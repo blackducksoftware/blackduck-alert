@@ -47,7 +47,7 @@ class Index extends Component {
             this.setEntriesFromArray(nextProps.items);
         }
 
-        if (!nextProps.fetching) {
+        if (!nextProps.fetching && this.props.autoRefresh) {
             this.startAutoReload();
         }
     }

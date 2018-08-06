@@ -10,7 +10,7 @@ class Navigation extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            GLOBAL_CONFIG: [],
+            CHANNEL_GLOBAL_CONFIG: [],
             PROVIDER_CONFIG: []
         }
         this.retrieveComponentData = this.retrieveComponentData.bind(this);
@@ -18,7 +18,7 @@ class Navigation extends Component {
 
     componentDidMount() {
         this.retrieveComponentData('CHANNEL_GLOBAL_CONFIG'),
-        this.retrieveComponentData('PROVIDER_CONFIG')
+            this.retrieveComponentData('PROVIDER_CONFIG')
     }
 
     retrieveComponentData(distributionConfigType) {
@@ -30,7 +30,7 @@ class Navigation extends Component {
             }
         }).then((response) => {
             return response.json().then((json) => {
-                this.setState ({
+                this.setState({
                     [distributionConfigType]: json
                 });
             });
@@ -38,70 +38,70 @@ class Navigation extends Component {
     }
 
     render() {
-        const globals = this.state.GLOBAL_CONFIG.map((component) =>
-        <li>
-            <NavLink to={`/alert/channels/${component.urlName}`} activeClassName="activeNav">
-                <FontAwesome name={component.fontAwesomeIcon} fixedWidth/>
-                {component.label}
-            </NavLink>
-        </li>);
+        const globals = this.state.CHANNEL_GLOBAL_CONFIG.map((component) =>
+            <li>
+                <NavLink to={`/alert/channels/${component.urlName}`} activeClassName="activeNav">
+                    <FontAwesome name={component.fontAwesomeIcon} fixedWidth/>
+                    {component.label}
+                </NavLink>
+            </li>);
         const providers = this.state.PROVIDER_CONFIG.map((component) =>
-        <li>
-            <NavLink to={`/alert/providers/${component.urlName}`} activeClassName="activeNav">
-                <FontAwesome name={component.fontAwesomeIcon} fixedWidth/>
-                {component.label}
-            </NavLink>
-        </li>);
-        
-    return (
-        <div className="navigation">
-        <div className="navigationLogo">
-            <Logo/>
-        </div>
-        <div className="navigationContent">
-            <ul>
-                <li className="navHeader">
-                    Providers
-                </li>
-                {providers}
-                <li className="navHeader">
-                    Channels
-                </li>
-                {globals}
-                <li className="navHeader">
-                    Jobs
-                </li>
-                <li>
-                    <NavLink to="/alert/jobs/distribution" activeClassName="activeNav">
-                        <FontAwesome name="truck" fixedWidth/> Distribution
-                    </NavLink>
-                </li>
-                <li>
-                    <NavLink to="/alert/jobs/scheduling" activeClassName="activeNav">
-                        <FontAwesome name="clock-o" fixedWidth/> Scheduling
-                    </NavLink>
-                </li>
-                <li className="divider"/>
-                <li>
-                    <NavLink to="/alert/general/audit" activeClassName="activeNav">
-                        <FontAwesome name="history" fixedWidth/> Audit
-                    </NavLink>
-                </li>
-                <li className="logoutLink">
-                    <a
-                        role="button"
-                        tabIndex={0}
-                        onClick={(evt) => {
-                            evt.preventDefault();
-                            props.confirmLogout();
-                        }}
-                    >
-                        <FontAwesome name="sign-out" fixedWidth/> Logout
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </div>);
+            <li>
+                <NavLink to={`/alert/providers/${component.urlName}`} activeClassName="activeNav">
+                    <FontAwesome name={component.fontAwesomeIcon} fixedWidth/>
+                    {component.label}
+                </NavLink>
+            </li>);
+
+        return (
+            <div className="navigation">
+                <div className="navigationLogo">
+                    <Logo/>
+                </div>
+                <div className="navigationContent">
+                    <ul>
+                        <li className="navHeader">
+                            Providers
+                        </li>
+                        {providers}
+                        <li className="navHeader">
+                            Channels
+                        </li>
+                        {globals}
+                        <li className="navHeader">
+                            Jobs
+                        </li>
+                        <li>
+                            <NavLink to="/alert/jobs/distribution" activeClassName="activeNav">
+                                <FontAwesome name="truck" fixedWidth/> Distribution
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink to="/alert/jobs/scheduling" activeClassName="activeNav">
+                                <FontAwesome name="clock-o" fixedWidth/> Scheduling
+                            </NavLink>
+                        </li>
+                        <li className="divider"/>
+                        <li>
+                            <NavLink to="/alert/general/audit" activeClassName="activeNav">
+                                <FontAwesome name="history" fixedWidth/> Audit
+                            </NavLink>
+                        </li>
+                        <li className="logoutLink">
+                            <a
+                                role="button"
+                                tabIndex={0}
+                                onClick={(evt) => {
+                                    evt.preventDefault();
+                                    props.confirmLogout();
+                                }}
+                            >
+                                <FontAwesome name="sign-out" fixedWidth/> Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>);
     }
 }
 

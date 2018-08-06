@@ -40,8 +40,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.alert.common.AlertProperties;
 import com.blackducksoftware.integration.alert.common.descriptor.ProviderDescriptor;
-import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
 import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.common.provider.Provider;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
@@ -66,6 +66,7 @@ public class StartupManager {
     private final Logger logger = LoggerFactory.getLogger(StartupManager.class);
 
     private final GlobalSchedulingRepository globalSchedulingRepository;
+    private final AlertProperties alertProperties;
     private final BlackDuckProperties blackDuckProperties;
     private final DailyTask dailyTask;
     private final OnDemandTask onDemandTask;
@@ -75,13 +76,39 @@ public class StartupManager {
     private final List<ProviderDescriptor> providerDescriptorList;
 
     @Value("${logging.level.com.blackducksoftware.integration:}")
-    String loggingLevel;
+    private String loggingLevel;
+
+    // SSL properties
+    @Value("${server.port:")
+    private String serverPort;
+
+    @Value("${server.ssl.key-store:}")
+    private String keyStoreFile;
+
+    @Value("${server.ssl.key-store-password:}")
+    private String keyStorePass;
+
+    @Value("${server.ssl.keyStoreType:}")
+    private String keyStoreType;
+
+    @Value("${server.ssl.keyAlias:}")
+    private String keyAlias;
+
+    @Value("${server.ssl.trust-store:}")
+    private String trustStoreFile;
+
+    @Value("${server.ssl.trust-store-password:}")
+    private String trustStorePass;
+
+    @Value("${server.ssl.trustStoreType:}")
+    private String trustStoreType;
 
     @Autowired
-    public StartupManager(final GlobalSchedulingRepository globalSchedulingRepository, final BlackDuckProperties blackDuckProperties,
+    public StartupManager(final GlobalSchedulingRepository globalSchedulingRepository, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
             final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer,
             final List<ProviderDescriptor> providerDescriptorList) {
         this.globalSchedulingRepository = globalSchedulingRepository;
+        this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
         this.dailyTask = dailyTask;
         this.onDemandTask = onDemandTask;
@@ -102,16 +129,18 @@ public class StartupManager {
     }
 
     public void logConfiguration() {
-        final boolean authenticatedProxy = StringUtils.isNotBlank(blackDuckProperties.getBlackDuckProxyPassword().orElse(null));
+        final boolean authenticatedProxy = StringUtils.isNotBlank(alertProperties.getAlertProxyPassword().orElse(null));
         logger.info("----------------------------------------");
         logger.info("Alert Configuration: ");
-        logger.info("Logging level:           {}", loggingLevel);
+        logger.info("Logging level:           {}", getLoggingLevel());
+        logger.info("Alert Proxy Host:          {}", alertProperties.getAlertProxyHost().orElse(""));
+        logger.info("Alert Proxy Port:          {}", alertProperties.getAlertProxyPort().orElse(""));
+        logger.info("Alert Proxy Authenticated: {}", authenticatedProxy);
+        logger.info("Alert Proxy User:          {}", alertProperties.getAlertProxyUsername().orElse(""));
+        logger.info("");
         logger.info("Black Duck URL:                 {}", blackDuckProperties.getBlackDuckUrl().orElse(""));
-        logger.info("Black Duck Proxy Host:          {}", blackDuckProperties.getBlackDuckProxyHost().orElse(""));
-        logger.info("Black Duck Proxy Port:          {}", blackDuckProperties.getBlackDuckProxyPort().orElse(""));
-        logger.info("Black Duck Proxy Authenticated: {}", authenticatedProxy);
-        logger.info("Black Duck Proxy User:          {}", blackDuckProperties.getBlackDuckProxyUsername().orElse(""));
-
+        logger.info("Black Duck Webserver Host:                 {}", blackDuckProperties.getPublicBlackDuckWebserverHost().orElse(""));
+        logger.info("Black Duck Webserver Port:                 {}", blackDuckProperties.getPublicBlackDuckWebserverPort().orElse(""));
         final Optional<GlobalBlackDuckConfigEntity> optionalGlobalBlackDuckConfigEntity = blackDuckProperties.getBlackDuckConfig();
         if (optionalGlobalBlackDuckConfigEntity.isPresent()) {
             final GlobalBlackDuckConfigEntity globalBlackDuckConfigEntity = optionalGlobalBlackDuckConfigEntity.get();
@@ -149,29 +178,23 @@ public class StartupManager {
         logger.info("Validating Black Duck Provider...");
         try {
             final HubServerVerifier verifier = new HubServerVerifier();
-            final ProxyInfoBuilder proxyBuilder = blackDuckProperties.createProxyInfoBuilder();
+            final ProxyInfoBuilder proxyBuilder = alertProperties.createProxyInfoBuilder();
             final ProxyInfo proxyInfo = proxyBuilder.build();
             final Optional<String> blackDuckUrlOptional = blackDuckProperties.getBlackDuckUrl();
             if (!blackDuckUrlOptional.isPresent()) {
                 logger.error("  -> Black Duck Provider Invalid; cause: Black Duck URL missing...");
             } else {
-                if (blackDuckUrlOptional.isPresent()) {
-                    final String blackDuckUrlString = blackDuckUrlOptional.get();
-                    final Boolean trustCertificate = BooleanUtils.toBoolean(blackDuckProperties.getBlackDuckTrustCertificate().orElse(false));
+                final String blackDuckUrlString = blackDuckUrlOptional.get();
+                final Boolean trustCertificate = BooleanUtils.toBoolean(alertProperties.getAlertTrustCertificate().orElse(false));
 
-                    final URL blackDuckUrl = new URL(blackDuckUrlString);
-                    if ("localhost".equals(blackDuckUrl.getHost())) {
-                        logger.warn("  -> Black Duck Provider Using localhost...");
-                        final String blackDuckWebServerEnvValue = blackDuckProperties.getEnvironmentVariable(AlertEnvironment.PUBLIC_HUB_WEBSERVER_HOST);
-                        if (StringUtils.isBlank(blackDuckWebServerEnvValue)) {
-                            logger.warn("  -> Black Duck Provider Using localhost because PUBLIC_HUB_WEBSERVER_HOST environment variable is not set");
-                        } else {
-                            logger.warn("  -> Black Duck Provider Using localhost because PUBLIC_HUB_WEBSERVER_HOST environment variable is set to localhost");
-                        }
-                    }
-                    verifier.verifyIsHubServer(new URL(blackDuckUrlString), proxyInfo, trustCertificate, blackDuckProperties.getBlackDuckTimeout());
-                    logger.info("  -> Black Duck Provider Valid!");
+                final URL blackDuckUrl = new URL(blackDuckUrlString);
+                if ("localhost".equals(blackDuckUrl.getHost())) {
+                    logger.warn("  -> Black Duck Provider Using localhost...");
+                    final String blackDuckWebServerHost = blackDuckProperties.getPublicBlackDuckWebserverHost().orElse("");
+                    logger.warn("  -> Black Duck Provider Using localhost because PUBLIC_BLACKDUCK_WEBSERVER_HOST environment variable is set to {}", blackDuckWebServerHost);
                 }
+                verifier.verifyIsHubServer(new URL(blackDuckUrlString), proxyInfo, trustCertificate, blackDuckProperties.getBlackDuckTimeout());
+                logger.info("  -> Black Duck Provider Valid!");
             }
         } catch (final MalformedURLException | IntegrationException ex) {
             logger.error("  -> Black Duck Provider Invalid; cause: {}", ex.getMessage());
@@ -246,4 +269,39 @@ public class StartupManager {
         providerDescriptorList.stream().map(ProviderDescriptor::getProvider).forEach(Provider::initialize);
     }
 
+    public String getLoggingLevel() {
+        return loggingLevel;
+    }
+
+    public String getServerPort() {
+        return serverPort;
+    }
+
+    public String getKeyStoreFile() {
+        return keyStoreFile;
+    }
+
+    public String getKeyStorePass() {
+        return keyStorePass;
+    }
+
+    public String getKeyStoreType() {
+        return keyStoreType;
+    }
+
+    public String getKeyAlias() {
+        return keyAlias;
+    }
+
+    public String getTrustStoreFile() {
+        return trustStoreFile;
+    }
+
+    public String getTrustStorePass() {
+        return trustStorePass;
+    }
+
+    public String getTrustStoreType() {
+        return trustStoreType;
+    }
 }

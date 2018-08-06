@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.core.convert.support.DefaultConversionService;
 
+import com.blackducksoftware.integration.alert.TestAlertProperties;
 import com.blackducksoftware.integration.alert.TestBlackDuckProperties;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.event.AlertEvent;
@@ -44,7 +45,7 @@ public class NotificationItemProcessorTest {
         final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
         final NotificationItemProcessor notificationItemProcessor = new NotificationItemProcessor(Arrays.asList(notificationTypeProcessor), contentConverter);
 
-        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties();
+        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(new TestAlertProperties());
 
         final HubBucket hubBucket = new HubBucket();
         final NotificationDetailResult notificationResult = Mockito.mock(NotificationDetailResult.class);

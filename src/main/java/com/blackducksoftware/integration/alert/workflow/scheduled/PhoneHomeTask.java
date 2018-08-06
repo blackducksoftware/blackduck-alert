@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.alert.common.AboutReader;
 import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackducksoftware.integration.alert.workflow.PhoneHome;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
@@ -45,12 +46,14 @@ public class PhoneHomeTask extends ScheduledTask {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final PhoneHome phoneHome;
     private final BlackDuckProperties blackDuckProperties;
+    private final AboutReader aboutReader;
 
     @Autowired
-    public PhoneHomeTask(final TaskScheduler taskScheduler, final PhoneHome phoneHome, final BlackDuckProperties blackDuckProperties) {
+    public PhoneHomeTask(final TaskScheduler taskScheduler, final PhoneHome phoneHome, final BlackDuckProperties blackDuckProperties, final AboutReader aboutReader) {
         super(taskScheduler, TASK_NAME);
         this.phoneHome = phoneHome;
         this.blackDuckProperties = blackDuckProperties;
+        this.aboutReader = aboutReader;
     }
 
     @Override
@@ -60,7 +63,7 @@ public class PhoneHomeTask extends ScheduledTask {
             try (final RestConnection restConnection = optionalRestConnection.get()) {
                 final HubServicesFactory hubServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(restConnection);
                 final PhoneHomeService phoneHomeService = hubServicesFactory.createPhoneHomeService();
-                final PhoneHomeRequestBody.Builder builder = phoneHome.createPhoneHomeBuilder(phoneHomeService, blackDuckProperties.getProductVersion());
+                final PhoneHomeRequestBody.Builder builder = phoneHome.createPhoneHomeBuilder(phoneHomeService, aboutReader.getProductVersion());
                 if (builder != null) {
                     phoneHome.addChannelMetaData(builder);
                     phoneHomeService.phoneHome(builder);

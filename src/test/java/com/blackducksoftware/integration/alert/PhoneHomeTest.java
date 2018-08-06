@@ -30,7 +30,7 @@ public class PhoneHomeTest {
     @Test
     @Category(HubConnectionTest.class)
     public void testProductVersion() throws AlertException, IOException {
-        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties();
+        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(new TestAlertProperties());
         final PhoneHome phoneHome = new PhoneHome(null);
 
         try (final RestConnection restConnection = globalProperties.createRestConnection(new TestLogger()).get()) {
