@@ -1,12 +1,15 @@
 package com.blackducksoftware.integration.alert.common.descriptor;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.Arrays;
 
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.blackducksoftware.integration.alert.common.enumeration.DescriptorType;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 
 public class DescriptorMapTest {
@@ -29,7 +32,7 @@ public class DescriptorMapTest {
         Mockito.when(channelDescriptor2.getType()).thenReturn(DescriptorType.CHANNEL);
         Mockito.when(providerDescriptor.getType()).thenReturn(DescriptorType.PROVIDER);
 
-        final DescriptorMap descriptorMap = new DescriptorMap(Arrays.asList(channelDescriptor1, channelDescriptor2), Arrays.asList(providerDescriptor));
+        final DescriptorMap descriptorMap = new DescriptorMap(Arrays.asList(channelDescriptor1, channelDescriptor2), Arrays.asList(providerDescriptor), null);
 
         assertEquals(3, descriptorMap.getDescriptorMap().size());
         assertEquals(2, descriptorMap.getChannelDescriptorMap().size());

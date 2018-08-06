@@ -16,9 +16,9 @@ import com.blackducksoftware.integration.alert.mock.entity.MockEntityUtil;
 import com.google.gson.JsonObject;
 
 public class MockHipChatEntity extends MockEntityUtil<HipChatDistributionConfigEntity> {
-    private final Integer roomId;
-    private final Boolean notify;
-    private final String color;
+    private Integer roomId;
+    private Boolean notify;
+    private String color;
     private final Long id;
 
     public MockHipChatEntity() {
@@ -69,6 +69,18 @@ public class MockHipChatEntity extends MockEntityUtil<HipChatDistributionConfigE
         json.addProperty("color", color);
         json.addProperty("id", id);
         return json.toString();
+    }
+
+    public void setNotify(final Boolean notify) {
+        this.notify = notify;
+    }
+
+    public void setRoomId(final Integer roomId) {
+        this.roomId = roomId;
+    }
+
+    public void setColor(final String color) {
+        this.color = color;
     }
 
 }

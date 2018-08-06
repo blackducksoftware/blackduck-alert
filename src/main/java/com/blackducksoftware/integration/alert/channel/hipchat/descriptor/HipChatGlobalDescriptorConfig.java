@@ -21,47 +21,52 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.channel.hipchat;
+package com.blackducksoftware.integration.alert.channel.hipchat.descriptor;
+
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.common.ContentConverter;
-import com.blackducksoftware.integration.alert.common.descriptor.DatabaseContentConverter;
+import com.blackducksoftware.integration.alert.channel.hipchat.HipChatChannel;
+import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
+import com.blackducksoftware.integration.alert.common.descriptor.config.UIComponent;
 import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
+import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatGlobalRepositoryAccessor;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.web.channel.model.HipChatGlobalConfig;
 import com.blackducksoftware.integration.alert.web.model.Config;
+import com.blackducksoftware.integration.exception.IntegrationException;
 
 @Component
-public class HipChatGlobalContentConverter extends DatabaseContentConverter {
+public class HipChatGlobalDescriptorConfig extends DescriptorConfig {
+    private final HipChatChannel hipChatChannel;
 
     @Autowired
-    public HipChatGlobalContentConverter(final ContentConverter contentConverter) {
-        super(contentConverter);
+    public HipChatGlobalDescriptorConfig(final HipChatGlobalTypeConverter databaseContentConverter, final HipChatGlobalRepositoryAccessor repositoryAccessor, final HipChatChannel hipChatChannel,
+            final HipChatStartupComponent hipChatStartupComponent) {
+        super(databaseContentConverter, repositoryAccessor, hipChatStartupComponent);
+        this.hipChatChannel = hipChatChannel;
     }
 
     @Override
-    public Config getRestModelFromJson(final String json) {
-        return getContentConverter().getJsonContent(json, HipChatGlobalConfig.class);
+    public UIComponent getUiComponent() {
+        return new UIComponent("HipChat", "hipchat", "comments", "HipChatConfiguration");
     }
 
     @Override
-    public DatabaseEntity populateDatabaseEntityFromRestModel(final Config restModel) {
+    public void validateConfig(final Config restModel, final Map<String, String> fieldErrors) {
         final HipChatGlobalConfig hipChatRestModel = (HipChatGlobalConfig) restModel;
-        final HipChatGlobalConfigEntity hipChatEntity = new HipChatGlobalConfigEntity(hipChatRestModel.getApiKey(), hipChatRestModel.getHostServer());
-        addIdToEntityPK(hipChatRestModel.getId(), hipChatEntity);
-        return hipChatEntity;
+        if (StringUtils.isBlank(hipChatRestModel.getApiKey())) {
+            fieldErrors.put("apiKey", "ApiKey can't be blank");
+        }
     }
 
     @Override
-    public Config populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
+    public void testConfig(final DatabaseEntity entity) throws IntegrationException {
         final HipChatGlobalConfigEntity hipChatEntity = (HipChatGlobalConfigEntity) entity;
-        final String id = getContentConverter().getStringValue(hipChatEntity.getId());
-        final boolean isApiKeySet = StringUtils.isNotBlank(hipChatEntity.getApiKey());
-        final HipChatGlobalConfig hipChatRestModel = new HipChatGlobalConfig(id, hipChatEntity.getApiKey(), isApiKeySet, hipChatEntity.getHostServer());
-        return hipChatRestModel;
+        hipChatChannel.testGlobalConfig(hipChatEntity);
     }
 
 }

@@ -23,23 +23,42 @@
  */
 package com.blackducksoftware.integration.alert.channel.event;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.channel.DistributionChannelManager;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
+import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
+import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
 
+@Transactional
 @Component
 public class ChannelEventFactory {
-    private final DistributionChannelManager distributionChannelManager;
+    private final ContentConverter contentConverter;
 
     @Autowired
-    public ChannelEventFactory(final DistributionChannelManager distributionChannelManager) {
-        this.distributionChannelManager = distributionChannelManager;
+    public ChannelEventFactory(final ContentConverter contentConverter) {
+        this.contentConverter = contentConverter;
     }
 
-    public ChannelEvent createEvent(final Long commonDistributionConfigId, final String distributionType, final DigestModel digestModel) {
-        return distributionChannelManager.createChannelEvent(distributionType, digestModel, commonDistributionConfigId);
+    public ChannelEvent createChannelEvent(final String destination, final DigestModel content, final Long commonDistributionConfigId) {
+        return new ChannelEvent(destination, contentConverter.getJsonString(content), commonDistributionConfigId);
+    }
+
+    public ChannelEvent createChannelTestEvent(final String destination) {
+        return createChannelEvent(destination, getTestMessageModel(), null);
+    }
+
+    public DigestModel getTestMessageModel() {
+        final Collection<ProjectData> projectDataCollection = Arrays.asList(new ProjectData(DigestType.REAL_TIME, "Alert", "Test Message", Collections.emptyList(), Collections.emptyMap()));
+        final DigestModel digestModel = new DigestModel(projectDataCollection);
+        return digestModel;
     }
 
 }
