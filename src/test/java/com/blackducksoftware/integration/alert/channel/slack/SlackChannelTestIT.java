@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.assertj.core.util.Sets;
@@ -79,10 +80,10 @@ public class SlackChannelTestIT extends ChannelTest {
     public void testCreateRequestExceptions() {
         final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null, null, contentConverter);
         final MockSlackEntity mockSlackEntity = new MockSlackEntity();
-        Request request = null;
+        List<Request> request = null;
 
         try {
-            request = slackChannel.createRequest(null, mockSlackEntity.createEmptyEntity(), null, null);
+            request = slackChannel.createRequests(null, mockSlackEntity.createEmptyEntity(), null, null);
             fail();
         } catch (final IntegrationException e) {
             assertNull(request);
@@ -90,7 +91,7 @@ public class SlackChannelTestIT extends ChannelTest {
 
         mockSlackEntity.setChannelName("");
         try {
-            request = slackChannel.createRequest(null, mockSlackEntity.createEntity(), null, null);
+            request = slackChannel.createRequests(null, mockSlackEntity.createEntity(), null, null);
             fail();
         } catch (final IntegrationException e) {
             assertNull(request);
@@ -120,10 +121,9 @@ public class SlackChannelTestIT extends ChannelTest {
 
         final ChannelRequestHelper spyChannelRequestHelper = Mockito.spy(channelRequestHelper);
 
-        final Request request = slackChannel.createRequest(spyChannelRequestHelper, mockSlackEntity.createEntity(), null, event);
+        final List<Request> request = slackChannel.createRequests(spyChannelRequestHelper, mockSlackEntity.createEntity(), null, event);
 
-        assertNull(request);
-
+        assertFalse(request.isEmpty());
         Mockito.verify(spyChannelRequestHelper).createPostMessageRequest(Mockito.anyString(), Mockito.anyMap(), Mockito.anyString());
     }
 
@@ -147,8 +147,8 @@ public class SlackChannelTestIT extends ChannelTest {
 
         final ChannelRequestHelper spyChannelRequestHelper = Mockito.spy(channelRequestHelper);
 
-        final Request request = slackChannel.createRequest(spyChannelRequestHelper, mockSlackEntity.createEntity(), null, event);
-        assertNull(request);
+        final List<Request> requests = slackChannel.createRequests(spyChannelRequestHelper, mockSlackEntity.createEntity(), null, event);
+        assertFalse(requests.isEmpty());
         Mockito.verify(spyChannelRequestHelper).createPostMessageRequest(Mockito.anyString(), Mockito.anyMap(), Mockito.anyString());
     }
 
