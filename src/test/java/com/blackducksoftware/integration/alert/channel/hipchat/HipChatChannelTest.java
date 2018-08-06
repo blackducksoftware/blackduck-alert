@@ -82,7 +82,7 @@ public class HipChatChannelTest extends ChannelTest {
 
         IntegrationException intException = null;
         try {
-            hipChatChannel.createRequest(null, new HipChatDistributionConfigEntity(null, null, null), null, null);
+            hipChatChannel.createRequests(null, new HipChatDistributionConfigEntity(null, null, null), null, null);
         } catch (final IntegrationException e) {
             intException = e;
         }
@@ -107,7 +107,7 @@ public class HipChatChannelTest extends ChannelTest {
             System.getProperties().setProperty("user.dir", "garbage");
             RuntimeException thrownException = null;
             try {
-                hipChatChannel.createRequest(channelRequestHelper, config, hipChatMockUtil.createGlobalEntity(), event);
+                hipChatChannel.createRequests(channelRequestHelper, config, hipChatMockUtil.createGlobalEntity(), event);
             } catch (final RuntimeException e) {
                 thrownException = e;
             }

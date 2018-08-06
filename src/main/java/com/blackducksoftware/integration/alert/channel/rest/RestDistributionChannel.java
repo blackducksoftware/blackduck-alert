@@ -24,6 +24,7 @@
 package com.blackducksoftware.integration.alert.channel.rest;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,9 +60,10 @@ public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntit
         final G globalConfig = getGlobalConfigEntity();
         try (final RestConnection restConnection = channelRestConnectionFactory.createUnauthenticatedRestConnection(getApiUrl(globalConfig))) {
             final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(restConnection);
-            final Request request = createRequest(channelRequestHelper, config, globalConfig, event);
-            channelRequestHelper.sendMessageRequest(request, event.getDestination());
-
+            final List<Request> requests = createRequests(channelRequestHelper, config, globalConfig, event);
+            for (final Request request : requests) {
+                channelRequestHelper.sendMessageRequest(request, event.getDestination());
+            }
         } catch (final IOException ex) {
             throw new AlertException(ex);
         }
@@ -73,6 +75,7 @@ public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntit
 
     public abstract String getApiUrl(G globalConfig);
 
-    public abstract Request createRequest(final ChannelRequestHelper channelRequestHelper, final C config, G globalConfig, final ChannelEvent event) throws IntegrationException;
+    public abstract List<Request> createRequests(final ChannelRequestHelper channelRequestHelper, final C config, G globalConfig, final ChannelEvent event) throws IntegrationException;
 
 }
+

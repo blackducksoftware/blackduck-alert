@@ -23,7 +23,9 @@
  */
 package com.blackducksoftware.integration.alert.channel.slack;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.transaction.Transactional;
@@ -67,7 +69,7 @@ public class SlackChannel extends RestDistributionChannel<GlobalChannelConfigEnt
     }
 
     @Override
-    public Request createRequest(final ChannelRequestHelper channelRequestHelper, final SlackDistributionConfigEntity config, final GlobalChannelConfigEntity globalConfig, final ChannelEvent event) throws IntegrationException {
+    public List<Request> createRequests(final ChannelRequestHelper channelRequestHelper, final SlackDistributionConfigEntity config, final GlobalChannelConfigEntity globalConfig, final ChannelEvent event) throws IntegrationException {
         if (StringUtils.isBlank(config.getWebhook())) {
             throw new IntegrationException("Missing Webhook URL");
         } else if (StringUtils.isBlank(config.getChannelName())) {
@@ -80,8 +82,7 @@ public class SlackChannel extends RestDistributionChannel<GlobalChannelConfigEnt
 
             final Map<String, String> requestHeaders = new HashMap<>();
             requestHeaders.put("Content-Type", "application/json");
-
-            return channelRequestHelper.createPostMessageRequest(slackUrl, requestHeaders, jsonString);
+            return Arrays.asList(channelRequestHelper.createPostMessageRequest(slackUrl, requestHeaders, jsonString));
         }
     }
 
