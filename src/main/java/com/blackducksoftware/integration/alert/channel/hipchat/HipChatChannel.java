@@ -136,7 +136,6 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
         if (config.getRoomId() == null) {
             throw new IntegrationException("Room ID missing");
         } else {
-
             if (isChunkedMessageNeeded(event)) {
                 final String eventContent = event.getContent();
                 final int requestCount = calculateChunks(eventContent);
@@ -173,8 +172,9 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
         final List<Request> requestList = new ArrayList<>(requestCount);
         final String eventContent = event.getContent();
         for (int index = 0; index < requestCount; index++) {
-            logger.info("Creating request {} of {}", index, requestCount);
-            final String contentTitle = String.format("%s -> %s (part %d of %d)", event.getProvider(), event.getNotificationType(), index + 1, requestCount);
+            final int currentRequest = index + 1;
+            logger.info("Creating request {} of {}", currentRequest, requestCount);
+            final String contentTitle = String.format("%s -> %s (part %d of %d)", event.getProvider(), event.getNotificationType(), currentRequest, requestCount);
             final int start = MESSAGE_SIZE_LIMIT * index;
             final int end = start + MESSAGE_SIZE_LIMIT;
             final String content;

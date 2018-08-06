@@ -18,6 +18,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -43,6 +44,7 @@ import com.blackducksoftware.integration.log.LogLevel;
 import com.blackducksoftware.integration.log.PrintStreamIntLogger;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.blackducksoftware.integration.rest.connection.UnauthenticatedRestConnection;
+import com.blackducksoftware.integration.rest.request.Request;
 import com.blackducksoftware.integration.test.annotation.ExternalConnectionTest;
 
 public class HipChatChannelTest extends ChannelTest {
@@ -206,4 +208,62 @@ public class HipChatChannelTest extends ChannelTest {
 
     }
 
+    @Test
+    public void testEmptyContent() throws Exception {
+        final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
+        final GlobalBlackDuckRepository mockedGlobalRepository = Mockito.mock(GlobalBlackDuckRepository.class);
+        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(mockedGlobalRepository, null);
+        final RestConnection connection = Mockito.mock(RestConnection.class);
+        final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(connection);
+        HipChatChannel hipChatChannel = new HipChatChannel(gson, globalProperties, auditEntryRepository, null, null, null, null, contentConverter);
+
+        final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", "");
+        final ChannelEvent event = new ChannelEvent(HipChatChannel.COMPONENT_NAME, RestConnection.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
+                notificationContent.getContent(), null, null);
+        final int roomId = Integer.parseInt(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_ROOM_ID));
+        final boolean notify = false;
+        final String color = "random";
+        final HipChatDistributionConfigEntity config = new HipChatDistributionConfigEntity(roomId, notify, color);
+
+        hipChatChannel = Mockito.spy(hipChatChannel);
+        Mockito.doReturn(new HipChatGlobalConfigEntity(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY), "")).when(hipChatChannel).getGlobalConfigEntity();
+
+        final List<Request> requestList = hipChatChannel.createRequests(channelRequestHelper, config, hipChatChannel.getGlobalConfigEntity(), event);
+        assertTrue(requestList.size() == 1);
+    }
+
+    @Test
+    public void testChunkedRequestList() throws Exception {
+        final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
+        final GlobalBlackDuckRepository mockedGlobalRepository = Mockito.mock(GlobalBlackDuckRepository.class);
+        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(mockedGlobalRepository, null);
+        final RestConnection connection = Mockito.mock(RestConnection.class);
+        final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(connection);
+        HipChatChannel hipChatChannel = new HipChatChannel(gson, globalProperties, auditEntryRepository, null, null, null, null, contentConverter);
+
+        final StringBuilder contentBuilder = new StringBuilder(HipChatChannel.MESSAGE_SIZE_LIMIT * 3);
+        addContentData(contentBuilder, 'a');
+        addContentData(contentBuilder, 'b');
+        addContentData(contentBuilder, 'c');
+
+        final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentBuilder.toString());
+        final ChannelEvent event = new ChannelEvent(HipChatChannel.COMPONENT_NAME, RestConnection.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
+                notificationContent.getContent(), null, null);
+        final int roomId = Integer.parseInt(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_ROOM_ID));
+        final boolean notify = false;
+        final String color = "random";
+        final HipChatDistributionConfigEntity config = new HipChatDistributionConfigEntity(roomId, notify, color);
+
+        hipChatChannel = Mockito.spy(hipChatChannel);
+        Mockito.doReturn(new HipChatGlobalConfigEntity(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY), "")).when(hipChatChannel).getGlobalConfigEntity();
+
+        final List<Request> requestList = hipChatChannel.createRequests(channelRequestHelper, config, hipChatChannel.getGlobalConfigEntity(), event);
+        assertTrue(requestList.size() == 3);
+    }
+
+    private void addContentData(final StringBuilder contentBuilder, final char character) {
+        for (int index = 0; index < HipChatChannel.MESSAGE_SIZE_LIMIT; index++) {
+            contentBuilder.append(character);
+        }
+    }
 }
