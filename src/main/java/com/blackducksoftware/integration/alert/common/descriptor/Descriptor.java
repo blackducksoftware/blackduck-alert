@@ -61,11 +61,11 @@ public abstract class Descriptor {
     }
 
     public void addGlobalConfig(final DescriptorConfig descriptorConfig) {
-        descriptorConfigs.put(DescriptorConfigType.GLOBAL_CONFIG, descriptorConfig);
+        descriptorConfigs.put(DescriptorConfigType.CHANNEL_GLOBAL_CONFIG, descriptorConfig);
     }
 
     public void addDistributionConfig(final DescriptorConfig descriptorConfig) {
-        descriptorConfigs.put(DescriptorConfigType.DISTRIBUTION_CONFIG, descriptorConfig);
+        descriptorConfigs.put(DescriptorConfigType.CHANNEL_DISTRIBUTION_CONFIG, descriptorConfig);
     }
 
     public DescriptorConfig getConfig(final DescriptorConfigType descriptorConfigType) {

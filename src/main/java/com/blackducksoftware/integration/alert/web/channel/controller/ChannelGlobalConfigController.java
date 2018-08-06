@@ -61,19 +61,19 @@ public class ChannelGlobalConfigController extends ChannelConfigController {
     @Override
     public ResponseEntity<String> postConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
-        return controllerHandler.postConfig(descriptor.getConfigFromJson(DescriptorConfigType.GLOBAL_CONFIG, restModel), descriptor);
+        return controllerHandler.postConfig(descriptor.getConfigFromJson(DescriptorConfigType.CHANNEL_GLOBAL_CONFIG, restModel), descriptor);
     }
 
     @Override
     public ResponseEntity<String> putConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
-        return controllerHandler.putConfig(descriptor.getConfigFromJson(DescriptorConfigType.GLOBAL_CONFIG, restModel), descriptor);
+        return controllerHandler.putConfig(descriptor.getConfigFromJson(DescriptorConfigType.CHANNEL_GLOBAL_CONFIG, restModel), descriptor);
     }
 
     @Override
     public ResponseEntity<String> validateConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
-        return controllerHandler.validateConfig(descriptor.getConfigFromJson(DescriptorConfigType.GLOBAL_CONFIG, restModel), descriptor);
+        return controllerHandler.validateConfig(descriptor.getConfigFromJson(DescriptorConfigType.CHANNEL_GLOBAL_CONFIG, restModel), descriptor);
     }
 
     @Override
@@ -85,7 +85,7 @@ public class ChannelGlobalConfigController extends ChannelConfigController {
     @Override
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
         final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
-        return controllerHandler.testConfig(descriptor.getConfigFromJson(DescriptorConfigType.GLOBAL_CONFIG, restModel), descriptor);
+        return controllerHandler.testConfig(descriptor.getConfigFromJson(DescriptorConfigType.CHANNEL_GLOBAL_CONFIG, restModel), descriptor);
     }
 
 }

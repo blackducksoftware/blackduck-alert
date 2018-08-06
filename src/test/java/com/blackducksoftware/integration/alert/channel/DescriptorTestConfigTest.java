@@ -91,7 +91,7 @@ public abstract class DescriptorTestConfigTest<R extends CommonDistributionConfi
     @Test
     public void testSendTestMessage() throws IntegrationException {
         saveGlobalConfiguration();
-        final DescriptorConfig descriptorConfig = getDescriptor().getConfig(DescriptorConfigType.DISTRIBUTION_CONFIG);
+        final DescriptorConfig descriptorConfig = getDescriptor().getConfig(DescriptorConfigType.CHANNEL_DISTRIBUTION_CONFIG);
         final DescriptorConfig spyDescriptorConfig = Mockito.spy(descriptorConfig);
         final E entity = getMockEntityUtil().createEntity();
         try {

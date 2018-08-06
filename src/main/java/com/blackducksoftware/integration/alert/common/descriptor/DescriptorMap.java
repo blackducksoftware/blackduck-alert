@@ -71,11 +71,11 @@ public class DescriptorMap {
     }
 
     public List<DescriptorConfig> getDistributionDescriptorConfigs() {
-        return getDescriptorConfigs(DescriptorConfigType.DISTRIBUTION_CONFIG);
+        return getDescriptorConfigs(DescriptorConfigType.CHANNEL_DISTRIBUTION_CONFIG);
     }
 
     public List<DescriptorConfig> getGlobalDescriptorConfigs() {
-        return getDescriptorConfigs(DescriptorConfigType.GLOBAL_CONFIG);
+        return getDescriptorConfigs(DescriptorConfigType.CHANNEL_GLOBAL_CONFIG);
     }
 
     public List<DescriptorConfig> getProviderDescriptorConfigs() {
