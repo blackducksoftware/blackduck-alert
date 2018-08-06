@@ -21,40 +21,46 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.channel.slack;
+package com.blackducksoftware.integration.alert.channel.slack.descriptor;
 
 import java.util.Map;
-import java.util.Set;
-
-import javax.jms.MessageListener;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
-import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
+import com.blackducksoftware.integration.alert.channel.event.ChannelEventFactory;
+import com.blackducksoftware.integration.alert.channel.slack.SlackChannel;
+import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
+import com.blackducksoftware.integration.alert.common.descriptor.config.UIComponent;
 import com.blackducksoftware.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.channel.slack.SlackDistributionRepositoryAccessor;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.web.channel.model.SlackDistributionConfig;
-import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfig;
 import com.blackducksoftware.integration.alert.web.model.Config;
-import com.blackducksoftware.integration.alert.workflow.startup.AlertStartupProperty;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
 @Component
-public class SlackDescriptor extends ChannelDescriptor {
+public class SlackDistributionDescriptorConfig extends DescriptorConfig {
+    private final ChannelEventFactory channelEventFactory;
     private final SlackChannel slackChannel;
 
     @Autowired
-    public SlackDescriptor(final SlackChannel slackChannel, final SlackDistributionContentConverter slackDistributionContentConverter, final SlackDistributionRepositoryAccessor slackDistributionRepositoryAccessor) {
-        super(SlackChannel.COMPONENT_NAME, SlackChannel.COMPONENT_NAME, null, null, slackDistributionContentConverter, slackDistributionRepositoryAccessor);
+    public SlackDistributionDescriptorConfig(final SlackDistributionTypeConverter databaseContentConverter, final SlackDistributionRepositoryAccessor repositoryAccessor, final ChannelEventFactory channelEventFactory,
+            final SlackChannel slackChannel) {
+        super(databaseContentConverter, repositoryAccessor);
+        this.channelEventFactory = channelEventFactory;
         this.slackChannel = slackChannel;
     }
 
     @Override
-    public void validateDistributionConfig(final CommonDistributionConfig restModel, final Map<String, String> fieldErrors) {
+    public UIComponent getUiComponent() {
+        return new UIComponent("Slack", "slack", "slack", "SlackJobConfiguration");
+    }
+
+    @Override
+    public void validateConfig(final Config restModel, final Map<String, String> fieldErrors) {
         final SlackDistributionConfig slackRestModel = (SlackDistributionConfig) restModel;
 
         if (StringUtils.isBlank(slackRestModel.getWebhook())) {
@@ -66,32 +72,10 @@ public class SlackDescriptor extends ChannelDescriptor {
     }
 
     @Override
-    public MessageListener getChannelListener() {
-        return slackChannel;
-    }
-
-    @Override
-    public void testDistributionConfig(final CommonDistributionConfig restModel, final ChannelEvent event) throws IntegrationException {
-        final SlackDistributionConfigEntity config = (SlackDistributionConfigEntity) getDistributionContentConverter().populateDatabaseEntityFromRestModel(restModel);
-        slackChannel.sendAuditedMessage(event, config);
-    }
-
-    @Override
-    public void validateGlobalConfig(final Config restModel, final Map<String, String> fieldErrors) {
-    }
-
-    @Override
-    public void testGlobalConfig(final DatabaseEntity entity) {
-    }
-
-    @Override
-    public Set<AlertStartupProperty> getGlobalEntityPropertyMapping() {
-        return null;
-    }
-
-    @Override
-    public Config getGlobalRestModelObject() {
-        return null;
+    public void testConfig(final DatabaseEntity entity) throws IntegrationException {
+        final SlackDistributionConfigEntity slackEntity = (SlackDistributionConfigEntity) entity;
+        final ChannelEvent event = channelEventFactory.createChannelTestEvent(SlackChannel.COMPONENT_NAME);
+        slackChannel.sendAuditedMessage(event, slackEntity);
     }
 
 }

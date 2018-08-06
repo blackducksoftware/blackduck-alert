@@ -21,8 +21,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.common.descriptor;
+package com.blackducksoftware.integration.alert.channel.hipchat.descriptor;
 
-public enum DescriptorType {
-    CHANNEL, PROVIDER;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.blackducksoftware.integration.alert.channel.hipchat.HipChatChannel;
+import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
+
+@Component
+public class HipChatDescriptor extends ChannelDescriptor {
+
+    @Autowired
+    public HipChatDescriptor(final HipChatChannel channelListener, final HipChatDistributionDescriptorConfig distributionDescriptorConfig, final HipChatGlobalDescriptorConfig hipChatGlobalDescriptorConfig) {
+        super(HipChatChannel.COMPONENT_NAME, HipChatChannel.COMPONENT_NAME, channelListener, distributionDescriptorConfig, hipChatGlobalDescriptorConfig);
+    }
+
 }

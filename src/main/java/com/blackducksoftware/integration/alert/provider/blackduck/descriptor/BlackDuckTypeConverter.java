@@ -21,34 +21,34 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.provider.blackduck;
+package com.blackducksoftware.integration.alert.provider.blackduck.descriptor;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.common.ContentConverter;
-import com.blackducksoftware.integration.alert.common.descriptor.DatabaseContentConverter;
+import com.blackducksoftware.integration.alert.common.descriptor.config.TypeConverter;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.blackducksoftware.integration.alert.web.model.Config;
 import com.blackducksoftware.integration.alert.web.provider.blackduck.GlobalBlackDuckConfig;
 
 @Component
-public class BlackDuckContentConverter extends DatabaseContentConverter {
+public class BlackDuckTypeConverter extends TypeConverter {
 
     @Autowired
-    public BlackDuckContentConverter(final ContentConverter contentConverter) {
+    public BlackDuckTypeConverter(final ContentConverter contentConverter) {
         super(contentConverter);
     }
 
     @Override
-    public Config getRestModelFromJson(final String json) {
+    public Config getConfigFromJson(final String json) {
         return getContentConverter().getJsonContent(json, GlobalBlackDuckConfig.class);
     }
 
     @Override
-    public DatabaseEntity populateDatabaseEntityFromRestModel(final Config restModel) {
+    public DatabaseEntity populateEntityFromConfig(final Config restModel) {
         final GlobalBlackDuckConfig globalBlackDuckConfig = (GlobalBlackDuckConfig) restModel;
         final Integer blackDuckTimeout = getContentConverter().getIntegerValue(globalBlackDuckConfig.getBlackDuckTimeout());
         final GlobalBlackDuckConfigEntity blackDuckEntity = new GlobalBlackDuckConfigEntity(blackDuckTimeout, globalBlackDuckConfig.getBlackDuckApiKey());
@@ -57,7 +57,7 @@ public class BlackDuckContentConverter extends DatabaseContentConverter {
     }
 
     @Override
-    public Config populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
+    public Config populateConfigFromEntity(final DatabaseEntity entity) {
         final GlobalBlackDuckConfigEntity blackDuckEntity = (GlobalBlackDuckConfigEntity) entity;
         final GlobalBlackDuckConfig globalBlackDuckConfig = new GlobalBlackDuckConfig();
         final String id = getContentConverter().getStringValue(blackDuckEntity.getId());

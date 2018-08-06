@@ -21,30 +21,40 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.provider.blackduck;
+package com.blackducksoftware.integration.alert.provider.blackduck.descriptor;
+
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.database.RepositoryAccessor;
+import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
+import com.blackducksoftware.integration.alert.common.descriptor.config.UIComponent;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
-import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
+import com.blackducksoftware.integration.alert.web.model.Config;
+import com.blackducksoftware.integration.exception.IntegrationException;
 
 @Component
-public class BlackDuckRepositoryAccessor extends RepositoryAccessor {
-    private final GlobalBlackDuckRepository repository;
+public class BlackDuckProviderDescriptorConfig extends DescriptorConfig {
 
     @Autowired
-    public BlackDuckRepositoryAccessor(final GlobalBlackDuckRepository repository) {
-        super(repository);
-        this.repository = repository;
+    public BlackDuckProviderDescriptorConfig(final BlackDuckTypeConverter databaseContentConverter, final BlackDuckRepositoryAccessor repositoryAccessor, final BlackDuckProviderStartupComponent startupComponent) {
+        super(databaseContentConverter, repositoryAccessor, startupComponent);
     }
 
     @Override
-    public DatabaseEntity saveEntity(final DatabaseEntity entity) {
-        final GlobalBlackDuckConfigEntity blackDuckEntity = (GlobalBlackDuckConfigEntity) entity;
-        return repository.save(blackDuckEntity);
+    public UIComponent getUiComponent() {
+        return new UIComponent("Black Duck", "blackduck", "laptop", "BlackDuckConfiguration");
+    }
+
+    @Override
+    public void validateConfig(final Config restModel, final Map<String, String> fieldErrors) {
+
+    }
+
+    @Override
+    public void testConfig(final DatabaseEntity entity) throws IntegrationException {
+
     }
 
 }
