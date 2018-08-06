@@ -3,16 +3,16 @@ package com.blackducksoftware.integration.alert.channel.slack;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.blackducksoftware.integration.alert.TestPropertyKey;
-import com.blackducksoftware.integration.alert.channel.ChannelManagerTest;
+import com.blackducksoftware.integration.alert.channel.DescriptorTestConfigTest;
 import com.blackducksoftware.integration.alert.channel.slack.descriptor.SlackDescriptor;
-import com.blackducksoftware.integration.alert.channel.slack.mock.MockSlackRestModel;
+import com.blackducksoftware.integration.alert.channel.slack.mock.MockSlackEntity;
 import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.channel.slack.SlackDistributionRepository;
 import com.blackducksoftware.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.alert.web.channel.model.SlackDistributionConfig;
 
-public class SlackChannelManagerTestIT extends ChannelManagerTest<SlackDistributionConfig, SlackDistributionConfigEntity, GlobalChannelConfigEntity> {
+public class SlackChannelManagerTestIT extends DescriptorTestConfigTest<SlackDistributionConfig, SlackDistributionConfigEntity, GlobalChannelConfigEntity> {
 
     @Autowired
     private SlackDistributionRepository distributionRepository;
@@ -36,12 +36,11 @@ public class SlackChannelManagerTestIT extends ChannelManagerTest<SlackDistribut
     }
 
     @Override
-    public MockSlackRestModel getMockRestModelUtil() {
-        final MockSlackRestModel restModel = new MockSlackRestModel();
+    public MockSlackEntity getMockEntityUtil() {
+        final MockSlackEntity restModel = new MockSlackEntity();
         restModel.setChannelName(this.properties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME));
         restModel.setChannelUsername(this.properties.getProperty(TestPropertyKey.TEST_SLACK_USERNAME));
         restModel.setWebhook(this.properties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK));
-        restModel.setId("");
         return restModel;
     }
 

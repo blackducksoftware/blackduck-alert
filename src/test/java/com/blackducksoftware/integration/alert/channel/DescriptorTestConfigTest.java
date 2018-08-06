@@ -6,10 +6,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -27,14 +29,17 @@ import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.channel.event.ChannelEventFactory;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
+import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
+import com.blackducksoftware.integration.alert.common.enumeration.DescriptorConfigType;
 import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
 import com.blackducksoftware.integration.alert.database.DatabaseDataSource;
 import com.blackducksoftware.integration.alert.database.entity.channel.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
-import com.blackducksoftware.integration.alert.mock.model.MockRestModelUtil;
+import com.blackducksoftware.integration.alert.mock.entity.MockEntityUtil;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfig;
+import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.google.gson.Gson;
@@ -46,7 +51,7 @@ import com.google.gson.Gson;
 @Transactional
 @WebAppConfiguration
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
-public abstract class ChannelManagerTest<R extends CommonDistributionConfig, E extends DistributionChannelConfigEntity, GE extends GlobalChannelConfigEntity> {
+public abstract class DescriptorTestConfigTest<R extends CommonDistributionConfig, E extends DistributionChannelConfigEntity, GE extends GlobalChannelConfigEntity> {
     protected Gson gson;
     protected ContentConverter contentConverter;
     protected ChannelEventFactory channelManager;
@@ -70,7 +75,7 @@ public abstract class ChannelManagerTest<R extends CommonDistributionConfig, E e
 
     public abstract ChannelDescriptor getDescriptor();
 
-    public abstract MockRestModelUtil<R> getMockRestModelUtil();
+    public abstract MockEntityUtil<E> getMockEntityUtil();
 
     @Test
     public void testCreateChannelEvent() {
@@ -83,22 +88,19 @@ public abstract class ChannelManagerTest<R extends CommonDistributionConfig, E e
         assertEquals(getDescriptor().getDestinationName(), channelEvent.getDestination());
     }
 
-    // @Test
-    // public void testSendTestMessage() throws IntegrationException {
-    // saveGlobalConfiguration();
-    // final String actual = channelManager.sendTestMessage(getMockRestModelUtil().createRestModel(), getDescriptor());
-    // final String expected = "Successfully sent test message";
-    //
-    // assertEquals(expected, actual);
-    // }
-    //
-    // @Test
-    // public void testSendTestMessageMissingGlobalConfiguration() throws IntegrationException {
-    // if (getDescriptor().hasGlobalConfiguration()) {
-    // final String actual = channelManager.sendTestMessage(getMockRestModelUtil().createRestModel(), getDescriptor());
-    // final String expected = "ERROR: Missing global configuration!";
-    //
-    // assertEquals(expected, actual);
-    // }
-    // }
+    @Test
+    public void testSendTestMessage() throws IntegrationException {
+        saveGlobalConfiguration();
+        final DescriptorConfig descriptorConfig = getDescriptor().getConfig(DescriptorConfigType.DISTRIBUTION_CONFIG);
+        final DescriptorConfig spyDescriptorConfig = Mockito.spy(descriptorConfig);
+        final E entity = getMockEntityUtil().createEntity();
+        try {
+            spyDescriptorConfig.testConfig(entity);
+        } catch (final IntegrationException e) {
+            Assert.fail();
+        }
+
+        Mockito.verify(spyDescriptorConfig).testConfig(Mockito.any());
+    }
+
 }
