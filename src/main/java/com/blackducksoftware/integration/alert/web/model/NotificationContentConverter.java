@@ -29,12 +29,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.common.ContentConverter;
-import com.blackducksoftware.integration.alert.common.descriptor.DatabaseContentConverter;
+import com.blackducksoftware.integration.alert.common.descriptor.config.TypeConverter;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.database.entity.NotificationEntity;
 
 @Component
-public class NotificationContentConverter extends DatabaseContentConverter {
+public class NotificationContentConverter extends TypeConverter {
 
     @Autowired
     public NotificationContentConverter(final ContentConverter contentConverter) {
@@ -42,12 +42,12 @@ public class NotificationContentConverter extends DatabaseContentConverter {
     }
 
     @Override
-    public Config getRestModelFromJson(final String json) {
+    public Config getConfigFromJson(final String json) {
         return getContentConverter().getJsonContent(json, NotificationConfig.class);
     }
 
     @Override
-    public DatabaseEntity populateDatabaseEntityFromRestModel(final Config restModel) {
+    public DatabaseEntity populateEntityFromConfig(final Config restModel) {
         final NotificationConfig notificationConfig = (NotificationConfig) restModel;
         final Date createdAt = getContentConverter().getValue(notificationConfig.getCreatedAt(), Date.class);
         final NotificationEntity notificationEntity = new NotificationEntity(notificationConfig.getEventKey(), createdAt, null, notificationConfig.getProjectName(), notificationConfig.getProjectUrl(),
@@ -57,7 +57,7 @@ public class NotificationContentConverter extends DatabaseContentConverter {
     }
 
     @Override
-    public Config populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
+    public Config populateConfigFromEntity(final DatabaseEntity entity) {
         final NotificationEntity notificationEntity = (NotificationEntity) entity;
         final String id = getContentConverter().getStringValue(notificationEntity.getId());
         final String createdAt = getContentConverter().getStringValue(notificationEntity.getCreatedAt());

@@ -21,22 +21,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.common.descriptor;
+package com.blackducksoftware.integration.alert.provider.blackduck.descriptor;
 
-import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
-import com.blackducksoftware.integration.alert.common.enumeration.DescriptorType;
-import com.blackducksoftware.integration.alert.common.provider.Provider;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-public abstract class ProviderDescriptor extends Descriptor {
-    private final Provider provider;
+import com.blackducksoftware.integration.alert.common.descriptor.ProviderDescriptor;
+import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProvider;
 
-    public ProviderDescriptor(final String name, final DescriptorConfig providerDescriptorConfig, final Provider provider) {
-        super(name, DescriptorType.PROVIDER);
-        this.provider = provider;
-        addProviderConfig(providerDescriptorConfig);
+@Component
+public class BlackDuckDescriptor extends ProviderDescriptor {
+    public static final String PROVIDER_NAME = "provider_blackduck";
+
+    @Autowired
+    public BlackDuckDescriptor(final BlackDuckProviderDescriptorConfig providerDescriptorConfig, final BlackDuckProvider provider) {
+        super(PROVIDER_NAME, providerDescriptorConfig, provider);
     }
 
-    public Provider getProvider() {
-        return provider;
-    }
 }

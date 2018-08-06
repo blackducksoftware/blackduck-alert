@@ -21,22 +21,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.common.descriptor;
+package com.blackducksoftware.integration.alert.channel.slack.descriptor;
 
-import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
-import com.blackducksoftware.integration.alert.common.enumeration.DescriptorType;
-import com.blackducksoftware.integration.alert.common.provider.Provider;
+import org.springframework.stereotype.Component;
 
-public abstract class ProviderDescriptor extends Descriptor {
-    private final Provider provider;
+import com.blackducksoftware.integration.alert.channel.slack.SlackChannel;
+import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
 
-    public ProviderDescriptor(final String name, final DescriptorConfig providerDescriptorConfig, final Provider provider) {
-        super(name, DescriptorType.PROVIDER);
-        this.provider = provider;
-        addProviderConfig(providerDescriptorConfig);
+@Component
+public class SlackDescriptor extends ChannelDescriptor {
+
+    public SlackDescriptor(final SlackChannel channelListener, final SlackDistributionDescriptorConfig distributionDescriptorConfig, final SlackGlobalDescriptorConfig globalDescriptorConfig) {
+        super(SlackChannel.COMPONENT_NAME, SlackChannel.COMPONENT_NAME, channelListener, distributionDescriptorConfig, globalDescriptorConfig);
     }
 
-    public Provider getProvider() {
-        return provider;
-    }
 }

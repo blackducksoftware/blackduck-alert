@@ -44,8 +44,8 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
-import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckContentConverter;
 import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.blackducksoftware.integration.alert.provider.blackduck.descriptor.BlackDuckTypeConverter;
 import com.blackducksoftware.integration.alert.web.actions.ConfigActions;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -64,8 +64,8 @@ public class GlobalBlackDuckConfigActions extends ConfigActions<GlobalBlackDuckC
     private final BlackDuckProperties blackDuckProperties;
 
     @Autowired
-    public GlobalBlackDuckConfigActions(final GlobalBlackDuckRepository globalRepository, final BlackDuckProperties blackDuckProperties, final BlackDuckContentConverter blackDuckContentConverter) {
-        super(globalRepository, blackDuckContentConverter);
+    public GlobalBlackDuckConfigActions(final GlobalBlackDuckRepository globalRepository, final BlackDuckProperties blackDuckProperties, final BlackDuckTypeConverter blackDuckTypeConverter) {
+        super(globalRepository, blackDuckTypeConverter);
         this.blackDuckProperties = blackDuckProperties;
     }
 
@@ -74,7 +74,7 @@ public class GlobalBlackDuckConfigActions extends ConfigActions<GlobalBlackDuckC
         if (id != null) {
             final Optional<GlobalBlackDuckConfigEntity> foundEntity = getRepository().findById(id);
             if (foundEntity.isPresent()) {
-                GlobalBlackDuckConfig restModel = (GlobalBlackDuckConfig) getDatabaseContentConverter().populateRestModelFromDatabaseEntity(foundEntity.get());
+                GlobalBlackDuckConfig restModel = (GlobalBlackDuckConfig) getDatabaseContentConverter().populateConfigFromEntity(foundEntity.get());
                 restModel = updateModelFromEnvironment(restModel);
                 if (restModel != null) {
                     final GlobalBlackDuckConfig maskedRestModel = maskRestModel(restModel);
@@ -87,7 +87,7 @@ public class GlobalBlackDuckConfigActions extends ConfigActions<GlobalBlackDuckC
         List<GlobalBlackDuckConfig> restModels = new ArrayList<>(databaseEntities.size());
         if (databaseEntities != null && !databaseEntities.isEmpty()) {
             for (final GlobalBlackDuckConfigEntity entity : databaseEntities) {
-                restModels.add((GlobalBlackDuckConfig) getDatabaseContentConverter().populateRestModelFromDatabaseEntity(entity));
+                restModels.add((GlobalBlackDuckConfig) getDatabaseContentConverter().populateConfigFromEntity(entity));
             }
         } else {
             restModels.add(new GlobalBlackDuckConfig());

@@ -21,47 +21,47 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.web.scheduling;
+package com.blackducksoftware.integration.alert.channel.hipchat.descriptor;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.descriptor.config.TypeConverter;
+import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingConfigEntity;
+import com.blackducksoftware.integration.alert.web.channel.model.HipChatGlobalConfig;
 import com.blackducksoftware.integration.alert.web.model.Config;
 
 @Component
-public class GlobalSchedulingContentConverter extends TypeConverter {
+public class HipChatGlobalTypeConverter extends TypeConverter {
 
     @Autowired
-    public GlobalSchedulingContentConverter(final ContentConverter contentConverter) {
+    public HipChatGlobalTypeConverter(final ContentConverter contentConverter) {
         super(contentConverter);
     }
 
     @Override
     public Config getConfigFromJson(final String json) {
-        return getContentConverter().getJsonContent(json, GlobalSchedulingConfig.class);
+        return getContentConverter().getJsonContent(json, HipChatGlobalConfig.class);
     }
 
     @Override
     public DatabaseEntity populateEntityFromConfig(final Config restModel) {
-        final GlobalSchedulingConfig schedulingRestModel = (GlobalSchedulingConfig) restModel;
-        final GlobalSchedulingConfigEntity schedulingEntity = new GlobalSchedulingConfigEntity(schedulingRestModel.getDailyDigestHourOfDay(), schedulingRestModel.getPurgeDataFrequencyDays());
-        addIdToEntityPK(schedulingRestModel.getId(), schedulingEntity);
-        return schedulingEntity;
+        final HipChatGlobalConfig hipChatRestModel = (HipChatGlobalConfig) restModel;
+        final HipChatGlobalConfigEntity hipChatEntity = new HipChatGlobalConfigEntity(hipChatRestModel.getApiKey(), hipChatRestModel.getHostServer());
+        addIdToEntityPK(hipChatRestModel.getId(), hipChatEntity);
+        return hipChatEntity;
     }
 
     @Override
     public Config populateConfigFromEntity(final DatabaseEntity entity) {
-        final GlobalSchedulingConfigEntity schedulingEntity = (GlobalSchedulingConfigEntity) entity;
-        final GlobalSchedulingConfig schedulingRestModel = new GlobalSchedulingConfig();
-        schedulingRestModel.setDailyDigestHourOfDay(schedulingEntity.getDailyDigestHourOfDay());
-        schedulingRestModel.setPurgeDataFrequencyDays(schedulingEntity.getPurgeDataFrequencyDays());
-        final String id = getContentConverter().getStringValue(schedulingEntity.getId());
-        schedulingRestModel.setId(id);
-        return schedulingRestModel;
+        final HipChatGlobalConfigEntity hipChatEntity = (HipChatGlobalConfigEntity) entity;
+        final String id = getContentConverter().getStringValue(hipChatEntity.getId());
+        final boolean isApiKeySet = StringUtils.isNotBlank(hipChatEntity.getApiKey());
+        final HipChatGlobalConfig hipChatRestModel = new HipChatGlobalConfig(id, hipChatEntity.getApiKey(), isApiKeySet, hipChatEntity.getHostServer());
+        return hipChatRestModel;
     }
 
 }

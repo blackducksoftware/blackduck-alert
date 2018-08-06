@@ -52,29 +52,22 @@ import com.google.gson.Gson;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public abstract class ControllerTest<E extends DatabaseEntity, R extends CommonDistributionConfig, CR extends JpaRepository<E, Long>> {
     protected final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
+    protected MockMvc mockMvc;
+    protected Gson gson;
+    protected CR entityRepository;
+    protected MockEntityUtil<E> entityMockUtil;
+    protected MockRestModelUtil<R> restModelMockUtil;
+    protected MockCommonDistributionEntity distributionMockUtil;
+    protected String restUrl;
+    protected E entity;
+    protected R restModel;
+    protected E savedEntity;
+
     @Autowired
     protected WebApplicationContext webApplicationContext;
+
     @Autowired
     protected CommonDistributionRepository commonDistributionRepository;
-    protected MockMvc mockMvc;
-
-    protected Gson gson;
-
-    protected CR entityRepository;
-
-    protected MockEntityUtil<E> entityMockUtil;
-
-    protected MockRestModelUtil<R> restModelMockUtil;
-
-    protected MockCommonDistributionEntity distributionMockUtil;
-
-    protected String restUrl;
-
-    protected E entity;
-
-    protected R restModel;
-
-    protected E savedEntity;
 
     public abstract CR getEntityRepository();
 

@@ -21,32 +21,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.common.descriptor;
+package com.blackducksoftware.integration.alert.common.descriptor.config;
 
-import com.blackducksoftware.integration.alert.common.ContentConverter;
-import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
+import java.util.Set;
+
 import com.blackducksoftware.integration.alert.web.model.Config;
+import com.blackducksoftware.integration.alert.workflow.startup.AlertStartupProperty;
 
-public abstract class DatabaseContentConverter {
-    private final ContentConverter contentConverter;
+public abstract class StartupComponent {
+    private final Config emptyConfigObject;
 
-    public DatabaseContentConverter(final ContentConverter contentConverter) {
-        this.contentConverter = contentConverter;
+    public StartupComponent(final Config emptyConfigObject) {
+        this.emptyConfigObject = emptyConfigObject;
     }
 
-    public abstract Config getRestModelFromJson(final String json);
-
-    public abstract DatabaseEntity populateDatabaseEntityFromRestModel(Config restModel);
-
-    public abstract Config populateRestModelFromDatabaseEntity(DatabaseEntity entity);
-
-    public ContentConverter getContentConverter() {
-        return contentConverter;
+    public Config getEmptyConfigObject() {
+        return emptyConfigObject;
     }
 
-    public void addIdToEntityPK(final String id, final DatabaseEntity entity) {
-        final Long longId = contentConverter.getLongValue(id);
-        entity.setId(longId);
-    }
+    public abstract Set<AlertStartupProperty> getGlobalEntityPropertyMapping();
 
 }
