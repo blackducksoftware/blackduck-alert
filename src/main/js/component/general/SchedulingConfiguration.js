@@ -1,14 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import Select from 'react-select-2';
 
-import { getSchedulingConfig, runSchedulingAccumulator, updateSchedulingConfig } from '../../store/actions/schedulingConfig';
+import {getSchedulingConfig, updateSchedulingConfig} from '../../store/actions/schedulingConfig';
 
 import ConfigButtons from '../common/ConfigButtons';
-import GeneralButton from '../../field/input/GeneralButton';
 
-import { dailyDigestOptions, purgeOptions } from '../../util/scheduling-data';
+import {dailyDigestOptions, purgeOptions} from '../../util/scheduling-data';
 
 class SchedulingConfiguration extends React.Component {
     constructor(props) {
@@ -34,10 +33,9 @@ class SchedulingConfiguration extends React.Component {
             });
             this.startAutoTick();
         }
-
-        const { dailyDigestHourOfDay, purgeDataFrequencyDays } = this.state;
-        this.setState({ dailyDigestHourOfDay: dailyDigestHourOfDay || nextProps.dailyDigestHourOfDay || null });
-        this.setState({ purgeDataFrequencyDays: purgeDataFrequencyDays || nextProps.purgeDataFrequencyDays || null });
+        const {dailyDigestHourOfDay, purgeDataFrequencyDays} = this.state;
+        this.setState({dailyDigestHourOfDay: dailyDigestHourOfDay || nextProps.dailyDigestHourOfDay || null});
+        this.setState({purgeDataFrequencyDays: purgeDataFrequencyDays || nextProps.purgeDataFrequencyDays || null});
     }
 
     componentWillUnmount() {
@@ -71,23 +69,23 @@ class SchedulingConfiguration extends React.Component {
     handleSubmit(event) {
         event.preventDefault();
         event.stopPropagation();
-        const { dailyDigestHourOfDay, purgeDataFrequencyDays } = this.state;
-        this.props.updateConfig({ dailyDigestHourOfDay, purgeDataFrequencyDays });
+        const {dailyDigestHourOfDay, purgeDataFrequencyDays} = this.state;
+        this.props.updateConfig({dailyDigestHourOfDay, purgeDataFrequencyDays});
     }
 
     handleDailyDigestChanged(option) {
         if (option) {
-            this.setState({ dailyDigestHourOfDay: option.value });
+            this.setState({dailyDigestHourOfDay: option.value});
         } else {
-            this.setState({ dailyDigestHourOfDay: option });
+            this.setState({dailyDigestHourOfDay: option});
         }
     }
 
     handlePurgeChanged(option) {
         if (option) {
-            this.setState({ purgeDataFrequencyDays: option.value });
+            this.setState({purgeDataFrequencyDays: option.value});
         } else {
-            this.setState({ purgeDataFrequencyDays: option });
+            this.setState({purgeDataFrequencyDays: option});
         }
     }
 
@@ -99,16 +97,16 @@ class SchedulingConfiguration extends React.Component {
         return (
             <div>
                 <h1>
-                    <span className="fa fa-clock-o" />
+                    <span className="fa fa-clock-o"/>
                     Scheduling
                 </h1>
-                { errorMessage && <div className="alert alert-danger">
-                    { errorMessage }
-                </div> }
+                {errorMessage && <div className="alert alert-danger">
+                    {errorMessage}
+                </div>}
 
-                { updateStatus === 'UPDATED' && <div className="alert alert-success">
-                    { 'Update successful' }
-                </div> }
+                {updateStatus === 'UPDATED' && <div className="alert alert-success">
+                    {'Update successful'}
+                </div>}
 
                 <form className="form-horizontal" onSubmit={this.handleSubmit}>
                     <div className="form-group">
@@ -133,10 +131,10 @@ class SchedulingConfiguration extends React.Component {
                                 value={this.state.dailyDigestHourOfDay}
                             />
                         </div>
-                        { errorFields && errorFields.dailyDigestHourOfDay &&
+                        {errorFields && errorFields.dailyDigestHourOfDay &&
                         <div className="col-sm-offset-3 col-sm-8">
                             <p className="fieldError">{errorFields.dailyDigestHourOfDay}</p>
-                        </div> }
+                        </div>}
                     </div>
 
                     <div className="form-group">
@@ -159,10 +157,10 @@ class SchedulingConfiguration extends React.Component {
                                 value={this.state.purgeDataFrequencyDays}
                             />
                         </div>
-                        { errorFields && errorFields.purgeDataFrequencyDays &&
+                        {errorFields && errorFields.purgeDataFrequencyDays &&
                         <div className="col-sm-offset-3 col-sm-8">
                             <p className="fieldError">{errorFields.purgeDataFrequencyDays}</p>
-                        </div> }
+                        </div>}
                     </div>
 
                     <div className="form-group">
@@ -172,7 +170,7 @@ class SchedulingConfiguration extends React.Component {
                         </div>
                     </div>
 
-                    <ConfigButtons submitId="scheduling-submit" cancelId="scheduling-cancel" includeSave includeTest={false} />
+                    <ConfigButtons submitId="scheduling-submit" cancelId="scheduling-cancel" includeSave includeTest={false}/>
                 </form>
             </div>
         );
@@ -182,8 +180,8 @@ class SchedulingConfiguration extends React.Component {
 SchedulingConfiguration.propTypes = {
     accumulatorNextRun: PropTypes.string,
     purgeDataNextRun: PropTypes.string,
-    purgeDataFrequencyDays: PropTypes.number.isRequired,
-    dailyDigestHourOfDay: PropTypes.number.isRequired,
+    purgeDataFrequencyDays: PropTypes.string,
+    dailyDigestHourOfDay: PropTypes.string,
     getConfig: PropTypes.func.isRequired,
     updateConfig: PropTypes.func.isRequired
 };
