@@ -58,6 +58,7 @@ export function getAuditData(pageNumber, pageSize, searchTerm) {
         }).then((response) => {
             if (response.ok) {
                 response.json().then((body) => {
+                    console.log("audit data ", body);
                     dispatch(auditDataFetched(body.totalPages, body.content));
                 });
             } else {

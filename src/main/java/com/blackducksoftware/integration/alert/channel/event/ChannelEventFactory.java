@@ -23,23 +23,35 @@
  */
 package com.blackducksoftware.integration.alert.channel.event;
 
+import java.util.Date;
+
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.channel.DistributionChannelManager;
+import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
+import com.blackducksoftware.integration.rest.connection.RestConnection;
 
+@Transactional
 @Component
 public class ChannelEventFactory {
-    private final DistributionChannelManager distributionChannelManager;
+    private final ContentConverter contentConverter;
 
     @Autowired
-    public ChannelEventFactory(final DistributionChannelManager distributionChannelManager) {
-        this.distributionChannelManager = distributionChannelManager;
+    public ChannelEventFactory(final ContentConverter contentConverter) {
+        this.contentConverter = contentConverter;
     }
 
-    public ChannelEvent createEvent(final Long commonDistributionConfigId, final String distributionType, final NotificationContent notificationContent) {
-        return distributionChannelManager.createChannelEvent(distributionType, notificationContent, commonDistributionConfigId);
+    public ChannelEvent createChannelEvent(final Long commonDistributionConfigId, final String destination, final NotificationContent notificationContent) {
+        return new ChannelEvent(destination, RestConnection.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(), notificationContent.getContent(),
+                commonDistributionConfigId, notificationContent.getId());
+    }
+
+    public ChannelEvent createChannelTestEvent(final String destination) {
+        final NotificationContent testContent = new NotificationContent(new Date(), "Alert", "Test Message", "Alert has sent this test message");
+        return createChannelEvent(null, destination, testContent);
     }
 
 }

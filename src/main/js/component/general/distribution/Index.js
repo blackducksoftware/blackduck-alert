@@ -80,14 +80,13 @@ class Index extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            autoRefresh: true,
             jobs: [],
             groups: [],
             waitingForGroups: true
         };
         this.startAutoReload = this.startAutoReload.bind(this);
+        this.startAutoReloadIfConfigured = this.startAutoReloadIfConfigured.bind(this);
         this.cancelAutoReload = this.cancelAutoReload.bind(this);
-        this.handleAutoRefreshChange = this.handleAutoRefreshChange.bind(this);
         this.createCustomModal = this.createCustomModal.bind(this);
         this.createCustomButtonGroup = this.createCustomButtonGroup.bind(this);
         this.cancelRowSelect = this.cancelRowSelect.bind(this);
@@ -170,15 +169,6 @@ class Index extends Component {
         this.reloadJobs();
     }
 
-    handleAutoRefreshChange({target}) {
-        if (target.checked) {
-            this.startAutoReload();
-        } else {
-            this.cancelAutoReload();
-        }
-        this.setState({[target.name]: target.checked});
-    }
-
     reloadJobs() {
         this.setState({
             jobConfigTableMessage: 'Loading...',
@@ -195,6 +185,12 @@ class Index extends Component {
         // Run reload in 10seconds - kill an existing timer if it exists.
         this.cancelAutoReload();
         this.timeout = setTimeout(() => this.reloadJobs(), 10000);
+    }
+
+    startAutoReloadIfConfigured() {
+        if (this.props.autoRefresh) {
+            this.startAutoReload();
+        }
     }
 
     createCustomModal(onModalClose, onSave, columns, validateState, ignoreEditable) {
@@ -294,7 +290,7 @@ class Index extends Component {
             }
         }).then((response) => {
             this.setState({inProgress: false});
-            this.startAutoReload();
+            this.startAutoReloadIfConfigured();
             if (response.ok) {
                 this.setState({jobConfigTableMessage: ''});
                 response.json().then((jsonArray) => {
@@ -332,7 +328,7 @@ class Index extends Component {
                 }
             }
         }).catch((error) => {
-            this.startAutoReload();
+            this.startAutoReloadIfConfigured();
             console.log(error);
         });
     }
@@ -353,7 +349,7 @@ class Index extends Component {
         const deleteOnClick = buttons.deleteBtn.props.onClick;
         const reloadEntries = () => this.reloadJobs();
         let refreshButton = null;
-        if (!this.state.autoRefresh) {
+        if (!this.props.autoRefresh) {
             refreshButton = (
                 <button type="button" tabIndex={0} className={classes} onClick={reloadEntries}>
                     <span className={fontAwesomeIcon} aria-hidden="true"/>Refresh
@@ -455,10 +451,7 @@ class Index extends Component {
                     <span className="fa fa-truck"/>
                     Distribution
                     <small className="pull-right">
-                        <AutoRefresh
-                            autoRefresh={this.state.autoRefresh}
-                            handleAutoRefreshChange={this.handleAutoRefreshChange}
-                        />
+                        <AutoRefresh startAutoReload={this.startAutoReload} cancelAutoReload={this.cancelAutoReload}/>
                     </small>
                 </h1>
                 {content}
@@ -468,6 +461,7 @@ class Index extends Component {
 }
 
 Index.propTypes = {
+    autoRefresh: PropTypes.bool,
     csrfToken: PropTypes.string
 };
 
@@ -476,7 +470,8 @@ Index.defaultProps = {
 };
 
 const mapStateToProps = state => ({
-    csrfToken: state.session.csrfToken
+    csrfToken: state.session.csrfToken,
+    autoRefresh: state.refresh.autoRefresh
 });
 
 const mapDispatchToProps = dispatch => ({

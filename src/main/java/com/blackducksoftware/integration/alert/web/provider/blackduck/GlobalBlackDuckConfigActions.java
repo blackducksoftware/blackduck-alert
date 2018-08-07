@@ -41,11 +41,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.alert.common.AlertProperties;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
-import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckContentConverter;
 import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.blackducksoftware.integration.alert.provider.blackduck.descriptor.BlackDuckTypeConverter;
 import com.blackducksoftware.integration.alert.web.actions.ConfigActions;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
 import com.blackducksoftware.integration.exception.IntegrationException;
@@ -62,11 +63,15 @@ import com.blackducksoftware.integration.validator.ValidationResults;
 public class GlobalBlackDuckConfigActions extends ConfigActions<GlobalBlackDuckConfigEntity, GlobalBlackDuckConfig, GlobalBlackDuckRepository> {
     private final Logger logger = LoggerFactory.getLogger(GlobalBlackDuckConfigActions.class);
     private final BlackDuckProperties blackDuckProperties;
+    private final AlertProperties alertProperties;
 
     @Autowired
-    public GlobalBlackDuckConfigActions(final GlobalBlackDuckRepository globalRepository, final BlackDuckProperties blackDuckProperties, final BlackDuckContentConverter blackDuckContentConverter) {
-        super(globalRepository, blackDuckContentConverter);
+
+    public GlobalBlackDuckConfigActions(final GlobalBlackDuckRepository globalRepository, final BlackDuckTypeConverter blackDuckTypeConverter, final BlackDuckProperties blackDuckProperties,
+            final AlertProperties alertProperties) {
+        super(globalRepository, blackDuckTypeConverter);
         this.blackDuckProperties = blackDuckProperties;
+        this.alertProperties = alertProperties;
     }
 
     @Override
@@ -74,8 +79,10 @@ public class GlobalBlackDuckConfigActions extends ConfigActions<GlobalBlackDuckC
         if (id != null) {
             final Optional<GlobalBlackDuckConfigEntity> foundEntity = getRepository().findById(id);
             if (foundEntity.isPresent()) {
-                GlobalBlackDuckConfig restModel = (GlobalBlackDuckConfig) getDatabaseContentConverter().populateRestModelFromDatabaseEntity(foundEntity.get());
-                restModel = updateModelFromEnvironment(restModel);
+
+                GlobalBlackDuckConfig restModel = (GlobalBlackDuckConfig) getDatabaseContentConverter().populateConfigFromEntity(foundEntity.get());
+                restModel = updateModelFromProperties(restModel);
+                
                 if (restModel != null) {
                     final GlobalBlackDuckConfig maskedRestModel = maskRestModel(restModel);
                     return Arrays.asList(maskedRestModel);
@@ -87,34 +94,35 @@ public class GlobalBlackDuckConfigActions extends ConfigActions<GlobalBlackDuckC
         List<GlobalBlackDuckConfig> restModels = new ArrayList<>(databaseEntities.size());
         if (databaseEntities != null && !databaseEntities.isEmpty()) {
             for (final GlobalBlackDuckConfigEntity entity : databaseEntities) {
-                restModels.add((GlobalBlackDuckConfig) getDatabaseContentConverter().populateRestModelFromDatabaseEntity(entity));
+                restModels.add((GlobalBlackDuckConfig) getDatabaseContentConverter().populateConfigFromEntity(entity));
             }
         } else {
             restModels.add(new GlobalBlackDuckConfig());
         }
-        restModels = updateModelsFromEnvironment(restModels);
+        restModels = updateModelsFromProperties(restModels);
         restModels = maskRestModels(restModels);
         return restModels;
     }
 
-    public GlobalBlackDuckConfig updateModelFromEnvironment(final GlobalBlackDuckConfig restModel) {
+    public GlobalBlackDuckConfig updateModelFromProperties(final GlobalBlackDuckConfig restModel) {
         restModel.setBlackDuckUrl(blackDuckProperties.getBlackDuckUrl().orElse(null));
-        if (blackDuckProperties.getBlackDuckTrustCertificate().isPresent()) {
-            restModel.setBlackDuckAlwaysTrustCertificate(String.valueOf(blackDuckProperties.getBlackDuckTrustCertificate().orElse(false)));
+        final Boolean trustCertificate = alertProperties.getAlertTrustCertificate().orElse(null);
+        if (null != trustCertificate) {
+            restModel.setBlackDuckAlwaysTrustCertificate(String.valueOf(trustCertificate));
         }
-        restModel.setBlackDuckProxyHost(blackDuckProperties.getBlackDuckProxyHost().orElse(null));
-        restModel.setBlackDuckProxyPort(blackDuckProperties.getBlackDuckProxyPort().orElse(null));
-        restModel.setBlackDuckProxyUsername(blackDuckProperties.getBlackDuckProxyUsername().orElse(null));
+        restModel.setBlackDuckProxyHost(alertProperties.getAlertProxyHost().orElse(null));
+        restModel.setBlackDuckProxyPort(alertProperties.getAlertProxyPort().orElse(null));
+        restModel.setBlackDuckProxyUsername(alertProperties.getAlertProxyUsername().orElse(null));
         // Do not send passwords going to the UI
-        final boolean proxyPasswordIsSet = StringUtils.isNotBlank(blackDuckProperties.getBlackDuckProxyPassword().orElse(null));
+        final boolean proxyPasswordIsSet = StringUtils.isNotBlank(alertProperties.getAlertProxyPassword().orElse(null));
         restModel.setBlackDuckProxyPasswordIsSet(proxyPasswordIsSet);
         return restModel;
     }
 
-    public List<GlobalBlackDuckConfig> updateModelsFromEnvironment(final List<GlobalBlackDuckConfig> restModels) {
+    public List<GlobalBlackDuckConfig> updateModelsFromProperties(final List<GlobalBlackDuckConfig> restModels) {
         final List<GlobalBlackDuckConfig> updatedRestModels = new ArrayList<>();
         for (final GlobalBlackDuckConfig restModel : restModels) {
-            updatedRestModels.add(updateModelFromEnvironment(restModel));
+            updatedRestModels.add(updateModelFromProperties(restModel));
         }
         return restModels;
     }
@@ -124,7 +132,7 @@ public class GlobalBlackDuckConfigActions extends ConfigActions<GlobalBlackDuckC
     public <T> T updateNewConfigWithSavedConfig(final T newConfig, final GlobalBlackDuckConfigEntity savedConfig) throws AlertException {
         T updatedConfig = super.updateNewConfigWithSavedConfig(newConfig, savedConfig);
         if (updatedConfig instanceof GlobalBlackDuckConfig) {
-            updatedConfig = (T) updateModelFromEnvironment((GlobalBlackDuckConfig) updatedConfig);
+            updatedConfig = (T) updateModelFromProperties((GlobalBlackDuckConfig) updatedConfig);
         }
         return updatedConfig;
     }
@@ -154,7 +162,7 @@ public class GlobalBlackDuckConfigActions extends ConfigActions<GlobalBlackDuckC
 
         final String apiToken = restModel.getBlackDuckApiKey();
 
-        final HubServerConfigBuilder blackDuckServerConfigBuilder = blackDuckProperties.createBlackDuckServerConfigBuilderWithoutAuthentication(intLogger, NumberUtils.toInt(restModel.getBlackDuckTimeout()));
+        final HubServerConfigBuilder blackDuckServerConfigBuilder = blackDuckProperties.createServerConfigBuilderWithoutAuthentication(intLogger, NumberUtils.toInt(restModel.getBlackDuckTimeout()));
         blackDuckServerConfigBuilder.setApiToken(apiToken);
 
         validateBlackDuckConfiguration(blackDuckServerConfigBuilder);

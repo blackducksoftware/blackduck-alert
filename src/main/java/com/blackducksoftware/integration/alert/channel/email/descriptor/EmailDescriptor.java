@@ -21,8 +21,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.common.descriptor;
+package com.blackducksoftware.integration.alert.channel.email.descriptor;
 
-public enum DescriptorType {
-    CHANNEL, PROVIDER;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.blackducksoftware.integration.alert.channel.email.EmailGroupChannel;
+import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
+
+@Component
+public class EmailDescriptor extends ChannelDescriptor {
+
+    @Autowired
+    public EmailDescriptor(final EmailGroupChannel channelListener, final EmailGlobalDescriptorConfig globalDescriptorConfig, final EmailDistributionDescriptorConfig distributionDescriptorConfig) {
+        super(EmailGroupChannel.COMPONENT_NAME, EmailGroupChannel.COMPONENT_NAME, channelListener, distributionDescriptorConfig, globalDescriptorConfig);
+    }
 }

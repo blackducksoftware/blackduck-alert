@@ -21,33 +21,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.channel.email;
+package com.blackducksoftware.integration.alert.channel.email.descriptor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.common.ContentConverter;
-import com.blackducksoftware.integration.alert.common.descriptor.DatabaseContentConverter;
+import com.blackducksoftware.integration.alert.common.descriptor.config.TypeConverter;
 import com.blackducksoftware.integration.alert.database.channel.email.EmailGroupDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.web.channel.model.EmailDistributionConfig;
 import com.blackducksoftware.integration.alert.web.model.Config;
 
 @Component
-public class EmailDistributionContentConverter extends DatabaseContentConverter {
+public class EmailDistributionTypeConverter extends TypeConverter {
 
     @Autowired
-    public EmailDistributionContentConverter(final ContentConverter contentConverter) {
+    public EmailDistributionTypeConverter(final ContentConverter contentConverter) {
         super(contentConverter);
     }
 
     @Override
-    public Config getRestModelFromJson(final String json) {
+    public Config getConfigFromJson(final String json) {
         return getContentConverter().getJsonContent(json, EmailDistributionConfig.class);
     }
 
     @Override
-    public DatabaseEntity populateDatabaseEntityFromRestModel(final Config restModel) {
+    public DatabaseEntity populateEntityFromConfig(final Config restModel) {
         final EmailDistributionConfig emailRestModel = (EmailDistributionConfig) restModel;
         final EmailGroupDistributionConfigEntity emailEntity = new EmailGroupDistributionConfigEntity(emailRestModel.getGroupName(), emailRestModel.getEmailTemplateLogoImage(), emailRestModel.getEmailSubjectLine());
         addIdToEntityPK(emailRestModel.getId(), emailEntity);
@@ -55,7 +55,7 @@ public class EmailDistributionContentConverter extends DatabaseContentConverter 
     }
 
     @Override
-    public Config populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
+    public Config populateConfigFromEntity(final DatabaseEntity entity) {
         final EmailGroupDistributionConfigEntity emailEntity = (EmailGroupDistributionConfigEntity) entity;
         final EmailDistributionConfig emailRestModel = new EmailDistributionConfig();
         final String id = getContentConverter().getStringValue(emailEntity.getId());

@@ -47,7 +47,6 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
-
         final String[] allowedPaths = {
                 "/",
                 "/#",
