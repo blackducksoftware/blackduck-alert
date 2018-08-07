@@ -18,7 +18,7 @@ class Navigation extends Component {
 
     componentDidMount() {
         this.retrieveComponentData('CHANNEL_GLOBAL_CONFIG'),
-            this.retrieveComponentData('PROVIDER_CONFIG')
+        this.retrieveComponentData('PROVIDER_CONFIG')
     }
 
     retrieveComponentData(distributionConfigType) {
@@ -38,14 +38,18 @@ class Navigation extends Component {
     }
 
     render() {
-        const globals = this.state.CHANNEL_GLOBAL_CONFIG.map((component) =>
+        const globals = this.state.CHANNEL_GLOBAL_CONFIG
+            .sort((first, second) => first.label > second.label)
+            .map((component) =>
             <li>
                 <NavLink to={`/alert/channels/${component.urlName}`} activeClassName="activeNav">
                     <FontAwesome name={component.fontAwesomeIcon} fixedWidth/>
                     {component.label}
                 </NavLink>
             </li>);
-        const providers = this.state.PROVIDER_CONFIG.map((component) =>
+        const providers = this.state.PROVIDER_CONFIG
+            .sort((first, second) => first.label > second.label)
+            .map((component) =>
             <li>
                 <NavLink to={`/alert/providers/${component.urlName}`} activeClassName="activeNav">
                     <FontAwesome name={component.fontAwesomeIcon} fixedWidth/>

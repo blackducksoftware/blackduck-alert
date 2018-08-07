@@ -33,7 +33,6 @@ class SchedulingConfiguration extends React.Component {
             });
             this.startAutoTick();
         }
-
         const {dailyDigestHourOfDay, purgeDataFrequencyDays} = this.state;
         this.setState({dailyDigestHourOfDay: dailyDigestHourOfDay || nextProps.dailyDigestHourOfDay || null});
         this.setState({purgeDataFrequencyDays: purgeDataFrequencyDays || nextProps.purgeDataFrequencyDays || null});
@@ -181,8 +180,8 @@ class SchedulingConfiguration extends React.Component {
 SchedulingConfiguration.propTypes = {
     accumulatorNextRun: PropTypes.string,
     purgeDataNextRun: PropTypes.string,
-    purgeDataFrequencyDays: PropTypes.number.isRequired,
-    dailyDigestHourOfDay: PropTypes.number.isRequired,
+    purgeDataFrequencyDays: PropTypes.string,
+    dailyDigestHourOfDay: PropTypes.string,
     getConfig: PropTypes.func.isRequired,
     updateConfig: PropTypes.func.isRequired
 };
