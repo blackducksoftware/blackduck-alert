@@ -21,33 +21,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.channel.slack;
+package com.blackducksoftware.integration.alert.channel.slack.descriptor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.common.ContentConverter;
-import com.blackducksoftware.integration.alert.common.descriptor.DatabaseContentConverter;
+import com.blackducksoftware.integration.alert.common.descriptor.config.TypeConverter;
 import com.blackducksoftware.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.web.channel.model.SlackDistributionConfig;
 import com.blackducksoftware.integration.alert.web.model.Config;
 
 @Component
-public class SlackDistributionContentConverter extends DatabaseContentConverter {
+public class SlackDistributionTypeConverter extends TypeConverter {
 
     @Autowired
-    public SlackDistributionContentConverter(final ContentConverter contentConverter) {
+    public SlackDistributionTypeConverter(final ContentConverter contentConverter) {
         super(contentConverter);
     }
 
     @Override
-    public Config getRestModelFromJson(final String json) {
+    public Config getConfigFromJson(final String json) {
         return getContentConverter().getJsonContent(json, SlackDistributionConfig.class);
     }
 
     @Override
-    public DatabaseEntity populateDatabaseEntityFromRestModel(final Config restModel) {
+    public DatabaseEntity populateEntityFromConfig(final Config restModel) {
         final SlackDistributionConfig slackRestModel = (SlackDistributionConfig) restModel;
         final SlackDistributionConfigEntity slackEntity = new SlackDistributionConfigEntity(slackRestModel.getWebhook(), slackRestModel.getChannelUsername(), slackRestModel.getChannelName());
         addIdToEntityPK(slackRestModel.getId(), slackEntity);
@@ -55,7 +55,7 @@ public class SlackDistributionContentConverter extends DatabaseContentConverter 
     }
 
     @Override
-    public Config populateRestModelFromDatabaseEntity(final DatabaseEntity entity) {
+    public Config populateConfigFromEntity(final DatabaseEntity entity) {
         final SlackDistributionConfigEntity slackEntity = (SlackDistributionConfigEntity) entity;
         final SlackDistributionConfig slackRestModel = new SlackDistributionConfig();
         final String id = getContentConverter().getStringValue(slackEntity.getId());

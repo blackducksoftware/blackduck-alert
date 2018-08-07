@@ -19,6 +19,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -29,6 +30,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.blackducksoftware.integration.alert.Application;
 import com.blackducksoftware.integration.alert.TestProperties;
 import com.blackducksoftware.integration.alert.TestPropertyKey;
+import com.blackducksoftware.integration.alert.common.AlertProperties;
 import com.blackducksoftware.integration.alert.database.DatabaseDataSource;
 import com.blackducksoftware.integration.alert.mock.model.MockLoginRestModel;
 import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -47,7 +49,9 @@ public class LoginControllerTestIT {
     @Autowired
     protected WebApplicationContext webApplicationContext;
     @Autowired
-    protected BlackDuckProperties hubProperties;
+    protected BlackDuckProperties blackDuckProperties;
+    @Autowired
+    protected AlertProperties alertProperties;
 
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
     private MockMvc mockMvc;
@@ -73,8 +77,9 @@ public class LoginControllerTestIT {
         final MockLoginRestModel mockLoginRestModel = new MockLoginRestModel();
         mockLoginRestModel.setBlackDuckUsername(testProperties.getProperty(TestPropertyKey.TEST_USERNAME));
         mockLoginRestModel.setBlackDuckPassword(testProperties.getProperty(TestPropertyKey.TEST_PASSWORD));
-        hubProperties.setBlackDuckTrustCertificate(Boolean.valueOf(testProperties.getProperty(TestPropertyKey.TEST_TRUST_HTTPS_CERT)));
-        hubProperties.setBlackDuckUrl(testProperties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL));
+
+        ReflectionTestUtils.setField(blackDuckProperties, "blackDuckUrl", testProperties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL));
+        ReflectionTestUtils.setField(alertProperties, "alertTrustCertificate", Boolean.valueOf(testProperties.getProperty(TestPropertyKey.TEST_TRUST_HTTPS_CERT)));
         final String restModel = mockLoginRestModel.getRestModelJson();
         request.content(restModel);
         request.contentType(contentType);

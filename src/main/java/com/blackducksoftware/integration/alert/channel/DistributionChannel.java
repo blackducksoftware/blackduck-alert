@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
+import com.blackducksoftware.integration.alert.common.AlertProperties;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.enumeration.AuditEntryStatus;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
@@ -59,12 +60,14 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C
     private final CommonDistributionRepository commonDistributionRepository;
     private final AuditEntryRepository auditEntryRepository;
     private final ContentConverter contentExtractor;
+    private final AlertProperties alertProperties;
     private final BlackDuckProperties blackDuckProperties;
 
-    public DistributionChannel(final Gson gson, final BlackDuckProperties blackDuckProperties, final AuditEntryRepository auditEntryRepository, final JpaRepository<G, Long> globalRepository,
+    public DistributionChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditEntryRepository auditEntryRepository, final JpaRepository<G, Long> globalRepository,
             final JpaRepository<C, Long> distributionRepository,
             final CommonDistributionRepository commonDistributionRepository, final ContentConverter contentExtractor) {
         super(gson, ChannelEvent.class);
+        this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
         this.auditEntryRepository = auditEntryRepository;
         this.globalRepository = globalRepository;
@@ -81,7 +84,11 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C
         return commonDistributionRepository;
     }
 
-    public BlackDuckProperties getGlobalProperties() {
+    public AlertProperties getAlertProperties() {
+        return alertProperties;
+    }
+
+    public BlackDuckProperties getBlackDuckProperties() {
         return blackDuckProperties;
     }
 

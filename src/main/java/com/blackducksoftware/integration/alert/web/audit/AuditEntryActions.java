@@ -41,7 +41,6 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.channel.event.ChannelEventFactory;
-import com.blackducksoftware.integration.alert.common.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryEntity;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
@@ -68,21 +67,18 @@ public class AuditEntryActions {
     private final CommonDistributionRepository commonDistributionRepository;
     private final NotificationContentConverter notificationContentConverter;
     private final ChannelEventFactory channelEventFactory;
-    private final ProjectDataFactory projectDataFactory;
     private final ChannelTemplateManager channelTemplateManager;
 
     @Autowired
     public AuditEntryActions(final AuditEntryRepository auditEntryRepository, final NotificationManager notificationManager, final AuditNotificationRepository auditNotificationRepository,
             final CommonDistributionRepository commonDistributionRepository, final NotificationContentConverter notificationContentConverter,
-            final ChannelEventFactory channelEventFactory, final ProjectDataFactory projectDataFactory,
-            final ChannelTemplateManager channelTemplateManager) {
+            final ChannelEventFactory channelEventFactory, final ChannelTemplateManager channelTemplateManager) {
         this.auditEntryRepository = auditEntryRepository;
         this.notificationManager = notificationManager;
         this.auditNotificationRepository = auditNotificationRepository;
         this.commonDistributionRepository = commonDistributionRepository;
         this.notificationContentConverter = notificationContentConverter;
         this.channelEventFactory = channelEventFactory;
-        this.projectDataFactory = projectDataFactory;
         this.channelTemplateManager = channelTemplateManager;
     }
 
@@ -180,7 +176,7 @@ public class AuditEntryActions {
             throw new AlertException("The job for this entry was deleted, can not re-send this entry.");
         }
         notifications.forEach(notificationContent -> {
-            final ChannelEvent event = channelEventFactory.createEvent(commonConfigId, commonConfigEntity.get().getDistributionType(), notificationContent);
+            final ChannelEvent event = channelEventFactory.createChannelEvent(commonConfigId, commonConfigEntity.get().getDistributionType(), notificationContent);
             event.setAuditEntryId(auditEntryEntity.getId());
             channelTemplateManager.sendEvent(event);
         });
@@ -214,7 +210,7 @@ public class AuditEntryActions {
 
         NotificationConfig notificationConfig = null;
         if (!notifications.isEmpty() && notifications.get(0) != null) {
-            notificationConfig = (NotificationConfig) notificationContentConverter.populateRestModelFromDatabaseEntity(notifications.get(0));
+            notificationConfig = (NotificationConfig) notificationContentConverter.populateConfigFromEntity(notifications.get(0));
         }
 
         String distributionConfigName = null;

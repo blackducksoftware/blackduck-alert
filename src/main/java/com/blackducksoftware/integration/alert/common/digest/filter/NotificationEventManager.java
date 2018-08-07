@@ -94,7 +94,7 @@ public class NotificationEventManager {
     }
 
     private ChannelEvent createChannelEvent(final CommonDistributionConfigEntity commonEntity, final NotificationContent notificationContent) {
-        return channelEventFactory.createEvent(commonEntity.getId(), commonEntity.getDistributionType(), notificationContent);
+        return channelEventFactory.createChannelEvent(commonEntity.getId(), commonEntity.getDistributionType(), notificationContent);
     }
 
 }

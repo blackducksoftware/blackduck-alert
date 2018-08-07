@@ -28,20 +28,20 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.blackducksoftware.integration.alert.common.AboutReader;
 import com.blackducksoftware.integration.alert.web.model.AboutModel;
 
 @Component
 public class AboutActions {
-    private final BlackDuckProperties blackDuckProperties;
+    private final AboutReader aboutReader;
 
     @Autowired
-    public AboutActions(final BlackDuckProperties blackDuckProperties) {
-        this.blackDuckProperties = blackDuckProperties;
+    public AboutActions(final AboutReader aboutReader) {
+        this.aboutReader = aboutReader;
     }
 
     public Optional<AboutModel> getAboutModel() {
-        return blackDuckProperties.getAboutModel();
+        return Optional.ofNullable(aboutReader.getAboutModel());
     }
 
 }

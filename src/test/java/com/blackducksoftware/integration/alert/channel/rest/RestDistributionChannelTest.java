@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.blackducksoftware.integration.alert.TestAlertProperties;
 import com.blackducksoftware.integration.alert.TestBlackDuckProperties;
 import com.blackducksoftware.integration.alert.channel.ChannelTest;
 import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
@@ -38,10 +39,12 @@ import com.google.gson.Gson;
 public class RestDistributionChannelTest extends ChannelTest {
     @Test
     public void sendMessageFailureTest() {
-        final BlackDuckProperties hubProperties = new TestBlackDuckProperties();
-        final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(hubProperties);
+        final TestAlertProperties testAlertProperties = new TestAlertProperties();
+        final BlackDuckProperties hubProperties = new TestBlackDuckProperties(testAlertProperties);
+        final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties);
         final Gson gson = new Gson();
-        final RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity> restChannel = new RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity>(gson, hubProperties, null, null,
+        final RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity> restChannel = new RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity>(gson, testAlertProperties,
+                hubProperties, null, null,
                 null, null,
                 channelRestConnectionFactory, contentConverter) {
 

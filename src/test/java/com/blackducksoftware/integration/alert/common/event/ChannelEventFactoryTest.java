@@ -19,10 +19,8 @@ import java.util.Collections;
 import java.util.Date;
 
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.springframework.core.convert.support.DefaultConversionService;
 
-import com.blackducksoftware.integration.alert.channel.DistributionChannelManager;
 import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.channel.event.ChannelEventFactory;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
@@ -40,8 +38,7 @@ public class ChannelEventFactoryTest {
     public void createEventWithChannelManagerTest() {
         final Gson gson = new Gson();
         final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
-        final DistributionChannelManager manager = Mockito.mock(DistributionChannelManager.class);
-        final ChannelEventFactory factory = new ChannelEventFactory(manager);
+        final ChannelEventFactory factory = new ChannelEventFactory(contentConverter);
 
         final Long id = 25L;
 
@@ -49,12 +46,13 @@ public class ChannelEventFactoryTest {
         final DigestModel digestModel = new DigestModel(projectData);
 
         final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
-        final ChannelEvent mockEvent = new ChannelEvent(DISTRIBUTION_TYPE, RestConnection.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
+        final ChannelEvent expected = new ChannelEvent(DISTRIBUTION_TYPE, RestConnection.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
                 notificationContent.getContent(), id, 1L);
-        Mockito.when(manager.createChannelEvent(Mockito.any(), Mockito.any(), Mockito.anyLong())).thenReturn(mockEvent);
 
-        final ChannelEvent event = factory.createEvent(id, "TYPE", notificationContent);
-        assertEquals(mockEvent, event);
+        final ChannelEvent event = factory.createChannelEvent(id, "TYPE", notificationContent);
+        assertEquals(expected.getAuditEntryId(), event.getAuditEntryId());
+        assertEquals(expected.getDestination(), event.getDestination());
+        assertEquals(expected.getContent(), event.getContent());
     }
 
 }

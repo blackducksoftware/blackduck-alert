@@ -43,12 +43,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.alert.common.AlertProperties;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.digest.DateRange;
-import com.blackducksoftware.integration.alert.common.enumeration.AlertEnvironment;
 import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
-import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckDescriptor;
 import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.blackducksoftware.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.blackducksoftware.integration.alert.workflow.NotificationManager;
 import com.blackducksoftware.integration.alert.workflow.processor.NotificationTypeProcessor;
 import com.blackducksoftware.integration.alert.workflow.scheduled.ScheduledTask;
@@ -72,7 +72,7 @@ public class BlackDuckAccumulator extends ScheduledTask {
     private final File searchRangeFilePath;
 
     @Autowired
-    public BlackDuckAccumulator(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final ContentConverter contentConverter,
+    public BlackDuckAccumulator(final TaskScheduler taskScheduler, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final ContentConverter contentConverter,
             final NotificationManager notificationManager, final List<NotificationTypeProcessor> notificationProcessors) {
         super(taskScheduler, "blackduck-accumulator-task");
         this.blackDuckProperties = blackDuckProperties;
@@ -81,7 +81,7 @@ public class BlackDuckAccumulator extends ScheduledTask {
         this.notificationManager = notificationManager;
         //TODO: do not store a file with the timestamp save this information into a database table for tasks.  Perhaps a task metadata object stored in the database.
         final String accumulatorFileName = String.format("%s-last-search.txt", getTaskName());
-        this.searchRangeFilePath = new File(blackDuckProperties.getEnvironmentVariable(AlertEnvironment.ALERT_CONFIG_HOME), accumulatorFileName);
+        this.searchRangeFilePath = new File(alertProperties.getAlertConfigHome(), accumulatorFileName);
     }
 
     public File getSearchRangeFilePath() {

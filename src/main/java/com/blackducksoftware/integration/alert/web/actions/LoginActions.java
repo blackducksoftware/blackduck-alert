@@ -67,7 +67,7 @@ public class LoginActions {
     }
 
     public boolean authenticateUser(final LoginConfig loginConfig, final IntLogger logger) throws IntegrationException {
-        final HubServerConfigBuilder serverConfigBuilder = blackDuckProperties.createBlackDuckServerConfigBuilderWithoutAuthentication(logger, HubServerConfigBuilder.DEFAULT_TIMEOUT_SECONDS);
+        final HubServerConfigBuilder serverConfigBuilder = blackDuckProperties.createServerConfigBuilderWithoutAuthentication(logger, HubServerConfigBuilder.DEFAULT_TIMEOUT_SECONDS);
 
         serverConfigBuilder.setPassword(loginConfig.getBlackDuckPassword());
         serverConfigBuilder.setUsername(loginConfig.getBlackDuckUsername());

@@ -25,16 +25,17 @@ package com.blackducksoftware.integration.alert.common.descriptor;
 
 import java.util.Set;
 
+import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
+import com.blackducksoftware.integration.alert.common.enumeration.DescriptorType;
 import com.blackducksoftware.integration.alert.common.provider.Provider;
-import com.blackducksoftware.integration.alert.database.RepositoryAccessor;
 
 public abstract class ProviderDescriptor extends Descriptor {
-
     private final Provider provider;
 
-    public ProviderDescriptor(final String name, final DatabaseContentConverter contentConverter, final RepositoryAccessor repositoryAccessor, final Provider provider) {
-        super(name, DescriptorType.PROVIDER, contentConverter, repositoryAccessor);
+    public ProviderDescriptor(final String name, final DescriptorConfig providerDescriptorConfig, final Provider provider) {
+        super(name, DescriptorType.PROVIDER);
         this.provider = provider;
+        addProviderConfig(providerDescriptorConfig);
     }
 
     public Provider getProvider() {

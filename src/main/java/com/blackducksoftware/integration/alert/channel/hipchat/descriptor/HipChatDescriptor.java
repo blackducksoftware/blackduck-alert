@@ -21,26 +21,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.common.enumeration;
+package com.blackducksoftware.integration.alert.channel.hipchat.descriptor;
 
-public enum AlertEnvironment {
-    ALERT_CONFIG_HOME("ALERT_CONFIG_HOME"),
-    ALERT_TEMPLATES_DIR("ALERT_TEMPLATES_DIR"),
-    ALERT_IMAGES_DIR("ALERT_IMAGES_DIR"),
-    HUB_ALWAYS_TRUST_SERVER_CERTIFICATE("HUB_ALWAYS_TRUST_SERVER_CERTIFICATE"),
-    HUB_PROXY_HOST("HUB_PROXY_HOST"),
-    HUB_PROXY_PORT("HUB_PROXY_PORT"),
-    HUB_PROXY_USER("HUB_PROXY_USER"),
-    HUB_PROXY_PASSWORD("HUB_PROXY_PASSWORD"),
-    PUBLIC_HUB_WEBSERVER_HOST("PUBLIC_HUB_WEBSERVER_HOST");
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-    private final String variableName;
+import com.blackducksoftware.integration.alert.channel.hipchat.HipChatChannel;
+import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
 
-    AlertEnvironment(final String variableName) {
-        this.variableName = variableName;
+@Component
+public class HipChatDescriptor extends ChannelDescriptor {
+
+    @Autowired
+    public HipChatDescriptor(final HipChatChannel channelListener, final HipChatDistributionDescriptorConfig distributionDescriptorConfig, final HipChatGlobalDescriptorConfig hipChatGlobalDescriptorConfig) {
+        super(HipChatChannel.COMPONENT_NAME, HipChatChannel.COMPONENT_NAME, channelListener, distributionDescriptorConfig, hipChatGlobalDescriptorConfig);
     }
 
-    public String getVariableName() {
-        return variableName;
-    }
 }

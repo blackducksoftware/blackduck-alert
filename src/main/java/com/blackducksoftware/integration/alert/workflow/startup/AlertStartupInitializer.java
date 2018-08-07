@@ -38,7 +38,8 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.common.descriptor.Descriptor;
+import com.blackducksoftware.integration.alert.common.descriptor.DescriptorMap;
+import com.blackducksoftware.integration.alert.common.descriptor.config.StartupComponent;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.web.model.Config;
@@ -51,30 +52,31 @@ public class AlertStartupInitializer {
     private final ConversionService conversionService;
     private final Environment environment;
     private final PropertyInitializer propertyInitializer;
-    private final List<Descriptor> configDescriptors;
-
-    private final List<AlertStartupProperty> alertProperties;
+    private final DescriptorMap descriptorMap;
+    private final List<AlertStartupProperty> alertStartupProperties;
 
     @Autowired
-    public AlertStartupInitializer(final PropertyInitializer propertyInitializer, final List<Descriptor> configDescriptors, final Environment environment,
+    public AlertStartupInitializer(final PropertyInitializer propertyInitializer, final DescriptorMap descriptorMap, final Environment environment,
             final ConversionService conversionService) {
         this.propertyInitializer = propertyInitializer;
-        this.configDescriptors = configDescriptors;
+        this.descriptorMap = descriptorMap;
         this.environment = environment;
         this.conversionService = conversionService;
-        alertProperties = new ArrayList<>(50);
+        alertStartupProperties = new ArrayList<>(50);
     }
 
+    // TODO try and move this functionality to startup component and eliminate this class
     public void initializeConfigs() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException, AlertException {
-        this.configDescriptors.forEach(descriptor -> {
-            final Set<AlertStartupProperty> startupProperties = descriptor.getGlobalEntityPropertyMapping();
+        descriptorMap.getStartupDescriptorConfigs().forEach(descriptor -> {
+            final StartupComponent startupComponent = descriptor.getStartupComponent();
+            final Set<AlertStartupProperty> startupProperties = startupComponent.getGlobalEntityPropertyMapping();
             if (startupProperties != null && !startupProperties.isEmpty()) {
                 try {
-                    final Config restModel = descriptor.getGlobalRestModelObject();
+                    final Config restModel = startupComponent.getEmptyConfigObject();
                     final boolean propertySet = initializeConfig(restModel, startupProperties);
                     if (propertySet) {
-                        final DatabaseEntity entity = descriptor.getGlobalContentConverter().populateDatabaseEntityFromRestModel(restModel);
-                        propertyInitializer.save(entity, descriptor);
+                        final DatabaseEntity entity = descriptor.getTypeConverter().populateEntityFromConfig(restModel);
+                        propertyInitializer.save(entity, descriptor.getRepositoryAccessor());
                     }
                 } catch (IllegalArgumentException | SecurityException ex) {
                     logger.error("Error initializing property manager", ex);
@@ -87,7 +89,7 @@ public class AlertStartupInitializer {
     private boolean initializeConfig(final Config globalRestModel, final Set<AlertStartupProperty> configProperties) {
         boolean propertySet = false;
         for (final AlertStartupProperty property : configProperties) {
-            alertProperties.add(property);
+            alertStartupProperties.add(property);
             final String propertyKey = property.getPropertyKey();
             logger.debug("Checking property key {}", propertyKey);
             String value = System.getProperty(propertyKey);
@@ -121,11 +123,11 @@ public class AlertStartupInitializer {
         return false;
     }
 
-    public List<AlertStartupProperty> getAlertProperties() {
-        return alertProperties;
+    public List<AlertStartupProperty> getAlertStartupProperties() {
+        return alertStartupProperties;
     }
 
     public Set<String> getAlertPropertyNameSet() {
-        return alertProperties.stream().map(AlertStartupProperty::getPropertyKey).collect(Collectors.toCollection(LinkedHashSet::new));
+        return alertStartupProperties.stream().map(AlertStartupProperty::getPropertyKey).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }
