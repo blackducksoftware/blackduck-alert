@@ -23,6 +23,7 @@
  */
 package com.blackducksoftware.integration.alert.channel.hipchat.descriptor;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -32,8 +33,11 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.channel.event.ChannelEventFactory;
 import com.blackducksoftware.integration.alert.channel.hipchat.HipChatChannel;
+import com.blackducksoftware.integration.alert.common.descriptor.config.ConfigField;
 import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.blackducksoftware.integration.alert.common.descriptor.config.UIComponent;
+import com.blackducksoftware.integration.alert.common.enumeration.FieldGroup;
+import com.blackducksoftware.integration.alert.common.enumeration.FieldType;
 import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatDistributionRepositoryAccessor;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
@@ -56,7 +60,10 @@ public class HipChatDistributionDescriptorConfig extends DescriptorConfig {
 
     @Override
     public UIComponent getUiComponent() {
-        return new UIComponent("HipChat", "hipchat", "comments", "HipChatJobConfiguration");
+        final ConfigField roomId = new ConfigField("roomId", "Room Id", FieldType.NUMBER_INPUT, true, FieldGroup.DEFAULT);
+        final ConfigField notify = new ConfigField("notify", "Notify", FieldType.CHECKBOX_INPUT, false, FieldGroup.DEFAULT);
+        final ConfigField color = new ConfigField("color", "Color", FieldType.SELECT, false, FieldGroup.DEFAULT, Arrays.asList("Yellow, Green, Red, Purple, Gray, Random"));
+        return new UIComponent("HipChat", "hipchat", "comments", Arrays.asList(roomId, notify, color));
     }
 
     @Override
