@@ -23,21 +23,32 @@
  */
 package com.blackducksoftware.integration.alert.web.model;
 
+import java.util.Collections;
+import java.util.List;
+
 import com.blackducksoftware.integration.util.Stringable;
 
 public class AboutModel extends Stringable {
     private String version;
     private String description;
     private String projectUrl;
+    private List<String> channelList;
+    private List<String> providerList;
 
     protected AboutModel() {
 
     }
 
     public AboutModel(final String version, final String description, final String projectUrl) {
+        this(version, description, projectUrl, Collections.emptyList(), Collections.emptyList());
+    }
+
+    public AboutModel(final String version, final String description, final String projectUrl, final List<String> providerList, final List<String> channelList) {
         this.version = version;
         this.description = description;
         this.projectUrl = projectUrl;
+        this.channelList = channelList;
+        this.providerList = providerList;
     }
 
     public String getVersion() {
@@ -50,5 +61,13 @@ public class AboutModel extends Stringable {
 
     public String getProjectUrl() {
         return projectUrl;
+    }
+
+    public List<String> getChannelList() {
+        return channelList;
+    }
+
+    public List<String> getProviderList() {
+        return providerList;
     }
 }
