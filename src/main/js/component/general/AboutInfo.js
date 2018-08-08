@@ -41,15 +41,15 @@ class AboutInfo extends React.Component {
                         </div>
                     </div>
                     <div className="form-group">
-                        <label className="col-sm-3 control-label">Supported Distribution Channels:</label>
-                        <div className="col-sm-8">
-                            {channelList.sort().join(", ")}
-                        </div>
-                    </div>
-                    <div className="form-group">
                         <label className="col-sm-3 control-label">Supported Providers:</label>
                         <div className="col-sm-8">
                             {providerList.sort().join(", ")}
+                        </div>
+                    </div>
+                    <div className="form-group">
+                        <label className="col-sm-3 control-label">Supported Distribution Channels:</label>
+                        <div className="col-sm-8">
+                            {channelList.sort().join(", ")}
                         </div>
                     </div>
                 </div>
