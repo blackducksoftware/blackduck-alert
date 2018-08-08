@@ -36,9 +36,10 @@ public class ConfigField {
     private boolean required;
     private boolean sensitive;
     private FieldGroup group;
+    private String subGroup;
     private List<String> options;
 
-    public ConfigField(final String key, final String label, final FieldType type, final boolean required, final boolean sensitive, final FieldGroup group, final List<String> options) {
+    public ConfigField(final String key, final String label, final FieldType type, final boolean required, final boolean sensitive, final FieldGroup group, final String subGroup, final List<String> options) {
         super();
         this.key = key;
         this.label = label;
@@ -46,11 +47,16 @@ public class ConfigField {
         this.required = required;
         this.sensitive = sensitive;
         this.group = group;
+        this.subGroup = subGroup;
         this.options = options;
     }
 
+    public ConfigField(final String key, final String label, final FieldType type, final boolean required, final boolean sensitive, final FieldGroup group, final String subGroup) {
+        this(key, label, type, required, sensitive, group, subGroup, Arrays.asList());
+    }
+
     public ConfigField(final String key, final String label, final FieldType type, final boolean required, final boolean sensitive, final FieldGroup group) {
-        this(key, label, type, required, sensitive, group, Arrays.asList());
+        this(key, label, type, required, sensitive, group, "");
     }
 
     public String getKey() {
@@ -99,6 +105,14 @@ public class ConfigField {
 
     public void setGroup(final FieldGroup group) {
         this.group = group;
+    }
+
+    public String getSubGroup() {
+        return subGroup;
+    }
+
+    public void setSubGroup(final String subGroup) {
+        this.subGroup = subGroup;
     }
 
     public List<String> getOptions() {
