@@ -42,5 +42,7 @@ public abstract class ProviderDescriptor extends Descriptor {
         return provider;
     }
 
-    public abstract Set<String> getNotificationTypes();
+    public Set<String> getNotificationTypes() {
+        return getProvider().getNotificationTypes();
+    }
 }
