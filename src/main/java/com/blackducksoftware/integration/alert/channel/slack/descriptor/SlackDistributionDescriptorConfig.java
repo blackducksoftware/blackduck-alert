@@ -23,6 +23,7 @@
  */
 package com.blackducksoftware.integration.alert.channel.slack.descriptor;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -32,8 +33,11 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.channel.event.ChannelEventFactory;
 import com.blackducksoftware.integration.alert.channel.slack.SlackChannel;
+import com.blackducksoftware.integration.alert.common.descriptor.config.ConfigField;
 import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.blackducksoftware.integration.alert.common.descriptor.config.UIComponent;
+import com.blackducksoftware.integration.alert.common.enumeration.FieldGroup;
+import com.blackducksoftware.integration.alert.common.enumeration.FieldType;
 import com.blackducksoftware.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.channel.slack.SlackDistributionRepositoryAccessor;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
@@ -56,7 +60,10 @@ public class SlackDistributionDescriptorConfig extends DescriptorConfig {
 
     @Override
     public UIComponent getUiComponent() {
-        return new UIComponent("Slack", "slack", "slack", "SlackJobConfiguration");
+        final ConfigField webhook = new ConfigField("webhook", "Webhook", FieldType.TEXT_INPUT, true, FieldGroup.DEFAULT);
+        final ConfigField channelUsername = new ConfigField("channelUsername", "Channel Username", FieldType.TEXT_INPUT, false, FieldGroup.DEFAULT);
+        final ConfigField channelName = new ConfigField("channelName", "Channel Name", FieldType.TEXT_INPUT, true, FieldGroup.DEFAULT);
+        return new UIComponent("Slack", "slack", "slack", Arrays.asList(webhook, channelUsername, channelName));
     }
 
     @Override

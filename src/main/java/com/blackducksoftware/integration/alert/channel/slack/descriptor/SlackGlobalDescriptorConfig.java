@@ -23,6 +23,7 @@
  */
 package com.blackducksoftware.integration.alert.channel.slack.descriptor;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
@@ -43,7 +44,7 @@ public class SlackGlobalDescriptorConfig extends DescriptorConfig {
 
     @Override
     public UIComponent getUiComponent() {
-        return new UIComponent("Slack", "slack", "slack", "SlackConfiguartion");
+        return new UIComponent("Slack", "slack", "slack", Arrays.asList());
     }
 
     @Override

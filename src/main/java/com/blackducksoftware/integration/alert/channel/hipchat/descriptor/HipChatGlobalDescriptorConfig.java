@@ -23,6 +23,7 @@
  */
 package com.blackducksoftware.integration.alert.channel.hipchat.descriptor;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -30,8 +31,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.channel.hipchat.HipChatChannel;
+import com.blackducksoftware.integration.alert.common.descriptor.config.ConfigField;
 import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.blackducksoftware.integration.alert.common.descriptor.config.UIComponent;
+import com.blackducksoftware.integration.alert.common.enumeration.FieldGroup;
+import com.blackducksoftware.integration.alert.common.enumeration.FieldType;
 import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
 import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatGlobalRepositoryAccessor;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
@@ -52,7 +56,9 @@ public class HipChatGlobalDescriptorConfig extends DescriptorConfig {
 
     @Override
     public UIComponent getUiComponent() {
-        return new UIComponent("HipChat", "hipchat", "comments", "HipChatConfiguration");
+        final ConfigField apiKey = new ConfigField("apiKey", "Api Key", FieldType.PASSWORD_INPUT, true, FieldGroup.DEFAULT);
+        final ConfigField hostServer = new ConfigField("hostServer", "Host Server", FieldType.TEXT_INPUT, false, FieldGroup.ADVANCED);
+        return new UIComponent("HipChat", "hipchat", "comments", Arrays.asList(apiKey, hostServer));
     }
 
     @Override
