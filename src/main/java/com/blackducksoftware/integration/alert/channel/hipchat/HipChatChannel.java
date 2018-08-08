@@ -137,10 +137,7 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
             throw new IntegrationException("Room ID missing");
         } else {
             if (isChunkedMessageNeeded(event)) {
-                final String eventContent = event.getContent();
-                final int requestCount = calculateChunks(eventContent);
-                final List<Request> requestList = createChunkedRequestList(channelRequestHelper, config, globalConfig, event, requestCount);
-                return requestList;
+                return createChunkedRequestList(channelRequestHelper, config, globalConfig, event);
             } else {
                 final String contentTitle = String.format("%s -> %s", event.getProvider(), event.getNotificationType());
                 return Arrays.asList(createRequest(channelRequestHelper, config, globalConfig, contentTitle, event.getContent()));
@@ -157,33 +154,31 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
         }
     }
 
-    private int calculateChunks(final String eventContent) {
+    private List<Request> createChunkedRequestList(final ChannelRequestHelper channelRequestHelper, final HipChatDistributionConfigEntity config, final HipChatGlobalConfigEntity globalConfig, final ChannelEvent event)
+            throws IntegrationException {
+        final String eventContent = event.getContent();
         final int contentLength = eventContent.length();
-        logger.info("Message too large.  Creating chunks..");
+        logger.info("Message too large.  Creating chunks...");
         logger.info("Content length: {}", contentLength);
         final int additionPage = (contentLength % MESSAGE_SIZE_LIMIT == 0) ? 0 : 1;
         final int requestCount = (contentLength / MESSAGE_SIZE_LIMIT) + additionPage;
         logger.info("Number of requests to submit: {}", requestCount);
-        return requestCount;
-    }
-
-    private List<Request> createChunkedRequestList(final ChannelRequestHelper channelRequestHelper, final HipChatDistributionConfigEntity config, final HipChatGlobalConfigEntity globalConfig, final ChannelEvent event,
-            final int requestCount) throws IntegrationException {
         final List<Request> requestList = new ArrayList<>(requestCount);
-        final String eventContent = event.getContent();
-        for (int index = 0; index < requestCount; index++) {
-            final int currentRequest = index + 1;
+        int end = 0;
+        int currentRequest = 1;
+        while (end < eventContent.length()) {
             logger.info("Creating request {} of {}", currentRequest, requestCount);
             final String contentTitle = String.format("%s -> %s (part %d of %d)", event.getProvider(), event.getNotificationType(), currentRequest, requestCount);
-            final int start = MESSAGE_SIZE_LIMIT * index;
-            final int end = start + MESSAGE_SIZE_LIMIT;
+            final int start = end;
+            end = end + MESSAGE_SIZE_LIMIT;
             final String content;
-            if (index == requestCount - 1) {
+            if (end > eventContent.length()) {
                 content = eventContent.substring(start);
             } else {
                 content = eventContent.substring(start, end);
             }
             requestList.add(createRequest(channelRequestHelper, config, globalConfig, contentTitle, content));
+            currentRequest++;
         }
 
         return requestList;
