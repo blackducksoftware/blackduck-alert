@@ -1,5 +1,5 @@
 ## Overview ##
-This application provides the ability to send notifications from the hub to various distribution channels.
+This application provides the ability to send notifications from the a provider to various distribution channels.
 
 ## Build ##
 

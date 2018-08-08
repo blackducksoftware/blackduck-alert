@@ -5,7 +5,7 @@ import '../css/footer.scss';
 
 import { getAboutInfo } from './store/actions/about';
 
-class AboutInfo extends React.Component {
+class AboutInfoFooter extends React.Component {
     constructor(props) {
         super(props);
     }
@@ -32,14 +32,14 @@ class AboutInfo extends React.Component {
     }
 }
 
-AboutInfo.propTypes = {
+AboutInfoFooter.propTypes = {
     fetching: PropTypes.bool,
     version: PropTypes.string.isRequired,
     description: PropTypes.string,
     projectUrl: PropTypes.string.isRequired
 };
 
-AboutInfo.defaultProps = {
+AboutInfoFooter.defaultProps = {
     fetching: false,
     version: '',
     description: '',
@@ -57,4 +57,4 @@ const mapDispatchToProps = dispatch => ({
     getAboutInfo: () => dispatch(getAboutInfo())
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(AboutInfo);
+export default connect(mapStateToProps, mapDispatchToProps)(AboutInfoFooter);
