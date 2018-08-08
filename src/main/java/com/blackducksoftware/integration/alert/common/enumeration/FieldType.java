@@ -42,4 +42,9 @@ public enum FieldType {
         return fieldTypeName;
     }
 
+    @Override
+    public String toString() {
+        return getFieldTypeName();
+    }
+
 }
