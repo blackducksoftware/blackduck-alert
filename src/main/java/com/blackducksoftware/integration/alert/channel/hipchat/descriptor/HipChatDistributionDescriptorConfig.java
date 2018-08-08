@@ -60,9 +60,9 @@ public class HipChatDistributionDescriptorConfig extends DescriptorConfig {
 
     @Override
     public UIComponent getUiComponent() {
-        final ConfigField roomId = new ConfigField("roomId", "Room Id", FieldType.NUMBER_INPUT, true, FieldGroup.DEFAULT);
-        final ConfigField notify = new ConfigField("notify", "Notify", FieldType.CHECKBOX_INPUT, false, FieldGroup.DEFAULT);
-        final ConfigField color = new ConfigField("color", "Color", FieldType.SELECT, false, FieldGroup.DEFAULT, Arrays.asList("Yellow, Green, Red, Purple, Gray, Random"));
+        final ConfigField roomId = new ConfigField("roomId", "Room Id", FieldType.NUMBER_INPUT, true, false, FieldGroup.DEFAULT);
+        final ConfigField notify = new ConfigField("notify", "Notify", FieldType.CHECKBOX_INPUT, false, false, FieldGroup.DEFAULT);
+        final ConfigField color = new ConfigField("color", "Color", FieldType.SELECT, false, false, FieldGroup.DEFAULT, Arrays.asList("Yellow, Green, Red, Purple, Gray, Random"));
         return new UIComponent("HipChat", "hipchat", "comments", Arrays.asList(roomId, notify, color));
     }
 

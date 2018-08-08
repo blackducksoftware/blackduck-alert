@@ -84,8 +84,8 @@ public class EmailDistributionDescriptorConfig extends DescriptorConfig {
 
     @Override
     public UIComponent getUiComponent() {
-        final ConfigField subjectLine = new ConfigField("emailSubjectLine", "Subject Line", FieldType.TEXT_INPUT, false, FieldGroup.DEFAULT);
-        final ConfigField groupName = new ConfigField("groupName", "Group Name", FieldType.SELECT, true, FieldGroup.DEFAULT, getEmailGroups());
+        final ConfigField subjectLine = new ConfigField("emailSubjectLine", "Subject Line", FieldType.TEXT_INPUT, false, false, FieldGroup.DEFAULT);
+        final ConfigField groupName = new ConfigField("groupName", "Group Name", FieldType.SELECT, true, false, FieldGroup.DEFAULT, getEmailGroups());
         return new UIComponent("Email", "email", "envelope", Arrays.asList(subjectLine, groupName));
     }
 

@@ -56,8 +56,8 @@ public class HipChatGlobalDescriptorConfig extends DescriptorConfig {
 
     @Override
     public UIComponent getUiComponent() {
-        final ConfigField apiKey = new ConfigField("apiKey", "Api Key", FieldType.PASSWORD_INPUT, true, FieldGroup.DEFAULT);
-        final ConfigField hostServer = new ConfigField("hostServer", "Host Server", FieldType.TEXT_INPUT, false, FieldGroup.ADVANCED);
+        final ConfigField apiKey = new ConfigField("apiKey", "Api Key", FieldType.PASSWORD_INPUT, true, true, FieldGroup.DEFAULT);
+        final ConfigField hostServer = new ConfigField("hostServer", "Host Server", FieldType.TEXT_INPUT, false, false, FieldGroup.ADVANCED);
         return new UIComponent("HipChat", "hipchat", "comments", Arrays.asList(apiKey, hostServer));
     }
 
