@@ -31,8 +31,8 @@ public class ChannelEvent extends AlertEvent {
 
     private Long auditEntryId;
 
-    public ChannelEvent(final String destination, final String content, final Long commonDistributionConfigId) {
-        super(destination, content);
+    public ChannelEvent(final String destination, final String createdAt, final String provider, final String notificationType, final String content, final Long commonDistributionConfigId, final Long notificationId) {
+        super(destination, createdAt, provider, notificationType, content, notificationId);
         this.commonDistributionConfigId = commonDistributionConfigId;
     }
 

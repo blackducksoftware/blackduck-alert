@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.descriptor.config.TypeConverter;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.database.entity.NotificationEntity;
+import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
 
 @Component
 public class NotificationContentConverter extends TypeConverter {
@@ -50,19 +50,18 @@ public class NotificationContentConverter extends TypeConverter {
     public DatabaseEntity populateEntityFromConfig(final Config restModel) {
         final NotificationConfig notificationConfig = (NotificationConfig) restModel;
         final Date createdAt = getContentConverter().getValue(notificationConfig.getCreatedAt(), Date.class);
-        final NotificationEntity notificationEntity = new NotificationEntity(notificationConfig.getEventKey(), createdAt, null, notificationConfig.getProjectName(), notificationConfig.getProjectUrl(),
-                notificationConfig.getProjectVersion(), notificationConfig.getProjectVersionUrl(), null, null, null, null);
+        final NotificationContent notificationEntity = new NotificationContent(createdAt, notificationConfig.getProvider(), notificationConfig.getNotificationType(), notificationConfig.getContent());
         addIdToEntityPK(notificationConfig.getId(), notificationEntity);
         return notificationEntity;
     }
 
     @Override
     public Config populateConfigFromEntity(final DatabaseEntity entity) {
-        final NotificationEntity notificationEntity = (NotificationEntity) entity;
+        final NotificationContent notificationEntity = (NotificationContent) entity;
         final String id = getContentConverter().getStringValue(notificationEntity.getId());
         final String createdAt = getContentConverter().getStringValue(notificationEntity.getCreatedAt());
-        final NotificationConfig notificationConfig = new NotificationConfig(id, notificationEntity.getEventKey(), createdAt, null, notificationEntity.getProjectName(), notificationEntity.getProjectVersion(), null,
-                notificationEntity.getProjectUrl(), notificationEntity.getProjectVersionUrl());
+        final NotificationConfig notificationConfig = new NotificationConfig(id, createdAt, notificationEntity.getProvider(), notificationEntity.getNotificationType(),
+                notificationEntity.getContent());
         return notificationConfig;
     }
 

@@ -23,9 +23,13 @@
  */
 package com.blackducksoftware.integration.alert.common.provider;
 
+import java.util.Set;
+
 public abstract class Provider {
 
     public abstract void initialize();
 
     public abstract void destroy();
+
+    public abstract Set<String> getNotificationTypes();
 }

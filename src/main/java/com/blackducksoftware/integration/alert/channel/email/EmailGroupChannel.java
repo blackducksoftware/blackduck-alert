@@ -24,7 +24,6 @@
 package com.blackducksoftware.integration.alert.channel.email;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -44,8 +43,6 @@ import com.blackducksoftware.integration.alert.channel.email.template.EmailTarge
 import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.common.AlertProperties;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
-import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
-import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
 import com.blackducksoftware.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
@@ -91,31 +88,25 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
         final EmailProperties emailProperties = new EmailProperties(getGlobalConfigEntity());
         try {
             final EmailMessagingService emailService = new EmailMessagingService(getAlertProperties(), emailProperties);
-            final Optional<DigestModel> optionalModel = extractContentFromEvent(event, DigestModel.class);
-            final Collection<ProjectData> data;
-            if (optionalModel.isPresent()) {
-                data = optionalModel.get().getProjectDataCollection();
-            } else {
-                data = Collections.emptyList();
-            }
 
             final HashMap<String, Object> model = new HashMap<>();
 
+            final String contentTitle = String.format("%s -> %s", event.getProvider(), event.getNotificationType());
+            final String content = event.getContent();
+            model.put("content", content);
+            model.put("contentTitle", contentTitle);
             model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), subjectLine);
-            model.put(EmailPropertyKeys.TEMPLATE_KEY_EMAIL_CATEGORY.getPropertyKey(), data.iterator().next().getDigestType().getDisplayName());
             final Optional<String> optionalBlackDuckUrl = getBlackDuckProperties().getBlackDuckUrl();
             if (optionalBlackDuckUrl.isPresent()) {
                 model.put(EmailPropertyKeys.TEMPLATE_KEY_BLACKDUCK_SERVER_URL.getPropertyKey(), StringUtils.trimToEmpty(optionalBlackDuckUrl.get()));
             }
             model.put(EmailPropertyKeys.TEMPLATE_KEY_BLACKDUCK_GROUP_NAME.getPropertyKey(), blackDuckGroupName);
 
-            model.put(EmailPropertyKeys.TEMPLATE_KEY_TOPIC.getPropertyKey(), data);
-
             model.put(EmailPropertyKeys.TEMPLATE_KEY_START_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
             model.put(EmailPropertyKeys.TEMPLATE_KEY_END_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
 
             for (final String emailAddress : emailAddresses) {
-                final EmailTarget emailTarget = new EmailTarget(emailAddress, "digest.ftl", model);
+                final EmailTarget emailTarget = new EmailTarget(emailAddress, "audit.ftl", model);
                 emailService.sendEmailMessage(emailTarget);
             }
         } catch (final IOException ex) {

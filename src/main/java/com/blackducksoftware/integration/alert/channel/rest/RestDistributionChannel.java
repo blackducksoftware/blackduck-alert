@@ -24,7 +24,7 @@
 package com.blackducksoftware.integration.alert.channel.rest;
 
 import java.io.IOException;
-import java.util.Optional;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +34,6 @@ import com.blackducksoftware.integration.alert.channel.DistributionChannel;
 import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.common.AlertProperties;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
-import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.database.entity.channel.DistributionChannelConfigEntity;
@@ -62,12 +61,9 @@ public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntit
         final G globalConfig = getGlobalConfigEntity();
         try (final RestConnection restConnection = channelRestConnectionFactory.createUnauthenticatedRestConnection(getApiUrl(globalConfig))) {
             final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(restConnection);
-            final Optional<DigestModel> optionalModel = extractContentFromEvent(event, DigestModel.class);
-            if (optionalModel.isPresent()) {
-                final Request request = createRequest(channelRequestHelper, config, globalConfig, optionalModel.get());
+            final List<Request> requests = createRequests(channelRequestHelper, config, globalConfig, event);
+            for (final Request request : requests) {
                 channelRequestHelper.sendMessageRequest(request, event.getDestination());
-            } else {
-                logger.info("No data found to send.");
             }
         } catch (final IOException ex) {
             throw new AlertException(ex);
@@ -80,6 +76,7 @@ public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntit
 
     public abstract String getApiUrl(G globalConfig);
 
-    public abstract Request createRequest(final ChannelRequestHelper channelRequestHelper, final C config, G globalConfig, final DigestModel digestModel) throws IntegrationException;
+    public abstract List<Request> createRequests(final ChannelRequestHelper channelRequestHelper, final C config, G globalConfig, final ChannelEvent event) throws IntegrationException;
 
 }
+

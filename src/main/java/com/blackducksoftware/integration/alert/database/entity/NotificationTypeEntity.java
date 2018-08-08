@@ -27,21 +27,23 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
+
 @Entity
 @Table(schema = "alert", name = "notification_types")
 public class NotificationTypeEntity extends DatabaseEntity {
     @Column
-    private NotificationCategoryEnum type;
+    private NotificationType type;
 
     public NotificationTypeEntity() {
         // JPA requires default constructor definitions
     }
 
-    public NotificationTypeEntity(final NotificationCategoryEnum type) {
+    public NotificationTypeEntity(final NotificationType type) {
         this.type = type;
     }
 
-    public NotificationCategoryEnum getType() {
+    public NotificationType getType() {
         return type;
     }
 

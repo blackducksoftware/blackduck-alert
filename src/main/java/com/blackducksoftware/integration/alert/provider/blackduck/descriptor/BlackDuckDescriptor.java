@@ -37,5 +37,4 @@ public class BlackDuckDescriptor extends ProviderDescriptor {
     public BlackDuckDescriptor(final BlackDuckProviderDescriptorConfig providerDescriptorConfig, final BlackDuckProvider provider) {
         super(PROVIDER_NAME, providerDescriptorConfig, provider);
     }
-
 }
