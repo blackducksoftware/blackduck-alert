@@ -60,9 +60,9 @@ public class SlackDistributionDescriptorConfig extends DescriptorConfig {
 
     @Override
     public UIComponent getUiComponent() {
-        final ConfigField webhook = new ConfigField("webhook", "Webhook", FieldType.TEXT_INPUT, true, FieldGroup.DEFAULT);
-        final ConfigField channelUsername = new ConfigField("channelUsername", "Channel Username", FieldType.TEXT_INPUT, false, FieldGroup.DEFAULT);
-        final ConfigField channelName = new ConfigField("channelName", "Channel Name", FieldType.TEXT_INPUT, true, FieldGroup.DEFAULT);
+        final ConfigField webhook = new ConfigField("webhook", "Webhook", FieldType.TEXT_INPUT, true, false, FieldGroup.DEFAULT);
+        final ConfigField channelUsername = new ConfigField("channelUsername", "Channel Username", FieldType.TEXT_INPUT, false, false, FieldGroup.DEFAULT);
+        final ConfigField channelName = new ConfigField("channelName", "Channel Name", FieldType.TEXT_INPUT, true, false, FieldGroup.DEFAULT);
         return new UIComponent("Slack", "slack", "slack", Arrays.asList(webhook, channelUsername, channelName));
     }
 
