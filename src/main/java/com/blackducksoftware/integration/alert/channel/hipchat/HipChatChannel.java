@@ -24,25 +24,28 @@
 package com.blackducksoftware.integration.alert.channel.hipchat;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.AlertConstants;
 import com.blackducksoftware.integration.alert.channel.ChannelFreemarkerTemplatingService;
+import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.channel.rest.ChannelRequestHelper;
 import com.blackducksoftware.integration.alert.channel.rest.ChannelRestConnectionFactory;
 import com.blackducksoftware.integration.alert.channel.rest.RestDistributionChannel;
 import com.blackducksoftware.integration.alert.common.AlertProperties;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
-import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
-import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
@@ -63,8 +66,10 @@ import freemarker.template.TemplateException;
 @Component(value = HipChatChannel.COMPONENT_NAME)
 @Transactional
 public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigEntity, HipChatDistributionConfigEntity> {
+    private final Logger logger = LoggerFactory.getLogger(HipChatChannel.class);
     public static final String COMPONENT_NAME = "channel_hipchat";
     public static final String HIP_CHAT_API = "https://api.hipchat.com";
+    public static final int MESSAGE_SIZE_LIMIT = 8000;
 
     @Autowired
     public HipChatChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditEntryRepository auditEntryRepository, final HipChatGlobalRepository hipChatGlobalRepository,
@@ -126,25 +131,74 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
     }
 
     @Override
-    public Request createRequest(final ChannelRequestHelper channelRequestHelper, final HipChatDistributionConfigEntity config, final HipChatGlobalConfigEntity globalConfig, final DigestModel digestModel) throws IntegrationException {
+    public List<Request> createRequests(final ChannelRequestHelper channelRequestHelper, final HipChatDistributionConfigEntity config, final HipChatGlobalConfigEntity globalConfig, final ChannelEvent event)
+            throws IntegrationException {
         if (config.getRoomId() == null) {
             throw new IntegrationException("Room ID missing");
         } else {
-            final Collection<ProjectData> projectDataCollection = digestModel.getProjectDataCollection();
-            final String htmlMessage = createHtmlMessage(projectDataCollection);
-            final String jsonString = getJsonString(htmlMessage, AlertConstants.ALERT_APPLICATION_NAME, config.getNotify(), config.getColor());
-
-            final String url = getApiUrl(globalConfig) + "/v2/room/" + config.getRoomId().toString() + "/notification";
-
-            final Map<String, String> requestHeaders = new HashMap<>();
-            requestHeaders.put("Authorization", "Bearer " + globalConfig.getApiKey());
-            requestHeaders.put("Content-Type", "application/json");
-
-            return channelRequestHelper.createPostMessageRequest(url, requestHeaders, jsonString);
+            if (isChunkedMessageNeeded(event)) {
+                return createChunkedRequestList(channelRequestHelper, config, globalConfig, event);
+            } else {
+                final String contentTitle = String.format("%s -> %s", event.getProvider(), event.getNotificationType());
+                return Arrays.asList(createRequest(channelRequestHelper, config, globalConfig, contentTitle, event.getContent()));
+            }
         }
     }
 
-    private String createHtmlMessage(final Collection<ProjectData> projectDataCollection) throws AlertException {
+    private boolean isChunkedMessageNeeded(final ChannelEvent event) {
+        final String eventContent = event.getContent();
+        if (StringUtils.isNotBlank(eventContent)) {
+            return eventContent.length() > MESSAGE_SIZE_LIMIT;
+        } else {
+            return false;
+        }
+    }
+
+    private List<Request> createChunkedRequestList(final ChannelRequestHelper channelRequestHelper, final HipChatDistributionConfigEntity config, final HipChatGlobalConfigEntity globalConfig, final ChannelEvent event)
+            throws IntegrationException {
+        final String eventContent = event.getContent();
+        final int contentLength = eventContent.length();
+        logger.info("Message too large.  Creating chunks...");
+        logger.info("Content length: {}", contentLength);
+        final int additionPage = (contentLength % MESSAGE_SIZE_LIMIT == 0) ? 0 : 1;
+        final int requestCount = (contentLength / MESSAGE_SIZE_LIMIT) + additionPage;
+        logger.info("Number of requests to submit: {}", requestCount);
+        final List<Request> requestList = new ArrayList<>(requestCount);
+        int end = 0;
+        int currentRequest = 1;
+        while (end < eventContent.length()) {
+            logger.info("Creating request {} of {}", currentRequest, requestCount);
+            final String contentTitle = String.format("%s -> %s (part %d of %d)", event.getProvider(), event.getNotificationType(), currentRequest, requestCount);
+            final int start = end;
+            end = end + MESSAGE_SIZE_LIMIT;
+            final String content;
+            if (end > eventContent.length()) {
+                content = eventContent.substring(start);
+            } else {
+                content = eventContent.substring(start, end);
+            }
+            requestList.add(createRequest(channelRequestHelper, config, globalConfig, contentTitle, content));
+            currentRequest++;
+        }
+
+        return requestList;
+    }
+
+    private Request createRequest(final ChannelRequestHelper channelRequestHelper, final HipChatDistributionConfigEntity config, final HipChatGlobalConfigEntity globalConfig, final String contentTitle, final String content)
+            throws IntegrationException {
+        final String htmlMessage = createHtmlMessage(contentTitle, content);
+        final String jsonString = getJsonString(htmlMessage, AlertConstants.ALERT_APPLICATION_NAME, config.getNotify(), config.getColor());
+
+        final String url = getApiUrl(globalConfig) + "/v2/room/" + config.getRoomId().toString() + "/notification";
+
+        final Map<String, String> requestHeaders = new HashMap<>();
+        requestHeaders.put("Authorization", "Bearer " + globalConfig.getApiKey());
+        requestHeaders.put("Content-Type", "application/json");
+
+        return channelRequestHelper.createPostMessageRequest(url, requestHeaders, jsonString);
+    }
+
+    private String createHtmlMessage(final String contentTitle, final String content) throws AlertException {
         try {
             final String templatesDirectory = getAlertProperties().getAlertTemplatesDir();
             final String templateDirectoryPath;
@@ -157,9 +211,10 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
             final ChannelFreemarkerTemplatingService freemarkerTemplatingService = new ChannelFreemarkerTemplatingService(templateDirectoryPath);
 
             final HashMap<String, Object> model = new HashMap<>();
-            model.put("projectDataCollection", projectDataCollection);
+            model.put("content", content);
+            model.put("contentTitle", contentTitle);
 
-            return freemarkerTemplatingService.getResolvedTemplate(model, "notification.ftl");
+            return freemarkerTemplatingService.getResolvedTemplate(model, "audit.ftl");
         } catch (final IOException | TemplateException e) {
             throw new AlertException(e);
         }

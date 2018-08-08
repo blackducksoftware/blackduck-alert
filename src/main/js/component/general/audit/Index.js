@@ -118,10 +118,9 @@ class Index extends Component {
             };
             const {notification} = entry;
             if (notification) {
-                result.notificationTypes = notification.notificationTypes;
-                result.notificationProjectName = notification.projectName;
-                result.notificationProjectVersion = notification.projectVersion;
-                result.components = notification.components;
+                result.notificationType = notification.notificationType;
+                result.notificationProviderName = notification.provider;
+                result.content = notification.content;
             }
             return result;
         });
@@ -143,45 +142,36 @@ class Index extends Component {
         return <div className={statusClass} aria-hidden>{cell}</div>;
     }
 
-    notificationTypeDataFormat(cells) {
-        if (cells && cells.length > 0) {
-            let hasPolicyViolation = false;
-            let hasPolicyViolationCleared = false;
-            let hasPolicyViolationOverride = false;
-            let hasHighVulnerability = false;
-            let hasMediumVulnerability = false;
-            let hasLowVulnerability = false;
-            let hasVulnerability = false;
+    notificationTypeDataFormat(cell) {
+        let hasPolicyViolation = false;
+        let hasPolicyViolationCleared = false;
+        let hasPolicyViolationOverride = false;
+        let hasHighVulnerability = false;
+        let hasMediumVulnerability = false;
+        let hasLowVulnerability = false;
+        let hasVulnerability = false;
 
-            cells.forEach((cell) => {
-                if (cell === 'POLICY_VIOLATION') {
-                    hasPolicyViolation = true;
-                } else if (cell === 'POLICY_VIOLATION_CLEARED') {
-                    hasPolicyViolationCleared = true;
-                } else if (cell === 'POLICY_VIOLATION_OVERRIDE') {
-                    hasPolicyViolationOverride = true;
-                } else if (cell === 'HIGH_VULNERABILITY') {
-                    hasHighVulnerability = true;
-                } else if (cell === 'MEDIUM_VULNERABILITY') {
-                    hasMediumVulnerability = true;
-                } else if (cell === 'LOW_VULNERABILITY') {
-                    hasLowVulnerability = true;
-                } else if (cell === 'VULNERABILITY') {
-                    hasVulnerability = true;
-                }
-            });
 
-            return (<NotificationTypeLegend
-                hasPolicyViolation={hasPolicyViolation}
-                hasPolicyViolationCleared={hasPolicyViolationCleared}
-                hasPolicyViolationOverride={hasPolicyViolationOverride}
-                hasHighVulnerability={hasHighVulnerability}
-                hasMediumVulnerability={hasMediumVulnerability}
-                hasLowVulnerability={hasLowVulnerability}
-                hasVulnerability={hasVulnerability}
-            />);
+        if (cell === 'RULE_VIOLATION') {
+            hasPolicyViolation = true;
+        } else if (cell === 'RULE_VIOLATION_CLEARED') {
+            hasPolicyViolationCleared = true;
+        } else if (cell === 'POLICY_OVERRIDE') {
+            hasPolicyViolationOverride = true;
+        }  else if (cell === 'VULNERABILITY') {
+            hasVulnerability = true;
         }
-        return null;
+
+
+        return (<NotificationTypeLegend
+            hasPolicyViolation={hasPolicyViolation}
+            hasPolicyViolationCleared={hasPolicyViolationCleared}
+            hasPolicyViolationOverride={hasPolicyViolationOverride}
+            hasHighVulnerability={hasHighVulnerability}
+            hasMediumVulnerability={hasMediumVulnerability}
+            hasLowVulnerability={hasLowVulnerability}
+            hasVulnerability={hasVulnerability}
+        />);
     }
 
     expandComponent(row) {
@@ -295,8 +285,8 @@ class Index extends Component {
                         search
                     >
                         <TableHeaderColumn dataField="jobName" dataSort columnTitle columnClassName="tableCell">Job Name</TableHeaderColumn>
-                        <TableHeaderColumn dataField="notificationProjectName" dataSort columnTitle columnClassName="tableCell">Project Name</TableHeaderColumn>
-                        <TableHeaderColumn dataField="notificationTypes" dataSort width="145" columnClassName="tableCell" dataFormat={this.notificationTypeDataFormat}>Notification Types</TableHeaderColumn>
+                        <TableHeaderColumn dataField="notificationProviderName" dataSort columnTitle columnClassName="tableCell">Provider Name</TableHeaderColumn>
+                        <TableHeaderColumn dataField="notificationType" dataSort width="145" columnClassName="tableCell" dataFormat={this.notificationTypeDataFormat}>Notification Types</TableHeaderColumn>
                         <TableHeaderColumn dataField="timeCreated" dataSort width="160" columnTitle columnClassName="tableCell">Time Created</TableHeaderColumn>
                         <TableHeaderColumn dataField="timeLastSent" dataSort width="160" columnTitle columnClassName="tableCell">Time Last Sent</TableHeaderColumn>
                         <TableHeaderColumn dataField="status" width="75" dataSort columnClassName="tableCell" dataFormat={this.statusColumnDataFormat}>Status</TableHeaderColumn>

@@ -48,5 +48,5 @@ public class BlackDuckProviderStartupComponent extends StartupComponent {
     public Set<AlertStartupProperty> getGlobalEntityPropertyMapping() {
         return entityPropertyMapper.mapEntityToProperties(BlackDuckDescriptor.PROVIDER_NAME, GlobalBlackDuckConfigEntity.class);
     }
-
+    
 }

@@ -33,15 +33,12 @@ import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.NonTransientResourceException;
-import org.springframework.batch.item.ParseException;
-import org.springframework.batch.item.UnexpectedInputException;
 
-import com.blackducksoftware.integration.alert.common.model.NotificationModel;
+import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
 import com.blackducksoftware.integration.alert.workflow.NotificationManager;
 
 @Transactional
-public class PurgeReader implements ItemReader<List<NotificationModel>> {
+public class PurgeReader implements ItemReader<List<NotificationContent>> {
     private final static Logger logger = LoggerFactory.getLogger(PurgeReader.class);
     private final NotificationManager notificationManager;
     private final int dayOffset;
@@ -52,11 +49,12 @@ public class PurgeReader implements ItemReader<List<NotificationModel>> {
     }
 
     @Override
-    public List<NotificationModel> read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
+    public List<NotificationContent> read() {
         try {
+
             final Date date = createDate();
             logger.info("Searching for notifications to purge earlier than {}", date);
-            final List<NotificationModel> notificationList = notificationManager.findByCreatedAtBefore(date);
+            final List<NotificationContent> notificationList = notificationManager.findByCreatedAtBefore(date);
 
             if (notificationList == null || notificationList.isEmpty()) {
                 logger.info("No notifications found to purge");

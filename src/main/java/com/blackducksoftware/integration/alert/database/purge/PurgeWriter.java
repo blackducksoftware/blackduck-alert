@@ -31,11 +31,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemWriter;
 
-import com.blackducksoftware.integration.alert.common.model.NotificationModel;
+import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
 import com.blackducksoftware.integration.alert.workflow.NotificationManager;
 
 @Transactional
-public class PurgeWriter implements ItemWriter<List<NotificationModel>> {
+public class PurgeWriter implements ItemWriter<List<NotificationContent>> {
     private final static Logger logger = LoggerFactory.getLogger(PurgeWriter.class);
     private final NotificationManager notificationManager;
 
@@ -44,7 +44,7 @@ public class PurgeWriter implements ItemWriter<List<NotificationModel>> {
     }
 
     @Override
-    public void write(final List<? extends List<NotificationModel>> items) throws Exception {
+    public void write(final List<? extends List<NotificationContent>> items) throws Exception {
         try {
             items.forEach(entityList -> {
                 if (entityList != null && !entityList.isEmpty()) {

@@ -17,10 +17,10 @@ import java.util.stream.Collectors;
 
 import com.blackducksoftware.integration.alert.channel.hipchat.HipChatChannel;
 import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
-import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.alert.mock.NotificationTypeMockUtils;
 import com.blackducksoftware.integration.alert.mock.ProjectMockUtils;
 import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfig;
+import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -35,7 +35,7 @@ public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDis
     private String frequency;
     private String filterByProject;
     private List<String> configuredProjects;
-    private List<NotificationCategoryEnum> notificationTypes;
+    private List<NotificationType> notificationTypes;
     private String lastRan;
     private String status;
 
@@ -48,7 +48,7 @@ public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDis
     }
 
     private MockCommonDistributionRestModel(final String id, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String filterByProject, final List<String> configuredProjects,
-            final List<NotificationCategoryEnum> notificationTypes, final String lastRan, final String status) {
+            final List<NotificationType> notificationTypes, final String lastRan, final String status) {
         super();
         this.id = id;
         this.distributionConfigId = distributionConfigId;
@@ -106,7 +106,7 @@ public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDis
         return configuredProjects;
     }
 
-    public List<NotificationCategoryEnum> getNotifications() {
+    public List<NotificationType> getNotifications() {
         return notificationTypes;
     }
 
@@ -134,7 +134,7 @@ public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDis
         this.configuredProjects = configuredProjects;
     }
 
-    public void setNotificationTypes(final List<NotificationCategoryEnum> notificationTypes) {
+    public void setNotificationTypes(final List<NotificationType> notificationTypes) {
         this.notificationTypes = notificationTypes;
     }
 

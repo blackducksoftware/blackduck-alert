@@ -23,6 +23,8 @@
  */
 package com.blackducksoftware.integration.alert.common.descriptor;
 
+import java.util.Set;
+
 import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.blackducksoftware.integration.alert.common.enumeration.DescriptorType;
 import com.blackducksoftware.integration.alert.common.provider.Provider;
@@ -38,5 +40,9 @@ public abstract class ProviderDescriptor extends Descriptor {
 
     public Provider getProvider() {
         return provider;
+    }
+
+    public Set<String> getNotificationTypes() {
+        return getProvider().getNotificationTypes();
     }
 }
