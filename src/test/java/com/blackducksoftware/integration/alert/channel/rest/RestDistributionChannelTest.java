@@ -13,6 +13,10 @@ package com.blackducksoftware.integration.alert.channel.rest;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
 import org.junit.Test;
 
 import com.blackducksoftware.integration.alert.TestAlertProperties;
@@ -23,10 +27,12 @@ import com.blackducksoftware.integration.alert.channel.slack.SlackChannel;
 import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
+import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
 import com.blackducksoftware.integration.alert.database.entity.channel.DistributionChannelConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
 import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.blackducksoftware.integration.rest.request.Request;
 import com.google.gson.Gson;
 
@@ -48,12 +54,14 @@ public class RestDistributionChannelTest extends ChannelTest {
             }
 
             @Override
-            public Request createRequest(final ChannelRequestHelper channelRequestHelper, final DistributionChannelConfigEntity config, final GlobalChannelConfigEntity globalConfig, final DigestModel digestModel) throws AlertException {
-                return new Request.Builder().uri("http://google.com").build();
+            public List<Request> createRequests(final ChannelRequestHelper channelRequestHelper, final DistributionChannelConfigEntity config, final GlobalChannelConfigEntity globalConfig, final ChannelEvent event) throws AlertException {
+                return Arrays.asList(new Request.Builder().uri("http://google.com").build());
             }
         };
         final DigestModel digestModel = new DigestModel(createProjectData("Rest channel test"));
-        final ChannelEvent event = new ChannelEvent(SlackChannel.COMPONENT_NAME, contentConverter.getJsonString(digestModel), 1L);
+        final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
+        final ChannelEvent event = new ChannelEvent(SlackChannel.COMPONENT_NAME, RestConnection.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
+                notificationContent.getContent(), 1L, 1L);
         final SlackDistributionConfigEntity config = new SlackDistributionConfigEntity("more garbage", "garbage", "garbage");
         Exception thrownException = null;
         try {

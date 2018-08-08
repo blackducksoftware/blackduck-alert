@@ -35,7 +35,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.blackducksoftware.integration.alert.common.model.NotificationModel;
+import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
 import com.blackducksoftware.integration.alert.database.purge.PurgeProcessor;
 import com.blackducksoftware.integration.alert.database.purge.PurgeReader;
 import com.blackducksoftware.integration.alert.database.purge.PurgeWriter;
@@ -56,7 +56,7 @@ public class PurgeTask extends JobScheduledTask<PurgeReader, PurgeProcessor, Pur
 
     @Override
     public Step createStep(final PurgeReader reader, final PurgeProcessor processor, final PurgeWriter writer) {
-        return stepBuilderFactory.get(PURGE_STEP_NAME).<List<NotificationModel>, List<NotificationModel>>chunk(1).reader(reader).processor(processor).writer(writer).taskExecutor(taskExecutor).transactionManager(transactionManager)
+        return stepBuilderFactory.get(PURGE_STEP_NAME).<List<NotificationContent>, List<NotificationContent>>chunk(1).reader(reader).processor(processor).writer(writer).taskExecutor(taskExecutor).transactionManager(transactionManager)
                        .build();
     }
 

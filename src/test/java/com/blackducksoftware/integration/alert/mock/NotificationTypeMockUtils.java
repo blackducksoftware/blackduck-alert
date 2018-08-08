@@ -14,22 +14,22 @@ package com.blackducksoftware.integration.alert.mock;
 import java.util.Arrays;
 import java.util.List;
 
-import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.alert.database.entity.NotificationTypeEntity;
 import com.blackducksoftware.integration.alert.database.relation.DistributionNotificationTypeRelation;
 import com.blackducksoftware.integration.alert.mock.entity.MockEntityUtil;
+import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 public class NotificationTypeMockUtils extends MockEntityUtil<NotificationTypeEntity> {
-    private NotificationCategoryEnum type;
+    private NotificationType type;
     private Long id;
 
     public NotificationTypeMockUtils() {
-        this(1L, NotificationCategoryEnum.POLICY_VIOLATION);
+        this(1L, NotificationType.RULE_VIOLATION);
     }
 
-    private NotificationTypeMockUtils(final Long id, final NotificationCategoryEnum type) {
+    private NotificationTypeMockUtils(final Long id, final NotificationType type) {
         this.type = type;
         this.id = id;
     }
@@ -39,7 +39,7 @@ public class NotificationTypeMockUtils extends MockEntityUtil<NotificationTypeEn
         return Arrays.asList(relation1);
     }
 
-    public List<NotificationCategoryEnum> createNotificiationTypeListing() {
+    public List<NotificationType> createNotificiationTypeListing() {
         return Arrays.asList(type);
     }
 
@@ -53,11 +53,11 @@ public class NotificationTypeMockUtils extends MockEntityUtil<NotificationTypeEn
         return json;
     }
 
-    public NotificationCategoryEnum getType() {
+    public NotificationType getType() {
         return type;
     }
 
-    public void setType(final NotificationCategoryEnum type) {
+    public void setType(final NotificationType type) {
         this.type = type;
     }
 

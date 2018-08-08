@@ -1,110 +1,46 @@
 package com.blackducksoftware.integration.alert.mock.model;
 
 import java.util.Date;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
-import com.blackducksoftware.integration.alert.web.model.ComponentConfig;
 import com.blackducksoftware.integration.alert.web.model.NotificationConfig;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 public class MockNotificationRestModel extends MockRestModelUtil<NotificationConfig> {
-    private String eventKey;
-    private String createdAt;
-    private Set<String> notificationTypes;
-    private String projectName;
-    private String projectVersion;
-    private Set<ComponentConfig> components;
-    private String projectUrl;
-    private String projectVersionUrl;
+    private final String createdAt;
+    private final String provider;
+    private final String notificationType;
+    private final String content;
     private String id;
 
     @SuppressWarnings("deprecation")
     public MockNotificationRestModel() {
-        this("_eventKey_", new Date(400).toLocaleString(), Stream.of(NotificationCategoryEnum.POLICY_VIOLATION.name()).collect(Collectors.toSet()), "projectName", "projectVersion",
-                Stream.of(new ComponentConfig(), new ComponentConfig()).collect(Collectors.toSet()), "projectUrl", "projectVersionUrl", "1");
+        this(new Date(400).toLocaleString(), "provider", NotificationCategoryEnum.POLICY_VIOLATION.name(), "{content: \" projectName projectVersion\"", "1");
     }
 
-    private MockNotificationRestModel(final String eventKey, final String createdAt, final Set<String> notificationTypes, final String projectName, final String projectVersion, final Set<ComponentConfig> components,
-            final String projectUrl, final String projectVersionUrl, final String id) {
-        super();
-        this.eventKey = eventKey;
+    private MockNotificationRestModel(final String createdAt, final String provider, final String notificationType, final String content, final String id) {
         this.createdAt = createdAt;
-        this.notificationTypes = notificationTypes;
-        this.projectName = projectName;
-        this.projectVersion = projectVersion;
-        this.components = components;
-        this.projectUrl = projectUrl;
-        this.projectVersionUrl = projectVersionUrl;
+        this.provider = provider;
+        this.notificationType = notificationType;
+        this.content = content;
         this.id = id;
-    }
-
-    public String getEventKey() {
-        return eventKey;
-    }
-
-    public void setEventKey(final String eventKey) {
-        this.eventKey = eventKey;
     }
 
     public String getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(final String createdAt) {
-        this.createdAt = createdAt;
+    public String getProvider() {
+        return provider;
     }
 
-    public Set<String> getNotificationTypes() {
-        return notificationTypes;
+    public String getNotificationType() {
+        return notificationType;
     }
 
-    public void setNotificationTypes(final Set<String> notificationTypes) {
-        this.notificationTypes = notificationTypes;
-    }
-
-    public String getProjectName() {
-        return projectName;
-    }
-
-    public void setProjectName(final String projectName) {
-        this.projectName = projectName;
-    }
-
-    public String getProjectVersion() {
-        return projectVersion;
-    }
-
-    public void setProjectVersion(final String projectVersion) {
-        this.projectVersion = projectVersion;
-    }
-
-    public Set<ComponentConfig> getComponents() {
-        return components;
-    }
-
-    public void setComponents(final Set<ComponentConfig> components) {
-        this.components = components;
-    }
-
-    public String getProjectUrl() {
-        return projectUrl;
-    }
-
-    public void setProjectUrl(final String projectUrl) {
-        this.projectUrl = projectUrl;
-    }
-
-    public String getProjectVersionUrl() {
-        return projectVersionUrl;
-    }
-
-    public void setProjectVersionUrl(final String projectVersionUrl) {
-        this.projectVersionUrl = projectVersionUrl;
+    public String getContent() {
+        return content;
     }
 
     public void setId(final String id) {
@@ -118,7 +54,7 @@ public class MockNotificationRestModel extends MockRestModelUtil<NotificationCon
 
     @Override
     public NotificationConfig createRestModel() {
-        return new NotificationConfig(id, eventKey, createdAt, notificationTypes, projectName, projectVersion, components, projectUrl, projectVersionUrl);
+        return new NotificationConfig(id, createdAt, provider, notificationType, content);
     }
 
     @Override
@@ -130,16 +66,10 @@ public class MockNotificationRestModel extends MockRestModelUtil<NotificationCon
     public String getRestModelJson() {
         final Gson gson = new Gson();
         final JsonObject json = new JsonObject();
-        json.addProperty("eventKey", eventKey);
         json.addProperty("createdAt", createdAt);
-        final JsonElement notificationArray = gson.toJsonTree(notificationTypes);
-        json.add("notificationTypes", notificationArray.getAsJsonArray());
-        json.addProperty("projectName", projectName);
-        json.addProperty("projectVersion", projectVersion);
-        json.addProperty("projectUrl", projectUrl);
-        json.addProperty("projectVersionUrl", projectVersionUrl);
-        final JsonElement componentsArray = gson.toJsonTree(components);
-        json.add("components", componentsArray.getAsJsonArray());
+        json.addProperty("provider", provider);
+        json.addProperty("notificationType", notificationType);
+        json.addProperty("content", content);
         json.addProperty("id", id);
         return json.toString();
     }

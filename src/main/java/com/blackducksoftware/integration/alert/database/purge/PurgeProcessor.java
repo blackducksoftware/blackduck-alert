@@ -27,12 +27,12 @@ import java.util.List;
 
 import org.springframework.batch.item.ItemProcessor;
 
-import com.blackducksoftware.integration.alert.common.model.NotificationModel;
+import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
 
-public class PurgeProcessor implements ItemProcessor<List<NotificationModel>, List<NotificationModel>> {
+public class PurgeProcessor implements ItemProcessor<List<NotificationContent>, List<NotificationContent>> {
 
     @Override
-    public List<NotificationModel> process(final List<NotificationModel> item) throws Exception {
+    public List<NotificationContent> process(final List<NotificationContent> item) throws Exception {
         return item;
     }
 }

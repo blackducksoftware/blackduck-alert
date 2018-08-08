@@ -36,29 +36,21 @@ import org.springframework.jms.config.JmsListenerEndpointRegistrar;
 import org.springframework.jms.config.SimpleJmsListenerEndpoint;
 
 import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
-import com.blackducksoftware.integration.alert.workflow.RealTimeListener;
 
 @Configuration
 public class ChannelListener implements JmsListenerConfigurer {
     private final Logger logger = LoggerFactory.getLogger(ChannelListener.class);
 
     private final List<ChannelDescriptor> channelDescriptorList;
-    private final RealTimeListener realTimeListener;
 
     @Autowired
-    public ChannelListener(final List<ChannelDescriptor> channelDescriptorList, final RealTimeListener realTimeListener) {
+    public ChannelListener(final List<ChannelDescriptor> channelDescriptorList) {
         this.channelDescriptorList = channelDescriptorList;
-        this.realTimeListener = realTimeListener;
     }
 
     @Override
     public void configureJmsListeners(final JmsListenerEndpointRegistrar registrar) {
         logger.info("Registering JMS Listeners");
-        final SimpleJmsListenerEndpoint realTimeEndpoint = new SimpleJmsListenerEndpoint();
-        realTimeEndpoint.setId(createListenerId("RealTime"));
-        realTimeEndpoint.setDestination("REAL_TIME_EVENT");
-        realTimeEndpoint.setMessageListener(realTimeListener);
-        registrar.registerEndpoint(realTimeEndpoint);
         channelDescriptorList.forEach(descriptor -> {
             final MessageListener channelListener = descriptor.getChannelListener();
             if (channelListener != null) {

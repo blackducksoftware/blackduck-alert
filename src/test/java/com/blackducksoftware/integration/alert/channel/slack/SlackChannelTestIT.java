@@ -16,7 +16,9 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.assertj.core.util.Sets;
@@ -41,8 +43,10 @@ import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
+import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.blackducksoftware.integration.exception.IntegrationException;
+import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.blackducksoftware.integration.rest.request.Request;
 import com.blackducksoftware.integration.test.annotation.ExternalConnectionTest;
 
@@ -64,7 +68,9 @@ public class SlackChannelTestIT extends ChannelTest {
 
         final Collection<ProjectData> projectData = createProjectData("Slack test project");
         final DigestModel digestModel = new DigestModel(projectData);
-        final ChannelEvent event = new ChannelEvent(SlackChannel.COMPONENT_NAME, contentConverter.getJsonString(digestModel), new Long(0));
+        final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
+        final ChannelEvent event = new ChannelEvent(SlackChannel.COMPONENT_NAME, RestConnection.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
+                notificationContent.getContent(), new Long(0), 1L);
 
         slackChannel.sendAuditedMessage(event, config);
 
@@ -76,10 +82,10 @@ public class SlackChannelTestIT extends ChannelTest {
     public void testCreateRequestExceptions() {
         final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null, null, null, contentConverter);
         final MockSlackEntity mockSlackEntity = new MockSlackEntity();
-        Request request = null;
+        List<Request> request = null;
 
         try {
-            request = slackChannel.createRequest(null, mockSlackEntity.createEmptyEntity(), null, null);
+            request = slackChannel.createRequests(null, mockSlackEntity.createEmptyEntity(), null, null);
             fail();
         } catch (final IntegrationException e) {
             assertNull(request);
@@ -87,7 +93,7 @@ public class SlackChannelTestIT extends ChannelTest {
 
         mockSlackEntity.setChannelName("");
         try {
-            request = slackChannel.createRequest(null, mockSlackEntity.createEntity(), null, null);
+            request = slackChannel.createRequests(null, mockSlackEntity.createEntity(), null, null);
             fail();
         } catch (final IntegrationException e) {
             assertNull(request);
@@ -100,23 +106,26 @@ public class SlackChannelTestIT extends ChannelTest {
         final MockSlackEntity mockSlackEntity = new MockSlackEntity();
         final Collection<ProjectData> projectData = createSlackProjectData();
         final DigestModel digestModel = new DigestModel(projectData);
+        final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
+        final ChannelEvent event = new ChannelEvent(SlackChannel.COMPONENT_NAME, RestConnection.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
+                notificationContent.getContent(), new Long(0), 1L);
 
         final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(null) {
             @Override
             public Request createPostMessageRequest(final String url, final Map<String, String> headers, final String body) {
-                assertTrue(body.contains("Vulnerability Count Added: "));
-                assertTrue(body.contains("Vulnerability Count Updated: "));
-                assertTrue(body.contains("Vulnerability Count Deleted: "));
+                assertTrue(body.contains("HIGH_VULNERABILITY"));
+                assertTrue(body.contains("ADDED"));
+                assertTrue(body.contains("UPDATED"));
+                assertTrue(body.contains("DELETED"));
                 return null;
             }
         };
 
         final ChannelRequestHelper spyChannelRequestHelper = Mockito.spy(channelRequestHelper);
 
-        final Request request = slackChannel.createRequest(spyChannelRequestHelper, mockSlackEntity.createEntity(), null, digestModel);
+        final List<Request> request = slackChannel.createRequests(spyChannelRequestHelper, mockSlackEntity.createEntity(), null, event);
 
-        assertNull(request);
-
+        assertFalse(request.isEmpty());
         Mockito.verify(spyChannelRequestHelper).createPostMessageRequest(Mockito.anyString(), Mockito.anyMap(), Mockito.anyString());
     }
 
@@ -126,6 +135,10 @@ public class SlackChannelTestIT extends ChannelTest {
         final MockSlackEntity mockSlackEntity = new MockSlackEntity();
         final ProjectData projectData = new ProjectData(DigestType.DAILY, "Slack", "1", null, null);
         final DigestModel digestModel = new DigestModel(Arrays.asList(projectData));
+        final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", "");
+        final ChannelEvent event = new ChannelEvent(SlackChannel.COMPONENT_NAME, RestConnection.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
+                notificationContent.getContent(), new Long(0), 1L);
+
         final ChannelRequestHelper channelRequestHelper = new ChannelRequestHelper(null) {
             @Override
             public Request createPostMessageRequest(final String url, final Map<String, String> headers, final String body) {
@@ -136,10 +149,8 @@ public class SlackChannelTestIT extends ChannelTest {
 
         final ChannelRequestHelper spyChannelRequestHelper = Mockito.spy(channelRequestHelper);
 
-        final Request request = slackChannel.createRequest(spyChannelRequestHelper, mockSlackEntity.createEntity(), null, digestModel);
-
-        assertNull(request);
-
+        final List<Request> requests = slackChannel.createRequests(spyChannelRequestHelper, mockSlackEntity.createEntity(), null, event);
+        assertFalse(requests.isEmpty());
         Mockito.verify(spyChannelRequestHelper).createPostMessageRequest(Mockito.anyString(), Mockito.anyMap(), Mockito.anyString());
     }
 

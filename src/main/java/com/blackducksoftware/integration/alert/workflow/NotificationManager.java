@@ -25,9 +25,6 @@ package com.blackducksoftware.integration.alert.workflow;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Function;
@@ -38,63 +35,48 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryEntity;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.database.audit.AuditNotificationRepository;
 import com.blackducksoftware.integration.alert.database.audit.relation.AuditNotificationRelation;
-import com.blackducksoftware.integration.alert.database.entity.NotificationEntity;
-import com.blackducksoftware.integration.alert.database.entity.VulnerabilityEntity;
-import com.blackducksoftware.integration.alert.database.entity.repository.NotificationRepository;
+import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
+import com.blackducksoftware.integration.alert.database.entity.repository.NotificationContentRepository;
 import com.blackducksoftware.integration.alert.database.entity.repository.VulnerabilityRepository;
 
 @Component
 @Transactional
 public class NotificationManager {
-    private final NotificationRepository notificationRepository;
+    private final NotificationContentRepository notificationContentRepository;
     private final VulnerabilityRepository vulnerabilityRepository;
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
 
     @Autowired
-    public NotificationManager(final NotificationRepository notificationRepository, final VulnerabilityRepository vulnerabilityRepository, final AuditEntryRepository auditEntryRepository,
+    public NotificationManager(final NotificationContentRepository notificationContentRepository, final VulnerabilityRepository vulnerabilityRepository, final AuditEntryRepository auditEntryRepository,
             final AuditNotificationRepository auditNotificationRepository) {
-        this.notificationRepository = notificationRepository;
+        this.notificationContentRepository = notificationContentRepository;
         this.vulnerabilityRepository = vulnerabilityRepository;
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;
     }
 
-    public NotificationModel saveNotification(final NotificationModel notification) {
-        final NotificationEntity notificationEntity = notificationRepository.save(notification.getNotificationEntity());
-        List<VulnerabilityEntity> vulnerabilities = Collections.emptyList();
-        if (notification.getVulnerabilityList() != null) {
-            final Collection<VulnerabilityEntity> vulnerabilityList = notification.getVulnerabilityList();
-            final List<VulnerabilityEntity> vulnerabilitiesToSave = vulnerabilityList.stream()
-                                                                            .map(vulnerability -> new VulnerabilityEntity(vulnerability.getVulnerabilityId(), vulnerability.getOperation(), notificationEntity.getId()))
-                                                                            .collect(Collectors.toList());
-            vulnerabilities = vulnerabilityRepository.saveAll(vulnerabilitiesToSave);
-        }
-
-        return new NotificationModel(notificationEntity, vulnerabilities);
+    public NotificationContent saveNotification(final NotificationContent notification) {
+        return notificationContentRepository.save(notification);
     }
 
-    public List<NotificationModel> findByIds(final List<Long> notificationIds) {
-        final List<NotificationEntity> notificationList = notificationRepository.findAllById(notificationIds);
-        return createModelList(notificationList);
+    public List<NotificationContent> findByIds(final List<Long> notificationIds) {
+        return notificationContentRepository.findAllById(notificationIds);
     }
 
-    public List<NotificationModel> findByCreatedAtBetween(final Date startDate, final Date endDate) {
-        final List<NotificationEntity> notificationList = notificationRepository.findByCreatedAtBetween(startDate, endDate);
-        return createModelList(notificationList);
+    public List<NotificationContent> findByCreatedAtBetween(final Date startDate, final Date endDate) {
+        return notificationContentRepository.findByCreatedAtBetween(startDate, endDate);
     }
 
-    public List<NotificationModel> findByCreatedAtBefore(final Date date) {
-        final List<NotificationEntity> notificationList = notificationRepository.findByCreatedAtBefore(date);
-        return createModelList(notificationList);
+    public List<NotificationContent> findByCreatedAtBefore(final Date date) {
+        return notificationContentRepository.findByCreatedAtBefore(date);
     }
 
-    public List<NotificationModel> findByCreatedAtBeforeDayOffset(final int dayOffset) {
+    public List<NotificationContent> findByCreatedAtBeforeDayOffset(final int dayOffset) {
         ZonedDateTime zonedDate = ZonedDateTime.now();
         zonedDate = zonedDate.minusDays(dayOffset);
         zonedDate = zonedDate.withZoneSameInstant(ZoneOffset.UTC);
@@ -103,24 +85,13 @@ public class NotificationManager {
         return findByCreatedAtBefore(date);
     }
 
-    private List<NotificationModel> createModelList(final List<NotificationEntity> entityList) {
-        final List<NotificationModel> resultList = new ArrayList<>();
-        entityList.forEach(notification -> {
-            final List<VulnerabilityEntity> vulnerabilities = vulnerabilityRepository.findByNotificationId(notification.getId());
-            resultList.add(new NotificationModel(notification, vulnerabilities));
-        });
-
-        return resultList;
-    }
-
-    public void deleteNotificationList(final List<NotificationModel> notifications) {
+    public void deleteNotificationList(final List<NotificationContent> notifications) {
         notifications.forEach(this::deleteNotification);
     }
 
-    public void deleteNotification(final NotificationModel model) {
-        vulnerabilityRepository.deleteAll(model.getVulnerabilityList());
-        notificationRepository.delete(model.getNotificationEntity());
-        deleteAuditEntries(model.getNotificationEntity().getId());
+    public void deleteNotification(final NotificationContent notification) {
+        notificationContentRepository.delete(notification);
+        deleteAuditEntries(notification.getId());
     }
 
     private void deleteAuditEntries(final Long notificationId) {
