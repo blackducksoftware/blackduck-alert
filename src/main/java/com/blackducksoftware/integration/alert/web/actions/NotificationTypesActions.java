@@ -35,11 +35,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.alert.database.entity.NotificationTypeEntity;
 import com.blackducksoftware.integration.alert.database.entity.repository.NotificationTypeRepository;
 import com.blackducksoftware.integration.alert.database.relation.DistributionNotificationTypeRelation;
 import com.blackducksoftware.integration.alert.database.relation.repository.DistributionNotificationTypeRepository;
+import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 
 @Transactional
 @Component
@@ -90,8 +90,8 @@ public class NotificationTypesActions {
 
     private void addNewDistributionNotificationTypes(final Long commonDistributionConfigId, final List<String> notificationTypesFromRestModel) {
         for (final String notificationType : notificationTypesFromRestModel) {
-            final NotificationCategoryEnum notificationTypeEnum = NotificationCategoryEnum.valueOf(notificationType);
-            Long notificationTypeId;
+            final NotificationType notificationTypeEnum = NotificationType.valueOf(notificationType);
+            final Long notificationTypeId;
             final NotificationTypeEntity foundEntity = notificationTypeRepository.findByType(notificationTypeEnum);
             if (foundEntity != null) {
                 notificationTypeId = foundEntity.getId();
