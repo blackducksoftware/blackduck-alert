@@ -23,8 +23,6 @@
  */
 package com.blackducksoftware.integration.alert.provider.blackduck.descriptor;
 
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -38,10 +36,5 @@ public class BlackDuckDescriptor extends ProviderDescriptor {
     @Autowired
     public BlackDuckDescriptor(final BlackDuckProviderDescriptorConfig providerDescriptorConfig, final BlackDuckProvider provider) {
         super(PROVIDER_NAME, providerDescriptorConfig, provider);
-    }
-
-    @Override
-    public Set<String> getNotificationTypes() {
-        return getProvider().getNotificationTypes();
     }
 }
