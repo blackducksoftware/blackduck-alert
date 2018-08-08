@@ -55,6 +55,10 @@ public class ConfigField {
         this(key, label, type, required, sensitive, group, subGroup, Arrays.asList());
     }
 
+    public ConfigField(final String key, final String label, final FieldType type, final boolean required, final boolean sensitive, final FieldGroup group, final List<String> options) {
+        this(key, label, type, required, sensitive, group, "", options);
+    }
+
     public ConfigField(final String key, final String label, final FieldType type, final boolean required, final boolean sensitive, final FieldGroup group) {
         this(key, label, type, required, sensitive, group, "");
     }
