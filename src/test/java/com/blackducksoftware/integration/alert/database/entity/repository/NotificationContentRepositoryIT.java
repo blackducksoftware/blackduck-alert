@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.blackducksoftware.integration.alert.Application;
 import com.blackducksoftware.integration.alert.database.DatabaseDataSource;
 import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
+import com.blackducksoftware.integration.alert.mock.entity.MockNotificationContent;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
@@ -55,7 +56,7 @@ public class NotificationContentRepositoryIT {
         final String provider = "provider_1";
         final String notificationType = "type_1";
         final String content = "NOTIFICATION CONTENT HERE";
-        final NotificationContent entity = new NotificationContent(createdAt, provider, notificationType, content);
+        final NotificationContent entity = new MockNotificationContent(createdAt, provider, notificationType, content, null).createEntity();
         final NotificationContent savedEntity = repository.save(entity);
         return savedEntity;
     }

@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -25,13 +24,11 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.blackducksoftware.integration.alert.common.enumeration.VulnerabilityOperation;
-import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.database.DatabaseDataSource;
-import com.blackducksoftware.integration.alert.database.entity.NotificationCategoryEnum;
-import com.blackducksoftware.integration.alert.database.entity.NotificationEntity;
+import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
 import com.blackducksoftware.integration.alert.database.entity.VulnerabilityEntity;
-import com.blackducksoftware.integration.alert.database.entity.repository.NotificationRepository;
-import com.blackducksoftware.integration.alert.database.entity.repository.VulnerabilityRepository;
+import com.blackducksoftware.integration.alert.database.entity.repository.NotificationContentRepository;
+import com.blackducksoftware.integration.alert.mock.entity.MockNotificationContent;
 import com.blackducksoftware.integration.alert.workflow.NotificationManager;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
@@ -46,102 +43,62 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 public class NotificationManagerTestIT {
 
     @Autowired
-    private NotificationRepository notificationRepository;
-
-    @Autowired
-    private VulnerabilityRepository vulnerabilityRepository;
+    private NotificationContentRepository notificationContentRepository;
 
     @Autowired
     private NotificationManager notificationManager;
 
-    private NotificationEntity createNotificationEntity(final Date createdAt) {
-        final String eventKey = "event_key_for_notification";
-        final NotificationCategoryEnum notificationType = NotificationCategoryEnum.VULNERABILITY;
-        final String projectName = "projectName";
-        final String projectVersion = "projectVersion";
-        final String componentName = "componentName";
-        final String componentVersion = "componentVersion";
-        final String policyRuleName = "policyRuleName";
-        final String person = "person";
-        final String projectUrl = "projectURL";
-        final String projectVersionUrl = "projectVersionUrl";
-        final NotificationEntity entity = new NotificationEntity(eventKey, createdAt, notificationType, projectName, projectUrl, projectVersion, projectVersionUrl, componentName, componentVersion, policyRuleName, person);
-        return entity;
+    private NotificationContent createNotificationContent(final Date createdAt) {
+        final MockNotificationContent mockedNotificationContent = new MockNotificationContent(createdAt, "provider", "notificationType", "{content: \"content is here...\"}", null);
+        return mockedNotificationContent.createEntity();
     }
 
-    private NotificationEntity createNotificationEntity() {
+    private NotificationContent createNotificationContent() {
         final Date createdAt = createDate(LocalDateTime.now());
-        return createNotificationEntity(createdAt);
+        return createNotificationContent(createdAt);
     }
 
     private Date createDate(final LocalDateTime localTime) {
         return Date.from(localTime.toInstant(ZoneOffset.UTC));
     }
 
-    public void assertNotificationModel(final NotificationEntity entity, final NotificationModel model) {
-        assertEquals(entity.getComponentName(), model.getComponentName());
-        assertEquals(entity.getComponentVersion(), model.getComponentVersion());
-        assertEquals(entity.getCreatedAt(), model.getCreatedAt());
-        assertEquals(entity.getEventKey(), model.getEventKey());
-        assertEquals(entity, model.getNotificationEntity());
-        assertEquals(entity.getNotificationType(), model.getNotificationType());
-        assertEquals(entity.getPolicyRuleName(), model.getPolicyRuleName());
-        assertEquals(entity.getPolicyRuleUser(), model.getPolicyRuleUser());
-        assertEquals(entity.getProjectName(), model.getProjectName());
-        assertEquals(entity.getProjectUrl(), model.getProjectUrl());
-        assertEquals(entity.getProjectVersion(), model.getProjectVersion());
-        assertEquals(entity.getProjectVersionUrl(), model.getProjectVersionUrl());
+    public void assertNotificationModel(final NotificationContent notification, final NotificationContent savedNotification) {
+        assertEquals(notification.getCreatedAt(), savedNotification.getCreatedAt());
+        assertEquals(notification.getProvider(), savedNotification.getProvider());
+        assertEquals(notification.getNotificationType(), savedNotification.getNotificationType());
+        assertEquals(notification.getContent(), savedNotification.getContent());
     }
 
     @Before
     public void cleanUpDB() {
-        notificationRepository.deleteAll();
-        vulnerabilityRepository.deleteAll();
+        notificationContentRepository.deleteAll();
     }
 
     @Test
     public void testSave() {
-        final NotificationEntity notificationEntity = createNotificationEntity();
-        final VulnerabilityEntity vulnerabilityEntity = new VulnerabilityEntity("id1", VulnerabilityOperation.ADD, null);
-        final List<VulnerabilityEntity> vulnerabilityList = Arrays.asList(vulnerabilityEntity);
-        NotificationModel model = new NotificationModel(notificationEntity, vulnerabilityList);
-        NotificationModel savedModel = notificationManager.saveNotification(model);
-
-        assertNotNull(savedModel.getNotificationEntity().getId());
-        assertNotificationModel(notificationEntity, savedModel);
-        assertEquals(vulnerabilityList.size(), model.getVulnerabilityList().size());
-
-        model = new NotificationModel(notificationEntity, null);
-        savedModel = notificationManager.saveNotification(model);
-
-        assertNotNull(savedModel.getNotificationEntity().getId());
-        assertNotificationModel(notificationEntity, savedModel);
-        assertTrue(model.getVulnerabilityList().isEmpty());
+        final NotificationContent notificationContent = createNotificationContent();
+        final NotificationContent savedModel = notificationManager.saveNotification(notificationContent);
+        assertNotNull(savedModel.getId());
+        assertNotificationModel(notificationContent, savedModel);
     }
 
     @Test
     public void testFindByIds() {
-        final NotificationEntity notificationEntity = createNotificationEntity();
-        final VulnerabilityEntity vulnerabilityEntity = new VulnerabilityEntity("id1", VulnerabilityOperation.ADD, null);
-        final List<VulnerabilityEntity> vulnerabilityList = Arrays.asList(vulnerabilityEntity);
-        final NotificationModel model = new NotificationModel(notificationEntity, vulnerabilityList);
-        final NotificationModel savedModel = notificationManager.saveNotification(model);
-        final List<Long> notificationIds = Arrays.asList(savedModel.getNotificationEntity().getId());
-        final List<NotificationModel> notificationModelList = notificationManager.findByIds(notificationIds);
+        final NotificationContent notification = createNotificationContent();
+        final NotificationContent savedModel = notificationManager.saveNotification(notification);
+        final List<Long> notificationIds = Arrays.asList(savedModel.getId());
+        final List<NotificationContent> notificationList = notificationManager.findByIds(notificationIds);
 
-        assertEquals(1, notificationModelList.size());
+        assertEquals(1, notificationList.size());
     }
 
     @Test
     public void testFindByIdsInvalidIds() {
-        final NotificationEntity notificationEntity = createNotificationEntity();
-        final VulnerabilityEntity vulnerabilityEntity = new VulnerabilityEntity("id2", VulnerabilityOperation.ADD, null);
-        final List<VulnerabilityEntity> vulnerabilityList = Arrays.asList(vulnerabilityEntity);
-        final NotificationModel model = new NotificationModel(notificationEntity, vulnerabilityList);
+        final NotificationContent model = createNotificationContent();
         notificationManager.saveNotification(model);
 
         final List<Long> notificationIds = Arrays.asList(34L, 22L, 10L);
-        final List<NotificationModel> notificationModelList = notificationManager.findByIds(notificationIds);
+        final List<NotificationContent> notificationModelList = notificationManager.findByIds(notificationIds);
         assertTrue(notificationModelList.isEmpty());
     }
 
@@ -151,19 +108,19 @@ public class NotificationManagerTestIT {
         final Date startDate = createDate(time.minusHours(1));
         final Date endDate = createDate(time.plusHours(1));
         Date createdAt = createDate(time.minusHours(3));
-        NotificationEntity entity = createNotificationEntity(createdAt);
-        notificationManager.saveNotification(new NotificationModel(entity, Collections.emptyList()));
+        NotificationContent entity = createNotificationContent(createdAt);
+        notificationManager.saveNotification(entity);
         createdAt = createDate(time.plusMinutes(1));
-        final NotificationEntity entityToFind1 = createNotificationEntity(createdAt);
+        final NotificationContent entityToFind1 = createNotificationContent(createdAt);
         createdAt = createDate(time.plusMinutes(5));
-        final NotificationEntity entityToFind2 = createNotificationEntity(createdAt);
+        final NotificationContent entityToFind2 = createNotificationContent(createdAt);
         createdAt = createDate(time.plusHours(3));
-        entity = createNotificationEntity(createdAt);
-        notificationManager.saveNotification(new NotificationModel(entity, Collections.emptyList()));
-        notificationManager.saveNotification(new NotificationModel(entityToFind1, Collections.emptyList()));
-        notificationManager.saveNotification(new NotificationModel(entityToFind2, Collections.emptyList()));
+        entity = createNotificationContent(createdAt);
+        notificationManager.saveNotification(entity);
+        notificationManager.saveNotification(entityToFind1);
+        notificationManager.saveNotification(entityToFind2);
 
-        final List<NotificationModel> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate);
+        final List<NotificationContent> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate);
 
         assertEquals(2, foundList.size());
         assertNotificationModel(entityToFind1, foundList.get(0));
@@ -176,14 +133,14 @@ public class NotificationManagerTestIT {
         final Date startDate = createDate(time.minusHours(1));
         final Date endDate = createDate(time.plusHours(1));
         final Date createdAtEarlier = createDate(time.minusHours(5));
-        NotificationEntity entity = createNotificationEntity(createdAtEarlier);
-        notificationManager.saveNotification(new NotificationModel(entity, Collections.emptyList()));
+        NotificationContent entity = createNotificationContent(createdAtEarlier);
+        notificationManager.saveNotification(entity);
 
         final Date createdAtLater = createDate(time.plusHours(3));
-        entity = createNotificationEntity(createdAtLater);
-        notificationManager.saveNotification(new NotificationModel(entity, Collections.emptyList()));
+        entity = createNotificationContent(createdAtLater);
+        notificationManager.saveNotification(entity);
 
-        final List<NotificationModel> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate);
+        final List<NotificationContent> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate);
 
         assertTrue(foundList.isEmpty());
     }
@@ -193,13 +150,13 @@ public class NotificationManagerTestIT {
         final LocalDateTime time = LocalDateTime.now();
         Date searchDate = createDate(time.plusHours(1));
         final Date createdAt = createDate(time.minusHours(5));
-        NotificationEntity entity = createNotificationEntity(createdAt);
-        notificationManager.saveNotification(new NotificationModel(entity, Collections.emptyList()));
+        NotificationContent entity = createNotificationContent(createdAt);
+        notificationManager.saveNotification(entity);
         final Date createdAtLaterThanSearch = createDate(time.plusHours(3));
-        entity = createNotificationEntity(createdAtLaterThanSearch);
-        notificationManager.saveNotification(new NotificationModel(entity, Collections.emptyList()));
+        entity = createNotificationContent(createdAtLaterThanSearch);
+        notificationManager.saveNotification(entity);
 
-        List<NotificationModel> foundList = notificationManager.findByCreatedAtBefore(searchDate);
+        List<NotificationContent> foundList = notificationManager.findByCreatedAtBefore(searchDate);
 
         assertEquals(1, foundList.size());
 
@@ -212,13 +169,13 @@ public class NotificationManagerTestIT {
     public void findByCreatedAtBeforeDayOffset() {
         final LocalDateTime time = LocalDateTime.now();
         final Date createdAt = createDate(time.minusDays(5));
-        NotificationEntity entity = createNotificationEntity(createdAt);
-        notificationManager.saveNotification(new NotificationModel(entity, Collections.emptyList()));
+        NotificationContent entity = createNotificationContent(createdAt);
+        notificationManager.saveNotification(entity);
         final Date createdAtLaterThanSearch = createDate(time.plusDays(3));
-        entity = createNotificationEntity(createdAtLaterThanSearch);
-        notificationManager.saveNotification(new NotificationModel(entity, Collections.emptyList()));
+        entity = createNotificationContent(createdAtLaterThanSearch);
+        notificationManager.saveNotification(entity);
 
-        List<NotificationModel> foundList = notificationManager.findByCreatedAtBeforeDayOffset(2);
+        List<NotificationContent> foundList = notificationManager.findByCreatedAtBeforeDayOffset(2);
 
         assertEquals(1, foundList.size());
 
@@ -234,42 +191,35 @@ public class NotificationManagerTestIT {
         final Date startDate = createDate(time.minusHours(1));
         final Date endDate = createDate(time.plusHours(1));
         final Date createdAt = createDate(time.minusHours(3));
-        NotificationEntity entity = createNotificationEntity(createdAt);
-        notificationManager.saveNotification(new NotificationModel(entity, vulnerabilityList));
+        NotificationContent entity = createNotificationContent(createdAt);
+        notificationManager.saveNotification(entity);
         Date createdAtInRange = createDate(time.plusMinutes(1));
-        final NotificationEntity entityToFind1 = createNotificationEntity(createdAtInRange);
+        final NotificationContent entityToFind1 = createNotificationContent(createdAtInRange);
         createdAtInRange = createDate(time.plusMinutes(5));
-        final NotificationEntity entityToFind2 = createNotificationEntity(createdAtInRange);
+        final NotificationContent entityToFind2 = createNotificationContent(createdAtInRange);
         final Date createdAtLater = createDate(time.plusHours(3));
-        entity = createNotificationEntity(createdAtLater);
-        notificationManager.saveNotification(new NotificationModel(entity, vulnerabilityList));
-        notificationManager.saveNotification(new NotificationModel(entityToFind1, vulnerabilityList));
-        notificationManager.saveNotification(new NotificationModel(entityToFind2, vulnerabilityList));
+        entity = createNotificationContent(createdAtLater);
+        notificationManager.saveNotification(entity);
+        notificationManager.saveNotification(entityToFind1);
+        notificationManager.saveNotification(entityToFind2);
 
-        final List<NotificationModel> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate);
-        assertEquals(4, notificationRepository.count());
-        assertEquals(4, vulnerabilityRepository.count());
+        final List<NotificationContent> foundList = notificationManager.findByCreatedAtBetween(startDate, endDate);
+        assertEquals(4, notificationContentRepository.count());
 
         notificationManager.deleteNotificationList(foundList);
 
-        assertEquals(2, notificationRepository.count());
-        assertEquals(2, vulnerabilityRepository.count());
+        assertEquals(2, notificationContentRepository.count());
     }
 
     @Test
     public void testDeleteNotification() {
-        final NotificationEntity notificationEntity = createNotificationEntity();
-        final VulnerabilityEntity vulnerabilityEntity = new VulnerabilityEntity("id1", VulnerabilityOperation.ADD, null);
-        final List<VulnerabilityEntity> vulnerabilityList = Arrays.asList(vulnerabilityEntity);
-        final NotificationModel model = new NotificationModel(notificationEntity, vulnerabilityList);
-        final NotificationModel savedModel = notificationManager.saveNotification(model);
+        final NotificationContent notificationEntity = createNotificationContent();
+        final NotificationContent savedModel = notificationManager.saveNotification(notificationEntity);
 
-        assertEquals(1, notificationRepository.count());
-        assertEquals(1, vulnerabilityRepository.count());
+        assertEquals(1, notificationContentRepository.count());
 
         notificationManager.deleteNotification(savedModel);
 
-        assertEquals(0, notificationRepository.count());
-        assertEquals(0, vulnerabilityRepository.count());
+        assertEquals(0, notificationContentRepository.count());
     }
 }

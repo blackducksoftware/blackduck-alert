@@ -16,7 +16,6 @@ import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
-import com.blackducksoftware.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.blackducksoftware.integration.alert.provider.blackduck.descriptor.BlackDuckProviderDescriptorConfig;
 import com.blackducksoftware.integration.alert.provider.blackduck.descriptor.BlackDuckRepositoryAccessor;
 import com.blackducksoftware.integration.alert.provider.blackduck.descriptor.BlackDuckTypeConverter;
@@ -82,13 +81,6 @@ public class BlackDuckDescriptorConfigTest {
     }
 
     @Test
-    public void testGetProvider() {
-        final BlackDuckProvider provider = Mockito.mock(BlackDuckProvider.class);
-        final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, provider);
-        assertEquals(provider, descriptor.getProvider());
-    }
-
-    @Test
     public void testValidateGlobalConfig() {
         final BlackDuckProviderDescriptorConfig hubDescriptor = new BlackDuckProviderDescriptorConfig(null, null, null);
         final BlackDuckProviderDescriptorConfig spiedDescriptor = Mockito.spy(hubDescriptor);
@@ -105,5 +97,4 @@ public class BlackDuckDescriptorConfigTest {
         spiedDescriptor.testConfig(null);
         Mockito.verify(spiedDescriptor).testConfig(Mockito.any());
     }
-
 }

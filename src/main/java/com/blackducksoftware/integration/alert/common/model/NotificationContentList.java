@@ -21,21 +21,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.web.model;
+package com.blackducksoftware.integration.alert.common.model;
 
-public class ComponentConfig extends Config {
+import java.util.List;
 
-    private String content;
+import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
 
-    public ComponentConfig() {
+public class NotificationContentList {
+
+    private final List<NotificationContent> notificationContentList;
+
+    public NotificationContentList(final List<NotificationContent> notificationContentList) {
+        this.notificationContentList = notificationContentList;
     }
 
-    public ComponentConfig(final String content) {
-        this.content = content;
+    public List<NotificationContent> getNotificationContentList() {
+        return notificationContentList;
     }
-
-    public String getContent() {
-        return content;
-    }
-
 }
