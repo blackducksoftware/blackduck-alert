@@ -23,9 +23,7 @@
  */
 package com.blackducksoftware.integration.alert.channel.event;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.Date;
 
 import javax.transaction.Transactional;
 
@@ -33,9 +31,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.common.ContentConverter;
-import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
-import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
-import com.blackducksoftware.integration.alert.common.enumeration.DigestType;
+import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
+import com.blackducksoftware.integration.rest.connection.RestConnection;
 
 @Transactional
 @Component
@@ -47,18 +44,14 @@ public class ChannelEventFactory {
         this.contentConverter = contentConverter;
     }
 
-    public ChannelEvent createChannelEvent(final String destination, final DigestModel content, final Long commonDistributionConfigId) {
-        return new ChannelEvent(destination, contentConverter.getJsonString(content), commonDistributionConfigId);
+    public ChannelEvent createChannelEvent(final Long commonDistributionConfigId, final String destination, final NotificationContent notificationContent) {
+        return new ChannelEvent(destination, RestConnection.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(), notificationContent.getContent(),
+                commonDistributionConfigId, notificationContent.getId());
     }
 
     public ChannelEvent createChannelTestEvent(final String destination) {
-        return createChannelEvent(destination, getTestMessageModel(), null);
-    }
-
-    public DigestModel getTestMessageModel() {
-        final Collection<ProjectData> projectDataCollection = Arrays.asList(new ProjectData(DigestType.REAL_TIME, "Alert", "Test Message", Collections.emptyList(), Collections.emptyMap()));
-        final DigestModel digestModel = new DigestModel(projectDataCollection);
-        return digestModel;
+        final NotificationContent testContent = new NotificationContent(new Date(), "Alert", "Test Message", "Alert has sent this test message");
+        return createChannelEvent(null, destination, testContent);
     }
 
 }

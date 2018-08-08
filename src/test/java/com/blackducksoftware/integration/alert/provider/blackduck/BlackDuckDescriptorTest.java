@@ -9,34 +9,26 @@ import java.util.stream.Collectors;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.blackducksoftware.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.blackducksoftware.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 
-public class BlackDuckProviderTest {
+public class BlackDuckDescriptorTest {
 
     @Test
-    public void testInitialize() {
-        final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
-        final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask);
-        provider.initialize();
-        Mockito.verify(accumulatorTask).scheduleExecution(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION);
-    }
-
-    @Test
-    public void testDestroy() {
-        final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
-        final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask);
-        provider.destroy();
-        Mockito.verify(accumulatorTask).scheduleExecution(BlackDuckAccumulator.STOP_SCHEDULE_EXPRESSION);
+    public void testGetProvider() {
+        final BlackDuckProvider provider = Mockito.mock(BlackDuckProvider.class);
+        final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, provider);
+        assertEquals(provider, descriptor.getProvider());
     }
 
     @Test
     public void testGetNotificationTypes() {
         final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
         final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask);
+        final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, provider);
         final Set<String> expectedNotificationTypes = Arrays.stream(NotificationType.values()).map(NotificationType::name).collect(Collectors.toSet());
-        final Set<String> providerNotificationTypes = provider.getNotificationTypes();
+        final Set<String> providerNotificationTypes = descriptor.getNotificationTypes();
         assertEquals(expectedNotificationTypes, providerNotificationTypes);
     }
-
 }

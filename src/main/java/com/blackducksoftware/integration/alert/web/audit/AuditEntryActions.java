@@ -24,10 +24,8 @@
 package com.blackducksoftware.integration.alert.web.audit;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -43,20 +41,16 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.alert.channel.ChannelTemplateManager;
 import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.channel.event.ChannelEventFactory;
-import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
-import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
-import com.blackducksoftware.integration.alert.common.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
-import com.blackducksoftware.integration.alert.common.model.NotificationModel;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryEntity;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.database.audit.AuditNotificationRepository;
 import com.blackducksoftware.integration.alert.database.audit.relation.AuditNotificationRelation;
 import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
+import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
 import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.alert.web.exception.AlertNotificationPurgedException;
 import com.blackducksoftware.integration.alert.web.model.AlertPagedModel;
-import com.blackducksoftware.integration.alert.web.model.ComponentConfig;
 import com.blackducksoftware.integration.alert.web.model.NotificationConfig;
 import com.blackducksoftware.integration.alert.web.model.NotificationContentConverter;
 import com.blackducksoftware.integration.alert.workflow.NotificationManager;
@@ -73,21 +67,18 @@ public class AuditEntryActions {
     private final CommonDistributionRepository commonDistributionRepository;
     private final NotificationContentConverter notificationContentConverter;
     private final ChannelEventFactory channelEventFactory;
-    private final ProjectDataFactory projectDataFactory;
     private final ChannelTemplateManager channelTemplateManager;
 
     @Autowired
     public AuditEntryActions(final AuditEntryRepository auditEntryRepository, final NotificationManager notificationManager, final AuditNotificationRepository auditNotificationRepository,
             final CommonDistributionRepository commonDistributionRepository, final NotificationContentConverter notificationContentConverter,
-            final ChannelEventFactory channelEventFactory, final ProjectDataFactory projectDataFactory,
-            final ChannelTemplateManager channelTemplateManager) {
+            final ChannelEventFactory channelEventFactory, final ChannelTemplateManager channelTemplateManager) {
         this.auditEntryRepository = auditEntryRepository;
         this.notificationManager = notificationManager;
         this.auditNotificationRepository = auditNotificationRepository;
         this.commonDistributionRepository = commonDistributionRepository;
         this.notificationContentConverter = notificationContentConverter;
         this.channelEventFactory = channelEventFactory;
-        this.projectDataFactory = projectDataFactory;
         this.channelTemplateManager = channelTemplateManager;
     }
 
@@ -160,7 +151,7 @@ public class AuditEntryActions {
         for (final AuditEntryConfig restModel : modelsToCheck) {
             if (restModel.getName().contains(searchTerm) || restModel.getStatus().contains(searchTerm) || restModel.getTimeCreated().contains(searchTerm) || restModel.getTimeLastSent().contains(searchTerm)) {
                 listToAddTo.add(restModel);
-            } else if (null != restModel.getNotification() && restModel.getNotification().getProjectName().contains(searchTerm)) {
+            } else if (null != restModel.getNotification() && restModel.getNotification().getContent().contains(searchTerm)) {
                 listToAddTo.add(restModel);
             }
         }
@@ -175,7 +166,7 @@ public class AuditEntryActions {
         final AuditEntryEntity auditEntryEntity = auditEntryEntityOptional.get();
         final List<AuditNotificationRelation> relations = auditNotificationRepository.findByAuditEntryId(auditEntryEntity.getId());
         final List<Long> notificationIds = relations.stream().map(AuditNotificationRelation::getNotificationId).collect(Collectors.toList());
-        final List<NotificationModel> notifications = notificationManager.findByIds(notificationIds);
+        final List<NotificationContent> notifications = notificationManager.findByIds(notificationIds);
         final Long commonConfigId = auditEntryEntity.getCommonConfigId();
         final Optional<CommonDistributionConfigEntity> commonConfigEntity = commonDistributionRepository.findById(commonConfigId);
         if (notifications == null || notifications.isEmpty()) {
@@ -184,12 +175,11 @@ public class AuditEntryActions {
         if (!commonConfigEntity.isPresent()) {
             throw new AlertException("The job for this entry was deleted, can not re-send this entry.");
         }
-        final Collection<ProjectData> projectDataCollection = projectDataFactory.createProjectDataCollection(notifications);
-        final DigestModel digestModel = new DigestModel(projectDataCollection);
-        // TODO Look to see if we can require only the ID instead of the model as well.
-        final ChannelEvent event = channelEventFactory.createChannelEvent(commonConfigEntity.get().getDistributionType(), digestModel, commonConfigId);
-        event.setAuditEntryId(auditEntryEntity.getId());
-        channelTemplateManager.sendEvent(event);
+        notifications.forEach(notificationContent -> {
+            final ChannelEvent event = channelEventFactory.createChannelEvent(commonConfigId, commonConfigEntity.get().getDistributionType(), notificationContent);
+            event.setAuditEntryId(auditEntryEntity.getId());
+            channelTemplateManager.sendEvent(event);
+        });
         return get();
     }
 
@@ -202,7 +192,7 @@ public class AuditEntryActions {
 
         final List<AuditNotificationRelation> relations = auditNotificationRepository.findByAuditEntryId(auditEntryEntity.getId());
         final List<Long> notificationIds = relations.stream().map(AuditNotificationRelation::getNotificationId).collect(Collectors.toList());
-        final List<NotificationModel> notifications = notificationManager.findByIds(notificationIds);
+        final List<NotificationContent> notifications = notificationManager.findByIds(notificationIds);
 
         final Optional<CommonDistributionConfigEntity> commonConfigEntity = commonDistributionRepository.findById(commonConfigId);
 
@@ -220,12 +210,7 @@ public class AuditEntryActions {
 
         NotificationConfig notificationConfig = null;
         if (!notifications.isEmpty() && notifications.get(0) != null) {
-            notificationConfig = (NotificationConfig) notificationContentConverter.populateConfigFromEntity(notifications.get(0).getNotificationEntity());
-            final Set<String> notificationTypes = notifications.stream().map(notification -> notification.getNotificationType().name()).collect(Collectors.toSet());
-            notificationConfig.setNotificationTypes(notificationTypes);
-            final Set<ComponentConfig> components = notifications.stream().map(notification -> new ComponentConfig(notification.getComponentName(), notification.getComponentVersion(), notification.getPolicyRuleName(),
-                    notification.getPolicyRuleUser())).collect(Collectors.toSet());
-            notificationConfig.setComponents(components);
+            notificationConfig = (NotificationConfig) notificationContentConverter.populateConfigFromEntity(notifications.get(0));
         }
 
         String distributionConfigName = null;

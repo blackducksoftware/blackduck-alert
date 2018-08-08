@@ -23,10 +23,8 @@
  */
 package com.blackducksoftware.integration.alert.channel;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -36,8 +34,6 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.channel.event.ChannelEvent;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
-import com.blackducksoftware.integration.alert.common.digest.model.DigestModel;
-import com.blackducksoftware.integration.alert.common.digest.model.ProjectData;
 import com.blackducksoftware.integration.alert.common.enumeration.AuditEntryStatus;
 import com.blackducksoftware.integration.alert.common.event.AlertEvent;
 import com.blackducksoftware.integration.alert.database.audit.AuditEntryEntity;
@@ -75,6 +71,7 @@ public class ChannelTemplateManager {
         final String destination = event.getDestination();
         if (event instanceof ChannelEvent) {
             final ChannelEvent channelEvent = (ChannelEvent) event;
+            //TODO revist this structure does this audit entry type make sense since we have the raw content.
             AuditEntryEntity auditEntryEntity = new AuditEntryEntity(channelEvent.getCommonDistributionConfigId(), new Date(System.currentTimeMillis()), null, null, null, null);
 
             if (channelEvent.getAuditEntryId() != null) {
@@ -84,20 +81,12 @@ public class ChannelTemplateManager {
             auditEntryEntity.setStatus(AuditEntryStatus.PENDING);
             final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);
             channelEvent.setAuditEntryId(savedAuditEntryEntity.getId());
-            final Optional<DigestModel> optionalModel = Optional.ofNullable(contentConverter.getJsonContent(channelEvent.getContent(), DigestModel.class));
-            if (!optionalModel.isPresent()) {
-                return false;
-            } else {
-                final Collection<ProjectData> projectDataCollection = optionalModel.get().getProjectDataCollection();
-                projectDataCollection.stream()
-                        .map(ProjectData::getNotificationIds)
-                        .flatMap(Collection::stream)
-                        .map(notificationId -> new AuditNotificationRelation(savedAuditEntryEntity.getId(), notificationId))
-                        .forEach(auditNotificationRelation -> auditNotificationRepository.save(auditNotificationRelation));
 
-                final String jsonMessage = gson.toJson(channelEvent);
-                jmsTemplate.convertAndSend(destination, jsonMessage);
-            }
+            final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), channelEvent.getNotificationId());
+            auditNotificationRepository.save(auditNotificationRelation);
+
+            final String jsonMessage = gson.toJson(channelEvent);
+            jmsTemplate.convertAndSend(destination, jsonMessage);
         } else {
             final String jsonMessage = gson.toJson(event);
             jmsTemplate.convertAndSend(destination, jsonMessage);

@@ -8,7 +8,7 @@ const policyViolationOverrideIcon = <span key="policyViolationOverrideIcon" alt=
 const highVulnerabilityIcon = <span key="highVulnerabilityIcon" alt="High Vulnerability" className="fa fa-shield highVulnerability" aria-hidden="true" />;
 const mediumVulnerabilityIcon = <span key="mediumVulnerabilityIcon" alt="Medium Vulnerability" className="fa fa-shield mediumVulnerability" aria-hidden="true" />;
 const lowVulnerabilityIcon = <span key="lowVulnerabilityIcon" alt="Low Vulnerability" className="fa fa-shield lowVulnerability" aria-hidden="true" />;
-const vulnerabilityIcon = <span key="vulnerabilityIcon" alt="Vulnerability" className="fa fa-shield vulnerability" aria-hidden="true" />;
+const vulnerabilityIcon = <span key="vulnerabilityIcon" alt="Vulnerability" className="fa fa-shield highVulnerability" aria-hidden="true" />;
 
 const NotificationTypeLegend = ({
     hasPolicyViolation,

@@ -33,11 +33,11 @@ import com.blackducksoftware.integration.alert.database.audit.AuditEntryReposito
 import com.blackducksoftware.integration.alert.database.audit.AuditNotificationRepository;
 import com.blackducksoftware.integration.alert.database.audit.relation.AuditNotificationRelation;
 import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
-import com.blackducksoftware.integration.alert.database.entity.NotificationEntity;
+import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
 import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
-import com.blackducksoftware.integration.alert.database.entity.repository.NotificationRepository;
+import com.blackducksoftware.integration.alert.database.entity.repository.NotificationContentRepository;
 import com.blackducksoftware.integration.alert.mock.entity.MockCommonDistributionEntity;
-import com.blackducksoftware.integration.alert.mock.entity.MockNotificationEntity;
+import com.blackducksoftware.integration.alert.mock.entity.MockNotificationContent;
 import com.blackducksoftware.integration.alert.web.controller.BaseController;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
@@ -62,7 +62,7 @@ public class AuditEntryControllerTestIT {
     AuditNotificationRepository auditNotificationRepository;
 
     @Autowired
-    NotificationRepository notificationRepository;
+    NotificationContentRepository notificationRepository;
     @Autowired
     private WebApplicationContext webApplicationContext;
     private MockMvc mockMvc;
@@ -115,8 +115,8 @@ public class AuditEntryControllerTestIT {
     @WithMockUser(roles = "ADMIN")
     public void testPostConfig() throws Exception {
         CommonDistributionConfigEntity commonEntity = mockCommonDistributionEntity.createEntity();
-        final MockNotificationEntity mockNotifications = new MockNotificationEntity();
-        NotificationEntity notificationEntity = mockNotifications.createEntity();
+        final MockNotificationContent mockNotifications = new MockNotificationContent();
+        NotificationContent notificationEntity = mockNotifications.createEntity();
         notificationEntity = notificationRepository.save(notificationEntity);
         commonEntity = commonDistributionRepository.save(commonEntity);
         mockAuditEntity.setCommonConfigId(commonEntity.getId());

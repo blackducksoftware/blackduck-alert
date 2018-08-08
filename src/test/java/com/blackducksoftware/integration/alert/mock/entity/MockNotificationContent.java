@@ -1,0 +1,57 @@
+package com.blackducksoftware.integration.alert.mock.entity;
+
+import java.util.Date;
+
+import com.blackducksoftware.integration.alert.database.entity.NotificationContent;
+import com.google.gson.JsonObject;
+
+public class MockNotificationContent extends MockEntityUtil<NotificationContent> {
+
+    private final Date createdAt;
+    private final String provider;
+    private final String notificationType;
+    private final String content;
+    private final Long id;
+
+    public MockNotificationContent() {
+        this(new Date(), "provider", "notificationType", "{content: \"content is here...\"}", 1L);
+    }
+
+    public MockNotificationContent(final Date createdAt, final String provider, final String notificationType, final String content, final Long id) {
+        this.createdAt = createdAt;
+        this.provider = provider;
+        this.notificationType = notificationType;
+        this.content = content;
+        this.id = id;
+    }
+
+    @Override
+    public NotificationContent createEntity() {
+        final NotificationContent notificationContent = new NotificationContent(createdAt, provider, notificationType, content);
+        notificationContent.setId(id);
+        return notificationContent;
+    }
+
+    @Override
+    public NotificationContent createEmptyEntity() {
+        return new NotificationContent();
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public String getEntityJson() {
+        final JsonObject json = new JsonObject();
+        // Gson uses locale by default thus I need to use it here
+        json.addProperty("createdAt", createdAt.toLocaleString());
+        json.addProperty("provider", provider);
+        json.addProperty("notificationType", notificationType);
+        json.addProperty("content", content);
+        json.addProperty("id", id);
+        return json.toString();
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+}

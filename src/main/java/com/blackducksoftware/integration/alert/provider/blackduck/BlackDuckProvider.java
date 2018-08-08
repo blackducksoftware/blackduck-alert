@@ -23,6 +23,10 @@
  */
 package com.blackducksoftware.integration.alert.provider.blackduck;
 
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +34,7 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.common.provider.Provider;
 import com.blackducksoftware.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
+import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 
 @Component
 public class BlackDuckProvider extends Provider {
@@ -52,5 +57,10 @@ public class BlackDuckProvider extends Provider {
     public void destroy() {
         logger.info("Destroying provider...");
         accumulatorTask.scheduleExecution(BlackDuckAccumulator.STOP_SCHEDULE_EXPRESSION);
+    }
+
+    @Override
+    public Set<String> getNotificationTypes() {
+        return Arrays.stream(NotificationType.values()).map(NotificationType::name).collect(Collectors.toSet());
     }
 }

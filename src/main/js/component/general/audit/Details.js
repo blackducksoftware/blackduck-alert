@@ -14,7 +14,7 @@ class Details extends Component {
         const values = {};
         values.notificationProjectName = currentEntry.notificationProjectName;
         values.notificationProjectVersion = currentEntry.notificationProjectVersion;
-        values.components = currentEntry.components;
+        values.content = currentEntry.content;
 
         values.eventType = currentEntry.eventType;
 
@@ -61,21 +61,13 @@ class Details extends Component {
             <div className="expandableContainer">
                 <div className="container-fluid">
                     <div className="row">
-                        { this.state.values.notificationProjectVersion && <div className="col-sm-8">
-                            <label>Project Version:</label> { this.state.values.notificationProjectVersion }
-                        </div> }
-
-                        { this.state.values.notificationProjectVersion && <div className="col-sm-4 text-right">
+                        <div className="col-sm-4 text-right">
                             <label>Event Type:</label> { this.getEventType() }
-                                                                          </div> }
+                        </div>
                     </div>
                 </div>
                 <div className="tableContainer">
-                    <BootstrapTable data={this.state.values.components} containerClass="auditDetailsTable" hover condensed trClassName={this.assignClassName} headerContainerClass="scrollable" bodyContainerClass="auditDetailsTableBody">
-                        <TableHeaderColumn dataField="componentName" isKey dataSort columnTitle columnClassName="tableCell">Component</TableHeaderColumn>
-                        <TableHeaderColumn dataField="componentVersion" dataSort columnTitle columnClassName="tableCell">Version</TableHeaderColumn>
-                        <TableHeaderColumn dataField="policyRuleName" dataSort columnTitle columnClassName="tableCell">Policy Rule</TableHeaderColumn>
-                    </BootstrapTable>
+                    <TextArea inputClass="stackTraceContainer" label="Content" readOnly name="notificationContent" value={this.state.values.content} />
                 </div>
                 {errorMessage}
                 {errorStackTrace}

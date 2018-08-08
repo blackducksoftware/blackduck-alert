@@ -23,72 +23,54 @@
  */
 package com.blackducksoftware.integration.alert.web.model;
 
-import java.util.Set;
-
 public class NotificationConfig extends Config {
-    private String eventKey;
     private String createdAt;
-    private Set<String> notificationTypes;
-    private String projectName;
-    private String projectVersion;
-    private Set<ComponentConfig> components;
-    private String projectUrl;
-    private String projectVersionUrl;
+    private String provider;
+    private String notificationType;
+    private String content;
 
     public NotificationConfig() {
     }
 
-    public NotificationConfig(final String id, final String eventKey, final String createdAt, final Set<String> notificationTypes, final String projectName, final String projectVersion, final Set<ComponentConfig> components,
-            final String projectUrl, final String projectVersionUrl) {
+    public NotificationConfig(final String id, final String createdAt, final String provider, final String notificationType, final String content) {
         super(id);
-        this.eventKey = eventKey;
         this.createdAt = createdAt;
-        this.notificationTypes = notificationTypes;
-        this.projectName = projectName;
-        this.projectVersion = projectVersion;
-        this.components = components;
-        this.projectUrl = projectUrl;
-        this.projectVersionUrl = projectVersionUrl;
+        this.provider = provider;
+        this.notificationType = notificationType;
+        this.content = content;
+
     }
 
-    public String getEventKey() {
-        return eventKey;
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(final String content) {
+        this.content = content;
     }
 
     public String getCreatedAt() {
         return createdAt;
     }
 
-    public Set<String> getNotificationTypes() {
-        return notificationTypes;
+    public void setCreatedAt(final String createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public void setNotificationTypes(final Set<String> notificationTypes) {
-        this.notificationTypes = notificationTypes;
+    public String getProvider() {
+        return provider;
     }
 
-    public String getProjectName() {
-        return projectName;
+    public void setProvider(final String provider) {
+        this.provider = provider;
     }
 
-    public String getProjectVersion() {
-        return projectVersion;
+    public String getNotificationType() {
+        return notificationType;
     }
 
-    public Set<ComponentConfig> getComponents() {
-        return components;
-    }
-
-    public void setComponents(final Set<ComponentConfig> components) {
-        this.components = components;
-    }
-
-    public String getProjectUrl() {
-        return projectUrl;
-    }
-
-    public String getProjectVersionUrl() {
-        return projectVersionUrl;
+    public void setNotificationType(final String notificationType) {
+        this.notificationType = notificationType;
     }
 
 }
