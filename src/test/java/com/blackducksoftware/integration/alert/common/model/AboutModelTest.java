@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.blackducksoftware.integration.alert.web.model.AboutDescriptorModel;
 import com.blackducksoftware.integration.alert.web.model.AboutModel;
 
 public class AboutModelTest {
@@ -16,8 +17,8 @@ public class AboutModelTest {
         final String version = "1.2.3";
         final String description = "description";
         final String gitHubUrl = "https://www.google.com";
-        final List<String> channelList = Arrays.asList("channel_1", "channel_2", "channel_3");
-        final List<String> providerList = Arrays.asList("provider_1", "provider_2", "provider_3");
+        final List<AboutDescriptorModel> channelList = Arrays.asList(new AboutDescriptorModel("", "channel_1"), new AboutDescriptorModel("", "channel_2"), new AboutDescriptorModel("", "channel_3"));
+        final List<AboutDescriptorModel> providerList = Arrays.asList(new AboutDescriptorModel("", "provider_1"), new AboutDescriptorModel("", "provider_2"), new AboutDescriptorModel("", "provider_3"));
 
         final AboutModel model = new AboutModel(version, description, gitHubUrl, providerList, channelList);
 
