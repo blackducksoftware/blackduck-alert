@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-
+import ReadOnlyField from '../../field/ReadOnlyField';
 import { getAboutInfo } from '../../store/actions/about';
 
 class AboutInfo extends React.Component {
@@ -13,8 +13,41 @@ class AboutInfo extends React.Component {
         this.props.getAboutInfo();
     }
 
+    iconColumnRenderer(cell) {
+        const altText = cell;
+        const keyText = `aboutIconKey-${cell}`;
+        const classNameText= `fa fa-${cell}`;
+        return (<span key={keyText} alt={altText} className={classNameText} aria-hidden="true" />);
+    }
+
+    createDescriptorTable(tableData) {
+        const tableOptions = {
+            defaultSortName: 'name',
+            defaultSortOrder: 'asc',
+            noDataText: 'No data found',
+        };
+        return (
+            <div className="form-group">
+                <BootstrapTable
+                    data={tableData}
+                    options={tableOptions}
+                    headerContainerClass="scrollable"
+                    bodyContainerClass="scrollable">
+                    <TableHeaderColumn dataField="iconKey" className="iconTableRow" columnClassName="iconTableRow" dataFormat={this.iconColumnRenderer}>
+                    </TableHeaderColumn>
+                    <TableHeaderColumn dataField="name" isKey>
+                        Name
+                    </TableHeaderColumn>
+                </BootstrapTable>
+            </div>
+        );
+    }
+
     render() {
         const { version,description, projectUrl, channelList, providerList } = this.props;
+        const projectUrlLink = <a alt={projectUrl} href={projectUrl}>{projectUrl}</a>;
+        const providerTable = this.createDescriptorTable(providerList);
+        const channelTable = this.createDescriptorTable(channelList);
         return (
             <div>
                 <h1>
@@ -22,35 +55,14 @@ class AboutInfo extends React.Component {
                     About
                 </h1>
                 <div className="form-horizontal">
+                    <ReadOnlyField label="Description" name="description" readOnly="true" value={description}/>
+                    <ReadOnlyField label="Version" name="version" readOnly="true" value={version}/>
+                    <ReadOnlyField label="Project URL" name="projectUrl" readOnly="true" value={projectUrlLink}/>
                     <div className="form-group">
-                        <label className="col-sm-3 control-label">Description:</label>
-                        <div className="col-sm-8">
-                            {description}
-                        </div>
+                        <ReadOnlyField label="Supported Providers" name="providerTable" readOnly="true" value={providerTable}/>
                     </div>
                     <div className="form-group">
-                        <label className="col-sm-3 control-label">Version:</label>
-                        <div className="col-sm-8">
-                            {version}
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        <label className="col-sm-3 control-label">Project URL:</label>
-                        <div className="col-sm-8">
-                            <a alt={projectUrl} href={projectUrl}>{projectUrl}</a>
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        <label className="col-sm-3 control-label">Supported Providers:</label>
-                        <div className="col-sm-8">
-                            {providerList.sort().join(", ")}
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        <label className="col-sm-3 control-label">Supported Distribution Channels:</label>
-                        <div className="col-sm-8">
-                            {channelList.sort().join(", ")}
-                        </div>
+                        <ReadOnlyField label="Supported Distribution Channels" name="channelTable" readOnly="true" value={channelTable}/>
                     </div>
                 </div>
             </div>
@@ -63,8 +75,8 @@ AboutInfo.propTypes = {
     version: PropTypes.string.isRequired,
     description: PropTypes.string,
     projectUrl: PropTypes.string.isRequired,
-    channelList: PropTypes.arrayOf(PropTypes.string),
-    providerList: PropTypes.arrayOf(PropTypes.string)
+    channelList: PropTypes.arrayOf(PropTypes.object),
+    providerList: PropTypes.arrayOf(PropTypes.object)
 };
 
 AboutInfo.defaultProps = {

@@ -32,8 +32,8 @@ public class AboutModel extends Stringable {
     private String version;
     private String description;
     private String projectUrl;
-    private List<String> channelList;
-    private List<String> providerList;
+    private List<AboutDescriptorModel> channelList;
+    private List<AboutDescriptorModel> providerList;
 
     protected AboutModel() {
 
@@ -43,7 +43,7 @@ public class AboutModel extends Stringable {
         this(version, description, projectUrl, Collections.emptyList(), Collections.emptyList());
     }
 
-    public AboutModel(final String version, final String description, final String projectUrl, final List<String> providerList, final List<String> channelList) {
+    public AboutModel(final String version, final String description, final String projectUrl, final List<AboutDescriptorModel> providerList, final List<AboutDescriptorModel> channelList) {
         this.version = version;
         this.description = description;
         this.projectUrl = projectUrl;
@@ -63,11 +63,11 @@ public class AboutModel extends Stringable {
         return projectUrl;
     }
 
-    public List<String> getChannelList() {
+    public List<AboutDescriptorModel> getChannelList() {
         return channelList;
     }
 
-    public List<String> getProviderList() {
+    public List<AboutDescriptorModel> getProviderList() {
         return providerList;
     }
 }
