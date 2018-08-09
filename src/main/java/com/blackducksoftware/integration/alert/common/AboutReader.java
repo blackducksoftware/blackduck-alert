@@ -36,8 +36,8 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.alert.common.descriptor.Descriptor;
 import com.blackducksoftware.integration.alert.common.descriptor.DescriptorMap;
 import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
-import com.blackducksoftware.integration.alert.common.descriptor.config.UIComponent;
 import com.blackducksoftware.integration.alert.common.enumeration.DescriptorConfigType;
+import com.blackducksoftware.integration.alert.web.model.AboutDescriptorModel;
 import com.blackducksoftware.integration.alert.web.model.AboutModel;
 import com.blackducksoftware.integration.util.ResourceUtil;
 import com.google.gson.Gson;
@@ -59,8 +59,8 @@ public class AboutReader {
         try {
             final String aboutJson = ResourceUtil.getResourceAsString(getClass(), "/about.txt", StandardCharsets.UTF_8.toString());
             final AboutModel aboutModel = gson.fromJson(aboutJson, AboutModel.class);
-            final List<String> channelNameList = getDescriptorLabels(descriptorMap.getChannelDescriptorMap(), DescriptorConfigType.CHANNEL_DISTRIBUTION_CONFIG);
-            final List<String> providerNameList = getDescriptorLabels(descriptorMap.getProviderDescriptorMap(), DescriptorConfigType.PROVIDER_CONFIG);
+            final List<AboutDescriptorModel> channelNameList = getDescriptorLabels(descriptorMap.getChannelDescriptorMap(), DescriptorConfigType.CHANNEL_DISTRIBUTION_CONFIG);
+            final List<AboutDescriptorModel> providerNameList = getDescriptorLabels(descriptorMap.getProviderDescriptorMap(), DescriptorConfigType.PROVIDER_CONFIG);
             return new AboutModel(aboutModel.getVersion(), aboutModel.getDescription(), aboutModel.getProjectUrl(), providerNameList, channelNameList);
         } catch (final Exception e) {
             logger.error(e.getMessage(), e);
@@ -68,11 +68,11 @@ public class AboutReader {
         }
     }
 
-    private List<String> getDescriptorLabels(final Map<String, ? extends Descriptor> descriptorMap, final DescriptorConfigType descriptorConfigType) {
+    private List<AboutDescriptorModel> getDescriptorLabels(final Map<String, ? extends Descriptor> descriptorMap, final DescriptorConfigType descriptorConfigType) {
         return descriptorMap.values().stream()
                        .map(descriptor -> descriptor.getConfig(descriptorConfigType))
                        .map(DescriptorConfig::getUiComponent)
-                       .map(UIComponent::getLabel)
+                       .map(uiComponent -> new AboutDescriptorModel(uiComponent.getFontAwesomeIcon(), uiComponent.getLabel()))
                        .collect(Collectors.toList());
     }
 
