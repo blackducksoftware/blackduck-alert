@@ -33,6 +33,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -47,10 +49,11 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.api.generated.view.RoleAssignmentView;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfig;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfigBuilder;
+import com.blackducksoftware.integration.hub.rest.BlackduckRestConnection;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.UserGroupService;
 import com.blackducksoftware.integration.log.IntLogger;
-import com.blackducksoftware.integration.rest.connection.RestConnection;
+import com.blackducksoftware.integration.log.Slf4jIntLogger;
 import com.blackducksoftware.integration.validator.AbstractValidator;
 import com.blackducksoftware.integration.validator.FieldEnum;
 import com.blackducksoftware.integration.validator.ValidationResult;
@@ -58,7 +61,7 @@ import com.blackducksoftware.integration.validator.ValidationResults;
 
 @Component
 public class LoginActions {
-
+    private static final Logger logger = LoggerFactory.getLogger(LoginActions.class);
     final GlobalProperties globalProperties;
 
     @Autowired
@@ -85,7 +88,7 @@ public class LoginActions {
 
         try {
             validateHubConfiguration(serverConfigBuilder);
-            try (final RestConnection restConnection = createRestConnection(serverConfigBuilder)) {
+            try (final BlackduckRestConnection restConnection = createRestConnection(serverConfigBuilder)) {
                 restConnection.connect();
                 logger.info("Connected");
                 final boolean isValidLoginUser = isUserRoleValid(loginRestModel.getHubUsername(), restConnection);
@@ -117,8 +120,8 @@ public class LoginActions {
         return false;
     }
 
-    public boolean isUserRoleValid(final String userName, final RestConnection restConnection) {
-        final HubServicesFactory hubServicesFactory = new HubServicesFactory(restConnection);
+    public boolean isUserRoleValid(final String userName, final BlackduckRestConnection restConnection) {
+        final HubServicesFactory hubServicesFactory = new HubServicesFactory(HubServicesFactory.createDefaultGson(), HubServicesFactory.createDefaultJsonParser(), restConnection, new Slf4jIntLogger(logger));
         final UserGroupService userGroupService = hubServicesFactory.createUserGroupService();
 
         try {
@@ -155,7 +158,7 @@ public class LoginActions {
         }
     }
 
-    public RestConnection createRestConnection(final HubServerConfigBuilder hubServerConfigBuilder) throws IntegrationException {
+    public BlackduckRestConnection createRestConnection(final HubServerConfigBuilder hubServerConfigBuilder) throws IntegrationException {
         final HubServerConfig hubServerConfig = hubServerConfigBuilder.build();
         return hubServerConfig.createCredentialsRestConnection(hubServerConfigBuilder.getLogger());
     }

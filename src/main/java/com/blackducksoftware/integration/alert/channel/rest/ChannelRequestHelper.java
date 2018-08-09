@@ -24,14 +24,13 @@
 package com.blackducksoftware.integration.alert.channel.rest;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.blackducksoftware.integration.alert.exception.AlertException;
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.service.HubService;
-import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.rest.HttpMethod;
 import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.blackducksoftware.integration.rest.request.BodyContent;
@@ -40,10 +39,10 @@ import com.blackducksoftware.integration.rest.request.Response;
 
 public class ChannelRequestHelper {
     private static final Logger logger = LoggerFactory.getLogger(ChannelRequestHelper.class);
-    private final HubServicesFactory hubServicesFactory;
+    private final RestConnection restConnection;
 
     public ChannelRequestHelper(final RestConnection restConnection) {
-        hubServicesFactory = new HubServicesFactory(restConnection);
+        this.restConnection = restConnection;
     }
 
     public Request createPostMessageRequest(final String url, final Map<String, String> headers, final String jsonString) {
@@ -54,7 +53,7 @@ public class ChannelRequestHelper {
         return request;
     }
 
-    public Request createPostMessageRequest(final String url, final Map<String, String> headers, final Map<String, String> queryParameters, final String jsonString) {
+    public Request createPostMessageRequest(final String url, final Map<String, String> headers, final Map<String, Set<String>> queryParameters, final String jsonString) {
         Request.Builder requestBuilder = new Request.Builder();
         final BodyContent bodyContent = new BodyContent(jsonString);
         requestBuilder = requestBuilder.method(HttpMethod.POST).uri(url).additionalHeaders(headers).queryParameters(queryParameters).bodyContent(bodyContent);
@@ -73,8 +72,7 @@ public class ChannelRequestHelper {
     public Response sendGenericRequest(final Request request) throws IntegrationException {
         Response response = null;
         try {
-            final HubService service = hubServicesFactory.createHubService();
-            response = service.executeRequest(request);
+            response = restConnection.executeRequest(request);
             logger.trace("Response: " + response.toString());
             return response;
         } catch (final Exception generalException) {

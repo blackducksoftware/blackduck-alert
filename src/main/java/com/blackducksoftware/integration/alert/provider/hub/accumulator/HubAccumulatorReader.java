@@ -28,9 +28,11 @@ import java.io.IOException;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -44,11 +46,17 @@ import org.springframework.batch.item.UnexpectedInputException;
 
 import com.blackducksoftware.integration.alert.config.AlertEnvironment;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
+import com.blackducksoftware.integration.hub.api.generated.view.NotificationView;
+import com.blackducksoftware.integration.hub.notification.CommonNotificationView;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResults;
+import com.blackducksoftware.integration.hub.notification.content.detail.NotificationContentDetailFactory;
+import com.blackducksoftware.integration.hub.rest.BlackduckRestConnection;
+import com.blackducksoftware.integration.hub.service.CommonNotificationService;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.NotificationService;
-import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
-import com.blackducksoftware.integration.rest.connection.RestConnection;
+import com.blackducksoftware.integration.hub.service.bucket.HubBucketService;
+import com.blackducksoftware.integration.log.Slf4jIntLogger;
+import com.blackducksoftware.integration.rest.RestConstants;
 
 public class HubAccumulatorReader implements ItemReader<NotificationDetailResults> {
     private static final String ENCODING = "UTF-8";
@@ -78,19 +86,27 @@ public class HubAccumulatorReader implements ItemReader<NotificationDetailResult
     @Override
     public NotificationDetailResults read() throws Exception, UnexpectedInputException, ParseException, NonTransientResourceException {
         final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), Executors.defaultThreadFactory());
-        try (final RestConnection restConnection = globalProperties.createRestConnectionAndLogErrors(logger)) {
+        try (final BlackduckRestConnection restConnection = globalProperties.createRestConnectionAndLogErrors(logger)) {
             if (restConnection != null) {
                 logger.info("Accumulator Reader Starting Operation");
-                final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection);
+                final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection, new Slf4jIntLogger(logger));
                 final File lastRunFile = new File(lastRunPath);
                 final Pair<Date, Date> dateRange = createDateRange(lastRunFile);
                 final Date startDate = dateRange.getLeft();
                 final Date endDate = dateRange.getRight();
-                logger.info("Accumulating Notifications Between {} and {} ", RestConnection.formatDate(startDate), RestConnection.formatDate(endDate));
-                final HubBucket hubBucket = new HubBucket();
-                final NotificationService notificationService = hubServicesFactory.createNotificationService(true);
-                final NotificationDetailResults notificationResults = notificationService.getAllNotificationDetailResultsPopulated(hubBucket, startDate, endDate);
+                logger.info("Accumulating Notifications Between {} and {} ", RestConstants.formatDate(startDate), RestConstants.formatDate(endDate));
+                final ThreadFactory threadFactory = Executors.defaultThreadFactory();
+                final ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), threadFactory);
 
+                final HubBucketService hubBucketService = hubServicesFactory.createHubBucketService(executorService);
+                final NotificationService notificationService = hubServicesFactory.createNotificationService();
+
+                final NotificationContentDetailFactory notificationContentDetailFactory = new NotificationContentDetailFactory(hubServicesFactory.getGson(), HubServicesFactory.createDefaultJsonParser());
+                final CommonNotificationService commonNotificationService = hubServicesFactory.createCommonNotificationService(notificationContentDetailFactory, true);
+                final List<NotificationView> notificationViewList = notificationService.getAllNotifications(startDate, endDate);
+                final List<CommonNotificationView> commonNotificationViews = commonNotificationService.getCommonNotifications(notificationViewList);
+                final NotificationDetailResults notificationResults = commonNotificationService.getNotificationDetailResults(commonNotificationViews);
+                
                 if (notificationResults.isEmpty()) {
                     logger.debug("Read Notification Count: 0");
                     return null;
@@ -119,7 +135,7 @@ public class HubAccumulatorReader implements ItemReader<NotificationDetailResult
         try {
             if (lastRunFile.exists()) {
                 final String lastRunValue = FileUtils.readFileToString(lastRunFile, ENCODING);
-                final Date startTime = RestConnection.parseDateString(lastRunValue);
+                final Date startTime = RestConstants.parseDateString(lastRunValue);
                 zonedStartDate = ZonedDateTime.ofInstant(startTime.toInstant(), zonedEndDate.getZone());
             } else {
                 zonedStartDate = zonedEndDate.minusMinutes(1);
@@ -143,10 +159,10 @@ public class HubAccumulatorReader implements ItemReader<NotificationDetailResult
             // increment 1 millisecond
             newSearchStart = newSearchStart.plusNanos(1000000);
             final Date newSearchStartDate = Date.from(newSearchStart.toInstant());
-            startString = RestConnection.formatDate(newSearchStartDate);
+            startString = RestConstants.formatDate(newSearchStartDate);
             logger.debug("Last Notification Read Timestamp Found");
         } else {
-            startString = RestConnection.formatDate(searchEndDate);
+            startString = RestConstants.formatDate(searchEndDate);
             logger.debug("Last Notification Read Timestamp Not Found");
         }
         logger.info("Accumulator Next Range Start Time: {} ", startString);

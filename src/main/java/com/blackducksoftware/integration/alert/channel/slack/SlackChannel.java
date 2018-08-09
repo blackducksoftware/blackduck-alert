@@ -50,7 +50,6 @@ import com.blackducksoftware.integration.alert.digest.model.ProjectData;
 import com.blackducksoftware.integration.alert.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.alert.event.AlertEventContentConverter;
 import com.blackducksoftware.integration.exception.IntegrationException;
-import com.blackducksoftware.integration.hub.throwaway.ItemTypeEnum;
 import com.blackducksoftware.integration.rest.request.Request;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -117,9 +116,9 @@ public class SlackChannel extends RestDistributionChannel<GlobalChannelConfigEnt
                         for (final ItemData item : data.getItems()) {
                             messageBuilder.append(System.lineSeparator());
                             final Map<String, Object> dataSet = item.getDataSet();
-                            final String ruleKey = ItemTypeEnum.RULE.toString();
+                            final String ruleKey = ProjectData.DATASET_KEY_RULE;
                             if (dataSet.containsKey(ruleKey) && StringUtils.isNotBlank(dataSet.get(ruleKey).toString())) {
-                                messageBuilder.append("Rule: " + dataSet.get(ItemTypeEnum.RULE.toString()));
+                                messageBuilder.append("Rule: " + dataSet.get(ProjectData.DATASET_KEY_RULE));
                                 messageBuilder.append(System.lineSeparator());
                             }
 
@@ -141,8 +140,8 @@ public class SlackChannel extends RestDistributionChannel<GlobalChannelConfigEnt
                                 messageBuilder.append(System.lineSeparator());
                             }
 
-                            messageBuilder.append("Component: " + dataSet.get(ItemTypeEnum.COMPONENT.toString()));
-                            messageBuilder.append(" [" + dataSet.get(ItemTypeEnum.VERSION.toString()) + "]");
+                            messageBuilder.append("Component: " + dataSet.get(ProjectData.DATASET_KEY_COMPONENT));
+                            messageBuilder.append(" [" + dataSet.get(ProjectData.DATASET_KEY_VERSION) + "]");
                         }
                         messageBuilder.append(System.lineSeparator());
                     }

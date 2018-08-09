@@ -37,7 +37,7 @@ import org.springframework.batch.item.UnexpectedInputException;
 
 import com.blackducksoftware.integration.alert.NotificationManager;
 import com.blackducksoftware.integration.alert.model.NotificationModel;
-import com.blackducksoftware.integration.rest.connection.RestConnection;
+import com.blackducksoftware.integration.rest.RestConstants;
 
 @Transactional
 public abstract class DigestItemReader implements ItemReader<List<NotificationModel>> {
@@ -62,7 +62,7 @@ public abstract class DigestItemReader implements ItemReader<List<NotificationMo
                 final DateRange dateRange = getDateRange();
                 final Date startDate = dateRange.getStart();
                 final Date endDate = dateRange.getEnd();
-                logger.info("{} Digest Item Reader Finding Notifications Between {} and {} ", readerName, RestConnection.formatDate(startDate), RestConnection.formatDate(endDate));
+                logger.info("{} Digest Item Reader Finding Notifications Between {} and {} ", readerName, RestConstants.formatDate(startDate), RestConstants.formatDate(endDate));
                 final List<NotificationModel> entityList = notificationManager.findByCreatedAtBetween(startDate, endDate);
                 hasRead = true;
                 if (entityList.isEmpty()) {

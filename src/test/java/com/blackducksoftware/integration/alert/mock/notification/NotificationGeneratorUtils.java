@@ -27,11 +27,12 @@ import com.blackducksoftware.integration.hub.notification.content.VulnerabilityN
 import com.blackducksoftware.integration.hub.notification.content.VulnerabilitySourceQualifiedId;
 import com.blackducksoftware.integration.hub.notification.content.detail.NotificationContentDetail;
 import com.blackducksoftware.integration.hub.notification.content.detail.NotificationContentDetailFactory;
+import com.blackducksoftware.integration.hub.rest.BlackduckRestConnection;
 import com.blackducksoftware.integration.hub.service.HubService;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
 import com.blackducksoftware.integration.hub.service.bucket.HubBucketService;
-import com.blackducksoftware.integration.rest.connection.RestConnection;
+import com.blackducksoftware.integration.rest.RestConstants;
 
 public class NotificationGeneratorUtils {
 
@@ -101,7 +102,7 @@ public class NotificationGeneratorUtils {
 
     public static NotificationDetailResults createNotificationResults(final List<NotificationDetailResult> detailList) {
         final Date createdAt = detailList.get(detailList.size() - 1).getCreatedAt();
-        final NotificationDetailResults results = new NotificationDetailResults(detailList, Optional.of(createdAt), Optional.of(RestConnection.formatDate(createdAt)), new HubBucket());
+        final NotificationDetailResults results = new NotificationDetailResults(detailList, Optional.of(createdAt), Optional.of(RestConstants.formatDate(createdAt)));
         return results;
     }
 
@@ -111,10 +112,10 @@ public class NotificationGeneratorUtils {
         final HubService hubService = Mockito.mock(HubService.class);
         final HubBucketService bucketService = Mockito.mock(HubBucketService.class);
         final List<VulnerabilityV2View> vulnerabilityViewList = createVulnerabilityList();
-        final RestConnection restConnection = Mockito.mock(RestConnection.class);
+        final BlackduckRestConnection restConnection = Mockito.mock(BlackduckRestConnection.class);
 
         Mockito.when(globalProperties.createRestConnectionAndLogErrors(Mockito.any())).thenReturn(restConnection);
-        Mockito.when(globalProperties.createHubServicesFactory(Mockito.any())).thenReturn(hubServicesFactory);
+        Mockito.when(globalProperties.createHubServicesFactory(Mockito.any(), Mockito.any())).thenReturn(hubServicesFactory);
         Mockito.when(hubServicesFactory.createHubService()).thenReturn(hubService);
         Mockito.when(hubServicesFactory.createHubBucketService()).thenReturn(bucketService);
         Mockito.when(hubService.getResponse(Mockito.any(UriSingleResponse.class))).thenReturn(versionView);
@@ -125,7 +126,7 @@ public class NotificationGeneratorUtils {
 
         final NotificationDetailResult detail = NotificationGeneratorUtils.createNotificationDetailList(view, content);
         final NotificationDetailResults notificationResults = NotificationGeneratorUtils.createNotificationResults(Arrays.asList(detail));
-        final HubBucket bucket = notificationResults.getHubBucket();
+        final HubBucket bucket = new HubBucket();
         // need to map the component version uri to a view in order for the processing rule to work
         // otherwise the rule will always have an empty list
         bucket.addValid(content.componentVersion, versionView);

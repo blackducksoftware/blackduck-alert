@@ -57,9 +57,10 @@ import com.blackducksoftware.integration.alert.exception.AlertException;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.api.generated.view.UserGroupView;
 import com.blackducksoftware.integration.hub.api.generated.view.UserView;
+import com.blackducksoftware.integration.hub.rest.BlackduckRestConnection;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.UserGroupService;
-import com.blackducksoftware.integration.rest.connection.RestConnection;
+import com.blackducksoftware.integration.log.Slf4jIntLogger;
 import com.google.gson.Gson;
 
 import freemarker.template.TemplateException;
@@ -121,9 +122,9 @@ public class EmailGroupChannel extends DistributionChannel<GlobalEmailConfigEnti
     }
 
     private List<String> getEmailAddressesForGroup(final String hubGroup) throws IntegrationException {
-        try (final RestConnection restConnection = getGlobalProperties().createRestConnectionAndLogErrors(logger)) {
+        try (final BlackduckRestConnection restConnection = getGlobalProperties().createRestConnectionAndLogErrors(logger)) {
             if (restConnection != null) {
-                final HubServicesFactory hubServicesFactory = getGlobalProperties().createHubServicesFactory(restConnection);
+                final HubServicesFactory hubServicesFactory = getGlobalProperties().createHubServicesFactory(restConnection, new Slf4jIntLogger(logger));
                 final UserGroupService groupService = hubServicesFactory.createUserGroupService();
                 final UserGroupView userGroupView = groupService.getGroupByName(hubGroup);
 

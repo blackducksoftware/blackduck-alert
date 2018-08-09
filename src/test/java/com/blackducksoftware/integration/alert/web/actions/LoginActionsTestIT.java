@@ -29,12 +29,11 @@ import com.blackducksoftware.integration.alert.TestProperties;
 import com.blackducksoftware.integration.alert.TestPropertyKey;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.mock.model.MockLoginRestModel;
-import com.blackducksoftware.integration.alert.web.actions.LoginActions;
 import com.blackducksoftware.integration.alert.web.model.LoginRestModel;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfigBuilder;
+import com.blackducksoftware.integration.hub.rest.BlackduckRestConnection;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
-import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.blackducksoftware.integration.test.annotation.HubConnectionTest;
 
 @Category(HubConnectionTest.class)
@@ -103,7 +102,7 @@ public class LoginActionsTestIT {
 
         final LoginActions loginActions = new LoginActions(globalProperties);
 
-        final RestConnection restConnection = loginActions.createRestConnection(serverConfigBuilder);
+        final BlackduckRestConnection restConnection = loginActions.createRestConnection(serverConfigBuilder);
 
         final boolean roleValid = loginActions.isUserRoleValid("broken", restConnection);
 

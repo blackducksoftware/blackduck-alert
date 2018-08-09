@@ -24,13 +24,18 @@
 package com.blackducksoftware.integration.alert.channel.hipchat;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -62,6 +67,7 @@ import freemarker.template.TemplateException;
 @Component(value = HipChatChannel.COMPONENT_NAME)
 @Transactional
 public class HipChatChannel extends RestDistributionChannel<GlobalHipChatConfigEntity, HipChatDistributionConfigEntity> {
+    private static final Logger logger = LoggerFactory.getLogger(HipChatChannel.class);
     public static final String COMPONENT_NAME = "channel_hipchat";
     public static final String HIP_CHAT_API = "https://api.hipchat.com";
 
@@ -97,8 +103,8 @@ public class HipChatChannel extends RestDistributionChannel<GlobalHipChatConfigE
         if (restConnection != null) {
             try {
                 final String url = getApiUrl(entity) + "/v2/room/*/notification";
-                final Map<String, String> queryParameters = new HashMap<>();
-                queryParameters.put("auth_test", "true");
+                final Map<String, Set<String>> queryParameters = new HashMap<>();
+                queryParameters.put("auth_test", new HashSet<>(Arrays.asList("true")));
 
                 final Map<String, String> requestHeaders = new HashMap<>();
                 requestHeaders.put("Authorization", "Bearer " + entity.getApiKey());
@@ -114,7 +120,7 @@ public class HipChatChannel extends RestDistributionChannel<GlobalHipChatConfigE
                 }
                 return "Invalid API key: " + response.getStatusMessage();
             } catch (final IntegrationException e) {
-                restConnection.logger.error("Unable to create a response", e);
+                logger.error("Unable to create a response", e);
                 throw new IntegrationException("Invalid API key: " + e.getMessage());
             } finally {
                 try {

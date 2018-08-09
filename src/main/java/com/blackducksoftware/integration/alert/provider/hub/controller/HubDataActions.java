@@ -41,8 +41,9 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.api.generated.discovery.ApiDiscovery;
 import com.blackducksoftware.integration.hub.api.generated.view.ProjectView;
 import com.blackducksoftware.integration.hub.api.generated.view.UserGroupView;
+import com.blackducksoftware.integration.hub.rest.BlackduckRestConnection;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
-import com.blackducksoftware.integration.rest.connection.RestConnection;
+import com.blackducksoftware.integration.log.Slf4jIntLogger;
 
 @Component
 public class HubDataActions {
@@ -55,9 +56,9 @@ public class HubDataActions {
     }
 
     public List<HubGroup> getHubGroups() throws IntegrationException {
-        try (final RestConnection restConnection = globalProperties.createRestConnectionAndLogErrors(logger)) {
+        try (final BlackduckRestConnection restConnection = globalProperties.createRestConnectionAndLogErrors(logger)) {
             if (restConnection != null) {
-                final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection);
+                final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection, new Slf4jIntLogger(logger));
                 final List<UserGroupView> rawGroups = hubServicesFactory.createHubService().getAllResponses(ApiDiscovery.USERGROUPS_LINK_RESPONSE);
 
                 final List<HubGroup> groups = new ArrayList<>();
@@ -77,9 +78,9 @@ public class HubDataActions {
     }
 
     public List<HubProject> getHubProjects() throws IntegrationException {
-        try (final RestConnection restConnection = globalProperties.createRestConnectionAndLogErrors(logger)) {
+        try (final BlackduckRestConnection restConnection = globalProperties.createRestConnectionAndLogErrors(logger)) {
             if (restConnection != null) {
-                final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection);
+                final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection, new Slf4jIntLogger(logger));
                 final List<ProjectView> rawProjects = hubServicesFactory.createHubService().getAllResponses(ApiDiscovery.PROJECTS_LINK_RESPONSE);
 
                 final List<HubProject> projects = new ArrayList<>();
