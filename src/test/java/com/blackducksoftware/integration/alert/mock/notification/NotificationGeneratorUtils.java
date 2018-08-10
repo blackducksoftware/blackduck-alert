@@ -107,7 +107,8 @@ public class NotificationGeneratorUtils {
     }
 
     @SuppressWarnings("unchecked")
-    public static NotificationDetailResults initializeTestData(final GlobalProperties globalProperties, final ComponentVersionView versionView, final VulnerabilityNotificationContent content) throws IntegrationException {
+    public static NotificationDetailResults initializeTestData(final GlobalProperties globalProperties, final ComponentVersionView versionView, final VulnerabilityNotificationContent content, final HubBucket bucket)
+            throws IntegrationException {
         final HubServicesFactory hubServicesFactory = Mockito.mock(HubServicesFactory.class);
         final HubService hubService = Mockito.mock(HubService.class);
         final HubBucketService bucketService = Mockito.mock(HubBucketService.class);
@@ -126,7 +127,6 @@ public class NotificationGeneratorUtils {
 
         final NotificationDetailResult detail = NotificationGeneratorUtils.createNotificationDetailList(view, content);
         final NotificationDetailResults notificationResults = NotificationGeneratorUtils.createNotificationResults(Arrays.asList(detail));
-        final HubBucket bucket = new HubBucket();
         // need to map the component version uri to a view in order for the processing rule to work
         // otherwise the rule will always have an empty list
         bucket.addValid(content.componentVersion, versionView);

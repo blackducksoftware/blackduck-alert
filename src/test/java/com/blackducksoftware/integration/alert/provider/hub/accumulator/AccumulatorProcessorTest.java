@@ -29,6 +29,7 @@ import com.blackducksoftware.integration.hub.notification.content.ComponentVersi
 import com.blackducksoftware.integration.hub.notification.content.PolicyInfo;
 import com.blackducksoftware.integration.hub.notification.content.RuleViolationNotificationContent;
 import com.blackducksoftware.integration.hub.notification.content.VulnerabilityNotificationContent;
+import com.blackducksoftware.integration.hub.service.bucket.HubBucket;
 import com.google.gson.Gson;
 
 public class AccumulatorProcessorTest {
@@ -56,7 +57,8 @@ public class AccumulatorProcessorTest {
         content.deletedVulnerabilityIds = NotificationGeneratorUtils.createSourceIdList("5", "6", "10", "11");
 
         final List<NotificationDetailResult> resultList = new ArrayList<>();
-        final NotificationDetailResults vulnerabilityResults = NotificationGeneratorUtils.initializeTestData(globalProperties, versionView, content);
+        final HubBucket bucket = new HubBucket();
+        final NotificationDetailResults vulnerabilityResults = NotificationGeneratorUtils.initializeTestData(globalProperties, versionView, content, bucket);
         resultList.addAll(vulnerabilityResults.getResults());
         resultList.addAll(createPolicyViolationNotification());
 
@@ -88,7 +90,8 @@ public class AccumulatorProcessorTest {
         content.deletedVulnerabilityIds = NotificationGeneratorUtils.createSourceIdList("5", "6", "10", "11");
 
         final List<NotificationDetailResult> resultList = new ArrayList<>();
-        final NotificationDetailResults vulnerabilityResults = NotificationGeneratorUtils.initializeTestData(globalProperties, versionView, content);
+        final HubBucket bucket = new HubBucket();
+        final NotificationDetailResults vulnerabilityResults = NotificationGeneratorUtils.initializeTestData(globalProperties, versionView, content, bucket);
         resultList.addAll(vulnerabilityResults.getResults());
         resultList.addAll(createPolicyViolationNotification());
 
@@ -123,7 +126,8 @@ public class AccumulatorProcessorTest {
         content.deletedVulnerabilityIds = NotificationGeneratorUtils.createSourceIdList("5", "6", "10", "11");
 
         final List<NotificationDetailResult> resultList = new ArrayList<>();
-        final NotificationDetailResults vulnerabilityResults = NotificationGeneratorUtils.initializeTestData(globalProperties, versionView, content);
+        final HubBucket bucket = new HubBucket();
+        final NotificationDetailResults vulnerabilityResults = NotificationGeneratorUtils.initializeTestData(globalProperties, versionView, content, bucket);
         resultList.addAll(vulnerabilityResults.getResults());
         resultList.addAll(createPolicyViolationNotification());
 
