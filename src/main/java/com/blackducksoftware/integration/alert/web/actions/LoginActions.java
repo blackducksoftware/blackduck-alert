@@ -125,7 +125,7 @@ public class LoginActions {
         final UserGroupService userGroupService = hubServicesFactory.createUserGroupService();
 
         try {
-            final List<RoleAssignmentView> userRoles = userGroupService.getRolesForUser(userName);
+            final List<RoleAssignmentView> userRoles = userGroupService.getAllRolesForUser(userName);
             for (final RoleAssignmentView roles : userRoles) {
                 if ("System Administrator".equalsIgnoreCase(roles.name)) {
                     return true;
