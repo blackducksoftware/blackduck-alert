@@ -42,6 +42,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.LoginConfig;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.hub.api.generated.view.RoleAssignmentView;
@@ -56,8 +58,6 @@ import com.synopsys.integration.validator.AbstractValidator;
 import com.synopsys.integration.validator.FieldEnum;
 import com.synopsys.integration.validator.ValidationResult;
 import com.synopsys.integration.validator.ValidationResults;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.web.exception.AlertFieldException;
 
 @Component
 public class LoginActions {
@@ -114,7 +114,7 @@ public class LoginActions {
         final UserGroupService userGroupService = blackDuckServicesFactory.createUserGroupService();
 
         try {
-            final List<RoleAssignmentView> userRoles = userGroupService.getRolesForUser(userName);
+            final List<RoleAssignmentView> userRoles = userGroupService.getAllRolesForUser(userName);
             for (final RoleAssignmentView roles : userRoles) {
                 if ("System Administrator".equalsIgnoreCase(roles.name)) {
                     return true;
