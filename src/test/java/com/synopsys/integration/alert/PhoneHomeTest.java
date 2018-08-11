@@ -40,21 +40,23 @@ public class PhoneHomeTest {
     @Category(HubConnectionTest.class)
     public void testProductVersion() throws AlertException, IOException {
         final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(new TestAlertProperties());
+        final CommonDistributionRepository commonDistributionRepository = Mockito.mock(CommonDistributionRepository.class);
+        Mockito.when(commonDistributionRepository.findAll()).thenReturn(createConfigEntities());
         final AboutReader aboutReader = Mockito.mock(AboutReader.class);
         final String productVersion = "test";
         Mockito.when(aboutReader.getProductVersion()).thenReturn(productVersion);
-        final PhoneHomeTask phoneHome = new PhoneHomeTask(null, globalProperties, aboutReader, null);
+        final PhoneHomeTask phoneHome = new PhoneHomeTask(null, globalProperties, aboutReader, commonDistributionRepository);
 
         try (final BlackduckRestConnection restConnection = globalProperties.createRestConnection(new TestLogger()).get()) {
             final HubServicesFactory hubServicesFactory = globalProperties.createBlackDuckServicesFactory(restConnection, new Slf4jIntLogger(logger));
             final PhoneHomeService phoneHomeService = hubServicesFactory.createPhoneHomeService(Executors.newSingleThreadExecutor());
             final Optional<PhoneHomeCallable> callable = phoneHome.createPhoneHomeCallable(hubServicesFactory);
             if (callable.isPresent()) {
-                final PhoneHomeRequestBody.Builder builder = callable.get().createPhoneHomeRequestBodyBuilder();
+                final PhoneHomeRequestBody body = callable.get().createPhoneHomeRequestBody();
 
-                Assert.assertNotNull(builder);
-                Assert.assertEquals(productVersion, builder.getArtifactVersion());
-                Assert.assertEquals("blackduck-alert", builder.getArtifactId());
+                Assert.assertNotNull(body);
+                Assert.assertEquals(productVersion, body.getArtifactVersion());
+                Assert.assertEquals("blackduck-alert", body.getArtifactId());
             } else {
                 Assert.fail();
             }
