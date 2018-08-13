@@ -35,7 +35,7 @@ import org.springframework.http.ResponseEntity;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.web.actions.ConfigActions;
+import com.blackducksoftware.integration.alert.web.actions.OldConfigActions;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
 import com.blackducksoftware.integration.alert.web.model.Config;
 import com.blackducksoftware.integration.alert.web.model.ResponseBodyBuilder;
@@ -45,18 +45,18 @@ public class CommonConfigHandler<D extends DatabaseEntity, R extends Config, W e
     private final Logger logger = LoggerFactory.getLogger(CommonConfigHandler.class);
     public final Class<D> databaseEntityClass;
     public final Class<R> configRestModelClass;
-    public final ConfigActions<D, R, W> configActions;
+    public final OldConfigActions<D, R, W> oldConfigActions;
 
-    public CommonConfigHandler(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final ConfigActions<D, R, W> configActions, final ContentConverter contentConverter) {
+    public CommonConfigHandler(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final OldConfigActions<D, R, W> configActions, final ContentConverter contentConverter) {
         super(contentConverter);
         this.databaseEntityClass = databaseEntityClass;
         this.configRestModelClass = configRestModelClass;
-        this.configActions = configActions;
+        this.oldConfigActions = configActions;
     }
 
     public List<R> getConfig(final Long id) {
         try {
-            return configActions.getConfig(id);
+            return oldConfigActions.getConfig(id);
         } catch (final AlertException e) {
             logger.error(e.getMessage(), e);
         }
@@ -67,12 +67,12 @@ public class CommonConfigHandler<D extends DatabaseEntity, R extends Config, W e
         if (restModel == null) {
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + configRestModelClass.getSimpleName());
         }
-        if (!configActions.doesConfigExist(restModel.getId())) {
+        if (!oldConfigActions.doesConfigExist(restModel.getId())) {
             try {
-                configActions.validateConfig(restModel);
-                configActions.configurationChangeTriggers(restModel);
+                oldConfigActions.validateConfig(restModel);
+                oldConfigActions.configurationChangeTriggers(restModel);
                 try {
-                    final D updatedEntity = configActions.saveConfig(restModel);
+                    final D updatedEntity = oldConfigActions.saveConfig(restModel);
                     return createResponse(HttpStatus.CREATED, updatedEntity.getId(), "Created");
                 } catch (final AlertException e) {
                     logger.error(e.getMessage(), e);
@@ -91,12 +91,12 @@ public class CommonConfigHandler<D extends DatabaseEntity, R extends Config, W e
         if (restModel == null) {
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + configRestModelClass.getSimpleName());
         }
-        if (configActions.doesConfigExist(restModel.getId())) {
+        if (oldConfigActions.doesConfigExist(restModel.getId())) {
             try {
-                configActions.validateConfig(restModel);
-                configActions.configurationChangeTriggers(restModel);
+                oldConfigActions.validateConfig(restModel);
+                oldConfigActions.configurationChangeTriggers(restModel);
                 try {
-                    final D updatedEntity = configActions.saveNewConfigUpdateFromSavedConfig(restModel);
+                    final D updatedEntity = oldConfigActions.saveNewConfigUpdateFromSavedConfig(restModel);
                     return createResponse(HttpStatus.ACCEPTED, updatedEntity.getId(), "Updated");
                 } catch (final AlertException e) {
                     logger.error(e.getMessage(), e);
@@ -115,8 +115,8 @@ public class CommonConfigHandler<D extends DatabaseEntity, R extends Config, W e
         if (restModel == null) {
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + configRestModelClass.getSimpleName());
         }
-        if (configActions.doesConfigExist(restModel.getId())) {
-            configActions.deleteConfig(restModel.getId());
+        if (oldConfigActions.doesConfigExist(restModel.getId())) {
+            oldConfigActions.deleteConfig(restModel.getId());
             return createResponse(HttpStatus.ACCEPTED, restModel.getId(), "Deleted");
         }
         return createResponse(HttpStatus.BAD_REQUEST, restModel.getId(), "No configuration with the specified id.");
@@ -127,7 +127,7 @@ public class CommonConfigHandler<D extends DatabaseEntity, R extends Config, W e
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + configRestModelClass.getSimpleName());
         }
         try {
-            final String responseMessage = configActions.validateConfig(restModel);
+            final String responseMessage = oldConfigActions.validateConfig(restModel);
             return createResponse(HttpStatus.OK, restModel.getId(), responseMessage);
         } catch (final AlertFieldException e) {
             final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(getContentConverter().getLongValue(restModel.getId()), e.getMessage());
@@ -143,7 +143,7 @@ public class CommonConfigHandler<D extends DatabaseEntity, R extends Config, W e
         }
         try {
             final String responseMessage = "";
-            configActions.testConfig(restModel);
+            oldConfigActions.testConfig(restModel);
             return createResponse(HttpStatus.OK, restModel.getId(), responseMessage);
         } catch (final IntegrationRestException e) {
             logger.error(e.getMessage(), e);

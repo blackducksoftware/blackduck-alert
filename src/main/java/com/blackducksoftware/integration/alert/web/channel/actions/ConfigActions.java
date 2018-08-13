@@ -25,52 +25,42 @@ package com.blackducksoftware.integration.alert.web.channel.actions;
 
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.blackducksoftware.integration.alert.common.ContentConverter;
-import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
+import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
 import com.blackducksoftware.integration.alert.web.model.Config;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
-public abstract class ChannelConfigActions<R extends Config> {
+public abstract class ConfigActions {
     private final ContentConverter contentConverter;
 
-    public ChannelConfigActions(final ContentConverter contentConverter) {
+    public ConfigActions(final ContentConverter contentConverter) {
         this.contentConverter = contentConverter;
     }
 
-    public boolean doesConfigExist(final String id, final ChannelDescriptor descriptor) {
+    public boolean doesConfigExist(final String id, final DescriptorConfig descriptor) {
         return doesConfigExist(contentConverter.getLongValue(id), descriptor);
     }
 
-    public abstract boolean doesConfigExist(final Long id, ChannelDescriptor descriptor);
+    public abstract boolean doesConfigExist(final Long id, DescriptorConfig descriptor);
 
-    public abstract List<R> getConfig(final Long id, ChannelDescriptor descriptor) throws AlertException;
+    public abstract List<? extends Config> getConfig(final Long id, DescriptorConfig descriptor) throws AlertException;
 
-    public void deleteConfig(final String id, final ChannelDescriptor descriptor) {
+    public void deleteConfig(final String id, final DescriptorConfig descriptor) {
         deleteConfig(contentConverter.getLongValue(id), descriptor);
     }
 
-    public abstract void deleteConfig(final Long id, ChannelDescriptor descriptor);
+    public abstract void deleteConfig(final Long id, DescriptorConfig descriptor);
 
-    public abstract DatabaseEntity saveConfig(final R restModel, ChannelDescriptor descriptor) throws AlertException;
+    public abstract DatabaseEntity saveConfig(final Config restModel, DescriptorConfig descriptor) throws AlertException;
 
-    public abstract String validateConfig(final R restModel, ChannelDescriptor descriptor) throws AlertFieldException;
+    public abstract String validateConfig(final Config restModel, DescriptorConfig descriptor) throws AlertFieldException;
 
-    public abstract String testConfig(final R restModel, final ChannelDescriptor descriptor) throws IntegrationException;
+    public abstract String testConfig(final Config restModel, final DescriptorConfig descriptor) throws IntegrationException;
 
-    public abstract DatabaseEntity saveNewConfigUpdateFromSavedConfig(final R restModel, ChannelDescriptor descriptor) throws AlertException;
-
-    public Boolean isBoolean(final String value) {
-        if (StringUtils.isBlank(value)) {
-            return false;
-        }
-        final String trimmedValue = value.trim();
-        return trimmedValue.equalsIgnoreCase("false") || trimmedValue.equalsIgnoreCase("true");
-    }
+    public abstract DatabaseEntity saveNewConfigUpdateFromSavedConfig(final Config restModel, DescriptorConfig descriptor) throws AlertException;
 
     public ContentConverter getContentConverter() {
         return contentConverter;

@@ -47,7 +47,7 @@ import com.blackducksoftware.integration.alert.database.provider.blackduck.Globa
 import com.blackducksoftware.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.blackducksoftware.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.blackducksoftware.integration.alert.provider.blackduck.descriptor.BlackDuckTypeConverter;
-import com.blackducksoftware.integration.alert.web.actions.ConfigActions;
+import com.blackducksoftware.integration.alert.web.actions.OldConfigActions;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfig;
@@ -60,7 +60,7 @@ import com.blackducksoftware.integration.validator.ValidationResult;
 import com.blackducksoftware.integration.validator.ValidationResults;
 
 @Component
-public class GlobalBlackDuckConfigActions extends ConfigActions<GlobalBlackDuckConfigEntity, GlobalBlackDuckConfig, GlobalBlackDuckRepository> {
+public class GlobalBlackDuckConfigActions extends OldConfigActions<GlobalBlackDuckConfigEntity, GlobalBlackDuckConfig, GlobalBlackDuckRepository> {
     private final Logger logger = LoggerFactory.getLogger(GlobalBlackDuckConfigActions.class);
     private final BlackDuckProperties blackDuckProperties;
     private final AlertProperties alertProperties;

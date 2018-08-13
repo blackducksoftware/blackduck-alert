@@ -23,7 +23,9 @@
  */
 package com.blackducksoftware.integration.alert.common.descriptor.config;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.blackducksoftware.integration.alert.database.RepositoryAccessor;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
@@ -66,5 +68,33 @@ public abstract class DescriptorConfig {
     public abstract void validateConfig(Config restModel, Map<String, String> fieldErrors);
 
     public abstract void testConfig(DatabaseEntity entity) throws IntegrationException;
+
+    public Optional<? extends DatabaseEntity> readEntity(final long id) {
+        return getRepositoryAccessor().readEntity(id);
+    }
+
+    public List<? extends DatabaseEntity> readEntities() {
+        return getRepositoryAccessor().readEntities();
+    }
+
+    public DatabaseEntity saveEntity(final DatabaseEntity entity) {
+        return getRepositoryAccessor().saveEntity(entity);
+    }
+
+    public void deleteEntity(final long id) {
+        getRepositoryAccessor().deleteEntity(id);
+    }
+
+    public DatabaseEntity populateEntityFromConfig(final Config config) {
+        return getTypeConverter().populateEntityFromConfig(config);
+    }
+
+    public Config populateConfigFromEntity(final DatabaseEntity entity) {
+        return getTypeConverter().populateConfigFromEntity(entity);
+    }
+
+    public Config getConfigFromJson(final String json) {
+        return getTypeConverter().getConfigFromJson(json);
+    }
 
 }

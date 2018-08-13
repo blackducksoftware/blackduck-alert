@@ -38,7 +38,7 @@ import com.blackducksoftware.integration.alert.mock.MockGlobalRestModelUtil;
 import com.blackducksoftware.integration.alert.web.model.Config;
 import com.google.gson.Gson;
 
-public abstract class GlobalActionsTest<GR extends Config, GE extends DatabaseEntity, GW extends JpaRepository<GE, Long>, GCA extends ConfigActions<GE, GR, GW>> {
+public abstract class GlobalActionsTest<GR extends Config, GE extends DatabaseEntity, GW extends JpaRepository<GE, Long>, GCA extends OldConfigActions<GE, GR, GW>> {
     protected GCA configActions;
     protected ContentConverter contentConverter;
 

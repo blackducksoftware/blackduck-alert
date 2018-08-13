@@ -33,59 +33,59 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blackducksoftware.integration.alert.common.ContentConverter;
-import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
 import com.blackducksoftware.integration.alert.common.descriptor.DescriptorMap;
+import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.blackducksoftware.integration.alert.common.enumeration.DescriptorConfigType;
 import com.blackducksoftware.integration.alert.web.channel.actions.ChannelGlobalConfigActions;
 import com.blackducksoftware.integration.alert.web.channel.handler.ChannelConfigHandler;
 import com.blackducksoftware.integration.alert.web.model.Config;
 
 @RestController
-@RequestMapping(ChannelConfigController.UNIVERSAL_PATH + "/global/{descriptorName}")
-public class ChannelGlobalConfigController extends ChannelConfigController {
-    private final ChannelConfigHandler<Config> controllerHandler;
+@RequestMapping(ConfigController.CHANNEL_CONFIG + "/global/{descriptorName}")
+public class ChannelGlobalConfigController extends ConfigController {
+    private final ChannelConfigHandler controllerHandler;
     private final DescriptorMap descriptorMap;
 
     @Autowired
     public ChannelGlobalConfigController(final DescriptorMap descriptorMap, final ContentConverter contentConverter, final ChannelGlobalConfigActions channelGlobalConfigActions) {
         this.descriptorMap = descriptorMap;
-        this.controllerHandler = new ChannelConfigHandler<>(contentConverter, channelGlobalConfigActions);
+        this.controllerHandler = new ChannelConfigHandler(contentConverter, channelGlobalConfigActions);
     }
 
     @Override
-    public List<Config> getConfig(final Long id, @PathVariable final String descriptorName) {
-        final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
+    public List<? extends Config> getConfig(final Long id, @PathVariable final String descriptorName) {
+        final DescriptorConfig descriptor = descriptorMap.getChannelDescriptor(descriptorName).getConfig(DescriptorConfigType.CHANNEL_GLOBAL_CONFIG);
         return controllerHandler.getConfig(id, descriptor);
     }
 
     @Override
     public ResponseEntity<String> postConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
-        final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
-        return controllerHandler.postConfig(descriptor.getConfigFromJson(DescriptorConfigType.CHANNEL_GLOBAL_CONFIG, restModel), descriptor);
+        final DescriptorConfig descriptor = descriptorMap.getChannelDescriptor(descriptorName).getConfig(DescriptorConfigType.CHANNEL_GLOBAL_CONFIG);
+        return controllerHandler.postConfig(descriptor.getConfigFromJson(restModel), descriptor);
     }
 
     @Override
     public ResponseEntity<String> putConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
-        final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
-        return controllerHandler.putConfig(descriptor.getConfigFromJson(DescriptorConfigType.CHANNEL_GLOBAL_CONFIG, restModel), descriptor);
+        final DescriptorConfig descriptor = descriptorMap.getChannelDescriptor(descriptorName).getConfig(DescriptorConfigType.CHANNEL_GLOBAL_CONFIG);
+        return controllerHandler.putConfig(descriptor.getConfigFromJson(restModel), descriptor);
     }
 
     @Override
     public ResponseEntity<String> validateConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
-        final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
-        return controllerHandler.validateConfig(descriptor.getConfigFromJson(DescriptorConfigType.CHANNEL_GLOBAL_CONFIG, restModel), descriptor);
+        final DescriptorConfig descriptor = descriptorMap.getChannelDescriptor(descriptorName).getConfig(DescriptorConfigType.CHANNEL_GLOBAL_CONFIG);
+        return controllerHandler.validateConfig(descriptor.getConfigFromJson(restModel), descriptor);
     }
 
     @Override
     public ResponseEntity<String> deleteConfig(final Long id, @PathVariable final String descriptorName) {
-        final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
+        final DescriptorConfig descriptor = descriptorMap.getChannelDescriptor(descriptorName).getConfig(DescriptorConfigType.CHANNEL_GLOBAL_CONFIG);
         return controllerHandler.deleteConfig(id, descriptor);
     }
 
     @Override
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
-        final ChannelDescriptor descriptor = descriptorMap.getChannelDescriptor(descriptorName);
-        return controllerHandler.testConfig(descriptor.getConfigFromJson(DescriptorConfigType.CHANNEL_GLOBAL_CONFIG, restModel), descriptor);
+        final DescriptorConfig descriptor = descriptorMap.getChannelDescriptor(descriptorName).getConfig(DescriptorConfigType.CHANNEL_GLOBAL_CONFIG);
+        return controllerHandler.testConfig(descriptor.getConfigFromJson(restModel), descriptor);
     }
 
 }

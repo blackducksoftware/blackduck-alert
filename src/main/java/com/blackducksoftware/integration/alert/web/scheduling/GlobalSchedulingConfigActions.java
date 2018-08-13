@@ -37,7 +37,7 @@ import org.springframework.stereotype.Component;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.alert.database.scheduling.GlobalSchedulingRepository;
-import com.blackducksoftware.integration.alert.web.actions.ConfigActions;
+import com.blackducksoftware.integration.alert.web.actions.OldConfigActions;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
 import com.blackducksoftware.integration.alert.workflow.scheduled.PurgeTask;
 import com.blackducksoftware.integration.alert.workflow.scheduled.frequency.DailyTask;
@@ -45,7 +45,7 @@ import com.blackducksoftware.integration.alert.workflow.scheduled.frequency.OnDe
 import com.blackducksoftware.integration.exception.IntegrationException;
 
 @Component
-public class GlobalSchedulingConfigActions extends ConfigActions<GlobalSchedulingConfigEntity, GlobalSchedulingConfig, GlobalSchedulingRepository> {
+public class GlobalSchedulingConfigActions extends OldConfigActions<GlobalSchedulingConfigEntity, GlobalSchedulingConfig, GlobalSchedulingRepository> {
     private final PurgeTask purgeTask;
 
     private final DailyTask dailyTask;
