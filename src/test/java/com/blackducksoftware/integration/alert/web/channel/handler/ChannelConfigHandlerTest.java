@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.blackducksoftware.integration.alert.common.ContentConverter;
-import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
+import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.mock.model.MockCommonDistributionRestModel;
@@ -33,9 +33,9 @@ public class ChannelConfigHandlerTest {
     @Test
     public void getConfigTest() throws AlertException {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler<CommonDistributionConfig> handler = new ChannelConfigHandler<>(contentConverter, configActions);
+        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
 
-        final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
+        final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
         final List<CommonDistributionConfig> restModel = Arrays.asList(mockCommonDistributionRestModel.createEmptyRestModel());
         Mockito.doReturn(restModel).when(configActions).getConfig(Mockito.anyLong(), Mockito.any());
 
@@ -46,9 +46,9 @@ public class ChannelConfigHandlerTest {
     @Test
     public void getConfigHandleExceptionTest() throws AlertException {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler<CommonDistributionConfig> handler = new ChannelConfigHandler<>(contentConverter, configActions);
+        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
 
-        final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
+        final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
         Mockito.when(configActions.getConfig(Mockito.anyLong(), Mockito.any())).thenThrow(new AlertException());
 
         Exception thrownException = null;
@@ -65,9 +65,9 @@ public class ChannelConfigHandlerTest {
     @Test
     public void postConfigTest() throws AlertException {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler<CommonDistributionConfig> handler = new ChannelConfigHandler<>(contentConverter, configActions);
+        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
 
-        final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
+        final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
         Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(false);
         Mockito.when(configActions.saveConfig(Mockito.any(), Mockito.any())).thenReturn(new CommonDistributionConfigEntity());
 
@@ -78,10 +78,9 @@ public class ChannelConfigHandlerTest {
 
     @Test
     public void postNullConfigTest() {
-        final ChannelConfigHandler<CommonDistributionConfig> handler = new ChannelConfigHandler<>(contentConverter, null);
+        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, null);
 
-        final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
-        Mockito.when(descriptor.getName()).thenReturn("TestDescriptor");
+        final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
         final ResponseEntity<String> response = handler.postConfig(null, descriptor);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
@@ -89,9 +88,9 @@ public class ChannelConfigHandlerTest {
     @Test
     public void postConfigWithConflictTest() {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler<CommonDistributionConfig> handler = new ChannelConfigHandler<>(contentConverter, configActions);
+        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
 
-        final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
+        final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
         Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(true);
 
         final CommonDistributionConfig restModel = mockCommonDistributionRestModel.createRestModel();
@@ -102,9 +101,9 @@ public class ChannelConfigHandlerTest {
     @Test
     public void postWithInvalidConfigTest() throws AlertFieldException {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler<CommonDistributionConfig> handler = new ChannelConfigHandler<>(contentConverter, configActions);
+        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
 
-        final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
+        final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
         Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(false);
         Mockito.when(configActions.validateConfig(Mockito.any(), Mockito.any())).thenThrow(new AlertFieldException(Collections.emptyMap()));
         Mockito.when(configActions.getContentConverter()).thenReturn(contentConverter);
@@ -117,9 +116,9 @@ public class ChannelConfigHandlerTest {
     @Test
     public void postWithInternalServerErrorTest() throws IntegrationException {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler<CommonDistributionConfig> handler = new ChannelConfigHandler<>(contentConverter, configActions);
+        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
 
-        final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
+        final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
         Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(false);
         Mockito.when(configActions.saveConfig(Mockito.any(), Mockito.any())).thenThrow(new AlertException());
 
@@ -131,9 +130,9 @@ public class ChannelConfigHandlerTest {
     @Test
     public void putConfigTest() throws IntegrationException {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler<CommonDistributionConfig> handler = new ChannelConfigHandler<>(contentConverter, configActions);
+        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
 
-        final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
+        final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
         Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(true);
         Mockito.when(configActions.validateConfig(Mockito.any(), Mockito.any())).thenReturn("");
         Mockito.when(configActions.saveNewConfigUpdateFromSavedConfig(Mockito.any(), Mockito.any())).thenReturn(new CommonDistributionConfigEntity());
@@ -145,10 +144,9 @@ public class ChannelConfigHandlerTest {
 
     @Test
     public void putNullConfigTest() {
-        final ChannelConfigHandler<CommonDistributionConfig> handler = new ChannelConfigHandler<>(contentConverter, null);
+        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, null);
 
-        final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
-        Mockito.when(descriptor.getName()).thenReturn("TestDescriptor");
+        final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
         final ResponseEntity<String> response = handler.putConfig(null, descriptor);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
@@ -156,9 +154,9 @@ public class ChannelConfigHandlerTest {
     @Test
     public void putConfigWithInvalidIdTest() {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler<CommonDistributionConfig> handler = new ChannelConfigHandler<>(contentConverter, configActions);
+        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
 
-        final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
+        final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
         Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(false);
 
         final CommonDistributionConfig restModel = mockCommonDistributionRestModel.createRestModel();
@@ -169,9 +167,9 @@ public class ChannelConfigHandlerTest {
     @Test
     public void putWithInvalidConfigTest() throws AlertFieldException {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler<CommonDistributionConfig> handler = new ChannelConfigHandler<>(contentConverter, configActions);
+        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
 
-        final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
+        final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(true);
         Mockito.when(configActions.validateConfig(Mockito.any(), Mockito.any())).thenThrow(new AlertFieldException(Collections.emptyMap()));
@@ -185,9 +183,9 @@ public class ChannelConfigHandlerTest {
     @Test
     public void putWithInternalServerErrorTest() throws IntegrationException {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler<CommonDistributionConfig> handler = new ChannelConfigHandler<>(contentConverter, configActions);
+        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
 
-        final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
+        final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(true);
         Mockito.when(configActions.saveNewConfigUpdateFromSavedConfig(Mockito.any(), Mockito.any())).thenThrow(new AlertException());
@@ -200,9 +198,9 @@ public class ChannelConfigHandlerTest {
     @Test
     public void deleteConfigTest() throws AlertException {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler<CommonDistributionConfig> handler = new ChannelConfigHandler<>(contentConverter, configActions);
+        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
 
-        final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
+        final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyLong(), Mockito.any())).thenReturn(true);
         Mockito.doNothing().when(configActions).deleteConfig(Mockito.anyLong(), Mockito.any());
@@ -214,10 +212,9 @@ public class ChannelConfigHandlerTest {
 
     @Test
     public void deleteNullConfigTest() {
-        final ChannelConfigHandler<CommonDistributionConfig> handler = new ChannelConfigHandler<>(contentConverter, null);
+        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, null);
 
-        final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
-        Mockito.when(descriptor.getName()).thenReturn("TestDescriptor");
+        final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
         final ResponseEntity<String> response = handler.deleteConfig(null, descriptor);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
@@ -225,9 +222,9 @@ public class ChannelConfigHandlerTest {
     @Test
     public void deleteConfigWithInvalidIdTest() {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler<CommonDistributionConfig> handler = new ChannelConfigHandler<>(contentConverter, configActions);
+        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
 
-        final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
+        final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(false);
 
@@ -239,9 +236,9 @@ public class ChannelConfigHandlerTest {
     @Test
     public void validateConfigTest() {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler<CommonDistributionConfig> handler = new ChannelConfigHandler<>(contentConverter, configActions);
+        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
 
-        final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
+        final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
 
         final CommonDistributionConfig restModel = mockCommonDistributionRestModel.createRestModel();
         final ResponseEntity<String> response = handler.validateConfig(restModel, descriptor);
@@ -250,10 +247,9 @@ public class ChannelConfigHandlerTest {
 
     @Test
     public void validateConfigNullTest() {
-        final ChannelConfigHandler<CommonDistributionConfig> handler = new ChannelConfigHandler<>(contentConverter, null);
+        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, null);
 
-        final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
-        Mockito.when(descriptor.getName()).thenReturn("TestDescriptor");
+        final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
         final ResponseEntity<String> response = handler.validateConfig(null, descriptor);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
@@ -261,9 +257,9 @@ public class ChannelConfigHandlerTest {
     @Test
     public void validateConfigWithInvalidConfigTest() throws AlertFieldException {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler<CommonDistributionConfig> handler = new ChannelConfigHandler<>(contentConverter, configActions);
+        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
 
-        final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
+        final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
 
         Mockito.when(configActions.validateConfig(Mockito.any(), Mockito.any())).thenThrow(new AlertFieldException(Collections.emptyMap()));
         Mockito.when(configActions.getContentConverter()).thenReturn(contentConverter);
@@ -276,9 +272,9 @@ public class ChannelConfigHandlerTest {
     @Test
     public void testConfigTest() {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler<CommonDistributionConfig> handler = new ChannelConfigHandler<>(contentConverter, configActions);
+        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
 
-        final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
+        final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
 
         final CommonDistributionConfig restModel = mockCommonDistributionRestModel.createRestModel();
         final ResponseEntity<String> response = handler.testConfig(restModel, descriptor);
@@ -287,10 +283,9 @@ public class ChannelConfigHandlerTest {
 
     @Test
     public void testNullConfigTest() {
-        final ChannelConfigHandler<CommonDistributionConfig> handler = new ChannelConfigHandler<>(contentConverter, null);
+        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, null);
 
-        final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
-        Mockito.when(descriptor.getName()).thenReturn("TestDescriptor");
+        final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
         final ResponseEntity<String> response = handler.testConfig(null, descriptor);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
@@ -298,8 +293,8 @@ public class ChannelConfigHandlerTest {
     @Test
     public void testConfigWithRestExceptionTest() throws Exception {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler<CommonDistributionConfig> handler = new ChannelConfigHandler<>(contentConverter, configActions);
-        final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
+        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
+        final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
         final int responseCode = HttpStatus.BAD_GATEWAY.value();
         Mockito.when(configActions.testConfig(Mockito.any(), Mockito.any())).thenThrow(new IntegrationRestException(responseCode, "", ""));
         Mockito.when(configActions.getContentConverter()).thenReturn(contentConverter);
@@ -312,9 +307,9 @@ public class ChannelConfigHandlerTest {
     @Test
     public void testConfigWithAlertFieldExceptionTest() throws Exception {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler<CommonDistributionConfig> handler = new ChannelConfigHandler<>(contentConverter, configActions);
+        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
 
-        final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
+        final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
 
         Mockito.when(configActions.testConfig(Mockito.any(), Mockito.any())).thenThrow(new AlertFieldException(Collections.emptyMap()));
         Mockito.when(configActions.getContentConverter()).thenReturn(contentConverter);
@@ -327,9 +322,9 @@ public class ChannelConfigHandlerTest {
     @Test
     public void testConfigWithExceptionTest() throws Exception {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler<CommonDistributionConfig> handler = new ChannelConfigHandler<>(contentConverter, configActions);
+        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
 
-        final ChannelDescriptor descriptor = Mockito.mock(ChannelDescriptor.class);
+        final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
 
         Mockito.when(configActions.testConfig(Mockito.any(), Mockito.any())).thenThrow(new NullPointerException());
         Mockito.when(configActions.getContentConverter()).thenReturn(contentConverter);

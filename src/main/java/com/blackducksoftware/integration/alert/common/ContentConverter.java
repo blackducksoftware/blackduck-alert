@@ -94,4 +94,12 @@ public class ContentConverter {
     public Boolean getBooleanValue(final String value) {
         return getValueOfString(value, Boolean.class);
     }
+
+    public Boolean isBoolean(final String value) {
+        if (StringUtils.isBlank(value)) {
+            return false;
+        }
+        final String trimmedValue = value.trim();
+        return trimmedValue.equalsIgnoreCase("false") || trimmedValue.equalsIgnoreCase("true");
+    }
 }

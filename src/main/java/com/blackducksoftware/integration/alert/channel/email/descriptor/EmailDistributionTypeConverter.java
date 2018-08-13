@@ -26,19 +26,27 @@ package com.blackducksoftware.integration.alert.channel.email.descriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.blackducksoftware.integration.alert.channel.email.EmailGroupChannel;
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.descriptor.config.TypeConverter;
 import com.blackducksoftware.integration.alert.database.channel.email.EmailGroupDistributionConfigEntity;
+import com.blackducksoftware.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
+import com.blackducksoftware.integration.alert.database.entity.repository.CommonDistributionRepository;
+import com.blackducksoftware.integration.alert.web.channel.actions.CommonDistributionConfigHelper;
 import com.blackducksoftware.integration.alert.web.channel.model.EmailDistributionConfig;
 import com.blackducksoftware.integration.alert.web.model.Config;
 
 @Component
 public class EmailDistributionTypeConverter extends TypeConverter {
+    private final CommonDistributionConfigHelper commonDistributionConfigHelper;
+    private final CommonDistributionRepository commonDistributionRepository;
 
     @Autowired
-    public EmailDistributionTypeConverter(final ContentConverter contentConverter) {
+    public EmailDistributionTypeConverter(final ContentConverter contentConverter, final CommonDistributionConfigHelper commonDistributionConfigHelper, final CommonDistributionRepository commonDistributionRepository) {
         super(contentConverter);
+        this.commonDistributionConfigHelper = commonDistributionConfigHelper;
+        this.commonDistributionRepository = commonDistributionRepository;
     }
 
     @Override
@@ -63,7 +71,8 @@ public class EmailDistributionTypeConverter extends TypeConverter {
         emailRestModel.setGroupName(emailEntity.getGroupName());
         emailRestModel.setEmailTemplateLogoImage(emailEntity.getEmailTemplateLogoImage());
         emailRestModel.setEmailSubjectLine(emailEntity.getEmailSubjectLine());
-        return emailRestModel;
+        final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.findByDistributionConfigIdAndDistributionType(emailEntity.getId(), EmailGroupChannel.COMPONENT_NAME);
+        return commonDistributionConfigHelper.populateCommonFieldsFromEntity(emailRestModel, commonEntity);
     }
 
 }

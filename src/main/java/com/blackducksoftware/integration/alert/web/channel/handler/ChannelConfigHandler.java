@@ -32,26 +32,26 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.blackducksoftware.integration.alert.common.ContentConverter;
-import com.blackducksoftware.integration.alert.common.descriptor.ChannelDescriptor;
+import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.web.channel.actions.ChannelConfigActions;
+import com.blackducksoftware.integration.alert.web.channel.actions.ConfigActions;
 import com.blackducksoftware.integration.alert.web.controller.handler.ControllerHandler;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
 import com.blackducksoftware.integration.alert.web.model.Config;
 import com.blackducksoftware.integration.alert.web.model.ResponseBodyBuilder;
 import com.blackducksoftware.integration.rest.exception.IntegrationRestException;
 
-public class ChannelConfigHandler<R extends Config> extends ControllerHandler {
+public class ChannelConfigHandler extends ControllerHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final ChannelConfigActions<R> configActions;
+    private final ConfigActions configActions;
 
-    public ChannelConfigHandler(final ContentConverter contentConverter, final ChannelConfigActions<R> configActions) {
+    public ChannelConfigHandler(final ContentConverter contentConverter, final ConfigActions configActions) {
         super(contentConverter);
         this.configActions = configActions;
     }
 
-    public List<R> getConfig(final Long id, final ChannelDescriptor descriptor) {
+    public List<? extends Config> getConfig(final Long id, final DescriptorConfig descriptor) {
         try {
             return configActions.getConfig(id, descriptor);
         } catch (final AlertException e) {
@@ -60,9 +60,9 @@ public class ChannelConfigHandler<R extends Config> extends ControllerHandler {
         return Collections.emptyList();
     }
 
-    public ResponseEntity<String> postConfig(final R restModel, final ChannelDescriptor descriptor) {
+    public ResponseEntity<String> postConfig(final Config restModel, final DescriptorConfig descriptor) {
         if (restModel == null) {
-            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + descriptor.getName());
+            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing");
         }
         if (!configActions.doesConfigExist(restModel.getId(), descriptor)) {
             try {
@@ -83,9 +83,9 @@ public class ChannelConfigHandler<R extends Config> extends ControllerHandler {
         return createResponse(HttpStatus.CONFLICT, restModel.getId(), "Provided id must not be in use. To update an existing configuration, use PUT.");
     }
 
-    public ResponseEntity<String> putConfig(final R restModel, final ChannelDescriptor descriptor) {
+    public ResponseEntity<String> putConfig(final Config restModel, final DescriptorConfig descriptor) {
         if (restModel == null) {
-            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + descriptor.getName());
+            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing");
         }
         if (configActions.doesConfigExist(restModel.getId(), descriptor)) {
             try {
@@ -106,7 +106,7 @@ public class ChannelConfigHandler<R extends Config> extends ControllerHandler {
         return createResponse(HttpStatus.BAD_REQUEST, restModel.getId(), "No configuration with the specified id.");
     }
 
-    public ResponseEntity<String> deleteConfig(final Long id, final ChannelDescriptor descriptor) {
+    public ResponseEntity<String> deleteConfig(final Long id, final DescriptorConfig descriptor) {
         if (id != null && configActions.doesConfigExist(id, descriptor)) {
             configActions.deleteConfig(id, descriptor);
             return createResponse(HttpStatus.ACCEPTED, id, "Deleted");
@@ -114,9 +114,9 @@ public class ChannelConfigHandler<R extends Config> extends ControllerHandler {
         return createResponse(HttpStatus.BAD_REQUEST, id, "No configuration with the specified id.");
     }
 
-    public ResponseEntity<String> validateConfig(final R restModel, final ChannelDescriptor descriptor) {
+    public ResponseEntity<String> validateConfig(final Config restModel, final DescriptorConfig descriptor) {
         if (restModel == null) {
-            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + descriptor.getName());
+            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing");
         }
         try {
             final String responseMessage = configActions.validateConfig(restModel, descriptor);
@@ -129,9 +129,9 @@ public class ChannelConfigHandler<R extends Config> extends ControllerHandler {
         }
     }
 
-    public ResponseEntity<String> testConfig(final R restModel, final ChannelDescriptor descriptor) {
+    public ResponseEntity<String> testConfig(final Config restModel, final DescriptorConfig descriptor) {
         if (restModel == null) {
-            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing " + descriptor.getName());
+            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing");
         }
         try {
             final String responseMessage = configActions.testConfig(restModel, descriptor);

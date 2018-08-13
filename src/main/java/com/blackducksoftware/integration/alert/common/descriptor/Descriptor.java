@@ -77,31 +77,31 @@ public abstract class Descriptor {
     }
 
     public Optional<? extends DatabaseEntity> readEntity(final DescriptorConfigType descriptorConfigType, final long id) {
-        return getConfig(descriptorConfigType).getRepositoryAccessor().readEntity(id);
+        return getConfig(descriptorConfigType).readEntity(id);
     }
 
     public List<? extends DatabaseEntity> readEntities(final DescriptorConfigType descriptorConfigType) {
-        return getConfig(descriptorConfigType).getRepositoryAccessor().readEntities();
+        return getConfig(descriptorConfigType).readEntities();
     }
 
     public DatabaseEntity saveEntity(final DescriptorConfigType descriptorConfigType, final DatabaseEntity entity) {
-        return getConfig(descriptorConfigType).getRepositoryAccessor().saveEntity(entity);
+        return getConfig(descriptorConfigType).saveEntity(entity);
     }
 
     public void deleteEntity(final DescriptorConfigType descriptorConfigType, final long id) {
-        getConfig(descriptorConfigType).getRepositoryAccessor().deleteEntity(id);
+        getConfig(descriptorConfigType).deleteEntity(id);
     }
 
     public DatabaseEntity populateEntityFromConfig(final DescriptorConfigType descriptorConfigType, final Config config) {
-        return getConfig(descriptorConfigType).getTypeConverter().populateEntityFromConfig(config);
+        return getConfig(descriptorConfigType).populateEntityFromConfig(config);
     }
 
     public Config populateConfigFromEntity(final DescriptorConfigType descriptorConfigType, final DatabaseEntity entity) {
-        return getConfig(descriptorConfigType).getTypeConverter().populateConfigFromEntity(entity);
+        return getConfig(descriptorConfigType).populateConfigFromEntity(entity);
     }
 
     public Config getConfigFromJson(final DescriptorConfigType descriptorConfigType, final String json) {
-        return getConfig(descriptorConfigType).getTypeConverter().getConfigFromJson(json);
+        return getConfig(descriptorConfigType).getConfigFromJson(json);
     }
 
     public void validateConfig(final DescriptorConfigType descriptorConfigType, final Config config, final Map<String, String> fieldErrors) {

@@ -45,11 +45,11 @@ import com.blackducksoftware.integration.alert.web.model.Config;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
 @Transactional
-public abstract class ConfigActions<D extends DatabaseEntity, R extends Config, W extends JpaRepository<D, Long>> {
+public abstract class OldConfigActions<D extends DatabaseEntity, R extends Config, W extends JpaRepository<D, Long>> {
     private final W repository;
     private final TypeConverter typeConverter;
 
-    public ConfigActions(final W repository, final TypeConverter typeConverter) {
+    public OldConfigActions(final W repository, final TypeConverter typeConverter) {
         this.repository = repository;
         this.typeConverter = typeConverter;
     }

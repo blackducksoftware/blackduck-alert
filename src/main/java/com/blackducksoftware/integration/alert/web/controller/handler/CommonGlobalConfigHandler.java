@@ -29,20 +29,20 @@ import org.springframework.http.ResponseEntity;
 
 import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.web.actions.ConfigActions;
+import com.blackducksoftware.integration.alert.web.actions.OldConfigActions;
 import com.blackducksoftware.integration.alert.web.model.Config;
 
 public class CommonGlobalConfigHandler<D extends DatabaseEntity, R extends Config, W extends JpaRepository<D, Long>> extends CommonConfigHandler<D, R, W> {
     private final Class<D> databaseEntityClass;
 
-    public CommonGlobalConfigHandler(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final ConfigActions<D, R, W> configActions, final ContentConverter contentConverter) {
+    public CommonGlobalConfigHandler(final Class<D> databaseEntityClass, final Class<R> configRestModelClass, final OldConfigActions<D, R, W> configActions, final ContentConverter contentConverter) {
         super(databaseEntityClass, configRestModelClass, configActions, contentConverter);
         this.databaseEntityClass = databaseEntityClass;
     }
 
     @Override
     public ResponseEntity<String> postConfig(final R restModel) {
-        if (!configActions.getRepository().findAll().isEmpty()) {
+        if (!oldConfigActions.getRepository().findAll().isEmpty()) {
             return createResponse(HttpStatus.PRECONDITION_FAILED, String.format("Cannot POST because a global configuration for %s already exists!", databaseEntityClass.getSimpleName()));
         }
         return super.postConfig(restModel);
