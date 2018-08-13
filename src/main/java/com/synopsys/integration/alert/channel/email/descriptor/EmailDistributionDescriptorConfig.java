@@ -37,11 +37,11 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.channel.event.ChannelEventFactory;
-import com.synopsys.integration.alert.common.descriptor.config.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
-import com.synopsys.integration.alert.common.enumeration.FieldGroup;
-import com.synopsys.integration.alert.common.enumeration.FieldType;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.DropDownConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.database.channel.email.EmailDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.database.channel.email.EmailGroupDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
@@ -84,8 +84,8 @@ public class EmailDistributionDescriptorConfig extends DescriptorConfig {
 
     @Override
     public UIComponent getUiComponent() {
-        final ConfigField subjectLine = new ConfigField("emailSubjectLine", "Subject Line", FieldType.TEXT_INPUT, false, false, FieldGroup.DEFAULT);
-        final ConfigField groupName = new ConfigField("groupName", "Group Name", FieldType.SELECT, true, false, FieldGroup.DEFAULT, getEmailGroups());
+        final ConfigField subjectLine = new TextInputConfigField("emailSubjectLine", "Subject Line", false, false);
+        final ConfigField groupName = new DropDownConfigField("groupName", "Group Name", true, false, getEmailGroups());
         return new UIComponent("Email", "email", "envelope", Arrays.asList(subjectLine, groupName));
     }
 

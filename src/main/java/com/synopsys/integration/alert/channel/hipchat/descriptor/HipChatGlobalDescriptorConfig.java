@@ -31,11 +31,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
-import com.synopsys.integration.alert.common.descriptor.config.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.enumeration.FieldGroup;
-import com.synopsys.integration.alert.common.enumeration.FieldType;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalRepositoryAccessor;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
@@ -56,8 +57,8 @@ public class HipChatGlobalDescriptorConfig extends DescriptorConfig {
 
     @Override
     public UIComponent getUiComponent() {
-        final ConfigField apiKey = new ConfigField("apiKey", "Api Key", FieldType.PASSWORD_INPUT, true, true, FieldGroup.DEFAULT);
-        final ConfigField hostServer = new ConfigField("hostServer", "Host Server", FieldType.TEXT_INPUT, false, false, FieldGroup.ADVANCED);
+        final ConfigField apiKey = new PasswordConfigField("apiKey", "Api Key", true);
+        final ConfigField hostServer = new TextInputConfigField("hostServer", "Host Server", false, false, FieldGroup.ADVANCED, "");
         return new UIComponent("HipChat", "hipchat", "comments", Arrays.asList(apiKey, hostServer));
     }
 
