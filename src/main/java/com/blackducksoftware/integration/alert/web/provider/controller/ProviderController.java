@@ -35,13 +35,13 @@ import com.blackducksoftware.integration.alert.common.descriptor.DescriptorMap;
 import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.blackducksoftware.integration.alert.common.enumeration.DescriptorConfigType;
 import com.blackducksoftware.integration.alert.web.channel.actions.ChannelGlobalConfigActions;
-import com.blackducksoftware.integration.alert.web.channel.controller.ConfigController;
+import com.blackducksoftware.integration.alert.web.channel.controller.NewConfigController;
 import com.blackducksoftware.integration.alert.web.channel.handler.ChannelConfigHandler;
 import com.blackducksoftware.integration.alert.web.model.Config;
 
 @RestController
-@RequestMapping(ConfigController.PROVIDER_CONFIG + "/{descriptorName}")
-public class ProviderController extends ConfigController {
+@RequestMapping(NewConfigController.PROVIDER_CONFIG + "/{descriptorName}")
+public class ProviderController extends NewConfigController {
     private final DescriptorMap descriptorMap;
     private final ChannelConfigHandler channelConfigHandler;
 

@@ -47,7 +47,7 @@ import com.blackducksoftware.integration.exception.IntegrationException;
 import com.google.common.collect.Maps;
 
 @Component
-public class ChannelGlobalConfigActions extends ConfigActions {
+public class ChannelGlobalConfigActions extends NewConfigActions {
 
     @Autowired
     public ChannelGlobalConfigActions(final ContentConverter contentConverter) {
