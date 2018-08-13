@@ -13,7 +13,6 @@ import org.junit.Test;
 import com.blackducksoftware.integration.alert.datasource.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.alert.mock.notification.NotificationGeneratorUtils;
 import com.blackducksoftware.integration.alert.model.NotificationModel;
-import com.blackducksoftware.integration.alert.processor.policy.PolicyNotificationTypeProcessor;
 import com.blackducksoftware.integration.hub.api.generated.enumeration.NotificationType;
 import com.blackducksoftware.integration.hub.api.generated.view.NotificationView;
 import com.blackducksoftware.integration.hub.notification.NotificationDetailResult;
@@ -49,7 +48,7 @@ public class PolicyNotificationTypeProcessorTest {
         final List<NotificationDetailResult> detailList = createPolicyViolationNotification();
 
         final NotificationDetailResults notificationResults = NotificationGeneratorUtils.createNotificationResults(detailList);
-        final HubBucket bucket = notificationResults.getHubBucket();
+        final HubBucket bucket = new HubBucket();
         final List<NotificationModel> modelList = new ArrayList<>();
         notificationResults.getResults().forEach(detail -> {
             modelList.addAll(processor.process(null, detail, bucket));
@@ -73,7 +72,7 @@ public class PolicyNotificationTypeProcessorTest {
         final List<NotificationDetailResult> detailList = createPolicyClearedNotification();
 
         final NotificationDetailResults notificationResults = NotificationGeneratorUtils.createNotificationResults(detailList);
-        final HubBucket bucket = notificationResults.getHubBucket();
+        final HubBucket bucket = new HubBucket();
         final List<NotificationModel> modelList = new ArrayList<>();
         notificationResults.getResults().forEach(detail -> {
             modelList.addAll(processor.process(null, detail, bucket));
@@ -97,7 +96,7 @@ public class PolicyNotificationTypeProcessorTest {
         final List<NotificationDetailResult> detailList = createPolicyOverrideNotification();
 
         final NotificationDetailResults notificationResults = NotificationGeneratorUtils.createNotificationResults(detailList);
-        final HubBucket bucket = notificationResults.getHubBucket();
+        final HubBucket bucket = new HubBucket();
         final List<NotificationModel> modelList = new ArrayList<>();
         notificationResults.getResults().forEach(detail -> {
             modelList.addAll(processor.process(null, detail, bucket));
@@ -124,7 +123,7 @@ public class PolicyNotificationTypeProcessorTest {
         detailList.addAll(violationList);
         detailList.addAll(clearedList);
         final NotificationDetailResults notificationResults = NotificationGeneratorUtils.createNotificationResults(detailList);
-        final HubBucket bucket = notificationResults.getHubBucket();
+        final HubBucket bucket = new HubBucket();
         final List<NotificationModel> modelList = new ArrayList<>();
         notificationResults.getResults().forEach(detail -> {
             modelList.addAll(processor.process(null, detail, bucket));
@@ -142,7 +141,7 @@ public class PolicyNotificationTypeProcessorTest {
         detailList.addAll(overrideList);
 
         final NotificationDetailResults notificationResults = NotificationGeneratorUtils.createNotificationResults(detailList);
-        final HubBucket bucket = notificationResults.getHubBucket();
+        final HubBucket bucket = new HubBucket();
         final List<NotificationModel> modelList = new ArrayList<>();
         notificationResults.getResults().forEach(detail -> {
             modelList.addAll(processor.process(null, detail, bucket));
@@ -162,7 +161,7 @@ public class PolicyNotificationTypeProcessorTest {
         detailList.addAll(duplicateClearedList);
 
         final NotificationDetailResults notificationResults = NotificationGeneratorUtils.createNotificationResults(detailList);
-        final HubBucket bucket = notificationResults.getHubBucket();
+        final HubBucket bucket = new HubBucket();
         final List<NotificationModel> modelList = new ArrayList<>();
         notificationResults.getResults().forEach(detail -> {
             modelList.addAll(processor.process(null, detail, bucket));
@@ -182,7 +181,7 @@ public class PolicyNotificationTypeProcessorTest {
         detailList.addAll(duplicateOverrideList);
 
         final NotificationDetailResults notificationResults = NotificationGeneratorUtils.createNotificationResults(detailList);
-        final HubBucket bucket = notificationResults.getHubBucket();
+        final HubBucket bucket = new HubBucket();
         final List<NotificationModel> modelList = new ArrayList<>();
         notificationResults.getResults().forEach(detail -> {
             modelList.addAll(processor.process(null, detail, bucket));

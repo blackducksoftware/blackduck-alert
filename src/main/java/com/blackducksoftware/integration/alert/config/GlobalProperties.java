@@ -39,10 +39,10 @@ import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubRepos
 import com.blackducksoftware.integration.exception.EncryptionException;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfig;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfigBuilder;
+import com.blackducksoftware.integration.hub.rest.BlackduckRestConnection;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.log.IntLogger;
 import com.blackducksoftware.integration.log.Slf4jIntLogger;
-import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.blackducksoftware.integration.util.ResourceUtil;
 import com.google.gson.Gson;
 
@@ -211,11 +211,11 @@ public class GlobalProperties {
         return null;
     }
 
-    public HubServicesFactory createHubServicesFactory(final RestConnection restConnection) {
-        return new HubServicesFactory(restConnection);
+    public HubServicesFactory createHubServicesFactory(final BlackduckRestConnection restConnection, final IntLogger logger) {
+        return new HubServicesFactory(HubServicesFactory.createDefaultGson(), HubServicesFactory.createDefaultJsonParser(), restConnection, logger);
     }
 
-    public RestConnection createRestConnectionAndLogErrors(final Logger logger) {
+    public BlackduckRestConnection createRestConnectionAndLogErrors(final Logger logger) {
         try {
             return createRestConnection(logger);
         } catch (final Exception e) {
@@ -224,22 +224,22 @@ public class GlobalProperties {
         return null;
     }
 
-    public RestConnection createRestConnection(final Logger logger) throws AlertException {
+    public BlackduckRestConnection createRestConnection(final Logger logger) throws AlertException {
         final IntLogger intLogger = new Slf4jIntLogger(logger);
         return createRestConnection(intLogger);
     }
 
-    public RestConnection createRestConnection(final IntLogger intLogger) throws AlertException {
+    public BlackduckRestConnection createRestConnection(final IntLogger intLogger) throws AlertException {
         final HubServerConfig hubServerConfig = createHubServerConfig(intLogger);
-        RestConnection restConnection = null;
+        BlackduckRestConnection restConnection = null;
         if (hubServerConfig != null) {
             restConnection = createRestConnection(intLogger, hubServerConfig);
         }
         return restConnection;
     }
 
-    public RestConnection createRestConnection(final IntLogger intLogger, final HubServerConfig hubServerConfig) {
-        RestConnection restConnection = null;
+    public BlackduckRestConnection createRestConnection(final IntLogger intLogger, final HubServerConfig hubServerConfig) {
+        BlackduckRestConnection restConnection = null;
         try {
             restConnection = hubServerConfig.createRestConnection(intLogger);
         } catch (final EncryptionException e) {

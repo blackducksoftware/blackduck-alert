@@ -12,24 +12,23 @@ import org.mockito.Mockito;
 
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
 import com.blackducksoftware.integration.alert.exception.AlertException;
-import com.blackducksoftware.integration.alert.provider.hub.controller.HubDataActions;
 import com.blackducksoftware.integration.alert.provider.hub.model.HubGroup;
 import com.blackducksoftware.integration.alert.provider.hub.model.HubProject;
 import com.blackducksoftware.integration.hub.api.core.ResourceMetadata;
 import com.blackducksoftware.integration.hub.api.generated.discovery.ApiDiscovery;
 import com.blackducksoftware.integration.hub.api.generated.view.ProjectView;
 import com.blackducksoftware.integration.hub.api.generated.view.UserGroupView;
+import com.blackducksoftware.integration.hub.rest.BlackduckRestConnection;
 import com.blackducksoftware.integration.hub.service.HubService;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.ProjectService;
-import com.blackducksoftware.integration.rest.connection.RestConnection;
 
 public class HubDataActionsTest {
 
     @Test
     public void testGetHubGroupsNullHubServicesFactory() throws Exception {
         final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
-        Mockito.when(globalProperties.createHubServicesFactory(Mockito.any())).thenReturn(null);
+        Mockito.when(globalProperties.createHubServicesFactory(Mockito.any(), Mockito.any())).thenReturn(null);
         final HubDataActions hubDataActions = new HubDataActions(globalProperties);
         try {
             hubDataActions.getHubGroups();
@@ -42,13 +41,13 @@ public class HubDataActionsTest {
     @Test
     public void testGetHubGroupsNoGroups() throws Exception {
         final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
-        final RestConnection restConnection = Mockito.mock(RestConnection.class);
+        final BlackduckRestConnection restConnection = Mockito.mock(BlackduckRestConnection.class);
         Mockito.when(globalProperties.createRestConnectionAndLogErrors(Mockito.any())).thenReturn(restConnection);
         final HubServicesFactory hubServicesFactory = Mockito.mock(HubServicesFactory.class);
         final HubService hubService = Mockito.mock(HubService.class);
         Mockito.when(hubService.getAllResponses(ApiDiscovery.USERGROUPS_LINK_RESPONSE)).thenReturn(Collections.emptyList());
         Mockito.when(hubServicesFactory.createHubService()).thenReturn(hubService);
-        Mockito.when(globalProperties.createHubServicesFactory(Mockito.any())).thenReturn(hubServicesFactory);
+        Mockito.when(globalProperties.createHubServicesFactory(Mockito.any(), Mockito.any())).thenReturn(hubServicesFactory);
         final HubDataActions hubDataActions = new HubDataActions(globalProperties);
         final List<HubGroup> hubGroups = hubDataActions.getHubGroups();
         assertEquals(0, hubGroups.size());
@@ -57,7 +56,7 @@ public class HubDataActionsTest {
     @Test
     public void testGetHubGroups() throws Exception {
         final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
-        final RestConnection restConnection = Mockito.mock(RestConnection.class);
+        final BlackduckRestConnection restConnection = Mockito.mock(BlackduckRestConnection.class);
         Mockito.when(globalProperties.createRestConnectionAndLogErrors(Mockito.any())).thenReturn(restConnection);
         final HubServicesFactory hubServicesFactory = Mockito.mock(HubServicesFactory.class);
         final HubService hubService = Mockito.mock(HubService.class);
@@ -77,7 +76,7 @@ public class HubDataActionsTest {
         Mockito.when(hubService.getAllResponses(ApiDiscovery.USERGROUPS_LINK_RESPONSE)).thenReturn(userGroups);
         Mockito.when(hubServicesFactory.createHubService()).thenReturn(hubService);
         Mockito.when(hubServicesFactory.createHubService()).thenReturn(hubService);
-        Mockito.when(globalProperties.createHubServicesFactory(Mockito.any())).thenReturn(hubServicesFactory);
+        Mockito.when(globalProperties.createHubServicesFactory(Mockito.any(), Mockito.any())).thenReturn(hubServicesFactory);
         final HubDataActions hubDataActions = new HubDataActions(globalProperties);
         final List<HubGroup> hubGroups = hubDataActions.getHubGroups();
         assertEquals(1, hubGroups.size());
@@ -90,7 +89,7 @@ public class HubDataActionsTest {
     @Test
     public void testGetHubProjectsNullHubServicesFactory() throws Exception {
         final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
-        Mockito.when(globalProperties.createHubServicesFactory(Mockito.any())).thenReturn(null);
+        Mockito.when(globalProperties.createHubServicesFactory(Mockito.any(), Mockito.any())).thenReturn(null);
         final HubDataActions hubDataActions = new HubDataActions(globalProperties);
         try {
             hubDataActions.getHubProjects();
@@ -103,7 +102,7 @@ public class HubDataActionsTest {
     @Test
     public void testGetHubProjectsNoProjects() throws Exception {
         final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
-        final RestConnection restConnection = Mockito.mock(RestConnection.class);
+        final BlackduckRestConnection restConnection = Mockito.mock(BlackduckRestConnection.class);
         Mockito.when(globalProperties.createRestConnectionAndLogErrors(Mockito.any())).thenReturn(restConnection);
         final HubServicesFactory hubServicesFactory = Mockito.mock(HubServicesFactory.class);
         final ProjectService projectRequestService = Mockito.mock(ProjectService.class);
@@ -111,7 +110,7 @@ public class HubDataActionsTest {
         Mockito.when(hubService.getAllResponses(ApiDiscovery.PROJECTS_LINK_RESPONSE)).thenReturn(Collections.emptyList());
         Mockito.when(hubServicesFactory.createProjectService()).thenReturn(projectRequestService);
         Mockito.when(hubServicesFactory.createHubService()).thenReturn(hubService);
-        Mockito.when(globalProperties.createHubServicesFactory(Mockito.any())).thenReturn(hubServicesFactory);
+        Mockito.when(globalProperties.createHubServicesFactory(Mockito.any(), Mockito.any())).thenReturn(hubServicesFactory);
         final HubDataActions hubDataActions = new HubDataActions(globalProperties);
         final List<HubProject> hubProjects = hubDataActions.getHubProjects();
         assertEquals(0, hubProjects.size());
@@ -120,7 +119,7 @@ public class HubDataActionsTest {
     @Test
     public void testGetHubProjects() throws Exception {
         final GlobalProperties globalProperties = Mockito.mock(GlobalProperties.class);
-        final RestConnection restConnection = Mockito.mock(RestConnection.class);
+        final BlackduckRestConnection restConnection = Mockito.mock(BlackduckRestConnection.class);
         Mockito.when(globalProperties.createRestConnectionAndLogErrors(Mockito.any())).thenReturn(restConnection);
         final HubServicesFactory hubServicesFactory = Mockito.mock(HubServicesFactory.class);
         final ProjectService projectRequestService = Mockito.mock(ProjectService.class);
@@ -136,7 +135,7 @@ public class HubDataActionsTest {
         Mockito.when(hubService.getAllResponses(ApiDiscovery.PROJECTS_LINK_RESPONSE)).thenReturn(projectViews);
         Mockito.when(hubServicesFactory.createProjectService()).thenReturn(projectRequestService);
         Mockito.when(hubServicesFactory.createHubService()).thenReturn(hubService);
-        Mockito.when(globalProperties.createHubServicesFactory(Mockito.any())).thenReturn(hubServicesFactory);
+        Mockito.when(globalProperties.createHubServicesFactory(Mockito.any(), Mockito.any())).thenReturn(hubServicesFactory);
         final HubDataActions hubDataActions = new HubDataActions(globalProperties);
         final List<HubProject> hubProjects = hubDataActions.getHubProjects();
         assertEquals(1, hubProjects.size());

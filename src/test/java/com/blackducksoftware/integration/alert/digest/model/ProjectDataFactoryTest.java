@@ -22,14 +22,9 @@ import org.junit.Test;
 import com.blackducksoftware.integration.alert.datasource.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.alert.datasource.entity.NotificationEntity;
 import com.blackducksoftware.integration.alert.datasource.entity.VulnerabilityEntity;
-import com.blackducksoftware.integration.alert.digest.model.CategoryData;
-import com.blackducksoftware.integration.alert.digest.model.ItemData;
-import com.blackducksoftware.integration.alert.digest.model.ProjectData;
-import com.blackducksoftware.integration.alert.digest.model.ProjectDataFactory;
 import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.alert.enumeration.VulnerabilityOperationEnum;
 import com.blackducksoftware.integration.alert.model.NotificationModel;
-import com.blackducksoftware.integration.hub.throwaway.ItemTypeEnum;
 
 public class ProjectDataFactoryTest {
 
@@ -107,9 +102,9 @@ public class ProjectDataFactoryTest {
         final CategoryData categoryData = projectData.getCategoryMap().get(notification.getNotificationType());
         final ItemData itemData = categoryData.getItems().iterator().next();
         assertEquals(notification.getNotificationType().name(), categoryData.getCategoryKey());
-        assertEquals(notification.getPolicyRuleName(), itemData.getDataSet().get(ItemTypeEnum.RULE.name()));
-        assertEquals(notification.getComponentName(), itemData.getDataSet().get(ItemTypeEnum.COMPONENT.name()));
-        assertEquals(notification.getComponentVersion(), itemData.getDataSet().get(ItemTypeEnum.VERSION.name()));
+        assertEquals(notification.getPolicyRuleName(), itemData.getDataSet().get(ProjectData.DATASET_KEY_RULE));
+        assertEquals(notification.getComponentName(), itemData.getDataSet().get(ProjectData.DATASET_KEY_COMPONENT));
+        assertEquals(notification.getComponentVersion(), itemData.getDataSet().get(ProjectData.DATASET_KEY_VERSION));
     }
 
     private Collection<NotificationModel> createNotificationCollection() {

@@ -10,7 +10,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mockito.Mockito;
 
-import com.blackducksoftware.integration.alert.PhoneHome;
 import com.blackducksoftware.integration.alert.channel.email.EmailGroupChannel;
 import com.blackducksoftware.integration.alert.channel.hipchat.HipChatChannel;
 import com.blackducksoftware.integration.alert.channel.slack.SlackChannel;
@@ -18,10 +17,10 @@ import com.blackducksoftware.integration.alert.datasource.entity.CommonDistribut
 import com.blackducksoftware.integration.alert.datasource.entity.repository.CommonDistributionRepository;
 import com.blackducksoftware.integration.alert.exception.AlertException;
 import com.blackducksoftware.integration.alert.mock.entity.MockCommonDistributionEntity;
+import com.blackducksoftware.integration.hub.rest.BlackduckRestConnection;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.PhoneHomeService;
 import com.blackducksoftware.integration.phonehome.PhoneHomeRequestBody;
-import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.blackducksoftware.integration.test.annotation.HubConnectionTest;
 import com.blackducksoftware.integration.test.tool.TestLogger;
 
@@ -32,9 +31,9 @@ public class PhoneHomeTest {
     public void testProductVersion() throws AlertException, IOException {
         final TestGlobalProperties globalProperties = new TestGlobalProperties();
         final PhoneHome phoneHome = new PhoneHome(null);
-
-        try (final RestConnection restConnection = globalProperties.createRestConnection(new TestLogger())) {
-            final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection);
+        final TestLogger testLogger = new TestLogger();
+        try (final BlackduckRestConnection restConnection = globalProperties.createRestConnection(testLogger)) {
+            final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection, testLogger);
             final PhoneHomeService phoneHomeService = hubServicesFactory.createPhoneHomeService();
             final PhoneHomeRequestBody.Builder builder = phoneHome.createPhoneHomeBuilder(phoneHomeService, "test");
 

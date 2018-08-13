@@ -20,9 +20,9 @@ import com.blackducksoftware.integration.alert.exception.AlertException;
 import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubConfigEntity;
 import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubRepository;
 import com.blackducksoftware.integration.hub.configuration.HubServerConfig;
+import com.blackducksoftware.integration.hub.rest.BlackduckRestConnection;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.log.IntLogger;
-import com.blackducksoftware.integration.rest.connection.RestConnection;
 import com.google.gson.Gson;
 
 public class TestGlobalProperties extends GlobalProperties {
@@ -81,7 +81,7 @@ public class TestGlobalProperties extends GlobalProperties {
     }
 
     @Override
-    public RestConnection createRestConnection(final IntLogger intLogger) throws AlertException {
+    public BlackduckRestConnection createRestConnection(final IntLogger intLogger) throws AlertException {
         setHubUrl(testProperties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL));
         setHubTrustCertificate(true);
         return super.createRestConnection(intLogger);
@@ -106,8 +106,8 @@ public class TestGlobalProperties extends GlobalProperties {
         setHubUrl(testProperties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL));
         setHubTrustCertificate(true);
         final HubServerConfig hubServerConfig = createHubServerConfigWithCredentials(logger);
-        final RestConnection restConnection = hubServerConfig.createCredentialsRestConnection(logger);
-        return new HubServicesFactory(restConnection);
+        final BlackduckRestConnection restConnection = hubServerConfig.createCredentialsRestConnection(logger);
+        return new HubServicesFactory(HubServicesFactory.createDefaultGson(), HubServicesFactory.createDefaultJsonParser(), restConnection, logger);
     }
 
 }

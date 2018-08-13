@@ -47,7 +47,7 @@ public class NotificationItemProcessor {
 
     public AlertEvent process(final GlobalProperties globalProperties, final NotificationDetailResults notificationData) {
         final List<NotificationDetailResult> resultList = notificationData.getResults();
-        final HubBucket bucket = notificationData.getHubBucket();
+        final HubBucket bucket = new HubBucket();
         final int size = resultList.size();
         final List<NotificationModel> notificationModelList = new ArrayList<>(size);
         if (processorList != null) {

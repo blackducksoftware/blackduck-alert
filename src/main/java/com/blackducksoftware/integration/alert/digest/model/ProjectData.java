@@ -30,6 +30,10 @@ import com.blackducksoftware.integration.alert.datasource.entity.NotificationCat
 import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
 
 public class ProjectData extends DigestData {
+    public static final String DATASET_KEY_COMPONENT = "COMPONENT";
+    public static final String DATASET_KEY_RULE = "RULE";
+    public static final String DATASET_KEY_VERSION = "VERSION";
+
     private final DigestTypeEnum digestType;
     private final String projectKey;
     private final String projectName;

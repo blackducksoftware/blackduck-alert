@@ -30,8 +30,7 @@ import com.blackducksoftware.integration.alert.Application;
 import com.blackducksoftware.integration.alert.config.DataSourceConfig;
 import com.blackducksoftware.integration.alert.datasource.entity.NotificationCategoryEnum;
 import com.blackducksoftware.integration.alert.datasource.entity.NotificationEntity;
-import com.blackducksoftware.integration.alert.datasource.entity.repository.NotificationRepository;
-import com.blackducksoftware.integration.rest.connection.RestConnection;
+import com.blackducksoftware.integration.rest.RestConstants;
 import com.blackducksoftware.integration.test.annotation.DatabaseConnectionTest;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 
@@ -60,7 +59,7 @@ public class NotificationRepositoryTestIT {
     }
 
     private NotificationEntity createEntity(final String dateString) throws ParseException {
-        final Date createdAt = RestConnection.parseDateString(dateString);
+        final Date createdAt = RestConstants.parseDateString(dateString);
         final NotificationEntity entity = createNotificationEntity(createdAt);
         final NotificationEntity savedEntity = repository.save(entity);
         return savedEntity;
@@ -94,15 +93,15 @@ public class NotificationRepositoryTestIT {
     public void testFindByDate() throws Exception {
         final Set<String> validResultDates = new HashSet<>();
         NotificationEntity savedEntity = createEntity("2017-10-15T1:00:00.000Z");
-        validResultDates.add(RestConnection.formatDate(savedEntity.getCreatedAt()));
+        validResultDates.add(RestConstants.formatDate(savedEntity.getCreatedAt()));
         savedEntity = createEntity("2017-10-21T14:00:00.000Z");
-        validResultDates.add(RestConnection.formatDate(savedEntity.getCreatedAt()));
+        validResultDates.add(RestConstants.formatDate(savedEntity.getCreatedAt()));
         savedEntity = createEntity("2017-10-22T14:00:00.000Z");
-        validResultDates.add(RestConnection.formatDate(savedEntity.getCreatedAt()));
+        validResultDates.add(RestConstants.formatDate(savedEntity.getCreatedAt()));
         savedEntity = createEntity("2017-10-23T14:00:00.000Z");
-        validResultDates.add(RestConnection.formatDate(savedEntity.getCreatedAt()));
+        validResultDates.add(RestConstants.formatDate(savedEntity.getCreatedAt()));
         savedEntity = createEntity("2017-10-30T14:00:00.000Z");
-        validResultDates.add(RestConnection.formatDate(savedEntity.getCreatedAt()));
+        validResultDates.add(RestConstants.formatDate(savedEntity.getCreatedAt()));
 
         createEntity("2017-10-10T16:00:00.000Z");
         createEntity("2017-10-31T15:00:00.000Z");
@@ -111,13 +110,13 @@ public class NotificationRepositoryTestIT {
         createEntity("2017-10-31T18:00:00.000Z");
         final long count = repository.count();
         assertEquals(10, count);
-        final Date startDate = RestConnection.parseDateString("2017-10-12T01:30:59.000Z");
-        final Date endDate = RestConnection.parseDateString("2017-10-30T16:59:59.000Z");
+        final Date startDate = RestConstants.parseDateString("2017-10-12T01:30:59.000Z");
+        final Date endDate = RestConstants.parseDateString("2017-10-30T16:59:59.000Z");
         final List<NotificationEntity> foundEntityList = repository.findByCreatedAtBetween(startDate, endDate);
         assertEquals(5, foundEntityList.size());
 
         foundEntityList.forEach(entity -> {
-            final String createdAtString = RestConnection.formatDate(entity.getCreatedAt());
+            final String createdAtString = RestConstants.formatDate(entity.getCreatedAt());
             assertTrue(validResultDates.contains(createdAtString));
         });
     }

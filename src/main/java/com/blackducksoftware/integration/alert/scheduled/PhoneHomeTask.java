@@ -33,10 +33,11 @@ import org.springframework.stereotype.Component;
 
 import com.blackducksoftware.integration.alert.PhoneHome;
 import com.blackducksoftware.integration.alert.config.GlobalProperties;
+import com.blackducksoftware.integration.hub.rest.BlackduckRestConnection;
 import com.blackducksoftware.integration.hub.service.HubServicesFactory;
 import com.blackducksoftware.integration.hub.service.PhoneHomeService;
+import com.blackducksoftware.integration.log.Slf4jIntLogger;
 import com.blackducksoftware.integration.phonehome.PhoneHomeRequestBody;
-import com.blackducksoftware.integration.rest.connection.RestConnection;
 
 @Component
 public class PhoneHomeTask extends ScheduledTask {
@@ -53,9 +54,9 @@ public class PhoneHomeTask extends ScheduledTask {
 
     @Override
     public void run() {
-        try (RestConnection restConnection = globalProperties.createRestConnectionAndLogErrors(logger)) {
+        try (final BlackduckRestConnection restConnection = globalProperties.createRestConnectionAndLogErrors(logger)) {
             if (restConnection != null) {
-                final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection);
+                final HubServicesFactory hubServicesFactory = globalProperties.createHubServicesFactory(restConnection, new Slf4jIntLogger(logger));
                 final PhoneHomeService phoneHomeService = hubServicesFactory.createPhoneHomeService();
                 final PhoneHomeRequestBody.Builder builder = phoneHome.createPhoneHomeBuilder(phoneHomeService, globalProperties.getProductVersion());
                 if (builder != null) {

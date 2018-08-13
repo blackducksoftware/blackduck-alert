@@ -39,7 +39,6 @@ import com.blackducksoftware.integration.alert.datasource.entity.VulnerabilityEn
 import com.blackducksoftware.integration.alert.enumeration.DigestTypeEnum;
 import com.blackducksoftware.integration.alert.enumeration.VulnerabilityOperationEnum;
 import com.blackducksoftware.integration.alert.model.NotificationModel;
-import com.blackducksoftware.integration.hub.throwaway.ItemTypeEnum;
 
 @Component
 public class ProjectDataFactory {
@@ -124,11 +123,11 @@ public class ProjectDataFactory {
         }
 
         if (StringUtils.isNotBlank(notification.getPolicyRuleName())) {
-            dataSet.put(ItemTypeEnum.RULE.name(), notification.getPolicyRuleName());
+            dataSet.put("RULE", notification.getPolicyRuleName());
         }
 
-        dataSet.put(ItemTypeEnum.COMPONENT.name(), notification.getComponentName());
-        dataSet.put(ItemTypeEnum.VERSION.name(), notification.getComponentVersion());
+        dataSet.put(ProjectData.DATASET_KEY_COMPONENT, notification.getComponentName());
+        dataSet.put(ProjectData.DATASET_KEY_VERSION, notification.getComponentVersion());
         if (countAdded > 0) {
             dataSet.put(VULNERABILITY_COUNT_KEY_ADDED, countAdded);
         }
