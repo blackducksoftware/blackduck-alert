@@ -35,8 +35,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.blackducksoftware.integration.alert.web.controller.BaseController;
 import com.blackducksoftware.integration.alert.web.model.Config;
 
-@RequestMapping(ConfigController.CONFIGURATION_PATH)
-public abstract class ConfigController extends BaseController {
+@RequestMapping(NewConfigController.CONFIGURATION_PATH)
+public abstract class NewConfigController extends BaseController {
     public static final String CONFIGURATION_PATH = BaseController.BASE_PATH + "/configuration";
     public static final String PROVIDER_CONFIG = CONFIGURATION_PATH + "/provider";
     public static final String CHANNEL_CONFIG = CONFIGURATION_PATH + "/channel";

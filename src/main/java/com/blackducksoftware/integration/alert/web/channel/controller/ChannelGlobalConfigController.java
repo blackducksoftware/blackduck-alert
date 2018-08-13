@@ -41,8 +41,8 @@ import com.blackducksoftware.integration.alert.web.channel.handler.ChannelConfig
 import com.blackducksoftware.integration.alert.web.model.Config;
 
 @RestController
-@RequestMapping(ConfigController.CHANNEL_CONFIG + "/global/{descriptorName}")
-public class ChannelGlobalConfigController extends ConfigController {
+@RequestMapping(NewConfigController.CHANNEL_CONFIG + "/global/{descriptorName}")
+public class ChannelGlobalConfigController extends NewConfigController {
     private final ChannelConfigHandler controllerHandler;
     private final DescriptorMap descriptorMap;
 

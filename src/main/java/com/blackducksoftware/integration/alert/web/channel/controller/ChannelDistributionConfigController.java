@@ -48,8 +48,8 @@ import com.blackducksoftware.integration.alert.web.model.CommonDistributionConfi
 import com.blackducksoftware.integration.alert.web.model.Config;
 
 @RestController
-@RequestMapping(ConfigController.CHANNEL_CONFIG + "/distribution")
-public class ChannelDistributionConfigController extends ConfigController {
+@RequestMapping(NewConfigController.CHANNEL_CONFIG + "/distribution")
+public class ChannelDistributionConfigController extends NewConfigController {
     private final ChannelConfigHandler controllerHandler;
     private final DescriptorMap descriptorMap;
 

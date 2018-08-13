@@ -35,7 +35,7 @@ import com.blackducksoftware.integration.alert.common.ContentConverter;
 import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.blackducksoftware.integration.alert.common.exception.AlertException;
 import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.web.channel.actions.ConfigActions;
+import com.blackducksoftware.integration.alert.web.channel.actions.NewConfigActions;
 import com.blackducksoftware.integration.alert.web.controller.handler.ControllerHandler;
 import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
 import com.blackducksoftware.integration.alert.web.model.Config;
@@ -44,16 +44,16 @@ import com.blackducksoftware.integration.rest.exception.IntegrationRestException
 
 public class ChannelConfigHandler extends ControllerHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final ConfigActions configActions;
+    private final NewConfigActions newConfigActions;
 
-    public ChannelConfigHandler(final ContentConverter contentConverter, final ConfigActions configActions) {
+    public ChannelConfigHandler(final ContentConverter contentConverter, final NewConfigActions newConfigActions) {
         super(contentConverter);
-        this.configActions = configActions;
+        this.newConfigActions = newConfigActions;
     }
 
     public List<? extends Config> getConfig(final Long id, final DescriptorConfig descriptor) {
         try {
-            return configActions.getConfig(id, descriptor);
+            return newConfigActions.getConfig(id, descriptor);
         } catch (final AlertException e) {
             logger.error(e.getMessage(), e);
         }
@@ -64,11 +64,11 @@ public class ChannelConfigHandler extends ControllerHandler {
         if (restModel == null) {
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing");
         }
-        if (!configActions.doesConfigExist(restModel.getId(), descriptor)) {
+        if (!newConfigActions.doesConfigExist(restModel.getId(), descriptor)) {
             try {
-                configActions.validateConfig(restModel, descriptor);
+                newConfigActions.validateConfig(restModel, descriptor);
                 try {
-                    final DatabaseEntity updatedEntity = configActions.saveConfig(restModel, descriptor);
+                    final DatabaseEntity updatedEntity = newConfigActions.saveConfig(restModel, descriptor);
                     return createResponse(HttpStatus.CREATED, updatedEntity.getId(), "Created");
                 } catch (final AlertException e) {
                     logger.error(e.getMessage(), e);
@@ -87,11 +87,11 @@ public class ChannelConfigHandler extends ControllerHandler {
         if (restModel == null) {
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing");
         }
-        if (configActions.doesConfigExist(restModel.getId(), descriptor)) {
+        if (newConfigActions.doesConfigExist(restModel.getId(), descriptor)) {
             try {
-                configActions.validateConfig(restModel, descriptor);
+                newConfigActions.validateConfig(restModel, descriptor);
                 try {
-                    final DatabaseEntity updatedEntity = configActions.saveNewConfigUpdateFromSavedConfig(restModel, descriptor);
+                    final DatabaseEntity updatedEntity = newConfigActions.saveNewConfigUpdateFromSavedConfig(restModel, descriptor);
                     return createResponse(HttpStatus.ACCEPTED, updatedEntity.getId(), "Updated");
                 } catch (final AlertException e) {
                     logger.error(e.getMessage(), e);
@@ -107,8 +107,8 @@ public class ChannelConfigHandler extends ControllerHandler {
     }
 
     public ResponseEntity<String> deleteConfig(final Long id, final DescriptorConfig descriptor) {
-        if (id != null && configActions.doesConfigExist(id, descriptor)) {
-            configActions.deleteConfig(id, descriptor);
+        if (id != null && newConfigActions.doesConfigExist(id, descriptor)) {
+            newConfigActions.deleteConfig(id, descriptor);
             return createResponse(HttpStatus.ACCEPTED, id, "Deleted");
         }
         return createResponse(HttpStatus.BAD_REQUEST, id, "No configuration with the specified id.");
@@ -119,7 +119,7 @@ public class ChannelConfigHandler extends ControllerHandler {
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing");
         }
         try {
-            final String responseMessage = configActions.validateConfig(restModel, descriptor);
+            final String responseMessage = newConfigActions.validateConfig(restModel, descriptor);
             return createResponse(HttpStatus.OK, restModel.getId(), responseMessage);
         } catch (final AlertFieldException e) {
             final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(getContentConverter().getLongValue(restModel.getId()), e.getMessage());
@@ -134,7 +134,7 @@ public class ChannelConfigHandler extends ControllerHandler {
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing");
         }
         try {
-            final String responseMessage = configActions.testConfig(restModel, descriptor);
+            final String responseMessage = newConfigActions.testConfig(restModel, descriptor);
             return createResponse(HttpStatus.OK, restModel.getId(), responseMessage);
         } catch (final IntegrationRestException e) {
             logger.error(e.getMessage(), e);

@@ -33,10 +33,10 @@ import com.blackducksoftware.integration.alert.web.exception.AlertFieldException
 import com.blackducksoftware.integration.alert.web.model.Config;
 import com.blackducksoftware.integration.exception.IntegrationException;
 
-public abstract class ConfigActions {
+public abstract class NewConfigActions {
     private final ContentConverter contentConverter;
 
-    public ConfigActions(final ContentConverter contentConverter) {
+    public NewConfigActions(final ContentConverter contentConverter) {
         this.contentConverter = contentConverter;
     }
 
