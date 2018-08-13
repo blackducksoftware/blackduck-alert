@@ -21,26 +21,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config;
-
-import java.util.Arrays;
-import java.util.List;
+package com.synopsys.integration.alert.common.descriptor.config.field;
 
 import com.synopsys.integration.alert.common.enumeration.FieldGroup;
-import com.synopsys.integration.alert.common.enumeration.FieldType;
 
 public class ConfigField {
     private String key;
     private String label;
-    private FieldType type;
+    private String type;
     private boolean required;
     private boolean sensitive;
     private FieldGroup group;
     private String subGroup;
-    private List<String> options;
 
-    public ConfigField(final String key, final String label, final FieldType type, final boolean required, final boolean sensitive, final FieldGroup group, final String subGroup, final List<String> options) {
-        super();
+    public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive, final FieldGroup group, final String subGroup) {
         this.key = key;
         this.label = label;
         this.type = type;
@@ -48,19 +42,14 @@ public class ConfigField {
         this.sensitive = sensitive;
         this.group = group;
         this.subGroup = subGroup;
-        this.options = options;
     }
 
-    public ConfigField(final String key, final String label, final FieldType type, final boolean required, final boolean sensitive, final FieldGroup group, final String subGroup) {
-        this(key, label, type, required, sensitive, group, subGroup, Arrays.asList());
-    }
-
-    public ConfigField(final String key, final String label, final FieldType type, final boolean required, final boolean sensitive, final FieldGroup group, final List<String> options) {
-        this(key, label, type, required, sensitive, group, "", options);
-    }
-
-    public ConfigField(final String key, final String label, final FieldType type, final boolean required, final boolean sensitive, final FieldGroup group) {
+    public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive, final FieldGroup group) {
         this(key, label, type, required, sensitive, group, "");
+    }
+
+    public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive) {
+        this(key, label, type, required, sensitive, FieldGroup.DEFAULT, "");
     }
 
     public String getKey() {
@@ -79,11 +68,11 @@ public class ConfigField {
         this.label = label;
     }
 
-    public FieldType getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(final FieldType type) {
+    public void setType(final String type) {
         this.type = type;
     }
 
@@ -117,14 +106,6 @@ public class ConfigField {
 
     public void setSubGroup(final String subGroup) {
         this.subGroup = subGroup;
-    }
-
-    public List<String> getOptions() {
-        return options;
-    }
-
-    public void setOptions(final List<String> options) {
-        this.options = options;
     }
 
 }

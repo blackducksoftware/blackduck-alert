@@ -25,6 +25,8 @@ package com.synopsys.integration.alert.common.descriptor.config;
 
 import java.util.List;
 
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+
 public class UIComponent {
     private String label;
     private String urlName;

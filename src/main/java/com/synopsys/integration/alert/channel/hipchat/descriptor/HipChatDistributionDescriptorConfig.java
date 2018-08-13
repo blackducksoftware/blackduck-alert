@@ -33,11 +33,12 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.channel.event.ChannelEventFactory;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
-import com.synopsys.integration.alert.common.descriptor.config.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
-import com.synopsys.integration.alert.common.enumeration.FieldGroup;
-import com.synopsys.integration.alert.common.enumeration.FieldType;
+import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.DropDownConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
@@ -60,9 +61,9 @@ public class HipChatDistributionDescriptorConfig extends DescriptorConfig {
 
     @Override
     public UIComponent getUiComponent() {
-        final ConfigField roomId = new ConfigField("roomId", "Room Id", FieldType.NUMBER_INPUT, true, false, FieldGroup.DEFAULT);
-        final ConfigField notify = new ConfigField("notify", "Notify", FieldType.CHECKBOX_INPUT, false, false, FieldGroup.DEFAULT);
-        final ConfigField color = new ConfigField("color", "Color", FieldType.SELECT, false, false, FieldGroup.DEFAULT, Arrays.asList("Yellow, Green, Red, Purple, Gray, Random"));
+        final ConfigField roomId = new NumberConfigField("roomId", "Room Id", true, false);
+        final ConfigField notify = new CheckboxConfigField("notify", "Notify", false, false);
+        final ConfigField color = new DropDownConfigField("color", "Color", false, false, Arrays.asList("Yellow, Green, Red, Purple, Gray, Random"));
         return new UIComponent("HipChat", "hipchat", "comments", Arrays.asList(roomId, notify, color));
     }
 
