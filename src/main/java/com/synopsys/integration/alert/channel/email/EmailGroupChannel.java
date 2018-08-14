@@ -53,12 +53,12 @@ import com.synopsys.integration.alert.database.channel.email.EmailGroupDistribut
 import com.synopsys.integration.alert.database.channel.email.EmailGroupDistributionRepository;
 import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.blackduck.api.generated.view.UserGroupView;
+import com.synopsys.integration.blackduck.api.generated.view.UserView;
+import com.synopsys.integration.blackduck.rest.BlackduckRestConnection;
+import com.synopsys.integration.blackduck.service.HubServicesFactory;
+import com.synopsys.integration.blackduck.service.UserGroupService;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.hub.api.generated.view.UserGroupView;
-import com.synopsys.integration.hub.api.generated.view.UserView;
-import com.synopsys.integration.hub.rest.BlackduckRestConnection;
-import com.synopsys.integration.hub.service.HubServicesFactory;
-import com.synopsys.integration.hub.service.UserGroupService;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component(value = EmailGroupChannel.COMPONENT_NAME)

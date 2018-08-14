@@ -38,18 +38,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.hub.api.UriSingleResponse;
-import com.synopsys.integration.hub.api.generated.enumeration.NotificationType;
-import com.synopsys.integration.hub.api.generated.view.ProjectVersionView;
-import com.synopsys.integration.hub.notification.NotificationDetailResult;
-import com.synopsys.integration.hub.notification.content.PolicyOverrideNotificationContent;
-import com.synopsys.integration.hub.notification.content.detail.NotificationContentDetail;
-import com.synopsys.integration.hub.service.bucket.HubBucket;
 import com.synopsys.integration.alert.common.model.NotificationModel;
 import com.synopsys.integration.alert.database.entity.NotificationCategoryEnum;
 import com.synopsys.integration.alert.database.entity.NotificationEntity;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.workflow.processor.NotificationTypeProcessor;
+import com.synopsys.integration.blackduck.api.UriSingleResponse;
+import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectVersionView;
+import com.synopsys.integration.blackduck.notification.NotificationDetailResult;
+import com.synopsys.integration.blackduck.notification.content.PolicyOverrideNotificationContent;
+import com.synopsys.integration.blackduck.notification.content.detail.NotificationContentDetail;
+import com.synopsys.integration.blackduck.service.bucket.HubBucket;
 
 @Component
 public class PolicyNotificationTypeProcessor extends NotificationTypeProcessor {

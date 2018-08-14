@@ -26,7 +26,6 @@ import org.mockito.stubbing.Answer;
 
 import com.synopsys.integration.alert.TestAlertProperties;
 import com.synopsys.integration.alert.TestBlackDuckProperties;
-import com.synopsys.integration.validator.ValidationResults;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -37,11 +36,12 @@ import com.synopsys.integration.alert.web.actions.GlobalActionsTest;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.provider.blackduck.GlobalBlackDuckConfig;
 import com.synopsys.integration.alert.web.provider.blackduck.GlobalBlackDuckConfigActions;
-import com.synopsys.integration.hub.configuration.HubServerConfig;
-import com.synopsys.integration.hub.configuration.HubServerConfigBuilder;
-import com.synopsys.integration.hub.configuration.HubServerConfigValidator;
+import com.synopsys.integration.blackduck.configuration.HubServerConfig;
+import com.synopsys.integration.blackduck.configuration.HubServerConfigBuilder;
+import com.synopsys.integration.blackduck.configuration.HubServerConfigValidator;
 import com.synopsys.integration.rest.connection.RestConnection;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
+import com.synopsys.integration.validator.ValidationResults;
 
 public class GlobalBlackDuckConfigActionsTest extends GlobalActionsTest<GlobalBlackDuckConfig, GlobalBlackDuckConfigEntity, GlobalBlackDuckRepository, GlobalBlackDuckConfigActions> {
 

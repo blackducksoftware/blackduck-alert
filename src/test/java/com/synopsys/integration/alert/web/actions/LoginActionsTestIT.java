@@ -31,9 +31,9 @@ import com.synopsys.integration.alert.TestPropertyKey;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.web.model.LoginConfig;
+import com.synopsys.integration.blackduck.configuration.HubServerConfigBuilder;
+import com.synopsys.integration.blackduck.rest.BlackduckRestConnection;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.hub.configuration.HubServerConfigBuilder;
-import com.synopsys.integration.hub.rest.BlackduckRestConnection;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.test.annotation.HubConnectionTest;
 

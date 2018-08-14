@@ -49,7 +49,7 @@ import com.synopsys.integration.alert.database.relation.DistributionNotification
 import com.synopsys.integration.alert.database.relation.DistributionProjectRelation;
 import com.synopsys.integration.alert.database.relation.repository.DistributionNotificationTypeRepository;
 import com.synopsys.integration.alert.database.relation.repository.DistributionProjectRepository;
-import com.synopsys.integration.hub.api.generated.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.test.annotation.DatabaseConnectionTest;
 
 @Category(DatabaseConnectionTest.class)
