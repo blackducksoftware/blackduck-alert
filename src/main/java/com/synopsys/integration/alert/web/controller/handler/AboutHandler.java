@@ -36,6 +36,7 @@ import com.synopsys.integration.alert.common.ContentConverter;
 
 @Component
 public class AboutHandler extends ControllerHandler {
+    public static final String ERROR_ABOUT_MODEL_NOT_FOUND = "Could not find the About model.";
     private final AboutActions aboutActions;
 
     @Autowired
@@ -50,6 +51,6 @@ public class AboutHandler extends ControllerHandler {
             final AboutModel model = optionalModel.get();
             return new ResponseEntity<>(getContentConverter().getJsonString(model), HttpStatus.OK);
         }
-        return new ResponseEntity<>("Could not find the About model.", HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(ERROR_ABOUT_MODEL_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 }

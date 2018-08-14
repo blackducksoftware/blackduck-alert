@@ -4,6 +4,7 @@ import {Redirect, Route, withRouter} from 'react-router-dom';
 
 import Navigation from './Navigation';
 import Audit from './component/general/audit/Index';
+import AboutInfo from './component/general/AboutInfo';
 import DistributionConfiguration from './component/general/distribution/Index';
 import SchedulingConfiguration from './component/general/SchedulingConfiguration';
 import SlackConfiguration from './component/channels/SlackConfiguration';
@@ -31,6 +32,7 @@ const MainPage = () => (
             <Route path="/alert/jobs/scheduling" component={SchedulingConfiguration}/>
             <Route path="/alert/jobs/distribution" component={DistributionConfiguration}/>
             <Route path="/alert/general/audit" component={Audit}/>
+            <Route path="/alert/general/about" component={AboutInfo}/>
         </div>
         <div className="modalsArea">
             <LogoutConfirmation/>
