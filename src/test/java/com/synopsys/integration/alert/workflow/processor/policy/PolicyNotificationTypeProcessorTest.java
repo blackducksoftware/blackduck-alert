@@ -13,17 +13,17 @@ import org.junit.Test;
 import com.synopsys.integration.alert.common.model.NotificationModel;
 import com.synopsys.integration.alert.database.entity.NotificationCategoryEnum;
 import com.synopsys.integration.alert.mock.notification.NotificationGeneratorUtils;
-import com.synopsys.integration.hub.api.generated.enumeration.NotificationType;
-import com.synopsys.integration.hub.api.generated.view.NotificationView;
-import com.synopsys.integration.hub.notification.NotificationDetailResult;
-import com.synopsys.integration.hub.notification.NotificationDetailResults;
-import com.synopsys.integration.hub.notification.content.ComponentVersionStatus;
-import com.synopsys.integration.hub.notification.content.PolicyInfo;
-import com.synopsys.integration.hub.notification.content.PolicyOverrideNotificationContent;
-import com.synopsys.integration.hub.notification.content.RuleViolationClearedNotificationContent;
-import com.synopsys.integration.hub.notification.content.RuleViolationNotificationContent;
-import com.synopsys.integration.hub.notification.content.detail.NotificationContentDetail;
-import com.synopsys.integration.hub.service.bucket.HubBucket;
+import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.api.generated.view.NotificationView;
+import com.synopsys.integration.blackduck.notification.NotificationDetailResult;
+import com.synopsys.integration.blackduck.notification.NotificationDetailResults;
+import com.synopsys.integration.blackduck.notification.content.ComponentVersionStatus;
+import com.synopsys.integration.blackduck.notification.content.PolicyInfo;
+import com.synopsys.integration.blackduck.notification.content.PolicyOverrideNotificationContent;
+import com.synopsys.integration.blackduck.notification.content.RuleViolationClearedNotificationContent;
+import com.synopsys.integration.blackduck.notification.content.RuleViolationNotificationContent;
+import com.synopsys.integration.blackduck.notification.content.detail.NotificationContentDetail;
+import com.synopsys.integration.blackduck.service.bucket.HubBucket;
 
 public class PolicyNotificationTypeProcessorTest {
     private static final String COMPONENT_ISSUE_URL = "issuesLink";

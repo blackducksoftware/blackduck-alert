@@ -32,15 +32,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
+import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
+import com.synopsys.integration.blackduck.configuration.HubServerConfig;
+import com.synopsys.integration.blackduck.configuration.HubServerConfigBuilder;
+import com.synopsys.integration.blackduck.rest.BlackduckRestConnection;
+import com.synopsys.integration.blackduck.service.HubServicesFactory;
 import com.synopsys.integration.exception.EncryptionException;
-import com.synopsys.integration.hub.configuration.HubServerConfig;
-import com.synopsys.integration.hub.configuration.HubServerConfigBuilder;
-import com.synopsys.integration.hub.rest.BlackduckRestConnection;
-import com.synopsys.integration.hub.service.HubServicesFactory;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 

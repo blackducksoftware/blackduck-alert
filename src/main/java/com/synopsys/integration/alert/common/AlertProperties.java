@@ -31,7 +31,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.hub.configuration.HubServerConfigBuilder;
+import com.synopsys.integration.blackduck.configuration.HubServerConfigBuilder;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.rest.connection.UnauthenticatedRestConnectionBuilder;
 import com.synopsys.integration.rest.proxy.ProxyInfoBuilder;

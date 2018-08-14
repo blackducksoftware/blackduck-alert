@@ -19,9 +19,9 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.hub.configuration.HubServerConfig;
-import com.synopsys.integration.hub.rest.BlackduckRestConnection;
-import com.synopsys.integration.hub.service.HubServicesFactory;
+import com.synopsys.integration.blackduck.configuration.HubServerConfig;
+import com.synopsys.integration.blackduck.rest.BlackduckRestConnection;
+import com.synopsys.integration.blackduck.service.HubServicesFactory;
 import com.synopsys.integration.log.IntLogger;
 
 public class TestBlackDuckProperties extends BlackDuckProperties {

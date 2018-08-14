@@ -26,11 +26,11 @@ package com.synopsys.integration.alert.workflow.processor;
 import java.util.List;
 import java.util.Set;
 
-import com.synopsys.integration.hub.api.generated.enumeration.NotificationType;
-import com.synopsys.integration.hub.notification.NotificationDetailResult;
-import com.synopsys.integration.hub.service.bucket.HubBucket;
 import com.synopsys.integration.alert.common.model.NotificationModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.notification.NotificationDetailResult;
+import com.synopsys.integration.blackduck.service.bucket.HubBucket;
 
 public abstract class NotificationTypeProcessor {
     private final Set<NotificationType> applicableNotificationTypes;

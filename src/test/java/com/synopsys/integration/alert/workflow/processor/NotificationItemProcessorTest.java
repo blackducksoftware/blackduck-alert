@@ -28,10 +28,10 @@ import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.event.AlertEvent;
 import com.synopsys.integration.alert.common.model.NotificationModel;
 import com.synopsys.integration.alert.common.model.NotificationModels;
-import com.synopsys.integration.hub.exception.HubIntegrationException;
-import com.synopsys.integration.hub.notification.NotificationDetailResult;
-import com.synopsys.integration.hub.notification.NotificationDetailResults;
-import com.synopsys.integration.hub.service.bucket.HubBucket;
+import com.synopsys.integration.blackduck.exception.HubIntegrationException;
+import com.synopsys.integration.blackduck.notification.NotificationDetailResult;
+import com.synopsys.integration.blackduck.notification.NotificationDetailResults;
+import com.synopsys.integration.blackduck.service.bucket.HubBucket;
 
 public class NotificationItemProcessorTest {
 

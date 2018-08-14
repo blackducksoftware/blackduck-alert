@@ -34,15 +34,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.hub.api.generated.discovery.ApiDiscovery;
-import com.synopsys.integration.hub.api.generated.view.ProjectView;
-import com.synopsys.integration.hub.api.generated.view.UserGroupView;
-import com.synopsys.integration.hub.rest.BlackduckRestConnection;
-import com.synopsys.integration.hub.service.HubServicesFactory;
-import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
+import com.synopsys.integration.blackduck.api.generated.view.UserGroupView;
+import com.synopsys.integration.blackduck.rest.BlackduckRestConnection;
+import com.synopsys.integration.blackduck.service.HubServicesFactory;
+import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
 public class BlackDuckDataActions {
