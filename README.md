@@ -1,6 +1,8 @@
 ## Overview ##
-This application provides the ability to send notifications from the hub to various distribution channels.
-
+<!-- The comments following wrap around the description string for parsing during the build. Do Not Remove -->
+<!-- description-text-start -->
+This application provides the ability to send notifications from the a provider to various distribution channels.
+<!-- description-text-end -->
 ## Build ##
 
 [![Build Status](https://travis-ci.org/blackducksoftware/blackduck-alert.svg?branch=master)](https://travis-ci.org/blackducksoftware/blackduck-alert)
@@ -28,8 +30,10 @@ To build the zip file containing the orchestration files for deployment:
 
 
 ## Where can I get the latest release? ##
-
+<!-- The comments following wrap around the project url string for parsing during the build. Do Not Remove -->
+<!-- project-url-text-start -->
 All releases are on the GitHub release page. https://github.com/blackducksoftware/blackduck-alert/releases
+<!-- project-url-text-end -->
 
 ## Documentation ##
 Our public Confluence page: https://blackducksoftware.atlassian.net/wiki/spaces/INTDOCS/pages/202047489/Black+Duck+Alert

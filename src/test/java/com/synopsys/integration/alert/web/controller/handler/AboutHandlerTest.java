@@ -37,4 +37,19 @@ public class AboutHandlerTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(expectedJson, response.getBody());
     }
+
+    @Test
+    public void testGetAboutDataNotPresent() {
+        final Gson gson = new Gson();
+        final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
+
+        final AboutActions aboutActions = Mockito.mock(AboutActions.class);
+        final AboutHandler aboutHandler = new AboutHandler(contentConverter, aboutActions);
+
+        Mockito.when(aboutActions.getAboutModel()).thenReturn(Optional.empty());
+
+        final ResponseEntity<String> response = aboutHandler.getAboutData();
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(AboutHandler.ERROR_ABOUT_MODEL_NOT_FOUND, response.getBody());
+    }
 }
