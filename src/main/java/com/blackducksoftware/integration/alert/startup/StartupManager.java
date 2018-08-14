@@ -53,6 +53,7 @@ import com.blackducksoftware.integration.alert.provider.hub.model.GlobalHubConfi
 import com.blackducksoftware.integration.alert.scheduled.PhoneHomeTask;
 import com.blackducksoftware.integration.alert.scheduling.model.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.alert.scheduling.model.GlobalSchedulingRepository;
+import com.blackducksoftware.integration.alert.startup.migration.DistributionJobMigration;
 import com.blackducksoftware.integration.exception.IntegrationException;
 import com.blackducksoftware.integration.hub.service.model.HubServerVerifier;
 import com.blackducksoftware.integration.rest.proxy.ProxyInfo;
@@ -70,6 +71,7 @@ public class StartupManager {
     private final PurgeConfig purgeConfig;
     private final PhoneHomeTask phoneHomeTask;
     private final AlertStartupInitializer alertStartupInitializer;
+    private final DistributionJobMigration distributionJobMigration;
 
     @Value("${logging.level.com.blackducksoftware.integration:}")
     String loggingLevel;
@@ -77,7 +79,7 @@ public class StartupManager {
     @Autowired
     public StartupManager(final GlobalSchedulingRepository globalSchedulingRepository, final GlobalProperties globalProperties, final AccumulatorConfig accumulatorConfig,
             final DailyDigestBatchConfig dailyDigestBatchConfig,
-            final PurgeConfig purgeConfig, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer) {
+            final PurgeConfig purgeConfig, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer, final DistributionJobMigration distributionJobMigration) {
         this.globalSchedulingRepository = globalSchedulingRepository;
         this.globalProperties = globalProperties;
         this.accumulatorConfig = accumulatorConfig;
@@ -85,15 +87,21 @@ public class StartupManager {
         this.purgeConfig = purgeConfig;
         this.phoneHomeTask = phoneHometask;
         this.alertStartupInitializer = alertStartupInitializer;
+        this.distributionJobMigration = distributionJobMigration;
     }
 
     public void startup() {
         logger.info("Hub Alert Starting...");
+        migrateJobsFromOldFormat();
         initializeChannelPropertyManagers();
         logConfiguration();
         listProperties();
         validateProviders();
         initializeCronJobs();
+    }
+
+    private void migrateJobsFromOldFormat() {
+        distributionJobMigration.jobMigrationMajorVersionOneToTwo();
     }
 
     public void logConfiguration() {

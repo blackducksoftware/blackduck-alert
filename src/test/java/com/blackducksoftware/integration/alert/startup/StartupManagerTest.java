@@ -20,7 +20,6 @@ import com.blackducksoftware.integration.alert.scheduled.PhoneHomeTask;
 import com.blackducksoftware.integration.alert.scheduling.mock.MockGlobalSchedulingEntity;
 import com.blackducksoftware.integration.alert.scheduling.model.GlobalSchedulingConfigEntity;
 import com.blackducksoftware.integration.alert.scheduling.model.GlobalSchedulingRepository;
-import com.blackducksoftware.integration.alert.startup.StartupManager;
 
 public class StartupManagerTest {
     private OutputLogger outputLogger;
@@ -42,7 +41,7 @@ public class StartupManagerTest {
         final TestGlobalProperties testGlobalProperties = new TestGlobalProperties();
         final TestGlobalProperties mockTestGlobalProperties = Mockito.spy(testGlobalProperties);
         Mockito.when(mockTestGlobalProperties.getHubProxyPassword()).thenReturn("not_blank_data");
-        final StartupManager startupManager = new StartupManager(null, mockTestGlobalProperties, null, null, null, null, null);
+        final StartupManager startupManager = new StartupManager(null, mockTestGlobalProperties, null, null, null, null, null, null);
 
         startupManager.logConfiguration();
         assertTrue(outputLogger.isLineContainingText("Hub Proxy Authenticated: true"));
@@ -65,7 +64,7 @@ public class StartupManagerTest {
         final MockGlobalSchedulingEntity mockGlobalSchedulingEntity = new MockGlobalSchedulingEntity();
         final GlobalSchedulingConfigEntity entity = mockGlobalSchedulingEntity.createGlobalEntity();
         Mockito.when(globalSchedulingRepository.save(Mockito.any(GlobalSchedulingConfigEntity.class))).thenReturn(entity);
-        final StartupManager startupManager = new StartupManager(globalSchedulingRepository, null, accumulatorConfig, dailyDigestBatchConfig, purgeConfig, phoneHomeTask, null);
+        final StartupManager startupManager = new StartupManager(globalSchedulingRepository, null, accumulatorConfig, dailyDigestBatchConfig, purgeConfig, phoneHomeTask, null, null);
 
         startupManager.initializeCronJobs();
 
@@ -76,7 +75,7 @@ public class StartupManagerTest {
     @Test
     public void testValidateProviders() throws IOException {
         final TestGlobalProperties testGlobalProperties = new TestGlobalProperties();
-        final StartupManager startupManager = new StartupManager(null, testGlobalProperties, null, null, null, null, null);
+        final StartupManager startupManager = new StartupManager(null, testGlobalProperties, null, null, null, null, null, null);
 
         startupManager.validateProviders();
         assertTrue(outputLogger.isLineContainingText("Validating configured providers: "));
@@ -85,7 +84,7 @@ public class StartupManagerTest {
     @Test
     public void testValidateHubProviderNullURL() throws IOException {
         final TestGlobalProperties testGlobalProperties = new TestGlobalProperties();
-        final StartupManager startupManager = new StartupManager(null, testGlobalProperties, null, null, null, null, null);
+        final StartupManager startupManager = new StartupManager(null, testGlobalProperties, null, null, null, null, null, null);
         testGlobalProperties.setHubUrl(null);
         startupManager.validateHubProvider();
         assertTrue(outputLogger.isLineContainingText("Validating Hub Provider..."));
@@ -95,7 +94,7 @@ public class StartupManagerTest {
     @Test
     public void testValidateHubProviderLocalhostURL() throws IOException {
         final TestGlobalProperties testGlobalProperties = new TestGlobalProperties();
-        final StartupManager startupManager = new StartupManager(null, testGlobalProperties, null, null, null, null, null);
+        final StartupManager startupManager = new StartupManager(null, testGlobalProperties, null, null, null, null, null, null);
         testGlobalProperties.setHubUrl("https://localhost:443");
         startupManager.validateHubProvider();
         assertTrue(outputLogger.isLineContainingText("Validating Hub Provider..."));
@@ -109,7 +108,7 @@ public class StartupManagerTest {
         Mockito.when(alertEnvironment.getVariable(AlertEnvironment.PUBLIC_HUB_WEBSERVER_HOST)).thenReturn("localhost");
         final TestGlobalProperties testGlobalProperties = new TestGlobalProperties(alertEnvironment, Mockito.mock(GlobalHubRepository.class));
         testGlobalProperties.setHubUrl("https://localhost:443");
-        final StartupManager startupManager = new StartupManager(null, testGlobalProperties, null, null, null, null, null);
+        final StartupManager startupManager = new StartupManager(null, testGlobalProperties, null, null, null, null, null, null);
         startupManager.validateHubProvider();
         assertTrue(outputLogger.isLineContainingText("Validating Hub Provider..."));
         assertTrue(outputLogger.isLineContainingText("Hub Provider Using localhost..."));
@@ -119,7 +118,7 @@ public class StartupManagerTest {
     @Test
     public void testValidateHubInvalidProvider() throws IOException {
         final TestGlobalProperties testGlobalProperties = new TestGlobalProperties();
-        final StartupManager startupManager = new StartupManager(null, testGlobalProperties, null, null, null, null, null);
+        final StartupManager startupManager = new StartupManager(null, testGlobalProperties, null, null, null, null, null, null);
         testGlobalProperties.setHubUrl("https://localhost:443");
         startupManager.validateHubProvider();
         assertTrue(outputLogger.isLineContainingText("Validating Hub Provider..."));
@@ -130,7 +129,7 @@ public class StartupManagerTest {
     @Test
     public void testValidateHubValidProvider() throws IOException {
         final TestGlobalProperties testGlobalProperties = new TestGlobalProperties();
-        final StartupManager startupManager = new StartupManager(null, testGlobalProperties, null, null, null, null, null);
+        final StartupManager startupManager = new StartupManager(null, testGlobalProperties, null, null, null, null, null, null);
         startupManager.validateHubProvider();
         assertTrue(outputLogger.isLineContainingText("Validating Hub Provider..."));
         assertTrue(outputLogger.isLineContainingText("Hub Provider Valid!"));
