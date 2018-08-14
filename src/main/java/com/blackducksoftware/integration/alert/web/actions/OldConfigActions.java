@@ -36,13 +36,13 @@ import javax.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.blackducksoftware.integration.alert.common.annotation.SensitiveFieldFinder;
-import com.blackducksoftware.integration.alert.common.descriptor.config.TypeConverter;
-import com.blackducksoftware.integration.alert.common.exception.AlertException;
-import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
-import com.blackducksoftware.integration.alert.web.model.Config;
-import com.blackducksoftware.integration.exception.IntegrationException;
+import com.synopsys.integration.alert.common.annotation.SensitiveFieldFinder;
+import com.synopsys.integration.alert.common.descriptor.config.TypeConverter;
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+import com.synopsys.integration.alert.web.exception.AlertFieldException;
+import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.exception.IntegrationException;
 
 @Transactional
 public abstract class OldConfigActions<D extends DatabaseEntity, R extends Config, W extends JpaRepository<D, Long>> {

@@ -9,7 +9,9 @@ const initialState = {
     fetching: false,
     version: '',
     description: '',
-    projectUrl: ''
+    projectUrl: '',
+    channelList: [],
+    providerList: []
 };
 
 const config = (state = initialState, action) => {
@@ -23,7 +25,9 @@ const config = (state = initialState, action) => {
                 fetching: false,
                 version: action.version,
                 description: action.description,
-                projectUrl: action.projectUrl
+                projectUrl: action.projectUrl,
+                channelList: action.channelList,
+                providerList: action.providerList
             });
         case ABOUT_INFO_FETCH_ERROR:
             return Object.assign({}, state, {

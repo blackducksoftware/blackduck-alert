@@ -7,7 +7,7 @@ import 'font-awesome/scss/font-awesome.scss';
 
 import MainPage from './MainPage';
 import LoginPage from './LoginPage';
-import AboutInfo from './AboutInfo';
+import AboutInfo from './AboutInfoFooter';
 import { getConfig } from './store/actions/config';
 import { verifyLogin } from './store/actions/session';
 

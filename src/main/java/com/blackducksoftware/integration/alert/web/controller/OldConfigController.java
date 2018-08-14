@@ -32,7 +32,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.blackducksoftware.integration.alert.web.model.Config;
+import com.synopsys.integration.alert.web.controller.BaseController;
+import com.synopsys.integration.alert.web.model.Config;
 
 // This must be an abstract class for the security to work
 @RequestMapping(OldConfigController.CONFIGURATION_PATH)

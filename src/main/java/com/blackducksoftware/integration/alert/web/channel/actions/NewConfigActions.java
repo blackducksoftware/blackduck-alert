@@ -25,13 +25,13 @@ package com.blackducksoftware.integration.alert.web.channel.actions;
 
 import java.util.List;
 
-import com.blackducksoftware.integration.alert.common.ContentConverter;
-import com.blackducksoftware.integration.alert.common.descriptor.config.DescriptorConfig;
-import com.blackducksoftware.integration.alert.common.exception.AlertException;
-import com.blackducksoftware.integration.alert.database.entity.DatabaseEntity;
-import com.blackducksoftware.integration.alert.web.exception.AlertFieldException;
-import com.blackducksoftware.integration.alert.web.model.Config;
-import com.blackducksoftware.integration.exception.IntegrationException;
+import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+import com.synopsys.integration.alert.web.exception.AlertFieldException;
+import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class NewConfigActions {
     private final ContentConverter contentConverter;
