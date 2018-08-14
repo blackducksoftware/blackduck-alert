@@ -48,6 +48,10 @@ public class ConfigField {
         this(key, label, type, required, sensitive, group, "");
     }
 
+    public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive, final String subGroup) {
+        this(key, label, type, required, sensitive, FieldGroup.DEFAULT, subGroup);
+    }
+
     public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive) {
         this(key, label, type, required, sensitive, FieldGroup.DEFAULT, "");
     }
