@@ -40,14 +40,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
-import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
-import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
-import com.synopsys.integration.alert.workflow.scheduled.frequency.OnDemandTask;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.hub.service.model.HubServerVerifier;
-import com.synopsys.integration.rest.proxy.ProxyInfo;
-import com.synopsys.integration.rest.proxy.ProxyInfoBuilder;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.provider.Provider;
@@ -59,6 +51,14 @@ import com.synopsys.integration.alert.database.purge.PurgeWriter;
 import com.synopsys.integration.alert.database.scheduling.GlobalSchedulingConfigEntity;
 import com.synopsys.integration.alert.database.scheduling.GlobalSchedulingRepository;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
+import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
+import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
+import com.synopsys.integration.alert.workflow.scheduled.frequency.OnDemandTask;
+import com.synopsys.integration.blackduck.service.model.HubServerVerifier;
+import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
+import com.synopsys.integration.rest.proxy.ProxyInfoBuilder;
 
 @Component
 @Transactional

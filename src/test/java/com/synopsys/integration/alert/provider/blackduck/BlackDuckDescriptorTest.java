@@ -11,7 +11,7 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
-import com.synopsys.integration.hub.api.generated.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 public class BlackDuckDescriptorTest {
 

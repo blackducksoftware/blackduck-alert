@@ -16,14 +16,14 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckDataActions;
 import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckGroup;
 import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckProject;
-import com.synopsys.integration.hub.api.core.ResourceMetadata;
-import com.synopsys.integration.hub.api.generated.discovery.ApiDiscovery;
-import com.synopsys.integration.hub.api.generated.view.ProjectView;
-import com.synopsys.integration.hub.api.generated.view.UserGroupView;
-import com.synopsys.integration.hub.rest.BlackduckRestConnection;
-import com.synopsys.integration.hub.service.HubService;
-import com.synopsys.integration.hub.service.HubServicesFactory;
-import com.synopsys.integration.hub.service.ProjectService;
+import com.synopsys.integration.blackduck.api.core.ResourceMetadata;
+import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
+import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
+import com.synopsys.integration.blackduck.api.generated.view.UserGroupView;
+import com.synopsys.integration.blackduck.rest.BlackduckRestConnection;
+import com.synopsys.integration.blackduck.service.HubService;
+import com.synopsys.integration.blackduck.service.HubServicesFactory;
+import com.synopsys.integration.blackduck.service.ProjectService;
 
 public class BlackDuckDataActionsTest {
 

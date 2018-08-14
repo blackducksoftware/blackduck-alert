@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
-import com.synopsys.integration.hub.api.generated.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 public class BlackDuckProviderTest {
 

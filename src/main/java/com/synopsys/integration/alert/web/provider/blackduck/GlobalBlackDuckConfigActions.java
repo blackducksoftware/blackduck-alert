@@ -41,23 +41,23 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckTypeConverter;
+import com.synopsys.integration.alert.web.actions.ConfigActions;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
+import com.synopsys.integration.blackduck.configuration.HubServerConfig;
+import com.synopsys.integration.blackduck.configuration.HubServerConfigBuilder;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.hub.configuration.HubServerConfig;
-import com.synopsys.integration.hub.configuration.HubServerConfigBuilder;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.connection.RestConnection;
 import com.synopsys.integration.validator.AbstractValidator;
 import com.synopsys.integration.validator.FieldEnum;
 import com.synopsys.integration.validator.ValidationResult;
 import com.synopsys.integration.validator.ValidationResults;
-import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.web.actions.ConfigActions;
 
 @Component
 public class GlobalBlackDuckConfigActions extends ConfigActions<GlobalBlackDuckConfigEntity, GlobalBlackDuckConfig, GlobalBlackDuckRepository> {

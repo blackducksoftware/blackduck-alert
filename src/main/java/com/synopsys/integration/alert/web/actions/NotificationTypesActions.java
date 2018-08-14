@@ -34,12 +34,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.hub.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.NotificationTypeEntity;
 import com.synopsys.integration.alert.database.entity.repository.NotificationTypeRepository;
 import com.synopsys.integration.alert.database.relation.DistributionNotificationTypeRelation;
 import com.synopsys.integration.alert.database.relation.repository.DistributionNotificationTypeRepository;
+import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 @Transactional
 @Component
