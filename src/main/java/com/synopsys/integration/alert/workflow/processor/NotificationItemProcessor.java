@@ -27,16 +27,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.synopsys.integration.hub.notification.NotificationDetailResult;
-import com.synopsys.integration.hub.notification.NotificationDetailResults;
-import com.synopsys.integration.hub.service.bucket.HubBucket;
-import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.InternalEventTypes;
 import com.synopsys.integration.alert.common.event.AlertEvent;
 import com.synopsys.integration.alert.common.model.NotificationModel;
 import com.synopsys.integration.alert.common.model.NotificationModels;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.blackduck.notification.NotificationDetailResult;
+import com.synopsys.integration.blackduck.notification.NotificationDetailResults;
+import com.synopsys.integration.blackduck.service.bucket.HubBucket;
+import com.synopsys.integration.rest.RestConstants;
 
 public class NotificationItemProcessor {
     private final List<NotificationTypeProcessor> processorList;

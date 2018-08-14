@@ -18,12 +18,12 @@ import java.util.stream.Collectors;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.synopsys.integration.alert.mock.NotificationTypeMockUtils;
-import com.synopsys.integration.alert.mock.ProjectMockUtils;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.common.enumeration.DigestType;
+import com.synopsys.integration.alert.mock.NotificationTypeMockUtils;
+import com.synopsys.integration.alert.mock.ProjectMockUtils;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
-import com.synopsys.integration.hub.api.generated.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDistributionConfig> {
     protected static final ProjectMockUtils projectMock = new ProjectMockUtils();

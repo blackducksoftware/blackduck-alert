@@ -23,8 +23,8 @@ import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEn
 import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.synopsys.integration.alert.mock.entity.MockCommonDistributionEntity;
 import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
-import com.synopsys.integration.hub.rest.BlackduckRestConnection;
-import com.synopsys.integration.hub.service.HubServicesFactory;
+import com.synopsys.integration.blackduck.rest.BlackduckRestConnection;
+import com.synopsys.integration.blackduck.service.HubServicesFactory;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.phonehome.PhoneHomeCallable;
 import com.synopsys.integration.phonehome.PhoneHomeRequestBody;

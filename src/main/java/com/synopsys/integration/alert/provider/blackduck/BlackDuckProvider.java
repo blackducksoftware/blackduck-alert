@@ -32,9 +32,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.common.provider.Provider;
-import com.synopsys.integration.hub.api.generated.enumeration.NotificationType;
+import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
+import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 @Component
 public class BlackDuckProvider extends Provider {
