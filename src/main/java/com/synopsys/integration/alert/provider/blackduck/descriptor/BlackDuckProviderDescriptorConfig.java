@@ -35,14 +35,13 @@ import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ReadOnlyConfigField;
-import com.synopsys.integration.alert.common.enumeration.FieldGroup;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class BlackDuckProviderDescriptorConfig extends DescriptorConfig {
-    private static final String PROXY_GROUP = "Proxy Configuration";
+    private static final String PROXY_SUB_GROUP = "Proxy Configuration";
 
     @Autowired
     public BlackDuckProviderDescriptorConfig(final BlackDuckTypeConverter databaseContentConverter, final BlackDuckRepositoryAccessor repositoryAccessor, final BlackDuckProviderStartupComponent startupComponent) {
@@ -54,10 +53,10 @@ public class BlackDuckProviderDescriptorConfig extends DescriptorConfig {
         final ConfigField blackDuckUrl = new ReadOnlyConfigField("blackduckUrl", "Url", true, false);
         final ConfigField blackDuckApiKey = new PasswordConfigField("blackDuckApiKey", "API Token", true);
         final ConfigField blackDuckTimeout = new NumberConfigField("blackDuckTimeout", "Timeout", true, false);
-        final ConfigField blackDuckProxyHost = new ReadOnlyConfigField("blackDuckProxyHost", "Host Name", false, false, FieldGroup.DEFAULT, PROXY_GROUP);
-        final ConfigField blackDuckProxyPort = new ReadOnlyConfigField("blackDuckProxyPort", "Port", false, false, FieldGroup.DEFAULT, PROXY_GROUP);
-        final ConfigField blackDuckProxyUsername = new ReadOnlyConfigField("blackDuckProxyUsername", "Username", false, false, FieldGroup.DEFAULT, PROXY_GROUP);
-        final ConfigField blackDuckProxyPassword = new ReadOnlyConfigField("blackDuckProxyPassword", "ProxyPassword", false, true, FieldGroup.DEFAULT, PROXY_GROUP);
+        final ConfigField blackDuckProxyHost = new ReadOnlyConfigField("blackDuckProxyHost", "Host Name", false, false, PROXY_SUB_GROUP);
+        final ConfigField blackDuckProxyPort = new ReadOnlyConfigField("blackDuckProxyPort", "Port", false, false, PROXY_SUB_GROUP);
+        final ConfigField blackDuckProxyUsername = new ReadOnlyConfigField("blackDuckProxyUsername", "Username", false, false, PROXY_SUB_GROUP);
+        final ConfigField blackDuckProxyPassword = new ReadOnlyConfigField("blackDuckProxyPassword", "ProxyPassword", false, true, PROXY_SUB_GROUP);
         return new UIComponent("Black Duck", "blackduck", "laptop", Arrays.asList(blackDuckUrl, blackDuckApiKey, blackDuckTimeout, blackDuckProxyHost, blackDuckProxyPort, blackDuckProxyUsername, blackDuckProxyPassword));
     }
 
