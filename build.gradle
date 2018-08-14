@@ -30,16 +30,24 @@ apply plugin: 'com.bmuschko.docker-remote-api'
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 import groovy.json.JsonOutput
 
-mainClassName = 'com.blackducksoftware.integration.alert.Application'
+mainClassName = 'com.synopsys.integration.alert.Application'
 
 dependencyManagement {
     imports {
         mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
     }
 }
+// TODO remove this when no longer depending on snapshots
+artifactory {
+    resolve {
+        repository {
+            repoKey = artifactorySnapshotRepo
+        }
+    }
+}
 
 dependencies {
-    compile 'com.blackducksoftware.integration:hub-common:35.0.0'
+    compile 'com.blackducksoftware.integration:hub-common:37.0.0-SNAPSHOT'
     compile 'org.springframework.boot:spring-boot-starter'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
     compile 'org.springframework.boot:spring-boot-starter-jdbc'
@@ -140,13 +148,17 @@ task webpack(type: Exec) {
 task createAboutText(type: Task) {
     final def aboutFile = new File("${projectDir}/src/main/resources/about.txt")
     aboutFile.delete()
-    def gitCommandOutput = new ByteArrayOutputStream()
-    exec {
-        commandLine 'git', 'remote', 'get-url', 'origin'
-        standardOutput = gitCommandOutput
-    }
-    def gitUrl = gitCommandOutput.toString().trim()
-    final def aboutJson = JsonOutput.toJson([version: version, projectUrl: gitUrl])
+    def readmeContentArray = new File("README.md").text.readLines()
+    def descriptionStart = readmeContentArray.indexOf("<!-- description-text-start -->") + 1
+    def descriptionEnd = readmeContentArray.indexOf("<!-- description-text-end -->")
+    def description = readmeContentArray.subList(descriptionStart, descriptionEnd).join(" ")
+
+    def projectUrlStart = readmeContentArray.indexOf("<!-- project-url-text-start -->") + 1
+    def projectUrlEnd = readmeContentArray.indexOf("<!-- project-url-text-end -->")
+    def projectUrlText = readmeContentArray.subList(projectUrlStart, projectUrlEnd).join(" ")
+    def gitUrl = projectUrlText.substring(projectUrlText.indexOf("http"))
+    gitUrl = gitUrl.substring(0, gitUrl.indexOf("releases"))
+    final def aboutJson = JsonOutput.toJson([version: version, projectUrl: gitUrl, description: description])
     logger.info("About text file: {} content: {}", aboutFile, aboutJson)
     aboutFile << aboutJson
 }

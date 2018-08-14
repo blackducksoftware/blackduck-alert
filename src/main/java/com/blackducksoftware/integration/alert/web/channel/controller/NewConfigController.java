@@ -32,8 +32,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.blackducksoftware.integration.alert.web.controller.BaseController;
-import com.blackducksoftware.integration.alert.web.model.Config;
+import com.synopsys.integration.alert.web.controller.BaseController;
+import com.synopsys.integration.alert.web.model.Config;
 
 @RequestMapping(NewConfigController.CONFIGURATION_PATH)
 public abstract class NewConfigController extends BaseController {

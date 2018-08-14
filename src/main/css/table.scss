@@ -1,131 +1,142 @@
 .react-bs-table-bordered {
-    border-radius: $border-radius !important;
+  border-radius: $border-radius !important;
 }
+
 .react-bs-table-add-btn,
 .react-bs-table-del-btn {
-    line-height: 1.4em;
-    .fa {
-        margin-right: 7px;
-    }
+  line-height: 1.4em;
+  .fa {
+    margin-right: 7px;
+  }
 }
+
 .statusSuccess {
-	color: #3c763d;
+  color: #3c763d;
 }
 
 .statusFailure {
-	color: #9c251f;
+  color: #9c251f;
 }
 
 .statusPending {
-    color: #999;
+  color: #999;
 }
 
 .tableButton {
-    border: 1px solid transparent;
+  border: 1px solid transparent;
 }
 
 .addJobButton {
-    border: 1px solid darken(#337ab7, 5%);
-    background-color: #337ab7;
-    &:hover {
-        background-color: darken(#337ab7, 10%);
-        border-color: darken(#337ab7, 17%);
-    }
+  border: 1px solid darken(#337ab7, 5%);
+  background-color: #337ab7;
+  &:hover {
+    background-color: darken(#337ab7, 10%);
+    border-color: darken(#337ab7, 17%);
+  }
 }
 
 .deleteJobButton {
-    border: 1px solid darken($color-danger, 5%);
-    background-color: $color-danger;
-    &:hover {
-        background-color: darken($color-danger, 10%);
-        border-color: darken($color-danger, 17%);
-    }
+  border: 1px solid darken($color-danger, 5%);
+  background-color: $color-danger;
+  &:hover {
+    background-color: darken($color-danger, 10%);
+    border-color: darken($color-danger, 17%);
+  }
 }
 
 .editJobButton {
-    color: #285f8f;
-    margin-left: auto;
-    margin-right: auto;
-    padding-top: 0;
-    padding-bottom: 0;
+  color: #285f8f;
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .table {
-    width: 100%;
+  width: 100%;
 }
 
 .tableRow {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .tableEvenRow {
-    cursor: pointer;
-    background-color: #f9f9f9;
+  cursor: pointer;
+  background-color: #f9f9f9;
 }
 
 .tableCell {
-    vertical-align: middle !important;
+  vertical-align: middle !important;
 }
 
 .scrollable {
-    position: relative;
-    overflow-y: scroll !important;
-    overflow-x: hidden;
+  position: relative;
+  overflow-y: scroll !important;
+  overflow-x: hidden;
 }
 
 .projectTableScrollableBody {
-    position: relative;
-    overflow-y: scroll !important;
-    overflow-x: hidden;
-    height: 200px !important;
-    width: 100%;
+  position: relative;
+  overflow-y: scroll !important;
+  overflow-x: hidden;
+  height: 200px !important;
+  width: 100%;
 }
 
 .tableScrollableBody {
-    position: relative;
-    overflow-y: scroll !important;
-    overflow-x: hidden;
-    height: 55vh !important;
-    width: 100%;
+  position: relative;
+  overflow-y: scroll !important;
+  overflow-x: hidden;
+  height: 55vh !important;
+  width: 100%;
 }
 
 .expandableContainer {
-    border-radius: $border-radius;
-    border: 1px solid $border-color;
-    background-color: white;
-    overflow-y: scroll !important;
-    padding-top: 15px;
+  border-radius: $border-radius;
+  border: 1px solid $border-color;
+  background-color: white;
+  overflow-y: scroll !important;
+  padding-top: 15px;
 }
 
 .auditDetailsTableBody {
-    position: relative;
-    overflow-y: scroll !important;
-    overflow-x: hidden;
-    height: 150px !important;
+  position: relative;
+  overflow-y: scroll !important;
+  overflow-x: hidden;
+  height: 150px !important;
 }
+
+.iconTableRow {
+  width: 30px;
+}
+
 .react-bs-table-container {
-    margin-bottom: 15px;
+  margin-bottom: 15px;
 }
+
 .react-bs-table-search-form {
-    margin-left: 0 !important;
-    margin-right: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
 }
+
 .react-bs-table-tool-bar {
-    margin-bottom: 8px;
+  margin-bottom: 8px;
 }
+
 .react-bs-table-search-form {
-    margin-left: 0 !important;
-    margin-right: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
 }
-.react-bs-table .table-bordered>thead>tr>td,
-.react-bs-table .table-bordered>thead>tr>th {
-    border-bottom-width: 1px;
+
+.react-bs-table .table-bordered > thead > tr > td,
+.react-bs-table .table-bordered > thead > tr > th {
+  border-bottom-width: 1px;
 }
 
 .tableContainer {
-    padding: 15px;
+  padding: 15px;
 }
 
 .stackTraceContainer {
-    width: 100%;
+  width: 100%;
 }

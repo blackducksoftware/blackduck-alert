@@ -91,6 +91,11 @@ class Navigation extends Component {
                                 <FontAwesome name="history" fixedWidth/> Audit
                             </NavLink>
                         </li>
+                        <li>
+                        <NavLink to="/alert/general/about" activeClassName="activeNav">
+                            <FontAwesome name="info" fixedWidth/> About
+                        </NavLink>
+                        </li>
                         <li className="logoutLink">
                             <a
                                 role="button"
