@@ -5,57 +5,43 @@ import {NavLink, withRouter} from 'react-router-dom';
 import FontAwesome from 'react-fontawesome';
 import Logo from './component/common/Logo';
 import {confirmLogout} from './store/actions/session';
+import {getDescriptorByType} from './store/actions/descriptors';
 
 class Navigation extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            CHANNEL_GLOBAL_CONFIG: [],
-            PROVIDER_CONFIG: []
-        }
-        this.retrieveComponentData = this.retrieveComponentData.bind(this);
+        this.createNavItemForDescriptors = this.createNavItemForDescriptors.bind(this);
     }
 
     componentDidMount() {
-        this.retrieveComponentData('CHANNEL_GLOBAL_CONFIG'),
-        this.retrieveComponentData('PROVIDER_CONFIG')
+        this.props.getDescriptorByType('CHANNEL_GLOBAL_CONFIG'),
+        this.props.getDescriptorByType('PROVIDER_CONFIG')
     }
 
-    retrieveComponentData(distributionConfigType) {
-        const getUrl = `/alert/api/descriptors/${distributionConfigType}`;
-        fetch(getUrl, {
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json'
+    createNavItemForDescriptors(decriptorTypeKey, uriPrefix) {
+        const {descriptors} = this.props;
+        if(!descriptors.items) {
+            return null;
+        } else {
+            const descriptorList = descriptors.items[decriptorTypeKey];
+            if(!descriptorList) {
+                return null;
+            } else {
+                return descriptorList.sort((first, second) => first.label > second.label)
+                .map((component) =>
+                    <li>
+                        <NavLink to={`${uriPrefix}${component.urlName}`} activeClassName="activeNav">
+                            <FontAwesome name={component.fontAwesomeIcon} fixedWidth/>
+                        {component.label}
+                        </NavLink>
+                    </li>);
             }
-        }).then((response) => {
-            return response.json().then((json) => {
-                this.setState({
-                    [distributionConfigType]: json
-                });
-            });
-        }).catch(console.error);
+        }
     }
 
     render() {
-        const globals = this.state.CHANNEL_GLOBAL_CONFIG
-            .sort((first, second) => first.label > second.label)
-            .map((component) =>
-            <li>
-                <NavLink to={`/alert/channels/${component.urlName}`} activeClassName="activeNav">
-                    <FontAwesome name={component.fontAwesomeIcon} fixedWidth/>
-                    {component.label}
-                </NavLink>
-            </li>);
-        const providers = this.state.PROVIDER_CONFIG
-            .sort((first, second) => first.label > second.label)
-            .map((component) =>
-            <li>
-                <NavLink to={`/alert/providers/${component.urlName}`} activeClassName="activeNav">
-                    <FontAwesome name={component.fontAwesomeIcon} fixedWidth/>
-                    {component.label}
-                </NavLink>
-            </li>);
+        const globals = this.createNavItemForDescriptors('CHANNEL_GLOBAL_CONFIG','/alert/channels/');
+        const providers = this.createNavItemForDescriptors('PROVIDER_CONFIG','/alert/providers/');
 
         return (
             <div className="navigation">
@@ -115,16 +101,18 @@ class Navigation extends Component {
 }
 
 Navigation.propTypes = {
-    confirmLogout: PropTypes.func.isRequired
+    confirmLogout: PropTypes.func.isRequired,
+    getDescriptorByType: PropTypes.func.isRequired
 };
 
-// TODO Add Redux to this page
 const mapStateToProps = state => ({
-    csrfToken: state.session.csrfToken
+    csrfToken: state.session.csrfToken,
+    descriptors: state.descriptors
 });
 
 const mapDispatchToProps = dispatch => ({
-    confirmLogout: () => dispatch(confirmLogout())
+    confirmLogout: () => dispatch(confirmLogout()),
+    getDescriptorByType: (descriptorType) => dispatch(getDescriptorByType(descriptorType))
 });
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Navigation));
