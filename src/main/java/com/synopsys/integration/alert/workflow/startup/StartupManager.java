@@ -174,6 +174,7 @@ public class StartupManager {
         logger.info("----------------------------------------");
     }
 
+    // TODO add this validationg to provider descriptors so we can run this when it's defined
     public void validateBlackDuckProvider() {
         logger.info("Validating Black Duck Provider...");
         try {
