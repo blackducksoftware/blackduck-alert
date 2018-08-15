@@ -38,7 +38,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.blackducksoftware.integration.alert.web.channel.controller.NewConfigController;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
@@ -49,8 +48,8 @@ import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.web.model.Config;
 
 @RestController
-@RequestMapping(NewConfigController.CHANNEL_CONFIG + "/distribution")
-public class ChannelDistributionConfigController extends NewConfigController {
+@RequestMapping(ConfigController.CHANNEL_CONFIG + "/distribution")
+public class ChannelDistributionConfigController extends ConfigController {
     private final ChannelConfigHandler controllerHandler;
     private final DescriptorMap descriptorMap;
 

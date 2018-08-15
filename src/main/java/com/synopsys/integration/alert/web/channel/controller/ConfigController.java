@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.blackducksoftware.integration.alert.web.controller;
+package com.synopsys.integration.alert.web.channel.controller;
 
 import java.util.List;
 
@@ -35,27 +35,27 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.synopsys.integration.alert.web.controller.BaseController;
 import com.synopsys.integration.alert.web.model.Config;
 
-// This must be an abstract class for the security to work
-@RequestMapping(OldConfigController.CONFIGURATION_PATH)
-public abstract class OldConfigController<R extends Config> extends BaseController {
+@RequestMapping(ConfigController.CONFIGURATION_PATH)
+public abstract class ConfigController extends BaseController {
     public static final String CONFIGURATION_PATH = BaseController.BASE_PATH + "/configuration";
+    public static final String PROVIDER_CONFIG = CONFIGURATION_PATH + "/provider";
+    public static final String CHANNEL_CONFIG = CONFIGURATION_PATH + "/channel";
 
     @GetMapping
-    public abstract List<R> getConfig(final Long id);
+    public abstract List<? extends Config> getConfig(final Long id, final String descriptorName);
 
     @PostMapping
-    public abstract ResponseEntity<String> postConfig(final R restModel);
+    public abstract ResponseEntity<String> postConfig(String config, final String descriptorName);
 
     @PutMapping
-    public abstract ResponseEntity<String> putConfig(final R restModel);
-
-    @DeleteMapping
-    public abstract ResponseEntity<String> deleteConfig(final R restModel);
+    public abstract ResponseEntity<String> putConfig(String config, final String descriptorName);
 
     @PostMapping(value = "/validate")
-    public abstract ResponseEntity<String> validateConfig(final R restModel);
+    public abstract ResponseEntity<String> validateConfig(String config, final String descriptorName);
+
+    @DeleteMapping
+    public abstract ResponseEntity<String> deleteConfig(Long id, final String descriptorName);
 
     @PostMapping(value = "/test")
-    public abstract ResponseEntity<String> testConfig(final R restModel);
-
+    public abstract ResponseEntity<String> testConfig(String config, final String descriptorName);
 }

@@ -32,25 +32,24 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.blackducksoftware.integration.alert.web.channel.controller.NewConfigController;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.synopsys.integration.alert.common.enumeration.DescriptorConfigType;
-import com.synopsys.integration.alert.web.channel.actions.ChannelGlobalConfigActions;
+import com.synopsys.integration.alert.web.channel.actions.SingleEntityConfigActions;
 import com.synopsys.integration.alert.web.channel.handler.ChannelConfigHandler;
 import com.synopsys.integration.alert.web.model.Config;
 
 @RestController
-@RequestMapping(NewConfigController.CHANNEL_CONFIG + "/global/{descriptorName}")
-public class ChannelGlobalConfigController extends NewConfigController {
+@RequestMapping(ConfigController.CHANNEL_CONFIG + "/global/{descriptorName}")
+public class ChannelGlobalConfigController extends ConfigController {
     private final ChannelConfigHandler controllerHandler;
     private final DescriptorMap descriptorMap;
 
     @Autowired
-    public ChannelGlobalConfigController(final DescriptorMap descriptorMap, final ContentConverter contentConverter, final ChannelGlobalConfigActions channelGlobalConfigActions) {
+    public ChannelGlobalConfigController(final DescriptorMap descriptorMap, final ContentConverter contentConverter, final SingleEntityConfigActions singleEntityConfigActions) {
         this.descriptorMap = descriptorMap;
-        this.controllerHandler = new ChannelConfigHandler(contentConverter, channelGlobalConfigActions);
+        this.controllerHandler = new ChannelConfigHandler(contentConverter, singleEntityConfigActions);
     }
 
     @Override
