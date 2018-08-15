@@ -31,7 +31,6 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.DigestType;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
@@ -99,20 +98,16 @@ public class CommonDistributionConfigHelper {
         notificationTypesActions.removeOldNotificationTypes(id);
     }
 
-    public void saveCommonEntity(final CommonDistributionConfig commonChannelConfig, final DatabaseEntity savedChannelEntity) throws AlertException {
+    public void saveCommonEntity(final CommonDistributionConfig commonChannelConfig, final DatabaseEntity savedChannelEntity) {
         if (commonChannelConfig != null) {
-            try {
-                CommonDistributionConfigEntity commonChannelEntity = createCommonEntity(commonChannelConfig);
-                if (savedChannelEntity != null && commonChannelEntity != null) {
-                    commonChannelEntity.setDistributionConfigId(savedChannelEntity.getId());
-                    commonChannelEntity = commonDistributionRepository.save(commonChannelEntity);
-                    if (Boolean.TRUE.equals(commonChannelEntity.getFilterByProject())) {
-                        configuredProjectsActions.saveConfiguredProjects(commonChannelEntity.getId(), commonChannelConfig.getConfiguredProjects());
-                    }
-                    notificationTypesActions.saveNotificationTypes(commonChannelEntity.getId(), commonChannelConfig.getNotificationTypes());
+            CommonDistributionConfigEntity commonChannelEntity = createCommonEntity(commonChannelConfig);
+            if (savedChannelEntity != null && commonChannelEntity != null) {
+                commonChannelEntity.setDistributionConfigId(savedChannelEntity.getId());
+                commonChannelEntity = commonDistributionRepository.save(commonChannelEntity);
+                if (Boolean.TRUE.equals(commonChannelEntity.getFilterByProject())) {
+                    configuredProjectsActions.saveConfiguredProjects(commonChannelEntity.getId(), commonChannelConfig.getConfiguredProjects());
                 }
-            } catch (final Exception e) {
-                throw new AlertException(e.getMessage(), e);
+                notificationTypesActions.saveNotificationTypes(commonChannelEntity.getId(), commonChannelConfig.getNotificationTypes());
             }
         }
     }

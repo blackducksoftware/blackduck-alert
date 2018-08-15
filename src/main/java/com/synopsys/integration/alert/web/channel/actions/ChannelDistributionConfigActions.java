@@ -41,13 +41,15 @@ import com.synopsys.integration.alert.database.audit.relation.AuditNotificationR
 import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
+import com.synopsys.integration.alert.web.actions.ConfigActions;
+import com.synopsys.integration.alert.web.actions.DefaultConfigActions;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class ChannelDistributionConfigActions extends ChannelGlobalConfigActions {
+public class ChannelDistributionConfigActions extends ConfigActions {
     private final CommonDistributionRepository commonDistributionRepository;
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
@@ -55,8 +57,8 @@ public class ChannelDistributionConfigActions extends ChannelGlobalConfigActions
 
     @Autowired
     public ChannelDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final ContentConverter contentConverter, final AuditEntryRepository auditEntryRepository,
-            final AuditNotificationRepository auditNotificationRepository, final CommonDistributionConfigHelper commonDistributionConfigHelper) {
-        super(contentConverter);
+            final AuditNotificationRepository auditNotificationRepository, final CommonDistributionConfigHelper commonDistributionConfigHelper, final DefaultConfigActions defaultConfigActions) {
+        super(contentConverter, defaultConfigActions);
         this.commonDistributionRepository = commonDistributionRepository;
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;
@@ -71,13 +73,13 @@ public class ChannelDistributionConfigActions extends ChannelGlobalConfigActions
     @Override
     public List<? extends Config> getConfig(final Long id, final DescriptorConfig descriptor) throws AlertException {
         final List<? extends Config> restModels = super.getConfig(id, descriptor);
-        addAuditEntryInfoToRestModels((List<CommonDistributionConfig>) restModels);
+        addAuditEntryInfoToRestModels(restModels);
         return restModels;
     }
 
-    private void addAuditEntryInfoToRestModels(final List<CommonDistributionConfig> restModels) {
-        for (final CommonDistributionConfig restModel : restModels) {
-            addAuditEntryInfoToRestModel(restModel);
+    private void addAuditEntryInfoToRestModels(final List<? extends Config> configs) {
+        for (final Config config : configs) {
+            addAuditEntryInfoToRestModel((CommonDistributionConfig) config);
         }
     }
 
@@ -95,7 +97,7 @@ public class ChannelDistributionConfigActions extends ChannelGlobalConfigActions
     }
 
     @Override
-    public DatabaseEntity saveConfig(final Config config, final DescriptorConfig descriptor) throws AlertException {
+    public DatabaseEntity saveConfig(final Config config, final DescriptorConfig descriptor) {
         if (config != null) {
             final CommonDistributionConfig commonConfig = (CommonDistributionConfig) config;
             final DatabaseEntity savedEntity = super.saveConfig(commonConfig, descriptor);
@@ -128,7 +130,7 @@ public class ChannelDistributionConfigActions extends ChannelGlobalConfigActions
     }
 
     @Override
-    public DatabaseEntity saveNewConfigUpdateFromSavedConfig(final Config config, final DescriptorConfig descriptor) throws AlertException {
+    public DatabaseEntity updateConfig(final Config config, final DescriptorConfig descriptor) throws AlertException {
         return saveConfig(config, descriptor);
     }
 
@@ -137,7 +139,7 @@ public class ChannelDistributionConfigActions extends ChannelGlobalConfigActions
         final Map<String, String> fieldErrors = new HashMap<>();
         final CommonDistributionConfig commonConfig = (CommonDistributionConfig) config;
         commonDistributionConfigHelper.validateCommonConfig(commonConfig, fieldErrors);
-        return super.validateConfigInternal(commonConfig, descriptor);
+        return super.validateConfig(commonConfig, descriptor);
     }
 
     @Override
@@ -146,7 +148,7 @@ public class ChannelDistributionConfigActions extends ChannelGlobalConfigActions
             return "ERROR: Missing global configuration!";
 
         }
-        return super.testConfigInternal(config, descriptor);
+        return super.testConfig(config, descriptor);
     }
 
     // TODO Move this method away from here and into the startup manager to clean up all orphans when Alert is rebooted

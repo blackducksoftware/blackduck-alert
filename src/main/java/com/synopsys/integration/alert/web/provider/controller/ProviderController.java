@@ -30,23 +30,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.blackducksoftware.integration.alert.web.channel.controller.NewConfigController;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.synopsys.integration.alert.common.enumeration.DescriptorConfigType;
-import com.synopsys.integration.alert.web.channel.actions.ChannelGlobalConfigActions;
+import com.synopsys.integration.alert.web.channel.actions.SingleEntityConfigActions;
+import com.synopsys.integration.alert.web.channel.controller.ConfigController;
 import com.synopsys.integration.alert.web.channel.handler.ChannelConfigHandler;
 import com.synopsys.integration.alert.web.model.Config;
 
 @RestController
-@RequestMapping(NewConfigController.PROVIDER_CONFIG + "/{descriptorName}")
-public class ProviderController extends NewConfigController {
+@RequestMapping(ConfigController.PROVIDER_CONFIG + "/{descriptorName}")
+public class ProviderController extends ConfigController {
     private final DescriptorMap descriptorMap;
     private final ChannelConfigHandler channelConfigHandler;
 
     @Autowired
-    public ProviderController(final DescriptorMap descriptorMap, final ContentConverter contentConverter, final ChannelGlobalConfigActions configActions) {
+    public ProviderController(final DescriptorMap descriptorMap, final ContentConverter contentConverter, final SingleEntityConfigActions configActions) {
         this.descriptorMap = descriptorMap;
         channelConfigHandler = new ChannelConfigHandler(contentConverter, configActions);
     }
