@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,10 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.ReadOnlyConfigField;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -57,6 +62,8 @@ import com.synopsys.integration.validator.ValidationResults;
 
 @Component
 public class BlackDuckProviderDescriptorConfig extends DescriptorConfig {
+    private static final String PROXY_SUB_GROUP = "Proxy Configuration";
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final BlackDuckProperties blackDuckProperties;
 
@@ -69,7 +76,14 @@ public class BlackDuckProviderDescriptorConfig extends DescriptorConfig {
 
     @Override
     public UIComponent getUiComponent() {
-        return new UIComponent("Black Duck", "blackduck", "laptop", "BlackDuckConfiguration");
+        final ConfigField blackDuckUrl = new ReadOnlyConfigField("blackduckUrl", "Url", true, false);
+        final ConfigField blackDuckApiKey = new PasswordConfigField("blackDuckApiKey", "API Token", true);
+        final ConfigField blackDuckTimeout = new NumberConfigField("blackDuckTimeout", "Timeout", true, false);
+        final ConfigField blackDuckProxyHost = new ReadOnlyConfigField("blackDuckProxyHost", "Host Name", false, false, PROXY_SUB_GROUP);
+        final ConfigField blackDuckProxyPort = new ReadOnlyConfigField("blackDuckProxyPort", "Port", false, false, PROXY_SUB_GROUP);
+        final ConfigField blackDuckProxyUsername = new ReadOnlyConfigField("blackDuckProxyUsername", "Username", false, false, PROXY_SUB_GROUP);
+        final ConfigField blackDuckProxyPassword = new ReadOnlyConfigField("blackDuckProxyPassword", "ProxyPassword", false, true, PROXY_SUB_GROUP);
+        return new UIComponent("Black Duck", "blackduck", "laptop", Arrays.asList(blackDuckUrl, blackDuckApiKey, blackDuckTimeout, blackDuckProxyHost, blackDuckProxyPort, blackDuckProxyUsername, blackDuckProxyPassword));
     }
 
     @Override
