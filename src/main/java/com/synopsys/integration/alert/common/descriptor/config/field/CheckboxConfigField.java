@@ -21,18 +21,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.slack.descriptor;
+package com.synopsys.integration.alert.common.descriptor.config.field;
 
-import org.springframework.stereotype.Component;
+import com.synopsys.integration.alert.common.enumeration.FieldGroup;
+import com.synopsys.integration.alert.common.enumeration.FieldType;
 
-import com.synopsys.integration.alert.channel.slack.SlackChannel;
-import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
+public class CheckboxConfigField extends ConfigField {
 
-@Component
-public class SlackDescriptor extends ChannelDescriptor {
+    public CheckboxConfigField(final String key, final String label, final boolean required, final boolean sensitive, final FieldGroup group) {
+        super(key, label, FieldType.CHECKBOX_INPUT.getFieldTypeName(), required, sensitive, group);
+    }
 
-    public SlackDescriptor(final SlackChannel channelListener, final SlackDistributionDescriptorConfig distributionDescriptorConfig) {
-        super(SlackChannel.COMPONENT_NAME, SlackChannel.COMPONENT_NAME, channelListener, distributionDescriptorConfig);
+    public CheckboxConfigField(final String key, final String label, final boolean required, final boolean sensitive) {
+        super(key, label, FieldType.CHECKBOX_INPUT.getFieldTypeName(), required, sensitive);
     }
 
 }

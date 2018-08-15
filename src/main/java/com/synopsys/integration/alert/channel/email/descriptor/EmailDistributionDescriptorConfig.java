@@ -23,9 +23,14 @@
  */
 package com.synopsys.integration.alert.channel.email.descriptor;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,24 +39,31 @@ import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.channel.event.ChannelEventFactory;
 import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.DropDownConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.database.channel.email.EmailDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.database.channel.email.EmailGroupDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.web.channel.model.EmailDistributionConfig;
 import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckDataActions;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class EmailDistributionDescriptorConfig extends DescriptorConfig {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final EmailGroupChannel emailGroupChannel;
     private final ChannelEventFactory channelEventFactory;
+    private final BlackDuckDataActions blackDuckDataActions;
 
     @Autowired
     public EmailDistributionDescriptorConfig(final EmailDistributionTypeConverter databaseContentConverter, final EmailDistributionRepositoryAccessor repositoryAccessor, final EmailGroupChannel emailGroupChannel,
-            final ChannelEventFactory channelEventFactory) {
+            final ChannelEventFactory channelEventFactory, final BlackDuckDataActions blackDuckDataActions) {
         super(databaseContentConverter, repositoryAccessor);
         this.emailGroupChannel = emailGroupChannel;
         this.channelEventFactory = channelEventFactory;
+        this.blackDuckDataActions = blackDuckDataActions;
     }
 
     @Override
@@ -72,7 +84,24 @@ public class EmailDistributionDescriptorConfig extends DescriptorConfig {
 
     @Override
     public UIComponent getUiComponent() {
-        return new UIComponent("Email", "email", "envelope", "GroupEmailJobConfiguration");
+        final ConfigField subjectLine = new TextInputConfigField("emailSubjectLine", "Subject Line", false, false);
+        final ConfigField groupName = new DropDownConfigField("groupName", "Group Name", true, false, getEmailGroups());
+        return new UIComponent("Email", "email", "envelope", Arrays.asList(subjectLine, groupName));
+    }
+
+    public List<String> getEmailGroups() {
+        // TODO we currently query the hub to get the groups, change this when the group DB table is introduced
+        try {
+            return blackDuckDataActions.getBlackDuckGroups()
+                    .stream()
+                    .map(blackduckGroup -> blackduckGroup.getName())
+                    .collect(Collectors.toList());
+        } catch (final IntegrationException e) {
+            logger.error("Error retrieving email groups");
+            e.printStackTrace();
+        }
+
+        return Arrays.asList();
     }
 
 }

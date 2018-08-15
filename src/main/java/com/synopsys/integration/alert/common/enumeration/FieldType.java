@@ -21,18 +21,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.slack.descriptor;
+package com.synopsys.integration.alert.common.enumeration;
 
-import org.springframework.stereotype.Component;
+public enum FieldType {
+    SELECT("Select"),
+    TEXT_INPUT("TextInput"),
+    TEXT_AREA("TestArea"),
+    PASSWORD_INPUT("PasswordInput"),
+    NUMBER_INPUT("NumberInput"),
+    CHECKBOX_INPUT("CheckboxInput"),
+    READ_ONLY("ReadOnlyField");
 
-import com.synopsys.integration.alert.channel.slack.SlackChannel;
-import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
+    private String fieldTypeName;
 
-@Component
-public class SlackDescriptor extends ChannelDescriptor {
+    private FieldType(final String fieldTypeName) {
+        this.fieldTypeName = fieldTypeName;
+    }
 
-    public SlackDescriptor(final SlackChannel channelListener, final SlackDistributionDescriptorConfig distributionDescriptorConfig) {
-        super(SlackChannel.COMPONENT_NAME, SlackChannel.COMPONENT_NAME, channelListener, distributionDescriptorConfig);
+    public String getFieldTypeName() {
+        return fieldTypeName;
+    }
+
+    @Override
+    public String toString() {
+        return getFieldTypeName();
     }
 
 }

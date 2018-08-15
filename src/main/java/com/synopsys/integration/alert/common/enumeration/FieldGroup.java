@@ -21,18 +21,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.slack.descriptor;
+package com.synopsys.integration.alert.common.enumeration;
 
-import org.springframework.stereotype.Component;
-
-import com.synopsys.integration.alert.channel.slack.SlackChannel;
-import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-
-@Component
-public class SlackDescriptor extends ChannelDescriptor {
-
-    public SlackDescriptor(final SlackChannel channelListener, final SlackDistributionDescriptorConfig distributionDescriptorConfig) {
-        super(SlackChannel.COMPONENT_NAME, SlackChannel.COMPONENT_NAME, channelListener, distributionDescriptorConfig);
-    }
-
+public enum FieldGroup {
+    DEFAULT,
+    ADVANCED,
+    KEY_VALUE;
 }
