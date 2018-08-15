@@ -21,18 +21,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.slack.descriptor;
+package com.synopsys.integration.alert.common.descriptor.config.field;
 
-import org.springframework.stereotype.Component;
+import com.synopsys.integration.alert.common.enumeration.FieldType;
 
-import com.synopsys.integration.alert.channel.slack.SlackChannel;
-import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
+public class PasswordConfigField extends ConfigField {
 
-@Component
-public class SlackDescriptor extends ChannelDescriptor {
-
-    public SlackDescriptor(final SlackChannel channelListener, final SlackDistributionDescriptorConfig distributionDescriptorConfig) {
-        super(SlackChannel.COMPONENT_NAME, SlackChannel.COMPONENT_NAME, channelListener, distributionDescriptorConfig);
+    public PasswordConfigField(final String key, final String label, final boolean required) {
+        super(key, label, FieldType.PASSWORD_INPUT.getFieldTypeName(), required, true);
     }
 
 }
