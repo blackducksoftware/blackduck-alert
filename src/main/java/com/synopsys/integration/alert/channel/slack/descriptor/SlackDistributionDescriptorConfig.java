@@ -23,6 +23,7 @@
  */
 package com.synopsys.integration.alert.channel.slack.descriptor;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -31,15 +32,17 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.channel.event.ChannelEventFactory;
-import com.synopsys.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
-import com.synopsys.integration.alert.database.channel.slack.SlackDistributionRepositoryAccessor;
-import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
 import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
+import com.synopsys.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
+import com.synopsys.integration.alert.database.channel.slack.SlackDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.web.channel.model.SlackDistributionConfig;
 import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class SlackDistributionDescriptorConfig extends DescriptorConfig {
@@ -56,7 +59,10 @@ public class SlackDistributionDescriptorConfig extends DescriptorConfig {
 
     @Override
     public UIComponent getUiComponent() {
-        return new UIComponent("Slack", "slack", "slack", "SlackJobConfiguration");
+        final ConfigField webhook = new TextInputConfigField("webhook", "Webhook", true, false);
+        final ConfigField channelUsername = new TextInputConfigField("channelUsername", "Channel Username", false, false);
+        final ConfigField channelName = new TextInputConfigField("channelName", "Channel Name", true, false);
+        return new UIComponent("Slack", "slack", "slack", Arrays.asList(webhook, channelUsername, channelName));
     }
 
     @Override

@@ -23,17 +23,21 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config;
 
+import java.util.List;
+
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+
 public class UIComponent {
     private String label;
     private String urlName;
     private String fontAwesomeIcon;
-    private String reactComponentName;
+    private List<ConfigField> fields;
 
-    public UIComponent(final String label, final String urlName, final String fontAwesomeIcon, final String reactComponentName) {
+    public UIComponent(final String label, final String urlName, final String fontAwesomeIcon, final List<ConfigField> fields) {
         this.label = label;
         this.urlName = urlName;
         this.fontAwesomeIcon = fontAwesomeIcon;
-        this.reactComponentName = reactComponentName;
+        this.fields = fields;
     }
 
     public String getLabel() {
@@ -60,12 +64,12 @@ public class UIComponent {
         this.fontAwesomeIcon = fontAwesomeIcon;
     }
 
-    public String getReactComponentName() {
-        return reactComponentName;
+    public List<ConfigField> getFields() {
+        return fields;
     }
 
-    public void setReactComponentName(final String reactComponentName) {
-        this.reactComponentName = reactComponentName;
+    public void setFields(final List<ConfigField> fields) {
+        this.fields = fields;
     }
 
 }
