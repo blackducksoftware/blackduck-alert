@@ -21,12 +21,12 @@
             <where>ID NOT IN (SELECT DISTRIBUTION_CONFIG_ID FROM (SELECT * FROM ALERT.COMMON_DISTRIBUTION_CONFIG WHERE DISTRIBUTION_TYPE = 'channel_hipchat'))</where>
         </delete>
     </changeSet>
-    <changeSet author="jrichard" id="1533054185-3">
+    <changeSet author="jrichard" id="1533054185-4">
         <delete tableName="EMAIL_GROUP_DISTRIBUTION_CONFIG" schemaName="ALERT">
             <where>ID NOT IN (SELECT DISTRIBUTION_CONFIG_ID FROM (SELECT * FROM ALERT.COMMON_DISTRIBUTION_CONFIG WHERE DISTRIBUTION_TYPE = 'channel_email'))</where>
         </delete>
     </changeSet>
-    <changeSet author="jrichard" id="1533054185-3">
+    <changeSet author="jrichard" id="1533054185-5">
         <delete tableName="SLACK_DISTRIBUTION_CONFIG" schemaName="ALERT">
             <where>ID NOT IN (SELECT DISTRIBUTION_CONFIG_ID FROM (SELECT * FROM ALERT.COMMON_DISTRIBUTION_CONFIG WHERE DISTRIBUTION_TYPE = 'channel_slack'))</where>
         </delete>
