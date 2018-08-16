@@ -23,8 +23,9 @@ class MainPage extends Component {
     }
 
     componentDidMount() {
-        this.props.getDescriptorByType('CHANNEL_GLOBAL_CONFIG');
         this.props.getDescriptorByType('PROVIDER_CONFIG');
+        this.props.getDescriptorByType('CHANNEL_GLOBAL_CONFIG');
+        this.props.getDescriptorByType('CHANNEL_DISTRIBUTION_CONFIG');
     }
 
     createRoutesForDescriptors(decriptorTypeKey, uriPrefix) {

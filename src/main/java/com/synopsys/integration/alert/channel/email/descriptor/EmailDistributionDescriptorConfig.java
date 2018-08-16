@@ -86,7 +86,7 @@ public class EmailDistributionDescriptorConfig extends DescriptorConfig {
     public UIComponent getUiComponent() {
         final ConfigField subjectLine = new TextInputConfigField("emailSubjectLine", "Subject Line", false, false);
         final ConfigField groupName = new DropDownConfigField("groupName", "Group Name", true, false, getEmailGroups());
-        return new UIComponent("Email", "email", EmailGroupChannel.COMPONENT_NAME, "envelope", Arrays.asList(subjectLine, groupName));
+        return new UIComponent("Group Email", "email", EmailGroupChannel.COMPONENT_NAME, "envelope", Arrays.asList(subjectLine, groupName));
     }
 
     public List<String> getEmailGroups() {

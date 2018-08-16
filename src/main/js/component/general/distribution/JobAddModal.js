@@ -101,7 +101,6 @@ class JobAddModal extends Component {
                         icon: descriptor.fontAwesomeIcon
                 }
             });
-            console.log(optionList);
             return optionList;
         } else {
             return [];
