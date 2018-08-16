@@ -183,7 +183,7 @@ public class EmailGlobalDescriptorConfig extends DescriptorConfig {
         fields.add(mailSmtpUserSet);
         fields.add(mailSmtpNoopStrict);
 
-        return new UIComponent("Email", "email", "envelope", fields);
+        return new UIComponent("Email", "email", EmailGroupChannel.COMPONENT_NAME, "envelope", fields);
     }
 
 }

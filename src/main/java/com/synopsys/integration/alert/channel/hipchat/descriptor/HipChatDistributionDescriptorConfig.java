@@ -64,7 +64,7 @@ public class HipChatDistributionDescriptorConfig extends DescriptorConfig {
         final ConfigField roomId = new NumberConfigField("roomId", "Room Id", true, false);
         final ConfigField notify = new CheckboxConfigField("notify", "Notify", false, false);
         final ConfigField color = new DropDownConfigField("color", "Color", false, false, Arrays.asList("Yellow, Green, Red, Purple, Gray, Random"));
-        return new UIComponent("HipChat", "hipchat", "comments", Arrays.asList(roomId, notify, color));
+        return new UIComponent("HipChat", "hipchat", HipChatChannel.COMPONENT_NAME, "comments", Arrays.asList(roomId, notify, color));
     }
 
     @Override

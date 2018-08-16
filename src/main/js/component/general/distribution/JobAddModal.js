@@ -7,24 +7,6 @@ import GroupEmailJobConfiguration from './job/GroupEmailJobConfiguration';
 import HipChatJobConfiguration from './job/HipChatJobConfiguration';
 import SlackJobConfiguration from './job/SlackJobConfiguration';
 
-import {jobTypes} from '../../../util/distribution-data';
-
-function renderOption(option) {
-    let fontAwesomeIcon;
-    if (option.value === 'channel_email') {
-        fontAwesomeIcon = 'fa fa-envelope fa-fw';
-    } else if (option.value === 'channel_hipchat') {
-        fontAwesomeIcon = 'fa fa-comments  fa-fw';
-    } else if (option.value === 'channel_slack') {
-        fontAwesomeIcon = 'fa fa-slack  fa-fw';
-    }
-    return (
-        <div>
-            <span key="icon" className={fontAwesomeIcon} aria-hidden="true"/>
-            <span key="name">{option.label}</span>
-        </div>
-    );
-}
 
 class JobAddModal extends Component {
     constructor(props) {
@@ -38,6 +20,7 @@ class JobAddModal extends Component {
         this.getCurrentJobConfig = this.getCurrentJobConfig.bind(this);
         this.handleSaveBtnClick = this.handleSaveBtnClick.bind(this);
         this.handleClose = this.handleClose.bind(this);
+        this.createJobTypeOptions = this.createJobTypeOptions.bind(this);
     }
 
     getCurrentJobConfig() {
@@ -109,6 +92,33 @@ class JobAddModal extends Component {
         this.props.onModalClose();
     }
 
+    createJobTypeOptions() {
+        if(this.props.channelDescriptors) {
+            const optionList =  this.props.channelDescriptors.map(descriptor => {
+                return {
+                        label: descriptor.label,
+                        value: descriptor.descriptorName,
+                        icon: descriptor.fontAwesomeIcon
+                }
+            });
+            console.log(optionList);
+            return optionList;
+        } else {
+            return [];
+        }
+
+    }
+
+    renderOption(option) {
+        const fontAwesomeIcon = `fa fa-${option.icon} fa-fw`;
+        return (
+            <div>
+                <span key={`icon-${option.value}`} className={fontAwesomeIcon} aria-hidden="true"/>
+                <span key={`name-${option.value}`}>{option.label}</span>
+            </div>
+        );
+    }
+
     render() {
         return (
             <Modal show={this.state.show} onHide={this.handleClose}>
@@ -127,11 +137,11 @@ class JobAddModal extends Component {
                                     className="typeAheadField"
                                     onChange={this.handleTypeChanged}
                                     clearable={false}
-                                    options={jobTypes}
-                                    optionRenderer={renderOption}
+                                    options={this.createJobTypeOptions()}
+                                    optionRenderer={this.renderOption}
                                     placeholder="Choose the Job Type"
                                     value={this.state.values.typeValue}
-                                    valueRenderer={renderOption}
+                                    valueRenderer={this.renderOption}
                                 />
                             </div>
                         </div>
@@ -145,7 +155,8 @@ class JobAddModal extends Component {
 }
 
 JobAddModal.propTypes = {
-    onModalClose: PropTypes.func.isRequired
+    onModalClose: PropTypes.func.isRequired,
+    channelDescriptors: PropTypes.arrayOf(PropTypes.object)
 };
 
 export default JobAddModal;

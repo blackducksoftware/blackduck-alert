@@ -29,14 +29,16 @@ import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField
 import com.synopsys.integration.util.Stringable;
 
 public class UIComponent extends Stringable {
-    private String label;
-    private String urlName;
-    private String fontAwesomeIcon;
-    private List<ConfigField> fields;
+    private final String label;
+    private final String urlName;
+    private final String descriptorName;
+    private final String fontAwesomeIcon;
+    private final List<ConfigField> fields;
 
-    public UIComponent(final String label, final String urlName, final String fontAwesomeIcon, final List<ConfigField> fields) {
+    public UIComponent(final String label, final String urlName, final String descriptorName, final String fontAwesomeIcon, final List<ConfigField> fields) {
         this.label = label;
         this.urlName = urlName;
+        this.descriptorName = descriptorName;
         this.fontAwesomeIcon = fontAwesomeIcon;
         this.fields = fields;
     }
@@ -45,32 +47,20 @@ public class UIComponent extends Stringable {
         return label;
     }
 
-    public void setLabel(final String label) {
-        this.label = label;
-    }
-
     public String getUrlName() {
         return urlName;
     }
 
-    public void setUrlName(final String urlName) {
-        this.urlName = urlName;
+    public String getDescriptorName() {
+        return descriptorName;
     }
 
     public String getFontAwesomeIcon() {
         return fontAwesomeIcon;
     }
 
-    public void setFontAwesomeIcon(final String fontAwesomeIcon) {
-        this.fontAwesomeIcon = fontAwesomeIcon;
-    }
-
     public List<ConfigField> getFields() {
         return fields;
-    }
-
-    public void setFields(final List<ConfigField> fields) {
-        this.fields = fields;
     }
 
 }

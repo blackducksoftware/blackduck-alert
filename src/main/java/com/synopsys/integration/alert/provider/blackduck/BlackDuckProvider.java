@@ -36,8 +36,9 @@ import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
-@Component
+@Component(value = BlackDuckProvider.COMPONENT_NAME)
 public class BlackDuckProvider extends Provider {
+    public static final String COMPONENT_NAME = "provider_blackduck";
     private static final Logger logger = LoggerFactory.getLogger(BlackDuckProvider.class);
 
     private final BlackDuckAccumulator accumulatorTask;

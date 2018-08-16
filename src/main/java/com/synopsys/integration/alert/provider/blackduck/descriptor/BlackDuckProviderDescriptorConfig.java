@@ -36,6 +36,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfi
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ReadOnlyConfigField;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -57,7 +58,8 @@ public class BlackDuckProviderDescriptorConfig extends DescriptorConfig {
         final ConfigField blackDuckProxyPort = new ReadOnlyConfigField("blackDuckProxyPort", "Port", false, false, PROXY_SUB_GROUP);
         final ConfigField blackDuckProxyUsername = new ReadOnlyConfigField("blackDuckProxyUsername", "Username", false, false, PROXY_SUB_GROUP);
         final ConfigField blackDuckProxyPassword = new ReadOnlyConfigField("blackDuckProxyPassword", "ProxyPassword", false, true, PROXY_SUB_GROUP);
-        return new UIComponent("Black Duck", "blackduck", "laptop", Arrays.asList(blackDuckUrl, blackDuckApiKey, blackDuckTimeout, blackDuckProxyHost, blackDuckProxyPort, blackDuckProxyUsername, blackDuckProxyPassword));
+        return new UIComponent("Black Duck", "blackduck", BlackDuckProvider.COMPONENT_NAME, "laptop",
+                Arrays.asList(blackDuckUrl, blackDuckApiKey, blackDuckTimeout, blackDuckProxyHost, blackDuckProxyPort, blackDuckProxyUsername, blackDuckProxyPassword));
     }
 
     @Override

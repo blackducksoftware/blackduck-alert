@@ -27,8 +27,7 @@ class Navigation extends Component {
             if(!descriptorList) {
                 return null;
             } else {
-                return descriptorList.sort((first, second) => first.label > second.label)
-                .map((component) =>
+                return descriptorList.map((component) =>
                     <li>
                         <NavLink to={`${uriPrefix}${component.urlName}`} activeClassName="activeNav">
                             <FontAwesome name={component.fontAwesomeIcon} fixedWidth/>
