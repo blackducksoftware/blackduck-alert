@@ -35,7 +35,6 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
-import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.synopsys.integration.alert.common.enumeration.DescriptorConfigType;
 import com.synopsys.integration.alert.web.model.AboutDescriptorModel;
@@ -47,21 +46,17 @@ public class AboutReader {
     public final static String PRODUCT_VERSION_UNKNOWN = "unknown";
     private final static Logger logger = LoggerFactory.getLogger(AboutReader.class);
     private final Gson gson;
-    private final DescriptorMap descriptorMap;
 
     @Autowired
-    public AboutReader(final Gson gson, final DescriptorMap descriptorMap) {
+    public AboutReader(final Gson gson) {
         this.gson = gson;
-        this.descriptorMap = descriptorMap;
     }
 
     public AboutModel getAboutModel() {
         try {
             final String aboutJson = ResourceUtil.getResourceAsString(getClass(), "/about.txt", StandardCharsets.UTF_8.toString());
             final AboutModel aboutModel = gson.fromJson(aboutJson, AboutModel.class);
-            final List<AboutDescriptorModel> channelNameList = getDescriptorLabels(descriptorMap.getChannelDescriptorMap(), DescriptorConfigType.CHANNEL_DISTRIBUTION_CONFIG);
-            final List<AboutDescriptorModel> providerNameList = getDescriptorLabels(descriptorMap.getProviderDescriptorMap(), DescriptorConfigType.PROVIDER_CONFIG);
-            return new AboutModel(aboutModel.getVersion(), aboutModel.getDescription(), aboutModel.getProjectUrl(), providerNameList, channelNameList);
+            return new AboutModel(aboutModel.getVersion(), aboutModel.getDescription(), aboutModel.getProjectUrl());
         } catch (final Exception e) {
             logger.error(e.getMessage(), e);
             return null;
@@ -70,10 +65,10 @@ public class AboutReader {
 
     private List<AboutDescriptorModel> getDescriptorLabels(final Map<String, ? extends Descriptor> descriptorMap, final DescriptorConfigType descriptorConfigType) {
         return descriptorMap.values().stream()
-                .map(descriptor -> descriptor.getConfig(descriptorConfigType))
-                .map(DescriptorConfig::getUiComponent)
-                .map(uiComponent -> new AboutDescriptorModel(uiComponent.getFontAwesomeIcon(), uiComponent.getLabel()))
-                .collect(Collectors.toList());
+                       .map(descriptor -> descriptor.getConfig(descriptorConfigType))
+                       .map(DescriptorConfig::getUiComponent)
+                       .map(uiComponent -> new AboutDescriptorModel(uiComponent.getFontAwesomeIcon(), uiComponent.getLabel()))
+                       .collect(Collectors.toList());
     }
 
     public String getProductVersion() {

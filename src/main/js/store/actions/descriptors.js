@@ -34,7 +34,7 @@ function descriptorsError(message) {
 export function getDescriptorByType(distributionConfigType) {
     return (dispatch, getState) => {
         dispatch(fetchingDescriptors());
-        const getUrl = `${FETCH_URL}/${distributionConfigType}`;
+        const getUrl = `${FETCH_URL}?descriptorType=${distributionConfigType}`;
         fetch(getUrl, {
             credentials: 'same-origin',
             headers: {
