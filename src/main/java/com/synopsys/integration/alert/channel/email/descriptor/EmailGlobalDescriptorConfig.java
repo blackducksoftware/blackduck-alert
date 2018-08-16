@@ -60,6 +60,7 @@ public class EmailGlobalDescriptorConfig extends DescriptorConfig {
         this.emailGroupChannel = emailGroupChannel;
     }
 
+    // TODO Global email config doesn't validate properly or give any indication that saving was successful
     @Override
     public void validateConfig(final Config restModel, final Map<String, String> fieldErrors) {
         final EmailGlobalConfig emailRestModel = (EmailGlobalConfig) restModel;

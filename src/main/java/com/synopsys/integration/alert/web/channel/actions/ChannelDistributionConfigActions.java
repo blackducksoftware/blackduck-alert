@@ -41,28 +41,27 @@ import com.synopsys.integration.alert.database.audit.relation.AuditNotificationR
 import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
-import com.synopsys.integration.alert.web.actions.ConfigActions;
 import com.synopsys.integration.alert.web.actions.DefaultConfigActions;
+import com.synopsys.integration.alert.web.actions.DescriptorConfigActions;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.web.model.Config;
-import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class ChannelDistributionConfigActions extends ConfigActions {
+public class ChannelDistributionConfigActions extends DescriptorConfigActions {
     private final CommonDistributionRepository commonDistributionRepository;
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
-    private final CommonDistributionConfigHelper commonDistributionConfigHelper;
+    private final CommonDistributionConfigActions commonDistributionConfigActions;
 
     @Autowired
     public ChannelDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final ContentConverter contentConverter, final AuditEntryRepository auditEntryRepository,
-            final AuditNotificationRepository auditNotificationRepository, final CommonDistributionConfigHelper commonDistributionConfigHelper, final DefaultConfigActions defaultConfigActions) {
+            final AuditNotificationRepository auditNotificationRepository, final CommonDistributionConfigActions commonDistributionConfigActions, final DefaultConfigActions defaultConfigActions) {
         super(contentConverter, defaultConfigActions);
         this.commonDistributionRepository = commonDistributionRepository;
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;
-        this.commonDistributionConfigHelper = commonDistributionConfigHelper;
+        this.commonDistributionConfigActions = commonDistributionConfigActions;
     }
 
     @Override
@@ -101,7 +100,7 @@ public class ChannelDistributionConfigActions extends ConfigActions {
         if (config != null) {
             final CommonDistributionConfig commonConfig = (CommonDistributionConfig) config;
             final DatabaseEntity savedEntity = super.saveConfig(commonConfig, descriptor);
-            commonDistributionConfigHelper.saveCommonEntity(commonConfig, savedEntity);
+            commonDistributionConfigActions.saveCommonEntity(commonConfig, savedEntity);
             return savedEntity;
         }
         return null;
@@ -113,7 +112,7 @@ public class ChannelDistributionConfigActions extends ConfigActions {
             final Optional<CommonDistributionConfigEntity> commonEntity = commonDistributionRepository.findById(id);
             if (commonEntity.isPresent()) {
                 deleteAuditEntries(id);
-                commonDistributionConfigHelper.deleteCommonEntity(id);
+                commonDistributionConfigActions.deleteCommonEntity(id);
                 final Long configId = commonEntity.get().getDistributionConfigId();
                 super.deleteConfig(configId, descriptor);
             }
@@ -138,31 +137,8 @@ public class ChannelDistributionConfigActions extends ConfigActions {
     public String validateConfig(final Config config, final DescriptorConfig descriptor) throws AlertFieldException {
         final Map<String, String> fieldErrors = new HashMap<>();
         final CommonDistributionConfig commonConfig = (CommonDistributionConfig) config;
-        commonDistributionConfigHelper.validateCommonConfig(commonConfig, fieldErrors);
+        commonDistributionConfigActions.validateCommonConfig(commonConfig, fieldErrors);
         return super.validateConfig(commonConfig, descriptor);
     }
-
-    @Override
-    public String testConfig(final Config config, final DescriptorConfig descriptor) throws IntegrationException {
-        if (descriptor != null && descriptor.readEntities().isEmpty()) {
-            return "ERROR: Missing global configuration!";
-
-        }
-        return super.testConfig(config, descriptor);
-    }
-
-    // TODO Move this method away from here and into the startup manager to clean up all orphans when Alert is rebooted
-    // private void cleanUpStaleChannelConfigurations(final ChannelDescriptor descriptor) {
-    // final String distributionName = descriptor.getName();
-    // if (distributionName != null) {
-    // final List<? extends DatabaseEntity> channelDistributionConfigEntities = descriptor.readEntities(DescriptorConfigType.CHANNEL_DISTRIBUTION_CONFIG);
-    // channelDistributionConfigEntities.forEach(entity -> {
-    // final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.findByDistributionConfigIdAndDistributionType(entity.getId(), distributionName);
-    // if (commonEntity == null) {
-    // descriptor.deleteEntity(DescriptorConfigType.CHANNEL_DISTRIBUTION_CONFIG, entity.getId());
-    // }
-    // });
-    // }
-    // }
 
 }

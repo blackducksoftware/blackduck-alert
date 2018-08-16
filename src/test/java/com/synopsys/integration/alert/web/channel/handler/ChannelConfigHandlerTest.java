@@ -20,6 +20,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.mock.model.MockCommonDistributionRestModel;
 import com.synopsys.integration.alert.web.channel.actions.ChannelDistributionConfigActions;
+import com.synopsys.integration.alert.web.config.controller.handler.ConfigControllerHandler;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.web.model.Config;
@@ -33,7 +34,7 @@ public class ChannelConfigHandlerTest {
     @Test
     public void getConfigTest() throws AlertException {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
+        final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
         final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
         final List<CommonDistributionConfig> restModel = Arrays.asList(mockCommonDistributionRestModel.createEmptyRestModel());
@@ -46,7 +47,7 @@ public class ChannelConfigHandlerTest {
     @Test
     public void getConfigHandleExceptionTest() throws AlertException {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
+        final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
         final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
         Mockito.when(configActions.getConfig(Mockito.anyLong(), Mockito.any())).thenThrow(new AlertException());
@@ -65,7 +66,7 @@ public class ChannelConfigHandlerTest {
     @Test
     public void postConfigTest() throws AlertException {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
+        final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
         final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
         Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(false);
@@ -78,7 +79,7 @@ public class ChannelConfigHandlerTest {
 
     @Test
     public void postNullConfigTest() {
-        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, null);
+        final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, null);
 
         final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
         final ResponseEntity<String> response = handler.postConfig(null, descriptor);
@@ -88,7 +89,7 @@ public class ChannelConfigHandlerTest {
     @Test
     public void postConfigWithConflictTest() {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
+        final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
         final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
         Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(true);
@@ -101,7 +102,7 @@ public class ChannelConfigHandlerTest {
     @Test
     public void postWithInvalidConfigTest() throws AlertFieldException {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
+        final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
         final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
         Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(false);
@@ -116,7 +117,7 @@ public class ChannelConfigHandlerTest {
     @Test
     public void postWithInternalServerErrorTest() throws IntegrationException {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
+        final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
         final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
         Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(false);
@@ -130,7 +131,7 @@ public class ChannelConfigHandlerTest {
     @Test
     public void putConfigTest() throws IntegrationException {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
+        final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
         final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
         Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(true);
@@ -144,7 +145,7 @@ public class ChannelConfigHandlerTest {
 
     @Test
     public void putNullConfigTest() {
-        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, null);
+        final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, null);
 
         final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
         final ResponseEntity<String> response = handler.putConfig(null, descriptor);
@@ -154,7 +155,7 @@ public class ChannelConfigHandlerTest {
     @Test
     public void putConfigWithInvalidIdTest() {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
+        final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
         final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
         Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(false);
@@ -167,7 +168,7 @@ public class ChannelConfigHandlerTest {
     @Test
     public void putWithInvalidConfigTest() throws AlertFieldException {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
+        final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
         final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
 
@@ -183,7 +184,7 @@ public class ChannelConfigHandlerTest {
     @Test
     public void putWithInternalServerErrorTest() throws IntegrationException {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
+        final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
         final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
 
@@ -198,7 +199,7 @@ public class ChannelConfigHandlerTest {
     @Test
     public void deleteConfigTest() throws AlertException {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
+        final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
         final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
 
@@ -212,7 +213,7 @@ public class ChannelConfigHandlerTest {
 
     @Test
     public void deleteNullConfigTest() {
-        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, null);
+        final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, null);
 
         final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
         final ResponseEntity<String> response = handler.deleteConfig(null, descriptor);
@@ -222,7 +223,7 @@ public class ChannelConfigHandlerTest {
     @Test
     public void deleteConfigWithInvalidIdTest() {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
+        final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
         final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
 
@@ -236,7 +237,7 @@ public class ChannelConfigHandlerTest {
     @Test
     public void validateConfigTest() {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
+        final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
         final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
 
@@ -247,7 +248,7 @@ public class ChannelConfigHandlerTest {
 
     @Test
     public void validateConfigNullTest() {
-        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, null);
+        final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, null);
 
         final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
         final ResponseEntity<String> response = handler.validateConfig(null, descriptor);
@@ -257,7 +258,7 @@ public class ChannelConfigHandlerTest {
     @Test
     public void validateConfigWithInvalidConfigTest() throws AlertFieldException {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
+        final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
         final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
 
@@ -272,7 +273,7 @@ public class ChannelConfigHandlerTest {
     @Test
     public void testConfigTest() {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
+        final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
         final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
 
@@ -283,7 +284,7 @@ public class ChannelConfigHandlerTest {
 
     @Test
     public void testNullConfigTest() {
-        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, null);
+        final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, null);
 
         final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
         final ResponseEntity<String> response = handler.testConfig(null, descriptor);
@@ -293,7 +294,7 @@ public class ChannelConfigHandlerTest {
     @Test
     public void testConfigWithRestExceptionTest() throws Exception {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
+        final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
         final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
         final int responseCode = HttpStatus.BAD_GATEWAY.value();
         Mockito.when(configActions.testConfig(Mockito.any(), Mockito.any())).thenThrow(new IntegrationRestException(responseCode, "", ""));
@@ -307,7 +308,7 @@ public class ChannelConfigHandlerTest {
     @Test
     public void testConfigWithAlertFieldExceptionTest() throws Exception {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
+        final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
         final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
 
@@ -322,7 +323,7 @@ public class ChannelConfigHandlerTest {
     @Test
     public void testConfigWithExceptionTest() throws Exception {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ChannelConfigHandler handler = new ChannelConfigHandler(contentConverter, configActions);
+        final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
         final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
 

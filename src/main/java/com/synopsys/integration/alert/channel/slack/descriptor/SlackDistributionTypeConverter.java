@@ -28,24 +28,24 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.descriptor.config.CommonTypeConverter;
 import com.synopsys.integration.alert.common.descriptor.config.TypeConverter;
 import com.synopsys.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
-import com.synopsys.integration.alert.web.channel.actions.CommonDistributionConfigHelper;
 import com.synopsys.integration.alert.web.channel.model.SlackDistributionConfig;
 import com.synopsys.integration.alert.web.model.Config;
 
 @Component
 public class SlackDistributionTypeConverter extends TypeConverter {
-    private final CommonDistributionConfigHelper commonDistributionConfigHelper;
+    private final CommonTypeConverter commonTypeConverter;
     private final CommonDistributionRepository commonDistributionRepository;
 
     @Autowired
-    public SlackDistributionTypeConverter(final ContentConverter contentConverter, final CommonDistributionConfigHelper commonDistributionConfigHelper, final CommonDistributionRepository commonDistributionRepository) {
+    public SlackDistributionTypeConverter(final ContentConverter contentConverter, final CommonTypeConverter commonTypeConverter, final CommonDistributionRepository commonDistributionRepository) {
         super(contentConverter);
-        this.commonDistributionConfigHelper = commonDistributionConfigHelper;
+        this.commonTypeConverter = commonTypeConverter;
         this.commonDistributionRepository = commonDistributionRepository;
     }
 
@@ -72,7 +72,7 @@ public class SlackDistributionTypeConverter extends TypeConverter {
         slackRestModel.setChannelUsername(slackEntity.getChannelUsername());
         slackRestModel.setChannelName(slackEntity.getChannelName());
         final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.findByDistributionConfigIdAndDistributionType(slackEntity.getId(), SlackChannel.COMPONENT_NAME);
-        return commonDistributionConfigHelper.populateCommonFieldsFromEntity(slackRestModel, commonEntity);
+        return commonTypeConverter.populateCommonFieldsFromEntity(slackRestModel, commonEntity);
     }
 
 }

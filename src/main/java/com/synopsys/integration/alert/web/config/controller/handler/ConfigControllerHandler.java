@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.channel.handler;
+package com.synopsys.integration.alert.web.config.controller.handler;
 
 import java.util.Collections;
 import java.util.List;
@@ -35,25 +35,25 @@ import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
-import com.synopsys.integration.alert.web.actions.ConfigActions;
+import com.synopsys.integration.alert.web.actions.DescriptorConfigActions;
 import com.synopsys.integration.alert.web.controller.handler.ControllerHandler;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.alert.web.model.ResponseBodyBuilder;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
-public class ChannelConfigHandler extends ControllerHandler {
+public class ConfigControllerHandler extends ControllerHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final ConfigActions configActions;
+    private final DescriptorConfigActions descriptorConfigActions;
 
-    public ChannelConfigHandler(final ContentConverter contentConverter, final ConfigActions configActions) {
+    public ConfigControllerHandler(final ContentConverter contentConverter, final DescriptorConfigActions descriptorConfigActions) {
         super(contentConverter);
-        this.configActions = configActions;
+        this.descriptorConfigActions = descriptorConfigActions;
     }
 
     public List<? extends Config> getConfig(final Long id, final DescriptorConfig descriptor) {
         try {
-            return configActions.getConfig(id, descriptor);
+            return descriptorConfigActions.getConfig(id, descriptor);
         } catch (final AlertException e) {
             logger.error(e.getMessage(), e);
         }
@@ -64,10 +64,10 @@ public class ChannelConfigHandler extends ControllerHandler {
         if (restModel == null) {
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing");
         }
-        if (!configActions.doesConfigExist(restModel.getId(), descriptor)) {
+        if (!descriptorConfigActions.doesConfigExist(restModel.getId(), descriptor)) {
             try {
-                configActions.validateConfig(restModel, descriptor);
-                final DatabaseEntity updatedEntity = configActions.saveConfig(restModel, descriptor);
+                descriptorConfigActions.validateConfig(restModel, descriptor);
+                final DatabaseEntity updatedEntity = descriptorConfigActions.saveConfig(restModel, descriptor);
                 return createResponse(HttpStatus.CREATED, updatedEntity.getId(), "Created");
             } catch (final AlertFieldException e) {
                 final ResponseBodyBuilder responseBuilder = new ResponseBodyBuilder(getContentConverter().getLongValue(restModel.getId()), "There were errors with the configuration.");
@@ -82,11 +82,11 @@ public class ChannelConfigHandler extends ControllerHandler {
         if (restModel == null) {
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing");
         }
-        if (configActions.doesConfigExist(restModel.getId(), descriptor)) {
+        if (descriptorConfigActions.doesConfigExist(restModel.getId(), descriptor)) {
             try {
-                configActions.validateConfig(restModel, descriptor);
+                descriptorConfigActions.validateConfig(restModel, descriptor);
                 try {
-                    final DatabaseEntity updatedEntity = configActions.updateConfig(restModel, descriptor);
+                    final DatabaseEntity updatedEntity = descriptorConfigActions.updateConfig(restModel, descriptor);
                     return createResponse(HttpStatus.ACCEPTED, updatedEntity.getId(), "Updated");
                 } catch (final AlertException e) {
                     logger.error(e.getMessage(), e);
@@ -102,8 +102,8 @@ public class ChannelConfigHandler extends ControllerHandler {
     }
 
     public ResponseEntity<String> deleteConfig(final Long id, final DescriptorConfig descriptor) {
-        if (id != null && configActions.doesConfigExist(id, descriptor)) {
-            configActions.deleteConfig(id, descriptor);
+        if (id != null && descriptorConfigActions.doesConfigExist(id, descriptor)) {
+            descriptorConfigActions.deleteConfig(id, descriptor);
             return createResponse(HttpStatus.ACCEPTED, id, "Deleted");
         }
         return createResponse(HttpStatus.BAD_REQUEST, id, "No configuration with the specified id.");
@@ -114,7 +114,7 @@ public class ChannelConfigHandler extends ControllerHandler {
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing");
         }
         try {
-            final String responseMessage = configActions.validateConfig(restModel, descriptor);
+            final String responseMessage = descriptorConfigActions.validateConfig(restModel, descriptor);
             return createResponse(HttpStatus.OK, restModel.getId(), responseMessage);
         } catch (final AlertFieldException e) {
             final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(getContentConverter().getLongValue(restModel.getId()), e.getMessage());
@@ -129,7 +129,7 @@ public class ChannelConfigHandler extends ControllerHandler {
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing");
         }
         try {
-            final String responseMessage = configActions.testConfig(restModel, descriptor);
+            final String responseMessage = descriptorConfigActions.testConfig(restModel, descriptor);
             return createResponse(HttpStatus.OK, restModel.getId(), responseMessage);
         } catch (final IntegrationRestException e) {
             logger.error(e.getMessage(), e);

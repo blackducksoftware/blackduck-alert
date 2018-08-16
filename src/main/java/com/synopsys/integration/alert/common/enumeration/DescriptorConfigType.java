@@ -26,5 +26,6 @@ package com.synopsys.integration.alert.common.enumeration;
 public enum DescriptorConfigType {
     CHANNEL_GLOBAL_CONFIG,
     CHANNEL_DISTRIBUTION_CONFIG,
-    PROVIDER_CONFIG
+    PROVIDER_CONFIG,
+    COMPONENT_CONFIG;
 }

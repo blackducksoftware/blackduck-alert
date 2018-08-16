@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.channel.controller;
+package com.synopsys.integration.alert.web.config.controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,20 +43,20 @@ import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.synopsys.integration.alert.common.enumeration.DescriptorConfigType;
 import com.synopsys.integration.alert.web.channel.actions.ChannelDistributionConfigActions;
-import com.synopsys.integration.alert.web.channel.handler.ChannelConfigHandler;
+import com.synopsys.integration.alert.web.config.controller.handler.ConfigControllerHandler;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.web.model.Config;
 
 @RestController
 @RequestMapping(ConfigController.CHANNEL_CONFIG + "/distribution")
 public class ChannelDistributionConfigController extends ConfigController {
-    private final ChannelConfigHandler controllerHandler;
+    private final ConfigControllerHandler controllerHandler;
     private final DescriptorMap descriptorMap;
 
     @Autowired
     public ChannelDistributionConfigController(final DescriptorMap descriptorMap, final ContentConverter contentConverter, final ChannelDistributionConfigActions channelDistributionConfigActions) {
         this.descriptorMap = descriptorMap;
-        this.controllerHandler = new ChannelConfigHandler(contentConverter, channelDistributionConfigActions);
+        this.controllerHandler = new ConfigControllerHandler(contentConverter, channelDistributionConfigActions);
     }
 
     @GetMapping()

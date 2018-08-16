@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.channel.controller;
+package com.synopsys.integration.alert.web.config.controller;
 
 import java.util.List;
 
@@ -36,20 +36,20 @@ import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.synopsys.integration.alert.common.enumeration.DescriptorConfigType;
-import com.synopsys.integration.alert.web.channel.actions.SingleEntityConfigActions;
-import com.synopsys.integration.alert.web.channel.handler.ChannelConfigHandler;
+import com.synopsys.integration.alert.web.actions.SingleEntityConfigActions;
+import com.synopsys.integration.alert.web.config.controller.handler.ConfigControllerHandler;
 import com.synopsys.integration.alert.web.model.Config;
 
 @RestController
 @RequestMapping(ConfigController.CHANNEL_CONFIG + "/global/{descriptorName}")
 public class ChannelGlobalConfigController extends ConfigController {
-    private final ChannelConfigHandler controllerHandler;
+    private final ConfigControllerHandler controllerHandler;
     private final DescriptorMap descriptorMap;
 
     @Autowired
     public ChannelGlobalConfigController(final DescriptorMap descriptorMap, final ContentConverter contentConverter, final SingleEntityConfigActions singleEntityConfigActions) {
         this.descriptorMap = descriptorMap;
-        this.controllerHandler = new ChannelConfigHandler(contentConverter, singleEntityConfigActions);
+        this.controllerHandler = new ConfigControllerHandler(contentConverter, singleEntityConfigActions);
     }
 
     @Override

@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.channel.controller;
+package com.synopsys.integration.alert.web.config.controller;
 
 import java.util.List;
 
@@ -40,6 +40,7 @@ public abstract class ConfigController extends BaseController {
     public static final String CONFIGURATION_PATH = BaseController.BASE_PATH + "/configuration";
     public static final String PROVIDER_CONFIG = CONFIGURATION_PATH + "/provider";
     public static final String CHANNEL_CONFIG = CONFIGURATION_PATH + "/channel";
+    public static final String COMPONENT_CONFIG = CONFIGURATION_PATH + "/component";
 
     @GetMapping
     public abstract List<? extends Config> getConfig(final Long id, final String descriptorName);
