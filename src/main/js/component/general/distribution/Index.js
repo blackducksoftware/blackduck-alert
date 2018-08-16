@@ -11,7 +11,6 @@ import EditTableCellFormatter from '../../common/EditTableCellFormatter';
 
 import JobAddModal from './JobAddModal';
 import {logout} from '../../../store/actions/session';
-import {getDescriptorByType} from '../../../store/actions/descriptors';
 
 /**
  * Selects className based on field value
@@ -99,7 +98,6 @@ class Index extends Component {
     }
 
     componentDidMount() {
-        this.props.getDescriptorByType('CHANNEL_DISTRIBUTION_CONFIG');
         this.retrieveGroups();
         this.reloadJobs();
     }
@@ -197,7 +195,6 @@ class Index extends Component {
 
     createCustomModal(onModalClose, onSave, columns, validateState, ignoreEditable) {
         const channelDescriptorList = this.props.descriptors.items['CHANNEL_DISTRIBUTION_CONFIG'];
-        console.log("channel descriptor list", channelDescriptorList);
         return (
             <JobAddModal
                 csrfToken={this.props.csrfToken}
@@ -483,8 +480,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    logout: () => dispatch(logout()),
-    getDescriptorByType: (descriptorType) => dispatch(getDescriptorByType(descriptorType))
+    logout: () => dispatch(logout())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Index);

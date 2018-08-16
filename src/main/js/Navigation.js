@@ -5,17 +5,11 @@ import {NavLink, withRouter} from 'react-router-dom';
 import FontAwesome from 'react-fontawesome';
 import Logo from './component/common/Logo';
 import {confirmLogout} from './store/actions/session';
-import {getDescriptorByType} from './store/actions/descriptors';
 
 class Navigation extends Component {
     constructor(props) {
         super(props);
         this.createNavItemForDescriptors = this.createNavItemForDescriptors.bind(this);
-    }
-
-    componentDidMount() {
-        this.props.getDescriptorByType('CHANNEL_GLOBAL_CONFIG');
-        this.props.getDescriptorByType('PROVIDER_CONFIG');
     }
 
     createNavItemForDescriptors(decriptorTypeKey, uriPrefix) {
@@ -100,8 +94,7 @@ class Navigation extends Component {
 }
 
 Navigation.propTypes = {
-    confirmLogout: PropTypes.func.isRequired,
-    getDescriptorByType: PropTypes.func.isRequired
+    confirmLogout: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -110,8 +103,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    confirmLogout: () => dispatch(confirmLogout()),
-    getDescriptorByType: (descriptorType) => dispatch(getDescriptorByType(descriptorType))
+    confirmLogout: () => dispatch(confirmLogout())
 });
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Navigation));

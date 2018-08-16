@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import ReadOnlyField from '../../field/ReadOnlyField';
 import { getAboutInfo } from '../../store/actions/about';
-import {getDescriptorByType} from '../../store/actions/descriptors';
 
 class AboutInfo extends React.Component {
     constructor(props) {
@@ -12,8 +11,6 @@ class AboutInfo extends React.Component {
 
     componentDidMount() {
         this.props.getAboutInfo();
-        this.props.getDescriptorByType('PROVIDER_CONFIG');
-        this.props.getDescriptorByType('CHANNEL_DISTRIBUTION_CONFIG');
     }
 
     iconColumnRenderer(cell) {
@@ -52,7 +49,6 @@ class AboutInfo extends React.Component {
         const channelList = this.props.descriptors.items['CHANNEL_DISTRIBUTION_CONFIG'];
         const projectUrlLink = <a alt={projectUrl} href={projectUrl}>{projectUrl}</a>;
         const providerTable = this.createDescriptorTable(providerList);
-        console.log("channel list", channelList);
         const channelTable = this.createDescriptorTable(channelList);
         return (
             <div>
@@ -115,8 +111,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    getAboutInfo: () => dispatch(getAboutInfo()),
-    getDescriptorByType: (descriptorType) => dispatch(getDescriptorByType(descriptorType))
+    getAboutInfo: () => dispatch(getAboutInfo())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AboutInfo);
