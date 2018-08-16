@@ -86,16 +86,16 @@ public class EmailDistributionDescriptorConfig extends DescriptorConfig {
     public UIComponent getUiComponent() {
         final ConfigField subjectLine = new TextInputConfigField("emailSubjectLine", "Subject Line", false, false);
         final ConfigField groupName = new DropDownConfigField("groupName", "Group Name", true, false, getEmailGroups());
-        return new UIComponent("Email", "email", "envelope", Arrays.asList(subjectLine, groupName));
+        return new UIComponent("Email", "email", EmailGroupChannel.COMPONENT_NAME, "envelope", Arrays.asList(subjectLine, groupName));
     }
 
     public List<String> getEmailGroups() {
         // TODO we currently query the hub to get the groups, change this when the group DB table is introduced
         try {
             return blackDuckDataActions.getBlackDuckGroups()
-                    .stream()
-                    .map(blackduckGroup -> blackduckGroup.getName())
-                    .collect(Collectors.toList());
+                           .stream()
+                           .map(blackduckGroup -> blackduckGroup.getName())
+                           .collect(Collectors.toList());
         } catch (final IntegrationException e) {
             logger.error("Error retrieving email groups");
             e.printStackTrace();

@@ -28,11 +28,12 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
-import com.synopsys.integration.alert.workflow.startup.AlertStartupProperty;
 import com.synopsys.integration.alert.common.descriptor.config.StartupComponent;
 import com.synopsys.integration.alert.database.entity.EntityPropertyMapper;
+import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.web.provider.blackduck.GlobalBlackDuckConfig;
+import com.synopsys.integration.alert.workflow.startup.AlertStartupProperty;
 
 @Component
 public class BlackDuckProviderStartupComponent extends StartupComponent {
@@ -46,7 +47,7 @@ public class BlackDuckProviderStartupComponent extends StartupComponent {
 
     @Override
     public Set<AlertStartupProperty> getGlobalEntityPropertyMapping() {
-        return entityPropertyMapper.mapEntityToProperties(BlackDuckDescriptor.PROVIDER_NAME, GlobalBlackDuckConfigEntity.class);
+        return entityPropertyMapper.mapEntityToProperties(BlackDuckProvider.COMPONENT_NAME, GlobalBlackDuckConfigEntity.class);
     }
 
 }

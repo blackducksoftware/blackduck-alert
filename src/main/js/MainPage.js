@@ -36,8 +36,7 @@ class MainPage extends Component {
             if(!descriptorList) {
                 return null;
             } else {
-                const sortedList =  descriptorList.sort((first, second) => first.label > second.label);
-                const routeList = sortedList.map((component) => {
+                const routeList = descriptorList.map((component) => {
                         if(component.urlName === 'blackduck') {
                             return <Route path={`${uriPrefix}${component.urlName}`} component={BlackDuckConfiguration}/>
                         } else if(component.urlName === 'email') {
@@ -56,7 +55,7 @@ class MainPage extends Component {
                         exact
                         path="/alert/"
                         render={() => (
-                            <Redirect to={`${uriPrefix}${sortedList[0].urlName}`}/>
+                            <Redirect to={`${uriPrefix}${descriptorList[0].urlName}`}/>
                         )} />
                 );
                 return routeList;

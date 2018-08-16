@@ -31,10 +31,9 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 
 @Component
 public class BlackDuckDescriptor extends ProviderDescriptor {
-    public static final String PROVIDER_NAME = "provider_blackduck";
 
     @Autowired
     public BlackDuckDescriptor(final BlackDuckProviderDescriptorConfig providerDescriptorConfig, final BlackDuckProvider provider) {
-        super(PROVIDER_NAME, providerDescriptorConfig, provider);
+        super(BlackDuckProvider.COMPONENT_NAME, providerDescriptorConfig, provider);
     }
 }

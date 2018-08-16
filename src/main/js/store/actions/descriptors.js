@@ -16,12 +16,22 @@ function fetchingDescriptors() {
 }
 
 function descriptorsFetched(descriptorType, descriptors) {
-    return {
-        type: DESCRIPTORS_FETCHED,
-        items: {
-            [descriptorType]: descriptors
-        }
-    };
+    if(descriptors) {
+        const sortedList = descriptors.sort((first, second) => first.label > second.label);
+        return {
+            type: DESCRIPTORS_FETCHED,
+            items: {
+                [descriptorType]: sortedList
+            }
+        };
+    } else {
+        return {
+            type: DESCRIPTORS_FETCHED,
+            items: {
+                [descriptorType]: []
+            }
+        };
+    }
 }
 
 function descriptorsError(message) {
