@@ -23,15 +23,18 @@
  */
 package com.synopsys.integration.alert.web.scheduling;
 
-import com.synopsys.integration.alert.database.scheduling.GlobalSchedulingConfigEntity;
-import com.synopsys.integration.alert.database.scheduling.GlobalSchedulingRepository;
-import com.synopsys.integration.alert.web.controller.handler.CommonConfigHandler;
-import com.synopsys.integration.alert.common.ContentConverter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-public class GlobalSchedulingHandler extends CommonConfigHandler<GlobalSchedulingConfigEntity, GlobalSchedulingConfig, GlobalSchedulingRepository> {
+import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
 
-    public GlobalSchedulingHandler(final Class<GlobalSchedulingConfigEntity> databaseEntityClass, final Class<GlobalSchedulingConfig> configRestModelClass, final GlobalSchedulingConfigActions configActions,
-            final ContentConverter contentConverter) {
-        super(databaseEntityClass, configRestModelClass, configActions, contentConverter);
+@Component
+public class SchedulingDescriptor extends ComponentDescriptor {
+    public static final String SCHEDULING_COMPONENT = "component_scheduling";
+
+    @Autowired
+    public SchedulingDescriptor(final SchedulingDescriptorConfig componentDescriptorConfig) {
+        super(SCHEDULING_COMPONENT, componentDescriptorConfig);
     }
+
 }

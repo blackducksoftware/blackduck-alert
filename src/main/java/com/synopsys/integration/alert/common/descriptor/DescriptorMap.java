@@ -31,8 +31,8 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.enumeration.DescriptorConfigType;
 import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
+import com.synopsys.integration.alert.common.enumeration.DescriptorConfigType;
 import com.synopsys.integration.alert.common.exception.AlertException;
 
 @Component
@@ -40,14 +40,17 @@ public class DescriptorMap {
     private final Map<String, Descriptor> descriptorMap;
     private final Map<String, ChannelDescriptor> channelDescriptorMap;
     private final Map<String, ProviderDescriptor> providerDescriptorMap;
+    private final Map<String, ComponentDescriptor> componentDescriptorMap;
     private final List<DescriptorConfig> descriptorConfigs;
 
     @Autowired
-    public DescriptorMap(final List<ChannelDescriptor> channelDescriptors, final List<ProviderDescriptor> providerDescriptors, final List<DescriptorConfig> descriptorConfigs) throws AlertException {
+    public DescriptorMap(final List<ChannelDescriptor> channelDescriptors, final List<ProviderDescriptor> providerDescriptors, final List<ComponentDescriptor> componentDescriptors, final List<DescriptorConfig> descriptorConfigs)
+            throws AlertException {
         this.descriptorConfigs = descriptorConfigs;
         descriptorMap = new HashMap<>(channelDescriptors.size() + providerDescriptors.size());
         channelDescriptorMap = initMap(channelDescriptors);
         providerDescriptorMap = initMap(providerDescriptors);
+        componentDescriptorMap = initMap(componentDescriptors);
     }
 
     private <D extends Descriptor> Map<String, D> initMap(final List<D> descriptorList) throws AlertException {
@@ -65,9 +68,9 @@ public class DescriptorMap {
 
     public List<DescriptorConfig> getStartupDescriptorConfigs() {
         return descriptorConfigs
-                       .stream()
-                       .filter(descriptorConfig -> descriptorConfig.hasStartupProperties())
-                       .collect(Collectors.toList());
+                .stream()
+                .filter(descriptorConfig -> descriptorConfig.hasStartupProperties())
+                .collect(Collectors.toList());
     }
 
     public List<DescriptorConfig> getDistributionDescriptorConfigs() {
@@ -82,12 +85,16 @@ public class DescriptorMap {
         return getDescriptorConfigs(DescriptorConfigType.PROVIDER_CONFIG);
     }
 
+    public List<DescriptorConfig> getComponentDescriptorConfigs() {
+        return getDescriptorConfigs(DescriptorConfigType.COMPONENT_CONFIG);
+    }
+
     public List<DescriptorConfig> getDescriptorConfigs(final DescriptorConfigType configType) {
         return descriptorMap.values()
-                       .stream()
-                       .filter(descriptor -> descriptor.getConfig(configType) != null)
-                       .map(descriptor -> descriptor.getConfig(configType))
-                       .collect(Collectors.toList());
+                .stream()
+                .filter(descriptor -> descriptor.getConfig(configType) != null)
+                .map(descriptor -> descriptor.getConfig(configType))
+                .collect(Collectors.toList());
     }
 
     public List<DescriptorConfig> getAllDescriptorConfigs() {
@@ -106,6 +113,10 @@ public class DescriptorMap {
         return providerDescriptorMap.get(name);
     }
 
+    public ComponentDescriptor getComponentDescriptor(final String name) {
+        return componentDescriptorMap.get(name);
+    }
+
     public Map<String, Descriptor> getDescriptorMap() {
         return descriptorMap;
     }
@@ -116,5 +127,9 @@ public class DescriptorMap {
 
     public Map<String, ProviderDescriptor> getProviderDescriptorMap() {
         return providerDescriptorMap;
+    }
+
+    public Map<String, ComponentDescriptor> getComponentDescriptorMap() {
+        return componentDescriptorMap;
     }
 }

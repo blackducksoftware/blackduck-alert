@@ -21,21 +21,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.model;
+package com.synopsys.integration.alert.common.descriptor;
 
-public class ComponentConfig extends Config {
+import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
+import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 
-    private String content;
+public class ComponentDescriptor extends Descriptor {
 
-    public ComponentConfig() {
-    }
-
-    public ComponentConfig(final String content) {
-        this.content = content;
-    }
-
-    public String getContent() {
-        return content;
+    public ComponentDescriptor(final String name, final DescriptorConfig componentDescriptorConfig) {
+        super(name, DescriptorType.COMPONENT);
+        addComponentConfig(componentDescriptorConfig);
     }
 
 }

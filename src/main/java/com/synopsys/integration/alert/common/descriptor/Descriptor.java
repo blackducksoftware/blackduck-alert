@@ -30,10 +30,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.synopsys.integration.alert.common.enumeration.DescriptorConfigType;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
-import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -66,6 +66,10 @@ public abstract class Descriptor {
 
     public void addDistributionConfig(final DescriptorConfig descriptorConfig) {
         descriptorConfigs.put(DescriptorConfigType.CHANNEL_DISTRIBUTION_CONFIG, descriptorConfig);
+    }
+
+    public void addComponentConfig(final DescriptorConfig descriptorConfig) {
+        descriptorConfigs.put(DescriptorConfigType.COMPONENT_CONFIG, descriptorConfig);
     }
 
     public DescriptorConfig getConfig(final DescriptorConfigType descriptorConfigType) {

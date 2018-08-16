@@ -36,7 +36,6 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.DistributionChannel;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.entity.channel.DistributionChannelConfigEntity;
@@ -56,9 +55,8 @@ public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntit
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public RestDistributionChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditEntryRepository auditEntryRepository, final JpaRepository<G, Long> globalRepository,
-            final JpaRepository<C, Long> distributionRepository,
-            final CommonDistributionRepository commonDistributionRepository, final ChannelRestConnectionFactory channelRestConnectionFactory, final ContentConverter contentExtractor) {
-        super(gson, alertProperties, blackDuckProperties, auditEntryRepository, globalRepository, distributionRepository, commonDistributionRepository, contentExtractor);
+            final JpaRepository<C, Long> distributionRepository, final CommonDistributionRepository commonDistributionRepository, final ChannelRestConnectionFactory channelRestConnectionFactory) {
+        super(gson, alertProperties, blackDuckProperties, auditEntryRepository, globalRepository, distributionRepository, commonDistributionRepository);
         this.channelRestConnectionFactory = channelRestConnectionFactory;
     }
 
@@ -119,4 +117,3 @@ public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntit
     public abstract List<Request> createRequests(final C config, G globalConfig, final ChannelEvent event) throws IntegrationException;
 
 }
-

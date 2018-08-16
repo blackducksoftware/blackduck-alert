@@ -37,11 +37,11 @@ import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
 
-public abstract class ConfigActions {
+public class DescriptorConfigActions {
     private final ContentConverter contentConverter;
     private final DefaultConfigActions defaultConfigActions;
 
-    public ConfigActions(final ContentConverter contentConverter, final DefaultConfigActions defaultConfigActions) {
+    public DescriptorConfigActions(final ContentConverter contentConverter, final DefaultConfigActions defaultConfigActions) {
         this.contentConverter = contentConverter;
         this.defaultConfigActions = defaultConfigActions;
     }

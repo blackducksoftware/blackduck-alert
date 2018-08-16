@@ -40,14 +40,14 @@ import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
 import com.synopsys.integration.alert.common.enumeration.DescriptorConfigType;
 
 @RestController
-@RequestMapping(DescriptorController.DESCRIPTOR_PATH + "/{descriptorConfigType}")
-public class DescriptorController extends BaseController {
+@RequestMapping(UIComponentController.DESCRIPTOR_PATH + "/{descriptorConfigType}")
+public class UIComponentController extends BaseController {
     public static final String DESCRIPTOR_PATH = BASE_PATH + "/descriptors";
 
     private final DescriptorMap descriptorMap;
 
     @Autowired
-    public DescriptorController(final DescriptorMap descriptorMap) {
+    public UIComponentController(final DescriptorMap descriptorMap) {
         this.descriptorMap = descriptorMap;
     }
 

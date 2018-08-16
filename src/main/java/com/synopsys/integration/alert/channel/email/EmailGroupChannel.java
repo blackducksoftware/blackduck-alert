@@ -43,7 +43,6 @@ import com.synopsys.integration.alert.channel.DistributionChannel;
 import com.synopsys.integration.alert.channel.email.template.EmailTarget;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
@@ -69,8 +68,8 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
 
     @Autowired
     public EmailGroupChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditEntryRepository auditEntryRepository, final EmailGlobalRepository emailRepository,
-            final EmailGroupDistributionRepository emailGroupDistributionRepository, final CommonDistributionRepository commonDistributionRepository, final ContentConverter contentExtractor) {
-        super(gson, alertProperties, blackDuckProperties, auditEntryRepository, emailRepository, emailGroupDistributionRepository, commonDistributionRepository, contentExtractor);
+            final EmailGroupDistributionRepository emailGroupDistributionRepository, final CommonDistributionRepository commonDistributionRepository) {
+        super(gson, alertProperties, blackDuckProperties, auditEntryRepository, emailRepository, emailGroupDistributionRepository, commonDistributionRepository);
     }
 
     @Override
@@ -86,6 +85,10 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
     }
 
     public void sendMessage(final List<String> emailAddresses, final ChannelEvent event, final String subjectLine, final String blackDuckGroupName) throws IntegrationException {
+        final EmailGlobalConfigEntity globalConfigEntity = getGlobalConfigEntity();
+        if (!isValidGlobalConfigEntity(globalConfigEntity)) {
+            throw new IntegrationException("ERROR: Missing global config.");
+        }
         final EmailProperties emailProperties = new EmailProperties(getGlobalConfigEntity());
         try {
             final EmailMessagingService emailService = new EmailMessagingService(getAlertProperties(), emailProperties);
@@ -115,6 +118,10 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
         } catch (final AlertException ex) {
             logger.error("Error sending email project data from event", ex);
         }
+    }
+
+    private boolean isValidGlobalConfigEntity(final EmailGlobalConfigEntity globalConfigEntity) {
+        return globalConfigEntity != null && StringUtils.isNotBlank(globalConfigEntity.getMailSmtpHost()) && StringUtils.isNotBlank(globalConfigEntity.getMailSmtpFrom());
     }
 
     private List<String> getEmailAddressesForGroup(final String blackDuckGroup) throws IntegrationException {

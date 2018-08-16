@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.channel.actions;
+package com.synopsys.integration.alert.web.actions;
 
 import java.util.List;
 
@@ -32,14 +32,12 @@ import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
-import com.synopsys.integration.alert.web.actions.ConfigActions;
-import com.synopsys.integration.alert.web.actions.DefaultConfigActions;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class SingleEntityConfigActions extends ConfigActions {
+public class SingleEntityConfigActions extends DescriptorConfigActions {
 
     @Autowired
     public SingleEntityConfigActions(final ContentConverter contentConverter, final DefaultConfigActions defaultConfigActions) {

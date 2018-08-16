@@ -37,33 +37,21 @@ import com.synopsys.integration.alert.database.entity.repository.CommonDistribut
 import com.synopsys.integration.alert.web.actions.ConfiguredProjectsActions;
 import com.synopsys.integration.alert.web.actions.NotificationTypesActions;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
-import com.synopsys.integration.alert.web.model.Config;
 
 @Component
-public class CommonDistributionConfigHelper {
+public class CommonDistributionConfigActions {
     private final ConfiguredProjectsActions configuredProjectsActions;
     private final NotificationTypesActions notificationTypesActions;
     private final CommonDistributionRepository commonDistributionRepository;
     private final ContentConverter contentConverter;
 
     @Autowired
-    public CommonDistributionConfigHelper(final ConfiguredProjectsActions configuredProjectsActions, final NotificationTypesActions notificationTypesActions, final CommonDistributionRepository commonDistributionRepository,
+    public CommonDistributionConfigActions(final ConfiguredProjectsActions configuredProjectsActions, final NotificationTypesActions notificationTypesActions, final CommonDistributionRepository commonDistributionRepository,
             final ContentConverter contentConverter) {
         this.configuredProjectsActions = configuredProjectsActions;
         this.notificationTypesActions = notificationTypesActions;
         this.commonDistributionRepository = commonDistributionRepository;
         this.contentConverter = contentConverter;
-    }
-
-    public Config populateCommonFieldsFromEntity(final CommonDistributionConfig channelConfig, final CommonDistributionConfigEntity commonEntity) {
-        channelConfig.setId(contentConverter.getStringValue(commonEntity.getId()));
-        channelConfig.setDistributionType(commonEntity.getDistributionType());
-        channelConfig.setFilterByProject(contentConverter.getStringValue(commonEntity.getFilterByProject()));
-        channelConfig.setFrequency(commonEntity.getFrequency().name());
-        channelConfig.setName(commonEntity.getName());
-        channelConfig.setConfiguredProjects(configuredProjectsActions.getConfiguredProjects(commonEntity));
-        channelConfig.setNotificationTypes(notificationTypesActions.getNotificationTypes(commonEntity));
-        return channelConfig;
     }
 
     public void validateCommonConfig(final CommonDistributionConfig commonConfig, final Map<String, String> fieldErrors) {

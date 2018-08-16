@@ -23,21 +23,33 @@
  */
 package com.synopsys.integration.alert.web.scheduling;
 
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
-import com.synopsys.integration.alert.database.scheduling.GlobalSchedulingConfigEntity;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.config.TypeConverter;
+import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+import com.synopsys.integration.alert.database.scheduling.GlobalSchedulingConfigEntity;
 import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
+import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
+import com.synopsys.integration.alert.workflow.scheduled.frequency.OnDemandTask;
 
 @Component
-public class GlobalSchedulingContentConverter extends TypeConverter {
+public class GlobalSchedulingTypeConverter extends TypeConverter {
+    private final PurgeTask purgeTask;
+    private final DailyTask dailyTask;
+    private final OnDemandTask onDemandTask;
 
     @Autowired
-    public GlobalSchedulingContentConverter(final ContentConverter contentConverter) {
+    public GlobalSchedulingTypeConverter(final ContentConverter contentConverter, final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask) {
         super(contentConverter);
+        this.purgeTask = purgeTask;
+        this.dailyTask = dailyTask;
+        this.onDemandTask = onDemandTask;
     }
 
     @Override
@@ -61,6 +73,17 @@ public class GlobalSchedulingContentConverter extends TypeConverter {
         schedulingRestModel.setPurgeDataFrequencyDays(schedulingEntity.getPurgeDataFrequencyDays());
         final String id = getContentConverter().getStringValue(schedulingEntity.getId());
         schedulingRestModel.setId(id);
+        return addConfigNextRunData(schedulingRestModel);
+    }
+
+    private GlobalSchedulingConfig addConfigNextRunData(final GlobalSchedulingConfig schedulingRestModel) {
+        schedulingRestModel.setDailyDigestNextRun(dailyTask.getFormatedNextRunTime().orElse(null));
+        schedulingRestModel.setPurgeDataNextRun(purgeTask.getFormatedNextRunTime().orElse(null));
+        final Optional<Long> onDemandNextRun = onDemandTask.getMillisecondsToNextRun();
+        if (onDemandNextRun.isPresent()) {
+            final Long seconds = TimeUnit.MILLISECONDS.toSeconds(onDemandNextRun.get());
+            schedulingRestModel.setAccumulatorNextRun(String.valueOf(seconds));
+        }
         return schedulingRestModel;
     }
 

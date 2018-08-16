@@ -8,21 +8,17 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import com.synopsys.integration.alert.web.scheduling.mock.MockGlobalSchedulingEntity;
-import com.synopsys.integration.alert.web.scheduling.model.MockGlobalSchedulingRestModel;
 import com.synopsys.integration.alert.database.scheduling.GlobalSchedulingConfigEntity;
 import com.synopsys.integration.alert.database.scheduling.GlobalSchedulingRepository;
 import com.synopsys.integration.alert.web.controller.GlobalControllerTest;
 import com.synopsys.integration.alert.web.scheduling.GlobalSchedulingConfig;
-import com.synopsys.integration.alert.web.scheduling.GlobalSchedulingConfigActions;
+import com.synopsys.integration.alert.web.scheduling.mock.MockGlobalSchedulingEntity;
+import com.synopsys.integration.alert.web.scheduling.model.MockGlobalSchedulingRestModel;
 
 public class GlobalSchedulingConfigControllerTestIT extends GlobalControllerTest<GlobalSchedulingConfigEntity, GlobalSchedulingConfig, GlobalSchedulingRepository> {
 
     @Autowired
     GlobalSchedulingRepository globalSchedulingRepository;
-
-    @Autowired
-    GlobalSchedulingConfigActions globalSchedulingConfigActions;
 
     @Override
     public GlobalSchedulingRepository getGlobalEntityRepository() {
@@ -51,8 +47,8 @@ public class GlobalSchedulingConfigControllerTestIT extends GlobalControllerTest
         globalEntityRepository.deleteAll();
         final GlobalSchedulingConfigEntity savedEntity = globalEntityRepository.save(entity);
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(restUrl)
-                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
-                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
+                .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                .with(SecurityMockMvcRequestPostProcessors.csrf());
         restModel.setId(String.valueOf(savedEntity.getId()));
         request.content(gson.toJson(restModel));
         request.contentType(contentType);
@@ -67,8 +63,8 @@ public class GlobalSchedulingConfigControllerTestIT extends GlobalControllerTest
         final GlobalSchedulingConfigEntity savedEntity = globalEntityRepository.save(entity);
         final String testRestUrl = restUrl + "/test";
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl)
-                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
-                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
+                .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                .with(SecurityMockMvcRequestPostProcessors.csrf());
         restModel.setId(String.valueOf(savedEntity.getId()));
         request.content(gson.toJson(restModel));
         request.contentType(contentType);
