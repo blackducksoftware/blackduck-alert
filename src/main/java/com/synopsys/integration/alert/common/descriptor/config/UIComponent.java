@@ -26,8 +26,9 @@ package com.synopsys.integration.alert.common.descriptor.config;
 import java.util.List;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.util.Stringable;
 
-public class UIComponent {
+public class UIComponent extends Stringable {
     private String label;
     private String urlName;
     private String fontAwesomeIcon;

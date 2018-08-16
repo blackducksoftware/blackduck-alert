@@ -24,23 +24,25 @@
 package com.synopsys.integration.alert.web.controller;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
+import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
 import com.synopsys.integration.alert.common.enumeration.DescriptorConfigType;
 
 @RestController
-@RequestMapping(DescriptorController.DESCRIPTOR_PATH + "/{descriptorConfigType}")
+@RequestMapping(DescriptorController.DESCRIPTOR_PATH)
 public class DescriptorController extends BaseController {
     public static final String DESCRIPTOR_PATH = BASE_PATH + "/descriptors";
 
@@ -52,16 +54,44 @@ public class DescriptorController extends BaseController {
     }
 
     @GetMapping
-    public List<UIComponent> getDescriptors(@RequestParam(value = "descriptorName", required = false) final String descriptorName, @PathVariable final String descriptorConfigType) {
-        final DescriptorConfigType descriptorConfigTypeEnum = Enum.valueOf(DescriptorConfigType.class, descriptorConfigType);
+    public List<UIComponent> getDescriptors(@RequestParam(value = "descriptorName", required = false) final String descriptorName, @RequestParam(value = "descriptorType", required = false) final String descriptorConfigType) {
+        // filter by name
         if (StringUtils.isNotBlank(descriptorName)) {
-            return Arrays.asList(descriptorMap.getDescriptor(descriptorName).getConfig(descriptorConfigTypeEnum).getUiComponent());
+            final Descriptor descriptor = descriptorMap.getDescriptor(descriptorName);
+            if (descriptor != null) {
+                // filter by type also
+                if (StringUtils.isNotBlank(descriptorConfigType)) {
+                    final DescriptorConfigType descriptorConfigTypeEnum = getDescriptorConfigType(descriptorConfigType);
+                    final DescriptorConfig descriptorConfig = descriptor.getConfig(descriptorConfigTypeEnum);
+                    if (descriptorConfig != null) {
+                        return Arrays.asList(descriptorConfig.getUiComponent());
+                    } else {
+                        return Collections.emptyList();
+                    }
+                } else {
+                    // name only
+                    return descriptor.getAllConfigs().stream().map(descriptorConfig -> descriptorConfig.getUiComponent()).collect(Collectors.toList());
+                }
+            } else {
+                return Collections.emptyList();
+            }
+        } else if (StringUtils.isNotBlank(descriptorConfigType)) {
+            final DescriptorConfigType descriptorConfigTypeEnum = getDescriptorConfigType(descriptorConfigType);
+            return descriptorMap.getDescriptorConfigs(descriptorConfigTypeEnum).stream().map(descriptorConfig -> descriptorConfig.getUiComponent()).collect(Collectors.toList());
+        } else {
+            return descriptorMap.getAllDescriptorConfigs()
+                           .stream()
+                           .map(descriptorConfig -> descriptorConfig.getUiComponent())
+                           .collect(Collectors.toList());
         }
-
-        return descriptorMap.getDescriptorConfigs(descriptorConfigTypeEnum)
-                       .stream()
-                       .map(descriptorConfig -> descriptorConfig.getUiComponent())
-                       .collect(Collectors.toList());
     }
 
+    private DescriptorConfigType getDescriptorConfigType(final String descriptorConfigType) {
+        try {
+            return Enum.valueOf(DescriptorConfigType.class, descriptorConfigType);
+        } catch (final IllegalArgumentException ex) {
+            return null;
+        }
+
+    }
 }
