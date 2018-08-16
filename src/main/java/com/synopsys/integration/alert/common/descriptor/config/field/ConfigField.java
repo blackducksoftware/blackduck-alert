@@ -24,8 +24,9 @@
 package com.synopsys.integration.alert.common.descriptor.config.field;
 
 import com.synopsys.integration.alert.common.enumeration.FieldGroup;
+import com.synopsys.integration.util.Stringable;
 
-public class ConfigField {
+public class ConfigField extends Stringable {
     private String key;
     private String label;
     private String type;
