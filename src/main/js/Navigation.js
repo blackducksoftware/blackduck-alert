@@ -14,8 +14,8 @@ class Navigation extends Component {
     }
 
     componentDidMount() {
-        this.props.getDescriptorByType('CHANNEL_GLOBAL_CONFIG'),
-        this.props.getDescriptorByType('PROVIDER_CONFIG')
+        this.props.getDescriptorByType('CHANNEL_GLOBAL_CONFIG');
+        this.props.getDescriptorByType('PROVIDER_CONFIG');
     }
 
     createNavItemForDescriptors(decriptorTypeKey, uriPrefix) {
@@ -40,7 +40,7 @@ class Navigation extends Component {
     }
 
     render() {
-        const globals = this.createNavItemForDescriptors('CHANNEL_GLOBAL_CONFIG','/alert/channels/');
+        const channelGlobals = this.createNavItemForDescriptors('CHANNEL_GLOBAL_CONFIG','/alert/channels/');
         const providers = this.createNavItemForDescriptors('PROVIDER_CONFIG','/alert/providers/');
 
         return (
@@ -57,7 +57,7 @@ class Navigation extends Component {
                         <li className="navHeader">
                             Channels
                         </li>
-                        {globals}
+                        {channelGlobals}
                         <li className="navHeader">
                             Jobs
                         </li>
