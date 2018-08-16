@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="jrichard" id="1534428444602-1">
+        <update tableName="COMMON_DISTRIBUTION_CONFIG" schemaName="ALERT">
+            <column name="DISTRIBUTION_TYPE" type="varchar(255)" value="channel_email"/>
+            <where>DISTRIBUTION_TYPE = 'email_group_channel'</where>
+        </update>
+    </changeSet>
+    <changeSet author="jrichard" id="1534428444602-2">
+        <update tableName="COMMON_DISTRIBUTION_CONFIG" schemaName="ALERT">
+            <column name="DISTRIBUTION_TYPE" type="varchar(255)" value="channel_hipchat"/>
+            <where>DISTRIBUTION_TYPE = 'hipchat_channel'</where>
+        </update>
+    </changeSet>
+    <changeSet author="jrichard" id="1534428444602-3">
+        <update tableName="COMMON_DISTRIBUTION_CONFIG" schemaName="ALERT">
+            <column name="DISTRIBUTION_TYPE" type="varchar(255)" value="channel_slack"/>
+            <where>DISTRIBUTION_TYPE = 'slack_channel'</where>
+        </update>
+    </changeSet>
+</databaseChangeLog>
