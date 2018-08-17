@@ -33,7 +33,7 @@
     </changeSet>
     <changeSet author="psantos" id="1533054185-6">
         <addColumn tableName="COMMON_DISTRIBUTION_CONFIG" schemaName="ALERT">
-            <column name="PROVIDER_NAME" type="varchar(255)"/>
+            <column name="PROVIDER_NAME" type="varchar(255)" value="provider_blackduck"/>
         </addColumn>
     </changeSet>
 </databaseChangeLog>
