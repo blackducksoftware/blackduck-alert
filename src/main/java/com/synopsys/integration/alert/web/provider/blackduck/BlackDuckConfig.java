@@ -26,7 +26,7 @@ package com.synopsys.integration.alert.web.provider.blackduck;
 import com.synopsys.integration.alert.common.annotation.SensitiveField;
 import com.synopsys.integration.alert.web.model.Config;
 
-public class GlobalBlackDuckConfig extends Config {
+public class BlackDuckConfig extends Config {
     private String blackDuckUrl;
     private String blackDuckTimeout;
 
@@ -44,10 +44,10 @@ public class GlobalBlackDuckConfig extends Config {
 
     private String blackDuckAlwaysTrustCertificate;
 
-    public GlobalBlackDuckConfig() {
+    public BlackDuckConfig() {
     }
 
-    public GlobalBlackDuckConfig(final String id, final String blackDuckUrl, final String blackDuckTimeout, final String blackDuckApiKey, final boolean blackDuckApiKeyIsSet, final String blackDuckProxyHost, final String blackDuckProxyPort,
+    public BlackDuckConfig(final String id, final String blackDuckUrl, final String blackDuckTimeout, final String blackDuckApiKey, final boolean blackDuckApiKeyIsSet, final String blackDuckProxyHost, final String blackDuckProxyPort,
             final String blackDuckProxyUsername,
             final String blackDuckProxyPassword, final boolean blackDuckProxyPasswordIsSet, final String blackDuckAlwaysTrustCertificate) {
         super(id);

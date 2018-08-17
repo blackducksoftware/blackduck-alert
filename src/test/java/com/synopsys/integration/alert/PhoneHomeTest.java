@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.Executors;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -28,7 +27,6 @@ import com.synopsys.integration.blackduck.service.HubServicesFactory;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.phonehome.PhoneHomeCallable;
 import com.synopsys.integration.phonehome.PhoneHomeRequestBody;
-import com.synopsys.integration.phonehome.PhoneHomeService;
 import com.synopsys.integration.test.TestLogger;
 import com.synopsys.integration.test.annotation.HubConnectionTest;
 
@@ -49,7 +47,6 @@ public class PhoneHomeTest {
 
         try (final BlackduckRestConnection restConnection = globalProperties.createRestConnection(new TestLogger()).get()) {
             final HubServicesFactory hubServicesFactory = globalProperties.createBlackDuckServicesFactory(restConnection, new Slf4jIntLogger(logger));
-            final PhoneHomeService phoneHomeService = hubServicesFactory.createPhoneHomeService(Executors.newSingleThreadExecutor());
             final Optional<PhoneHomeCallable> callable = phoneHome.createPhoneHomeCallable(hubServicesFactory);
             if (callable.isPresent()) {
                 final PhoneHomeRequestBody body = callable.get().createPhoneHomeRequestBody();

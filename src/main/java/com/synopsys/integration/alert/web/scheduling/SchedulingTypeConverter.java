@@ -39,13 +39,13 @@ import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.OnDemandTask;
 
 @Component
-public class GlobalSchedulingTypeConverter extends TypeConverter {
+public class SchedulingTypeConverter extends TypeConverter {
     private final PurgeTask purgeTask;
     private final DailyTask dailyTask;
     private final OnDemandTask onDemandTask;
 
     @Autowired
-    public GlobalSchedulingTypeConverter(final ContentConverter contentConverter, final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask) {
+    public SchedulingTypeConverter(final ContentConverter contentConverter, final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask) {
         super(contentConverter);
         this.purgeTask = purgeTask;
         this.dailyTask = dailyTask;
@@ -54,12 +54,12 @@ public class GlobalSchedulingTypeConverter extends TypeConverter {
 
     @Override
     public Config getConfigFromJson(final String json) {
-        return getContentConverter().getJsonContent(json, GlobalSchedulingConfig.class);
+        return getContentConverter().getJsonContent(json, SchedulingConfig.class);
     }
 
     @Override
     public DatabaseEntity populateEntityFromConfig(final Config restModel) {
-        final GlobalSchedulingConfig schedulingRestModel = (GlobalSchedulingConfig) restModel;
+        final SchedulingConfig schedulingRestModel = (SchedulingConfig) restModel;
         final GlobalSchedulingConfigEntity schedulingEntity = new GlobalSchedulingConfigEntity(schedulingRestModel.getDailyDigestHourOfDay(), schedulingRestModel.getPurgeDataFrequencyDays());
         addIdToEntityPK(schedulingRestModel.getId(), schedulingEntity);
         return schedulingEntity;
@@ -68,7 +68,7 @@ public class GlobalSchedulingTypeConverter extends TypeConverter {
     @Override
     public Config populateConfigFromEntity(final DatabaseEntity entity) {
         final GlobalSchedulingConfigEntity schedulingEntity = (GlobalSchedulingConfigEntity) entity;
-        final GlobalSchedulingConfig schedulingRestModel = new GlobalSchedulingConfig();
+        final SchedulingConfig schedulingRestModel = new SchedulingConfig();
         schedulingRestModel.setDailyDigestHourOfDay(schedulingEntity.getDailyDigestHourOfDay());
         schedulingRestModel.setPurgeDataFrequencyDays(schedulingEntity.getPurgeDataFrequencyDays());
         final String id = getContentConverter().getStringValue(schedulingEntity.getId());
@@ -76,7 +76,7 @@ public class GlobalSchedulingTypeConverter extends TypeConverter {
         return addConfigNextRunData(schedulingRestModel);
     }
 
-    private GlobalSchedulingConfig addConfigNextRunData(final GlobalSchedulingConfig schedulingRestModel) {
+    private SchedulingConfig addConfigNextRunData(final SchedulingConfig schedulingRestModel) {
         schedulingRestModel.setDailyDigestNextRun(dailyTask.getFormatedNextRunTime().orElse(null));
         schedulingRestModel.setPurgeDataNextRun(purgeTask.getFormatedNextRunTime().orElse(null));
         final Optional<Long> onDemandNextRun = onDemandTask.getMillisecondsToNextRun();

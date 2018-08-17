@@ -1,6 +1,8 @@
 package com.synopsys.integration.alert.common.descriptor;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.Arrays;
 
@@ -30,7 +32,7 @@ public class DescriptorMapTest {
         Mockito.when(channelDescriptor2.getType()).thenReturn(DescriptorType.CHANNEL);
         Mockito.when(providerDescriptor.getType()).thenReturn(DescriptorType.PROVIDER);
 
-        final DescriptorMap descriptorMap = new DescriptorMap(Arrays.asList(channelDescriptor1, channelDescriptor2), Arrays.asList(providerDescriptor), null);
+        final DescriptorMap descriptorMap = new DescriptorMap(Arrays.asList(channelDescriptor1, channelDescriptor2), Arrays.asList(providerDescriptor), Arrays.asList(), null);
 
         assertEquals(3, descriptorMap.getDescriptorMap().size());
         assertEquals(2, descriptorMap.getChannelDescriptorMap().size());

@@ -1,38 +1,29 @@
 package com.synopsys.integration.alert.web.channel.controller;
 
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import com.synopsys.integration.alert.TestPropertyKey;
 import com.synopsys.integration.alert.channel.email.mock.MockEmailGlobalEntity;
 import com.synopsys.integration.alert.channel.email.mock.MockEmailGlobalRestModel;
-import com.synopsys.integration.alert.database.channel.email.EmailGlobalConfigEntity;
-import com.synopsys.integration.alert.database.channel.email.EmailGlobalRepository;
-import com.synopsys.integration.alert.mock.MockGlobalEntityUtil;
-import com.synopsys.integration.alert.mock.MockGlobalRestModelUtil;
-import com.synopsys.integration.alert.web.channel.model.EmailGlobalConfig;
+import com.synopsys.integration.alert.database.channel.email.EmailGlobalRepositoryAccessor;
+import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.web.controller.GlobalControllerTest;
+import com.synopsys.integration.alert.web.model.Config;
 
-public class EmailChannelGlobalControllerTestIT extends GlobalControllerTest<EmailGlobalConfigEntity, EmailGlobalConfig, EmailGlobalRepository> {
+public class EmailChannelGlobalControllerTestIT extends GlobalControllerTest {
 
     @Autowired
-    private EmailGlobalRepository emailGlobalRepository;
+    private EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor;
 
     @Override
-    public EmailGlobalRepository getGlobalEntityRepository() {
-        return emailGlobalRepository;
-    }
-
-    @Override
-    public MockGlobalEntityUtil<EmailGlobalConfigEntity> getGlobalEntityMockUtil() {
-        return new MockEmailGlobalEntity();
-    }
-
-    @Override
-    public MockGlobalRestModelUtil<EmailGlobalConfig> getGlobalRestModelMockUtil() {
-        return new MockEmailGlobalRestModel();
+    public EmailGlobalRepositoryAccessor getGlobalRepositoryAccessor() {
+        return emailGlobalRepositoryAccessor;
     }
 
     @Override
@@ -41,14 +32,31 @@ public class EmailChannelGlobalControllerTestIT extends GlobalControllerTest<Ema
     }
 
     @Override
+    public DatabaseEntity getGlobalEntity() {
+        final MockEmailGlobalEntity mockGlobalEntity = new MockEmailGlobalEntity();
+        return mockGlobalEntity.createGlobalEntity();
+    }
+
+    @Override
+    public Config getGlobalConfig() {
+        final MockEmailGlobalRestModel mockGlobalConfig = new MockEmailGlobalRestModel();
+        mockGlobalConfig.setMailSmtpHost(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST));
+        mockGlobalConfig.setMailSmtpFrom(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM));
+        return mockGlobalConfig.createGlobalRestModel();
+    }
+
+    @Test
+    @Override
+    @WithMockUser(roles = "ADMIN")
     public void testTestConfig() throws Exception {
         final String testRestUrl = restUrl + "/test";
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl)
-                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
-                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
-        request.content(gson.toJson(restModel));
+                .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                .with(SecurityMockMvcRequestPostProcessors.csrf());
+        config.setId(String.valueOf(entity.getId()));
+        request.content(gson.toJson(config));
         request.contentType(contentType);
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().is5xxServerError());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isMethodNotAllowed());
     }
 
 }

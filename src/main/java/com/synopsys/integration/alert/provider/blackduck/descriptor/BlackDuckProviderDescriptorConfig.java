@@ -49,7 +49,7 @@ import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuc
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.Config;
-import com.synopsys.integration.alert.web.provider.blackduck.GlobalBlackDuckConfig;
+import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckConfig;
 import com.synopsys.integration.blackduck.configuration.HubServerConfig;
 import com.synopsys.integration.blackduck.configuration.HubServerConfigBuilder;
 import com.synopsys.integration.exception.IntegrationException;
@@ -88,7 +88,7 @@ public class BlackDuckProviderDescriptorConfig extends DescriptorConfig {
 
     @Override
     public void validateConfig(final Config config, final Map<String, String> fieldErrors) {
-        final GlobalBlackDuckConfig blackDuckConfig = (GlobalBlackDuckConfig) config;
+        final BlackDuckConfig blackDuckConfig = (BlackDuckConfig) config;
         if (StringUtils.isNotBlank(blackDuckConfig.getBlackDuckTimeout()) && !StringUtils.isNumeric(blackDuckConfig.getBlackDuckTimeout())) {
             fieldErrors.put("blackDuckTimeout", "Not an Integer.");
         }
