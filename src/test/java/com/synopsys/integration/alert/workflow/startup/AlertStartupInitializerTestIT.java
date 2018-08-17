@@ -1,6 +1,9 @@
 package com.synopsys.integration.alert.workflow.startup;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -40,7 +43,7 @@ public class AlertStartupInitializerTestIT {
         final EntityPropertyMapper entityPropertyMapper = new EntityPropertyMapper();
         final EmailGlobalDescriptorConfig descriptorConfig = new EmailGlobalDescriptorConfig(emailGlobalContentConverter, emailGlobalRepositoryAccessor, new EmailGlobalStartupComponent(entityPropertyMapper), null);
         final List<DescriptorConfig> descriptorConfigs = Arrays.asList(descriptorConfig);
-        final DescriptorMap descriptorMap = new DescriptorMap(Arrays.asList(), Arrays.asList(), descriptorConfigs);
+        final DescriptorMap descriptorMap = new DescriptorMap(Arrays.asList(), Arrays.asList(), Arrays.asList(), descriptorConfigs);
         final AlertStartupInitializer initializer = new AlertStartupInitializer(propertyInitializer, descriptorMap, environment, conversionService);
         initializer.initializeConfigs();
         assertFalse(initializer.getAlertStartupProperties().isEmpty());
@@ -53,7 +56,7 @@ public class AlertStartupInitializerTestIT {
         final ConversionService conversionService = new DefaultConversionService();
         final PropertyInitializer propertyInitializer = new PropertyInitializer();
         final List<DescriptorConfig> descriptorConfigs = Arrays.asList();
-        final DescriptorMap descriptorMap = new DescriptorMap(Arrays.asList(), Arrays.asList(), descriptorConfigs);
+        final DescriptorMap descriptorMap = new DescriptorMap(Arrays.asList(), Arrays.asList(), Arrays.asList(), descriptorConfigs);
         final AlertStartupInitializer initializer = new AlertStartupInitializer(propertyInitializer, descriptorMap, environment, conversionService);
         initializer.initializeConfigs();
         assertTrue(initializer.getAlertStartupProperties().isEmpty());
@@ -72,7 +75,7 @@ public class AlertStartupInitializerTestIT {
         final EntityPropertyMapper entityPropertyMapper = new EntityPropertyMapper();
         final EmailGlobalDescriptorConfig descriptorConfig = new EmailGlobalDescriptorConfig(emailGlobalContentConverter, emailGlobalRepositoryAccessor, new EmailGlobalStartupComponent(entityPropertyMapper), null);
         final List<DescriptorConfig> descriptorConfigs = Arrays.asList(descriptorConfig);
-        final DescriptorMap descriptorMap = new DescriptorMap(Arrays.asList(), Arrays.asList(), descriptorConfigs);
+        final DescriptorMap descriptorMap = new DescriptorMap(Arrays.asList(), Arrays.asList(), Arrays.asList(), descriptorConfigs);
         final AlertStartupInitializer initializer = new AlertStartupInitializer(propertyInitializer, descriptorMap, environment, conversionService);
         initializer.initializeConfigs();
         final String value = "newValue";
@@ -102,7 +105,7 @@ public class AlertStartupInitializerTestIT {
         final EntityPropertyMapper entityPropertyMapper = new EntityPropertyMapper();
         final EmailGlobalDescriptorConfig descriptorConfig = new EmailGlobalDescriptorConfig(emailGlobalContentConverter, emailGlobalRepositoryAccessor, new EmailGlobalStartupComponent(entityPropertyMapper), null);
         final List<DescriptorConfig> descriptorConfigs = Arrays.asList(descriptorConfig);
-        final DescriptorMap descriptorMap = new DescriptorMap(Arrays.asList(), Arrays.asList(), descriptorConfigs);
+        final DescriptorMap descriptorMap = new DescriptorMap(Arrays.asList(), Arrays.asList(), Arrays.asList(), descriptorConfigs);
         final AlertStartupInitializer initializer = new AlertStartupInitializer(propertyInitializer, descriptorMap, environment, conversionService);
         initializer.initializeConfigs();
 
@@ -132,7 +135,7 @@ public class AlertStartupInitializerTestIT {
         final EntityPropertyMapper entityPropertyMapper = new EntityPropertyMapper();
         final EmailGlobalDescriptorConfig descriptorConfig = new EmailGlobalDescriptorConfig(emailGlobalContentConverter, emailGlobalRepositoryAccessor, new EmailGlobalStartupComponent(entityPropertyMapper), null);
         final List<DescriptorConfig> descriptorConfigs = Arrays.asList(descriptorConfig);
-        final DescriptorMap descriptorMap = new DescriptorMap(Arrays.asList(), Arrays.asList(), descriptorConfigs);
+        final DescriptorMap descriptorMap = new DescriptorMap(Arrays.asList(), Arrays.asList(), Arrays.asList(), descriptorConfigs);
         final AlertStartupInitializer initializer = new AlertStartupInitializer(propertyInitializer, descriptorMap, environment, conversionService);
         initializer.initializeConfigs();
         final EmailGlobalConfig globalRestModel = new EmailGlobalConfig();
@@ -163,7 +166,7 @@ public class AlertStartupInitializerTestIT {
         final EntityPropertyMapper entityPropertyMapper = new EntityPropertyMapper();
         final EmailGlobalDescriptorConfig descriptorConfig = new EmailGlobalDescriptorConfig(emailGlobalContentConverter, emailGlobalRepositoryAccessor, new EmailGlobalStartupComponent(entityPropertyMapper), null);
         final List<DescriptorConfig> descriptorConfigs = Arrays.asList(descriptorConfig);
-        final DescriptorMap descriptorMap = new DescriptorMap(Arrays.asList(), Arrays.asList(), descriptorConfigs);
+        final DescriptorMap descriptorMap = new DescriptorMap(Arrays.asList(), Arrays.asList(), Arrays.asList(), descriptorConfigs);
         final AlertStartupInitializer initializer = new AlertStartupInitializer(propertyInitializer, descriptorMap, environment, conversionService);
 
         initializer.initializeConfigs();
@@ -186,7 +189,7 @@ public class AlertStartupInitializerTestIT {
         final EntityPropertyMapper entityPropertyMapper = new EntityPropertyMapper();
         final EmailGlobalDescriptorConfig descriptorConfig = new EmailGlobalDescriptorConfig(emailGlobalContentConverter, emailGlobalRepositoryAccessor, new EmailGlobalStartupComponent(entityPropertyMapper), null);
         final List<DescriptorConfig> descriptorConfigs = Arrays.asList(descriptorConfig);
-        final DescriptorMap descriptorMap = new DescriptorMap(Arrays.asList(), Arrays.asList(), descriptorConfigs);
+        final DescriptorMap descriptorMap = new DescriptorMap(Arrays.asList(), Arrays.asList(), Arrays.asList(), descriptorConfigs);
         final AlertStartupInitializer initializer = new AlertStartupInitializer(propertyInitializer, descriptorMap, environment, conversionService);
         initializer.initializeConfigs();
     }
@@ -204,7 +207,7 @@ public class AlertStartupInitializerTestIT {
         final EntityPropertyMapper entityPropertyMapper = new EntityPropertyMapper();
         final EmailGlobalDescriptorConfig descriptorConfig = new EmailGlobalDescriptorConfig(emailGlobalContentConverter, emailGlobalRepositoryAccessor, new EmailGlobalStartupComponent(entityPropertyMapper), null);
         final List<DescriptorConfig> descriptorConfigs = Arrays.asList(descriptorConfig);
-        final DescriptorMap descriptorMap = new DescriptorMap(Arrays.asList(), Arrays.asList(), descriptorConfigs);
+        final DescriptorMap descriptorMap = new DescriptorMap(Arrays.asList(), Arrays.asList(), Arrays.asList(), descriptorConfigs);
         final AlertStartupInitializer initializer = new AlertStartupInitializer(propertyInitializer, descriptorMap, environment, conversionService);
         initializer.initializeConfigs();
     }
@@ -235,7 +238,7 @@ public class AlertStartupInitializerTestIT {
         final EntityPropertyMapper entityPropertyMapper = new EntityPropertyMapper();
         final EmailGlobalDescriptorConfig descriptorConfig = new EmailGlobalDescriptorConfig(emailGlobalContentConverter, emailGlobalRepositoryAccessor, new EmailGlobalStartupComponent(entityPropertyMapper), null);
         final List<DescriptorConfig> descriptorConfigs = Arrays.asList(descriptorConfig);
-        final DescriptorMap descriptorMap = new DescriptorMap(Arrays.asList(), Arrays.asList(), descriptorConfigs);
+        final DescriptorMap descriptorMap = new DescriptorMap(Arrays.asList(), Arrays.asList(), Arrays.asList(), descriptorConfigs);
         final AlertStartupInitializer initializer = new AlertStartupInitializer(propertyInitializer, descriptorMap, environment, conversionService);
         initializer.initializeConfigs();
         assertFalse(initializer.getAlertPropertyNameSet().isEmpty());

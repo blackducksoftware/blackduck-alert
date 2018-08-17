@@ -115,20 +115,6 @@ public class ChannelConfigHandlerTest {
     }
 
     @Test
-    public void postWithInternalServerErrorTest() throws IntegrationException {
-        final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
-        final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
-
-        final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
-        Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(false);
-        Mockito.when(configActions.saveConfig(Mockito.any(), Mockito.any())).thenThrow(new AlertException());
-
-        final CommonDistributionConfig restModel = mockCommonDistributionRestModel.createRestModel();
-        final ResponseEntity<String> response = handler.postConfig(restModel, descriptor);
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-    }
-
-    @Test
     public void putConfigTest() throws IntegrationException {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
         final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
@@ -136,7 +122,7 @@ public class ChannelConfigHandlerTest {
         final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
         Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(true);
         Mockito.when(configActions.validateConfig(Mockito.any(), Mockito.any())).thenReturn("");
-        Mockito.when(configActions.saveNewConfigUpdateFromSavedConfig(Mockito.any(), Mockito.any())).thenReturn(new CommonDistributionConfigEntity());
+        Mockito.when(configActions.updateConfig(Mockito.any(), Mockito.any())).thenReturn(new CommonDistributionConfigEntity());
 
         final CommonDistributionConfig restModel = mockCommonDistributionRestModel.createRestModel();
         final ResponseEntity<String> response = handler.putConfig(restModel, descriptor);
@@ -189,7 +175,7 @@ public class ChannelConfigHandlerTest {
         final DescriptorConfig descriptor = Mockito.mock(DescriptorConfig.class);
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(true);
-        Mockito.when(configActions.saveNewConfigUpdateFromSavedConfig(Mockito.any(), Mockito.any())).thenThrow(new AlertException());
+        Mockito.when(configActions.updateConfig(Mockito.any(), Mockito.any())).thenThrow(new AlertException());
 
         final CommonDistributionConfig restModel = mockCommonDistributionRestModel.createRestModel();
         final ResponseEntity<String> response = handler.putConfig(restModel, descriptor);

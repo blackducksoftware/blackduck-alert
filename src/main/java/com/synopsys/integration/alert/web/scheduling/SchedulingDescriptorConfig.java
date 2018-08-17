@@ -40,7 +40,7 @@ import com.synopsys.integration.exception.IntegrationException;
 public class SchedulingDescriptorConfig extends DescriptorConfig {
 
     @Autowired
-    public SchedulingDescriptorConfig(final GlobalSchedulingTypeConverter typeConverter, final SchedulingReposioryAccessor repositoryAccessor) {
+    public SchedulingDescriptorConfig(final SchedulingTypeConverter typeConverter, final SchedulingReposioryAccessor repositoryAccessor) {
         super(typeConverter, repositoryAccessor);
     }
 
@@ -51,7 +51,7 @@ public class SchedulingDescriptorConfig extends DescriptorConfig {
 
     @Override
     public void validateConfig(final Config config, final Map<String, String> fieldErrors) {
-        final GlobalSchedulingConfig schedulingConfig = (GlobalSchedulingConfig) config;
+        final SchedulingConfig schedulingConfig = (SchedulingConfig) config;
         if (StringUtils.isNotBlank(schedulingConfig.getDailyDigestHourOfDay())) {
             if (!StringUtils.isNumeric(schedulingConfig.getDailyDigestHourOfDay())) {
                 fieldErrors.put("dailyDigestHourOfDay", "Must be a number between 0 and 23");

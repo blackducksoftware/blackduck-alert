@@ -2,7 +2,6 @@ package com.synopsys.integration.alert.mock.model;
 
 import java.util.Date;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.database.entity.NotificationCategoryEnum;
 import com.synopsys.integration.alert.web.model.NotificationConfig;
@@ -64,7 +63,6 @@ public class MockNotificationRestModel extends MockRestModelUtil<NotificationCon
 
     @Override
     public String getRestModelJson() {
-        final Gson gson = new Gson();
         final JsonObject json = new JsonObject();
         json.addProperty("createdAt", createdAt);
         json.addProperty("provider", provider);

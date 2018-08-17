@@ -51,7 +51,7 @@ public class RestDistributionChannelTest extends ChannelTest {
         final RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity> restChannel = new RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity>(gson, testAlertProperties,
                 hubProperties, null, null,
                 null, null,
-                channelRestConnectionFactory, contentConverter) {
+                channelRestConnectionFactory) {
 
             @Override
             public String getApiUrl(final GlobalChannelConfigEntity entity) {
@@ -88,7 +88,7 @@ public class RestDistributionChannelTest extends ChannelTest {
         final RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity> restChannel = new RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity>(gson, testAlertProperties,
                 hubProperties, null, null,
                 null, null,
-                channelRestConnectionFactory, contentConverter) {
+                channelRestConnectionFactory) {
 
             @Override
             public String getApiUrl(final GlobalChannelConfigEntity entity) {
@@ -121,7 +121,7 @@ public class RestDistributionChannelTest extends ChannelTest {
         final RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity> restChannel = new RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity>(gson, testAlertProperties,
                 hubProperties, null, null,
                 null, null,
-                channelRestConnectionFactory, contentConverter) {
+                channelRestConnectionFactory) {
 
             @Override
             public String getApiUrl(final GlobalChannelConfigEntity entity) {
@@ -156,7 +156,7 @@ public class RestDistributionChannelTest extends ChannelTest {
         final RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity> restChannel = new RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity>(gson, testAlertProperties,
                 hubProperties, null, null,
                 null, null,
-                channelRestConnectionFactory, contentConverter) {
+                channelRestConnectionFactory) {
 
             @Override
             public String getApiUrl(final GlobalChannelConfigEntity entity) {

@@ -25,18 +25,18 @@ package com.synopsys.integration.alert.web.scheduling;
 
 import com.synopsys.integration.alert.web.model.Config;
 
-public class GlobalSchedulingConfig extends Config {
+public class SchedulingConfig extends Config {
     private String accumulatorNextRun;
     private String dailyDigestHourOfDay;
     private String dailyDigestNextRun;
     private String purgeDataFrequencyDays;
     private String purgeDataNextRun;
 
-    public GlobalSchedulingConfig() {
+    public SchedulingConfig() {
 
     }
 
-    public GlobalSchedulingConfig(final String id, final String accumulatorNextRun, final String dailyDigestHourOfDay, final String dailyDigestNextRun, final String purgeDataFrequencyDays, final String purgeDataNextRun) {
+    public SchedulingConfig(final String id, final String accumulatorNextRun, final String dailyDigestHourOfDay, final String dailyDigestNextRun, final String purgeDataFrequencyDays, final String purgeDataNextRun) {
         super(id);
         this.accumulatorNextRun = accumulatorNextRun;
         this.dailyDigestHourOfDay = dailyDigestHourOfDay;

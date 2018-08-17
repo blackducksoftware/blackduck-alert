@@ -40,6 +40,7 @@ import com.synopsys.integration.alert.web.controller.handler.ControllerHandler;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.alert.web.model.ResponseBodyBuilder;
+import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 public class ConfigControllerHandler extends ControllerHandler {
@@ -139,6 +140,9 @@ public class ConfigControllerHandler extends ControllerHandler {
             responseBodyBuilder.putErrors(e.getFieldErrors());
             final String responseBody = responseBodyBuilder.build();
             return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
+        } catch (final IntegrationException e) {
+            logger.error(e.getMessage(), e);
+            return createResponse(HttpStatus.METHOD_NOT_ALLOWED, restModel.getId(), e.getMessage());
         } catch (final Exception e) {
             logger.error(e.getMessage(), e);
             return createResponse(HttpStatus.INTERNAL_SERVER_ERROR, restModel.getId(), e.getMessage());
