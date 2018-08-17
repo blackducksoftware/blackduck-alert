@@ -107,6 +107,7 @@ public abstract class ControllerTest {
     @WithMockUser(roles = "ADMIN")
     public void testGetConfig() throws Exception {
         distributionMockUtil.setDistributionType(getDescriptorName());
+        distributionMockUtil.setDistributionConfigId(entity.getId());
         final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.save(distributionMockUtil.createEntity());
         final String getUrl = restUrl + "?id=" + commonEntity.getId();
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(getUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
