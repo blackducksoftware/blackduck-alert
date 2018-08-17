@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.DescriptorConfigType;
 import com.synopsys.integration.alert.common.enumeration.DigestType;
@@ -53,7 +54,6 @@ import com.synopsys.integration.alert.web.actions.NotificationTypesActions;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.alert.common.ContentConverter;
 
 @Component
 public class ChannelDistributionConfigActions extends ChannelConfigActions<CommonDistributionConfig> {
@@ -123,6 +123,7 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
             restModel.setDistributionType(commonEntity.getDistributionType());
             restModel.setFilterByProject(getContentConverter().getStringValue(commonEntity.getFilterByProject()));
             restModel.setFrequency(commonEntity.getFrequency().name());
+            restModel.setProviderName(commonEntity.getProviderName());
             restModel.setName(commonEntity.getName());
             restModel.setConfiguredProjects(configuredProjectsActions.getConfiguredProjects(commonEntity));
             restModel.setNotificationTypes(notificationTypesActions.getNotificationTypes(commonEntity));
@@ -179,7 +180,7 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
         final Long distributionConfigId = getContentConverter().getLongValue(restModel.getDistributionConfigId());
         final DigestType digestType = Enum.valueOf(DigestType.class, restModel.getFrequency());
         final Boolean filterByProject = getContentConverter().getBooleanValue(restModel.getFilterByProject());
-        final CommonDistributionConfigEntity commonEntity = new CommonDistributionConfigEntity(distributionConfigId, restModel.getDistributionType(), restModel.getName(), digestType, filterByProject);
+        final CommonDistributionConfigEntity commonEntity = new CommonDistributionConfigEntity(distributionConfigId, restModel.getDistributionType(), restModel.getName(), restModel.getProviderName(), digestType, filterByProject);
         final Long longId = getContentConverter().getLongValue(restModel.getId());
         commonEntity.setId(longId);
         return commonEntity;
@@ -233,6 +234,9 @@ public class ChannelDistributionConfigActions extends ChannelConfigActions<Commo
         }
         if (StringUtils.isNotBlank(restModel.getFilterByProject()) && !isBoolean(restModel.getFilterByProject())) {
             fieldErrors.put("filterByProject", "Not a Boolean.");
+        }
+        if (StringUtils.isBlank(restModel.getProviderName())) {
+            fieldErrors.put("providerName", "Provider cannot be blank.");
         }
         if (StringUtils.isBlank(restModel.getFrequency())) {
             fieldErrors.put("frequency", "Frequency cannot be blank.");
