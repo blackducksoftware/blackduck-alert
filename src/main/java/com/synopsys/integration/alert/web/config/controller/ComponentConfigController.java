@@ -36,7 +36,7 @@ import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.synopsys.integration.alert.common.enumeration.DescriptorConfigType;
-import com.synopsys.integration.alert.web.actions.SingleEntityConfigActions;
+import com.synopsys.integration.alert.web.config.actions.SingleEntityConfigActions;
 import com.synopsys.integration.alert.web.config.controller.handler.ConfigControllerHandler;
 import com.synopsys.integration.alert.web.model.Config;
 

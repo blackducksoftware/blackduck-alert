@@ -58,7 +58,7 @@ public class EmailDistributionTypeConverter extends TypeConverter {
     public DatabaseEntity populateEntityFromConfig(final Config restModel) {
         final EmailDistributionConfig emailRestModel = (EmailDistributionConfig) restModel;
         final EmailGroupDistributionConfigEntity emailEntity = new EmailGroupDistributionConfigEntity(emailRestModel.getGroupName(), emailRestModel.getEmailTemplateLogoImage(), emailRestModel.getEmailSubjectLine());
-        addIdToEntityPK(emailRestModel.getId(), emailEntity);
+        addIdToEntityPK(emailRestModel.getDistributionConfigId(), emailEntity);
         return emailEntity;
     }
 
