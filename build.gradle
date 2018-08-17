@@ -227,7 +227,7 @@ task buildDockerImage(type: DockerBuildImage, dependsOn: [stageDocker]) {
 }
 
 task dockerLogin(type: Exec) {
-    commandLine "docker", "login", "--username", "$System.env.DOCKER_BLACKDUCK_USER", "--password", "$System.env.DOCKER_BLACKDUCK_PASSWORD"
+    commandLine "docker", "login", "--username", "$System.env.DOCKER_INT_BLACKDUCK_USER", "--password", "$System.env.DOCKER_INT_BLACKDUCK_PASSWORD"
 }
 
 task pushImage(type: Exec, dependsOn: [buildDockerImage]) {
