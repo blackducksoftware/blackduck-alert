@@ -59,7 +59,7 @@ public class HipChatDistributionTypeConverter extends TypeConverter {
         final HipChatDistributionConfig hipChatRestModel = (HipChatDistributionConfig) restModel;
         final Integer roomId = getContentConverter().getIntegerValue(hipChatRestModel.getRoomId());
         final HipChatDistributionConfigEntity hipChatEntity = new HipChatDistributionConfigEntity(roomId, hipChatRestModel.getNotify(), hipChatRestModel.getColor());
-        addIdToEntityPK(hipChatRestModel.getId(), hipChatEntity);
+        addIdToEntityPK(hipChatRestModel.getDistributionConfigId(), hipChatEntity);
         return hipChatEntity;
     }
 

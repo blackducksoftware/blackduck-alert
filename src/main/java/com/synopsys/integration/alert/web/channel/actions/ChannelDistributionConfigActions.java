@@ -41,8 +41,8 @@ import com.synopsys.integration.alert.database.audit.relation.AuditNotificationR
 import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
-import com.synopsys.integration.alert.web.actions.DefaultConfigActions;
-import com.synopsys.integration.alert.web.actions.DescriptorConfigActions;
+import com.synopsys.integration.alert.web.config.actions.DefaultConfigActions;
+import com.synopsys.integration.alert.web.config.actions.DescriptorConfigActions;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.web.model.Config;

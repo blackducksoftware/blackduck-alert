@@ -58,7 +58,7 @@ public class SlackDistributionTypeConverter extends TypeConverter {
     public DatabaseEntity populateEntityFromConfig(final Config restModel) {
         final SlackDistributionConfig slackRestModel = (SlackDistributionConfig) restModel;
         final SlackDistributionConfigEntity slackEntity = new SlackDistributionConfigEntity(slackRestModel.getWebhook(), slackRestModel.getChannelUsername(), slackRestModel.getChannelName());
-        addIdToEntityPK(slackRestModel.getId(), slackEntity);
+        addIdToEntityPK(slackRestModel.getDistributionConfigId(), slackEntity);
         return slackEntity;
     }
 
