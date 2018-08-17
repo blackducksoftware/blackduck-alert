@@ -31,6 +31,7 @@ class Index extends Component {
         this.onStatusFailureClick = this.onStatusFailureClick.bind(this);
         this.statusColumnDataFormat = this.statusColumnDataFormat.bind(this);
         this.createCustomButtonGroup = this.createCustomButtonGroup.bind(this);
+        this.refreshAuditEntries = this.refreshAuditEntries.bind(this);
         this.reloadAuditEntries = this.reloadAuditEntries.bind(this);
         this.onSizePerPageListChange = this.onSizePerPageListChange.bind(this);
         this.onPageChange = this.onPageChange.bind(this);
@@ -158,7 +159,7 @@ class Index extends Component {
             hasPolicyViolationCleared = true;
         } else if (cell === 'POLICY_OVERRIDE') {
             hasPolicyViolationOverride = true;
-        }  else if (cell === 'VULNERABILITY') {
+        } else if (cell === 'VULNERABILITY') {
             hasVulnerability = true;
         }
 
@@ -193,12 +194,37 @@ class Index extends Component {
         this.timeout = setTimeout(() => this.reloadAuditEntries(), 10000);
     }
 
-    reloadAuditEntries() {
+    refreshAuditEntries() {
+        this.reloadAuditEntries(this.state.currentPage, this.state.currentPageSize, this.state.searchTerm);
+    }
+
+
+    reloadAuditEntries(currentPage, sizePerPage, searchTerm) {
         this.setState({
             message: 'Loading...',
             inProgress: true
         });
-        this.props.getAuditData(this.state.currentPage, this.state.currentPageSize, this.state.searchTerm);
+        var page = 1;
+        if (currentPage) {
+            page = currentPage;
+        } else if (this.state.currentPage) {
+            page = this.state.currentPage;
+        }
+
+        var size = 10;
+        if (sizePerPage) {
+            size = sizePerPage;
+        } else if (this.state.currentPageSize) {
+            size = this.state.currentPageSize;
+        }
+
+        var term = '';
+        if (null != searchTerm || undefined != searchTerm) {
+            term = searchTerm;
+        } else if (this.state.searchTerm) {
+            term = this.state.searchTerm;
+        }
+        this.props.getAuditData(page, size, term);
     }
 
     cancelRowSelect() {
@@ -214,7 +240,7 @@ class Index extends Component {
     createCustomButtonGroup(buttons) {
         return (
             <ButtonGroup>
-                {!this.props.autoRefresh && <div className="btn btn-info react-bs-table-add-btn tableButton" onClick={this.reloadAuditEntries}>
+                {!this.props.autoRefresh && <div className="btn btn-info react-bs-table-add-btn tableButton" onClick={this.refreshAuditEntries}>
                     <span className="fa fa-refresh fa-fw" aria-hidden="true"/> Refresh
                 </div>}
             </ButtonGroup>
@@ -224,19 +250,19 @@ class Index extends Component {
     onSizePerPageListChange(sizePerPage) {
         this.setState({currentPage: 1, currentPageSize: sizePerPage});
 
-        this.props.getAuditData(this.state.currentPage, this.state.currentPageSize, this.state.searchTerm);
+        this.reloadAuditEntries(1, sizePerPage);
     }
 
     onPageChange(page, sizePerPage) {
         this.setState({currentPage: page});
-        this.props.getAuditData(page, this.state.currentPageSize, this.state.searchTerm);
+        this.reloadAuditEntries(page, sizePerPage);
     }
 
     onSearchChange(searchText, colInfos, multiColumnSearch) {
         this.setState({
             searchTerm: searchText
         });
-        this.reloadAuditEntries()
+        this.reloadAuditEntries(null, null, searchText)
     }
 
     render() {
