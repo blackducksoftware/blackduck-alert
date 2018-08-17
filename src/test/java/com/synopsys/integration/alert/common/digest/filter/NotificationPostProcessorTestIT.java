@@ -82,11 +82,11 @@ public class NotificationPostProcessorTestIT {
         final NotificationContent notificationModel = createNotificationModel();
         final Long config1Id = 13L;
 
-        final CommonDistributionConfigEntity config1 = new CommonDistributionConfigEntity(config1Id, EmailGroupChannel.COMPONENT_NAME, "Config 1", configuredDigestType, true);
+        final CommonDistributionConfigEntity config1 = new CommonDistributionConfigEntity(config1Id, EmailGroupChannel.COMPONENT_NAME, "Config 1", "provider_blackduck", configuredDigestType, true);
         config1.setId(config1Id);
 
         final Long config2Id = 17L;
-        final CommonDistributionConfigEntity config2 = new CommonDistributionConfigEntity(config2Id, EmailGroupChannel.COMPONENT_NAME, "Config 2", configuredDigestType, false);
+        final CommonDistributionConfigEntity config2 = new CommonDistributionConfigEntity(config2Id, EmailGroupChannel.COMPONENT_NAME, "Config 2", "provider_blackduck", configuredDigestType, false);
 
         config2.setId(config2Id);
 
@@ -108,8 +108,8 @@ public class NotificationPostProcessorTestIT {
     public void doFrequenciesMatchTest() {
         final NotificationPostProcessor postProcessor = new NotificationPostProcessor(distributionProjectRepository, configuredProjectsRepository, distributionNotificationTypeRepository, notificationTypeRepository);
 
-        final CommonDistributionConfigEntity config = new CommonDistributionConfigEntity(13L, EmailGroupChannel.COMPONENT_NAME, "Config 1", DigestType.DAILY, true);
-        final CommonDistributionConfigEntity configOther = new CommonDistributionConfigEntity(13L, EmailGroupChannel.COMPONENT_NAME, "Config 2", null, false);
+        final CommonDistributionConfigEntity config = new CommonDistributionConfigEntity(13L, EmailGroupChannel.COMPONENT_NAME, "Config 1", "provider_blackduck", DigestType.DAILY, true);
+        final CommonDistributionConfigEntity configOther = new CommonDistributionConfigEntity(13L, EmailGroupChannel.COMPONENT_NAME, "Config 2", "provider_blackduck", null, false);
 
         assertTrue(postProcessor.doFrequenciesMatch(config, DigestType.DAILY));
         assertFalse(postProcessor.doFrequenciesMatch(config, DigestType.REAL_TIME));
@@ -126,7 +126,7 @@ public class NotificationPostProcessorTestIT {
 
         final NotificationContent notificationModel = createNotificationModel();
         final Long config1Id = 13L;
-        final CommonDistributionConfigEntity config1 = new CommonDistributionConfigEntity(config1Id, EmailGroupChannel.COMPONENT_NAME, "Config 1", DigestType.REAL_TIME, true);
+        final CommonDistributionConfigEntity config1 = new CommonDistributionConfigEntity(config1Id, EmailGroupChannel.COMPONENT_NAME, "Config 1", "provider_blackduck", DigestType.REAL_TIME, true);
 
         config1.setId(config1Id);
 
@@ -154,7 +154,7 @@ public class NotificationPostProcessorTestIT {
 
         final NotificationContent notificationModel = createNotificationModel();
         final Long config1Id = 13L;
-        final CommonDistributionConfigEntity config1 = new CommonDistributionConfigEntity(config1Id, EmailGroupChannel.COMPONENT_NAME, "Config 1", DigestType.REAL_TIME, true);
+        final CommonDistributionConfigEntity config1 = new CommonDistributionConfigEntity(config1Id, EmailGroupChannel.COMPONENT_NAME, "Config 1", "provider_blackduck", DigestType.REAL_TIME, true);
         config1.setId(config1Id);
         notificationTypeRepository.save(new NotificationTypeEntity(NotificationType.RULE_VIOLATION_CLEARED));
         final NotificationTypeEntity notificationType = notificationTypeRepository.findAll().get(0);
