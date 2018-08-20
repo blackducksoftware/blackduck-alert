@@ -23,13 +23,13 @@
  */
 package com.synopsys.integration.alert.component.scheduling;
 
-import java.util.Collections;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.descriptor.config.CustomUIComponent;
 import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
@@ -42,13 +42,13 @@ import com.synopsys.integration.exception.IntegrationException;
 public class SchedulingDescriptorConfig extends DescriptorConfig {
 
     @Autowired
-    public SchedulingDescriptorConfig(final SchedulingTypeConverter typeConverter, final SchedulingReposioryAccessor repositoryAccessor) {
-        super(typeConverter, repositoryAccessor);
+    public SchedulingDescriptorConfig(final SchedulingTypeConverter typeConverter, final SchedulingReposioryAccessor repositoryAccessor, final SchedulingStartupComponent schedulingStartupComponent) {
+        super(typeConverter, repositoryAccessor, schedulingStartupComponent);
     }
 
     @Override
     public UIComponent getUiComponent() {
-        return new UIComponent("Scheduling", "scheduling", "clock-o", Collections.emptyList());
+        return new CustomUIComponent("Scheduling", "scheduling", "clock-o", "SchedulingConfiguration");
     }
 
     @Override
