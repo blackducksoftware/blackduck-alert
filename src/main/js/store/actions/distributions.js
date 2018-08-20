@@ -103,7 +103,6 @@ export function getDistributionJob(url, id) {
         dispatch(fetchingJob());
         if (id) {
             const getUrl = `${url}?id=${id}`;
-            const self = this;
             fetch(getUrl, {
                 credentials: 'same-origin',
                 headers: {
@@ -133,7 +132,7 @@ export function saveDistributionJob(url, config) {
     return (dispatch, getState) => {
         dispatch(savingJobConfig());
         const {csrfToken} = getState().session;
-        fetch(this.props.testUrl, {
+        fetch(url, {
             method: 'POST',
             credentials: 'same-origin',
             headers: {
@@ -170,7 +169,7 @@ export function updateDistributionJob(url, config) {
     return (dispatch, getState) => {
         dispatch(updatingJobConfig());
         const {csrfToken} = getState().session;
-        fetch(this.props.testUrl, {
+        fetch(url, {
             method: 'PUT',
             credentials: 'same-origin',
             headers: {
@@ -207,7 +206,7 @@ export function testDistributionJob(url, config) {
     return (dispatch, getState) => {
         dispatch(testingJobConfig());
         const {csrfToken} = getState().session;
-        fetch(this.props.testUrl, {
+        fetch(url, {
             method: 'POST',
             credentials: 'same-origin',
             headers: {

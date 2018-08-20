@@ -133,7 +133,7 @@ ProjectConfiguration.defaultProps = {
     projects: [],
     configuredProjects: [],
     errorMsg: null,
-    includeAllProjects: false
+    includeAllProjects: true
 };
 
 ProjectConfiguration.propTypes = {
