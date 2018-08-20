@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {Modal} from 'react-bootstrap';
 import Select from 'react-select-2';
@@ -27,8 +28,6 @@ class JobAddModal extends Component {
         switch (this.state.values.typeValue) {
             case 'channel_email':
                 return (<GroupEmailJobConfiguration
-                    csrfToken={this.props.csrfToken}
-                    includeAllProjects={this.props.includeAllProjects}
                     waitingForGroups={this.props.waitingForGroups}
                     groups={this.props.groups}
                     projects={this.props.projects}
@@ -38,16 +37,12 @@ class JobAddModal extends Component {
                 />);
             case 'channel_hipchat':
                 return (<HipChatJobConfiguration
-                    csrfToken={this.props.csrfToken}
-                    includeAllProjects={this.props.includeAllProjects}
                     projects={this.props.projects}
                     handleCancel={this.handleClose}
                     handleSaveBtnClick={this.handleSaveBtnClick}
                 />);
             case 'channel_slack':
                 return (<SlackJobConfiguration
-                    csrfToken={this.props.csrfToken}
-                    includeAllProjects={this.props.includeAllProjects}
                     projects={this.props.projects}
                     handleCancel={this.handleClose}
                     handleSaveBtnClick={this.handleSaveBtnClick}
@@ -93,8 +88,9 @@ class JobAddModal extends Component {
     }
 
     createJobTypeOptions() {
-        if(this.props.channelDescriptors) {
-            const optionList =  this.props.channelDescriptors.map(descriptor => {
+        const channelDescriptors = this.props.descriptors.items['CHANNEL_DISTRIBUTION_CONFIG'];
+        if(channelDescriptors) {
+            const optionList =  channelDescriptors.map(descriptor => {
                 return {
                         label: descriptor.label,
                         value: descriptor.descriptorName,
@@ -105,7 +101,6 @@ class JobAddModal extends Component {
         } else {
             return [];
         }
-
     }
 
     renderOption(option) {
@@ -155,7 +150,20 @@ class JobAddModal extends Component {
 
 JobAddModal.propTypes = {
     onModalClose: PropTypes.func.isRequired,
-    channelDescriptors: PropTypes.arrayOf(PropTypes.object)
+    csrfToken: PropTypes.string,
+    descriptors: PropTypes.object
 };
 
-export default JobAddModal;
+JobAddModal.defaultProps = {
+    csrfToken: null,
+    descriptor: {}
+};
+
+const mapStateToProps = state => ({
+    csrfToken: state.session.csrfToken,
+    descriptors: state.descriptors
+});
+
+const mapDispatchToProps = dispatch => ({ });
+
+export default connect(mapStateToProps, mapDispatchToProps)(JobAddModal);

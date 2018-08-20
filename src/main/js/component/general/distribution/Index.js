@@ -111,6 +111,7 @@ class Index extends Component {
             const {
                 id, name, distributionConfigId, distributionType, frequency, notificationTypes, groupName, includeAllProjects, configuredProjects
             } = currentRowSelected;
+            console.log("Current job distribution", currentRowSelected);
             if (distributionType === 'channel_email') {
                 return (<GroupEmailJobConfiguration
                     csrfToken={this.props.csrfToken}
@@ -194,11 +195,8 @@ class Index extends Component {
     }
 
     createCustomModal(onModalClose, onSave, columns, validateState, ignoreEditable) {
-        const channelDescriptorList = this.props.descriptors.items['CHANNEL_DISTRIBUTION_CONFIG'];
         return (
             <JobAddModal
-                csrfToken={this.props.csrfToken}
-                channelDescriptors={channelDescriptorList}
                 waitingForGroups={this.state.waitingForGroups}
                 projects={this.state.projects}
                 includeAllProjects
