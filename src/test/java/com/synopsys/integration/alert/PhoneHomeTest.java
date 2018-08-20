@@ -29,8 +29,8 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.phonehome.PhoneHomeCallable;
 import com.synopsys.integration.phonehome.PhoneHomeRequestBody;
 import com.synopsys.integration.phonehome.PhoneHomeService;
-import com.synopsys.integration.test.TestLogger;
 import com.synopsys.integration.test.annotation.HubConnectionTest;
+import com.synopsys.integration.test.tool.TestLogger;
 
 public class PhoneHomeTest {
 
