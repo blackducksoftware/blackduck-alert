@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.scheduling;
+package com.synopsys.integration.alert.web.component.scheduling;
 
 import com.synopsys.integration.alert.web.model.Config;
 

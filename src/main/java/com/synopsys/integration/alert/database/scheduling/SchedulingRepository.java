@@ -21,20 +21,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.scheduling;
+package com.synopsys.integration.alert.database.scheduling;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import javax.transaction.Transactional;
 
-import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@Component
-public class SchedulingDescriptor extends ComponentDescriptor {
-    public static final String SCHEDULING_COMPONENT = "component_scheduling";
-
-    @Autowired
-    public SchedulingDescriptor(final SchedulingDescriptorConfig componentDescriptorConfig) {
-        super(SCHEDULING_COMPONENT, componentDescriptorConfig);
-    }
+@Transactional
+public interface SchedulingRepository extends JpaRepository<SchedulingConfigEntity, Long> {
 
 }

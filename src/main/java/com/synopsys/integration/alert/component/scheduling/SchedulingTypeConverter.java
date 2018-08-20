@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.scheduling;
+package com.synopsys.integration.alert.component.scheduling;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -32,7 +32,8 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.config.TypeConverter;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
-import com.synopsys.integration.alert.database.scheduling.GlobalSchedulingConfigEntity;
+import com.synopsys.integration.alert.database.scheduling.SchedulingConfigEntity;
+import com.synopsys.integration.alert.web.component.scheduling.SchedulingConfig;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
@@ -60,14 +61,14 @@ public class SchedulingTypeConverter extends TypeConverter {
     @Override
     public DatabaseEntity populateEntityFromConfig(final Config restModel) {
         final SchedulingConfig schedulingRestModel = (SchedulingConfig) restModel;
-        final GlobalSchedulingConfigEntity schedulingEntity = new GlobalSchedulingConfigEntity(schedulingRestModel.getDailyDigestHourOfDay(), schedulingRestModel.getPurgeDataFrequencyDays());
+        final SchedulingConfigEntity schedulingEntity = new SchedulingConfigEntity(schedulingRestModel.getDailyDigestHourOfDay(), schedulingRestModel.getPurgeDataFrequencyDays());
         addIdToEntityPK(schedulingRestModel.getId(), schedulingEntity);
         return schedulingEntity;
     }
 
     @Override
     public Config populateConfigFromEntity(final DatabaseEntity entity) {
-        final GlobalSchedulingConfigEntity schedulingEntity = (GlobalSchedulingConfigEntity) entity;
+        final SchedulingConfigEntity schedulingEntity = (SchedulingConfigEntity) entity;
         final SchedulingConfig schedulingRestModel = new SchedulingConfig();
         schedulingRestModel.setDailyDigestHourOfDay(schedulingEntity.getDailyDigestHourOfDay());
         schedulingRestModel.setPurgeDataFrequencyDays(schedulingEntity.getPurgeDataFrequencyDays());

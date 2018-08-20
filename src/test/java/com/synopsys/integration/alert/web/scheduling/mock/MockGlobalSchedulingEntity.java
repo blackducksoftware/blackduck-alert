@@ -12,10 +12,10 @@
 package com.synopsys.integration.alert.web.scheduling.mock;
 
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.database.scheduling.GlobalSchedulingConfigEntity;
+import com.synopsys.integration.alert.database.scheduling.SchedulingConfigEntity;
 import com.synopsys.integration.alert.mock.MockGlobalEntityUtil;
 
-public class MockGlobalSchedulingEntity extends MockGlobalEntityUtil<GlobalSchedulingConfigEntity> {
+public class MockGlobalSchedulingEntity extends MockGlobalEntityUtil<SchedulingConfigEntity> {
     private final String dailyDigestHourOfDay;
     private final String purgeDataFrequencyDays;
     private final Long id;
@@ -45,15 +45,15 @@ public class MockGlobalSchedulingEntity extends MockGlobalEntityUtil<GlobalSched
     }
 
     @Override
-    public GlobalSchedulingConfigEntity createGlobalEntity() {
-        final GlobalSchedulingConfigEntity entity = new GlobalSchedulingConfigEntity(dailyDigestHourOfDay, purgeDataFrequencyDays);
+    public SchedulingConfigEntity createGlobalEntity() {
+        final SchedulingConfigEntity entity = new SchedulingConfigEntity(dailyDigestHourOfDay, purgeDataFrequencyDays);
         entity.setId(id);
         return entity;
     }
 
     @Override
-    public GlobalSchedulingConfigEntity createEmptyGlobalEntity() {
-        return new GlobalSchedulingConfigEntity();
+    public SchedulingConfigEntity createEmptyGlobalEntity() {
+        return new SchedulingConfigEntity();
     }
 
     @Override

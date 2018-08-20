@@ -13,7 +13,7 @@ package com.synopsys.integration.alert.web.scheduling.model;
 
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.mock.MockGlobalRestModelUtil;
-import com.synopsys.integration.alert.web.scheduling.SchedulingConfig;
+import com.synopsys.integration.alert.web.component.scheduling.SchedulingConfig;
 
 public class MockGlobalSchedulingRestModel extends MockGlobalRestModelUtil<SchedulingConfig> {
     private String accumulatorNextRun;
