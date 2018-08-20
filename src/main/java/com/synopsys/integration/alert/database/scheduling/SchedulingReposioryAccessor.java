@@ -21,26 +21,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.scheduling;
+package com.synopsys.integration.alert.database.scheduling;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.database.RepositoryAccessor;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
-import com.synopsys.integration.alert.database.scheduling.GlobalSchedulingConfigEntity;
-import com.synopsys.integration.alert.database.scheduling.GlobalSchedulingRepository;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
 
 @Component
 public class SchedulingReposioryAccessor extends RepositoryAccessor {
-    private final GlobalSchedulingRepository repository;
+    private final SchedulingRepository repository;
     private final DailyTask dailyTask;
     private final PurgeTask purgeTask;
 
     @Autowired
-    public SchedulingReposioryAccessor(final GlobalSchedulingRepository repository, final DailyTask dailyTask, final PurgeTask purgeTask) {
+    public SchedulingReposioryAccessor(final SchedulingRepository repository, final DailyTask dailyTask, final PurgeTask purgeTask) {
         super(repository);
         this.repository = repository;
         this.dailyTask = dailyTask;
@@ -49,7 +47,7 @@ public class SchedulingReposioryAccessor extends RepositoryAccessor {
 
     @Override
     public DatabaseEntity saveEntity(final DatabaseEntity entity) {
-        GlobalSchedulingConfigEntity schedulingEntity = (GlobalSchedulingConfigEntity) entity;
+        SchedulingConfigEntity schedulingEntity = (SchedulingConfigEntity) entity;
         schedulingEntity = repository.save(schedulingEntity);
         if (schedulingEntity != null) {
             final String dailyDigestHourOfDay = schedulingEntity.getDailyDigestHourOfDay();

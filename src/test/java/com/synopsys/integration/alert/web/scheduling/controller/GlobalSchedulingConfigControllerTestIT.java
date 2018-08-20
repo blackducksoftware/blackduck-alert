@@ -9,9 +9,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+import com.synopsys.integration.alert.database.scheduling.SchedulingReposioryAccessor;
 import com.synopsys.integration.alert.web.controller.GlobalControllerTest;
 import com.synopsys.integration.alert.web.model.Config;
-import com.synopsys.integration.alert.web.scheduling.SchedulingReposioryAccessor;
 import com.synopsys.integration.alert.web.scheduling.mock.MockGlobalSchedulingEntity;
 import com.synopsys.integration.alert.web.scheduling.model.MockGlobalSchedulingRestModel;
 

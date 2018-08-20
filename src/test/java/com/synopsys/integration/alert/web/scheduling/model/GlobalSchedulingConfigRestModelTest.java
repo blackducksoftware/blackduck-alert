@@ -14,8 +14,8 @@ package com.synopsys.integration.alert.web.scheduling.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import com.synopsys.integration.alert.web.component.scheduling.SchedulingConfig;
 import com.synopsys.integration.alert.web.model.GlobalRestModelTest;
-import com.synopsys.integration.alert.web.scheduling.SchedulingConfig;
 
 public class GlobalSchedulingConfigRestModelTest extends GlobalRestModelTest<SchedulingConfig> {
 

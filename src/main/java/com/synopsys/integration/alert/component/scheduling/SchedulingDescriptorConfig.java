@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.scheduling;
+package com.synopsys.integration.alert.component.scheduling;
 
 import java.util.Collections;
 import java.util.Map;
@@ -33,6 +33,8 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+import com.synopsys.integration.alert.database.scheduling.SchedulingReposioryAccessor;
+import com.synopsys.integration.alert.web.component.scheduling.SchedulingConfig;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
 
