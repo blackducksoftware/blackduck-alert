@@ -32,11 +32,17 @@ public class UIComponent {
     private String urlName;
     private String fontAwesomeIcon;
     private List<ConfigField> fields;
+    private boolean automaticallyGenerateUI;
 
     public UIComponent(final String label, final String urlName, final String fontAwesomeIcon, final List<ConfigField> fields) {
+        this(label, urlName, fontAwesomeIcon, true, fields);
+    }
+
+    public UIComponent(final String label, final String urlName, final String fontAwesomeIcon, final boolean automaticallyGenerateUI, final List<ConfigField> fields) {
         this.label = label;
         this.urlName = urlName;
         this.fontAwesomeIcon = fontAwesomeIcon;
+        this.automaticallyGenerateUI = automaticallyGenerateUI;
         this.fields = fields;
     }
 
@@ -62,6 +68,14 @@ public class UIComponent {
 
     public void setFontAwesomeIcon(final String fontAwesomeIcon) {
         this.fontAwesomeIcon = fontAwesomeIcon;
+    }
+
+    public boolean isAutomaticallyGenerateUI() {
+        return automaticallyGenerateUI;
+    }
+
+    public void setAutomaticallyGenerateUI(final boolean automaticallyGenerateUI) {
+        this.automaticallyGenerateUI = automaticallyGenerateUI;
     }
 
     public List<ConfigField> getFields() {
