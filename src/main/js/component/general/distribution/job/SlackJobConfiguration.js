@@ -54,18 +54,6 @@ class SlackJobConfiguration extends Component {
         });
     }
 
-    // initializeValues(data) {
-    //     super.initializeValues(data);
-    //
-    //     const webhook = data.webhook || this.props.webhook;
-    //     const channelUsername = data.channelUsername || this.props.channelUsername;
-    //     const channelName = data.channelName || this.props.channelName;
-    //
-    //     super.handleStateValues('webhook', webhook);
-    //     super.handleStateValues('channelUsername', channelUsername);
-    //     super.handleStateValues('channelName', channelName);
-    // }
-
     render() {
         const content = (
             <div>
