@@ -16,8 +16,8 @@ class GroupEmailJobConfiguration extends Component {
         this.getConfiguration = this.getConfiguration.bind(this);
 
         this.state = {
-            emailSubjectLine: props.emailSubjectLine,
-            groupName: props.groupName,
+            emailSubjectLine: '',
+            groupName: '',
             groupOptions: []
         }
     }
@@ -54,8 +54,6 @@ class GroupEmailJobConfiguration extends Component {
     }
 
     componentDidMount() {
-
-        console.log("Group email mounted props", this.props);
         const {baseUrl,distributionConfigId} = this.props;
         this.props.getDistributionJob(baseUrl,distributionConfigId);
     }
@@ -63,7 +61,7 @@ class GroupEmailJobConfiguration extends Component {
     componentWillReceiveProps(nextProps) {
         if (!nextProps.fetching && !nextProps.inProgress) {
             if(nextProps.jobs[nextProps.distributionConfigId]) {
-                const groupOptions = this.createGroupOptions(nextProps.groups, nextProps[nextProps.distributionConfigId].groupName);
+                const groupOptions = this.createGroupOptions(nextProps.groups, nextProps.jobs[nextProps.distributionConfigId].groupName);
                 this.setState({
                     emailSubjectLine: nextProps.jobs[nextProps.distributionConfigId].emailSubjectLine,
                     groupName: nextProps.jobs[nextProps.distributionConfigId].groupName,
@@ -95,7 +93,7 @@ class GroupEmailJobConfiguration extends Component {
         if (optionsList) {
             this.handleStateValues('groupName', optionsList.value);
         } else {
-            this.handleStateValues('groupName', null);
+            this.handleStateValues('groupName', '');
         }
     }
 
@@ -181,7 +179,6 @@ class GroupEmailJobConfiguration extends Component {
         return (<BaseJobConfiguration
                     baseUrl={this.props.baseUrl}
                     testUrl={this.props.testUrl}
-                    id = {this.props.id}
                     distributionConfigId = {this.props.distributionConfigId}
                     handleCancel={this.props.handleCancel}
                     handleSaveBtnClick={this.props.handleSaveBtnClick}
@@ -192,7 +189,6 @@ class GroupEmailJobConfiguration extends Component {
 
 GroupEmailJobConfiguration.propTypes = {
     jobs: PropTypes.object,
-    id: PropTypes.string,
     distributionConfigId: PropTypes.string,
     baseUrl: PropTypes.string,
     testUrl: PropTypes.string,
@@ -208,7 +204,6 @@ GroupEmailJobConfiguration.propTypes = {
 
 GroupEmailJobConfiguration.defaultProps = {
     jobs: {},
-    id: null,
     distributionConfigId: null,
     baseUrl: '/alert/api/configuration/channel/distribution/channel_email',
     testUrl: '/alert/api/configuration/channel/distribution/channel_email/test',

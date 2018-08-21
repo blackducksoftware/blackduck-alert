@@ -33,6 +33,7 @@ class HipChatJobConfiguration extends Component {
                 this.setState({
                     roomId: nextProps.jobs[nextProps.distributionConfigId].roomId,
                     notify: nextProps.jobs[nextProps.distributionConfigId].notify,
+                    color: nextProps.jobs[nextProps.distributionConfigId].color,
                     colorOptions: nextProps.colorOptions
                 });
             }
@@ -121,6 +122,7 @@ class HipChatJobConfiguration extends Component {
         return (<BaseJobConfiguration
                     baseUrl={this.props.baseUrl}
                     testUrl={this.props.testUrl}
+                    distributionConfigId = {this.props.distributionConfigId}
                     handleCancel={this.props.handleCancel}
                     handleSaveBtnClick={this.props.handleSaveBtnClick}
                     getParentConfiguration={this.getConfiguration}

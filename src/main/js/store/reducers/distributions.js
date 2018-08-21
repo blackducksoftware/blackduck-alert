@@ -47,7 +47,10 @@ const config = (state = initialState, action) => {
                 error: {
                     message: ''
                 },
-                ...action
+                jobs: {
+                    ...state.jobs,
+                    ...action.jobs
+                }
             });
 
         case DISTRIBUTION_JOB_FETCH_ERROR:
