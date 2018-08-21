@@ -32,8 +32,7 @@ class BaseJobConfiguration extends Component {
     }
 
     componentDidMount() {
-        const {baseUrl, distributionConfigId} = this.props;
-        this.props.getDistributionJob(baseUrl,distributionConfigId);
+
     }
 
     componentWillReceiveProps(nextProps) {

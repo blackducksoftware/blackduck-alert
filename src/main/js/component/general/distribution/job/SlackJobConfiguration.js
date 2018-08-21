@@ -76,6 +76,7 @@ class SlackJobConfiguration extends Component {
         return (<BaseJobConfiguration
                     baseUrl={this.props.baseUrl}
                     testUrl={this.props.testUrl}
+                    distributionConfigId = {this.props.distributionConfigId}
                     handleCancel={this.props.handleCancel}
                     handleSaveBtnClick={this.props.handleSaveBtnClick}
                     getParentConfiguration={this.getConfiguration}

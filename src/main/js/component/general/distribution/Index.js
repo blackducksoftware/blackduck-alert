@@ -111,46 +111,25 @@ class Index extends Component {
             const {
                 id, name, distributionConfigId, distributionType, frequency, notificationTypes, groupName, includeAllProjects, configuredProjects
             } = currentRowSelected;
-            console.log("Current job distribution", currentRowSelected);
             if (distributionType === 'channel_email') {
                 return (<GroupEmailJobConfiguration
                     csrfToken={this.props.csrfToken}
-                    id={id}
                     distributionConfigId={distributionConfigId}
-                    name={name}
-                    includeAllProjects={includeAllProjects}
-                    frequency={frequency}
-                    notificationTypes={notificationTypes}
                     waitingForGroups={this.state.waitingForGroups}
-                    groups={this.state.groups}
-                    groupName={groupName}
-                    configuredProjects={configuredProjects}
                     handleCancel={this.cancelRowSelect}
                     handleSaveBtnClick={this.saveBtn}
                 />);
             } else if (distributionType === 'channel_hipchat') {
                 return (<HipChatJobConfiguration
                     csrfToken={this.props.csrfToken}
-                    id={id}
                     distributionConfigId={distributionConfigId}
-                    name={name}
-                    includeAllProjects={includeAllProjects}
-                    frequency={frequency}
-                    notificationTypes={notificationTypes}
-                    configuredProjects={configuredProjects}
                     handleCancel={this.cancelRowSelect}
                     handleSaveBtnClick={this.saveBtn}
                 />);
             } else if (distributionType === 'channel_slack') {
                 return (<SlackJobConfiguration
                     csrfToken={this.props.csrfToken}
-                    id={id}
                     distributionConfigId={distributionConfigId}
-                    name={name}
-                    includeAllProjects={includeAllProjects}
-                    frequency={frequency}
-                    notificationTypes={notificationTypes}
-                    configuredProjects={configuredProjects}
                     handleCancel={this.cancelRowSelect}
                     handleSaveBtnClick={this.saveBtn}
                 />);
