@@ -97,38 +97,6 @@ class GroupEmailJobConfiguration extends Component {
         }
     }
 
-    // initializeValues(data) {
-    //     super.initializeValues(data);
-    //     const groupName = data.groupName || this.props.groupName;
-    //     const emailSubjectLine = data.emailSubjectLine || this.props.emailSubjectLine;
-    //
-    //     const groupOptions = this.props.groups.map(group => ({
-    //         label: group.name,
-    //         value: group.name,
-    //         missing: false
-    //     })).sort((group1, group2) => {
-    //         if (group1.value < group2.value) {
-    //             return -1;
-    //         } else if (group1.value > group2.value) {
-    //             return 1;
-    //         }
-    //         return 0;
-    //     });
-    //
-    //     const groupFound = groupOptions.find(group => group.label === groupName);
-    //     if (groupName && (!groupFound || groupOptions.length === 0)) {
-    //         groupOptions.push({
-    //             label: groupName,
-    //             value: groupName,
-    //             missing: true
-    //         });
-    //     }
-    //
-    //     this.state.groupOptions = groupOptions;
-    //     super.handleStateValues('groupName', groupName);
-    //     super.handleStateValues('emailSubjectLine', emailSubjectLine);
-    // }
-
     renderOption(option) {
         if (option.missing) {
             return (

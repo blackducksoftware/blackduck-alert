@@ -52,37 +52,6 @@ class HipChatJobConfiguration extends Component {
         });
     }
 
-    // initializeValues(data) {
-    //     super.initializeValues(data);
-    //
-    //     const roomId = data.roomId || this.props.roomId;
-    //     let notify = null;
-    //     if (data.notify) {
-    //         notify = data.notify;
-    //     } else if (this.props.notify) {
-    //         notify = this.props.notify;
-    //     } else {
-    //         notify = false;
-    //     }
-    //     const color = data.color || this.props.color;
-    //
-    //     super.handleStateValues('roomId', roomId);
-    //     super.handleStateValues('notify', notify);
-    //     super.handleStateValues('color', color);
-    //
-    //     const colorOptions = [
-    //         { label: 'Yellow', value: 'yellow' },
-    //         { label: 'Green', value: 'green' },
-    //         { label: 'Red', value: 'red' },
-    //         { label: 'Purple', value: 'purple' },
-    //         { label: 'Gray', value: 'gray' },
-    //         { label: 'Random', value: 'random' }
-    //     ];
-    //     this.setState({
-    //         colorOptions
-    //     });
-    // }
-
     handleChange({target}) {
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const {name} = target;

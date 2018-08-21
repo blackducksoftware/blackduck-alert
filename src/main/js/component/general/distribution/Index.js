@@ -115,6 +115,7 @@ class Index extends Component {
                 return (<GroupEmailJobConfiguration
                     csrfToken={this.props.csrfToken}
                     distributionConfigId={distributionConfigId}
+                    groups= {this.state.groups}
                     waitingForGroups={this.state.waitingForGroups}
                     handleCancel={this.cancelRowSelect}
                     handleSaveBtnClick={this.saveBtn}
