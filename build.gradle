@@ -37,17 +37,9 @@ dependencyManagement {
         mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
     }
 }
-// TODO remove this when no longer depending on snapshots
-artifactory {
-    resolve {
-        repository {
-            repoKey = artifactorySnapshotRepo
-        }
-    }
-}
 
 dependencies {
-    compile 'com.blackducksoftware.integration:hub-common:37.0.0-SNAPSHOT'
+    compile 'com.blackducksoftware.integration:hub-common:37.0.0'
     compile 'org.springframework.boot:spring-boot-starter'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
     compile 'org.springframework.boot:spring-boot-starter-jdbc'
