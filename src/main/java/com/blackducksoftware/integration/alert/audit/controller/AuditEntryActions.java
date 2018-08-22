@@ -163,6 +163,7 @@ public class AuditEntryActions {
     private Page<AuditEntryEntity> getAuditPage(final Integer pageNumber, final Integer pageSize, final String sortField, final String sortOrder) {
         boolean sortQuery = false;
         String sortingField = "timeLastSent";
+        // We can only modify the query for the fields that exist in AuditEntryEntity
         if (StringUtils.isNotBlank(sortField) && "timeCreated".equalsIgnoreCase(sortField) || "timeLastSent".equalsIgnoreCase(sortField) || "status".equalsIgnoreCase(sortField)) {
             sortingField = sortField;
             sortQuery = true;
@@ -219,6 +220,7 @@ public class AuditEntryActions {
     private List<AuditEntryRestModel> createRestModels(final List<AuditEntryEntity> auditEntryEntities, final String sortField, final String sortOrder) {
         final List<AuditEntryRestModel> restModels = auditEntryEntities.stream().map(this::createRestModel).collect(Collectors.toList());
 
+        // We can only want to sort for the fields that could not be sorted by in the query for AuditEntryEntity
         if (StringUtils.isNotBlank(sortField) && (sortField.equalsIgnoreCase("name") || sortField.equalsIgnoreCase("projectName"))) {
             final boolean sortByName = sortField.equalsIgnoreCase("name");
             boolean ascendingOrder = false;
