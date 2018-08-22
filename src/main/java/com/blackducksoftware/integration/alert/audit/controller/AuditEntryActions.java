@@ -235,8 +235,6 @@ public class AuditEntryActions {
             if (ascendingOrder) {
                 comparator = comparator.reversed();
             }
-            logger.error("Ascending order {}", ascendingOrder);
-            logger.error("Sort Field {}  Sort Order {}", sortField, sortOrder);
             restModels.sort(comparator);
         }
 
