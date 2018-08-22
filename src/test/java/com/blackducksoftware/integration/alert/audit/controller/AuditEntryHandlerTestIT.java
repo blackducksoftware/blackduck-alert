@@ -11,9 +11,7 @@
  */
 package com.blackducksoftware.integration.alert.audit.controller;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.sql.Date;
 
@@ -36,8 +34,6 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.blackducksoftware.integration.alert.Application;
-import com.blackducksoftware.integration.alert.audit.controller.AuditEntryHandler;
-import com.blackducksoftware.integration.alert.audit.controller.AuditEntryRestModel;
 import com.blackducksoftware.integration.alert.audit.repository.AuditEntryEntity;
 import com.blackducksoftware.integration.alert.audit.repository.AuditEntryRepository;
 import com.blackducksoftware.integration.alert.audit.repository.AuditNotificationRepository;
@@ -93,7 +89,7 @@ public class AuditEntryHandlerTestIT {
 
         auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
 
-        final AlertPagedRestModel<AuditEntryRestModel> auditEntries = auditEntryHandler.get(null, null);
+        final AlertPagedRestModel<AuditEntryRestModel> auditEntries = auditEntryHandler.get(null, null, null, null);
         assertEquals(1, auditEntries.getTotalPages());
 
         final AuditEntryRestModel auditEntry = auditEntryHandler.get(savedAuditEntryEntity.getId());
