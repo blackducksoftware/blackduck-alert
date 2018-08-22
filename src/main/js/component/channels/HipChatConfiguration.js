@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import TextInput from '../../field/input/TextInput';
+import PasswordInput from '../../field/input/PasswordInput';
 import ConfigButtons from '../common/ConfigButtons';
 import { getConfig, testConfig, updateConfig, toggleShowHostServer } from '../../store/actions/hipChatConfig';
 
@@ -81,7 +82,7 @@ class HipChatConfiguration extends React.Component {
                 </div> }
 
                 <form className="form-horizontal" disabled={disabled} onSubmit={this.handleSubmit}>
-                    <TextInput id="hipChatApiKey" label="Api Key" name="apiKey" readOnly={disabled} value={this.state.apiKey} isSet={this.state.apiKeyIsSet} onChange={this.handleChange} errorName="apiKeyError" errorValue={this.props.fieldErrors.apiKey} />
+                    <PasswordInput id="hipChatApiKey" label="Api Key" name="apiKey" readOnly={disabled} value={this.state.apiKey} isSet={this.state.apiKeyIsSet} onChange={this.handleChange} errorName="apiKeyError" errorValue={this.props.fieldErrors.apiKey} />
 
                     <div className="form-group">
                         <div className="col-sm-8 col-sm-offset-3">
