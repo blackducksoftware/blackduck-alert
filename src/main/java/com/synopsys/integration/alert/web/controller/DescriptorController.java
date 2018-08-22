@@ -63,21 +63,21 @@ public class DescriptorController extends BaseController {
     }
 
     @GetMapping
-    public Collection<Descriptor> getDescriptors(@RequestParam(value = "descriptorName", required = false) final String descriptorName, @RequestParam(value = "descriptorType", required = false) final String descriptorType) {
+    public Collection<Descriptor> getDescriptors(@RequestParam(value = "descriptorName", required = false) final String descriptorName) {
         if (StringUtils.isNotBlank(descriptorName)) {
             return Arrays.asList(descriptorMap.getDescriptor(descriptorName));
         }
 
-        if (StringUtils.isNotBlank(descriptorType)) {
-            final DescriptorType descriptorTypeEnum = Enum.valueOf(DescriptorType.class, descriptorType);
-            return descriptorMap.getDescriptorMap().values()
-                    .stream()
-                    .filter(descriptor -> descriptorTypeEnum.equals(descriptor.getType()))
-                    .collect(Collectors.toList());
-        }
-
         return descriptorMap.getDescriptorMap().values();
+    }
 
+    @GetMapping("/{descriptorType}")
+    public Collection<Descriptor> getDescriptorTypes(@PathVariable final String descriptorType) {
+        final DescriptorType descriptorTypeEnum = Enum.valueOf(DescriptorType.class, descriptorType);
+        return descriptorMap.getDescriptorMap().values()
+                .stream()
+                .filter(descriptor -> descriptorTypeEnum.equals(descriptor.getType()))
+                .collect(Collectors.toList());
     }
 
     @GetMapping("descriptorConfig/{descriptorConfigType}")
