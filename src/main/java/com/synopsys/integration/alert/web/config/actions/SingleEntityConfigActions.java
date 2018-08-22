@@ -40,8 +40,8 @@ import com.synopsys.integration.exception.IntegrationException;
 public class SingleEntityConfigActions extends DescriptorConfigActions {
 
     @Autowired
-    public SingleEntityConfigActions(final ContentConverter contentConverter, final DefaultConfigActions defaultConfigActions) {
-        super(contentConverter, defaultConfigActions);
+    public SingleEntityConfigActions(final ContentConverter contentConverter) {
+        super(contentConverter);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class SingleEntityConfigActions extends DescriptorConfigActions {
         final List<? extends DatabaseEntity> globalConfigs = descriptor.readEntities();
         if (globalConfigs.size() == 1) {
             try {
-                restModel = getDefaultConfigActions().updateEntityWithSavedEntity(restModel, globalConfigs.get(0));
+                restModel = updateEntityWithSavedEntity(restModel, globalConfigs.get(0));
             } catch (final AlertException e) {
                 return "Error updating config.";
             }
@@ -61,7 +61,7 @@ public class SingleEntityConfigActions extends DescriptorConfigActions {
     public String testConfig(Config restModel, final DescriptorConfig descriptor) throws IntegrationException {
         final List<? extends DatabaseEntity> globalConfigs = descriptor.readEntities();
         if (globalConfigs.size() == 1) {
-            restModel = getDefaultConfigActions().updateEntityWithSavedEntity(restModel, globalConfigs.get(0));
+            restModel = updateEntityWithSavedEntity(restModel, globalConfigs.get(0));
             return super.testConfig(restModel, descriptor);
         }
         return "Config did not have the expected number of rows: Expected 1, but found " + globalConfigs.size();

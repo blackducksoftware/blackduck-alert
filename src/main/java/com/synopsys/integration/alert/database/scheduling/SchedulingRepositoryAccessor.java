@@ -32,13 +32,13 @@ import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
 
 @Component
-public class SchedulingReposioryAccessor extends RepositoryAccessor {
+public class SchedulingRepositoryAccessor extends RepositoryAccessor {
     private final SchedulingRepository repository;
     private final DailyTask dailyTask;
     private final PurgeTask purgeTask;
 
     @Autowired
-    public SchedulingReposioryAccessor(final SchedulingRepository repository, final DailyTask dailyTask, final PurgeTask purgeTask) {
+    public SchedulingRepositoryAccessor(final SchedulingRepository repository, final DailyTask dailyTask, final PurgeTask purgeTask) {
         super(repository);
         this.repository = repository;
         this.dailyTask = dailyTask;

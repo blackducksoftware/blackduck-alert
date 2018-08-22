@@ -41,7 +41,6 @@ import com.synopsys.integration.alert.database.audit.relation.AuditNotificationR
 import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
-import com.synopsys.integration.alert.web.config.actions.DefaultConfigActions;
 import com.synopsys.integration.alert.web.config.actions.DescriptorConfigActions;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
@@ -56,8 +55,8 @@ public class ChannelDistributionConfigActions extends DescriptorConfigActions {
 
     @Autowired
     public ChannelDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final ContentConverter contentConverter, final AuditEntryRepository auditEntryRepository,
-            final AuditNotificationRepository auditNotificationRepository, final CommonDistributionConfigActions commonDistributionConfigActions, final DefaultConfigActions defaultConfigActions) {
-        super(contentConverter, defaultConfigActions);
+            final AuditNotificationRepository auditNotificationRepository, final CommonDistributionConfigActions commonDistributionConfigActions) {
+        super(contentConverter);
         this.commonDistributionRepository = commonDistributionRepository;
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;

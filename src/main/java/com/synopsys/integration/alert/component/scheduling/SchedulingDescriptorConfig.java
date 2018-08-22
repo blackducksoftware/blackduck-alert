@@ -33,7 +33,7 @@ import com.synopsys.integration.alert.common.descriptor.config.CustomUIComponent
 import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
-import com.synopsys.integration.alert.database.scheduling.SchedulingReposioryAccessor;
+import com.synopsys.integration.alert.database.scheduling.SchedulingRepositoryAccessor;
 import com.synopsys.integration.alert.web.component.scheduling.SchedulingConfig;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
@@ -42,7 +42,7 @@ import com.synopsys.integration.exception.IntegrationException;
 public class SchedulingDescriptorConfig extends DescriptorConfig {
 
     @Autowired
-    public SchedulingDescriptorConfig(final SchedulingTypeConverter typeConverter, final SchedulingReposioryAccessor repositoryAccessor, final SchedulingStartupComponent schedulingStartupComponent) {
+    public SchedulingDescriptorConfig(final SchedulingTypeConverter typeConverter, final SchedulingRepositoryAccessor repositoryAccessor, final SchedulingStartupComponent schedulingStartupComponent) {
         super(typeConverter, repositoryAccessor, schedulingStartupComponent);
     }
 
