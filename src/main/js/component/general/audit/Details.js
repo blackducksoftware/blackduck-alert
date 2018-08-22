@@ -60,11 +60,11 @@ class Details extends Component {
             <div className="expandableContainer">
                 <div className="container-fluid">
                     <div className="row">
-                        {this.state.values.notificationProjectVersion && <div className="col-sm-8">
-                            <label>Project Version:</label> {this.state.values.notificationProjectVersion}
+                        {this.state.values.projectVersion && <div className="col-sm-8">
+                            <label>Project Version:</label> {this.state.values.projectVersion}
                         </div>}
 
-                        {this.state.values.notificationProjectVersion && <div className="col-sm-4 text-right">
+                        {this.state.values.projectVersion && <div className="col-sm-4 text-right">
                             <label>Event Type:</label> {this.getEventType()}
                         </div>}
                     </div>
