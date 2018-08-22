@@ -44,7 +44,7 @@ import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.field.DropDownConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.enumeration.DescriptorConfigType;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
@@ -102,8 +102,8 @@ public class DescriptorController extends BaseController {
 
         final List<ConfigField> combinedFields = new ArrayList<>();
         final ConfigField name = new TextInputConfigField("name", "Name", true, false);
-        final ConfigField frequency = new DropDownConfigField("frequency", "Digest type", true, false, Arrays.stream(DigestType.values()).map(type -> type.getDisplayName()).collect(Collectors.toList()));
-        final ConfigField notificationTypes = new DropDownConfigField("notificationTypes", "Notification Types", true, false, providerDescriptor.getNotificationTypes().stream().collect(Collectors.toList()));
+        final ConfigField frequency = new SelectConfigField("frequency", "Digest type", true, false, Arrays.stream(DigestType.values()).map(type -> type.getDisplayName()).collect(Collectors.toList()));
+        final ConfigField notificationTypes = new SelectConfigField("notificationTypes", "Notification Types", true, false, providerDescriptor.getNotificationTypes().stream().collect(Collectors.toList()));
         combinedFields.add(name);
         combinedFields.add(frequency);
         combinedFields.add(notificationTypes);
