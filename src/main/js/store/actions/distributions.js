@@ -85,15 +85,17 @@ function testingJobConfig() {
     }
 }
 
-function testJobSuccess() {
+function testJobSuccess(message) {
     return {
-        type: DISTRIBUTION_JOB_TEST_SUCCESS
+        type: DISTRIBUTION_JOB_TEST_SUCCESS,
+        configurationMessage: message
     }
 }
 
-function testJobFailed(errors) {
+function testJobFailed(errors, message) {
     return {
         type: DISTRIBUTION_JOB_TEST_FAILURE,
+        configurationMessage: message,
         errors
     }
 }
@@ -227,9 +229,9 @@ export function testDistributionJob(url, config) {
                                 errors[name] = value;
                             }
                         }
-                        dispatch(testJobFailed(errors));
+                        dispatch(testJobFailed(errors, json.message));
                     } else {
-                        dispatch(testJobSuccess());
+                        dispatch(testJobSuccess(json.message));
                     }
                 });
             } else {
