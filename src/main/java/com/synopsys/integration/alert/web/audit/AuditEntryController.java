@@ -48,11 +48,12 @@ public class AuditEntryController extends BaseController {
 
     @GetMapping
     public AlertPagedModel<AuditEntryConfig> get(@RequestParam(value = "pageNumber", required = false) final Integer pageNumber, @RequestParam(value = "pageSize", required = false) final Integer pageSize,
-            @RequestParam(value = "searchTerm", required = false) final String searchTerm) {
+    @RequestParam(value = "searchTerm", required = false) final String searchTerm, @RequestParam(value = "sortField", required = false) final String sortField,
+    @RequestParam(value = "sortOrder", required = false) final String sortOrder) {
         if (StringUtils.isNotBlank(searchTerm)) {
-            return auditEntryHandler.search(pageNumber, pageSize, searchTerm);
+            return auditEntryHandler.search(pageNumber, pageSize, searchTerm, sortField, sortOrder);
         } else {
-            return auditEntryHandler.get(pageNumber, pageSize);
+            return auditEntryHandler.get(pageNumber, pageSize, sortField, sortOrder);
         }
     }
 
