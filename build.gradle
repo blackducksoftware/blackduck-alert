@@ -37,17 +37,9 @@ dependencyManagement {
         mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
     }
 }
-// TODO remove this when no longer depending on snapshots
-artifactory {
-    resolve {
-        repository {
-            repoKey = artifactorySnapshotRepo
-        }
-    }
-}
 
 dependencies {
-    compile 'com.blackducksoftware.integration:hub-common:37.0.0-SNAPSHOT'
+    compile 'com.blackducksoftware.integration:hub-common:37.0.0'
     compile 'org.springframework.boot:spring-boot-starter'
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
     compile 'org.springframework.boot:spring-boot-starter-jdbc'
@@ -227,7 +219,7 @@ task buildDockerImage(type: DockerBuildImage, dependsOn: [stageDocker]) {
 }
 
 task dockerLogin(type: Exec) {
-    commandLine "docker", "login", "--username", "$System.env.DOCKER_HUB_USER", "--password", "$System.env.DOCKER_HUB_PASSWORD"
+    commandLine "docker", "login", "--username", "$System.env.DOCKER_INT_BLACKDUCK_USER", "--password", "$System.env.DOCKER_INT_BLACKDUCK_PASSWORD"
 }
 
 task pushImage(type: Exec, dependsOn: [buildDockerImage]) {
