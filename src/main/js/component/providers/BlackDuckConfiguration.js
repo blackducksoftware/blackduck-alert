@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import NumberInput from '../../field/input/NumberInput';
-import TextInput from '../../field/input/TextInput';
+import PasswordInput from '../../field/input/PasswordInput';
 import ReadOnlyField from '../../field/ReadOnlyField';
 import ConfigButtons from '../common/ConfigButtons';
 
@@ -89,7 +89,7 @@ class BlackDuckConfiguration extends React.Component {
                 <form className="form-horizontal" onSubmit={this.handleSubmit}>
                     <div>
                         <ReadOnlyField label="Url" name="blackDuckUrl" readOnly="true" value={this.props.blackDuckUrl}/>
-                        <TextInput id="blackDuckConfigurationApiToken" label="API Token" name="blackDuckApiKey" value={this.state.blackDuckApiKey} isSet={this.state.blackDuckApiKeyIsSet} onChange={this.handleChange}
+                        <PasswordInput id="blackDuckConfigurationApiToken" label="API Token" name="blackDuckApiKey" value={this.state.blackDuckApiKey} isSet={this.state.blackDuckApiKeyIsSet} onChange={this.handleChange}
                                    errorMessage={this.props.fieldErrors.apiKey || this.props.fieldErrors.blackDuckApiKey}/>
                         <NumberInput id="blackDuckConfigurationTimeout" label="Timeout" name="blackDuckTimeout" value={this.state.blackDuckTimeout} onChange={this.handleChange}/>
                         <div className="form-group">
