@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import {BootstrapTable, ButtonGroup, TableHeaderColumn} from 'react-bootstrap-table';
 import {getAuditData} from '../../../store/actions/audit';
 import AutoRefresh from '../../common/AutoRefresh';
+import DescriptorLabel from '../../common/DescriptorLabel';
 import RefreshTableCellFormatter from '../../common/RefreshTableCellFormatter';
 import AuditDetails from './Details';
 import NotificationTypeLegend from '../../common/NotificationTypeLegend';
@@ -36,6 +37,7 @@ class Index extends Component {
         this.onSizePerPageListChange = this.onSizePerPageListChange.bind(this);
         this.onPageChange = this.onPageChange.bind(this);
         this.onSearchChange = this.onSearchChange.bind(this);
+        this.providerColumnDataFormat = this.providerColumnDataFormat.bind(this);
     }
 
     componentDidMount() {
@@ -265,6 +267,26 @@ class Index extends Component {
         this.reloadAuditEntries(null, null, searchText)
     }
 
+    providerColumnDataFormat(cell) {
+        const defaultValue = <div className="inline">{cell}</div>;
+        if(this.props.descriptors) {
+            const descriptorList = this.props.descriptors.items['PROVIDER_CONFIG'];
+            if(descriptorList) {
+                const filteredList = descriptorList.filter(descriptor => descriptor.descriptorName === cell)
+                if(filteredList && filteredList.length > 0) {
+                    const foundDescriptor = filteredList[0];
+                    return (<DescriptorLabel keyPrefix='audit-provider-icon' descriptor={foundDescriptor}/>);
+                } else {
+                    return defaultValue;
+                }
+            } else {
+                return defaultValue;
+            }
+        } else {
+            return defaultValue;
+        }
+    }
+
     render() {
         const auditTableOptions = {
             defaultSortName: 'timeLastSent',
@@ -311,7 +333,7 @@ class Index extends Component {
                         search
                     >
                         <TableHeaderColumn dataField="jobName" dataSort columnTitle columnClassName="tableCell">Job Name</TableHeaderColumn>
-                        <TableHeaderColumn dataField="notificationProviderName" dataSort columnTitle columnClassName="tableCell">Provider Name</TableHeaderColumn>
+                        <TableHeaderColumn dataField="notificationProviderName" dataSort columnTitle columnClassName="tableCell" dataFormat={this.providerColumnDataFormat}>Provider Name</TableHeaderColumn>
                         <TableHeaderColumn dataField="notificationType" dataSort width="145" columnClassName="tableCell" dataFormat={this.notificationTypeDataFormat}>Notification Types</TableHeaderColumn>
                         <TableHeaderColumn dataField="timeCreated" dataSort width="160" columnTitle columnClassName="tableCell">Time Created</TableHeaderColumn>
                         <TableHeaderColumn dataField="timeLastSent" dataSort width="160" columnTitle columnClassName="tableCell">Time Last Sent</TableHeaderColumn>
@@ -333,6 +355,7 @@ class Index extends Component {
 
 Index.defaultProps = {
     csrfToken: null,
+    descriptors: {},
     items: []
 };
 
@@ -342,7 +365,8 @@ Index.propTypes = {
     fetching: PropTypes.bool,
     items: PropTypes.arrayOf(PropTypes.object),
     totalDataCount: PropTypes.number,
-    getAuditData: PropTypes.func.isRequired
+    getAuditData: PropTypes.func.isRequired,
+    descriptors: PropTypes.object
 };
 
 const mapStateToProps = state => ({
@@ -350,7 +374,8 @@ const mapStateToProps = state => ({
     items: state.audit.items,
     csrfToken: state.session.csrfToken,
     fetching: state.audit.fetching,
-    autoRefresh: state.refresh.autoRefresh
+    autoRefresh: state.refresh.autoRefresh,
+    descriptors: state.descriptors
 });
 
 const mapDispatchToProps = dispatch => ({
