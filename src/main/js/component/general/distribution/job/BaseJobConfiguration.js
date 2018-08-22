@@ -31,13 +31,8 @@ class BaseJobConfiguration extends Component {
         this.buildJsonBody = this.buildJsonBody.bind(this);
     }
 
-    componentDidMount() {
-
-    }
-
     componentWillReceiveProps(nextProps) {
         if (!nextProps.fetching && !nextProps.inProgress) {
-            console.log("BaseJob Props:", nextProps);
             const stateValues = {
                 fetching: nextProps.fetching,
                 inProgress: nextProps.inProgress,
@@ -47,6 +42,9 @@ class BaseJobConfiguration extends Component {
             };
 
             if(nextProps.distributionConfigId) {
+
+                const allProjectsSelected = (nextProps.jobs[nextProps.distributionConfigId].filterByProject == 'false');
+
                 const newState = Object.assign({}, stateValues, {
                     id: nextProps.id,
                     distributionConfigId: nextProps.distributionConfigId,
@@ -54,15 +52,13 @@ class BaseJobConfiguration extends Component {
                     providerName: nextProps.jobs[nextProps.distributionConfigId].providerName,
                     distributionType: nextProps.jobs[nextProps.distributionConfigId].distributionType,
                     frequency: nextProps.jobs[nextProps.distributionConfigId].frequency,
-                    includeAllProjects: nextProps.jobs[nextProps.distributionConfigId].includeAllProjects,
+                    includeAllProjects: {allProjectsSelected},
                     filterByProject: nextProps.jobs[nextProps.distributionConfigId].filterByProject,
                     notificationTypes: nextProps.jobs[nextProps.distributionConfigId].notificationTypes,
                     configuredProjects: nextProps.jobs[nextProps.distributionConfigId].configuredProjects
                 });
-                console.log("base config has distribution id", newState);
                 this.setState(newState);
             } else {
-                    console.log("base config without distribution", stateValues);
                     this.setState(stateValues);
             }
         }
@@ -90,7 +86,6 @@ class BaseJobConfiguration extends Component {
             event.preventDefault();
         }
         const jsonBody = this.buildJsonBody();
-        console.log("body to submit ",jsonBody);
         if(this.props.id) {
             this.props.updateDistributionJob(this.props.baseUrl, jsonBody);
         } else {
@@ -186,14 +181,6 @@ class BaseJobConfiguration extends Component {
         }
     }
 
-    readDistributionJobConfiguration(distributionId) {
-        if (distributionId) {
-            const urlString = this.props.getUrl || this.props.baseUrl;
-            const getUrl = `${urlString}?id=${distributionId}`;
-            this.props.getDistributionJob(getUrl,distributionId);
-        }
-    }
-
     createProviderOptions() {
         const providers = this.props.descriptors.items['PROVIDER_CONFIG'];
         if(providers) {
@@ -224,7 +211,7 @@ class BaseJobConfiguration extends Component {
                     onChange={this.handleProviderChanged}
                     searchable
                     options={this.createProviderOptions()}
-                    placeholder="Choose the frequency"
+                    placeholder="Choose the provider"
                     value={this.state.providerName}
                     />
                     {this.state.errors.providerNameError && <label className="fieldError" name="providerNameError">

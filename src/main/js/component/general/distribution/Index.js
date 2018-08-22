@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import {BootstrapTable, DeleteButton, InsertButton, ReactBsTable, TableHeaderColumn} from 'react-bootstrap-table';
 
 import AutoRefresh from '../../common/AutoRefresh';
+import DescriptorLabel from '../../common/DescriptorLabel';
 import GroupEmailJobConfiguration from './job/GroupEmailJobConfiguration';
 import HipChatJobConfiguration from './job/HipChatJobConfiguration';
 import SlackJobConfiguration from './job/SlackJobConfiguration';
@@ -27,33 +28,6 @@ function statusColumnClassNameFormat(fieldValue) {
         className = 'statusFailure';
     }
     return `${className} tableCell`;
-}
-
-/**
- * Return type column data
- * @param cell
- * @returns {*}
- */
-function typeColumnDataFormat(cell) {
-    let fontAwesomeClass = '';
-    let cellText = '';
-    if (cell === 'channel_email') {
-        fontAwesomeClass = 'fa fa-envelope fa-fw';
-        cellText = 'Group Email';
-    } else if (cell === 'channel_hipchat') {
-        fontAwesomeClass = 'fa fa-comments fa-fw';
-        cellText = 'HipChat';
-    } else if (cell === 'channel_slack') {
-        fontAwesomeClass = 'fa fa-slack fa-fw';
-        cellText = 'Slack';
-    }
-
-    return (
-        <div title={cellText}>
-            <span key="icon" className={fontAwesomeClass} aria-hidden="true"/>
-            {cellText}
-        </div>
-    );
 }
 
 /**
@@ -95,6 +69,8 @@ class Index extends Component {
         this.customJobConfigDeletionConfirm = this.customJobConfigDeletionConfirm.bind(this);
         this.reloadJobs = this.reloadJobs.bind(this);
         this.saveBtn = this.saveBtn.bind(this);
+        this.typeColumnDataFormat = this.typeColumnDataFormat.bind(this);
+        this.providerColumnDataFormat = this.providerColumnDataFormat.bind(this);
     }
 
     componentDidMount() {
@@ -282,6 +258,7 @@ class Index extends Component {
                                 distributionConfigId: item.distributionConfigId,
                                 name: item.name,
                                 distributionType: item.distributionType,
+                                providerName: item.providerName,
                                 lastRan: item.lastRan,
                                 status: item.status,
                                 frequency: item.frequency,
@@ -351,6 +328,45 @@ class Index extends Component {
         );
     }
 
+    typeColumnDataFormat(cell) {
+        const defaultValue = <div className="inline">{cell}</div>;
+        if(this.props.descriptors) {
+            const descriptorList = this.props.descriptors.items['CHANNEL_DISTRIBUTION_CONFIG'];
+            if(descriptorList) {
+                const filteredList = descriptorList.filter(descriptor => descriptor.descriptorName === cell)
+                if(filteredList && filteredList.length > 0) {
+                    const foundDescriptor = filteredList[0];
+                    return (<DescriptorLabel keyPrefix='distribution-channel-icon' descriptor={foundDescriptor}/>);
+                } else {
+                    return defaultValue;
+                }
+            } else {
+                return defaultValue;
+            }
+        } else {
+            return defaultValue;
+        }
+    }
+
+    providerColumnDataFormat(cell) {
+        const defaultValue = <div className="inline">{cell}</div>;
+        if(this.props.descriptors) {
+            const descriptorList = this.props.descriptors.items['PROVIDER_CONFIG'];
+            if(descriptorList) {
+                const filteredList = descriptorList.filter(descriptor => descriptor.descriptorName === cell)
+                if(filteredList && filteredList.length > 0) {
+                    const foundDescriptor = filteredList[0];
+                    return (<DescriptorLabel keyPrefix='distribution-provider-icon' descriptor={foundDescriptor}/>);
+                } else {
+                    return defaultValue;
+                }
+            } else {
+                return defaultValue;
+            }
+        } else {
+            return defaultValue;
+        }
+    }
 
     render() {
         const jobTableOptions = {
@@ -370,7 +386,6 @@ class Index extends Component {
                 return null;
             }
         };
-
         let content = (
             <div>
                 <BootstrapTable
@@ -396,9 +411,10 @@ class Index extends Component {
                     <TableHeaderColumn dataField="name" dataSort columnTitle columnClassName="tableCell">
                         Distribution Job
                     </TableHeaderColumn>
-                    <TableHeaderColumn dataField="distributionType" dataSort columnClassName="tableCell" dataFormat={typeColumnDataFormat}>
+                    <TableHeaderColumn dataField="distributionType" dataSort columnClassName="tableCell" dataFormat={this.typeColumnDataFormat}>
                         Type
                     </TableHeaderColumn>
+                    <TableHeaderColumn dataField="providerName" dataSort columnClassName="tableCell" dataFormat={this.providerColumnDataFormat}> Provider </TableHeaderColumn>
                     <TableHeaderColumn dataField="frequency" dataSort columnClassName="tableCell" dataFormat={frequencyColumnDataFormat}>
                         Digest Type
                     </TableHeaderColumn>

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
+import DescriptorLabel from '../../common/DescriptorLabel';
 import TextInput from '../../../field/input/TextInput';
-import LabeledField from '../../../field/LabeledField';
 import TextArea from '../../../field/input/TextArea';
 import { ReactBsTable, BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 
@@ -32,13 +32,8 @@ class Details extends Component {
             const filteredList = descriptorList.filter(descriptor => descriptor.descriptorName === this.state.values.eventType)
 
             if(filteredList && filteredList.length > 0) {
-                const descriptor = filteredList[0];
-                const icon = `fa fa-${descriptor.fontAwesomeIcon} fa-fw`;
-                const cellText = descriptor.label;
-                return (<div className="inline">
-                    <span key={`audit-detail-icon-${descriptor.label}`} className={icon} aria-hidden="true" />
-                    {cellText}
-                    </div>);
+                const foundDescriptor = filteredList[0];
+                return (<DescriptorLabel keyPrefix='audit-detail-icon' descriptor={foundDescriptor}/>);
             } else {
                 const cellText = "Unknown";
                 return (<div className="inline">{cellText}</div>);
