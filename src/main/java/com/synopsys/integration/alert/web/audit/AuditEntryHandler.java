@@ -28,12 +28,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.web.controller.handler.ControllerHandler;
-import com.synopsys.integration.alert.web.exception.AlertNotificationPurgedException;
-import com.synopsys.integration.exception.IntegrationException;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.web.controller.handler.ControllerHandler;
+import com.synopsys.integration.alert.web.exception.AlertNotificationPurgedException;
 import com.synopsys.integration.alert.web.model.AlertPagedModel;
+import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class AuditEntryHandler extends ControllerHandler {
@@ -47,12 +47,12 @@ public class AuditEntryHandler extends ControllerHandler {
         this.auditEntryActions = auditEntryActions;
     }
 
-    public AlertPagedModel<AuditEntryConfig> get(final Integer pageNumber, final Integer pageSize) {
-        return auditEntryActions.get(pageNumber, pageSize);
+    public AlertPagedModel<AuditEntryConfig> get(final Integer pageNumber, final Integer pageSize, final String sortField, final String sortOrder) {
+        return auditEntryActions.get(pageNumber, pageSize, sortField, sortOrder);
     }
 
-    public AlertPagedModel<AuditEntryConfig> search(final Integer pageNumber, final Integer pageSize, final String searchTerm) {
-        return auditEntryActions.search(pageNumber, pageSize, searchTerm);
+    public AlertPagedModel<AuditEntryConfig> search(final Integer pageNumber, final Integer pageSize, final String searchTerm, final String sortField, final String sortOrder) {
+        return auditEntryActions.search(pageNumber, pageSize, searchTerm, sortField, sortOrder);
     }
 
     public AuditEntryConfig get(final Long id) {
