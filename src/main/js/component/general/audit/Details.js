@@ -1,19 +1,18 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 
 import TextInput from '../../../field/input/TextInput';
-import LabeledField from '../../../field/LabeledField';
 import TextArea from '../../../field/input/TextArea';
 
-import { ReactBsTable, BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import {BootstrapTable, ReactBsTable, TableHeaderColumn} from 'react-bootstrap-table';
 
 class Details extends Component {
     constructor(props) {
         super(props);
 
-        const { currentEntry } = props;
+        const {currentEntry} = props;
         const values = {};
-        values.notificationProjectName = currentEntry.notificationProjectName;
-        values.notificationProjectVersion = currentEntry.notificationProjectVersion;
+        values.projectName = currentEntry.projectName;
+        values.projectVersion = currentEntry.projectVersion;
         values.components = currentEntry.components;
 
         values.eventType = currentEntry.eventType;
@@ -41,7 +40,7 @@ class Details extends Component {
         }
 
         return (<div className="inline">
-            <span key="icon" className={fontAwesomeClass} aria-hidden="true" />
+            <span key="icon" className={fontAwesomeClass} aria-hidden="true"/>
             {cellText}
         </div>);
     }
@@ -50,24 +49,24 @@ class Details extends Component {
     render(content) {
         let errorMessage = null;
         if (this.state.values.errorMessage) {
-            errorMessage = <TextInput label="Error" readOnly name="errorMessage" value={this.state.values.errorMessage} />;
+            errorMessage = <TextInput label="Error" readOnly name="errorMessage" value={this.state.values.errorMessage}/>;
         }
         let errorStackTrace = null;
         if (this.state.values.errorStackTrace) {
-            errorStackTrace = <TextArea inputClass="stackTraceContainer" label="Stack Trace" readOnly name="errorStackTrace" value={this.state.values.errorStackTrace} />;
+            errorStackTrace = <TextArea inputClass="stackTraceContainer" label="Stack Trace" readOnly name="errorStackTrace" value={this.state.values.errorStackTrace}/>;
         }
 
         return (
             <div className="expandableContainer">
                 <div className="container-fluid">
                     <div className="row">
-                        { this.state.values.notificationProjectVersion && <div className="col-sm-8">
-                            <label>Project Version:</label> { this.state.values.notificationProjectVersion }
-                        </div> }
+                        {this.state.values.notificationProjectVersion && <div className="col-sm-8">
+                            <label>Project Version:</label> {this.state.values.notificationProjectVersion}
+                        </div>}
 
-                        { this.state.values.notificationProjectVersion && <div className="col-sm-4 text-right">
-                            <label>Event Type:</label> { this.getEventType() }
-                                                                          </div> }
+                        {this.state.values.notificationProjectVersion && <div className="col-sm-4 text-right">
+                            <label>Event Type:</label> {this.getEventType()}
+                        </div>}
                     </div>
                 </div>
                 <div className="tableContainer">
@@ -83,4 +82,5 @@ class Details extends Component {
         );
     }
 }
+
 export default Details;
