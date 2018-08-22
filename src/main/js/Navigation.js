@@ -81,7 +81,7 @@ class Navigation extends Component {
                                 tabIndex={0}
                                 onClick={(evt) => {
                                     evt.preventDefault();
-                                    props.confirmLogout();
+                                    this.props.confirmLogout();
                                 }}
                             >
                                 <FontAwesome name="sign-out" fixedWidth/> Logout
