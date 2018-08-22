@@ -84,12 +84,9 @@ class Index extends Component {
 
     getCurrentJobConfig(currentRowSelected) {
         if (currentRowSelected != null) {
-            const {
-                id, name, distributionConfigId, distributionType, frequency, notificationTypes, groupName, includeAllProjects, configuredProjects
-            } = currentRowSelected;
+            const { distributionConfigId, distributionType } = currentRowSelected;
             if (distributionType === 'channel_email') {
                 return (<GroupEmailJobConfiguration
-                    csrfToken={this.props.csrfToken}
                     distributionConfigId={distributionConfigId}
                     groups= {this.state.groups}
                     waitingForGroups={this.state.waitingForGroups}
@@ -98,14 +95,12 @@ class Index extends Component {
                 />);
             } else if (distributionType === 'channel_hipchat') {
                 return (<HipChatJobConfiguration
-                    csrfToken={this.props.csrfToken}
                     distributionConfigId={distributionConfigId}
                     handleCancel={this.cancelRowSelect}
                     handleSaveBtnClick={this.saveBtn}
                 />);
             } else if (distributionType === 'channel_slack') {
                 return (<SlackJobConfiguration
-                    csrfToken={this.props.csrfToken}
                     distributionConfigId={distributionConfigId}
                     handleCancel={this.cancelRowSelect}
                     handleSaveBtnClick={this.saveBtn}

@@ -136,6 +136,7 @@ HipChatJobConfiguration.defaultProps = {
 };
 
 const mapStateToProps = state => ({
+    csrfToken: state.session.csrfToken,
     jobs: state.distributions.jobs,
     errors: state.distributions.errors
 });

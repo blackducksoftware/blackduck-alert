@@ -42,9 +42,6 @@ class BaseJobConfiguration extends Component {
             };
 
             if(nextProps.distributionConfigId) {
-
-                const allProjectsSelected = (nextProps.jobs[nextProps.distributionConfigId].filterByProject == 'false');
-
                 const newState = Object.assign({}, stateValues, {
                     id: nextProps.id,
                     distributionConfigId: nextProps.distributionConfigId,
@@ -52,14 +49,14 @@ class BaseJobConfiguration extends Component {
                     providerName: nextProps.jobs[nextProps.distributionConfigId].providerName,
                     distributionType: nextProps.jobs[nextProps.distributionConfigId].distributionType,
                     frequency: nextProps.jobs[nextProps.distributionConfigId].frequency,
-                    includeAllProjects: {allProjectsSelected},
+                    includeAllProjects: nextProps.jobs[nextProps.distributionConfigId].filterByProject == 'false',
                     filterByProject: nextProps.jobs[nextProps.distributionConfigId].filterByProject,
                     notificationTypes: nextProps.jobs[nextProps.distributionConfigId].notificationTypes,
                     configuredProjects: nextProps.jobs[nextProps.distributionConfigId].configuredProjects
                 });
                 this.setState(newState);
             } else {
-                    this.setState(stateValues);
+                this.setState(stateValues);
             }
         }
     }
@@ -111,7 +108,6 @@ class BaseJobConfiguration extends Component {
     buildJsonBody() {
         const configuration = Object.assign({}, this.state, this.props.getParentConfiguration());
         configuration.filterByProject = !configuration.includeAllProjects;
-        configuration.includeAllProjects = null;
         if (configuration.notificationTypes && configuration.notificationTypes.length > 0) {
             configuration.notificationTypes = configuration.notificationTypes;
         } else {
