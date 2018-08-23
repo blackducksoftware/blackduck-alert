@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
 import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.field.DropDownConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckDataActions;
 import com.synopsys.integration.exception.IntegrationException;
@@ -57,7 +57,7 @@ public class EmailDistributionUIConfig extends UIConfig {
 
     public List<ConfigField> setupFields() {
         final ConfigField subjectLine = new TextInputConfigField("emailSubjectLine", "Subject Line", false, false);
-        final ConfigField groupName = new DropDownConfigField("groupName", "Group Name", true, false, getEmailGroups());
+        final ConfigField groupName = new SelectConfigField("groupName", "Group Name", true, false, getEmailGroups());
         return Arrays.asList(subjectLine, groupName);
     }
 

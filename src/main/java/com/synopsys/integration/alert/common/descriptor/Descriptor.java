@@ -31,7 +31,7 @@ import java.util.Optional;
 import com.synopsys.integration.alert.common.descriptor.config.RestApi;
 import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.enumeration.RestApiTypes;
+import com.synopsys.integration.alert.common.enumeration.RestApiType;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
@@ -39,14 +39,14 @@ import com.synopsys.integration.exception.IntegrationException;
 public abstract class Descriptor {
     private final String name;
     private final DescriptorType type;
-    private final Map<RestApiTypes, RestApi> restApis;
-    private final Map<RestApiTypes, UIConfig> uiConfigs;
+    private final Map<RestApiType, RestApi> restApis;
+    private final Map<RestApiType, UIConfig> uiConfigs;
 
     public Descriptor(final String name, final DescriptorType type) {
         this.name = name;
         this.type = type;
-        restApis = new HashMap<>(RestApiTypes.values().length + 1);
-        uiConfigs = new HashMap<>(RestApiTypes.values().length + 1);
+        restApis = new HashMap<>(RestApiType.values().length + 1);
+        uiConfigs = new HashMap<>(RestApiType.values().length + 1);
     }
 
     public String getName() {
@@ -58,83 +58,83 @@ public abstract class Descriptor {
     }
 
     public void addProviderRestApi(final RestApi restApi) {
-        restApis.put(RestApiTypes.PROVIDER_CONFIG, restApi);
+        restApis.put(RestApiType.PROVIDER_CONFIG, restApi);
     }
 
     public void addGlobalRestApi(final RestApi restApi) {
-        restApis.put(RestApiTypes.CHANNEL_GLOBAL_CONFIG, restApi);
+        restApis.put(RestApiType.CHANNEL_GLOBAL_CONFIG, restApi);
     }
 
     public void addDistributionRestApi(final RestApi restApi) {
-        restApis.put(RestApiTypes.CHANNEL_DISTRIBUTION_CONFIG, restApi);
+        restApis.put(RestApiType.CHANNEL_DISTRIBUTION_CONFIG, restApi);
     }
 
     public void addComponentRestApi(final RestApi restApi) {
-        restApis.put(RestApiTypes.COMPONENT_CONFIG, restApi);
+        restApis.put(RestApiType.COMPONENT_CONFIG, restApi);
     }
 
     public void addProviderUiConfigs(final RestApi restApi, final UIConfig uiConfig) {
-        uiConfigs.put(RestApiTypes.PROVIDER_CONFIG, uiConfig);
+        uiConfigs.put(RestApiType.PROVIDER_CONFIG, uiConfig);
         addProviderRestApi(restApi);
     }
 
     public void addGlobalUiConfigs(final RestApi restApi, final UIConfig uiConfig) {
-        uiConfigs.put(RestApiTypes.CHANNEL_GLOBAL_CONFIG, uiConfig);
+        uiConfigs.put(RestApiType.CHANNEL_GLOBAL_CONFIG, uiConfig);
         addGlobalRestApi(restApi);
     }
 
     public void addDistributionUiConfigs(final RestApi restApi, final UIConfig uiConfig) {
-        uiConfigs.put(RestApiTypes.CHANNEL_DISTRIBUTION_CONFIG, uiConfig);
+        uiConfigs.put(RestApiType.CHANNEL_DISTRIBUTION_CONFIG, uiConfig);
         addDistributionRestApi(restApi);
     }
 
     public void addComponentUiConfigs(final RestApi restApi, final UIConfig uiConfig) {
-        uiConfigs.put(RestApiTypes.COMPONENT_CONFIG, uiConfig);
+        uiConfigs.put(RestApiType.COMPONENT_CONFIG, uiConfig);
         addComponentRestApi(restApi);
     }
 
-    public RestApi getRestApi(final RestApiTypes restApiTypes) {
-        return restApis.get(restApiTypes);
+    public RestApi getRestApi(final RestApiType restApiType) {
+        return restApis.get(restApiType);
     }
 
-    public UIConfig getUIConfig(final RestApiTypes restApiTypes) {
-        return uiConfigs.get(restApiTypes);
+    public UIConfig getUIConfig(final RestApiType restApiType) {
+        return uiConfigs.get(restApiType);
     }
 
-    public Optional<? extends DatabaseEntity> readEntity(final RestApiTypes restApiTypes, final long id) {
-        return getRestApi(restApiTypes).readEntity(id);
+    public Optional<? extends DatabaseEntity> readEntity(final RestApiType restApiType, final long id) {
+        return getRestApi(restApiType).readEntity(id);
     }
 
-    public List<? extends DatabaseEntity> readEntities(final RestApiTypes restApiTypes) {
-        return getRestApi(restApiTypes).readEntities();
+    public List<? extends DatabaseEntity> readEntities(final RestApiType restApiType) {
+        return getRestApi(restApiType).readEntities();
     }
 
-    public DatabaseEntity saveEntity(final RestApiTypes restApiTypes, final DatabaseEntity entity) {
-        return getRestApi(restApiTypes).saveEntity(entity);
+    public DatabaseEntity saveEntity(final RestApiType restApiType, final DatabaseEntity entity) {
+        return getRestApi(restApiType).saveEntity(entity);
     }
 
-    public void deleteEntity(final RestApiTypes restApiTypes, final long id) {
-        getRestApi(restApiTypes).deleteEntity(id);
+    public void deleteEntity(final RestApiType restApiType, final long id) {
+        getRestApi(restApiType).deleteEntity(id);
     }
 
-    public DatabaseEntity populateEntityFromConfig(final RestApiTypes restApiTypes, final Config config) {
-        return getRestApi(restApiTypes).populateEntityFromConfig(config);
+    public DatabaseEntity populateEntityFromConfig(final RestApiType restApiType, final Config config) {
+        return getRestApi(restApiType).populateEntityFromConfig(config);
     }
 
-    public Config populateConfigFromEntity(final RestApiTypes restApiTypes, final DatabaseEntity entity) {
-        return getRestApi(restApiTypes).populateConfigFromEntity(entity);
+    public Config populateConfigFromEntity(final RestApiType restApiType, final DatabaseEntity entity) {
+        return getRestApi(restApiType).populateConfigFromEntity(entity);
     }
 
-    public Config getConfigFromJson(final RestApiTypes restApiTypes, final String json) {
-        return getRestApi(restApiTypes).getConfigFromJson(json);
+    public Config getConfigFromJson(final RestApiType restApiType, final String json) {
+        return getRestApi(restApiType).getConfigFromJson(json);
     }
 
-    public void validateConfig(final RestApiTypes restApiTypes, final Config config, final Map<String, String> fieldErrors) {
-        getRestApi(restApiTypes).validateConfig(config, fieldErrors);
+    public void validateConfig(final RestApiType restApiType, final Config config, final Map<String, String> fieldErrors) {
+        getRestApi(restApiType).validateConfig(config, fieldErrors);
     }
 
-    public void testConfig(final RestApiTypes restApiTypes, final DatabaseEntity entity) throws IntegrationException {
-        getRestApi(restApiTypes).testConfig(entity);
+    public void testConfig(final RestApiType restApiType, final DatabaseEntity entity) throws IntegrationException {
+        getRestApi(restApiType).testConfig(entity);
     }
 
 }

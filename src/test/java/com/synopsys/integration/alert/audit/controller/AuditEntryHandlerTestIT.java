@@ -88,11 +88,11 @@ public class AuditEntryHandlerTestIT {
         final NotificationContent savedNotificationEntity = notificationContentRepository.save(mockNotification.createEntity());
         final CommonDistributionConfigEntity savedConfigEntity = commonDistributionRepository.save(mockDistributionConfig.createEntity());
         final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository
-                                                               .save(new AuditEntryEntity(savedConfigEntity.getId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS, null, null));
+                                                       .save(new AuditEntryEntity(savedConfigEntity.getId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS, null, null));
 
         auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
 
-        final AlertPagedModel<AuditEntryConfig> auditEntries = auditEntryHandler.get(null, null);
+        final AlertPagedModel<AuditEntryConfig> auditEntries = auditEntryHandler.get(null, null, null, null, null);
         assertEquals(1, auditEntries.getTotalPages());
 
         final AuditEntryConfig auditEntry = auditEntryHandler.get(savedAuditEntryEntity.getId());
@@ -116,16 +116,16 @@ public class AuditEntryHandlerTestIT {
         final NotificationContent savedNotificationEntity = notificationContentRepository.save(mockNotification.createEntity());
         final CommonDistributionConfigEntity savedConfigEntity = commonDistributionRepository.save(mockDistributionConfig.createEntity());
         final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository
-                                                               .save(new AuditEntryEntity(savedConfigEntity.getId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS, null, null));
+                                                       .save(new AuditEntryEntity(savedConfigEntity.getId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS, null, null));
 
         final AuditEntryEntity badAuditEntryEntity_1 = auditEntryRepository.save(new AuditEntryEntity(-1L, new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.FAILURE, "Failed: stuff happened", ""));
         auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
         final AuditEntryEntity badAuditEntryEntity_2 = auditEntryRepository
-                                                               .save(new AuditEntryEntity(savedConfigEntity.getId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.FAILURE,
-                                                                       "Failed: stuff happened",
-                                                                       ""));
+                                                       .save(new AuditEntryEntity(savedConfigEntity.getId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.FAILURE,
+                                                       "Failed: stuff happened",
+                                                       ""));
         final AuditEntryEntity badAuditEntryEntityBoth = auditEntryRepository
-                                                                 .save(new AuditEntryEntity(-1L, new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.FAILURE, "Failed: stuff happened", ""));
+                                                         .save(new AuditEntryEntity(-1L, new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.FAILURE, "Failed: stuff happened", ""));
 
         final ResponseEntity<String> invalidIdResponse = auditEntryHandler.resendNotification(-1L);
         assertEquals(HttpStatus.BAD_REQUEST, invalidIdResponse.getStatusCode());

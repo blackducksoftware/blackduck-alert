@@ -32,8 +32,8 @@ import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
 import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.field.DropDownConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 
 @Component
 public class HipChatDistributionUIConfig extends UIConfig {
@@ -46,7 +46,7 @@ public class HipChatDistributionUIConfig extends UIConfig {
     public List<ConfigField> setupFields() {
         final ConfigField roomId = new NumberConfigField("roomId", "Room Id", true, false);
         final ConfigField notify = new CheckboxConfigField("notify", "Notify", false, false);
-        final ConfigField color = new DropDownConfigField("color", "Color", false, false, Arrays.asList("Yellow, Green, Red, Purple, Gray, Random"));
+        final ConfigField color = new SelectConfigField("color", "Color", false, false, Arrays.asList("Yellow, Green, Red, Purple, Gray, Random"));
         return Arrays.asList(roomId, notify, color);
     }
 
