@@ -37,8 +37,8 @@ import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.field.DropDownConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
@@ -53,7 +53,7 @@ public class HipChatDistributionDescriptorConfig extends DescriptorConfig {
 
     @Autowired
     public HipChatDistributionDescriptorConfig(final HipChatDistributionTypeConverter databaseContentConverter, final HipChatDistributionRepositoryAccessor repositoryAccessor,
-            final ChannelEventFactory channelEventFactory, final HipChatChannel hipChatChannel) {
+    final ChannelEventFactory channelEventFactory, final HipChatChannel hipChatChannel) {
         super(databaseContentConverter, repositoryAccessor);
         this.channelEventFactory = channelEventFactory;
         this.hipChatChannel = hipChatChannel;
@@ -63,8 +63,9 @@ public class HipChatDistributionDescriptorConfig extends DescriptorConfig {
     public UIComponent getUiComponent() {
         final ConfigField roomId = new NumberConfigField("roomId", "Room Id", true, false);
         final ConfigField notify = new CheckboxConfigField("notify", "Notify", false, false);
-        final ConfigField color = new DropDownConfigField("color", "Color", false, false, Arrays.asList("Yellow, Green, Red, Purple, Gray, Random"));
+        final ConfigField color = new SelectConfigField("color", "Color", false, false, Arrays.asList("Yellow, Green, Red, Purple, Gray, Random"));
         return new UIComponent("HipChat", "hipchat", HipChatChannel.COMPONENT_NAME, "comments", Arrays.asList(roomId, notify, color));
+
     }
 
     @Override

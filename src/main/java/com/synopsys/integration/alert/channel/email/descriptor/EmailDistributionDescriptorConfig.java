@@ -40,7 +40,7 @@ import com.synopsys.integration.alert.channel.event.ChannelEventFactory;
 import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.field.DropDownConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.database.channel.email.EmailDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.database.channel.email.EmailGroupDistributionConfigEntity;
@@ -59,7 +59,7 @@ public class EmailDistributionDescriptorConfig extends DescriptorConfig {
 
     @Autowired
     public EmailDistributionDescriptorConfig(final EmailDistributionTypeConverter databaseContentConverter, final EmailDistributionRepositoryAccessor repositoryAccessor, final EmailGroupChannel emailGroupChannel,
-            final ChannelEventFactory channelEventFactory, final BlackDuckDataActions blackDuckDataActions) {
+    final ChannelEventFactory channelEventFactory, final BlackDuckDataActions blackDuckDataActions) {
         super(databaseContentConverter, repositoryAccessor);
         this.emailGroupChannel = emailGroupChannel;
         this.channelEventFactory = channelEventFactory;
@@ -85,17 +85,17 @@ public class EmailDistributionDescriptorConfig extends DescriptorConfig {
     @Override
     public UIComponent getUiComponent() {
         final ConfigField subjectLine = new TextInputConfigField("emailSubjectLine", "Subject Line", false, false);
-        final ConfigField groupName = new DropDownConfigField("groupName", "Group Name", true, false, getEmailGroups());
-        return new UIComponent("Group Email", "email", EmailGroupChannel.COMPONENT_NAME, "envelope", Arrays.asList(subjectLine, groupName));
+        final ConfigField groupName = new SelectConfigField("groupName", "Group Name", true, false, getEmailGroups());
+        return new UIComponent("Email", "email", EmailGroupChannel.COMPONENT_NAME, "envelope", Arrays.asList(subjectLine, groupName));
     }
 
     public List<String> getEmailGroups() {
         // TODO we currently query the hub to get the groups, change this when the group DB table is introduced
         try {
             return blackDuckDataActions.getBlackDuckGroups()
-                           .stream()
-                           .map(blackduckGroup -> blackduckGroup.getName())
-                           .collect(Collectors.toList());
+                   .stream()
+                   .map(blackduckGroup -> blackduckGroup.getName())
+                   .collect(Collectors.toList());
         } catch (final IntegrationException e) {
             logger.error("Error retrieving email groups");
             e.printStackTrace();
