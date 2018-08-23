@@ -14,7 +14,7 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckProviderDescriptorConfig;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckProviderRestApi;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.mock.MockGlobalBlackDuckEntity;
 import com.synopsys.integration.alert.provider.blackduck.mock.MockGlobalBlackDuckRestModel;
@@ -38,7 +38,7 @@ public class BlackDuckDescriptorConfigTest {
         Mockito.doNothing().when(globalBlackDuckRepository).deleteById(Mockito.anyLong());
         final BlackDuckRepositoryAccessor hubRepositoryAccessor = new BlackDuckRepositoryAccessor(globalBlackDuckRepository);
 
-        final BlackDuckProviderDescriptorConfig hubDescriptorConfig = new BlackDuckProviderDescriptorConfig(null, hubRepositoryAccessor, null, null);
+        final BlackDuckProviderRestApi hubDescriptorConfig = new BlackDuckProviderRestApi(null, hubRepositoryAccessor, null, null);
 
         final List<? extends DatabaseEntity> entities = hubDescriptorConfig.getRepositoryAccessor().readEntities();
         final Optional<? extends DatabaseEntity> foundEntity = hubDescriptorConfig.getRepositoryAccessor().readEntity(1);
@@ -77,8 +77,8 @@ public class BlackDuckDescriptorConfigTest {
 
     @Test
     public void testValidateGlobalConfig() {
-        final BlackDuckProviderDescriptorConfig hubDescriptor = new BlackDuckProviderDescriptorConfig(null, null, null, null);
-        final BlackDuckProviderDescriptorConfig spiedDescriptor = Mockito.spy(hubDescriptor);
+        final BlackDuckProviderRestApi hubDescriptor = new BlackDuckProviderRestApi(null, null, null, null);
+        final BlackDuckProviderRestApi spiedDescriptor = Mockito.spy(hubDescriptor);
         final BlackDuckConfig model = Mockito.mock(BlackDuckConfig.class);
         final Map<String, String> fieldErrors = Mockito.mock(Map.class);
         spiedDescriptor.validateConfig(model, fieldErrors);

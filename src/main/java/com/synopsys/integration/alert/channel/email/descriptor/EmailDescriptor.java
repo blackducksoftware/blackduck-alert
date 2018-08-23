@@ -33,7 +33,9 @@ import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 public class EmailDescriptor extends ChannelDescriptor {
 
     @Autowired
-    public EmailDescriptor(final EmailGroupChannel channelListener, final EmailGlobalDescriptorConfig globalDescriptorConfig, final EmailDistributionDescriptorConfig distributionDescriptorConfig) {
-        super(EmailGroupChannel.COMPONENT_NAME, EmailGroupChannel.COMPONENT_NAME, channelListener, distributionDescriptorConfig, globalDescriptorConfig);
+
+    public EmailDescriptor(final EmailGroupChannel channelListener, final EmailGlobalRestApi globalRestApi, final EmailGlobalUIConfig emailGlobalUIConfig,
+            final EmailDistributionRestApi distributionRestApi, final EmailDistributionUIConfig emailDistributionUIConfig) {
+        super(EmailGroupChannel.COMPONENT_NAME, EmailGroupChannel.COMPONENT_NAME, channelListener, distributionRestApi, emailDistributionUIConfig, globalRestApi, emailGlobalUIConfig);
     }
 }

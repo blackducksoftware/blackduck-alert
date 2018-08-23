@@ -23,7 +23,6 @@
  */
 package com.synopsys.integration.alert.channel.slack.descriptor;
 
-import java.util.Arrays;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -33,10 +32,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.channel.event.ChannelEventFactory;
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
-import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
-import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
-import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.RestApi;
 import com.synopsys.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
 import com.synopsys.integration.alert.database.channel.slack.SlackDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
@@ -45,24 +41,16 @@ import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class SlackDistributionDescriptorConfig extends DescriptorConfig {
+public class SlackDistributionRestApi extends RestApi {
     private final ChannelEventFactory channelEventFactory;
     private final SlackChannel slackChannel;
 
     @Autowired
-    public SlackDistributionDescriptorConfig(final SlackDistributionTypeConverter databaseContentConverter, final SlackDistributionRepositoryAccessor repositoryAccessor, final ChannelEventFactory channelEventFactory,
+    public SlackDistributionRestApi(final SlackDistributionTypeConverter databaseContentConverter, final SlackDistributionRepositoryAccessor repositoryAccessor, final ChannelEventFactory channelEventFactory,
             final SlackChannel slackChannel) {
         super(databaseContentConverter, repositoryAccessor);
         this.channelEventFactory = channelEventFactory;
         this.slackChannel = slackChannel;
-    }
-
-    @Override
-    public UIComponent getUiComponent() {
-        final ConfigField webhook = new TextInputConfigField("webhook", "Webhook", true, false);
-        final ConfigField channelUsername = new TextInputConfigField("channelUsername", "Channel Username", false, false);
-        final ConfigField channelName = new TextInputConfigField("channelName", "Channel Name", true, false);
-        return new UIComponent("Slack", "slack", "slack", Arrays.asList(webhook, channelUsername, channelName));
     }
 
     @Override

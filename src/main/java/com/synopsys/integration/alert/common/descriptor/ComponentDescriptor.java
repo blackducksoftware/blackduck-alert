@@ -23,14 +23,20 @@
  */
 package com.synopsys.integration.alert.common.descriptor;
 
-import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
+import com.synopsys.integration.alert.common.descriptor.config.RestApi;
+import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 
 public class ComponentDescriptor extends Descriptor {
 
-    public ComponentDescriptor(final String name, final DescriptorConfig componentDescriptorConfig) {
+    public ComponentDescriptor(final String name, final RestApi componentRestApi) {
         super(name, DescriptorType.COMPONENT);
-        addComponentConfig(componentDescriptorConfig);
+        addComponentRestApi(componentRestApi);
+    }
+
+    public ComponentDescriptor(final String name, final RestApi componentRestApi, final UIConfig componentUIConfig) {
+        super(name, DescriptorType.COMPONENT);
+        addComponentUiConfigs(componentRestApi, componentUIConfig);
     }
 
 }
