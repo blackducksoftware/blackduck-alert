@@ -159,8 +159,7 @@ public class AuditEntryActions {
                 sortingOrder = Sort.Direction.ASC;
             }
         }
-        //TODO change log back to debug
-        logger.error("Audit entry get. SortField: {} SortOrder: {}", sortingField, sortingOrder.name());
+        logger.debug("Audit entry get. SortField: {} SortOrder: {}", sortingField, sortingOrder.name());
         final PageRequest pageRequest = PageRequest.of(0, Integer.MAX_VALUE, new Sort(sortingOrder, sortingField));
         final Page<AuditEntryEntity> auditPage = auditEntryRepository.findAll(pageRequest);
         return auditPage;
@@ -195,8 +194,6 @@ public class AuditEntryActions {
     private List<AuditEntryConfig> sortRestModels(final List<AuditEntryConfig> auditEntryConfigs, final String sortField, final String sortOrder) {
         // We can only want to sort for the fields that could not be sorted by in the query for AuditEntryEntity
         if (StringUtils.isNotBlank(sortField) && (sortField.equalsIgnoreCase("name") || sortField.equalsIgnoreCase("notificationProviderName"))) {
-            //TODO remove this log
-            logger.error("SORTING BY {} ORDER {}", sortField, sortOrder);
             final boolean sortByName = sortField.equalsIgnoreCase("name");
             boolean ascendingOrder = false;
             if (StringUtils.isNotBlank(sortOrder) && "asc".equalsIgnoreCase(sortOrder)) {
