@@ -23,24 +23,48 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field;
 
-import java.util.List;
+import java.util.Collection;
 
 import com.synopsys.integration.alert.common.enumeration.FieldGroup;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
-public class DropDownConfigField extends ConfigField {
-    private List<String> options;
+public class SelectConfigField extends ConfigField {
+    private Collection<String> options;
+    private boolean searchable;
+    private boolean multiSelect;
 
-    public DropDownConfigField(final String key, final String label, final boolean required, final boolean sensitive, final List<String> options) {
+    public SelectConfigField(final String key, final String label, final boolean required, final boolean sensitive, final boolean searchable, final boolean multiSelect, final Collection<String> options) {
         super(key, label, FieldType.SELECT.getFieldTypeName(), required, sensitive, FieldGroup.DEFAULT, "");
+        this.searchable = searchable;
+        this.multiSelect = multiSelect;
         this.options = options;
     }
 
-    public List<String> getOptions() {
+    public SelectConfigField(final String key, final String label, final boolean required, final boolean sensitive, final Collection<String> options) {
+        this(key, label, required, sensitive, true, false, options);
+    }
+
+    public boolean isSearchable() {
+        return searchable;
+    }
+
+    public void setSearchable(final boolean searchable) {
+        this.searchable = searchable;
+    }
+
+    public boolean isMultiSelect() {
+        return multiSelect;
+    }
+
+    public void setMultiSelect(final boolean multiSelect) {
+        this.multiSelect = multiSelect;
+    }
+
+    public Collection<String> getOptions() {
         return options;
     }
 
-    public void setOptions(final List<String> options) {
+    public void setOptions(final Collection<String> options) {
         this.options = options;
     }
 }

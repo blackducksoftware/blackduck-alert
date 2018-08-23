@@ -40,7 +40,7 @@ import com.synopsys.integration.alert.channel.event.ChannelEventFactory;
 import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.field.DropDownConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.database.channel.email.EmailDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.database.channel.email.EmailGroupDistributionConfigEntity;
@@ -85,7 +85,7 @@ public class EmailDistributionDescriptorConfig extends DescriptorConfig {
     @Override
     public UIComponent getUiComponent() {
         final ConfigField subjectLine = new TextInputConfigField("emailSubjectLine", "Subject Line", false, false);
-        final ConfigField groupName = new DropDownConfigField("groupName", "Group Name", true, false, getEmailGroups());
+        final ConfigField groupName = new SelectConfigField("groupName", "Group Name", true, false, getEmailGroups());
         return new UIComponent("Email", "email", "envelope", Arrays.asList(subjectLine, groupName));
     }
 
