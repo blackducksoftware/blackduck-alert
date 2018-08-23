@@ -68,5 +68,4 @@ public class EmailDistributionRestApi extends RestApi {
         final ChannelEvent event = channelEventFactory.createChannelTestEvent(EmailGroupChannel.COMPONENT_NAME);
         emailGroupChannel.sendAuditedMessage(event, emailEntity);
     }
-
 }
