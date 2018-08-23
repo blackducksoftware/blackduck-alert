@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import DescriptorLabel from '../../common/DescriptorLabel';
 import TextInput from '../../../field/input/TextInput';
+import LabeledField from '../../../field/LabeledField';
 import TextArea from '../../../field/input/TextArea';
 import { ReactBsTable, BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 
@@ -10,10 +11,10 @@ class Details extends Component {
     constructor(props) {
         super(props);
 
-        const { currentEntry } = props;
+        const {currentEntry} = props;
         const values = {};
-        values.notificationProjectName = currentEntry.notificationProjectName;
-        values.notificationProjectVersion = currentEntry.notificationProjectVersion;
+        values.projectName = currentEntry.projectName;
+        values.projectVersion = currentEntry.projectVersion;
         values.content = currentEntry.content;
 
         values.eventType = currentEntry.eventType;
@@ -48,11 +49,11 @@ class Details extends Component {
     render(content) {
         let errorMessage = null;
         if (this.state.values.errorMessage) {
-            errorMessage = <TextInput label="Error" readOnly name="errorMessage" value={this.state.values.errorMessage} />;
+            errorMessage = <TextInput label="Error" readOnly name="errorMessage" value={this.state.values.errorMessage}/>;
         }
         let errorStackTrace = null;
         if (this.state.values.errorStackTrace) {
-            errorStackTrace = <TextArea inputClass="stackTraceContainer" label="Stack Trace" readOnly name="errorStackTrace" value={this.state.values.errorStackTrace} />;
+            errorStackTrace = <TextArea inputClass="stackTraceContainer" label="Stack Trace" readOnly name="errorStackTrace" value={this.state.values.errorStackTrace}/>;
         }
 
         return (
@@ -60,12 +61,12 @@ class Details extends Component {
                 <div className="container-fluid">
                     <div className="row">
                         <div className="col-sm-4 text-right">
-                            <label>Event Type:</label> { this.getEventType() }
+                            <label>Event Type:</label> {this.getEventType()}
                         </div>
                     </div>
                 </div>
                 <div className="tableContainer">
-                    <TextArea inputClass="stackTraceContainer" label="Content" readOnly name="notificationContent" value={this.state.values.content} />
+                    <TextArea inputClass="stackTraceContainer" label="Content" readOnly name="notificationContent" value={this.state.values.content}/>
                 </div>
                 {errorMessage}
                 {errorStackTrace}

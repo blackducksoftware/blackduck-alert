@@ -7,7 +7,7 @@ import {
 
 import {verifyLoginByStatus} from './session';
 
-const FETCH_URL = "/alert/api/descriptors"
+const FETCH_URL = "/alert/api/descriptor"
 
 function fetchingDescriptors() {
     return {

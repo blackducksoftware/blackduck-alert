@@ -67,6 +67,13 @@ class GroupEmailJobConfiguration extends Component {
                     groupName: nextProps.jobs[nextProps.distributionConfigId].groupName,
                     groupOptions: groupOptions
                 });
+            } else {
+                const groupOptions = this.createGroupOptions(nextProps.groups, '');
+                this.setState({
+                    emailSubjectLine: '',
+                    groupName: '',
+                    groupOptions: groupOptions
+                });
             }
         }
     }
@@ -110,6 +117,7 @@ class GroupEmailJobConfiguration extends Component {
     }
 
     render() {
+        console.log(this.state);
         const {groupOptions} = this.state;
         const {groupName} = this.state;
         const options = groupOptions || [];
