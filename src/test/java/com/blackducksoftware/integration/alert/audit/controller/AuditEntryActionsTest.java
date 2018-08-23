@@ -71,7 +71,7 @@ public class AuditEntryActionsTest {
         Mockito.doThrow(new AlertException()).when(spyObjectTransformer).databaseEntityToConfigRestModel(Mockito.any(), Mockito.any());
         Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Arrays.asList(mockNotificationEntity.createEntity()));
         final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, vulnerabilityRepository, auditEntryRepository, auditNotificationRepository),
-                auditNotificationRepository, commonDistributionRepository, spyObjectTransformer, null, null, null);
+        auditNotificationRepository, commonDistributionRepository, spyObjectTransformer, null, null, null);
 
         auditEntryActions.get(1L);
 
@@ -91,7 +91,7 @@ public class AuditEntryActionsTest {
         Mockito.when(commonDistributionRepository.findById(Mockito.anyLong())).thenReturn(null);
         Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Arrays.asList(mockNotificationEntity.createEntity()));
         final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, vulnerabilityRepository, auditEntryRepository, auditNotificationRepository),
-                auditNotificationRepository, commonDistributionRepository, null, null, null, null);
+        auditNotificationRepository, commonDistributionRepository, null, null, null, null);
 
         AlertPagedRestModel<AuditEntryRestModel> restModel = null;
         try {
@@ -109,14 +109,16 @@ public class AuditEntryActionsTest {
     @Test
     public void testPagedRequest() {
         final int totalPages = 2;
-        final int currentPage = 1;
+        final int currentPage = 0;
         final int pageSize = 2;
 
         final AuditEntryEntity entity_1 = new AuditEntryEntity();
         entity_1.setId(1L);
         final AuditEntryEntity entity_2 = new AuditEntryEntity();
         entity_2.setId(2L);
-        final List<AuditEntryEntity> pagedEntryList = Arrays.asList(entity_1, entity_2);
+        final AuditEntryEntity entity_3 = new AuditEntryEntity();
+        entity_2.setId(3L);
+        final List<AuditEntryEntity> pagedEntryList = Arrays.asList(entity_1, entity_2, entity_3);
         @SuppressWarnings("unchecked") final Page<AuditEntryEntity> pageResponse = Mockito.mock(Page.class);
 
         Mockito.when(pageResponse.getContent()).thenReturn(pagedEntryList);
@@ -138,9 +140,9 @@ public class AuditEntryActionsTest {
         Mockito.when(commonDistributionRepository.findAll()).thenReturn(Arrays.asList(mockCommonDistributionEntity.createEntity()));
         Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Arrays.asList(mockNotificationEntity.createEntity()));
         final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, vulnerabilityRepository, auditEntryRepository, auditNotificationRepository),
-                auditNotificationRepository, commonDistributionRepository, spyObjectTransformer, null, null, null);
+        auditNotificationRepository, commonDistributionRepository, spyObjectTransformer, null, null, null);
 
-        final AlertPagedRestModel<AuditEntryRestModel> restModel = auditEntryActions.get(currentPage, pageSize, null, null);
+        final AlertPagedRestModel<AuditEntryRestModel> restModel = auditEntryActions.get(currentPage, pageSize, null, null, null);
         assertEquals(pageResponse.getTotalPages(), restModel.getTotalPages());
         assertEquals(pageResponse.getNumber(), restModel.getCurrentPage());
         assertEquals(pageResponse.getSize(), restModel.getPageSize());
@@ -178,12 +180,12 @@ public class AuditEntryActionsTest {
         Mockito.when(commonDistributionRepository.findAll()).thenReturn(Arrays.asList(mockCommonDistributionEntity.createEntity()));
         Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Arrays.asList(mockNotificationEntity.createEntity()));
         final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, vulnerabilityRepository, auditEntryRepository, auditNotificationRepository),
-                auditNotificationRepository, commonDistributionRepository, spyObjectTransformer, null, null, null);
+        auditNotificationRepository, commonDistributionRepository, spyObjectTransformer, null, null, null);
 
-        final AlertPagedRestModel<AuditEntryRestModel> restModel = auditEntryActions.get(currentPage, pageSize, null, null);
+        final AlertPagedRestModel<AuditEntryRestModel> restModel = auditEntryActions.get(currentPage, pageSize, null, null, null);
         assertEquals(pageResponse.getTotalPages(), restModel.getTotalPages());
         assertEquals(pageResponse.getNumber(), restModel.getCurrentPage());
-        assertEquals(pageResponse.getSize(), restModel.getPageSize());
+        assertEquals(0, restModel.getPageSize());
         assertTrue(restModel.getContent().isEmpty());
     }
 

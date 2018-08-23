@@ -46,12 +46,8 @@ public class AuditEntryHandler extends ControllerHandler {
         this.auditEntryActions = auditEntryActions;
     }
 
-    public AlertPagedRestModel<AuditEntryRestModel> get(final Integer pageNumber, final Integer pageSize, final String sortField, final String sortOrder) {
-        return auditEntryActions.get(pageNumber, pageSize, sortField, sortOrder);
-    }
-
-    public AlertPagedRestModel<AuditEntryRestModel> search(final Integer pageNumber, final Integer pageSize, final String searchTerm, final String sortField, final String sortOrder) {
-        return auditEntryActions.search(pageNumber, pageSize, searchTerm, sortField, sortOrder);
+    public AlertPagedRestModel<AuditEntryRestModel> get(final Integer pageNumber, final Integer pageSize, final String searchTerm, final String sortField, final String sortOrder) {
+        return auditEntryActions.get(pageNumber, pageSize, searchTerm, sortField, sortOrder);
     }
 
     public AuditEntryRestModel get(final Long id) {

@@ -89,7 +89,7 @@ public class AuditEntryHandlerTestIT {
 
         auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
 
-        final AlertPagedRestModel<AuditEntryRestModel> auditEntries = auditEntryHandler.get(null, null, null, null);
+        final AlertPagedRestModel<AuditEntryRestModel> auditEntries = auditEntryHandler.get(null, null, null, null, null);
         assertEquals(1, auditEntries.getTotalPages());
 
         final AuditEntryRestModel auditEntry = auditEntryHandler.get(savedAuditEntryEntity.getId());
@@ -128,8 +128,8 @@ public class AuditEntryHandlerTestIT {
         final AuditEntryEntity badAuditEntryEntity_1 = auditEntryRepository.save(new AuditEntryEntity(-1L, new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), StatusEnum.FAILURE, "Failed: stuff happened", ""));
         auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
         final AuditEntryEntity badAuditEntryEntity_2 = auditEntryRepository
-                .save(new AuditEntryEntity(savedConfigEntity.getId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), StatusEnum.FAILURE, "Failed: stuff happened",
-                        ""));
+                                                       .save(new AuditEntryEntity(savedConfigEntity.getId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), StatusEnum.FAILURE, "Failed: stuff happened",
+                                                       ""));
         final AuditEntryEntity badAuditEntryEntityBoth = auditEntryRepository.save(new AuditEntryEntity(-1L, new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), StatusEnum.FAILURE, "Failed: stuff happened", ""));
 
         final ResponseEntity<String> invalidIdResponse = auditEntryHandler.resendNotification(-1L);
