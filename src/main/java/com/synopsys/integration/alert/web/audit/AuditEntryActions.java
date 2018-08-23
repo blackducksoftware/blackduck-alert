@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -85,40 +86,22 @@ public class AuditEntryActions {
     }
 
     public AlertPagedModel<AuditEntryConfig> get() {
-        return get(null, null, null, null);
+        return get(null, null, null, null, null);
     }
 
-    public AlertPagedModel<AuditEntryConfig> get(final Integer pageNumber, final Integer pageSize, final String sortField, final String sortOrder) {
+    public AlertPagedModel<AuditEntryConfig> get(final Integer pageNumber, final Integer pageSize, final String searchTerm, final String sortField, final String sortOrder) {
+        List<AuditEntryConfig> auditEntries = new ArrayList<>();
 
-        final Page<AuditEntryEntity> auditPage = getAuditPage(pageNumber, pageSize, sortField, sortOrder);
-        final List<AuditEntryConfig> auditEntryConfigs = createRestModels(auditPage.getContent(), sortField, sortOrder);
-        final AlertPagedModel<AuditEntryConfig> pagedRestModel = new AlertPagedModel(auditPage.getTotalPages(), auditPage.getNumber(), auditPage.getSize(), auditEntryConfigs);
-        logger.debug("Paged Audit Entry Rest Model: {}", pagedRestModel);
-        return pagedRestModel;
-    }
+        final Page<AuditEntryEntity> auditPage = queryForAuditEntries(sortField, sortOrder);
+        final List<AuditEntryConfig> auditEntryConfigs = createRestModels(auditPage.getContent());
 
-    public AuditEntryConfig get(final Long id) {
-        if (id != null) {
-            final Optional<AuditEntryEntity> auditEntryEntity = auditEntryRepository.findById(id);
-            if (auditEntryEntity.isPresent()) {
-                return createRestModel(auditEntryEntity.get());
-            }
-        }
-        return null;
-    }
-
-    public AlertPagedModel<AuditEntryConfig> search(final Integer pageNumber, final Integer pageSize, final String searchTerm, final String sortField, final String sortOrder) {
-        final List<AuditEntryConfig> auditEntries = new ArrayList<>();
-        final Page<AuditEntryEntity> auditPage = getAuditPage(pageNumber, pageSize, sortField, sortOrder);
-        final List<AuditEntryEntity> contentList = auditPage.getContent();
-        final List<AuditEntryConfig> currentPageRestModels = createRestModels(contentList, sortField, sortOrder);
-
-        addMatchingModels(auditEntries, currentPageRestModels, searchTerm);
+        addMatchingModels(auditEntries, auditEntryConfigs, searchTerm);
+        auditEntries = sortRestModels(auditEntries, sortField, sortOrder);
 
         List<AuditEntryConfig> pagedAuditEntries = auditEntries;
         int totalPages = 1;
-        int pageNumberResponse = 0;
-        if (null != pageSize) {
+        int pageNumberResponse = 1;
+        if (null != pageSize && !auditEntries.isEmpty()) {
             pagedAuditEntries = new ArrayList<>();
             final int pageStart = pageNumber * pageSize;
             final int pageEnd = pageStart + pageSize;
@@ -138,17 +121,31 @@ public class AuditEntryActions {
         return pagedRestModel;
     }
 
+    public AuditEntryConfig get(final Long id) {
+        if (id != null) {
+            final Optional<AuditEntryEntity> auditEntryEntity = auditEntryRepository.findById(id);
+            if (auditEntryEntity.isPresent()) {
+                return createRestModel(auditEntryEntity.get());
+            }
+        }
+        return null;
+    }
+
     private void addMatchingModels(final List<AuditEntryConfig> listToAddTo, final List<AuditEntryConfig> modelsToCheck, final String searchTerm) {
-        for (final AuditEntryConfig restModel : modelsToCheck) {
-            if (restModel.getName().contains(searchTerm) || restModel.getStatus().contains(searchTerm) || restModel.getTimeCreated().contains(searchTerm) || restModel.getTimeLastSent().contains(searchTerm)) {
-                listToAddTo.add(restModel);
-            } else if (null != restModel.getNotification() && restModel.getNotification().getContent().contains(searchTerm)) {
-                listToAddTo.add(restModel);
+        if (StringUtils.isBlank(searchTerm)) {
+            listToAddTo.addAll(modelsToCheck);
+        } else {
+            for (final AuditEntryConfig restModel : modelsToCheck) {
+                if (restModel.getName().contains(searchTerm) || restModel.getStatus().contains(searchTerm) || restModel.getTimeCreated().contains(searchTerm) || restModel.getTimeLastSent().contains(searchTerm)) {
+                    listToAddTo.add(restModel);
+                } else if (null != restModel.getNotification() && restModel.getNotification().getContent().contains(searchTerm)) {
+                    listToAddTo.add(restModel);
+                }
             }
         }
     }
 
-    private Page<AuditEntryEntity> getAuditPage(final Integer pageNumber, final Integer pageSize, final String sortField, final String sortOrder) {
+    private Page<AuditEntryEntity> queryForAuditEntries(final String sortField, final String sortOrder) {
         boolean sortQuery = false;
         String sortingField = "timeLastSent";
         // We can only modify the query for the fields that exist in AuditEntryEntity
@@ -162,14 +159,9 @@ public class AuditEntryActions {
                 sortingOrder = Sort.Direction.ASC;
             }
         }
-        logger.debug("Audit entry get. PageNumber: {} PageSize: {} SortField: {} SortOrder: {}", pageNumber, pageSize, sortingField, sortingOrder.name());
-        int page = 0;
-        int size = Integer.MAX_VALUE;
-        if (pageNumber != null && pageSize != null) {
-            page = pageNumber;
-            size = pageSize;
-        }
-        final PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, new Sort(sortingOrder, sortingField));
+        //TODO change log back to debug
+        logger.error("Audit entry get. SortField: {} SortOrder: {}", sortingField, sortingOrder.name());
+        final PageRequest pageRequest = PageRequest.of(0, Integer.MAX_VALUE, new Sort(sortingOrder, sortingField));
         final Page<AuditEntryEntity> auditPage = auditEntryRepository.findAll(pageRequest);
         return auditPage;
     }
@@ -200,10 +192,11 @@ public class AuditEntryActions {
         return get();
     }
 
-    private List<AuditEntryConfig> createRestModels(final List<AuditEntryEntity> auditEntryEntities, final String sortField, final String sortOrder) {
-        final List<AuditEntryConfig> auditEntryConfigs = auditEntryEntities.stream().map(this::createRestModel).collect(Collectors.toList());
+    private List<AuditEntryConfig> sortRestModels(final List<AuditEntryConfig> auditEntryConfigs, final String sortField, final String sortOrder) {
         // We can only want to sort for the fields that could not be sorted by in the query for AuditEntryEntity
-        if (StringUtils.isNotBlank(sortField) && (sortField.equalsIgnoreCase("name") || sortField.equalsIgnoreCase("projectName"))) {
+        if (StringUtils.isNotBlank(sortField) && (sortField.equalsIgnoreCase("name") || sortField.equalsIgnoreCase("notificationProviderName"))) {
+            //TODO remove this log
+            logger.error("SORTING BY {} ORDER {}", sortField, sortOrder);
             final boolean sortByName = sortField.equalsIgnoreCase("name");
             boolean ascendingOrder = false;
             if (StringUtils.isNotBlank(sortOrder) && "asc".equalsIgnoreCase(sortOrder)) {
@@ -212,16 +205,21 @@ public class AuditEntryActions {
             Comparator comparator;
             if (sortByName) {
                 comparator = Comparator.comparing(AuditEntryConfig::getName);
-                //            } else {
-                //                final Function<AuditEntryConfig, String> function = audit -> audit.getNotification().get;
-                //                comparator = Comparator.comparing(function);
-                //            }
-                if (ascendingOrder) {
-                    comparator = comparator.reversed();
-                }
-                auditEntryConfigs.sort(comparator);
+            } else {
+                final Function<AuditEntryConfig, String> function = audit -> audit.getNotification().getProvider();
+                comparator = Comparator.comparing(function);
             }
+            if (ascendingOrder) {
+                comparator = comparator.reversed();
+            }
+            auditEntryConfigs.sort(comparator);
         }
+
+        return auditEntryConfigs;
+    }
+
+    private List<AuditEntryConfig> createRestModels(final List<AuditEntryEntity> auditEntryEntities) {
+        final List<AuditEntryConfig> auditEntryConfigs = auditEntryEntities.stream().map(this::createRestModel).collect(Collectors.toList());
         return auditEntryConfigs;
     }
 

@@ -92,7 +92,7 @@ public class AuditEntryHandlerTestIT {
 
         auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
 
-        final AlertPagedModel<AuditEntryConfig> auditEntries = auditEntryHandler.get(null, null, null, null);
+        final AlertPagedModel<AuditEntryConfig> auditEntries = auditEntryHandler.get(null, null, null, null, null);
         assertEquals(1, auditEntries.getTotalPages());
 
         final AuditEntryConfig auditEntry = auditEntryHandler.get(savedAuditEntryEntity.getId());
