@@ -88,14 +88,16 @@ public class AuditEntryActionsTest {
     @Test
     public void testPagedRequest() {
         final int totalPages = 2;
-        final int currentPage = 1;
+        final int currentPage = 0;
         final int pageSize = 2;
 
         final AuditEntryEntity entity_1 = new AuditEntryEntity();
         entity_1.setId(1L);
         final AuditEntryEntity entity_2 = new AuditEntryEntity();
         entity_2.setId(2L);
-        final List<AuditEntryEntity> pagedEntryList = Arrays.asList(entity_1, entity_2);
+        final AuditEntryEntity entity_3 = new AuditEntryEntity();
+        entity_2.setId(3L);
+        final List<AuditEntryEntity> pagedEntryList = Arrays.asList(entity_1, entity_2, entity_3);
         @SuppressWarnings("unchecked") final Page<AuditEntryEntity> pageResponse = Mockito.mock(Page.class);
 
         Mockito.when(pageResponse.getContent()).thenReturn(pagedEntryList);
@@ -120,7 +122,7 @@ public class AuditEntryActionsTest {
         final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, vulnerabilityRepository, auditEntryRepository, auditNotificationRepository),
         auditNotificationRepository, commonDistributionRepository, notificationContentConverter, null, null);
 
-        final AlertPagedModel<AuditEntryConfig> restModel = auditEntryActions.get(currentPage, pageSize, null, null);
+        final AlertPagedModel<AuditEntryConfig> restModel = auditEntryActions.get(currentPage, pageSize, null, null, null);
         assertEquals(pageResponse.getTotalPages(), restModel.getTotalPages());
         assertEquals(pageResponse.getNumber(), restModel.getCurrentPage());
         assertEquals(pageResponse.getSize(), restModel.getPageSize());
@@ -160,7 +162,7 @@ public class AuditEntryActionsTest {
         final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, vulnerabilityRepository, auditEntryRepository, auditNotificationRepository),
         auditNotificationRepository, commonDistributionRepository, notificationContentConverter, null, null);
 
-        final AlertPagedModel<AuditEntryConfig> restModel = auditEntryActions.get(currentPage, pageSize, null, null);
+        final AlertPagedModel<AuditEntryConfig> restModel = auditEntryActions.get(currentPage, pageSize, null, null, null);
         assertEquals(pageResponse.getTotalPages(), restModel.getTotalPages());
         assertEquals(pageResponse.getNumber(), restModel.getCurrentPage());
         //Assert 0 because there aren't any entries in the pageResponse content

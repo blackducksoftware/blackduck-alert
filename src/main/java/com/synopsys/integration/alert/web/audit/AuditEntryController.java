@@ -23,7 +23,6 @@
  */
 package com.synopsys.integration.alert.web.audit;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -50,11 +49,7 @@ public class AuditEntryController extends BaseController {
     public AlertPagedModel<AuditEntryConfig> get(@RequestParam(value = "pageNumber", required = false) final Integer pageNumber, @RequestParam(value = "pageSize", required = false) final Integer pageSize,
     @RequestParam(value = "searchTerm", required = false) final String searchTerm, @RequestParam(value = "sortField", required = false) final String sortField,
     @RequestParam(value = "sortOrder", required = false) final String sortOrder) {
-        if (StringUtils.isNotBlank(searchTerm)) {
-            return auditEntryHandler.search(pageNumber, pageSize, searchTerm, sortField, sortOrder);
-        } else {
-            return auditEntryHandler.get(pageNumber, pageSize, sortField, sortOrder);
-        }
+        return auditEntryHandler.get(pageNumber, pageSize, searchTerm, sortField, sortOrder);
     }
 
     @GetMapping(value = "/{id}")
