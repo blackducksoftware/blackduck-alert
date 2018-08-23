@@ -32,16 +32,16 @@ import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
 
-public abstract class DescriptorConfig {
+public abstract class RestApi {
     private final TypeConverter typeConverter;
     private final RepositoryAccessor repositoryAccessor;
     private final StartupComponent startupComponent;
 
-    public DescriptorConfig(final TypeConverter typeConverter, final RepositoryAccessor repositoryAccessor) {
+    public RestApi(final TypeConverter typeConverter, final RepositoryAccessor repositoryAccessor) {
         this(typeConverter, repositoryAccessor, null);
     }
 
-    public DescriptorConfig(final TypeConverter typeConverter, final RepositoryAccessor repositoryAccessor, final StartupComponent startupComponent) {
+    public RestApi(final TypeConverter typeConverter, final RepositoryAccessor repositoryAccessor, final StartupComponent startupComponent) {
         this.typeConverter = typeConverter;
         this.repositoryAccessor = repositoryAccessor;
         this.startupComponent = startupComponent;
@@ -62,8 +62,6 @@ public abstract class DescriptorConfig {
     public boolean hasStartupProperties() {
         return getStartupComponent() != null;
     }
-
-    public abstract UIComponent getUiComponent();
 
     public abstract void validateConfig(Config restModel, Map<String, String> fieldErrors);
 

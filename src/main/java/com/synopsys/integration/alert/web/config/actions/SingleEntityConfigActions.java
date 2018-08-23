@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
+import com.synopsys.integration.alert.common.descriptor.config.RestApi;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
@@ -45,7 +45,7 @@ public class SingleEntityConfigActions extends DescriptorConfigActions {
     }
 
     @Override
-    public String validateConfig(Config restModel, final DescriptorConfig descriptor) throws AlertFieldException {
+    public String validateConfig(Config restModel, final RestApi descriptor) throws AlertFieldException {
         final List<? extends DatabaseEntity> globalConfigs = descriptor.readEntities();
         if (globalConfigs.size() == 1) {
             try {
@@ -58,7 +58,7 @@ public class SingleEntityConfigActions extends DescriptorConfigActions {
     }
 
     @Override
-    public String testConfig(Config restModel, final DescriptorConfig descriptor) throws IntegrationException {
+    public String testConfig(Config restModel, final RestApi descriptor) throws IntegrationException {
         final List<? extends DatabaseEntity> globalConfigs = descriptor.readEntities();
         if (globalConfigs.size() == 1) {
             restModel = updateEntityWithSavedEntity(restModel, globalConfigs.get(0));

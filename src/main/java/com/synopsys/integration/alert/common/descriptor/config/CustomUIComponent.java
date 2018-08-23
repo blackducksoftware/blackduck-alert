@@ -28,10 +28,6 @@ import java.util.Collections;
 public class CustomUIComponent extends UIComponent {
     private String uiComponentName;
 
-    public CustomUIComponent(final String label, final String urlName, final String fontAwesomeIcon) {
-        this(label, urlName, fontAwesomeIcon, "");
-    }
-
     public CustomUIComponent(final String label, final String urlName, final String fontAwesomeIcon, final String uiComponentName) {
         super(label, urlName, fontAwesomeIcon, false, Collections.emptyList());
         this.uiComponentName = uiComponentName;

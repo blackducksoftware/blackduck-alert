@@ -23,7 +23,6 @@
  */
 package com.synopsys.integration.alert.channel.hipchat.descriptor;
 
-import java.util.Arrays;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -31,12 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
-import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
-import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
-import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
-import com.synopsys.integration.alert.common.enumeration.FieldGroup;
+import com.synopsys.integration.alert.common.descriptor.config.RestApi;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalRepositoryAccessor;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
@@ -45,21 +39,14 @@ import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class HipChatGlobalDescriptorConfig extends DescriptorConfig {
+public class HipChatGlobalRestApi extends RestApi {
     private final HipChatChannel hipChatChannel;
 
     @Autowired
-    public HipChatGlobalDescriptorConfig(final HipChatGlobalTypeConverter databaseContentConverter, final HipChatGlobalRepositoryAccessor repositoryAccessor, final HipChatChannel hipChatChannel,
+    public HipChatGlobalRestApi(final HipChatGlobalTypeConverter databaseContentConverter, final HipChatGlobalRepositoryAccessor repositoryAccessor, final HipChatChannel hipChatChannel,
             final HipChatStartupComponent hipChatStartupComponent) {
         super(databaseContentConverter, repositoryAccessor, hipChatStartupComponent);
         this.hipChatChannel = hipChatChannel;
-    }
-
-    @Override
-    public UIComponent getUiComponent() {
-        final ConfigField apiKey = new PasswordConfigField("apiKey", "Api Key", true);
-        final ConfigField hostServer = new TextInputConfigField("hostServer", "Host Server", false, false, FieldGroup.ADVANCED);
-        return new UIComponent("HipChat", "hipchat", "comments", Arrays.asList(apiKey, hostServer));
     }
 
     @Override

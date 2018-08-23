@@ -23,7 +23,6 @@
  */
 package com.synopsys.integration.alert.channel.hipchat.descriptor;
 
-import java.util.Arrays;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -33,12 +32,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.channel.event.ChannelEventFactory;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
-import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
-import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
-import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.field.DropDownConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.RestApi;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
@@ -47,24 +41,16 @@ import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class HipChatDistributionDescriptorConfig extends DescriptorConfig {
+public class HipChatDistributionRestApi extends RestApi {
     private final ChannelEventFactory channelEventFactory;
     private final HipChatChannel hipChatChannel;
 
     @Autowired
-    public HipChatDistributionDescriptorConfig(final HipChatDistributionTypeConverter databaseContentConverter, final HipChatDistributionRepositoryAccessor repositoryAccessor,
+    public HipChatDistributionRestApi(final HipChatDistributionTypeConverter databaseContentConverter, final HipChatDistributionRepositoryAccessor repositoryAccessor,
             final ChannelEventFactory channelEventFactory, final HipChatChannel hipChatChannel) {
         super(databaseContentConverter, repositoryAccessor);
         this.channelEventFactory = channelEventFactory;
         this.hipChatChannel = hipChatChannel;
-    }
-
-    @Override
-    public UIComponent getUiComponent() {
-        final ConfigField roomId = new NumberConfigField("roomId", "Room Id", true, false);
-        final ConfigField notify = new CheckboxConfigField("notify", "Notify", false, false);
-        final ConfigField color = new DropDownConfigField("color", "Color", false, false, Arrays.asList("Yellow, Green, Red, Purple, Gray, Random"));
-        return new UIComponent("HipChat", "hipchat", "comments", Arrays.asList(roomId, notify, color));
     }
 
     @Override

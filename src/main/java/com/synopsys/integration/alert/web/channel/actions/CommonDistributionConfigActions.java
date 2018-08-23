@@ -32,7 +32,6 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.DigestType;
 import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.synopsys.integration.alert.web.actions.ConfiguredProjectsActions;
 import com.synopsys.integration.alert.web.actions.NotificationTypesActions;
@@ -86,11 +85,11 @@ public class CommonDistributionConfigActions {
         notificationTypesActions.removeOldNotificationTypes(id);
     }
 
-    public void saveCommonEntity(final CommonDistributionConfig commonChannelConfig, final DatabaseEntity savedChannelEntity) {
+    public void saveCommonEntity(final CommonDistributionConfig commonChannelConfig, final long distributionId) {
         if (commonChannelConfig != null) {
             CommonDistributionConfigEntity commonChannelEntity = createCommonEntity(commonChannelConfig);
-            if (savedChannelEntity != null && commonChannelEntity != null) {
-                commonChannelEntity.setDistributionConfigId(savedChannelEntity.getId());
+            if (commonChannelEntity != null) {
+                commonChannelEntity.setDistributionConfigId(distributionId);
                 commonChannelEntity = commonDistributionRepository.save(commonChannelEntity);
                 if (Boolean.TRUE.equals(commonChannelEntity.getFilterByProject())) {
                     configuredProjectsActions.saveConfiguredProjects(commonChannelEntity.getId(), commonChannelConfig.getConfiguredProjects());

@@ -25,65 +25,27 @@ package com.synopsys.integration.alert.channel.email.descriptor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
-import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
+import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.enumeration.FieldGroup;
-import com.synopsys.integration.alert.database.channel.email.EmailGlobalConfigEntity;
-import com.synopsys.integration.alert.database.channel.email.EmailGlobalRepositoryAccessor;
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
-import com.synopsys.integration.alert.web.channel.model.EmailGlobalConfig;
-import com.synopsys.integration.alert.web.model.Config;
-import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class EmailGlobalDescriptorConfig extends DescriptorConfig {
-    public static final String NOT_AN_INTEGER = "Not an Integer.";
-
-    private final EmailGroupChannel emailGroupChannel;
-
-    @Autowired
-    public EmailGlobalDescriptorConfig(final EmailGlobalTypeConverter databaseContentConverter, final EmailGlobalRepositoryAccessor repositoryAccessor, final EmailGlobalStartupComponent startupComponent,
-            final EmailGroupChannel emailGroupChannel) {
-        super(databaseContentConverter, repositoryAccessor, startupComponent);
-        this.emailGroupChannel = emailGroupChannel;
-    }
-
-    // TODO Global email config doesn't validate properly or give any indication that saving was successful
-    @Override
-    public void validateConfig(final Config restModel, final Map<String, String> fieldErrors) {
-        final EmailGlobalConfig emailRestModel = (EmailGlobalConfig) restModel;
-
-        if (StringUtils.isNotBlank(emailRestModel.getMailSmtpPort()) && !StringUtils.isNumeric(emailRestModel.getMailSmtpPort())) {
-            fieldErrors.put("mailSmtpPort", NOT_AN_INTEGER);
-        }
-        if (StringUtils.isNotBlank(emailRestModel.getMailSmtpConnectionTimeout()) && !StringUtils.isNumeric(emailRestModel.getMailSmtpConnectionTimeout())) {
-            fieldErrors.put("mailSmtpConnectionTimeout", NOT_AN_INTEGER);
-        }
-        if (StringUtils.isNotBlank(emailRestModel.getMailSmtpTimeout()) && !StringUtils.isNumeric(emailRestModel.getMailSmtpTimeout())) {
-            fieldErrors.put("mailSmtpTimeout", NOT_AN_INTEGER);
-        }
-    }
+public class EmailGlobalUIConfig extends UIConfig {
 
     @Override
-    public void testConfig(final DatabaseEntity entity) throws IntegrationException {
-        final EmailGlobalConfigEntity emailEntity = (EmailGlobalConfigEntity) entity;
-        emailGroupChannel.testGlobalConfig(emailEntity);
+    public UIComponent generateUIComponent() {
+        return new UIComponent("Email", "email", "envelope", setupFields());
     }
 
-    @Override
-    public UIComponent getUiComponent() {
+    public List<ConfigField> setupFields() {
         final List<ConfigField> fields = new ArrayList<>();
 
         // Default fields
@@ -184,7 +146,7 @@ public class EmailGlobalDescriptorConfig extends DescriptorConfig {
         fields.add(mailSmtpUserSet);
         fields.add(mailSmtpNoopStrict);
 
-        return new UIComponent("Email", "email", "envelope", fields);
+        return fields;
     }
 
 }

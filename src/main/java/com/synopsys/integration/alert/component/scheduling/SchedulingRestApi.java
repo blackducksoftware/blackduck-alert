@@ -29,9 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.config.CustomUIComponent;
-import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
-import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
+import com.synopsys.integration.alert.common.descriptor.config.RestApi;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.scheduling.SchedulingRepositoryAccessor;
 import com.synopsys.integration.alert.web.component.scheduling.SchedulingConfig;
@@ -39,16 +37,11 @@ import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class SchedulingDescriptorConfig extends DescriptorConfig {
+public class SchedulingRestApi extends RestApi {
 
     @Autowired
-    public SchedulingDescriptorConfig(final SchedulingTypeConverter typeConverter, final SchedulingRepositoryAccessor repositoryAccessor, final SchedulingStartupComponent schedulingStartupComponent) {
+    public SchedulingRestApi(final SchedulingTypeConverter typeConverter, final SchedulingRepositoryAccessor repositoryAccessor, final SchedulingStartupComponent schedulingStartupComponent) {
         super(typeConverter, repositoryAccessor, schedulingStartupComponent);
-    }
-
-    @Override
-    public UIComponent getUiComponent() {
-        return new CustomUIComponent("Scheduling", "scheduling", "clock-o", "SchedulingConfiguration");
     }
 
     @Override

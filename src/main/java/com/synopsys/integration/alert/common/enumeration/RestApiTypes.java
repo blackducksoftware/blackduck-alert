@@ -23,7 +23,7 @@
  */
 package com.synopsys.integration.alert.common.enumeration;
 
-public enum DescriptorConfigType {
+public enum RestApiTypes {
     CHANNEL_GLOBAL_CONFIG,
     CHANNEL_DISTRIBUTION_CONFIG,
     PROVIDER_CONFIG,

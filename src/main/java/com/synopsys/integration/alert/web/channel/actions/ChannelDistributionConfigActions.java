@@ -32,7 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
+import com.synopsys.integration.alert.common.descriptor.config.RestApi;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
@@ -64,12 +64,12 @@ public class ChannelDistributionConfigActions extends DescriptorConfigActions {
     }
 
     @Override
-    public boolean doesConfigExist(final Long id, final DescriptorConfig descriptor) {
+    public boolean doesConfigExist(final Long id, final RestApi descriptor) {
         return id != null && commonDistributionRepository.existsById(id);
     }
 
     @Override
-    public List<? extends Config> getConfig(final Long id, final DescriptorConfig descriptor) throws AlertException {
+    public List<? extends Config> getConfig(final Long id, final RestApi descriptor) throws AlertException {
         final List<? extends Config> restModels = super.getConfig(id, descriptor);
         addAuditEntryInfoToRestModels(restModels);
         return restModels;
@@ -95,18 +95,18 @@ public class ChannelDistributionConfigActions extends DescriptorConfigActions {
     }
 
     @Override
-    public DatabaseEntity saveConfig(final Config config, final DescriptorConfig descriptor) {
+    public DatabaseEntity saveConfig(final Config config, final RestApi descriptor) {
         if (config != null) {
             final CommonDistributionConfig commonConfig = (CommonDistributionConfig) config;
-            final DatabaseEntity savedEntity = super.saveConfig(commonConfig, descriptor);
-            commonDistributionConfigActions.saveCommonEntity(commonConfig, savedEntity);
-            return savedEntity;
+            final DatabaseEntity savedChannelEntity = super.saveConfig(commonConfig, descriptor);
+            commonDistributionConfigActions.saveCommonEntity(commonConfig, savedChannelEntity.getId());
+            return savedChannelEntity;
         }
         return null;
     }
 
     @Override
-    public void deleteConfig(final Long id, final DescriptorConfig descriptor) {
+    public void deleteConfig(final Long id, final RestApi descriptor) {
         if (id != null) {
             final Optional<CommonDistributionConfigEntity> commonEntity = commonDistributionRepository.findById(id);
             if (commonEntity.isPresent()) {
@@ -128,12 +128,12 @@ public class ChannelDistributionConfigActions extends DescriptorConfigActions {
     }
 
     @Override
-    public DatabaseEntity updateConfig(final Config config, final DescriptorConfig descriptor) throws AlertException {
+    public DatabaseEntity updateConfig(final Config config, final RestApi descriptor) throws AlertException {
         return saveConfig(config, descriptor);
     }
 
     @Override
-    public String validateConfig(final Config config, final DescriptorConfig descriptor) throws AlertFieldException {
+    public String validateConfig(final Config config, final RestApi descriptor) throws AlertFieldException {
         final Map<String, String> fieldErrors = new HashMap<>();
         final CommonDistributionConfig commonConfig = (CommonDistributionConfig) config;
         commonDistributionConfigActions.validateCommonConfig(commonConfig, fieldErrors);

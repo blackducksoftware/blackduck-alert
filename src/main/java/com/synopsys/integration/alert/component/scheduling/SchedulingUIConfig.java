@@ -23,18 +23,18 @@
  */
 package com.synopsys.integration.alert.component.scheduling;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
+import com.synopsys.integration.alert.common.descriptor.config.CustomUIComponent;
+import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
+import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
 
 @Component
-public class SchedulingDescriptor extends ComponentDescriptor {
-    public static final String SCHEDULING_COMPONENT = "component_scheduling";
+public class SchedulingUIConfig extends UIConfig {
 
-    @Autowired
-    public SchedulingDescriptor(final SchedulingRestApi componentRestApi, final SchedulingUIConfig schedulingUIConfig) {
-        super(SCHEDULING_COMPONENT, componentRestApi, schedulingUIConfig);
+    @Override
+    public UIComponent generateUIComponent() {
+        return new CustomUIComponent("Scheduling", "scheduling", "clock-o", "SchedulingConfiguration");
     }
 
 }

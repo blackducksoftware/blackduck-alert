@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.web.controller;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
-import com.synopsys.integration.alert.common.enumeration.DescriptorConfigType;
+import com.synopsys.integration.alert.common.enumeration.RestApiTypes;
 
 @RestController
 @RequestMapping(UIComponentController.DESCRIPTOR_PATH + "/{descriptorConfigType}")
@@ -53,15 +52,12 @@ public class UIComponentController extends BaseController {
 
     @GetMapping
     public List<UIComponent> getDescriptors(@RequestParam(value = "descriptorName", required = false) final String descriptorName, @PathVariable final String descriptorConfigType) {
-        final DescriptorConfigType descriptorConfigTypeEnum = Enum.valueOf(DescriptorConfigType.class, descriptorConfigType);
+        final RestApiTypes descriptorConfigTypeEnum = Enum.valueOf(RestApiTypes.class, descriptorConfigType);
         if (StringUtils.isNotBlank(descriptorName)) {
-            return Arrays.asList(descriptorMap.getDescriptor(descriptorName).getConfig(descriptorConfigTypeEnum).getUiComponent());
+            return Arrays.asList(descriptorMap.getDescriptor(descriptorName).getUIConfig(descriptorConfigTypeEnum).generateUIComponent());
         }
 
-        return descriptorMap.getDescriptorConfigs(descriptorConfigTypeEnum)
-                       .stream()
-                       .map(descriptorConfig -> descriptorConfig.getUiComponent())
-                       .collect(Collectors.toList());
+        return descriptorMap.getUIComponents(descriptorConfigTypeEnum);
     }
 
 }
