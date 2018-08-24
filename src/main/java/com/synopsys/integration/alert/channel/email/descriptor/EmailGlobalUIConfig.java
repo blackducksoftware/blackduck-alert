@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
 import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
 import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
@@ -42,7 +43,7 @@ public class EmailGlobalUIConfig extends UIConfig {
 
     @Override
     public UIComponent generateUIComponent() {
-        return new UIComponent("Email", "email", "envelope", setupFields());
+        return new UIComponent("Email", "email", EmailGroupChannel.COMPONENT_NAME, "envelope", setupFields());
     }
 
     public List<ConfigField> setupFields() {

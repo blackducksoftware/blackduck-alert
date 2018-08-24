@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
 import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
@@ -40,7 +41,7 @@ public class HipChatDistributionUIConfig extends UIConfig {
 
     @Override
     public UIComponent generateUIComponent() {
-        return new UIComponent("HipChat", "hipchat", "comments", setupFields());
+        return new UIComponent("HipChat", "hipchat", HipChatChannel.COMPONENT_NAME, "comments", setupFields());
     }
 
     public List<ConfigField> setupFields() {

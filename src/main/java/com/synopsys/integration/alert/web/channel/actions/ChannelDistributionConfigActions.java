@@ -55,7 +55,7 @@ public class ChannelDistributionConfigActions extends DescriptorConfigActions {
 
     @Autowired
     public ChannelDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final ContentConverter contentConverter, final AuditEntryRepository auditEntryRepository,
-            final AuditNotificationRepository auditNotificationRepository, final CommonDistributionConfigActions commonDistributionConfigActions) {
+    final AuditNotificationRepository auditNotificationRepository, final CommonDistributionConfigActions commonDistributionConfigActions) {
         super(contentConverter);
         this.commonDistributionRepository = commonDistributionRepository;
         this.auditEntryRepository = auditEntryRepository;

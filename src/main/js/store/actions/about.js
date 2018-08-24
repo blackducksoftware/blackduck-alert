@@ -39,7 +39,6 @@ export function getAboutInfo() {
         .then((response) => {
             if(response.ok) {
                 response.json().then((body) => {
-                    console.log("About info: ", body);
                     dispatch(aboutInfoFetched(body));
                 })
             } else {

@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.slack.SlackChannel;
 import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
 import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
@@ -38,7 +39,7 @@ public class SlackUIConfig extends UIConfig {
 
     @Override
     public UIComponent generateUIComponent() {
-        return new UIComponent("Slack", "slack", "slack", setupFields());
+        return new UIComponent("Slack", "slack", SlackChannel.COMPONENT_NAME, "slack", setupFields());
     }
 
     public List<ConfigField> setupFields() {

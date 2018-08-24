@@ -47,7 +47,7 @@ public class EmailDistributionRestApi extends RestApi {
 
     @Autowired
     public EmailDistributionRestApi(final EmailDistributionTypeConverter databaseContentConverter, final EmailDistributionRepositoryAccessor repositoryAccessor, final EmailGroupChannel emailGroupChannel,
-            final ChannelEventFactory channelEventFactory) {
+    final ChannelEventFactory channelEventFactory) {
         super(databaseContentConverter, repositoryAccessor);
         this.emailGroupChannel = emailGroupChannel;
         this.channelEventFactory = channelEventFactory;

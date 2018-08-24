@@ -23,32 +23,22 @@
  */
 package com.synopsys.integration.alert.web.model;
 
-import java.util.Collections;
-import java.util.List;
-
 import com.synopsys.integration.util.Stringable;
 
 public class AboutModel extends Stringable {
     private String version;
     private String description;
     private String projectUrl;
-    private List<AboutDescriptorModel> channelList;
-    private List<AboutDescriptorModel> providerList;
 
     protected AboutModel() {
 
     }
 
     public AboutModel(final String version, final String description, final String projectUrl) {
-        this(version, description, projectUrl, Collections.emptyList(), Collections.emptyList());
-    }
 
-    public AboutModel(final String version, final String description, final String projectUrl, final List<AboutDescriptorModel> providerList, final List<AboutDescriptorModel> channelList) {
         this.version = version;
         this.description = description;
         this.projectUrl = projectUrl;
-        this.channelList = channelList;
-        this.providerList = providerList;
     }
 
     public String getVersion() {
@@ -61,13 +51,5 @@ public class AboutModel extends Stringable {
 
     public String getProjectUrl() {
         return projectUrl;
-    }
-
-    public List<AboutDescriptorModel> getChannelList() {
-        return channelList;
-    }
-
-    public List<AboutDescriptorModel> getProviderList() {
-        return providerList;
     }
 }

@@ -179,7 +179,6 @@ export function testConfig(config) {
                 } else {
                     response.json()
                         .then((data) => {
-                            console.log('data', data.message);
                             switch (response.status) {
                                 case 400:
                                     return dispatch(testFailed(data.message, data.errors));
