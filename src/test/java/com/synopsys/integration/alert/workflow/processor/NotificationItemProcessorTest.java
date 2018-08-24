@@ -31,7 +31,6 @@ import com.synopsys.integration.alert.common.model.NotificationModels;
 import com.synopsys.integration.blackduck.exception.HubIntegrationException;
 import com.synopsys.integration.blackduck.notification.NotificationDetailResult;
 import com.synopsys.integration.blackduck.notification.NotificationDetailResults;
-import com.synopsys.integration.blackduck.service.bucket.HubBucket;
 
 public class NotificationItemProcessorTest {
 
@@ -47,7 +46,6 @@ public class NotificationItemProcessorTest {
 
         final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(new TestAlertProperties());
 
-        final HubBucket hubBucket = new HubBucket();
         final NotificationDetailResult notificationResult = Mockito.mock(NotificationDetailResult.class);
 
         final NotificationDetailResults notificationData = new NotificationDetailResults(Arrays.asList(notificationResult), Optional.empty(), Optional.empty());
