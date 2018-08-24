@@ -45,8 +45,8 @@ public abstract class Descriptor {
     public Descriptor(final String name, final DescriptorType type) {
         this.name = name;
         this.type = type;
-        restApis = new HashMap<>(RestApiType.values().length + 1);
-        uiConfigs = new HashMap<>(RestApiType.values().length + 1);
+        restApis = new HashMap<>();
+        uiConfigs = new HashMap<>();
     }
 
     public String getName() {
