@@ -284,12 +284,12 @@ class Index extends Component {
     }
 
     providerColumnDataFormat(cell) {
-        const defaultValue = <div className="inline">{cell}</div>;
-        if(this.props.descriptors) {
+        const defaultValue = <div className="inline" aria-hidden="true">{cell}</div>;
+        if (this.props.descriptors) {
             const descriptorList = this.props.descriptors.items['PROVIDER_CONFIG'];
-            if(descriptorList) {
+            if (descriptorList) {
                 const filteredList = descriptorList.filter(descriptor => descriptor.descriptorName === cell)
-                if(filteredList && filteredList.length > 0) {
+                if (filteredList && filteredList.length > 0) {
                     const foundDescriptor = filteredList[0];
                     return (<DescriptorLabel keyPrefix='audit-provider-icon' descriptor={foundDescriptor}/>);
                 } else {
