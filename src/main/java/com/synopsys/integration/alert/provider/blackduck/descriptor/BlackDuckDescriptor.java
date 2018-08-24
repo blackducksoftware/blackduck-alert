@@ -34,7 +34,7 @@ public class BlackDuckDescriptor extends ProviderDescriptor {
     public static final String PROVIDER_NAME = "provider_blackduck";
 
     @Autowired
-    public BlackDuckDescriptor(final BlackDuckProviderDescriptorConfig providerDescriptorConfig, final BlackDuckProvider provider) {
-        super(PROVIDER_NAME, providerDescriptorConfig, provider);
+    public BlackDuckDescriptor(final BlackDuckProviderRestApi providerRestApi, final BlackDuckProviderUIConfig blackDuckProviderUIConfig, final BlackDuckProvider provider) {
+        super(PROVIDER_NAME, providerRestApi, blackDuckProviderUIConfig, provider);
     }
 }

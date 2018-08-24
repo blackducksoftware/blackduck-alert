@@ -14,13 +14,13 @@ package com.synopsys.integration.alert.web.scheduling.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import com.synopsys.integration.alert.web.component.scheduling.SchedulingConfig;
 import com.synopsys.integration.alert.web.model.GlobalRestModelTest;
-import com.synopsys.integration.alert.web.scheduling.GlobalSchedulingConfig;
 
-public class GlobalSchedulingConfigRestModelTest extends GlobalRestModelTest<GlobalSchedulingConfig> {
+public class GlobalSchedulingConfigRestModelTest extends GlobalRestModelTest<SchedulingConfig> {
 
     @Override
-    public void assertGlobalRestModelFieldsNull(final GlobalSchedulingConfig restModel) {
+    public void assertGlobalRestModelFieldsNull(final SchedulingConfig restModel) {
         assertNull(restModel.getAccumulatorNextRun());
         assertNull(restModel.getDailyDigestHourOfDay());
         assertNull(restModel.getDailyDigestNextRun());
@@ -29,7 +29,7 @@ public class GlobalSchedulingConfigRestModelTest extends GlobalRestModelTest<Glo
     }
 
     @Override
-    public void assertGlobalRestModelFieldsFull(final GlobalSchedulingConfig restModel) {
+    public void assertGlobalRestModelFieldsFull(final SchedulingConfig restModel) {
         assertEquals(getMockUtil().getAccumulatorNextRun(), restModel.getAccumulatorNextRun());
         assertEquals(getMockUtil().getDailyDigestHourOfDay(), restModel.getDailyDigestHourOfDay());
         assertEquals(getMockUtil().getDailyDigestNextRun(), restModel.getDailyDigestNextRun());
@@ -38,8 +38,8 @@ public class GlobalSchedulingConfigRestModelTest extends GlobalRestModelTest<Glo
     }
 
     @Override
-    public Class<GlobalSchedulingConfig> getGlobalRestModelClass() {
-        return GlobalSchedulingConfig.class;
+    public Class<SchedulingConfig> getGlobalRestModelClass() {
+        return SchedulingConfig.class;
     }
 
     @Override

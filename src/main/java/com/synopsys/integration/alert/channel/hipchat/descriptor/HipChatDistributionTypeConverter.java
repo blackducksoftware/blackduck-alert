@@ -26,18 +26,27 @@ package com.synopsys.integration.alert.channel.hipchat.descriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
+import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.descriptor.config.CommonTypeConverter;
 import com.synopsys.integration.alert.common.descriptor.config.TypeConverter;
+import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
+import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.synopsys.integration.alert.web.channel.model.HipChatDistributionConfig;
 import com.synopsys.integration.alert.web.model.Config;
 
 @Component
 public class HipChatDistributionTypeConverter extends TypeConverter {
+    private final CommonTypeConverter commonTypeConverter;
+    private final CommonDistributionRepository commonDistributionRepository;
+
     @Autowired
-    public HipChatDistributionTypeConverter(final ContentConverter contentConverter) {
+    public HipChatDistributionTypeConverter(final ContentConverter contentConverter, final CommonTypeConverter commonTypeConverter, final CommonDistributionRepository commonDistributionRepository) {
         super(contentConverter);
+        this.commonTypeConverter = commonTypeConverter;
+        this.commonDistributionRepository = commonDistributionRepository;
     }
 
     @Override
@@ -50,7 +59,7 @@ public class HipChatDistributionTypeConverter extends TypeConverter {
         final HipChatDistributionConfig hipChatRestModel = (HipChatDistributionConfig) restModel;
         final Integer roomId = getContentConverter().getIntegerValue(hipChatRestModel.getRoomId());
         final HipChatDistributionConfigEntity hipChatEntity = new HipChatDistributionConfigEntity(roomId, hipChatRestModel.getNotify(), hipChatRestModel.getColor());
-        addIdToEntityPK(hipChatRestModel.getId(), hipChatEntity);
+        addIdToEntityPK(hipChatRestModel.getDistributionConfigId(), hipChatEntity);
         return hipChatEntity;
     }
 
@@ -64,7 +73,8 @@ public class HipChatDistributionTypeConverter extends TypeConverter {
         hipChatRestModel.setRoomId(roomId);
         hipChatRestModel.setNotify(hipChatEntity.getNotify());
         hipChatRestModel.setColor(hipChatEntity.getColor());
-        return hipChatRestModel;
+        final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.findByDistributionConfigIdAndDistributionType(hipChatEntity.getId(), HipChatChannel.COMPONENT_NAME);
+        return commonTypeConverter.populateCommonFieldsFromEntity(hipChatRestModel, commonEntity);
     }
 
 }

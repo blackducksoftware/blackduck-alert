@@ -22,7 +22,7 @@ class Navigation extends Component {
     }
 
     retrieveComponentData(distributionConfigType) {
-        const getUrl = `/alert/api/descriptor/descriptorConfig/${distributionConfigType}`;
+        const getUrl = `/alert/api/descriptor/restApi/${distributionConfigType}`;
         fetch(getUrl, {
             credentials: 'same-origin',
             headers: {

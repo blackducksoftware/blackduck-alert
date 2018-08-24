@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.text.ParseException;
-import java.time.Instant;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -63,7 +62,6 @@ public class NotificationContentRepositoryIT {
 
     @Test
     public void testSaveEntity() throws Exception {
-        final Date createdAt = Date.from(Instant.now());
         final NotificationContent entity = createEntity(RestConstants.formatDate(new Date()));
         final NotificationContent savedEntity = repository.save(entity);
         final long count = repository.count();
