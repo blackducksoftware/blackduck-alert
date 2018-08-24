@@ -11,7 +11,7 @@ public class AndFieldFilterBuilder extends BinaryOperatorFieldFilterBuilder {
     }
 
     @Override
-    public Predicate<NotificationContent> buildPredicate() {
-        return getLeftFilterBuilder().buildPredicate().and(getRightFilterBuilder().buildPredicate());
+    public Predicate<NotificationContent> joiningPredicate(final Predicate<NotificationContent> left, final Predicate<NotificationContent> right) {
+        return left.and(right);
     }
 }
