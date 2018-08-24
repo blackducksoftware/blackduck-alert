@@ -31,7 +31,7 @@ public class GsonFilterTest {
         final List<NotificationContent> notificationList = Arrays.asList(policyNotification, vulnerabilityNotification);
 
         final List<String> jsonFieldList = Arrays.asList("content", "projectName");
-        final JsonFieldFilter projectNameFilter = new JsonFieldFilter(gson, PROJECT_NAME_1, jsonFieldList);
+        final JsonFieldFilter projectNameFilter = new JsonFieldFilter(gson, HierarchicalField.nestedField(jsonFieldList), PROJECT_NAME_1);
 
         final List<NotificationContent> filteredList = notificationList.stream().filter(projectNameFilter.buildPredicate()).collect(Collectors.toList());
         assertEquals(1, filteredList.size());
@@ -45,8 +45,8 @@ public class GsonFilterTest {
 
         final List<String> policyJsonFieldHierarchy = Arrays.asList("content", "projectName");
         final List<String> vulnerabilityJsonFieldHierarchy = Arrays.asList("content", "affectedProjectVersions", "projectName");
-        final JsonFieldFilter policyProjectNameFilter = new JsonFieldFilter(gson, PROJECT_NAME_1, policyJsonFieldHierarchy);
-        final JsonFieldFilter vulnerabilityProjectNameFilter = new JsonFieldFilter(gson, PROJECT_NAME_1, vulnerabilityJsonFieldHierarchy);
+        final JsonFieldFilter policyProjectNameFilter = new JsonFieldFilter(gson, HierarchicalField.nestedField(policyJsonFieldHierarchy), PROJECT_NAME_1);
+        final JsonFieldFilter vulnerabilityProjectNameFilter = new JsonFieldFilter(gson, HierarchicalField.nestedField(vulnerabilityJsonFieldHierarchy), PROJECT_NAME_1);
         final JsonFilterBuilder compoundFilter = new OrFieldFilterBuilder(policyProjectNameFilter, vulnerabilityProjectNameFilter);
 
         final List<NotificationContent> filteredList = notificationList.stream().filter(compoundFilter.buildPredicate()).collect(Collectors.toList());
@@ -62,8 +62,8 @@ public class GsonFilterTest {
         final List<String> vulnerabilityComponentJsonFieldHierarchy = Arrays.asList("content", "componentName");
         final List<String> vulnerabilityProjectJsonFieldHierarchy = Arrays.asList("content", "affectedProjectVersions", "projectName");
 
-        final JsonFieldFilter vulnerabilityComponentNameFilter = new JsonFieldFilter(gson, COMPONENT_NAME_1, vulnerabilityComponentJsonFieldHierarchy);
-        final JsonFieldFilter vulnerabilityProjectNameFilter = new JsonFieldFilter(gson, PROJECT_NAME_1, vulnerabilityProjectJsonFieldHierarchy);
+        final JsonFieldFilter vulnerabilityComponentNameFilter = new JsonFieldFilter(gson, HierarchicalField.nestedField(vulnerabilityComponentJsonFieldHierarchy), COMPONENT_NAME_1);
+        final JsonFieldFilter vulnerabilityProjectNameFilter = new JsonFieldFilter(gson, HierarchicalField.nestedField(vulnerabilityProjectJsonFieldHierarchy), PROJECT_NAME_1);
         final JsonFilterBuilder compoundFilter = new AndFieldFilterBuilder(vulnerabilityComponentNameFilter, vulnerabilityProjectNameFilter);
 
         final List<NotificationContent> filteredList = notificationList.stream().filter(compoundFilter.buildPredicate()).collect(Collectors.toList());
