@@ -24,12 +24,15 @@
 package com.synopsys.integration.alert.web.audit;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +44,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.ChannelTemplateManager;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.channel.event.ChannelEventFactory;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
@@ -49,12 +53,11 @@ import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEn
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.synopsys.integration.alert.web.exception.AlertNotificationPurgedException;
+import com.synopsys.integration.alert.web.model.AlertPagedModel;
 import com.synopsys.integration.alert.web.model.NotificationConfig;
 import com.synopsys.integration.alert.web.model.NotificationContentConverter;
 import com.synopsys.integration.alert.workflow.NotificationManager;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.web.model.AlertPagedModel;
 
 @Transactional
 @Component
@@ -71,8 +74,8 @@ public class AuditEntryActions {
 
     @Autowired
     public AuditEntryActions(final AuditEntryRepository auditEntryRepository, final NotificationManager notificationManager, final AuditNotificationRepository auditNotificationRepository,
-            final CommonDistributionRepository commonDistributionRepository, final NotificationContentConverter notificationContentConverter,
-            final ChannelEventFactory channelEventFactory, final ChannelTemplateManager channelTemplateManager) {
+    final CommonDistributionRepository commonDistributionRepository, final NotificationContentConverter notificationContentConverter,
+    final ChannelEventFactory channelEventFactory, final ChannelTemplateManager channelTemplateManager) {
         this.auditEntryRepository = auditEntryRepository;
         this.notificationManager = notificationManager;
         this.auditNotificationRepository = auditNotificationRepository;
@@ -83,51 +86,22 @@ public class AuditEntryActions {
     }
 
     public AlertPagedModel<AuditEntryConfig> get() {
-        return get(null, null);
+        return get(null, null, null, null, null);
     }
 
-    public AlertPagedModel<AuditEntryConfig> get(final Integer pageNumber, final Integer pageSize) {
-        final List<AuditEntryEntity> auditEntries;
-        logger.debug("Audit entry get. PageNumber: {} PageSize: {}", pageNumber, pageSize);
-        int totalPages = 1;
-        int pageNumberResponse = 0;
-        if (pageNumber != null && pageSize != null) {
-            final PageRequest pageRequest = PageRequest.of(pageNumber, pageSize, new Sort(Sort.Direction.DESC, "timeLastSent"));
-            final Page<AuditEntryEntity> page = auditEntryRepository.findAll(pageRequest);
-            totalPages = page.getTotalPages();
-            pageNumberResponse = page.getNumber();
-            auditEntries = page.getContent();
-        } else {
-            final List<AuditEntryEntity> contentList = auditEntryRepository.findAll();
-            auditEntries = contentList;
-        }
-        final List<AuditEntryConfig> auditEntryConfigs = createRestModels(auditEntries);
-        final AlertPagedModel<AuditEntryConfig> pagedRestModel = new AlertPagedModel<>(totalPages, pageNumberResponse, auditEntryConfigs.size(), auditEntryConfigs);
-        logger.debug("Paged Audit Entry Rest Model: {}", pagedRestModel);
-        return pagedRestModel;
-    }
+    public AlertPagedModel<AuditEntryConfig> get(final Integer pageNumber, final Integer pageSize, final String searchTerm, final String sortField, final String sortOrder) {
+        List<AuditEntryConfig> auditEntries = new ArrayList<>();
 
-    public AuditEntryConfig get(final Long id) {
-        if (id != null) {
-            final Optional<AuditEntryEntity> auditEntryEntity = auditEntryRepository.findById(id);
-            if (auditEntryEntity.isPresent()) {
-                return createRestModel(auditEntryEntity.get());
-            }
-        }
-        return null;
-    }
+        final Page<AuditEntryEntity> auditPage = queryForAuditEntries(sortField, sortOrder);
+        final List<AuditEntryConfig> auditEntryConfigs = createRestModels(auditPage.getContent());
 
-    public AlertPagedModel<AuditEntryConfig> search(final Integer pageNumber, final Integer pageSize, final String searchTerm) {
-        final List<AuditEntryConfig> auditEntries = new ArrayList<>();
-        logger.debug("Audit entry search. PageNumber: {} PageSize: {} SearchTerm: {}", pageNumber, pageSize, searchTerm);
-        final List<AuditEntryEntity> contentList = auditEntryRepository.findAll();
-        final List<AuditEntryConfig> currentPageRestModels = createRestModels(contentList);
-        addMatchingModels(auditEntries, currentPageRestModels, searchTerm);
+        addMatchingModels(auditEntries, auditEntryConfigs, searchTerm);
+        auditEntries = sortRestModels(auditEntries, sortField, sortOrder);
 
         List<AuditEntryConfig> pagedAuditEntries = auditEntries;
         int totalPages = 1;
-        int pageNumberResponse = 0;
-        if (null != pageSize) {
+        int pageNumberResponse = 1;
+        if (null != pageSize && !auditEntries.isEmpty()) {
             pagedAuditEntries = new ArrayList<>();
             final int pageStart = pageNumber * pageSize;
             final int pageEnd = pageStart + pageSize;
@@ -147,14 +121,48 @@ public class AuditEntryActions {
         return pagedRestModel;
     }
 
-    private void addMatchingModels(final List<AuditEntryConfig> listToAddTo, final List<AuditEntryConfig> modelsToCheck, final String searchTerm) {
-        for (final AuditEntryConfig restModel : modelsToCheck) {
-            if (restModel.getName().contains(searchTerm) || restModel.getStatus().contains(searchTerm) || restModel.getTimeCreated().contains(searchTerm) || restModel.getTimeLastSent().contains(searchTerm)) {
-                listToAddTo.add(restModel);
-            } else if (null != restModel.getNotification() && restModel.getNotification().getContent().contains(searchTerm)) {
-                listToAddTo.add(restModel);
+    public AuditEntryConfig get(final Long id) {
+        if (id != null) {
+            final Optional<AuditEntryEntity> auditEntryEntity = auditEntryRepository.findById(id);
+            if (auditEntryEntity.isPresent()) {
+                return createRestModel(auditEntryEntity.get());
             }
         }
+        return null;
+    }
+
+    private void addMatchingModels(final List<AuditEntryConfig> listToAddTo, final List<AuditEntryConfig> modelsToCheck, final String searchTerm) {
+        if (StringUtils.isBlank(searchTerm)) {
+            listToAddTo.addAll(modelsToCheck);
+        } else {
+            for (final AuditEntryConfig restModel : modelsToCheck) {
+                if (restModel.getName().contains(searchTerm) || restModel.getStatus().contains(searchTerm) || restModel.getTimeCreated().contains(searchTerm) || restModel.getTimeLastSent().contains(searchTerm)) {
+                    listToAddTo.add(restModel);
+                } else if (null != restModel.getNotification() && restModel.getNotification().getContent().contains(searchTerm)) {
+                    listToAddTo.add(restModel);
+                }
+            }
+        }
+    }
+
+    private Page<AuditEntryEntity> queryForAuditEntries(final String sortField, final String sortOrder) {
+        boolean sortQuery = false;
+        String sortingField = "timeLastSent";
+        // We can only modify the query for the fields that exist in AuditEntryEntity
+        if (StringUtils.isNotBlank(sortField) && "timeCreated".equalsIgnoreCase(sortField) || "timeLastSent".equalsIgnoreCase(sortField) || "status".equalsIgnoreCase(sortField)) {
+            sortingField = sortField;
+            sortQuery = true;
+        }
+        Sort.Direction sortingOrder = Sort.Direction.DESC;
+        if (StringUtils.isNotBlank(sortOrder) && sortQuery) {
+            if (Sort.Direction.ASC.name().equalsIgnoreCase(sortOrder)) {
+                sortingOrder = Sort.Direction.ASC;
+            }
+        }
+        logger.debug("Audit entry get. SortField: {} SortOrder: {}", sortingField, sortingOrder.name());
+        final PageRequest pageRequest = PageRequest.of(0, Integer.MAX_VALUE, new Sort(sortingOrder, sortingField));
+        final Page<AuditEntryEntity> auditPage = auditEntryRepository.findAll(pageRequest);
+        return auditPage;
     }
 
     public AlertPagedModel<AuditEntryConfig> resendNotification(final Long id) throws IntegrationException {
@@ -183,8 +191,33 @@ public class AuditEntryActions {
         return get();
     }
 
+    private List<AuditEntryConfig> sortRestModels(final List<AuditEntryConfig> auditEntryConfigs, final String sortField, final String sortOrder) {
+        // We can only want to sort for the fields that could not be sorted by in the query for AuditEntryEntity
+        if (StringUtils.isNotBlank(sortField) && (sortField.equalsIgnoreCase("name") || sortField.equalsIgnoreCase("notificationProviderName"))) {
+            final boolean sortByName = sortField.equalsIgnoreCase("name");
+            boolean ascendingOrder = false;
+            if (StringUtils.isNotBlank(sortOrder) && "asc".equalsIgnoreCase(sortOrder)) {
+                ascendingOrder = true;
+            }
+            Comparator comparator;
+            if (sortByName) {
+                comparator = Comparator.comparing(AuditEntryConfig::getName);
+            } else {
+                final Function<AuditEntryConfig, String> function = audit -> audit.getNotification().getProvider();
+                comparator = Comparator.comparing(function);
+            }
+            if (ascendingOrder) {
+                comparator = comparator.reversed();
+            }
+            auditEntryConfigs.sort(comparator);
+        }
+
+        return auditEntryConfigs;
+    }
+
     private List<AuditEntryConfig> createRestModels(final List<AuditEntryEntity> auditEntryEntities) {
-        return auditEntryEntities.stream().map(this::createRestModel).collect(Collectors.toList());
+        final List<AuditEntryConfig> auditEntryConfigs = auditEntryEntities.stream().map(this::createRestModel).collect(Collectors.toList());
+        return auditEntryConfigs;
     }
 
     private AuditEntryConfig createRestModel(final AuditEntryEntity auditEntryEntity) {

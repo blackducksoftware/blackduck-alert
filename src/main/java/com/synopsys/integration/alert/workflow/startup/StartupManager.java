@@ -48,8 +48,8 @@ import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuc
 import com.synopsys.integration.alert.database.purge.PurgeProcessor;
 import com.synopsys.integration.alert.database.purge.PurgeReader;
 import com.synopsys.integration.alert.database.purge.PurgeWriter;
-import com.synopsys.integration.alert.database.scheduling.GlobalSchedulingConfigEntity;
-import com.synopsys.integration.alert.database.scheduling.GlobalSchedulingRepository;
+import com.synopsys.integration.alert.database.scheduling.SchedulingConfigEntity;
+import com.synopsys.integration.alert.database.scheduling.SchedulingRepository;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
@@ -65,7 +65,7 @@ import com.synopsys.integration.rest.proxy.ProxyInfoBuilder;
 public class StartupManager {
     private final Logger logger = LoggerFactory.getLogger(StartupManager.class);
 
-    private final GlobalSchedulingRepository globalSchedulingRepository;
+    private final SchedulingRepository schedulingRepository;
     private final AlertProperties alertProperties;
     private final BlackDuckProperties blackDuckProperties;
     private final DailyTask dailyTask;
@@ -104,10 +104,10 @@ public class StartupManager {
     private String trustStoreType;
 
     @Autowired
-    public StartupManager(final GlobalSchedulingRepository globalSchedulingRepository, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
+    public StartupManager(final SchedulingRepository schedulingRepository, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
             final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer,
             final List<ProviderDescriptor> providerDescriptorList) {
-        this.globalSchedulingRepository = globalSchedulingRepository;
+        this.schedulingRepository = schedulingRepository;
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
         this.dailyTask = dailyTask;
@@ -204,18 +204,18 @@ public class StartupManager {
     }
 
     public void initializeCronJobs() {
-        final List<GlobalSchedulingConfigEntity> globalSchedulingConfigs = globalSchedulingRepository.findAll();
+        final List<SchedulingConfigEntity> globalSchedulingConfigs = schedulingRepository.findAll();
         String dailyDigestHourOfDay = null;
         String purgeDataFrequencyDays = null;
         if (!globalSchedulingConfigs.isEmpty() && globalSchedulingConfigs.get(0) != null) {
-            final GlobalSchedulingConfigEntity globalSchedulingConfig = globalSchedulingConfigs.get(0);
+            final SchedulingConfigEntity globalSchedulingConfig = globalSchedulingConfigs.get(0);
             dailyDigestHourOfDay = globalSchedulingConfig.getDailyDigestHourOfDay();
             purgeDataFrequencyDays = globalSchedulingConfig.getPurgeDataFrequencyDays();
         } else {
             dailyDigestHourOfDay = "0";
             purgeDataFrequencyDays = "3";
-            final GlobalSchedulingConfigEntity globalSchedulingConfig = new GlobalSchedulingConfigEntity(dailyDigestHourOfDay, purgeDataFrequencyDays);
-            final GlobalSchedulingConfigEntity savedGlobalSchedulingConfig = globalSchedulingRepository.save(globalSchedulingConfig);
+            final SchedulingConfigEntity globalSchedulingConfig = new SchedulingConfigEntity(dailyDigestHourOfDay, purgeDataFrequencyDays);
+            final SchedulingConfigEntity savedGlobalSchedulingConfig = schedulingRepository.save(globalSchedulingConfig);
             logger.info(savedGlobalSchedulingConfig.toString());
         }
         scheduleTaskCrons(dailyDigestHourOfDay, purgeDataFrequencyDays);
@@ -240,9 +240,9 @@ public class StartupManager {
     private Boolean purgeOldData() {
         try {
             logger.info("Begin startup purge of old data");
-            final List<GlobalSchedulingConfigEntity> globalSchedulingConfigs = globalSchedulingRepository.findAll();
+            final List<SchedulingConfigEntity> globalSchedulingConfigs = schedulingRepository.findAll();
             if (!globalSchedulingConfigs.isEmpty() && globalSchedulingConfigs.get(0) != null) {
-                final GlobalSchedulingConfigEntity globalSchedulingConfig = globalSchedulingConfigs.get(0);
+                final SchedulingConfigEntity globalSchedulingConfig = globalSchedulingConfigs.get(0);
                 final String purgeDataFrequencyDays = globalSchedulingConfig.getPurgeDataFrequencyDays();
                 final PurgeReader reader = purgeTask.createReaderWithDayOffset(Integer.valueOf(purgeDataFrequencyDays));
                 final PurgeProcessor processor = purgeTask.processor();

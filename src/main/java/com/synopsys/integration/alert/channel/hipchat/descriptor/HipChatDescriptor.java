@@ -33,8 +33,9 @@ import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 public class HipChatDescriptor extends ChannelDescriptor {
 
     @Autowired
-    public HipChatDescriptor(final HipChatChannel channelListener, final HipChatDistributionDescriptorConfig distributionDescriptorConfig, final HipChatGlobalDescriptorConfig hipChatGlobalDescriptorConfig) {
-        super(HipChatChannel.COMPONENT_NAME, HipChatChannel.COMPONENT_NAME, channelListener, distributionDescriptorConfig, hipChatGlobalDescriptorConfig);
+    public HipChatDescriptor(final HipChatChannel channelListener, final HipChatDistributionRestApi distributionRestApi, final HipChatDistributionUIConfig hipChatDistributionUIConfig,
+            final HipChatGlobalRestApi hipChatGlobalRestApi, final HipChatGlobalUIConfig hipChatGlobalUIConfig) {
+        super(HipChatChannel.COMPONENT_NAME, HipChatChannel.COMPONENT_NAME, channelListener, distributionRestApi, hipChatDistributionUIConfig, hipChatGlobalRestApi, hipChatGlobalUIConfig);
     }
 
 }

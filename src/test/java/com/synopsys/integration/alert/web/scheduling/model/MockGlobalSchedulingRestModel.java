@@ -13,15 +13,15 @@ package com.synopsys.integration.alert.web.scheduling.model;
 
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.mock.MockGlobalRestModelUtil;
-import com.synopsys.integration.alert.web.scheduling.GlobalSchedulingConfig;
+import com.synopsys.integration.alert.web.component.scheduling.SchedulingConfig;
 
-public class MockGlobalSchedulingRestModel extends MockGlobalRestModelUtil<GlobalSchedulingConfig> {
-    private final String accumulatorNextRun;
-    private final String dailyDigestHourOfDay;
-    private final String dailyDigestNextRun;
-    private final String purgeDataFrequencyDays;
-    private final String purgeDataNextRun;
-    private final String id;
+public class MockGlobalSchedulingRestModel extends MockGlobalRestModelUtil<SchedulingConfig> {
+    private String accumulatorNextRun;
+    private String dailyDigestHourOfDay;
+    private String dailyDigestNextRun;
+    private String purgeDataFrequencyDays;
+    private String purgeDataNextRun;
+    private String id;
 
     public MockGlobalSchedulingRestModel() {
         this("33", "2", "01/19/2018 02:00 AM UTC", "5", "01/21/2018 12:00 AM UTC", "1");
@@ -33,6 +33,30 @@ public class MockGlobalSchedulingRestModel extends MockGlobalRestModelUtil<Globa
         this.dailyDigestNextRun = dailyDigestNextRun;
         this.purgeDataFrequencyDays = purgeDataFrequencyDays;
         this.purgeDataNextRun = purgeDataNextRun;
+        this.id = id;
+    }
+
+    public void setAccumulatorNextRun(final String accumulatorNextRun) {
+        this.accumulatorNextRun = accumulatorNextRun;
+    }
+
+    public void setDailyDigestHourOfDay(final String dailyDigestHourOfDay) {
+        this.dailyDigestHourOfDay = dailyDigestHourOfDay;
+    }
+
+    public void setDailyDigestNextRun(final String dailyDigestNextRun) {
+        this.dailyDigestNextRun = dailyDigestNextRun;
+    }
+
+    public void setPurgeDataFrequencyDays(final String purgeDataFrequencyDays) {
+        this.purgeDataFrequencyDays = purgeDataFrequencyDays;
+    }
+
+    public void setPurgeDataNextRun(final String purgeDataNextRun) {
+        this.purgeDataNextRun = purgeDataNextRun;
+    }
+
+    public void setId(final String id) {
         this.id = id;
     }
 
@@ -62,13 +86,13 @@ public class MockGlobalSchedulingRestModel extends MockGlobalRestModelUtil<Globa
     }
 
     @Override
-    public GlobalSchedulingConfig createGlobalRestModel() {
-        return new GlobalSchedulingConfig(id, accumulatorNextRun, dailyDigestHourOfDay, dailyDigestNextRun, purgeDataFrequencyDays, purgeDataNextRun);
+    public SchedulingConfig createGlobalRestModel() {
+        return new SchedulingConfig(id, accumulatorNextRun, dailyDigestHourOfDay, dailyDigestNextRun, purgeDataFrequencyDays, purgeDataNextRun);
     }
 
     @Override
-    public GlobalSchedulingConfig createEmptyGlobalRestModel() {
-        return new GlobalSchedulingConfig();
+    public SchedulingConfig createEmptyGlobalRestModel() {
+        return new SchedulingConfig();
     }
 
     @Override

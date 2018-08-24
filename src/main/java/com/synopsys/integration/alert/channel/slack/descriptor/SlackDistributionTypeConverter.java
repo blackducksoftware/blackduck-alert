@@ -26,19 +26,27 @@ package com.synopsys.integration.alert.channel.slack.descriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
+import com.synopsys.integration.alert.channel.slack.SlackChannel;
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.descriptor.config.CommonTypeConverter;
 import com.synopsys.integration.alert.common.descriptor.config.TypeConverter;
+import com.synopsys.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
+import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.synopsys.integration.alert.web.channel.model.SlackDistributionConfig;
 import com.synopsys.integration.alert.web.model.Config;
 
 @Component
 public class SlackDistributionTypeConverter extends TypeConverter {
+    private final CommonTypeConverter commonTypeConverter;
+    private final CommonDistributionRepository commonDistributionRepository;
 
     @Autowired
-    public SlackDistributionTypeConverter(final ContentConverter contentConverter) {
+    public SlackDistributionTypeConverter(final ContentConverter contentConverter, final CommonTypeConverter commonTypeConverter, final CommonDistributionRepository commonDistributionRepository) {
         super(contentConverter);
+        this.commonTypeConverter = commonTypeConverter;
+        this.commonDistributionRepository = commonDistributionRepository;
     }
 
     @Override
@@ -50,7 +58,7 @@ public class SlackDistributionTypeConverter extends TypeConverter {
     public DatabaseEntity populateEntityFromConfig(final Config restModel) {
         final SlackDistributionConfig slackRestModel = (SlackDistributionConfig) restModel;
         final SlackDistributionConfigEntity slackEntity = new SlackDistributionConfigEntity(slackRestModel.getWebhook(), slackRestModel.getChannelUsername(), slackRestModel.getChannelName());
-        addIdToEntityPK(slackRestModel.getId(), slackEntity);
+        addIdToEntityPK(slackRestModel.getDistributionConfigId(), slackEntity);
         return slackEntity;
     }
 
@@ -63,7 +71,8 @@ public class SlackDistributionTypeConverter extends TypeConverter {
         slackRestModel.setWebhook(slackEntity.getWebhook());
         slackRestModel.setChannelUsername(slackEntity.getChannelUsername());
         slackRestModel.setChannelName(slackEntity.getChannelName());
-        return slackRestModel;
+        final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.findByDistributionConfigIdAndDistributionType(slackEntity.getId(), SlackChannel.COMPONENT_NAME);
+        return commonTypeConverter.populateCommonFieldsFromEntity(slackRestModel, commonEntity);
     }
 
 }

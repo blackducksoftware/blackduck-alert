@@ -40,21 +40,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.synopsys.integration.alert.AlertConstants;
 import com.synopsys.integration.alert.channel.ChannelFreemarkerTemplatingService;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.channel.rest.RestDistributionChannel;
+import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionRepository;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalRepository;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.AlertConstants;
-import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.exception.IntegrationException;
@@ -74,9 +73,8 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
 
     @Autowired
     public HipChatChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditEntryRepository auditEntryRepository, final HipChatGlobalRepository hipChatGlobalRepository,
-            final CommonDistributionRepository commonDistributionRepository,
-            final HipChatDistributionRepository hipChatDistributionRepository, final ChannelRestConnectionFactory channelRestConnectionFactory, final ContentConverter contentExtractor) {
-        super(gson, alertProperties, blackDuckProperties, auditEntryRepository, hipChatGlobalRepository, hipChatDistributionRepository, commonDistributionRepository, channelRestConnectionFactory, contentExtractor);
+            final CommonDistributionRepository commonDistributionRepository, final HipChatDistributionRepository hipChatDistributionRepository, final ChannelRestConnectionFactory channelRestConnectionFactory) {
+        super(gson, alertProperties, blackDuckProperties, auditEntryRepository, hipChatGlobalRepository, hipChatDistributionRepository, commonDistributionRepository, channelRestConnectionFactory);
     }
 
     @Override
@@ -133,6 +131,9 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
     @Override
     public List<Request> createRequests(final HipChatDistributionConfigEntity config, final HipChatGlobalConfigEntity globalConfig, final ChannelEvent event)
             throws IntegrationException {
+        if (!isValidGlobalConfig(globalConfig)) {
+            throw new IntegrationException("ERROR: Missing global config.");
+        }
         if (config.getRoomId() == null) {
             throw new IntegrationException("Room ID missing");
         } else {
@@ -143,6 +144,10 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
                 return Arrays.asList(createRequest(config, globalConfig, contentTitle, event.getContent()));
             }
         }
+    }
+
+    private boolean isValidGlobalConfig(final HipChatGlobalConfigEntity globalConfigEntity) {
+        return globalConfigEntity != null && StringUtils.isNotBlank(globalConfigEntity.getApiKey());
     }
 
     private boolean isChunkedMessageNeeded(final ChannelEvent event) {

@@ -31,8 +31,9 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.enumeration.DescriptorConfigType;
-import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
+import com.synopsys.integration.alert.common.descriptor.config.RestApi;
+import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
+import com.synopsys.integration.alert.common.enumeration.RestApiType;
 import com.synopsys.integration.alert.common.exception.AlertException;
 
 @Component
@@ -40,17 +41,20 @@ public class DescriptorMap {
     private final Map<String, Descriptor> descriptorMap;
     private final Map<String, ChannelDescriptor> channelDescriptorMap;
     private final Map<String, ProviderDescriptor> providerDescriptorMap;
-    private final List<DescriptorConfig> descriptorConfigs;
+    private final Map<String, ComponentDescriptor> componentDescriptorMap;
+    private final List<RestApi> restApis;
 
     @Autowired
-    public DescriptorMap(final List<ChannelDescriptor> channelDescriptors, final List<ProviderDescriptor> providerDescriptors, final List<DescriptorConfig> descriptorConfigs) throws AlertException {
-        this.descriptorConfigs = descriptorConfigs;
+    public DescriptorMap(final List<ChannelDescriptor> channelDescriptors, final List<ProviderDescriptor> providerDescriptors, final List<ComponentDescriptor> componentDescriptors, final List<RestApi> restApis)
+            throws AlertException {
+        this.restApis = restApis;
         descriptorMap = new HashMap<>(channelDescriptors.size() + providerDescriptors.size());
-        channelDescriptorMap = initMap(channelDescriptors);
-        providerDescriptorMap = initMap(providerDescriptors);
+        channelDescriptorMap = initDescriptorMap(channelDescriptors);
+        providerDescriptorMap = initDescriptorMap(providerDescriptors);
+        componentDescriptorMap = initDescriptorMap(componentDescriptors);
     }
 
-    private <D extends Descriptor> Map<String, D> initMap(final List<D> descriptorList) throws AlertException {
+    private <D extends Descriptor> Map<String, D> initDescriptorMap(final List<D> descriptorList) throws AlertException {
         final Map<String, D> descriptorMapping = new HashMap<>(descriptorList.size());
         for (final D descriptor : descriptorList) {
             final String descriptorName = descriptor.getName();
@@ -63,35 +67,39 @@ public class DescriptorMap {
         return descriptorMapping;
     }
 
-    public List<DescriptorConfig> getStartupDescriptorConfigs() {
-        return descriptorConfigs
-                       .stream()
-                       .filter(descriptorConfig -> descriptorConfig.hasStartupProperties())
-                       .collect(Collectors.toList());
+    public List<RestApi> getStartupRestApis() {
+        return restApis
+                .stream()
+                .filter(descriptorConfig -> descriptorConfig.hasStartupProperties())
+                .collect(Collectors.toList());
     }
 
-    public List<DescriptorConfig> getDistributionDescriptorConfigs() {
-        return getDescriptorConfigs(DescriptorConfigType.CHANNEL_DISTRIBUTION_CONFIG);
+    public List<UIComponent> getDistributionUIConfigs() {
+        return getUIComponents(RestApiType.CHANNEL_DISTRIBUTION_CONFIG);
     }
 
-    public List<DescriptorConfig> getGlobalDescriptorConfigs() {
-        return getDescriptorConfigs(DescriptorConfigType.CHANNEL_GLOBAL_CONFIG);
+    public List<UIComponent> getGlobalUIConfigs() {
+        return getUIComponents(RestApiType.CHANNEL_GLOBAL_CONFIG);
     }
 
-    public List<DescriptorConfig> getProviderDescriptorConfigs() {
-        return getDescriptorConfigs(DescriptorConfigType.PROVIDER_CONFIG);
+    public List<UIComponent> getProviderUIConfigs() {
+        return getUIComponents(RestApiType.PROVIDER_CONFIG);
     }
 
-    public List<DescriptorConfig> getDescriptorConfigs(final DescriptorConfigType configType) {
+    public List<UIComponent> getComponentUIConfigs() {
+        return getUIComponents(RestApiType.COMPONENT_CONFIG);
+    }
+
+    public List<UIComponent> getUIComponents(final RestApiType configType) {
         return descriptorMap.values()
-                       .stream()
-                       .filter(descriptor -> descriptor.getConfig(configType) != null)
-                       .map(descriptor -> descriptor.getConfig(configType))
-                       .collect(Collectors.toList());
+                .stream()
+                .filter(descriptor -> descriptor.getUIConfig(configType) != null)
+                .map(descriptor -> descriptor.getUIConfig(configType).generateUIComponent())
+                .collect(Collectors.toList());
     }
 
-    public List<DescriptorConfig> getAllDescriptorConfigs() {
-        return descriptorConfigs;
+    public List<RestApi> getAllDescriptorConfigs() {
+        return restApis;
     }
 
     public Descriptor getDescriptor(final String name) {
@@ -106,6 +114,10 @@ public class DescriptorMap {
         return providerDescriptorMap.get(name);
     }
 
+    public ComponentDescriptor getComponentDescriptor(final String name) {
+        return componentDescriptorMap.get(name);
+    }
+
     public Map<String, Descriptor> getDescriptorMap() {
         return descriptorMap;
     }
@@ -116,5 +128,9 @@ public class DescriptorMap {
 
     public Map<String, ProviderDescriptor> getProviderDescriptorMap() {
         return providerDescriptorMap;
+    }
+
+    public Map<String, ComponentDescriptor> getComponentDescriptorMap() {
+        return componentDescriptorMap;
     }
 }
