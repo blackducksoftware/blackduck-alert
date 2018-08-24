@@ -28,8 +28,6 @@ class JobAddModal extends Component {
         switch (this.state.values.typeValue) {
             case 'channel_email':
                 return (<GroupEmailJobConfiguration
-                    waitingForGroups={this.props.waitingForGroups}
-                    groups={this.props.groups}
                     projects={this.props.projects}
                     handleCancel={this.handleClose}
                     handleSaveBtnClick={this.handleSaveBtnClick}
@@ -89,12 +87,12 @@ class JobAddModal extends Component {
 
     createJobTypeOptions() {
         const channelDescriptors = this.props.descriptors.items['CHANNEL_DISTRIBUTION_CONFIG'];
-        if(channelDescriptors) {
-            const optionList =  channelDescriptors.map(descriptor => {
+        if (channelDescriptors) {
+            const optionList = channelDescriptors.map(descriptor => {
                 return {
-                        label: descriptor.label,
-                        value: descriptor.descriptorName,
-                        icon: descriptor.fontAwesomeIcon
+                    label: descriptor.label,
+                    value: descriptor.descriptorName,
+                    icon: descriptor.fontAwesomeIcon
                 }
             });
             return optionList;
@@ -151,12 +149,14 @@ class JobAddModal extends Component {
 JobAddModal.propTypes = {
     onModalClose: PropTypes.func.isRequired,
     csrfToken: PropTypes.string,
-    descriptors: PropTypes.object
+    descriptors: PropTypes.object,
+    projects: PropTypes.arrayOf(PropTypes.object)
 };
 
 JobAddModal.defaultProps = {
     csrfToken: null,
-    descriptor: {}
+    descriptor: {},
+    projects: []
 };
 
 const mapStateToProps = state => ({
@@ -164,6 +164,6 @@ const mapStateToProps = state => ({
     descriptors: state.descriptors
 });
 
-const mapDispatchToProps = dispatch => ({ });
+const mapDispatchToProps = dispatch => ({});
 
 export default connect(mapStateToProps, mapDispatchToProps)(JobAddModal);
