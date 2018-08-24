@@ -68,7 +68,7 @@ public class UIComponentController extends BaseController {
             if (descriptor != null) {
                 // filter by type also
                 if (StringUtils.isNotBlank(descriptorConfigType)) {
-                    final RestApiType descriptorType = getDescriptorConfigType(descriptorConfigType);
+                    final RestApiType descriptorType = RestApiType.getRestApiType(descriptorConfigType);
                     final UIConfig uiConfig = descriptor.getUIConfig(descriptorType);
                     if (uiConfig != null) {
                         return Arrays.asList(uiConfig.generateUIComponent());
@@ -83,7 +83,7 @@ public class UIComponentController extends BaseController {
                 return Collections.emptyList();
             }
         } else if (StringUtils.isNotBlank(descriptorConfigType)) {
-            final RestApiType descriptorConfigTypeEnum = getDescriptorConfigType(descriptorConfigType);
+            final RestApiType descriptorConfigTypeEnum = RestApiType.getRestApiType(descriptorConfigType);
             return descriptorMap.getUIComponents(descriptorConfigTypeEnum);
         } else {
             return descriptorMap.getAllUIComponents();
@@ -109,14 +109,5 @@ public class UIComponentController extends BaseController {
         final UIComponent combinedUIComponent = new UIComponent(channelUIComponent.getLabel(), channelUIComponent.getUrlName(), channelUIComponent.getDescriptorName(), channelUIComponent.getFontAwesomeIcon(),
         channelUIComponent.isAutomaticallyGenerateUI(), combinedFields);
         return combinedUIComponent;
-    }
-
-    private RestApiType getDescriptorConfigType(final String descriptorConfigType) {
-        try {
-            return Enum.valueOf(RestApiType.class, descriptorConfigType);
-        } catch (final IllegalArgumentException ex) {
-            return null;
-        }
-
     }
 }
