@@ -23,7 +23,6 @@
  */
 package com.synopsys.integration.alert.workflow.filter;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -38,14 +37,10 @@ public class JsonFieldFilter implements JsonFilterBuilder {
     private final List<String> fieldNameHierarchy;
     private final String value;
 
-    public JsonFieldFilter(final Gson gson, final String value, final String fieldName) {
-        this(gson, value, Arrays.asList(fieldName));
-    }
-
-    public JsonFieldFilter(final Gson gson, final String value, final List<String> fieldNameHierarchy) {
+    public JsonFieldFilter(final Gson gson, final HierarchicalField hierarchicalField, final String value) {
         this.gson = gson;
         this.value = value;
-        this.fieldNameHierarchy = fieldNameHierarchy;
+        this.fieldNameHierarchy = hierarchicalField.getFieldNames();
     }
 
     @Override

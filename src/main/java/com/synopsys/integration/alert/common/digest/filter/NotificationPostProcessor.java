@@ -105,7 +105,6 @@ public class NotificationPostProcessor {
                 return Optional.of(notificationContent);
             }
         }
-
         return Optional.empty();
     }
 

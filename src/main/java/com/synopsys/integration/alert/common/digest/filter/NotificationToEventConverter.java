@@ -46,25 +46,23 @@ import com.synopsys.integration.alert.database.entity.repository.CommonDistribut
 
 @Transactional
 @Component
-public class NotificationEventManager {
-    private final Logger logger = LoggerFactory.getLogger(NotificationEventManager.class);
+public class NotificationToEventConverter {
+    private final Logger logger = LoggerFactory.getLogger(NotificationToEventConverter.class);
     private final NotificationPostProcessor notificationPostProcessor;
     private final CommonDistributionRepository commonDistributionRepository;
     private final ChannelEventFactory channelEventFactory;
 
     @Autowired
-    public NotificationEventManager(final NotificationPostProcessor notificationPostProcessor, final ChannelEventFactory channelEventFactory,
-            final CommonDistributionRepository commonDistributionRepository) {
+    public NotificationToEventConverter(final NotificationPostProcessor notificationPostProcessor, final ChannelEventFactory channelEventFactory, final CommonDistributionRepository commonDistributionRepository) {
         this.notificationPostProcessor = notificationPostProcessor;
         this.channelEventFactory = channelEventFactory;
         this.commonDistributionRepository = commonDistributionRepository;
     }
 
-    public List<ChannelEvent> createChannelEvents(final DigestType digestType, final List<NotificationContent> notificationContentList) {
-        final List<ChannelEvent> channelEvents = new ArrayList<>();
-        final List<CommonDistributionConfigEntity> distributionConfigurations = commonDistributionRepository.findAll();
-        final Map<CommonDistributionConfigEntity, List<NotificationContent>> distributionConfigNotificationMap = new HashMap<>(distributionConfigurations.size());
+    public Map<CommonDistributionConfigEntity, List<NotificationContent>> mapDistributionConfigurationsToNotifications(final DigestType digestType, final List<NotificationContent> notificationContentList) {
+        final Map<CommonDistributionConfigEntity, List<NotificationContent>> distributionConfigNotificationMap = new HashMap<>();
 
+        final List<CommonDistributionConfigEntity> distributionConfigurations = commonDistributionRepository.findAll();
         distributionConfigurations.forEach(distributionConfig -> {
             distributionConfigNotificationMap.put(distributionConfig, new ArrayList<>());
         });
@@ -79,7 +77,11 @@ public class NotificationEventManager {
                 });
             });
         });
+        return distributionConfigNotificationMap;
+    }
 
+    public List<ChannelEvent> createChannelEvents(final Map<CommonDistributionConfigEntity, List<NotificationContent>> distributionConfigNotificationMap) {
+        final List<ChannelEvent> channelEvents = new ArrayList<>();
         distributionConfigNotificationMap.entrySet().forEach(entry -> {
             final CommonDistributionConfigEntity distributionConfig = entry.getKey();
             final List<NotificationContent> notificationList = entry.getValue();

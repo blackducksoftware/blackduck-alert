@@ -1,11 +1,14 @@
 package com.synopsys.integration.alert.common.digest.filter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 
@@ -55,7 +58,7 @@ public class NotificationEventManagerTest {
     private CommonDistributionRepository commonDistributionRepository;
 
     @Autowired
-    private NotificationEventManager notificationEventMananger;
+    private NotificationToEventConverter notificationEventMananger;
 
     @Autowired
     private DistributionNotificationTypeRepository distributionNotificationTypeRepository;
@@ -100,7 +103,9 @@ public class NotificationEventManagerTest {
     public void createInvalidDigestTypeTest() {
         final NotificationContent notificationModel = createNotificationModel("Project_1", "1.0.0", NotificationType.RULE_VIOLATION);
         final List<NotificationContent> notificationModels = Arrays.asList(notificationModel);
-        final List<ChannelEvent> channelEvents = notificationEventMananger.createChannelEvents(DigestType.DAILY, notificationModels);
+
+        final Map<CommonDistributionConfigEntity, List<NotificationContent>> configToNotifications = notificationEventMananger.mapDistributionConfigurationsToNotifications(DigestType.DAILY, notificationModels);
+        final List<ChannelEvent> channelEvents = notificationEventMananger.createChannelEvents(configToNotifications);
         assertTrue(channelEvents.isEmpty());
     }
 
@@ -112,7 +117,8 @@ public class NotificationEventManagerTest {
         final NotificationContent notification_2 = createNotificationModel("Project_2", "1.0.0", NotificationType.RULE_VIOLATION);
         final NotificationContent notification_3 = createNotificationModel("Project_1", "2.0.0", NotificationType.RULE_VIOLATION);
         final List<NotificationContent> notificationModelList = Arrays.asList(notification_1, notification_2, notification_3);
-        final List<ChannelEvent> channelEvents = notificationEventMananger.createChannelEvents(DigestType.REAL_TIME, notificationModelList);
+        final Map<CommonDistributionConfigEntity, List<NotificationContent>> configToNotifications = notificationEventMananger.mapDistributionConfigurationsToNotifications(DigestType.REAL_TIME, notificationModelList);
+        final List<ChannelEvent> channelEvents = notificationEventMananger.createChannelEvents(configToNotifications);
         assertEquals(configEntityList.size() * notificationModelList.size(), channelEvents.size());
 
         channelEvents.forEach(event -> {
