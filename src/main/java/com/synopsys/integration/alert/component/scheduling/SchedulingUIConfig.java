@@ -34,7 +34,7 @@ public class SchedulingUIConfig extends UIConfig {
 
     @Override
     public UIComponent generateUIComponent() {
-        return new CustomUIComponent("Scheduling", "scheduling", "clock-o", "SchedulingConfiguration");
+        return new CustomUIComponent("Scheduling", "scheduling", SchedulingDescriptor.SCHEDULING_COMPONENT, "clock-o", "SchedulingConfiguration");
     }
 
 }

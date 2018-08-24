@@ -7,7 +7,7 @@ import 'font-awesome/scss/font-awesome.scss';
 
 import MainPage from './MainPage';
 import LoginPage from './LoginPage';
-import AboutInfo from './AboutInfoFooter';
+import AboutInfoFooter from './AboutInfoFooter';
 import { getConfig } from './store/actions/config';
 import { verifyLogin } from './store/actions/session';
 
@@ -27,7 +27,7 @@ class App extends Component {
             return (
                 <div>
                     {contentPage}
-                    <AboutInfo/>
+                    <AboutInfoFooter/>
                 </div>
             );
         }

@@ -28,4 +28,12 @@ public enum RestApiType {
     CHANNEL_DISTRIBUTION_CONFIG,
     PROVIDER_CONFIG,
     COMPONENT_CONFIG;
+
+    public static final RestApiType getRestApiType(final String restApiTypeName) {
+        try {
+            return valueOf(restApiTypeName);
+        } catch (final IllegalArgumentException ex) {
+            return null;
+        }
+    }
 }

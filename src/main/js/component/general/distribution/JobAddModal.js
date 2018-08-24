@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {Modal} from 'react-bootstrap';
 import Select from 'react-select-2';
@@ -7,24 +8,6 @@ import GroupEmailJobConfiguration from './job/GroupEmailJobConfiguration';
 import HipChatJobConfiguration from './job/HipChatJobConfiguration';
 import SlackJobConfiguration from './job/SlackJobConfiguration';
 
-import {jobTypes} from '../../../util/distribution-data';
-
-function renderOption(option) {
-    let fontAwesomeIcon;
-    if (option.value === 'channel_email') {
-        fontAwesomeIcon = 'fa fa-envelope fa-fw';
-    } else if (option.value === 'channel_hipchat') {
-        fontAwesomeIcon = 'fa fa-comments  fa-fw';
-    } else if (option.value === 'channel_slack') {
-        fontAwesomeIcon = 'fa fa-slack  fa-fw';
-    }
-    return (
-        <div>
-            <span key="icon" className={fontAwesomeIcon} aria-hidden="true"/>
-            <span key="name">{option.label}</span>
-        </div>
-    );
-}
 
 class JobAddModal extends Component {
     constructor(props) {
@@ -38,16 +21,13 @@ class JobAddModal extends Component {
         this.getCurrentJobConfig = this.getCurrentJobConfig.bind(this);
         this.handleSaveBtnClick = this.handleSaveBtnClick.bind(this);
         this.handleClose = this.handleClose.bind(this);
+        this.createJobTypeOptions = this.createJobTypeOptions.bind(this);
     }
 
     getCurrentJobConfig() {
         switch (this.state.values.typeValue) {
             case 'channel_email':
                 return (<GroupEmailJobConfiguration
-                    csrfToken={this.props.csrfToken}
-                    includeAllProjects={this.props.includeAllProjects}
-                    waitingForGroups={this.props.waitingForGroups}
-                    groups={this.props.groups}
                     projects={this.props.projects}
                     handleCancel={this.handleClose}
                     handleSaveBtnClick={this.handleSaveBtnClick}
@@ -55,16 +35,12 @@ class JobAddModal extends Component {
                 />);
             case 'channel_hipchat':
                 return (<HipChatJobConfiguration
-                    csrfToken={this.props.csrfToken}
-                    includeAllProjects={this.props.includeAllProjects}
                     projects={this.props.projects}
                     handleCancel={this.handleClose}
                     handleSaveBtnClick={this.handleSaveBtnClick}
                 />);
             case 'channel_slack':
                 return (<SlackJobConfiguration
-                    csrfToken={this.props.csrfToken}
-                    includeAllProjects={this.props.includeAllProjects}
                     projects={this.props.projects}
                     handleCancel={this.handleClose}
                     handleSaveBtnClick={this.handleSaveBtnClick}
@@ -109,6 +85,32 @@ class JobAddModal extends Component {
         this.props.onModalClose();
     }
 
+    createJobTypeOptions() {
+        const channelDescriptors = this.props.descriptors.items['CHANNEL_DISTRIBUTION_CONFIG'];
+        if (channelDescriptors) {
+            const optionList = channelDescriptors.map(descriptor => {
+                return {
+                    label: descriptor.label,
+                    value: descriptor.descriptorName,
+                    icon: descriptor.fontAwesomeIcon
+                }
+            });
+            return optionList;
+        } else {
+            return [];
+        }
+    }
+
+    renderOption(option) {
+        const fontAwesomeIcon = `fa fa-${option.icon} fa-fw`;
+        return (
+            <div>
+                <span key={`icon-${option.value}`} className={fontAwesomeIcon} aria-hidden="true"/>
+                <span key={`name-${option.value}`}>{option.label}</span>
+            </div>
+        );
+    }
+
     render() {
         return (
             <Modal show={this.state.show} onHide={this.handleClose}>
@@ -127,11 +129,11 @@ class JobAddModal extends Component {
                                     className="typeAheadField"
                                     onChange={this.handleTypeChanged}
                                     clearable={false}
-                                    options={jobTypes}
-                                    optionRenderer={renderOption}
+                                    options={this.createJobTypeOptions()}
+                                    optionRenderer={this.renderOption}
                                     placeholder="Choose the Job Type"
                                     value={this.state.values.typeValue}
-                                    valueRenderer={renderOption}
+                                    valueRenderer={this.renderOption}
                                 />
                             </div>
                         </div>
@@ -145,7 +147,23 @@ class JobAddModal extends Component {
 }
 
 JobAddModal.propTypes = {
-    onModalClose: PropTypes.func.isRequired
+    onModalClose: PropTypes.func.isRequired,
+    csrfToken: PropTypes.string,
+    descriptors: PropTypes.object,
+    projects: PropTypes.arrayOf(PropTypes.object)
 };
 
-export default JobAddModal;
+JobAddModal.defaultProps = {
+    csrfToken: null,
+    descriptor: {},
+    projects: []
+};
+
+const mapStateToProps = state => ({
+    csrfToken: state.session.csrfToken,
+    descriptors: state.descriptors
+});
+
+const mapDispatchToProps = dispatch => ({});
+
+export default connect(mapStateToProps, mapDispatchToProps)(JobAddModal);
