@@ -5,6 +5,7 @@ import Select from 'react-select-2';
 import TextInput from '../../../../field/input/TextInput';
 import BaseJobConfiguration from './BaseJobConfiguration';
 import {getDistributionJob} from '../../../../store/actions/distributions';
+import {getEmailGroups} from '../../../../store/actions/emailConfig';
 
 
 class GroupEmailJobConfiguration extends Component {
@@ -23,20 +24,20 @@ class GroupEmailJobConfiguration extends Component {
     }
 
     createGroupOptions(groups, groupName) {
-        if(groups) {
+        if (groups) {
             const groupOptions = groups.map(group => ({
                 label: group.name,
                 value: group.name,
                 missing: false
             }))
-            .sort((group1, group2) => {
+                .sort((group1, group2) => {
                     if (group1.value < group2.value) {
-                    return -1;
-                } else if (group1.value > group2.value) {
-                    return 1;
-                }
-                return 0;
-            });
+                        return -1;
+                    } else if (group1.value > group2.value) {
+                        return 1;
+                    }
+                    return 0;
+                });
 
             const groupFound = groupOptions.find(group => group.label === groupName);
             if (groupName && (!groupFound || groupOptions.length === 0)) {
@@ -54,13 +55,14 @@ class GroupEmailJobConfiguration extends Component {
     }
 
     componentDidMount() {
-        const {baseUrl,distributionConfigId} = this.props;
-        this.props.getDistributionJob(baseUrl,distributionConfigId);
+        const {baseUrl, distributionConfigId} = this.props;
+        this.props.getDistributionJob(baseUrl, distributionConfigId);
+        this.props.getEmailGroups();
     }
 
     componentWillReceiveProps(nextProps) {
         if (!nextProps.fetching && !nextProps.inProgress) {
-            if(nextProps.jobs[nextProps.distributionConfigId]) {
+            if (nextProps.jobs[nextProps.distributionConfigId]) {
                 const groupOptions = this.createGroupOptions(nextProps.groups, nextProps.jobs[nextProps.distributionConfigId].groupName);
                 this.setState({
                     emailSubjectLine: nextProps.jobs[nextProps.distributionConfigId].emailSubjectLine,
@@ -117,7 +119,6 @@ class GroupEmailJobConfiguration extends Component {
     }
 
     render() {
-        console.log(this.state);
         const {groupOptions} = this.state;
         const {groupName} = this.state;
         const options = groupOptions || [];
@@ -125,27 +126,27 @@ class GroupEmailJobConfiguration extends Component {
         const content = (
             <div>
                 <TextInput id="jobEmailSubject" label="Subject Line" name="emailSubjectLine" value={this.state.emailSubjectLine} onChange={this.handleChange} errorName="emailSubjectLineError"
-                    errorValue={this.props.emailSubjectLineError}/>
+                           errorValue={this.props.emailSubjectLineError}/>
 
                 <div className="form-group">
                     <label className="col-sm-3 control-label">Group</label>
                     <div className="col-sm-8">
-                    <Select
-                    id="jobEmailGroup"
-                    className="typeAheadField"
-                    onChange={this.handleGroupsChanged}
-                    clearable
-                    options={options}
-                    optionRenderer={this.renderOption}
-                    placeholder="Choose the Black Duck user group"
-                    value={groupName}
-                    valueRenderer={this.renderOption}
-                    searchable
-                    />
+                        <Select
+                            id="jobEmailGroup"
+                            className="typeAheadField"
+                            onChange={this.handleGroupsChanged}
+                            clearable
+                            options={options}
+                            optionRenderer={this.renderOption}
+                            placeholder="Choose the Black Duck user group"
+                            value={groupName}
+                            valueRenderer={this.renderOption}
+                            searchable
+                        />
 
-                    {this.props.errors.groupNameError && <label className="fieldError" name="groupError">
-                        {this.props.errors.groupNameError}
-                    </label>}
+                        {this.props.errors.groupNameError && <label className="fieldError" name="groupError">
+                            {this.props.errors.groupNameError}
+                        </label>}
                     </div>
                 </div>
                 {this.props.waitingForGroups && <div className="inline">
@@ -153,13 +154,13 @@ class GroupEmailJobConfiguration extends Component {
                 </div>}
             </div>);
         return (<BaseJobConfiguration
-                    baseUrl={this.props.baseUrl}
-                    testUrl={this.props.testUrl}
-                    distributionConfigId = {this.props.distributionConfigId}
-                    handleCancel={this.props.handleCancel}
-                    handleSaveBtnClick={this.props.handleSaveBtnClick}
-                    getParentConfiguration={this.getConfiguration}
-                    childContent={content} />);
+            baseUrl={this.props.baseUrl}
+            testUrl={this.props.testUrl}
+            distributionConfigId={this.props.distributionConfigId}
+            handleCancel={this.props.handleCancel}
+            handleSaveBtnClick={this.props.handleSaveBtnClick}
+            getParentConfiguration={this.getConfiguration}
+            childContent={content}/>);
     }
 }
 
@@ -187,17 +188,21 @@ GroupEmailJobConfiguration.defaultProps = {
     emailSubjectLine: '',
     groupName: '',
     groups: [],
+    waitingForGroups: true,
     errors: {}
 };
 
 const mapDispatchToProps = dispatch => ({
-    getDistributionJob: (url,id) => dispatch(getDistributionJob(url,id))
+    getDistributionJob: (url, id) => dispatch(getDistributionJob(url, id)),
+    getEmailGroups: () => dispatch(getEmailGroups())
 });
 
 const mapStateToProps = state => ({
     csrfToken: state.session.csrfToken,
     jobs: state.distributions.jobs,
-    errors: state.distributions.errors
+    errors: state.distributions.errors,
+    groups: state.emailConfig.groups,
+    waitingForGroups: state.emailConfig.fetchingGroups
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(GroupEmailJobConfiguration);

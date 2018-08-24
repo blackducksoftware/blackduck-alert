@@ -54,9 +54,7 @@ class Index extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            jobs: [],
-            groups: [],
-            waitingForGroups: true
+            jobs: []
         };
         this.startAutoReload = this.startAutoReload.bind(this);
         this.startAutoReloadIfConfigured = this.startAutoReloadIfConfigured.bind(this);
@@ -74,7 +72,6 @@ class Index extends Component {
     }
 
     componentDidMount() {
-        this.retrieveGroups();
         this.reloadJobs();
     }
 
@@ -84,12 +81,10 @@ class Index extends Component {
 
     getCurrentJobConfig(currentRowSelected) {
         if (currentRowSelected != null) {
-            const { distributionConfigId, distributionType } = currentRowSelected;
+            const {distributionConfigId, distributionType} = currentRowSelected;
             if (distributionType === 'channel_email') {
                 return (<GroupEmailJobConfiguration
                     distributionConfigId={distributionConfigId}
-                    groups= {this.state.groups}
-                    waitingForGroups={this.state.waitingForGroups}
                     handleCancel={this.cancelRowSelect}
                     handleSaveBtnClick={this.saveBtn}
                 />);
@@ -148,11 +143,8 @@ class Index extends Component {
     createCustomModal(onModalClose, onSave, columns, validateState, ignoreEditable) {
         return (
             <JobAddModal
-                waitingForGroups={this.state.waitingForGroups}
                 projects={this.state.projects}
                 includeAllProjects
-                groups={this.state.groups}
-                groupError={this.state.groupError}
                 handleCancel={this.cancelRowSelect}
                 onModalClose={() => {
                     this.fetchDistributionJobs();
@@ -206,31 +198,6 @@ class Index extends Component {
             });
             next();
         }
-    }
-
-    retrieveGroups() {
-        fetch('/alert/api/blackduck/groups', {
-            credentials: 'same-origin'
-        }).then((response) => {
-            this.setState({waitingForGroups: false});
-            if (!response.ok) {
-                return response.json().then((json) => {
-                    this.setState({groupError: json.message});
-                });
-            }
-            return response.json().then((json) => {
-                this.setState({groupError: ''});
-                const jsonArray = JSON.parse(json.message);
-                if (jsonArray != null && jsonArray.length > 0) {
-                    const groups = jsonArray.map(({name, active, url}) => ({name, active, url}));
-                    this.setState({
-                        groups
-                    });
-                }
-            });
-        }).catch((error) => {
-            console.log(error);
-        });
     }
 
     fetchDistributionJobs() {
@@ -325,11 +292,11 @@ class Index extends Component {
 
     typeColumnDataFormat(cell) {
         const defaultValue = <div className="inline">{cell}</div>;
-        if(this.props.descriptors) {
+        if (this.props.descriptors) {
             const descriptorList = this.props.descriptors.items['CHANNEL_DISTRIBUTION_CONFIG'];
-            if(descriptorList) {
+            if (descriptorList) {
                 const filteredList = descriptorList.filter(descriptor => descriptor.descriptorName === cell)
-                if(filteredList && filteredList.length > 0) {
+                if (filteredList && filteredList.length > 0) {
                     const foundDescriptor = filteredList[0];
                     return (<DescriptorLabel keyPrefix='distribution-channel-icon' descriptor={foundDescriptor}/>);
                 } else {
@@ -345,11 +312,11 @@ class Index extends Component {
 
     providerColumnDataFormat(cell) {
         const defaultValue = <div className="inline">{cell}</div>;
-        if(this.props.descriptors) {
+        if (this.props.descriptors) {
             const descriptorList = this.props.descriptors.items['PROVIDER_CONFIG'];
-            if(descriptorList) {
+            if (descriptorList) {
                 const filteredList = descriptorList.filter(descriptor => descriptor.descriptorName === cell)
-                if(filteredList && filteredList.length > 0) {
+                if (filteredList && filteredList.length > 0) {
                     const foundDescriptor = filteredList[0];
                     return (<DescriptorLabel keyPrefix='distribution-provider-icon' descriptor={foundDescriptor}/>);
                 } else {
