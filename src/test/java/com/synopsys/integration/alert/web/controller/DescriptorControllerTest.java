@@ -5,7 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.nio.charset.Charset;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -39,9 +39,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.alert.Application;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
-import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
 import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
-import com.synopsys.integration.alert.common.enumeration.DescriptorConfigType;
+import com.synopsys.integration.alert.common.enumeration.RestApiType;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.test.annotation.DatabaseConnectionTest;
 import com.synopsys.integration.test.annotation.ExternalConnectionTest;
@@ -75,7 +74,7 @@ public class DescriptorControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     public void getAllTest() throws Exception {
-        final String getUrl = DescriptorController.DESCRIPTOR_PATH;
+        final String getUrl = UIComponentController.DESCRIPTOR_PATH;
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(getUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
         final MvcResult result = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
 
@@ -89,7 +88,7 @@ public class DescriptorControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     public void getbyNameTest() throws Exception {
-        final String getUrl = DescriptorController.DESCRIPTOR_PATH + "?descriptorName=channel_email";
+        final String getUrl = UIComponentController.DESCRIPTOR_PATH + "?descriptorName=channel_email";
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(getUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
         final MvcResult result = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
 
@@ -98,14 +97,16 @@ public class DescriptorControllerTest {
 
         final List<UIComponent> componentList = gson.fromJson(body, componentListType.getType());
         assertNotNull(componentList);
-        final Set<DescriptorConfig> expected = descriptorMap.getDescriptor("channel_email").getAllConfigs();
+        final List<UIComponent> expected = descriptorMap.getDescriptor("channel_email").getAllUIConfigs()
+                                           .stream()
+                                           .map(uiConfig -> uiConfig.generateUIComponent()).collect(Collectors.toList());
         assertEquals(expected.size(), componentList.size());
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     public void getbyNameAndDescriptorTypeTest() throws Exception {
-        final String getUrl = DescriptorController.DESCRIPTOR_PATH + "?descriptorName=channel_email&descriptorType=CHANNEL_GLOBAL_CONFIG";
+        final String getUrl = UIComponentController.DESCRIPTOR_PATH + "?descriptorName=channel_email&descriptorType=CHANNEL_GLOBAL_CONFIG";
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(getUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
         final MvcResult result = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
 
@@ -120,7 +121,7 @@ public class DescriptorControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     public void getbyNameNotFoundTest() throws Exception {
-        final String getUrl = DescriptorController.DESCRIPTOR_PATH + "?descriptorName=bad_name";
+        final String getUrl = UIComponentController.DESCRIPTOR_PATH + "?descriptorName=bad_name";
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(getUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
         final MvcResult result = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
 
@@ -135,7 +136,7 @@ public class DescriptorControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     public void getbyNameAndDescriptorTypeNotFoundTest() throws Exception {
-        final String getUrl = DescriptorController.DESCRIPTOR_PATH + "?descriptorName=channel_email&descriptorType=bad_type";
+        final String getUrl = UIComponentController.DESCRIPTOR_PATH + "?descriptorName=channel_email&descriptorType=bad_type";
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(getUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
         final MvcResult result = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
 
@@ -150,7 +151,7 @@ public class DescriptorControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     public void getbyDescriptorTypeTest() throws Exception {
-        final String getUrl = DescriptorController.DESCRIPTOR_PATH + "?descriptorType=CHANNEL_GLOBAL_CONFIG";
+        final String getUrl = UIComponentController.DESCRIPTOR_PATH + "?descriptorType=CHANNEL_GLOBAL_CONFIG";
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(getUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
         final MvcResult result = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
 
@@ -159,14 +160,14 @@ public class DescriptorControllerTest {
 
         final List<UIComponent> componentList = gson.fromJson(body, componentListType.getType());
         assertNotNull(componentList);
-        final List<DescriptorConfig> expected = descriptorMap.getDescriptorConfigs(DescriptorConfigType.CHANNEL_GLOBAL_CONFIG);
+        final List<UIComponent> expected = descriptorMap.getUIComponents(RestApiType.CHANNEL_GLOBAL_CONFIG);
         assertEquals(expected.size(), componentList.size());
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     public void getbyDescriptorTypeNotFoundTest() throws Exception {
-        final String getUrl = DescriptorController.DESCRIPTOR_PATH + "?descriptorType=bad_type";
+        final String getUrl = UIComponentController.DESCRIPTOR_PATH + "?descriptorType=bad_type";
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(getUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
         final MvcResult result = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
 
@@ -181,7 +182,7 @@ public class DescriptorControllerTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     public void badNameAndDescriptorTypeTest() throws Exception {
-        final String getUrl = DescriptorController.DESCRIPTOR_PATH + "?descriptorName=bad_name&descriptorType=bad_type";
+        final String getUrl = UIComponentController.DESCRIPTOR_PATH + "?descriptorName=bad_name&descriptorType=bad_type";
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(getUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
         final MvcResult result = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
 

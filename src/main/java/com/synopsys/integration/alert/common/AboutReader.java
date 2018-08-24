@@ -24,9 +24,6 @@
 package com.synopsys.integration.alert.common;
 
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,10 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.descriptor.Descriptor;
-import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
-import com.synopsys.integration.alert.common.enumeration.DescriptorConfigType;
-import com.synopsys.integration.alert.web.model.AboutDescriptorModel;
 import com.synopsys.integration.alert.web.model.AboutModel;
 import com.synopsys.integration.util.ResourceUtil;
 
@@ -61,14 +54,6 @@ public class AboutReader {
             logger.error(e.getMessage(), e);
             return null;
         }
-    }
-
-    private List<AboutDescriptorModel> getDescriptorLabels(final Map<String, ? extends Descriptor> descriptorMap, final DescriptorConfigType descriptorConfigType) {
-        return descriptorMap.values().stream()
-                       .map(descriptor -> descriptor.getConfig(descriptorConfigType))
-                       .map(DescriptorConfig::getUiComponent)
-                       .map(uiComponent -> new AboutDescriptorModel(uiComponent.getFontAwesomeIcon(), uiComponent.getLabel()))
-                       .collect(Collectors.toList());
     }
 
     public String getProductVersion() {

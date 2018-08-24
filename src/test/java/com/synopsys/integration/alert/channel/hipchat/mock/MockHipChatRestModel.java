@@ -25,7 +25,7 @@ public class MockHipChatRestModel extends MockRestModelUtil<HipChatDistributionC
     private String id;
 
     public MockHipChatRestModel() {
-        this("11", false, "black", "1");
+        this("11", false, "yellow", "1");
     }
 
     private MockHipChatRestModel(final String roomId, final boolean notify, final String color, final String id) {

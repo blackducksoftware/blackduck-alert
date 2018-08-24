@@ -13,9 +13,9 @@ package com.synopsys.integration.alert.provider.blackduck.mock;
 
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.mock.MockGlobalRestModelUtil;
-import com.synopsys.integration.alert.web.provider.blackduck.GlobalBlackDuckConfig;
+import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckConfig;
 
-public class MockGlobalBlackDuckRestModel extends MockGlobalRestModelUtil<GlobalBlackDuckConfig> {
+public class MockGlobalBlackDuckRestModel extends MockGlobalRestModelUtil<BlackDuckConfig> {
     private String blackDuckUrl;
     private String blackDuckTimeout;
     private String blackDuckUsername;
@@ -160,16 +160,16 @@ public class MockGlobalBlackDuckRestModel extends MockGlobalRestModelUtil<Global
     }
 
     @Override
-    public GlobalBlackDuckConfig createGlobalRestModel() {
-        final GlobalBlackDuckConfig restModel = new GlobalBlackDuckConfig(id, blackDuckUrl, blackDuckTimeout, blackDuckApiKey, blackDuckApiKeyIsSet, blackDuckProxyHost, blackDuckProxyPort, blackDuckProxyUsername, blackDuckProxyPassword,
+    public BlackDuckConfig createGlobalRestModel() {
+        final BlackDuckConfig restModel = new BlackDuckConfig(id, blackDuckUrl, blackDuckTimeout, blackDuckApiKey, blackDuckApiKeyIsSet, blackDuckProxyHost, blackDuckProxyPort, blackDuckProxyUsername, blackDuckProxyPassword,
                 blackDuckProxyPasswordIsSet,
                 blackDuckAlwaysTrustCertificate);
         return restModel;
     }
 
     @Override
-    public GlobalBlackDuckConfig createEmptyGlobalRestModel() {
-        return new GlobalBlackDuckConfig();
+    public BlackDuckConfig createEmptyGlobalRestModel() {
+        return new BlackDuckConfig();
     }
 
     @Override

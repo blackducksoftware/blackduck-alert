@@ -16,10 +16,10 @@ import com.synopsys.integration.alert.mock.MockGlobalRestModelUtil;
 import com.synopsys.integration.alert.web.channel.model.HipChatGlobalConfig;
 
 public class MockHipChatGlobalRestModel extends MockGlobalRestModelUtil<HipChatGlobalConfig> {
-    private final String apiKey;
-    private final boolean apiKeyIsSet;
-    private final String id;
-    private final String hostServer;
+    private String apiKey;
+    private boolean apiKeyIsSet;
+    private String id;
+    private String hostServer;
 
     public MockHipChatGlobalRestModel() {
         this("ApiKey", false, "1", "HostServer");
@@ -30,6 +30,26 @@ public class MockHipChatGlobalRestModel extends MockGlobalRestModelUtil<HipChatG
         this.apiKeyIsSet = apiKeyIsSet;
         this.id = id;
         this.hostServer = hostServer;
+    }
+
+    public String getHostServer() {
+        return hostServer;
+    }
+
+    public void setHostServer(final String hostServer) {
+        this.hostServer = hostServer;
+    }
+
+    public void setApiKey(final String apiKey) {
+        this.apiKey = apiKey;
+    }
+
+    public void setApiKeyIsSet(final boolean apiKeyIsSet) {
+        this.apiKeyIsSet = apiKeyIsSet;
+    }
+
+    public void setId(final String id) {
+        this.id = id;
     }
 
     public String getApiKey() {

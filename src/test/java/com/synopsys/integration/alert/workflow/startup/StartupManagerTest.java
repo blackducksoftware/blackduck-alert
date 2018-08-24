@@ -15,8 +15,8 @@ import com.synopsys.integration.alert.TestAlertProperties;
 import com.synopsys.integration.alert.TestBlackDuckProperties;
 import com.synopsys.integration.alert.OutputLogger;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
-import com.synopsys.integration.alert.database.scheduling.GlobalSchedulingConfigEntity;
-import com.synopsys.integration.alert.database.scheduling.GlobalSchedulingRepository;
+import com.synopsys.integration.alert.database.scheduling.SchedulingConfigEntity;
+import com.synopsys.integration.alert.database.scheduling.SchedulingRepository;
 import com.synopsys.integration.alert.web.scheduling.mock.MockGlobalSchedulingEntity;
 import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
@@ -65,12 +65,12 @@ public class StartupManagerTest {
         final PurgeTask purgeTask = Mockito.mock(PurgeTask.class);
         Mockito.doNothing().when(purgeTask).scheduleExecution(Mockito.anyString());
         Mockito.doReturn(Optional.of("time")).when(purgeTask).getFormatedNextRunTime();
-        final GlobalSchedulingRepository globalSchedulingRepository = Mockito.mock(GlobalSchedulingRepository.class);
+        final SchedulingRepository schedulingRepository = Mockito.mock(SchedulingRepository.class);
         final MockGlobalSchedulingEntity mockGlobalSchedulingEntity = new MockGlobalSchedulingEntity();
-        final GlobalSchedulingConfigEntity entity = mockGlobalSchedulingEntity.createGlobalEntity();
-        Mockito.when(globalSchedulingRepository.save(Mockito.any(GlobalSchedulingConfigEntity.class))).thenReturn(entity);
+        final SchedulingConfigEntity entity = mockGlobalSchedulingEntity.createGlobalEntity();
+        Mockito.when(schedulingRepository.save(Mockito.any(SchedulingConfigEntity.class))).thenReturn(entity);
 
-        final StartupManager startupManager = new StartupManager(globalSchedulingRepository, testAlertProperties, null, dailyTask, onDemandTask, purgeTask, phoneHomeTask, null, Collections.emptyList());
+        final StartupManager startupManager = new StartupManager(schedulingRepository, testAlertProperties, null, dailyTask, onDemandTask, purgeTask, phoneHomeTask, null, Collections.emptyList());
 
         startupManager.initializeCronJobs();
 

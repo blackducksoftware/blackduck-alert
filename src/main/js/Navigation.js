@@ -14,18 +14,18 @@ class Navigation extends Component {
 
     createNavItemForDescriptors(decriptorTypeKey, uriPrefix) {
         const {descriptors} = this.props;
-        if(!descriptors.items) {
+        if (!descriptors.items) {
             return null;
         } else {
             const descriptorList = descriptors.items[decriptorTypeKey];
-            if(!descriptorList) {
+            if (!descriptorList) {
                 return null;
             } else {
                 return descriptorList.map((component) =>
                     <li>
                         <NavLink to={`${uriPrefix}${component.urlName}`} activeClassName="activeNav">
                             <FontAwesome name={component.fontAwesomeIcon} fixedWidth/>
-                        {component.label}
+                            {component.label}
                         </NavLink>
                     </li>);
             }
@@ -33,8 +33,8 @@ class Navigation extends Component {
     }
 
     render() {
-        const channelGlobals = this.createNavItemForDescriptors('CHANNEL_GLOBAL_CONFIG','/alert/channels/');
-        const providers = this.createNavItemForDescriptors('PROVIDER_CONFIG','/alert/providers/');
+        const channelGlobals = this.createNavItemForDescriptors('CHANNEL_GLOBAL_CONFIG', '/alert/channels/');
+        const providers = this.createNavItemForDescriptors('PROVIDER_CONFIG', '/alert/providers/');
 
         return (
             <div className="navigation">
@@ -71,9 +71,9 @@ class Navigation extends Component {
                             </NavLink>
                         </li>
                         <li>
-                        <NavLink to="/alert/general/about" activeClassName="activeNav">
-                            <FontAwesome name="info" fixedWidth/> About
-                        </NavLink>
+                            <NavLink to="/alert/general/about" activeClassName="activeNav">
+                                <FontAwesome name="info" fixedWidth/> About
+                            </NavLink>
                         </li>
                         <li className="logoutLink">
                             <a

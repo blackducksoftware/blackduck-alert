@@ -37,7 +37,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
@@ -59,13 +58,11 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C
     private final JpaRepository<C, Long> distributionRepository;
     private final CommonDistributionRepository commonDistributionRepository;
     private final AuditEntryRepository auditEntryRepository;
-    private final ContentConverter contentExtractor;
     private final AlertProperties alertProperties;
     private final BlackDuckProperties blackDuckProperties;
 
     public DistributionChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditEntryRepository auditEntryRepository, final JpaRepository<G, Long> globalRepository,
-            final JpaRepository<C, Long> distributionRepository,
-            final CommonDistributionRepository commonDistributionRepository, final ContentConverter contentExtractor) {
+            final JpaRepository<C, Long> distributionRepository, final CommonDistributionRepository commonDistributionRepository) {
         super(gson, ChannelEvent.class);
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
@@ -73,7 +70,6 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C
         this.globalRepository = globalRepository;
         this.distributionRepository = distributionRepository;
         this.commonDistributionRepository = commonDistributionRepository;
-        this.contentExtractor = contentExtractor;
     }
 
     public AuditEntryRepository getAuditEntryRepository() {

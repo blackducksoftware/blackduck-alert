@@ -1,6 +1,10 @@
 package com.synopsys.integration.alert.provider.blackduck.tasks;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,13 +22,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.scheduling.TaskScheduler;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.TestAlertProperties;
 import com.synopsys.integration.alert.TestBlackDuckProperties;
-import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.digest.DateRange;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
@@ -47,9 +48,6 @@ import com.synopsys.integration.rest.connection.RestConnection;
 
 public class BlackDuckAccumulatorTest {
 
-    private Gson gson;
-    private ContentConverter contentConverter;
-
     private File testAccumulatorParent;
 
     private TestAlertProperties testAlertProperties;
@@ -59,8 +57,6 @@ public class BlackDuckAccumulatorTest {
 
     @Before
     public void init() throws Exception {
-        gson = new Gson();
-        contentConverter = new ContentConverter(gson, new DefaultConversionService());
         testAccumulatorParent = new File("testAccumulatorDirectory");
         testAccumulatorParent.mkdirs();
         System.out.println(testAccumulatorParent.getCanonicalPath());
@@ -373,7 +369,6 @@ public class BlackDuckAccumulatorTest {
 
     @Test
     public void testWrite() {
-        final Gson gson = new Gson();
         final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, testAlertProperties, testBlackDuckProperties, notificationManager);
 
         final NotificationContent content = new MockNotificationContent(new Date(), "BlackDuck", "NotificationType", "{content: \"content is here\"}", null).createEntity();

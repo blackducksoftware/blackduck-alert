@@ -67,7 +67,7 @@ public class AlertStartupInitializer {
 
     // TODO try and move this functionality to startup component and eliminate this class
     public void initializeConfigs() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException, AlertException {
-        descriptorMap.getStartupDescriptorConfigs().forEach(descriptor -> {
+        descriptorMap.getStartupRestApis().forEach(descriptor -> {
             final StartupComponent startupComponent = descriptor.getStartupComponent();
             final Set<AlertStartupProperty> startupProperties = startupComponent.getGlobalEntityPropertyMapping();
             if (startupProperties != null && !startupProperties.isEmpty()) {

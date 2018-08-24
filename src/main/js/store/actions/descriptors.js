@@ -1,9 +1,4 @@
-
-import {
-    DESCRIPTORS_FETCHING,
-    DESCRIPTORS_FETCHED,
-    DESCRIPTORS_FETCH_ERROR
-} from './types';
+import {DESCRIPTORS_FETCH_ERROR, DESCRIPTORS_FETCHED, DESCRIPTORS_FETCHING} from './types';
 
 import {verifyLoginByStatus} from './session';
 
@@ -16,7 +11,7 @@ function fetchingDescriptors() {
 }
 
 function descriptorsFetched(descriptorType, descriptors) {
-    if(descriptors) {
+    if (descriptors) {
         const sortedList = descriptors.sort((first, second) => first.label > second.label);
         return {
             type: DESCRIPTORS_FETCHED,
@@ -52,7 +47,7 @@ export function getDescriptorByType(distributionConfigType) {
             }
         }).then((response) => {
             response.json().then((json) => {
-                if(!response.ok) {
+                if (!response.ok) {
                     dispatch(descriptorsError(json.message));
                     dispatch(verifyLoginByStatus(response.status));
                 } else {

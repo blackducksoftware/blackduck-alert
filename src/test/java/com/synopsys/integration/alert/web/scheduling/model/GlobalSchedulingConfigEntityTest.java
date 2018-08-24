@@ -15,26 +15,26 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.synopsys.integration.alert.database.entity.GlobalEntityTest;
-import com.synopsys.integration.alert.database.scheduling.GlobalSchedulingConfigEntity;
+import com.synopsys.integration.alert.database.scheduling.SchedulingConfigEntity;
 import com.synopsys.integration.alert.web.scheduling.mock.MockGlobalSchedulingEntity;
 
-public class GlobalSchedulingConfigEntityTest extends GlobalEntityTest<GlobalSchedulingConfigEntity> {
+public class GlobalSchedulingConfigEntityTest extends GlobalEntityTest<SchedulingConfigEntity> {
 
     @Override
-    public void assertGlobalEntityFieldsNull(final GlobalSchedulingConfigEntity entity) {
+    public void assertGlobalEntityFieldsNull(final SchedulingConfigEntity entity) {
         assertNull(entity.getDailyDigestHourOfDay());
         assertNull(entity.getPurgeDataFrequencyDays());
     }
 
     @Override
-    public void assertGlobalEntityFieldsFull(final GlobalSchedulingConfigEntity entity) {
+    public void assertGlobalEntityFieldsFull(final SchedulingConfigEntity entity) {
         assertEquals(getMockUtil().getDailyDigestHourOfDay(), entity.getDailyDigestHourOfDay());
         assertEquals(getMockUtil().getPurgeDataFrequencyDays(), entity.getPurgeDataFrequencyDays());
     }
 
     @Override
-    public Class<GlobalSchedulingConfigEntity> getGlobalEntityClass() {
-        return GlobalSchedulingConfigEntity.class;
+    public Class<SchedulingConfigEntity> getGlobalEntityClass() {
+        return SchedulingConfigEntity.class;
     }
 
     @Override
