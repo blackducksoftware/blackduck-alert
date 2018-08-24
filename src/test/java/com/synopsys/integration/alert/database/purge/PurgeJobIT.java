@@ -1,6 +1,8 @@
 package com.synopsys.integration.alert.database.purge;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -25,14 +27,13 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
-import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
-import com.synopsys.integration.test.annotation.DatabaseConnectionTest;
 import com.synopsys.integration.alert.Application;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
-import com.synopsys.integration.alert.database.entity.NotificationCategoryEnum;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.entity.repository.NotificationContentRepository;
+import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
+import com.synopsys.integration.test.annotation.DatabaseConnectionTest;
 
 @Category(DatabaseConnectionTest.class)
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -104,16 +105,6 @@ public class PurgeJobIT {
     @Test
     public void testReaderWithData() {
         final List<NotificationContent> entityList = new ArrayList<>();
-        final String eventKey = "eventKey";
-        final NotificationCategoryEnum notificationType = NotificationCategoryEnum.VULNERABILITY;
-        final String projectName = "ProjectName";
-        final String projectUrl = "ProjectUrl";
-        final String projectVersion = "ProjectVersion";
-        final String projectVersionUrl = "ProjectVersionUrl";
-        final String componentName = "ComponentName";
-        final String componentVersion = "ComponentVersion";
-        final String policyRuleName = "PolicyRuleName";
-        final String person = "PolicyPerson";
 
         ZonedDateTime zonedDateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
         zonedDateTime = zonedDateTime.minusDays(2);

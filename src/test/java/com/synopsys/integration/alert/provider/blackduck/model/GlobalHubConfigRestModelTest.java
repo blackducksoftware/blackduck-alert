@@ -18,12 +18,12 @@ import org.junit.Test;
 
 import com.synopsys.integration.alert.provider.blackduck.mock.MockGlobalBlackDuckRestModel;
 import com.synopsys.integration.alert.web.model.GlobalRestModelTest;
-import com.synopsys.integration.alert.web.provider.blackduck.GlobalBlackDuckConfig;
+import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckConfig;
 
-public class GlobalHubConfigRestModelTest extends GlobalRestModelTest<GlobalBlackDuckConfig> {
+public class GlobalHubConfigRestModelTest extends GlobalRestModelTest<BlackDuckConfig> {
 
     @Override
-    public void assertGlobalRestModelFieldsNull(final GlobalBlackDuckConfig restModel) {
+    public void assertGlobalRestModelFieldsNull(final BlackDuckConfig restModel) {
         assertNull(restModel.getBlackDuckAlwaysTrustCertificate());
         assertNull(restModel.getBlackDuckApiKey());
         assertNull(restModel.getBlackDuckProxyHost());
@@ -35,7 +35,7 @@ public class GlobalHubConfigRestModelTest extends GlobalRestModelTest<GlobalBlac
     }
 
     @Override
-    public void assertGlobalRestModelFieldsFull(final GlobalBlackDuckConfig restModel) {
+    public void assertGlobalRestModelFieldsFull(final BlackDuckConfig restModel) {
         assertEquals(getMockUtil().getBlackDuckAlwaysTrustCertificate(), restModel.getBlackDuckAlwaysTrustCertificate());
         assertEquals(getMockUtil().getBlackDuckProxyHost(), restModel.getBlackDuckProxyHost());
         assertEquals(getMockUtil().getBlackDuckProxyPassword(), restModel.getBlackDuckProxyPassword());
@@ -46,8 +46,8 @@ public class GlobalHubConfigRestModelTest extends GlobalRestModelTest<GlobalBlac
     }
 
     @Override
-    public Class<GlobalBlackDuckConfig> getGlobalRestModelClass() {
-        return GlobalBlackDuckConfig.class;
+    public Class<BlackDuckConfig> getGlobalRestModelClass() {
+        return BlackDuckConfig.class;
     }
 
     @Override
@@ -57,7 +57,7 @@ public class GlobalHubConfigRestModelTest extends GlobalRestModelTest<GlobalBlac
 
     @Test
     public void testSetHubProxyPassword() {
-        final GlobalBlackDuckConfig model = getMockUtil().createEmptyGlobalRestModel();
+        final BlackDuckConfig model = getMockUtil().createEmptyGlobalRestModel();
 
         final String expectedPassword = "expected";
         model.setBlackDuckProxyPassword(expectedPassword);

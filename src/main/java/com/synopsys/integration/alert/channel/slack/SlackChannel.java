@@ -35,21 +35,20 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.channel.rest.RestDistributionChannel;
+import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
 import com.synopsys.integration.alert.database.channel.slack.SlackDistributionRepository;
 import com.synopsys.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
 import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.request.Request;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 
 @Component(value = SlackChannel.COMPONENT_NAME)
 @Transactional
@@ -59,9 +58,8 @@ public class SlackChannel extends RestDistributionChannel<GlobalChannelConfigEnt
 
     @Autowired
     public SlackChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditEntryRepository auditEntryRepository, final SlackDistributionRepository slackDistributionRepository,
-            final CommonDistributionRepository commonDistributionRepository,
-            final ChannelRestConnectionFactory channelRestConnectionFactory, final ContentConverter contentExtractor) {
-        super(gson, alertProperties, blackDuckProperties, auditEntryRepository, null, slackDistributionRepository, commonDistributionRepository, channelRestConnectionFactory, contentExtractor);
+            final CommonDistributionRepository commonDistributionRepository, final ChannelRestConnectionFactory channelRestConnectionFactory) {
+        super(gson, alertProperties, blackDuckProperties, auditEntryRepository, null, slackDistributionRepository, commonDistributionRepository, channelRestConnectionFactory);
     }
 
     @Override

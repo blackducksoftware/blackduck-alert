@@ -2,8 +2,8 @@ import {CONFIG_FETCHED, CONFIG_FETCHING, CONFIG_TEST_FAILED, CONFIG_TEST_SUCCESS
 
 import {verifyLoginByStatus} from './session';
 
-const CONFIG_URL = '/alert/api/configuration/provider/blackduck';
-const TEST_URL = '/alert/api/configuration/provider/blackduck/test';
+const CONFIG_URL = '/alert/api/configuration/provider/provider_blackduck';
+const TEST_URL = '/alert/api/configuration/provider/provider_blackduck/test';
 
 function scrubConfig(config) {
     return {

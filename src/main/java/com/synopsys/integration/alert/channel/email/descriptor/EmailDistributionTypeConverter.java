@@ -26,19 +26,27 @@ package com.synopsys.integration.alert.channel.email.descriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.descriptor.config.CommonTypeConverter;
 import com.synopsys.integration.alert.common.descriptor.config.TypeConverter;
 import com.synopsys.integration.alert.database.channel.email.EmailGroupDistributionConfigEntity;
+import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.synopsys.integration.alert.web.channel.model.EmailDistributionConfig;
 import com.synopsys.integration.alert.web.model.Config;
 
 @Component
 public class EmailDistributionTypeConverter extends TypeConverter {
+    private final CommonTypeConverter commonTypeConverter;
+    private final CommonDistributionRepository commonDistributionRepository;
 
     @Autowired
-    public EmailDistributionTypeConverter(final ContentConverter contentConverter) {
+    public EmailDistributionTypeConverter(final ContentConverter contentConverter, final CommonTypeConverter commonTypeConverter, final CommonDistributionRepository commonDistributionRepository) {
         super(contentConverter);
+        this.commonTypeConverter = commonTypeConverter;
+        this.commonDistributionRepository = commonDistributionRepository;
     }
 
     @Override
@@ -50,7 +58,7 @@ public class EmailDistributionTypeConverter extends TypeConverter {
     public DatabaseEntity populateEntityFromConfig(final Config restModel) {
         final EmailDistributionConfig emailRestModel = (EmailDistributionConfig) restModel;
         final EmailGroupDistributionConfigEntity emailEntity = new EmailGroupDistributionConfigEntity(emailRestModel.getGroupName(), emailRestModel.getEmailTemplateLogoImage(), emailRestModel.getEmailSubjectLine());
-        addIdToEntityPK(emailRestModel.getId(), emailEntity);
+        addIdToEntityPK(emailRestModel.getDistributionConfigId(), emailEntity);
         return emailEntity;
     }
 
@@ -63,7 +71,8 @@ public class EmailDistributionTypeConverter extends TypeConverter {
         emailRestModel.setGroupName(emailEntity.getGroupName());
         emailRestModel.setEmailTemplateLogoImage(emailEntity.getEmailTemplateLogoImage());
         emailRestModel.setEmailSubjectLine(emailEntity.getEmailSubjectLine());
-        return emailRestModel;
+        final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.findByDistributionConfigIdAndDistributionType(emailEntity.getId(), EmailGroupChannel.COMPONENT_NAME);
+        return commonTypeConverter.populateCommonFieldsFromEntity(emailRestModel, commonEntity);
     }
 
 }

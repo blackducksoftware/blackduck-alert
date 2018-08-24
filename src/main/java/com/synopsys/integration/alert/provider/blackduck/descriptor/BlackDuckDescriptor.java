@@ -33,7 +33,7 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 public class BlackDuckDescriptor extends ProviderDescriptor {
 
     @Autowired
-    public BlackDuckDescriptor(final BlackDuckProviderDescriptorConfig providerDescriptorConfig, final BlackDuckProvider provider) {
-        super(BlackDuckProvider.COMPONENT_NAME, providerDescriptorConfig, provider);
+    public BlackDuckDescriptor(final BlackDuckProviderRestApi providerRestApi, final BlackDuckProviderUIConfig blackDuckProviderUIConfig, final BlackDuckProvider provider) {
+        super(BlackDuckProvider.COMPONENT_NAME, providerRestApi, blackDuckProviderUIConfig, provider);
     }
 }

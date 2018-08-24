@@ -19,10 +19,10 @@ import com.synopsys.integration.alert.web.channel.model.EmailDistributionConfig;
 public class MockEmailRestModel extends MockRestModelUtil<EmailDistributionConfig> {
     private final MockCommonDistributionRestModel distributionMockUtil = new MockCommonDistributionRestModel();
 
-    private final String groupName;
-    private final String id;
-    private final String emailTemplateLogoImage;
-    private final String emailSubjectLine;
+    private String groupName;
+    private String id;
+    private String emailTemplateLogoImage;
+    private String emailSubjectLine;
 
     public MockEmailRestModel() {
         this("groupName", "1", "emailTemplateLogoImage", "emailSubjectLine");
@@ -32,6 +32,22 @@ public class MockEmailRestModel extends MockRestModelUtil<EmailDistributionConfi
         this.groupName = groupName;
         this.id = id;
         this.emailTemplateLogoImage = emailTemplateLogoImage;
+        this.emailSubjectLine = emailSubjectLine;
+    }
+
+    public void setGroupName(final String groupName) {
+        this.groupName = groupName;
+    }
+
+    public void setId(final String id) {
+        this.id = id;
+    }
+
+    public void setEmailTemplateLogoImage(final String emailTemplateLogoImage) {
+        this.emailTemplateLogoImage = emailTemplateLogoImage;
+    }
+
+    public void setEmailSubjectLine(final String emailSubjectLine) {
         this.emailSubjectLine = emailSubjectLine;
     }
 

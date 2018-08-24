@@ -34,12 +34,18 @@ public class UIComponent extends Stringable {
     private final String descriptorName;
     private final String fontAwesomeIcon;
     private final List<ConfigField> fields;
+    private final boolean automaticallyGenerateUI;
 
     public UIComponent(final String label, final String urlName, final String descriptorName, final String fontAwesomeIcon, final List<ConfigField> fields) {
+        this(label, urlName, descriptorName, fontAwesomeIcon, true, fields);
+    }
+
+    public UIComponent(final String label, final String urlName, final String descriptorName, final String fontAwesomeIcon, final boolean automaticallyGenerateUI, final List<ConfigField> fields) {
         this.label = label;
         this.urlName = urlName;
         this.descriptorName = descriptorName;
         this.fontAwesomeIcon = fontAwesomeIcon;
+        this.automaticallyGenerateUI = automaticallyGenerateUI;
         this.fields = fields;
     }
 
@@ -57,6 +63,10 @@ public class UIComponent extends Stringable {
 
     public String getFontAwesomeIcon() {
         return fontAwesomeIcon;
+    }
+
+    public boolean isAutomaticallyGenerateUI() {
+        return automaticallyGenerateUI;
     }
 
     public List<ConfigField> getFields() {

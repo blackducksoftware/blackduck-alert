@@ -1,6 +1,8 @@
 package com.synopsys.integration.alert;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -24,14 +26,12 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
-import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
-import com.synopsys.integration.test.annotation.DatabaseConnectionTest;
-import com.synopsys.integration.alert.common.enumeration.VulnerabilityOperation;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
-import com.synopsys.integration.alert.database.entity.VulnerabilityEntity;
 import com.synopsys.integration.alert.database.entity.repository.NotificationContentRepository;
+import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.workflow.NotificationManager;
+import com.synopsys.integration.test.annotation.DatabaseConnectionTest;
 
 @Category(DatabaseConnectionTest.class)
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -185,8 +185,6 @@ public class NotificationManagerTestIT {
 
     @Test
     public void testDeleteNotificationList() {
-        final VulnerabilityEntity vulnerabilityEntity = new VulnerabilityEntity("id1", VulnerabilityOperation.ADD, null);
-        final List<VulnerabilityEntity> vulnerabilityList = Arrays.asList(vulnerabilityEntity);
         final LocalDateTime time = LocalDateTime.now();
         final Date startDate = createDate(time.minusHours(1));
         final Date endDate = createDate(time.plusHours(1));

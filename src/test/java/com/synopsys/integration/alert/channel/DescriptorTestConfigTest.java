@@ -32,10 +32,10 @@ import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.channel.event.ChannelEventFactory;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.DescriptorConfig;
+import com.synopsys.integration.alert.common.descriptor.config.RestApi;
 import com.synopsys.integration.alert.common.digest.model.DigestModel;
 import com.synopsys.integration.alert.common.digest.model.ProjectData;
-import com.synopsys.integration.alert.common.enumeration.DescriptorConfigType;
+import com.synopsys.integration.alert.common.enumeration.RestApiType;
 import com.synopsys.integration.alert.common.enumeration.DigestType;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
@@ -94,8 +94,8 @@ public abstract class DescriptorTestConfigTest<R extends CommonDistributionConfi
     @Test
     public void testSendTestMessage() throws IntegrationException {
         saveGlobalConfiguration();
-        final DescriptorConfig descriptorConfig = getDescriptor().getConfig(DescriptorConfigType.CHANNEL_DISTRIBUTION_CONFIG);
-        final DescriptorConfig spyDescriptorConfig = Mockito.spy(descriptorConfig);
+        final RestApi restApi = getDescriptor().getRestApi(RestApiType.CHANNEL_DISTRIBUTION_CONFIG);
+        final RestApi spyDescriptorConfig = Mockito.spy(restApi);
         final E entity = getMockEntityUtil().createEntity();
         try {
             spyDescriptorConfig.testConfig(entity);

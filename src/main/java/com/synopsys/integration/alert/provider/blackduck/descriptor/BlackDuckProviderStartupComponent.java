@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.common.descriptor.config.StartupComponent;
 import com.synopsys.integration.alert.database.entity.EntityPropertyMapper;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.alert.web.provider.blackduck.GlobalBlackDuckConfig;
+import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckConfig;
 import com.synopsys.integration.alert.workflow.startup.AlertStartupProperty;
 
 @Component
@@ -41,7 +41,7 @@ public class BlackDuckProviderStartupComponent extends StartupComponent {
 
     @Autowired
     public BlackDuckProviderStartupComponent(final EntityPropertyMapper entityPropertyMapper) {
-        super(new GlobalBlackDuckConfig());
+        super(new BlackDuckConfig());
         this.entityPropertyMapper = entityPropertyMapper;
     }
 

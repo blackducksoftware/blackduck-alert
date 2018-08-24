@@ -31,8 +31,8 @@ import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 @Component
 public class SlackDescriptor extends ChannelDescriptor {
 
-    public SlackDescriptor(final SlackChannel channelListener, final SlackDistributionDescriptorConfig distributionDescriptorConfig) {
-        super(SlackChannel.COMPONENT_NAME, SlackChannel.COMPONENT_NAME, channelListener, distributionDescriptorConfig);
+    public SlackDescriptor(final SlackChannel channelListener, final SlackDistributionRestApi distributionRestApi, final SlackUIConfig slackUIConfig) {
+        super(SlackChannel.COMPONENT_NAME, SlackChannel.COMPONENT_NAME, channelListener, distributionRestApi, slackUIConfig);
     }
 
 }
