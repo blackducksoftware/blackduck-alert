@@ -11,7 +11,7 @@ public class OrFieldFilterBuilder extends BinaryOperatorFieldFilterBuilder {
     }
 
     @Override
-    public Predicate<NotificationContent> buildPredicate() {
-        return getLeftFilterBuilder().buildPredicate().or(getRightFilterBuilder().buildPredicate());
+    public Predicate<NotificationContent> joiningPredicate(final Predicate<NotificationContent> left, final Predicate<NotificationContent> right) {
+        return left.or(right);
     }
 }

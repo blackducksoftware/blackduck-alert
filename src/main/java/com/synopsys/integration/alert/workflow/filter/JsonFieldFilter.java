@@ -30,6 +30,7 @@ import java.util.function.Predicate;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 
 public class JsonFieldFilter implements JsonFilterBuilder {
@@ -37,41 +38,58 @@ public class JsonFieldFilter implements JsonFilterBuilder {
     private final List<String> fieldNameHierarchy;
     private final String value;
 
-    public JsonFieldFilter(final Gson gson, final String fieldName, final String value) {
-        this(gson, Arrays.asList(fieldName), value);
+    public JsonFieldFilter(final Gson gson, final String value, final String fieldName) {
+        this(gson, value, Arrays.asList(fieldName));
     }
 
-    public JsonFieldFilter(final Gson gson, final List<String> fieldNameHierarchy, final String value) {
+    public JsonFieldFilter(final Gson gson, final String value, final List<String> fieldNameHierarchy) {
         this.gson = gson;
-        this.fieldNameHierarchy = fieldNameHierarchy;
         this.value = value;
+        this.fieldNameHierarchy = fieldNameHierarchy;
     }
 
     @Override
     public Predicate<NotificationContent> buildPredicate() {
         final Predicate<NotificationContent> contentPredicate = (notification) -> {
-            JsonObject object = gson.fromJson(notification.getContent(), JsonObject.class);
-            JsonElement foundObject = object;
-            // traverse the json tree a node at a time.
-            for (final String fieldName : fieldNameHierarchy) {
-                foundObject = object.get(fieldName);
-                if (foundObject != null) {
-                    if (foundObject.isJsonObject()) {
-                        object = foundObject.getAsJsonObject();
-                    }
-                } else {
-                    // stop at the first failure in the tree hierarchy.
-                    break;
+            final JsonObject object = gson.fromJson(notification.getContent(), JsonObject.class);
+
+            final JsonElement foundObject = getFieldContainingValue(object, fieldNameHierarchy.get(0), 1);
+            return foundObject != null;
+        };
+        return contentPredicate;
+    }
+
+    private JsonElement getFieldContainingValue(final JsonElement jsonElement, final String fieldName, final int nextIndex) {
+        if (jsonElement != null) {
+            final JsonElement jsonField = getFieldValue(jsonElement, fieldName, nextIndex);
+
+            // check if we are at the expected depth
+            if (nextIndex < fieldNameHierarchy.size()) {
+                return getFieldContainingValue(jsonField, fieldNameHierarchy.get(nextIndex), nextIndex + 1);
+            } else if (jsonField != null && jsonField.isJsonPrimitive()) {
+                final JsonPrimitive jsonPrimitive = jsonField.getAsJsonPrimitive();
+                if (jsonPrimitive.isString() && value.equals(jsonPrimitive.getAsString())) {
+                    return jsonField;
                 }
             }
+        }
+        return null;
+    }
 
-            if (foundObject != null) {
-                return value.equals(foundObject.getAsString());
-            } else {
-                return false;
+    private JsonElement getFieldValue(final JsonElement jsonElement, final String fieldName, final int nextIndex) {
+        if (jsonElement.isJsonObject()) {
+            final JsonObject jsonObject = jsonElement.getAsJsonObject();
+            return jsonObject.get(fieldName);
+        } else if (jsonElement.isJsonArray()) {
+            // TODO we might be able to parallelize this
+            for (final JsonElement arrayElement : jsonElement.getAsJsonArray()) {
+                // search each element of the array; if something matches, we're done
+                final JsonElement jsonField = getFieldContainingValue(arrayElement, fieldName, nextIndex + 1);
+                if (jsonField != null) {
+                    return jsonField;
+                }
             }
-        };
-
-        return contentPredicate;
+        }
+        return null;
     }
 }
