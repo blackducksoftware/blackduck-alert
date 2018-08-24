@@ -19,7 +19,9 @@ class Index extends Component {
             entries: [],
             currentPage: 1,
             currentPageSize: 10,
-            searchTerm: ''
+            searchTerm: '',
+            sortField: 'timeLastSent',
+            sortOrder: 'desc'
         };
         // this.addDefaultEntries = this.addDefaultEntries.bind(this);
         this.cancelAutoReload = this.cancelAutoReload.bind(this);
@@ -36,10 +38,11 @@ class Index extends Component {
         this.onSizePerPageListChange = this.onSizePerPageListChange.bind(this);
         this.onPageChange = this.onPageChange.bind(this);
         this.onSearchChange = this.onSearchChange.bind(this);
+        this.onSortChange = this.onSortChange.bind(this);
     }
 
     componentDidMount() {
-        this.props.getAuditData(this.state.currentPage, this.state.currentPageSize, this.state.searchTerm);
+        this.props.getAuditData(this.state.currentPage, this.state.currentPageSize, this.state.searchTerm, this.state.sortField, this.state.sortOrder);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -109,7 +112,7 @@ class Index extends Component {
         const entries = jsonArray.map((entry) => {
             const result = {
                 id: entry.id,
-                jobName: entry.name,
+                name: entry.name,
                 eventType: entry.eventType,
                 timeCreated: entry.timeCreated,
                 timeLastSent: entry.timeLastSent,
@@ -199,7 +202,7 @@ class Index extends Component {
     }
 
 
-    reloadAuditEntries(currentPage, sizePerPage, searchTerm) {
+    reloadAuditEntries(currentPage, sizePerPage, searchTerm, sortField, sortOrder) {
         this.setState({
             message: 'Loading...',
             inProgress: true
@@ -224,7 +227,20 @@ class Index extends Component {
         } else if (this.state.searchTerm) {
             term = this.state.searchTerm;
         }
-        this.props.getAuditData(page, size, term);
+
+        var sortingField = '';
+        if (null != sortField || undefined != sortField) {
+            sortingField = sortField;
+        } else if (this.state.sortField) {
+            sortingField = this.state.sortField;
+        }
+        var sortingOrder = '';
+        if (null != sortOrder || undefined != sortOrder) {
+            sortingOrder = sortOrder;
+        } else if (this.state.sortOrder) {
+            sortingOrder = this.state.sortOrder;
+        }
+        this.props.getAuditData(page, size, term, sortingField, sortingOrder);
     }
 
     cancelRowSelect() {
@@ -265,6 +281,11 @@ class Index extends Component {
         this.reloadAuditEntries(null, null, searchText)
     }
 
+    onSortChange(sortName, sortOrder) {
+        this.setState({sortField: sortName, sortOrder: sortOrder});
+        this.reloadAuditEntries(null, null, null, sortName, sortOrder)
+    }
+
     render() {
         const auditTableOptions = {
             defaultSortName: 'timeLastSent',
@@ -276,9 +297,11 @@ class Index extends Component {
             expandRowBgColor: '#e8e8e8',
             sizePerPage: this.state.currentPageSize,
             page: this.state.currentPage,
+            // We need all of these onChange methods because the table is using the remote option
             onPageChange: this.onPageChange,
             onSizePerPageList: this.onSizePerPageListChange,
-            onSearchChange: this.onSearchChange
+            onSearchChange: this.onSearchChange,
+            onSortChange: this.onSortChange
         };
 
         const auditFetchInfo = {
@@ -310,9 +333,9 @@ class Index extends Component {
                         pagination
                         search
                     >
-                        <TableHeaderColumn dataField="jobName" dataSort columnTitle columnClassName="tableCell">Job Name</TableHeaderColumn>
+                        <TableHeaderColumn dataField="name" dataSort columnTitle columnClassName="tableCell">Job Name</TableHeaderColumn>
                         <TableHeaderColumn dataField="notificationProviderName" dataSort columnTitle columnClassName="tableCell">Provider Name</TableHeaderColumn>
-                        <TableHeaderColumn dataField="notificationType" dataSort width="145" columnClassName="tableCell" dataFormat={this.notificationTypeDataFormat}>Notification Types</TableHeaderColumn>
+                        <TableHeaderColumn dataField="notificationType" width="145" columnClassName="tableCell" dataFormat={this.notificationTypeDataFormat}>Notification Types</TableHeaderColumn>
                         <TableHeaderColumn dataField="timeCreated" dataSort width="160" columnTitle columnClassName="tableCell">Time Created</TableHeaderColumn>
                         <TableHeaderColumn dataField="timeLastSent" dataSort width="160" columnTitle columnClassName="tableCell">Time Last Sent</TableHeaderColumn>
                         <TableHeaderColumn dataField="status" width="75" dataSort columnClassName="tableCell" dataFormat={this.statusColumnDataFormat}>Status</TableHeaderColumn>
@@ -354,7 +377,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    getAuditData: (pageNumber, pageSize, searchTerm) => dispatch(getAuditData(pageNumber, pageSize, searchTerm)),
+    getAuditData: (pageNumber, pageSize, searchTerm, sortField, sortOrder) => dispatch(getAuditData(pageNumber, pageSize, searchTerm, sortField, sortOrder)),
     logout: () => dispatch(logout())
 });
 

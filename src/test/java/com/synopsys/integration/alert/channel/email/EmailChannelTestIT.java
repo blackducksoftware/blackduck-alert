@@ -15,7 +15,6 @@ import com.synopsys.integration.alert.TestAlertProperties;
 import com.synopsys.integration.alert.TestBlackDuckProperties;
 import com.synopsys.integration.alert.TestPropertyKey;
 import com.synopsys.integration.alert.channel.ChannelTest;
-import com.synopsys.integration.test.annotation.ExternalConnectionTest;
 import com.synopsys.integration.alert.channel.email.mock.MockEmailEntity;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.common.digest.model.DigestModel;
@@ -26,6 +25,7 @@ import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.synopsys.integration.rest.RestConstants;
+import com.synopsys.integration.test.annotation.ExternalConnectionTest;
 
 public class EmailChannelTestIT extends ChannelTest {
 
@@ -46,7 +46,7 @@ public class EmailChannelTestIT extends ChannelTest {
             testAlertProperties.setAlertTrustCertificate(Boolean.valueOf(trustCert));
         }
 
-        EmailGroupChannel emailChannel = new EmailGroupChannel(gson, testAlertProperties, globalProperties, auditEntryRepository, null, null, null, contentConverter);
+        EmailGroupChannel emailChannel = new EmailGroupChannel(gson, testAlertProperties, globalProperties, auditEntryRepository, null, null, null);
         final Collection<ProjectData> projectData = createProjectData("Manual test project");
         final DigestModel digestModel = new DigestModel(projectData);
         final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
@@ -78,7 +78,7 @@ public class EmailChannelTestIT extends ChannelTest {
     public void sendEmailNullGlobalTest() throws Exception {
         final OutputLogger outputLogger = new OutputLogger();
 
-        final EmailGroupChannel emailChannel = new EmailGroupChannel(gson, null, null, null, null, null, null, contentConverter);
+        final EmailGroupChannel emailChannel = new EmailGroupChannel(gson, null, null, null, null, null, null);
         final DigestModel digestModel = new DigestModel(null);
         final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
         final ChannelEvent event = new ChannelEvent(EmailGroupChannel.COMPONENT_NAME, RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),

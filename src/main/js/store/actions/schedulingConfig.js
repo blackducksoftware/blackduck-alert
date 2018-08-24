@@ -12,8 +12,8 @@ import {
 
 import { verifyLoginByStatus } from './session';
 
-const CONFIG_URL = '/alert/api/configuration/global/scheduling';
-const ACCUMULATOR_URL = '/alert/api/configuration/global/scheduling/tasks/run';
+const CONFIG_URL = '/alert/api/configuration/component/component_scheduling';
+const ACCUMULATOR_URL = '/alert/api/configuration/component/component_scheduling/tasks/run';
 
 /**
  * Triggers Scheduling Config Fetching reducer
