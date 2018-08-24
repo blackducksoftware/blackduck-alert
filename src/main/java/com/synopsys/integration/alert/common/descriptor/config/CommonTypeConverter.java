@@ -50,6 +50,7 @@ public class CommonTypeConverter {
         channelConfig.setId(contentConverter.getStringValue(commonEntity.getId()));
         channelConfig.setDistributionType(commonEntity.getDistributionType());
         channelConfig.setFilterByProject(contentConverter.getStringValue(commonEntity.getFilterByProject()));
+        channelConfig.setProviderName(commonEntity.getProviderName());
         channelConfig.setFrequency(commonEntity.getFrequency().name());
         channelConfig.setName(commonEntity.getName());
         channelConfig.setConfiguredProjects(configuredProjectsActions.getConfiguredProjects(commonEntity));

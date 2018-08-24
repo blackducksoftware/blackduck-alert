@@ -41,7 +41,7 @@ class BaseJobConfiguration extends Component {
                 error: nextProps.error
             };
 
-            if(nextProps.distributionConfigId) {
+            if (nextProps.distributionConfigId) {
                 const newState = Object.assign({}, stateValues, {
                     id: nextProps.id,
                     distributionConfigId: nextProps.distributionConfigId,
@@ -83,7 +83,7 @@ class BaseJobConfiguration extends Component {
             event.preventDefault();
         }
         const jsonBody = this.buildJsonBody();
-        if(this.props.id) {
+        if (this.props.id) {
             this.props.updateDistributionJob(this.props.baseUrl, jsonBody);
         } else {
             this.props.saveDistributionJob(this.props.baseUrl, jsonBody);
@@ -145,8 +145,8 @@ class BaseJobConfiguration extends Component {
     }
 
     handleProviderChanged(option) {
-        if(option) {
-            this.handleStateValues('providerName',option.value);
+        if (option) {
+            this.handleStateValues('providerName', option.value);
         } else {
             this.handleStateValues('providerName', option);
         }
@@ -179,8 +179,8 @@ class BaseJobConfiguration extends Component {
 
     createProviderOptions() {
         const providers = this.props.descriptors.items['PROVIDER_CONFIG'];
-        if(providers) {
-            const optionList =  providers.map(descriptor => {
+        if (providers) {
+            const optionList = providers.map(descriptor => {
                 return {
                     label: descriptor.label,
                     value: descriptor.descriptorName,
@@ -201,18 +201,18 @@ class BaseJobConfiguration extends Component {
                 <div className="form-group">
                     <label className="col-sm-3 control-label">Provider</label>
                     <div className="col-sm-8">
-                    <Select
-                    id="providerName"
-                    className="typeAheadField"
-                    onChange={this.handleProviderChanged}
-                    searchable
-                    options={this.createProviderOptions()}
-                    placeholder="Choose the provider"
-                    value={this.state.providerName}
-                    />
-                    {this.state.errors.providerNameError && <label className="fieldError" name="providerNameError">
-                        {this.state.errors.providerNameError}
-                    </label>}
+                        <Select
+                            id="providerName"
+                            className="typeAheadField"
+                            onChange={this.handleProviderChanged}
+                            searchable
+                            options={this.createProviderOptions()}
+                            placeholder="Choose the provider"
+                            value={this.state.providerName}
+                        />
+                        {this.state.errors.providerNameError && <label className="fieldError" name="providerNameError">
+                            {this.state.errors.providerNameError}
+                        </label>}
                     </div>
                 </div>
                 <div className="form-group">
@@ -281,7 +281,7 @@ BaseJobConfiguration.propTypes = {
 
 BaseJobConfiguration.defaultProps = {
     csrfToken: null,
-    descriptor: {},
+    descriptors: {},
     jobs: {},
     baseUrl: '',
     testUrl: '',
@@ -294,10 +294,10 @@ BaseJobConfiguration.defaultProps = {
 };
 
 const mapDispatchToProps = dispatch => ({
-    getDistributionJob: (url,id) => dispatch(getDistributionJob(url,id)),
-    saveDistributionJob: (url,config) => dispatch(saveDistributionJob(url,config)),
-    updateDistributionJob: (url,config) => dispatch(updateDistributionJob(url,config)),
-    testDistributionJob: (url,config) => dispatch(testDistributionJob(url,config))
+    getDistributionJob: (url, id) => dispatch(getDistributionJob(url, id)),
+    saveDistributionJob: (url, config) => dispatch(saveDistributionJob(url, config)),
+    updateDistributionJob: (url, config) => dispatch(updateDistributionJob(url, config)),
+    testDistributionJob: (url, config) => dispatch(testDistributionJob(url, config))
 });
 
 const mapStateToProps = state => ({
