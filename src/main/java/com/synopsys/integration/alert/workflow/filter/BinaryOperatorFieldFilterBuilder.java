@@ -15,16 +15,8 @@ public abstract class BinaryOperatorFieldFilterBuilder implements JsonFilterBuil
 
     @Override
     public final Predicate<NotificationContent> buildPredicate() {
-        return joiningPredicate(getLeftFilterBuilder().buildPredicate(), getRightFilterBuilder().buildPredicate());
+        return joiningPredicate(leftFilterBuilder.buildPredicate(), rightFilterBuilder.buildPredicate());
     }
 
-    public abstract Predicate<NotificationContent> joiningPredicate(final Predicate<NotificationContent> left, final Predicate<NotificationContent> right);
-
-    public JsonFilterBuilder getLeftFilterBuilder() {
-        return leftFilterBuilder;
-    }
-
-    public JsonFilterBuilder getRightFilterBuilder() {
-        return rightFilterBuilder;
-    }
+    public abstract Predicate<NotificationContent> joiningPredicate(final Predicate<NotificationContent> leftFilter, final Predicate<NotificationContent> rightFilter);
 }
