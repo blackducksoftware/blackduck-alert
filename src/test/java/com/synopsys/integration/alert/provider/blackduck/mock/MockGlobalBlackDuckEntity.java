@@ -18,16 +18,18 @@ import com.synopsys.integration.alert.mock.MockGlobalEntityUtil;
 public class MockGlobalBlackDuckEntity extends MockGlobalEntityUtil<GlobalBlackDuckConfigEntity> {
     private Integer blackDuckTimeout;
     private String blackDuckApiKey;
+    private String blackDuckUrl;
     private Long id;
 
     public MockGlobalBlackDuckEntity() {
-        this(444, "BlackDuckApiKey############################################################", 1L);
+        this(444, "BlackDuckApiKey############################################################", "http://localhost:443", 1L);
     }
 
-    private MockGlobalBlackDuckEntity(final Integer blackDuckTimeout, final String blackDuckApiKey, final Long id) {
+    private MockGlobalBlackDuckEntity(final Integer blackDuckTimeout, final String blackDuckApiKey, final String blackDuckUrl, final Long id) {
         super();
         this.blackDuckTimeout = blackDuckTimeout;
         this.blackDuckApiKey = blackDuckApiKey;
+        this.blackDuckUrl = blackDuckUrl;
         this.id = id;
     }
 
@@ -37,6 +39,10 @@ public class MockGlobalBlackDuckEntity extends MockGlobalEntityUtil<GlobalBlackD
 
     public void setBlackDuckApiKey(final String blackDuckApiKey) {
         this.blackDuckApiKey = blackDuckApiKey;
+    }
+
+    public void setBlackDuckUrl(final String blackDuckUrl) {
+        this.blackDuckUrl = blackDuckUrl;
     }
 
     public void setId(final Long id) {
@@ -51,6 +57,10 @@ public class MockGlobalBlackDuckEntity extends MockGlobalEntityUtil<GlobalBlackD
         return blackDuckApiKey;
     }
 
+    public String getBlackDuckUrl() {
+        return blackDuckUrl;
+    }
+
     @Override
     public Long getId() {
         return id;
@@ -58,7 +68,7 @@ public class MockGlobalBlackDuckEntity extends MockGlobalEntityUtil<GlobalBlackD
 
     @Override
     public GlobalBlackDuckConfigEntity createGlobalEntity() {
-        final GlobalBlackDuckConfigEntity entity = new GlobalBlackDuckConfigEntity(Integer.valueOf(blackDuckTimeout), blackDuckApiKey);
+        final GlobalBlackDuckConfigEntity entity = new GlobalBlackDuckConfigEntity(Integer.valueOf(blackDuckTimeout), blackDuckApiKey, blackDuckUrl);
         entity.setId(id);
         return entity;
     }
@@ -72,6 +82,7 @@ public class MockGlobalBlackDuckEntity extends MockGlobalEntityUtil<GlobalBlackD
     public String getGlobalEntityJson() {
         final JsonObject json = new JsonObject();
         json.addProperty("blackDuckTimeout", blackDuckTimeout);
+        json.addProperty("blackDuckUrl", blackDuckUrl);
         json.addProperty("id", id);
         return json.toString();
     }

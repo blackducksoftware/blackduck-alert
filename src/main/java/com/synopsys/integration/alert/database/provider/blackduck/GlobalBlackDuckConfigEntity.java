@@ -43,14 +43,17 @@ public class GlobalBlackDuckConfigEntity extends DatabaseEntity {
     @SensitiveField
     @Convert(converter = StringEncryptionConverter.class)
     private String blackDuckApiKey;
+    @Column(name = "blackduck_url")
+    private String blackDuckUrl;
 
     public GlobalBlackDuckConfigEntity() {
         // JPA requires default constructor definitions
     }
 
-    public GlobalBlackDuckConfigEntity(final Integer blackDuckTimeout, final String blackDuckApiKey) {
+    public GlobalBlackDuckConfigEntity(final Integer blackDuckTimeout, final String blackDuckApiKey, final String blackDuckUrl) {
         this.blackDuckTimeout = blackDuckTimeout;
         this.blackDuckApiKey = blackDuckApiKey;
+        this.blackDuckUrl = blackDuckUrl;
     }
 
     public Integer getBlackDuckTimeout() {
@@ -61,4 +64,7 @@ public class GlobalBlackDuckConfigEntity extends DatabaseEntity {
         return blackDuckApiKey;
     }
 
+    public String getBlackDuckUrl() {
+        return blackDuckUrl;
+    }
 }
