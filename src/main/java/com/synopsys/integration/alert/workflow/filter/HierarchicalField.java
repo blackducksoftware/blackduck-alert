@@ -29,22 +29,26 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import javax.validation.constraints.NotNull;
+
 public class HierarchicalField {
-    private final Collection<String> fieldList;
+    private final List<String> fieldList;
 
     private HierarchicalField(final Collection<String> fieldList) {
-        this.fieldList = fieldList;
+        final List<String> list = new ArrayList<>();
+        list.addAll(fieldList);
+        this.fieldList = Collections.unmodifiableList(list);
     }
 
-    public static final HierarchicalField topLevelField(final String fieldName) {
+    public static final HierarchicalField topLevelField(@NotNull final String fieldName) {
         return new HierarchicalField(Arrays.asList(fieldName));
     }
 
-    public static final HierarchicalField nestedField(final String... fieldNames) {
+    public static final HierarchicalField nestedField(@NotNull final String... fieldNames) {
         return new HierarchicalField(Arrays.asList(fieldNames));
     }
 
-    public static final HierarchicalField nestedField(final Collection<String> fieldNames) {
+    public static final HierarchicalField nestedField(@NotNull final Collection<String> fieldNames) {
         return new HierarchicalField(fieldNames);
     }
 
@@ -52,8 +56,10 @@ public class HierarchicalField {
      * @return an unmodifiable list of fields representing the path to a field nested within an object
      */
     public List<String> getFieldNames() {
-        final List<String> list = new ArrayList<>();
-        list.addAll(fieldList);
-        return Collections.unmodifiableList(list);
+        return fieldList;
+    }
+
+    public String innermostFieldName() {
+        return fieldList.get(fieldList.size() - 1);
     }
 }

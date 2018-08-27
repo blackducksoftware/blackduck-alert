@@ -74,9 +74,9 @@ public class UIComponentController extends BaseController {
     public Collection<Descriptor> getDescriptorTypes(@PathVariable final String descriptorType) {
         final DescriptorType descriptorTypeEnum = Enum.valueOf(DescriptorType.class, descriptorType);
         return descriptorMap.getDescriptorMap().values()
-                .stream()
-                .filter(descriptor -> descriptorTypeEnum.equals(descriptor.getType()))
-                .collect(Collectors.toList());
+                   .stream()
+                   .filter(descriptor -> descriptorTypeEnum.equals(descriptor.getType()))
+                   .collect(Collectors.toList());
     }
 
     @GetMapping("/restApi/{restApiType}")
@@ -99,7 +99,8 @@ public class UIComponentController extends BaseController {
         final List<ConfigField> combinedFields = new ArrayList<>();
         final ConfigField name = new TextInputConfigField("name", "Name", true, false);
         final ConfigField frequency = new SelectConfigField("frequency", "Digest type", true, false, Arrays.stream(DigestType.values()).map(type -> type.getDisplayName()).collect(Collectors.toList()));
-        final ConfigField notificationTypes = new SelectConfigField("notificationTypes", "Notification Types", true, false, providerDescriptor.getNotificationTypes().stream().collect(Collectors.toList()));
+        final ConfigField notificationTypes = new SelectConfigField("notificationTypes", "Notification Types", true, false,
+            providerDescriptor.getProviderContentTypes().stream().map(contentType -> contentType.getNotificationType()).collect(Collectors.toList()));
         combinedFields.add(name);
         combinedFields.add(frequency);
         combinedFields.add(notificationTypes);
