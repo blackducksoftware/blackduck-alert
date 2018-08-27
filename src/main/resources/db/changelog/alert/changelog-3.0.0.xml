@@ -36,4 +36,9 @@
             <column name="PROVIDER_NAME" type="varchar(255)" value="provider_blackduck"/>
         </addColumn>
     </changeSet>
+    <changeSet author="psantos" id="1533054185-7">
+        <addColumn tableName="GLOBAL_BLACKDUCK_CONFIG" schemaName="ALERT">
+            <column name="BLACKDUCK_URL" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
