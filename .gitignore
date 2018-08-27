@@ -8,6 +8,7 @@
 bin/
 .idea
 out/
+*.iml
 
 # build tool
 .gradle/
@@ -27,5 +28,4 @@ node_modules
 data/
 sonar-project.properties
 .scannerwork/
-blackduck-alert.iml
 coverage/
