@@ -23,13 +23,31 @@
  */
 package com.synopsys.integration.alert.common.provider;
 
-import java.util.Set;
+import java.util.Collection;
 
-public abstract class Provider {
+import javax.validation.constraints.NotNull;
 
-    public abstract void initialize();
+import com.synopsys.integration.alert.workflow.filter.HierarchicalField;
+import com.synopsys.integration.util.Stringable;
 
-    public abstract void destroy();
+public class ProviderContentType extends Stringable {
+    private final String notificationType;
+    private final Collection<HierarchicalField> filterableFields;
 
-    public abstract Set<ProviderContentType> getProviderContentTypes();
+    public ProviderContentType(@NotNull final String notificationType, @NotNull final Collection<HierarchicalField> filterableFields) {
+        this.notificationType = notificationType;
+        this.filterableFields = filterableFields;
+    }
+
+    public String getNotificationType() {
+        return notificationType;
+    }
+
+    public boolean hasFilterableFields() {
+        return !filterableFields.isEmpty();
+    }
+
+    public Collection<HierarchicalField> getFilterableFields() {
+        return filterableFields;
+    }
 }
