@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import NumberInput from '../../field/input/NumberInput';
 import PasswordInput from '../../field/input/PasswordInput';
 import ReadOnlyField from '../../field/ReadOnlyField';
-import TextInput from '../../field/input/TextInput';
 import ConfigButtons from '../common/ConfigButtons';
 
 import {getConfig, testConfig, updateConfig} from '../../store/actions/config';
@@ -89,12 +88,9 @@ class BlackDuckConfiguration extends React.Component {
 
                 <form className="form-horizontal" onSubmit={this.handleSubmit}>
                     <div>
-                        <TextInput label="Url"
-                                   name="blackDuckUrl"
-                                   value={this.state.blackDuckUrl}
-                                   onChange={this.handleChange}
-                                   errorName="blackDuckUrlError"
-                                   errorValue={this.props.fieldErrors.blackDuckUrl}/>
+                        <ReadOnlyField label="Url" name="blackDuckUrl" value={this.state.blackDuckUrl}
+                                       errorName="blackDuckUrlError"
+                                       errorValue={this.props.fieldErrors.blackDuckUrl}/>
                         <PasswordInput id="blackDuckConfigurationApiToken" label="API Token" name="blackDuckApiKey" value={this.state.blackDuckApiKey} isSet={this.state.blackDuckApiKeyIsSet} onChange={this.handleChange}
                                        errorMessage={this.props.fieldErrors.apiKey || this.props.fieldErrors.blackDuckApiKey}/>
                         <NumberInput id="blackDuckConfigurationTimeout" label="Timeout" name="blackDuckTimeout" value={this.state.blackDuckTimeout} onChange={this.handleChange}/>
@@ -103,10 +99,10 @@ class BlackDuckConfiguration extends React.Component {
                                 <h2>Proxy Configuration <small>(Read-Only)</small></h2>
                             </div>
                         </div>
-                        <ReadOnlyField label="Host Name" name="blackDuckProxyHost" readOnly="true" value={this.props.blackDuckProxyHost}/>
-                        <ReadOnlyField label="Port" name="blackDuckProxyPort" readOnly="true" value={this.props.blackDuckProxyPort}/>
-                        <ReadOnlyField label="Username" name="blackDuckProxyUsername" readOnly="true" value={this.props.blackDuckProxyUsername}/>
-                        <ReadOnlyField label="Proxy Password" name="blackDuckProxyPassword" readOnly="true" isSet={this.props.blackDuckProxyPasswordIsSet}/>
+                        <ReadOnlyField label="Host Name" name="blackDuckProxyHost" value={this.props.blackDuckProxyHost}/>
+                        <ReadOnlyField label="Port" name="blackDuckProxyPort" value={this.props.blackDuckProxyPort}/>
+                        <ReadOnlyField label="Username" name="blackDuckProxyUsername" value={this.props.blackDuckProxyUsername}/>
+                        <ReadOnlyField label="Proxy Password" name="blackDuckProxyPassword" isSet={this.props.blackDuckProxyPasswordIsSet}/>
                     </div>
                     <ConfigButtons isFixed={false} includeSave includeTest type="submit" onTestClick={this.handleTest}/>
                 </form>
