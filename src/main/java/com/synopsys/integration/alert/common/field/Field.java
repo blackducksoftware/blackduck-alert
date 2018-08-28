@@ -21,33 +21,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.provider;
+package com.synopsys.integration.alert.common.field;
 
-import java.util.Collection;
+public abstract class Field {
+    private String fieldKey;
 
-import javax.validation.constraints.NotNull;
-
-import com.synopsys.integration.alert.common.field.HierarchicalField;
-import com.synopsys.integration.util.Stringable;
-
-public class ProviderContentType extends Stringable {
-    private final String notificationType;
-    private final Collection<HierarchicalField> filterableFields;
-
-    public ProviderContentType(@NotNull final String notificationType, @NotNull final Collection<HierarchicalField> filterableFields) {
-        this.notificationType = notificationType;
-        this.filterableFields = filterableFields;
+    public Field(final String fieldKey) {
+        this.fieldKey = fieldKey;
     }
 
-    public String getNotificationType() {
-        return notificationType;
+    public String getFieldKey() {
+        return fieldKey;
     }
 
-    public boolean hasFilterableFields() {
-        return !filterableFields.isEmpty();
-    }
-
-    public Collection<HierarchicalField> getFilterableFields() {
-        return filterableFields;
+    public void setFieldKey(final String fieldKey) {
+        this.fieldKey = fieldKey;
     }
 }

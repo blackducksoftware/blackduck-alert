@@ -21,45 +21,39 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.workflow.filter;
+package com.synopsys.integration.alert.common.field;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
-
-public class HierarchicalField {
+public class HierarchicalField extends Field {
     private final List<String> fieldList;
+    private final String configNameMapping;
 
-    private HierarchicalField(final Collection<String> fieldList) {
+    public HierarchicalField(final Collection<String> pathToField, final String innerMostFieldName, final String configNameMapping) {
+        super(innerMostFieldName);
+
         final List<String> list = new ArrayList<>();
-        list.addAll(fieldList);
+        list.addAll(pathToField);
+        list.add(innerMostFieldName);
         this.fieldList = Collections.unmodifiableList(list);
-    }
-
-    public static final HierarchicalField topLevelField(@NotNull final String fieldName) {
-        return new HierarchicalField(Arrays.asList(fieldName));
-    }
-
-    public static final HierarchicalField nestedField(@NotNull final String... fieldNames) {
-        return new HierarchicalField(Arrays.asList(fieldNames));
-    }
-
-    public static final HierarchicalField nestedField(@NotNull final Collection<String> fieldNames) {
-        return new HierarchicalField(fieldNames);
+        this.configNameMapping = configNameMapping;
     }
 
     /**
      * @return an unmodifiable list of fields representing the path to a field nested within an object
      */
-    public List<String> getFieldNames() {
+    public List<String> getFullPathToField() {
         return fieldList;
     }
 
     public String innermostFieldName() {
-        return fieldList.get(fieldList.size() - 1);
+        return getFieldKey();
+    }
+
+    public String getConfigNameMapping() {
+        return configNameMapping;
     }
 }

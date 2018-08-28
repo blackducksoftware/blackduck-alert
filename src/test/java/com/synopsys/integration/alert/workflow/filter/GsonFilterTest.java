@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.field.HierarchicalField;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 
 public class GsonFilterTest {
@@ -30,8 +31,8 @@ public class GsonFilterTest {
         final NotificationContent vulnerabilityNotification = createVulnerabilityContent("TestProject2", "1.0.0");
         final List<NotificationContent> notificationList = Arrays.asList(policyNotification, vulnerabilityNotification);
 
-        final List<String> jsonFieldList = Arrays.asList("content", "projectName");
-        final JsonFieldFilter projectNameFilter = new JsonFieldFilter(gson, HierarchicalField.nestedField(jsonFieldList), PROJECT_NAME_1);
+        final List<String> jsonFieldList = Arrays.asList("content");
+        final JsonFieldFilter projectNameFilter = new JsonFieldFilter(gson, new HierarchicalField(jsonFieldList, "projectName", null), PROJECT_NAME_1);
 
         final List<NotificationContent> filteredList = notificationList.stream().filter(projectNameFilter.buildPredicate()).collect(Collectors.toList());
         assertEquals(1, filteredList.size());
@@ -43,10 +44,10 @@ public class GsonFilterTest {
         final NotificationContent vulnerabilityNotification = createVulnerabilityContent(PROJECT_NAME_1, "1.0.0");
         final List<NotificationContent> notificationList = Arrays.asList(policyNotification, vulnerabilityNotification);
 
-        final List<String> policyJsonFieldHierarchy = Arrays.asList("content", "projectName");
-        final List<String> vulnerabilityJsonFieldHierarchy = Arrays.asList("content", "affectedProjectVersions", "projectName");
-        final JsonFieldFilter policyProjectNameFilter = new JsonFieldFilter(gson, HierarchicalField.nestedField(policyJsonFieldHierarchy), PROJECT_NAME_1);
-        final JsonFieldFilter vulnerabilityProjectNameFilter = new JsonFieldFilter(gson, HierarchicalField.nestedField(vulnerabilityJsonFieldHierarchy), PROJECT_NAME_1);
+        final List<String> policyJsonFieldHierarchy = Arrays.asList("content");
+        final List<String> vulnerabilityJsonFieldHierarchy = Arrays.asList("content", "affectedProjectVersions");
+        final JsonFieldFilter policyProjectNameFilter = new JsonFieldFilter(gson, new HierarchicalField(policyJsonFieldHierarchy, "projectName", null), PROJECT_NAME_1);
+        final JsonFieldFilter vulnerabilityProjectNameFilter = new JsonFieldFilter(gson, new HierarchicalField(vulnerabilityJsonFieldHierarchy, "projectName", null), PROJECT_NAME_1);
         final JsonFilterBuilder compoundFilter = new OrFieldFilterBuilder(policyProjectNameFilter, vulnerabilityProjectNameFilter);
 
         final List<NotificationContent> filteredList = notificationList.stream().filter(compoundFilter.buildPredicate()).collect(Collectors.toList());
@@ -59,11 +60,11 @@ public class GsonFilterTest {
         final NotificationContent vulnerabilityNotification = createVulnerabilityContent(PROJECT_NAME_1, "1.0.0", COMPONENT_NAME_1, "1.2.1");
         final List<NotificationContent> notificationList = Arrays.asList(policyNotification, vulnerabilityNotification);
 
-        final List<String> vulnerabilityComponentJsonFieldHierarchy = Arrays.asList("content", "componentName");
-        final List<String> vulnerabilityProjectJsonFieldHierarchy = Arrays.asList("content", "affectedProjectVersions", "projectName");
+        final List<String> vulnerabilityComponentJsonFieldHierarchy = Arrays.asList("content");
+        final List<String> vulnerabilityProjectJsonFieldHierarchy = Arrays.asList("content", "affectedProjectVersions");
 
-        final JsonFieldFilter vulnerabilityComponentNameFilter = new JsonFieldFilter(gson, HierarchicalField.nestedField(vulnerabilityComponentJsonFieldHierarchy), COMPONENT_NAME_1);
-        final JsonFieldFilter vulnerabilityProjectNameFilter = new JsonFieldFilter(gson, HierarchicalField.nestedField(vulnerabilityProjectJsonFieldHierarchy), PROJECT_NAME_1);
+        final JsonFieldFilter vulnerabilityComponentNameFilter = new JsonFieldFilter(gson, new HierarchicalField(vulnerabilityComponentJsonFieldHierarchy, "componentName", null), COMPONENT_NAME_1);
+        final JsonFieldFilter vulnerabilityProjectNameFilter = new JsonFieldFilter(gson, new HierarchicalField(vulnerabilityProjectJsonFieldHierarchy, "projectName", null), PROJECT_NAME_1);
         final JsonFilterBuilder compoundFilter = new AndFieldFilterBuilder(vulnerabilityComponentNameFilter, vulnerabilityProjectNameFilter);
 
         final List<NotificationContent> filteredList = notificationList.stream().filter(compoundFilter.buildPredicate()).collect(Collectors.toList());
@@ -76,14 +77,14 @@ public class GsonFilterTest {
 
     private NotificationContent createPolicyContent(final String projectName, final String projectVersionName, final String componentName, final String componentVersionName) {
         final String content = "{\"content\":{\"projectName\":\""
-                + projectName
-                + "\",\"projectVersionName\":\""
-                + projectVersionName
-                + "\",\"componentVersionStatuses\":[{\"componentName\":\""
-                + componentName
-                + "\",\"componentVersionName\":\""
-                + componentVersionName
-                + "\",\"componentVersion\":\"https://int-hub04.dc1.lan/api/components/18dbecb7-a3b5-418b-9af1-44bf61ae0319/versions/3ef95202-5b60-4a62-ab07-02740212fd96\",\"bomComponentVersionPolicyStatus\":\"https://int-hub04.dc1.lan/api/projects/e8b0220a-3c39-4cf8-a8f2-85e2bec950a9/versions/ce613509-19da-41f9-99cb-7f4a82dfd3f1/components/18dbecb7-a3b5-418b-9af1-44bf61ae0319/versions/3ef95202-5b60-4a62-ab07-02740212fd96/policy-status\",\"componentIssueLink\":\"https://int-hub04.dc1.lan/api/projects/e8b0220a-3c39-4cf8-a8f2-85e2bec950a9/versions/ce613509-19da-41f9-99cb-7f4a82dfd3f1/components/18dbecb7-a3b5-418b-9af1-44bf61ae0319/component-versions/3ef95202-5b60-4a62-ab07-02740212fd96/issues\",\"policies\":[\"https://int-hub04.dc1.lan/api/policy-rules/9f34466a-a088-45a6-8048-35f96fcb989f\",\"https://int-hub04.dc1.lan/api/policy-rules/fedc4472-34b4-4c12-88bb-9fa63bae40a3\",\"https://int-hub04.dc1.lan/api/policy-rules/0b602e42-e339-46ab-8061-b2219088f233\"]}],\"policyInfos\":[{\"policyName\":\"No Apache Commons File Upload\",\"policy\":\"https://int-hub04.dc1.lan/api/policy-rules/9f34466a-a088-45a6-8048-35f96fcb989f\"},{\"policyName\":\"No Apache Commons File Upload 1.2.1\",\"policy\":\"https://int-hub04.dc1.lan/api/policy-rules/0b602e42-e339-46ab-8061-b2219088f233\"},{\"policyName\":\"No Commons FileUpload 1.2.1\",\"policy\":\"https://int-hub04.dc1.lan/api/policy-rules/fedc4472-34b4-4c12-88bb-9fa63bae40a3\"}],\"componentVersionsInViolation\":1,\"projectVersion\":\"https://int-hub04.dc1.lan/api/projects/e8b0220a-3c39-4cf8-a8f2-85e2bec950a9/versions/ce613509-19da-41f9-99cb-7f4a82dfd3f1\"},\"contentType\":\"application/json\",\"type\":\"RULE_VIOLATION\",\"createdAt\":\"2018-08-22T14:44:34.340Z\",\"_meta\":{\"allow\":[\"GET\"],\"href\":\"https://int-hub04.dc1.lan/api/notifications/f1224269-6b74-4263-8b6c-cb4de6be9d6c\"}}";
+                                   + projectName
+                                   + "\",\"projectVersionName\":\""
+                                   + projectVersionName
+                                   + "\",\"componentVersionStatuses\":[{\"componentName\":\""
+                                   + componentName
+                                   + "\",\"componentVersionName\":\""
+                                   + componentVersionName
+                                   + "\",\"componentVersion\":\"https://int-hub04.dc1.lan/api/components/18dbecb7-a3b5-418b-9af1-44bf61ae0319/versions/3ef95202-5b60-4a62-ab07-02740212fd96\",\"bomComponentVersionPolicyStatus\":\"https://int-hub04.dc1.lan/api/projects/e8b0220a-3c39-4cf8-a8f2-85e2bec950a9/versions/ce613509-19da-41f9-99cb-7f4a82dfd3f1/components/18dbecb7-a3b5-418b-9af1-44bf61ae0319/versions/3ef95202-5b60-4a62-ab07-02740212fd96/policy-status\",\"componentIssueLink\":\"https://int-hub04.dc1.lan/api/projects/e8b0220a-3c39-4cf8-a8f2-85e2bec950a9/versions/ce613509-19da-41f9-99cb-7f4a82dfd3f1/components/18dbecb7-a3b5-418b-9af1-44bf61ae0319/component-versions/3ef95202-5b60-4a62-ab07-02740212fd96/issues\",\"policies\":[\"https://int-hub04.dc1.lan/api/policy-rules/9f34466a-a088-45a6-8048-35f96fcb989f\",\"https://int-hub04.dc1.lan/api/policy-rules/fedc4472-34b4-4c12-88bb-9fa63bae40a3\",\"https://int-hub04.dc1.lan/api/policy-rules/0b602e42-e339-46ab-8061-b2219088f233\"]}],\"policyInfos\":[{\"policyName\":\"No Apache Commons File Upload\",\"policy\":\"https://int-hub04.dc1.lan/api/policy-rules/9f34466a-a088-45a6-8048-35f96fcb989f\"},{\"policyName\":\"No Apache Commons File Upload 1.2.1\",\"policy\":\"https://int-hub04.dc1.lan/api/policy-rules/0b602e42-e339-46ab-8061-b2219088f233\"},{\"policyName\":\"No Commons FileUpload 1.2.1\",\"policy\":\"https://int-hub04.dc1.lan/api/policy-rules/fedc4472-34b4-4c12-88bb-9fa63bae40a3\"}],\"componentVersionsInViolation\":1,\"projectVersion\":\"https://int-hub04.dc1.lan/api/projects/e8b0220a-3c39-4cf8-a8f2-85e2bec950a9/versions/ce613509-19da-41f9-99cb-7f4a82dfd3f1\"},\"contentType\":\"application/json\",\"type\":\"RULE_VIOLATION\",\"createdAt\":\"2018-08-22T14:44:34.340Z\",\"_meta\":{\"allow\":[\"GET\"],\"href\":\"https://int-hub04.dc1.lan/api/notifications/f1224269-6b74-4263-8b6c-cb4de6be9d6c\"}}";
         return new NotificationContent(new Date(), "provider_blackduck", "RULE_VIOLATION", content);
     }
 
@@ -92,7 +93,8 @@ public class GsonFilterTest {
     }
 
     private NotificationContent createVulnerabilityContent(final String projectName, final String projectVersion, final String componentName, final String componentVersionName) {
-        final String content = "\t{\"content\":{\"componentVersionOriginName\":\"apache_software\",\"componentVersionOriginId\":\"commons-fileupload/commons-fileupload-1.2.1\",\"newVulnerabilityCount\":5,\"newVulnerabilityIds\":[{\"source\":\"NVD\",\"vulnerabilityId\":\"CVE-2016-1000031\",\"vulnerability\":\"https://int-hub04.dc1.lan/api/vulnerabilities/CVE-2016-1000031\"},{\"source\":\"BDSA\",\"vulnerabilityId\":\"BDSA-2013-0013\",\"relatedVulnerabilityId\":\"CVE-2013-2186\",\"vulnerability\":\"https://int-hub04.dc1.lan/api/vulnerabilities/BDSA-2013-0013\",\"relatedVulnerability\":\"https://int-hub04.dc1.lan/api/vulnerabilities/CVE-2013-2186\"},{\"source\":\"NVD\",\"vulnerabilityId\":\"CVE-2016-3092\",\"vulnerability\":\"https://int-hub04.dc1.lan/api/vulnerabilities/CVE-2016-3092\"},{\"source\":\"NVD\",\"vulnerabilityId\":\"CVE-2014-0050\",\"vulnerability\":\"https://int-hub04.dc1.lan/api/vulnerabilities/CVE-2014-0050\"},{\"source\":\"BDSA\",\"vulnerabilityId\":\"BDSA-2013-0001\",\"relatedVulnerabilityId\":\"CVE-2013-0248\",\"vulnerability\":\"https://int-hub04.dc1.lan/api/vulnerabilities/BDSA-2013-0001\",\"relatedVulnerability\":\"https://int-hub04.dc1.lan/api/vulnerabilities/CVE-2013-0248\"}],\"updatedVulnerabilityIds\":[],\"deletedVulnerabilityIds\":[],\"updatedVulnerabilityCount\":0,\"deletedVulnerabilityCount\":0,\"componentVersion\":\"https://int-hub04.dc1.lan/api/components/18dbecb7-a3b5-418b-9af1-44bf61ae0319/versions/3ef95202-5b60-4a62-ab07-02740212fd96\",\"componentName\":\""
+        final String content =
+            "\t{\"content\":{\"componentVersionOriginName\":\"apache_software\",\"componentVersionOriginId\":\"commons-fileupload/commons-fileupload-1.2.1\",\"newVulnerabilityCount\":5,\"newVulnerabilityIds\":[{\"source\":\"NVD\",\"vulnerabilityId\":\"CVE-2016-1000031\",\"vulnerability\":\"https://int-hub04.dc1.lan/api/vulnerabilities/CVE-2016-1000031\"},{\"source\":\"BDSA\",\"vulnerabilityId\":\"BDSA-2013-0013\",\"relatedVulnerabilityId\":\"CVE-2013-2186\",\"vulnerability\":\"https://int-hub04.dc1.lan/api/vulnerabilities/BDSA-2013-0013\",\"relatedVulnerability\":\"https://int-hub04.dc1.lan/api/vulnerabilities/CVE-2013-2186\"},{\"source\":\"NVD\",\"vulnerabilityId\":\"CVE-2016-3092\",\"vulnerability\":\"https://int-hub04.dc1.lan/api/vulnerabilities/CVE-2016-3092\"},{\"source\":\"NVD\",\"vulnerabilityId\":\"CVE-2014-0050\",\"vulnerability\":\"https://int-hub04.dc1.lan/api/vulnerabilities/CVE-2014-0050\"},{\"source\":\"BDSA\",\"vulnerabilityId\":\"BDSA-2013-0001\",\"relatedVulnerabilityId\":\"CVE-2013-0248\",\"vulnerability\":\"https://int-hub04.dc1.lan/api/vulnerabilities/BDSA-2013-0001\",\"relatedVulnerability\":\"https://int-hub04.dc1.lan/api/vulnerabilities/CVE-2013-0248\"}],\"updatedVulnerabilityIds\":[],\"deletedVulnerabilityIds\":[],\"updatedVulnerabilityCount\":0,\"deletedVulnerabilityCount\":0,\"componentVersion\":\"https://int-hub04.dc1.lan/api/components/18dbecb7-a3b5-418b-9af1-44bf61ae0319/versions/3ef95202-5b60-4a62-ab07-02740212fd96\",\"componentName\":\""
                 + componentName + "\",\"versionName\":\""
                 + componentVersionName
                 + "\",\"affectedProjectVersions\":"
