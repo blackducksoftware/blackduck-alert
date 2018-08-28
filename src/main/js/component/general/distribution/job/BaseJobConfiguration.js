@@ -204,23 +204,6 @@ class BaseJobConfiguration extends Component {
             <form className="form-horizontal" onSubmit={this.onSubmit}>
                 <TextInput id="name" label="Job Name" name="name" value={this.state.name} onChange={this.handleChange} errorName="nameError" errorValue={this.state.errors.nameError}/>
                 <div className="form-group">
-                    <label className="col-sm-3 control-label">Provider</label>
-                    <div className="col-sm-8">
-                        <Select
-                            id="providerName"
-                            className="typeAheadField"
-                            onChange={this.handleProviderChanged}
-                            searchable
-                            options={this.createProviderOptions()}
-                            placeholder="Choose the provider"
-                            value={this.state.providerName}
-                        />
-                        {this.state.errors.providerNameError && <label className="fieldError" name="providerNameError">
-                            {this.state.errors.providerNameError}
-                        </label>}
-                    </div>
-                </div>
-                <div className="form-group">
                     <label className="col-sm-3 control-label">Frequency</label>
                     <div className="col-sm-8">
                         <Select
@@ -234,6 +217,23 @@ class BaseJobConfiguration extends Component {
                         />
                         {this.state.errors.frequencyError && <label className="fieldError" name="frequencyError">
                             {this.state.errors.frequencyError}
+                        </label>}
+                    </div>
+                </div>
+                <div className="form-group">
+                    <label className="col-sm-3 control-label">Provider</label>
+                    <div className="col-sm-8">
+                        <Select
+                            id="providerName"
+                            className="typeAheadField"
+                            onChange={this.handleProviderChanged}
+                            searchable
+                            options={this.createProviderOptions()}
+                            placeholder="Choose the provider"
+                            value={this.state.providerName}
+                        />
+                        {this.state.errors.providerNameError && <label className="fieldError" name="providerNameError">
+                            {this.state.errors.providerNameError}
                         </label>}
                     </div>
                 </div>
