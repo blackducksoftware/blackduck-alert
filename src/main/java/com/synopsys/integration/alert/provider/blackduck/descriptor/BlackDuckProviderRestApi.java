@@ -89,10 +89,10 @@ public class BlackDuckProviderRestApi extends RestApi {
         final String apiToken = blackDuckEntity.getBlackDuckApiKey();
         final String url = blackDuckEntity.getBlackDuckUrl();
 
-        final HubServerConfigBuilder blackDuckServerConfigBuilder = blackDuckProperties.createServerConfigBuilderWithoutAuthentication(intLogger, Integer.valueOf(blackDuckEntity.getBlackDuckTimeout()));
+        final HubServerConfigBuilder blackDuckServerConfigBuilder = blackDuckProperties.createServerConfigBuilderWithoutAuthentication(intLogger, blackDuckEntity.getBlackDuckTimeout());
         blackDuckServerConfigBuilder.setApiToken(apiToken);
         blackDuckServerConfigBuilder.setUrl(url);
-        
+
         validateBlackDuckConfiguration(blackDuckServerConfigBuilder);
         try (final RestConnection restConnection = createRestConnection(blackDuckServerConfigBuilder)) {
             restConnection.connect();
