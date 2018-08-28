@@ -29,6 +29,7 @@ import com.synopsys.integration.alert.common.descriptor.config.RestApi;
 import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.provider.Provider;
+import com.synopsys.integration.alert.common.provider.ProviderUIConfig;
 
 public abstract class ProviderDescriptor extends Descriptor {
     private final Provider provider;
@@ -45,11 +46,11 @@ public abstract class ProviderDescriptor extends Descriptor {
         addProviderUiConfigs(providerRestApi, providerUiConfig);
     }
 
-    public ProviderDescriptor(final String name, final RestApi providerRestApi, final UIConfig providerUiConfig, final RestApi distributionRestApi, final UIConfig distributionUIConfig, final Provider provider) {
+    public ProviderDescriptor(final String name, final RestApi providerRestApi, final UIConfig providerUiConfig, final RestApi distributionRestApi, final ProviderUIConfig distributionUIConfig, final Provider provider) {
         super(name, DescriptorType.PROVIDER);
         this.provider = provider;
         addProviderUiConfigs(providerRestApi, providerUiConfig);
-        addDistributionUiConfigs(distributionRestApi, distributionUIConfig);
+        addProviderDistributionUiConfigs(distributionRestApi, distributionUIConfig);
     }
 
     public Provider getProvider() {

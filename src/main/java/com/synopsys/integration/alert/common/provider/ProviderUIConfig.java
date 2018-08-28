@@ -21,20 +21,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.enumeration;
+package com.synopsys.integration.alert.common.provider;
 
-public enum RestApiType {
-    CHANNEL_GLOBAL_CONFIG,
-    CHANNEL_DISTRIBUTION_CONFIG,
-    PROVIDER_CONFIG,
-    PROVIDER_DISTRIBUTION_CONFIG,
-    COMPONENT_CONFIG;
+import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 
-    public static final RestApiType getRestApiType(final String restApiTypeName) {
-        try {
-            return valueOf(restApiTypeName);
-        } catch (final IllegalArgumentException ex) {
-            return null;
-        }
+public abstract class ProviderUIConfig extends UIConfig {
+
+    private final Provider provider;
+
+    public ProviderUIConfig(final Provider provider) {
+        this.provider = provider;
+    }
+
+    public ConfigField getNotificationTypeField() {
+        return new SelectConfigField("notificationTypes", "Notification Types", true, false, provider.getNotificationTypes());
     }
 }
