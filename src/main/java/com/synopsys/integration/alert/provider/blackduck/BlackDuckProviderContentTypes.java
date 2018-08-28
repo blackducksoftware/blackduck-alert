@@ -28,11 +28,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.synopsys.integration.alert.common.field.HierarchicalField;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
-import com.synopsys.integration.alert.workflow.filter.HierarchicalField;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
-public class BlackDuckProviderContentTypes { 
+public class BlackDuckProviderContentTypes {
     public static final List<ProviderContentType> ALL = new ArrayList();
     public static final ProviderContentType BOM_EDIT = new ProviderContentType(
         NotificationType.BOM_EDIT.name(),
@@ -45,37 +45,25 @@ public class BlackDuckProviderContentTypes {
     public static final ProviderContentType POLICY_OVERRIDE = new ProviderContentType(
         NotificationType.POLICY_OVERRIDE.name(),
         Arrays.asList(
-            HierarchicalField.nestedField("content", "projectName"),
-            HierarchicalField.nestedField("content", "projectVersionName"),
-            HierarchicalField.nestedField("content", "componentName"),
-            HierarchicalField.nestedField("content", "versionName")
+            new HierarchicalField(Arrays.asList("content"), "projectName", "configuredProjects")
         )
     );
     public static final ProviderContentType RULE_VIOLATION = new ProviderContentType(
         NotificationType.RULE_VIOLATION.name(),
         Arrays.asList(
-            HierarchicalField.nestedField("content", "projectName"),
-            HierarchicalField.nestedField("content", "projectVersionName"),
-            HierarchicalField.nestedField("content", "componentVersionStatuses", "componentName"),
-            HierarchicalField.nestedField("content", "componentVersionStatuses", "componentVersionName")
+            new HierarchicalField(Arrays.asList("content"), "projectName", "configuredProjects")
         )
     );
     public static final ProviderContentType RULE_VIOLATION_CLEARED = new ProviderContentType(
         NotificationType.RULE_VIOLATION_CLEARED.name(),
         Arrays.asList(
-            HierarchicalField.nestedField("content", "projectName"),
-            HierarchicalField.nestedField("content", "projectVersionName"),
-            HierarchicalField.nestedField("content", "componentVersionStatuses", "componentName"),
-            HierarchicalField.nestedField("content", "componentVersionStatuses", "componentVersionName")
+            new HierarchicalField(Arrays.asList("content"), "projectName", "configuredProjects")
         )
     );
     public static final ProviderContentType VULNERABILITY = new ProviderContentType(
         NotificationType.VULNERABILITY.name(),
         Arrays.asList(
-            HierarchicalField.nestedField("content", "affectedProjectVersions", "projectName"),
-            HierarchicalField.nestedField("content", "affectedProjectVersions", "projectVersionName"),
-            HierarchicalField.nestedField("content", "componentName"),
-            HierarchicalField.nestedField("content", "versionName")
+            new HierarchicalField(Arrays.asList("content", "affectedProjectVersions"), "projectName", "configuredProjects")
         )
     );
 

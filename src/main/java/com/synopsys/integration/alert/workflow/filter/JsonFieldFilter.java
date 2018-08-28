@@ -30,6 +30,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.synopsys.integration.alert.common.field.HierarchicalField;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 
 public class JsonFieldFilter implements JsonFilterBuilder {
@@ -40,7 +41,7 @@ public class JsonFieldFilter implements JsonFilterBuilder {
     public JsonFieldFilter(final Gson gson, final HierarchicalField hierarchicalField, final String value) {
         this.gson = gson;
         this.value = value;
-        this.fieldNameHierarchy = hierarchicalField.getFieldNames();
+        this.fieldNameHierarchy = hierarchicalField.getFullPathToField();
     }
 
     @Override
