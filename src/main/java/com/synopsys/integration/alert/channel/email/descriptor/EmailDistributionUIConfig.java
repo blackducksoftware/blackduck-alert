@@ -69,9 +69,8 @@ public class EmailDistributionUIConfig extends UIConfig {
                    .stream()
                    .map(blackduckGroup -> blackduckGroup.getName())
                    .collect(Collectors.toList());
-        } catch (final IntegrationException e) {
-            logger.error("Error retrieving email groups");
-            e.printStackTrace();
+        } catch (final IntegrationException ex) {
+            logger.error("Error retrieving email groups", ex);
         }
 
         return Arrays.asList();
