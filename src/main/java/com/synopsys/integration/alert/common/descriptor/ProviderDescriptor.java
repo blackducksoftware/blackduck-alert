@@ -33,16 +33,23 @@ import com.synopsys.integration.alert.common.provider.Provider;
 public abstract class ProviderDescriptor extends Descriptor {
     private final Provider provider;
 
+    public ProviderDescriptor(final String name, final RestApi providerRestApi, final Provider provider) {
+        super(name, DescriptorType.PROVIDER);
+        this.provider = provider;
+        addProviderRestApi(providerRestApi);
+    }
+
     public ProviderDescriptor(final String name, final RestApi providerRestApi, final UIConfig providerUiConfig, final Provider provider) {
         super(name, DescriptorType.PROVIDER);
         this.provider = provider;
         addProviderUiConfigs(providerRestApi, providerUiConfig);
     }
 
-    public ProviderDescriptor(final String name, final RestApi providerRestApi, final Provider provider) {
+    public ProviderDescriptor(final String name, final RestApi providerRestApi, final UIConfig providerUiConfig, final RestApi distributionRestApi, final UIConfig distributionUIConfig, final Provider provider) {
         super(name, DescriptorType.PROVIDER);
         this.provider = provider;
-        addProviderRestApi(providerRestApi);
+        addProviderUiConfigs(providerRestApi, providerUiConfig);
+        addDistributionUiConfigs(distributionRestApi, distributionUIConfig);
     }
 
     public Provider getProvider() {
