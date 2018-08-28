@@ -41,6 +41,8 @@ class BaseJobConfiguration extends Component {
                 error: nextProps.error
             };
 
+            const callHandleSaveBtnClick = this.state.configurationMessage === 'Saving...' && nextProps.success;
+
             if (nextProps.distributionConfigId) {
                 const newState = Object.assign({}, stateValues, {
                     id: nextProps.id,
@@ -54,9 +56,14 @@ class BaseJobConfiguration extends Component {
                     notificationTypes: nextProps.jobs[nextProps.distributionConfigId].notificationTypes,
                     configuredProjects: nextProps.jobs[nextProps.distributionConfigId].configuredProjects
                 });
+
                 this.setState(newState);
             } else {
                 this.setState(stateValues);
+            }
+
+            if (callHandleSaveBtnClick && nextProps.handleSaveBtnClick) {
+                nextProps.handleSaveBtnClick(this.state);
             }
         }
     }
@@ -65,9 +72,7 @@ class BaseJobConfiguration extends Component {
         event.preventDefault();
         const {handleSaveBtnClick, handleCancel} = this.props;
         this.handleSubmit();
-        if (handleSaveBtnClick && this.state.success) {
-            handleSaveBtnClick(this.state);
-        } else if (handleCancel && !handleSaveBtnClick) {
+        if (handleCancel && !handleSaveBtnClick) {
             handleCancel();
         }
     }
