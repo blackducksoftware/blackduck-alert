@@ -23,18 +23,31 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.common.descriptor.config.RestApi;
+import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class BlackDuckDescriptor extends ProviderDescriptor {
+public class BlackDuckDistributionRestApi extends RestApi {
 
     @Autowired
-    public BlackDuckDescriptor(final BlackDuckProviderRestApi providerRestApi, final BlackDuckProviderUIConfig blackDuckProviderUIConfig, final BlackDuckDistributionRestApi blackDuckDistributionRestApi,
-    final BlackDuckDistributionUIConfig blackDuckDistributionUIConfig, final BlackDuckProvider provider) {
-        super(BlackDuckProvider.COMPONENT_NAME, providerRestApi, blackDuckProviderUIConfig, blackDuckDistributionRestApi, blackDuckDistributionUIConfig, provider);
+    public BlackDuckDistributionRestApi(final BlackDuckTypeConverter typeConverter, final BlackDuckRepositoryAccessor repositoryAccessor) {
+        super(typeConverter, repositoryAccessor);
+    }
+
+    @Override
+    public void validateConfig(final Config restModel, final Map<String, String> fieldErrors) {
+
+    }
+
+    @Override
+    public void testConfig(final DatabaseEntity entity) throws IntegrationException {
+
     }
 }

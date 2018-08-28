@@ -18,7 +18,7 @@ public class BlackDuckDescriptorTest {
     @Test
     public void testGetProvider() {
         final BlackDuckProvider provider = Mockito.mock(BlackDuckProvider.class);
-        final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, null, provider);
+        final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, null, null, null, provider);
         assertEquals(provider, descriptor.getProvider());
     }
 
@@ -26,7 +26,7 @@ public class BlackDuckDescriptorTest {
     public void testGetNotificationTypes() {
         final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
         final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask);
-        final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, null, provider);
+        final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, null, null, null, provider);
         final Set<String> expectedNotificationTypes = Arrays.stream(NotificationType.values()).map(NotificationType::name).collect(Collectors.toSet());
         final Set<String> providerNotificationTypes = descriptor.getNotificationTypes();
         assertEquals(expectedNotificationTypes, providerNotificationTypes);
