@@ -147,7 +147,7 @@ importWebServerCertificate(){
     	echo $PUBLIC_HUB_WEBSERVER_HOST
     	echo $PUBLIC_HUB_WEBSERVER_PORT
 
-    	# In case of email-extension container restart
+    	# In case of alert container restart
     	if keytool -list -keystore "$truststoreFile" -storepass changeit -alias publichubwebserver
     	then
     	    keytool -delete -alias publichubwebserver -keystore "$truststoreFile" -storepass changeit
