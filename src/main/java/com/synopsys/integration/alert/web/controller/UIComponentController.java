@@ -95,16 +95,17 @@ public class UIComponentController extends BaseController {
         final ProviderDescriptor providerDescriptor = descriptorMap.getProviderDescriptor(providerName);
         final ChannelDescriptor channelDescriptor = descriptorMap.getChannelDescriptor(channelName);
         final UIConfig channelUIConfig = channelDescriptor.getUIConfig(RestApiType.CHANNEL_DISTRIBUTION_CONFIG);
+        final UIConfig providerUIConfig = providerDescriptor.getUIConfig(RestApiType.PROVIDER_DISTRIBUTION_CONFIG);
         final UIComponent channelUIComponent = channelUIConfig.generateUIComponent();
-
+        final UIComponent providerUIComponent = providerUIConfig.generateUIComponent();
         final List<ConfigField> combinedFields = new ArrayList<>();
         final ConfigField name = new TextInputConfigField("name", "Name", true, false);
         final ConfigField frequency = new SelectConfigField("frequency", "Digest type", true, false, Arrays.stream(DigestType.values()).map(type -> type.getDisplayName()).collect(Collectors.toList()));
-        final ConfigField notificationTypes = new SelectConfigField("notificationTypes", "Notification Types", true, false, providerDescriptor.getNotificationTypes().stream().collect(Collectors.toList()));
+        //final ConfigField notificationTypes = new SelectConfigField("notificationTypes", "Notification Types", true, false, providerDescriptor.getNotificationTypes().stream().collect(Collectors.toList()));
         combinedFields.add(name);
         combinedFields.add(frequency);
-        combinedFields.add(notificationTypes);
         combinedFields.addAll(channelUIComponent.getFields());
+        combinedFields.addAll(providerUIComponent.getFields());
 
         final UIComponent combinedUIComponent = new UIComponent(channelUIComponent.getLabel(), channelUIComponent.getUrlName(), channelUIComponent.getDescriptorName(), channelUIComponent.getFontAwesomeIcon(),
         channelUIComponent.isAutomaticallyGenerateUI(), combinedFields);
