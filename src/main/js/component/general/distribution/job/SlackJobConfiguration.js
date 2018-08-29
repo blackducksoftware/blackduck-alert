@@ -20,13 +20,13 @@ class SlackJobConfiguration extends Component {
     }
 
     componentDidMount() {
-        const {baseUrl,distributionConfigId} = this.props;
-        this.props.getDistributionJob(baseUrl,distributionConfigId);
+        const {baseUrl, distributionConfigId} = this.props;
+        this.props.getDistributionJob(baseUrl, distributionConfigId);
     }
 
     componentWillReceiveProps(nextProps) {
         if (!nextProps.fetching && !nextProps.inProgress) {
-            if(nextProps.jobs[nextProps.distributionConfigId]) {
+            if (nextProps.jobs[nextProps.distributionConfigId]) {
                 this.setState({
                     webhook: nextProps.jobs[nextProps.distributionConfigId].webhook,
                     channelUsername: nextProps.jobs[nextProps.distributionConfigId].channelUsername,
@@ -57,18 +57,20 @@ class SlackJobConfiguration extends Component {
     render() {
         const content = (
             <div>
-                <TextInput id="jobSlackWebhook" label="Webhook" name="webhook" value={this.state.webhook} onChange={this.handleChange} errorName="webhookError" errorValue={this.props.errors.webhookError} />
-                <TextInput id="jobSlackChannelName" label="Channel Name" name="channelName" value={this.state.channelName} onChange={this.handleChange} errorName="channelNameError" errorValue={this.props.errors.channelNameError} />
-                <TextInput id="jobSlackChannelUsername" label="Channel Username" name="channelUsername" value={this.state.channelUsername} onChange={this.handleChange} errorName="channelUsernameError" errorValue={this.props.channelUsernameError} />
+                <TextInput id="jobSlackWebhook" label="Webhook" name="webhook" value={this.state.webhook} onChange={this.handleChange} errorName="webhookError" errorValue={this.props.errors.webhookError}/>
+                <TextInput id="jobSlackChannelName" label="Channel Name" name="channelName" value={this.state.channelName} onChange={this.handleChange} errorName="channelNameError" errorValue={this.props.errors.channelNameError}/>
+                <TextInput id="jobSlackChannelUsername" label="Channel Username" name="channelUsername" value={this.state.channelUsername} onChange={this.handleChange} errorName="channelUsernameError"
+                           errorValue={this.props.channelUsernameError}/>
             </div>);
         return (<BaseJobConfiguration
-                    baseUrl={this.props.baseUrl}
-                    testUrl={this.props.testUrl}
-                    distributionConfigId = {this.props.distributionConfigId}
-                    handleCancel={this.props.handleCancel}
-                    handleSaveBtnClick={this.props.handleSaveBtnClick}
-                    getParentConfiguration={this.getConfiguration}
-                    childContent={content}/>);
+            baseUrl={this.props.baseUrl}
+            testUrl={this.props.testUrl}
+            channelName={this.props.channelName}
+            distributionConfigId={this.props.distributionConfigId}
+            handleCancel={this.props.handleCancel}
+            handleSaveBtnClick={this.props.handleSaveBtnClick}
+            getParentConfiguration={this.getConfiguration}
+            childContent={content}/>);
     }
 }
 
@@ -80,11 +82,11 @@ SlackJobConfiguration.propTypes = {
     distributionType: PropTypes.string,
     csrfToken: PropTypes.string,
     webhook: PropTypes.string,
-    channelName: PropTypes.string,
     channelUserName: PropTypes.string,
     errors: PropTypes.object,
     handleCancel: PropTypes.func.isRequired,
-    handleSaveBtnClick: PropTypes.func.isRequired
+    handleSaveBtnClick: PropTypes.func.isRequired,
+    channelName: PropTypes.string.isRequired
 };
 
 SlackJobConfiguration.defaultProps = {
@@ -100,7 +102,7 @@ SlackJobConfiguration.defaultProps = {
 };
 
 const mapDispatchToProps = dispatch => ({
-    getDistributionJob: (url,id) => dispatch(getDistributionJob(url,id))
+    getDistributionJob: (url, id) => dispatch(getDistributionJob(url, id))
 });
 
 const mapStateToProps = state => ({

@@ -6,9 +6,11 @@ import TextInput from '../../../../field/input/TextInput';
 import ProjectConfiguration from '../ProjectConfiguration';
 import ConfigButtons from '../../../common/ConfigButtons';
 
-import {frequencyOptions, notificationOptions} from '../../../../util/distribution-data';
+import {frequencyOptions} from '../../../../util/distribution-data';
 
 import {getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob} from '../../../../store/actions/distributions';
+import {getDistributionDescriptor} from '../../../../store/actions/descriptors';
+import DescriptorOption from "../../../common/DescriptorOption";
 
 class BaseJobConfiguration extends Component {
     constructor(props) {
@@ -28,7 +30,9 @@ class BaseJobConfiguration extends Component {
         this.handleTestSubmit = this.handleTestSubmit.bind(this);
         this.handleProviderChanged = this.handleProviderChanged.bind(this);
         this.createProviderOptions = this.createProviderOptions.bind(this);
+        this.createNotificationTypeOptions = this.createNotificationTypeOptions.bind(this);
         this.buildJsonBody = this.buildJsonBody.bind(this);
+        this.renderDistributionForm = this.renderDistributionForm.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -152,8 +156,10 @@ class BaseJobConfiguration extends Component {
     handleProviderChanged(option) {
         if (option) {
             this.handleStateValues('providerName', option.value);
+            this.props.getDistributionDescriptor(option.value, this.props.channelName);
         } else {
             this.handleStateValues('providerName', option);
+            this.props.getDistributionDescriptor(null, this.props.channelName);
         }
     }
 
@@ -196,7 +202,58 @@ class BaseJobConfiguration extends Component {
         } else {
             return [];
         }
+    }
 
+    createNotificationTypeOptions() {
+        const {fields} = this.props.currentDistributionComponents;
+        if (fields) {
+            const notificationTypeField = fields.filter(field => field.key === 'notificationTypes');
+            const {options} = notificationTypeField[0];
+
+            const optionList = options.map(option => Object.assign({}, {label: option, value: option}));
+            return optionList;
+        } else {
+            return [];
+        }
+    }
+
+    renderOption(option) {
+        return (<DescriptorOption icon={option.icon} label={option.label} value={option.value}/>);
+    }
+
+    renderDistributionForm() {
+        if (!this.props.currentDistributionComponents) {
+            return null;
+        } else {
+            return (
+                <div>
+                    <div className="form-group">
+                        <label className="col-sm-3 control-label">Notification Types</label>
+                        <div className="col-sm-8">
+                            <Select
+                                id="jobType"
+                                className="typeAheadField"
+                                onChange={this.handleNotificationChanged}
+                                searchable
+                                multi
+                                removeSelected
+                                options={this.createNotificationTypeOptions()}
+                                placeholder="Choose the notification types"
+                                value={this.state.notificationTypes}
+                            />
+                            {this.state.errors.notificationTypesError && <label className="fieldError" name="notificationTypesError">
+                                {this.state.errors.notificationTypesError}
+                            </label>}
+                        </div>
+                    </div>
+                    {this.props.childContent}
+                    <ProjectConfiguration includeAllProjects={this.state.includeAllProjects} handleChange={this.handleChange} handleProjectChanged={this.handleProjectChanged} projects={this.props.projects}
+                                          configuredProjects={this.state.configuredProjects}/>
+                    <ConfigButtons cancelId="job-cancel" submitId="job-submit" includeTest includeCancel onTestClick={this.handleTestSubmit} onCancelClick={this.props.handleCancel}/>
+                    <p name="configurationMessage">{this.state.configurationMessage}</p>
+                </div>
+            );
+        }
     }
 
     render() {
@@ -229,38 +286,17 @@ class BaseJobConfiguration extends Component {
                             onChange={this.handleProviderChanged}
                             searchable
                             options={this.createProviderOptions()}
+                            optionRenderer={this.renderOption}
                             placeholder="Choose the provider"
                             value={this.state.providerName}
+                            valueRenderer={this.renderOption}
                         />
                         {this.state.errors.providerNameError && <label className="fieldError" name="providerNameError">
                             {this.state.errors.providerNameError}
                         </label>}
                     </div>
                 </div>
-                <div className="form-group">
-                    <label className="col-sm-3 control-label">Notification Types</label>
-                    <div className="col-sm-8">
-                        <Select
-                            id="jobType"
-                            className="typeAheadField"
-                            onChange={this.handleNotificationChanged}
-                            searchable
-                            multi
-                            removeSelected
-                            options={notificationOptions}
-                            placeholder="Choose the notification types"
-                            value={this.state.notificationTypes}
-                        />
-                        {this.state.errors.notificationTypesError && <label className="fieldError" name="notificationTypesError">
-                            {this.state.errors.notificationTypesError}
-                        </label>}
-                    </div>
-                </div>
-                {this.props.childContent}
-                <ProjectConfiguration includeAllProjects={this.state.includeAllProjects} handleChange={this.handleChange} handleProjectChanged={this.handleProjectChanged} projects={this.props.projects}
-                                      configuredProjects={this.state.configuredProjects}/>
-                <ConfigButtons cancelId="job-cancel" submitId="job-submit" includeTest includeCancel onTestClick={this.handleTestSubmit} onCancelClick={this.props.handleCancel}/>
-                <p name="configurationMessage">{this.state.configurationMessage}</p>
+                {this.renderDistributionForm()}
             </form>
         );
     }
@@ -281,7 +317,9 @@ BaseJobConfiguration.propTypes = {
     handleCancel: PropTypes.func.isRequired,
     handleSaveBtnClick: PropTypes.func.isRequired,
     getParentConfiguration: PropTypes.func.isRequired,
-    childContent: PropTypes.object.isRequired
+    childContent: PropTypes.object.isRequired,
+    channelName: PropTypes.string.isRequired,
+    currentDistributionComponents: PropTypes.object
 };
 
 BaseJobConfiguration.defaultProps = {
@@ -295,14 +333,16 @@ BaseJobConfiguration.defaultProps = {
     success: false,
     configurationMessage: '',
     error: {},
-    distributionConfigId: null
+    distributionConfigId: null,
+    currentDistributionComponents: null
 };
 
 const mapDispatchToProps = dispatch => ({
     getDistributionJob: (url, id) => dispatch(getDistributionJob(url, id)),
     saveDistributionJob: (url, config) => dispatch(saveDistributionJob(url, config)),
     updateDistributionJob: (url, config) => dispatch(updateDistributionJob(url, config)),
-    testDistributionJob: (url, config) => dispatch(testDistributionJob(url, config))
+    testDistributionJob: (url, config) => dispatch(testDistributionJob(url, config)),
+    getDistributionDescriptor: (provider, channel) => dispatch(getDistributionDescriptor(provider, channel))
 });
 
 const mapStateToProps = state => ({
@@ -314,6 +354,7 @@ const mapStateToProps = state => ({
     success: state.distributions.success,
     configurationMessage: state.distributions.configurationMessage,
     error: state.distributions.error,
+    currentDistributionComponents: state.descriptors.currentDistributionComponents
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(BaseJobConfiguration);

@@ -39,23 +39,22 @@ function descriptorsError(message) {
 
 function fetchingDistributionDescriptor() {
     return {
-        type: DESCRIPTORS_DISTRIBUTION_FETCHING,
-
+        type: DESCRIPTORS_DISTRIBUTION_FETCHING
     };
 }
 
 function fetchedDistributionDescriptors(items) {
     return {
         type: DESCRIPTORS_DISTRIBUTION_FETCHED,
-
+        currentDistributionComponents: items
     }
 }
 
-function distributionDescriptorError(messages, errors) {
+function distributionDescriptorError(message, error) {
     return {
         type: DESCRIPTORS_DISTRIBUTION_FETCH_ERROR,
         message,
-        errors
+        error
     };
 }
 
@@ -93,7 +92,7 @@ export function getDistributionDescriptor(provider, channel) {
         }).then((response) => {
             response.json().then((json) => {
                 if (!response.ok) {
-                    dispatch(distributionDescriptorError(json.message, json.errors));
+                    dispatch(distributionDescriptorError(json.message, json.error));
                     dispatch(verifyLoginByStatus(response.status));
                 } else {
                     dispatch(fetchedDistributionDescriptors(json));

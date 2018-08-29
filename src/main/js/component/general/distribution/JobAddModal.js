@@ -7,6 +7,7 @@ import Select from 'react-select-2';
 import GroupEmailJobConfiguration from './job/GroupEmailJobConfiguration';
 import HipChatJobConfiguration from './job/HipChatJobConfiguration';
 import SlackJobConfiguration from './job/SlackJobConfiguration';
+import DescriptorOption from "../../common/DescriptorOption";
 
 
 class JobAddModal extends Component {
@@ -28,6 +29,7 @@ class JobAddModal extends Component {
         switch (this.state.values.typeValue) {
             case 'channel_email':
                 return (<GroupEmailJobConfiguration
+                    channelName={this.state.values.typeValue}
                     projects={this.props.projects}
                     handleCancel={this.handleClose}
                     handleSaveBtnClick={this.handleSaveBtnClick}
@@ -35,12 +37,14 @@ class JobAddModal extends Component {
                 />);
             case 'channel_hipchat':
                 return (<HipChatJobConfiguration
+                    channelName={this.state.values.typeValue}
                     projects={this.props.projects}
                     handleCancel={this.handleClose}
                     handleSaveBtnClick={this.handleSaveBtnClick}
                 />);
             case 'channel_slack':
                 return (<SlackJobConfiguration
+                    channelName={this.state.values.typeValue}
                     projects={this.props.projects}
                     handleCancel={this.handleClose}
                     handleSaveBtnClick={this.handleSaveBtnClick}
@@ -102,13 +106,7 @@ class JobAddModal extends Component {
     }
 
     renderOption(option) {
-        const fontAwesomeIcon = `fa fa-${option.icon} fa-fw`;
-        return (
-            <div>
-                <span key={`icon-${option.value}`} className={fontAwesomeIcon} aria-hidden="true"/>
-                <span key={`name-${option.value}`}>{option.label}</span>
-            </div>
-        );
+        return (<DescriptorOption icon={option.icon} label={option.label} value={option.value}/>);
     }
 
     render() {
