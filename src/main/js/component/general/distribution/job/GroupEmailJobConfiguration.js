@@ -156,6 +156,7 @@ class GroupEmailJobConfiguration extends Component {
         return (<BaseJobConfiguration
             baseUrl={this.props.baseUrl}
             testUrl={this.props.testUrl}
+            channelName={this.props.channelName}
             distributionConfigId={this.props.distributionConfigId}
             handleCancel={this.props.handleCancel}
             handleSaveBtnClick={this.props.handleSaveBtnClick}
@@ -175,8 +176,8 @@ GroupEmailJobConfiguration.propTypes = {
     groups: PropTypes.arrayOf(PropTypes.object),
     errors: PropTypes.object,
     handleCancel: PropTypes.func.isRequired,
-    handleSaveBtnClick: PropTypes.func.isRequired
-
+    handleSaveBtnClick: PropTypes.func.isRequired,
+    channelName: PropTypes.string.isRequired
 };
 
 GroupEmailJobConfiguration.defaultProps = {

@@ -84,18 +84,21 @@ class Index extends Component {
             const {distributionConfigId, distributionType} = currentRowSelected;
             if (distributionType === 'channel_email') {
                 return (<GroupEmailJobConfiguration
+                    channelName={distributionType}
                     distributionConfigId={distributionConfigId}
                     handleCancel={this.cancelRowSelect}
                     handleSaveBtnClick={this.saveBtn}
                 />);
             } else if (distributionType === 'channel_hipchat') {
                 return (<HipChatJobConfiguration
+                    channelName={distributionType}
                     distributionConfigId={distributionConfigId}
                     handleCancel={this.cancelRowSelect}
                     handleSaveBtnClick={this.saveBtn}
                 />);
             } else if (distributionType === 'channel_slack') {
                 return (<SlackJobConfiguration
+                    channelName={distributionType}
                     distributionConfigId={distributionConfigId}
                     handleCancel={this.cancelRowSelect}
                     handleSaveBtnClick={this.saveBtn}
