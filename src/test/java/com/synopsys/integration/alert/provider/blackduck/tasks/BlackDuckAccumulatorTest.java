@@ -199,7 +199,7 @@ public class BlackDuckAccumulatorTest {
 
     @Test
     public void testAccumulateWithDateRange() throws Exception {
-        // this is the most comprehensive test as it mocks all services in use and completes the full process
+        // this is the most comprehensive test as it mocks all services in use and completes the full apply
         final BlackduckRestConnection restConnection = Mockito.mock(BlackduckRestConnection.class);
         final HubServicesFactory blackDuckServicesFactory = Mockito.mock(HubServicesFactory.class);
         final HubService blackDuckService = Mockito.mock(HubService.class);

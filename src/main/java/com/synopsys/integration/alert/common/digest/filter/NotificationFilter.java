@@ -35,6 +35,8 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -42,15 +44,13 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.RestApi;
+import com.synopsys.integration.alert.common.descriptor.config.CommonTypeConverter;
 import com.synopsys.integration.alert.common.enumeration.DigestType;
-import com.synopsys.integration.alert.common.enumeration.RestApiType;
 import com.synopsys.integration.alert.common.field.HierarchicalField;
-import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
+import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.workflow.filter.AndFieldFilterBuilder;
 import com.synopsys.integration.alert.workflow.filter.DefaultFilterBuilders;
@@ -59,27 +59,30 @@ import com.synopsys.integration.alert.workflow.filter.JsonFilterBuilder;
 import com.synopsys.integration.alert.workflow.filter.OrFieldFilterBuilder;
 
 @Component
-public class NotificationPreProcessor {
+@Transactional
+public class NotificationFilter {
     private final Gson gson;
     private final List<ProviderDescriptor> providerDescriptors;
-    private final DigestType frequency;
+    private final CommonTypeConverter commonTypeConverter;
+    private final CommonDistributionRepository commonDistributionRepository;
 
     @Autowired
-    public NotificationPreProcessor(final Gson gson, final List<ProviderDescriptor> providerDescriptors, final DigestType frequency) {
+    public NotificationFilter(final Gson gson, final List<ProviderDescriptor> providerDescriptors, final CommonDistributionRepository commonDistributionRepository, final CommonTypeConverter commonTypeConverter) {
         this.gson = gson;
         this.providerDescriptors = providerDescriptors;
-        this.frequency = frequency;
+        this.commonTypeConverter = commonTypeConverter;
+        this.commonDistributionRepository = commonDistributionRepository;
     }
 
-    public Collection<NotificationContent> process(final Collection<NotificationContent> notificationList) {
+    public Collection<NotificationContent> apply(final DigestType frequency, final Collection<NotificationContent> notificationList) {
         final Set<NotificationContent> filteredNotifications = new HashSet<>();
 
-        final List<CommonDistributionConfig> unfilteredDistributionConfigs = getCommonDistributionConfigs();
+        final List<CommonDistributionConfig> unfilteredDistributionConfigs = getAllDistributionConfigs();
         if (unfilteredDistributionConfigs.isEmpty()) {
             return filteredNotifications;
         }
 
-        final Predicate<CommonDistributionConfig> frequencyFilter = config -> frequency.equals(config.getFrequency());
+        final Predicate<CommonDistributionConfig> frequencyFilter = config -> frequency.name().equals(config.getFrequency());
         final List<CommonDistributionConfig> distributionConfigs = applyFilter(unfilteredDistributionConfigs, frequencyFilter);
         if (distributionConfigs.isEmpty()) {
             return filteredNotifications;
@@ -107,20 +110,16 @@ public class NotificationPreProcessor {
                    .collect(Collectors.toList());
     }
 
-    private List<CommonDistributionConfig> getCommonDistributionConfigs() {
-        final List<CommonDistributionConfig> commonDistributionConfigs = new ArrayList<>();
-        providerDescriptors.forEach(descriptor -> {
-            final RestApi restApi = descriptor.getRestApi(RestApiType.CHANNEL_DISTRIBUTION_CONFIG);
-            final List<? extends DatabaseEntity> entities = restApi.readEntities();
+    private List<CommonDistributionConfig> getAllDistributionConfigs() {
+        final List<CommonDistributionConfigEntity> foundEntities = commonDistributionRepository.findAll();
 
-            entities.forEach(entity -> {
-                if (entity.getClass().isInstance(CommonDistributionConfigEntity.class)) {
-                    final CommonDistributionConfig config = (CommonDistributionConfig) restApi.populateConfigFromEntity(entity);
-                    commonDistributionConfigs.add(config);
-                }
-            });
+        final List<CommonDistributionConfig> configs = new ArrayList<>(foundEntities.size());
+        foundEntities.parallelStream().forEach(entity -> {
+            final CommonDistributionConfig newConfig = new CommonDistributionConfig();
+            commonTypeConverter.populateCommonFieldsFromEntity(newConfig, entity);
+            configs.add(newConfig);
         });
-        return commonDistributionConfigs;
+        return configs;
     }
 
     private Set<String> getConfiguredNotificationTypes(final List<CommonDistributionConfig> distributionConfigs) {
@@ -155,18 +154,6 @@ public class NotificationPreProcessor {
                    .filter(contentType -> notificationType.equals(contentType.getNotificationType()))
                    .flatMap(contentType -> contentType.getFilterableFields().stream())
                    .collect(Collectors.toSet());
-    }
-
-    private Map<Provider, List<NotificationContent>> getNotificationsPerProvider(final Collection<NotificationContent> unfilteredNotifications) {
-        final Map<Provider, List<NotificationContent>> providerToNotifications = new HashMap<>();
-        for (ProviderDescriptor providerDescriptor : providerDescriptors) {
-            final List<NotificationContent> providerNotifications = unfilteredNotifications
-                                                                        .parallelStream()
-                                                                        .filter(content -> providerDescriptor.getName().equals(content.getProvider()))
-                                                                        .collect(Collectors.toList());
-            providerToNotifications.put(providerDescriptor.getProvider(), providerNotifications);
-        }
-        return providerToNotifications;
     }
 
     private Predicate<NotificationContent> createFilter(Collection<HierarchicalField> filterableFields, final Collection<CommonDistributionConfig> distributionConfigs) {
