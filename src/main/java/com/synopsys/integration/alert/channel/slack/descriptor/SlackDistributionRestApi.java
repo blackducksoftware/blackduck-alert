@@ -47,7 +47,7 @@ public class SlackDistributionRestApi extends RestApi {
 
     @Autowired
     public SlackDistributionRestApi(final SlackDistributionTypeConverter databaseContentConverter, final SlackDistributionRepositoryAccessor repositoryAccessor, final ChannelEventFactory channelEventFactory,
-            final SlackChannel slackChannel) {
+    final SlackChannel slackChannel) {
         super(databaseContentConverter, repositoryAccessor);
         this.channelEventFactory = channelEventFactory;
         this.slackChannel = slackChannel;

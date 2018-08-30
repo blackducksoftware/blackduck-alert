@@ -26,13 +26,13 @@ package com.synopsys.integration.alert.web.controller;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,7 +46,6 @@ import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
-import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.DigestType;
 import com.synopsys.integration.alert.common.enumeration.RestApiType;
 
@@ -62,31 +61,33 @@ public class UIComponentController extends BaseController {
     }
 
     @GetMapping
-    public Collection<Descriptor> getDescriptors(@RequestParam(value = "descriptorName", required = false) final String descriptorName) {
+    public Collection<UIComponent> getDescriptors(@RequestParam(value = "descriptorName", required = false) final String descriptorName, @RequestParam(value = "descriptorType", required = false) final String descriptorConfigType) {
+        // filter by name
         if (StringUtils.isNotBlank(descriptorName)) {
-            return Arrays.asList(descriptorMap.getDescriptor(descriptorName));
+            final Descriptor descriptor = descriptorMap.getDescriptor(descriptorName);
+            if (descriptor != null) {
+                // filter by type also
+                if (StringUtils.isNotBlank(descriptorConfigType)) {
+                    final RestApiType descriptorType = RestApiType.getRestApiType(descriptorConfigType);
+                    final UIConfig uiConfig = descriptor.getUIConfig(descriptorType);
+                    if (uiConfig != null) {
+                        return Arrays.asList(uiConfig.generateUIComponent());
+                    } else {
+                        return Collections.emptyList();
+                    }
+                } else {
+                    // name only
+                    return descriptor.getAllUIConfigs().stream().map(descriptorConfig -> descriptorConfig.generateUIComponent()).collect(Collectors.toList());
+                }
+            } else {
+                return Collections.emptyList();
+            }
+        } else if (StringUtils.isNotBlank(descriptorConfigType)) {
+            final RestApiType descriptorConfigTypeEnum = RestApiType.getRestApiType(descriptorConfigType);
+            return descriptorMap.getUIComponents(descriptorConfigTypeEnum);
+        } else {
+            return descriptorMap.getAllUIComponents();
         }
-
-        return descriptorMap.getDescriptorMap().values();
-    }
-
-    @GetMapping("/{descriptorType}")
-    public Collection<Descriptor> getDescriptorTypes(@PathVariable final String descriptorType) {
-        final DescriptorType descriptorTypeEnum = Enum.valueOf(DescriptorType.class, descriptorType);
-        return descriptorMap.getDescriptorMap().values()
-                   .stream()
-                   .filter(descriptor -> descriptorTypeEnum.equals(descriptor.getType()))
-                   .collect(Collectors.toList());
-    }
-
-    @GetMapping("/restApi/{restApiType}")
-    public Collection<UIComponent> getUIComponents(@RequestParam(value = "descriptorName", required = false) final String descriptorName, @PathVariable final String restApiType) {
-        final RestApiType restApiTypeEnum = Enum.valueOf(RestApiType.class, restApiType);
-        if (StringUtils.isNotBlank(descriptorName)) {
-            return Arrays.asList(descriptorMap.getDescriptor(descriptorName).getUIConfig(restApiTypeEnum).generateUIComponent());
-        }
-
-        return descriptorMap.getUIComponents(restApiTypeEnum);
     }
 
     @GetMapping("/distribution")
@@ -106,8 +107,8 @@ public class UIComponentController extends BaseController {
         combinedFields.add(notificationTypes);
         combinedFields.addAll(channelUIComponent.getFields());
 
-        final UIComponent combinedUIComponent = new UIComponent(channelUIComponent.getLabel(), channelUIComponent.getUrlName(), channelUIComponent.getFontAwesomeIcon(), combinedFields);
+        final UIComponent combinedUIComponent = new UIComponent(channelUIComponent.getLabel(), channelUIComponent.getUrlName(), channelUIComponent.getDescriptorName(), channelUIComponent.getFontAwesomeIcon(),
+            channelUIComponent.isAutomaticallyGenerateUI(), combinedFields);
         return combinedUIComponent;
     }
-
 }

@@ -71,7 +71,8 @@ public class MockEmailRestModel extends MockRestModelUtil<EmailDistributionConfi
     @Override
     public EmailDistributionConfig createRestModel() {
         final EmailDistributionConfig restModel = new EmailDistributionConfig(String.valueOf(distributionMockUtil.getId()), distributionMockUtil.getDistributionConfigId(), distributionMockUtil.getDistributionType(),
-                distributionMockUtil.getName(), distributionMockUtil.getFrequency(), distributionMockUtil.getFilterByProject(), groupName, emailTemplateLogoImage, emailSubjectLine, distributionMockUtil.getProjects(),
+                distributionMockUtil.getName(), distributionMockUtil.getProviderName(), distributionMockUtil.getFrequency(), distributionMockUtil.getFilterByProject(), groupName, emailTemplateLogoImage, emailSubjectLine,
+                distributionMockUtil.getProjects(),
                 distributionMockUtil.getNotificationsAsStrings());
         return restModel;
     }

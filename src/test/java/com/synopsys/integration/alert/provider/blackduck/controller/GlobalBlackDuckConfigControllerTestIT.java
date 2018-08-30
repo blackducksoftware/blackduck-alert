@@ -62,10 +62,8 @@ public class GlobalBlackDuckConfigControllerTestIT extends GlobalControllerTest 
 
     @Override
     public void testTestConfig() throws Exception {
-        ReflectionTestUtils.setField(blackDuckProperties, "blackDuckUrl", testProperties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL));
         ReflectionTestUtils.setField(alertProperties, "alertTrustCertificate", Boolean.valueOf(testProperties.getProperty(TestPropertyKey.TEST_TRUST_HTTPS_CERT)));
         super.testTestConfig();
-        ReflectionTestUtils.setField(blackDuckProperties, "blackDuckUrl", null);
         ReflectionTestUtils.setField(alertProperties, "alertTrustCertificate", false);
     }
 

@@ -1,14 +1,17 @@
 import {
-    EMAIL_CONFIG_FETCHING,
     EMAIL_CONFIG_FETCHED,
-    EMAIL_CONFIG_UPDATE_ERROR,
-    EMAIL_CONFIG_UPDATING,
-    EMAIL_CONFIG_UPDATED,
+    EMAIL_CONFIG_FETCHING,
+    EMAIL_CONFIG_HIDE_ADVANCED,
     EMAIL_CONFIG_SHOW_ADVANCED,
-    EMAIL_CONFIG_HIDE_ADVANCED
+    EMAIL_CONFIG_UPDATE_ERROR,
+    EMAIL_CONFIG_UPDATED,
+    EMAIL_CONFIG_UPDATING,
+    EMAIL_GROUPS_FETCH_ERROR,
+    EMAIL_GROUPS_FETCHED,
+    EMAIL_GROUPS_FETCHING
 } from './types';
 
-import { verifyLoginByStatus } from './session';
+import {verifyLoginByStatus} from './session';
 
 const CONFIG_URL = '/alert/api/configuration/channel/global/channel_email';
 
@@ -83,7 +86,7 @@ function fetchingEmailConfig() {
 function emailConfigFetched(config) {
     return {
         type: EMAIL_CONFIG_FETCHED,
-        config: { ...scrubConfig(config) }
+        config: {...scrubConfig(config)}
     };
 }
 
@@ -116,15 +119,15 @@ function updatingEmailConfig() {
 function emailConfigUpdated(config) {
     return {
         type: EMAIL_CONFIG_UPDATED,
-        config: { ...scrubConfig(config) }
+        config: {...scrubConfig(config)}
     };
 }
 
 export function toggleAdvancedEmailOptions(toggle) {
     if (toggle) {
-        return { type: EMAIL_CONFIG_SHOW_ADVANCED };
+        return {type: EMAIL_CONFIG_SHOW_ADVANCED};
     }
-    return { type: EMAIL_CONFIG_HIDE_ADVANCED };
+    return {type: EMAIL_CONFIG_HIDE_ADVANCED};
 }
 
 export function getEmailConfig() {
@@ -133,20 +136,20 @@ export function getEmailConfig() {
         fetch(CONFIG_URL, {
             credentials: 'same-origin'
         })
-        .then((response) => {
-            if(response.ok) {
-                response.json().then((body) => {
-                    if (body.length > 0) {
-                        dispatch(emailConfigFetched(body[0]));
-                    } else {
-                        dispatch(emailConfigFetched({}));
-                    }
-                })
-            } else {
-                dispatch(verifyLoginByStatus(response.status));
-            }
-        })
-        .catch(console.error);
+            .then((response) => {
+                if (response.ok) {
+                    response.json().then((body) => {
+                        if (body.length > 0) {
+                            dispatch(emailConfigFetched(body[0]));
+                        } else {
+                            dispatch(emailConfigFetched({}));
+                        }
+                    })
+                } else {
+                    dispatch(verifyLoginByStatus(response.status));
+                }
+            })
+            .catch(console.error);
     };
 }
 
@@ -155,7 +158,7 @@ export function updateEmailConfig(config) {
         dispatch(updatingEmailConfig());
         const method = config.id ? 'PUT' : 'POST';
         const body = scrubConfig(config);
-        const { csrfToken } = getState().session;
+        const {csrfToken} = getState().session;
         fetch(CONFIG_URL, {
             credentials: 'same-origin',
             method,
@@ -168,7 +171,7 @@ export function updateEmailConfig(config) {
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
-                        dispatch(emailConfigUpdated({ ...config, id: data.id }));
+                        dispatch(emailConfigUpdated({...config, id: data.id}));
                     }).then(() => {
                         dispatch(getEmailConfig());
                     });
@@ -189,5 +192,50 @@ export function updateEmailConfig(config) {
                 }
             })
             .catch(console.error);
+    };
+}
+
+// email group functions
+
+function fetchingEmailGroups() {
+    return {
+        type: EMAIL_GROUPS_FETCHING
+    };
+}
+
+function fetchedEmailGroups(groups) {
+    return {
+        type: EMAIL_GROUPS_FETCHED,
+        groups
+    };
+}
+
+function fetchEmailGroupsError(message, errors) {
+    return {
+        type: EMAIL_GROUPS_FETCH_ERROR,
+        message,
+        errors
+    };
+}
+
+export function getEmailGroups() {
+    return (dispatch) => {
+        dispatch(fetchingEmailGroups());
+        fetch('/alert/api/blackduck/groups', {
+            credentials: 'same-origin'
+        }).then((response) => {
+            if (!response.ok) {
+                return response.json().then((json) => {
+                    dispatch(fetchEmailGroupsError(json.message, json.errors));
+                });
+            }
+            return response.json().then((json) => {
+                const jsonArray = JSON.parse(json.message);
+                if (jsonArray != null && jsonArray.length > 0) {
+                    const groups = jsonArray.map(({name, active, url}) => ({name, active, url}));
+                    dispatch(fetchedEmailGroups(groups));
+                }
+            });
+        }).catch(console.error);
     };
 }

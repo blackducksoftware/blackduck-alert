@@ -61,7 +61,7 @@ public class BlackDuckProviderRestApi extends RestApi {
 
     @Autowired
     public BlackDuckProviderRestApi(final BlackDuckTypeConverter databaseContentConverter, final BlackDuckRepositoryAccessor repositoryAccessor, final BlackDuckProviderStartupComponent startupComponent,
-            final BlackDuckProperties blackDuckProperties) {
+    final BlackDuckProperties blackDuckProperties) {
         super(databaseContentConverter, repositoryAccessor, startupComponent);
         this.blackDuckProperties = blackDuckProperties;
     }
@@ -87,9 +87,11 @@ public class BlackDuckProviderRestApi extends RestApi {
 
         final GlobalBlackDuckConfigEntity blackDuckEntity = (GlobalBlackDuckConfigEntity) entity;
         final String apiToken = blackDuckEntity.getBlackDuckApiKey();
+        final String url = blackDuckEntity.getBlackDuckUrl();
 
-        final HubServerConfigBuilder blackDuckServerConfigBuilder = blackDuckProperties.createServerConfigBuilderWithoutAuthentication(intLogger, Integer.valueOf(blackDuckEntity.getBlackDuckTimeout()));
+        final HubServerConfigBuilder blackDuckServerConfigBuilder = blackDuckProperties.createServerConfigBuilderWithoutAuthentication(intLogger, blackDuckEntity.getBlackDuckTimeout());
         blackDuckServerConfigBuilder.setApiToken(apiToken);
+        blackDuckServerConfigBuilder.setUrl(url);
 
         validateBlackDuckConfiguration(blackDuckServerConfigBuilder);
         try (final RestConnection restConnection = createRestConnection(blackDuckServerConfigBuilder)) {

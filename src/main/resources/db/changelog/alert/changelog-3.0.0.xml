@@ -31,4 +31,14 @@
             <where>ID NOT IN (SELECT DISTRIBUTION_CONFIG_ID FROM (SELECT * FROM ALERT.COMMON_DISTRIBUTION_CONFIG WHERE DISTRIBUTION_TYPE = 'channel_slack'))</where>
         </delete>
     </changeSet>
+    <changeSet author="psantos" id="1533054185-6">
+        <addColumn tableName="COMMON_DISTRIBUTION_CONFIG" schemaName="ALERT">
+            <column name="PROVIDER_NAME" type="varchar(255)" value="provider_blackduck"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="psantos" id="1533054185-7">
+        <addColumn tableName="GLOBAL_BLACKDUCK_CONFIG" schemaName="ALERT">
+            <column name="BLACKDUCK_URL" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

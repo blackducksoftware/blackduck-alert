@@ -23,10 +23,12 @@
  */
 package com.synopsys.integration.alert.common.descriptor;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.descriptor.config.RestApi;
 import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
@@ -99,6 +101,22 @@ public abstract class Descriptor {
 
     public UIConfig getUIConfig(final RestApiType restApiType) {
         return uiConfigs.get(restApiType);
+    }
+
+    public List<UIConfig> getAllUIConfigs() {
+        if (hasUIConfigs()) {
+            return uiConfigs.values().stream().collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    public boolean hasUIConfigs() {
+        return uiConfigs.size() > 0;
+    }
+
+    public boolean hasUIConfigForType(final RestApiType restApiType) {
+        return uiConfigs.containsKey(restApiType);
     }
 
     public Optional<? extends DatabaseEntity> readEntity(final RestApiType restApiType, final long id) {

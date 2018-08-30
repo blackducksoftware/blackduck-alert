@@ -78,7 +78,8 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
 
     @Override
     public Optional<GlobalBlackDuckConfigEntity> getBlackDuckConfig() {
-        return Optional.of(new GlobalBlackDuckConfigEntity(Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_HUB_TIMEOUT)), testProperties.getProperty(TestPropertyKey.TEST_HUB_API_KEY)));
+        return Optional.of(new GlobalBlackDuckConfigEntity(Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_HUB_TIMEOUT)), testProperties.getProperty(TestPropertyKey.TEST_HUB_API_KEY),
+        testProperties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL)));
     }
 
     @Override
@@ -88,7 +89,7 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
 
     public HubServerConfig createHubServerConfigWithCredentials(final IntLogger logger) throws NumberFormatException, AlertException {
         return super.createBlackDuckServerConfig(logger, Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_HUB_TIMEOUT)), testProperties.getProperty(TestPropertyKey.TEST_USERNAME),
-                testProperties.getProperty(TestPropertyKey.TEST_PASSWORD));
+        testProperties.getProperty(TestPropertyKey.TEST_PASSWORD));
     }
 
     public HubServicesFactory createHubServicesFactoryWithCredential(final IntLogger logger) throws Exception {

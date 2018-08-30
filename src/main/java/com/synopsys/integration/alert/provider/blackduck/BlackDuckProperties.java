@@ -46,16 +46,16 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
 public class BlackDuckProperties {
+    public static final int DEFAULT_TIMEOUT = 300;
     private final GlobalBlackDuckRepository globalBlackDuckRepository;
     private final AlertProperties alertProperties;
 
-    @Value("${blackduck.url:}")
-    private String blackDuckUrl;
-
-    @Value("${public.blackduck.webserver.host:}")
+    // the blackduck product hasn't renamed their environment variables from hub to blackduck
+    // need to keep hub in the name until
+    @Value("${public.hub.webserver.host:}")
     private String publicBlackDuckWebserverHost;
 
-    @Value("${public.blackduck.webserver.port:}")
+    @Value("${public.hub.webserver.port:}")
     private String publicBlackDuckWebserverPort;
 
     @Autowired
@@ -65,7 +65,16 @@ public class BlackDuckProperties {
     }
 
     public Optional<String> getBlackDuckUrl() {
-        return getOptionalString(blackDuckUrl);
+        final Optional<GlobalBlackDuckConfigEntity> optionalGlobalBlackDuckConfigEntity = getBlackDuckConfig();
+        if (optionalGlobalBlackDuckConfigEntity.isPresent()) {
+            final GlobalBlackDuckConfigEntity blackDuckConfigEntity = optionalGlobalBlackDuckConfigEntity.get();
+            if (StringUtils.isBlank(blackDuckConfigEntity.getBlackDuckUrl())) {
+                return Optional.empty();
+            } else {
+                return Optional.of(blackDuckConfigEntity.getBlackDuckUrl());
+            }
+        }
+        return Optional.empty();
     }
 
     public Optional<String> getPublicBlackDuckWebserverHost() {
@@ -86,9 +95,14 @@ public class BlackDuckProperties {
     public Integer getBlackDuckTimeout() {
         final Optional<GlobalBlackDuckConfigEntity> optionalGlobalBlackDuckConfigEntity = getBlackDuckConfig();
         if (optionalGlobalBlackDuckConfigEntity.isPresent()) {
-            return optionalGlobalBlackDuckConfigEntity.get().getBlackDuckTimeout();
+            final GlobalBlackDuckConfigEntity blackDuckConfigEntity = optionalGlobalBlackDuckConfigEntity.get();
+            if (blackDuckConfigEntity.getBlackDuckTimeout() == null) {
+                return DEFAULT_TIMEOUT;
+            } else {
+                return optionalGlobalBlackDuckConfigEntity.get().getBlackDuckTimeout();
+            }
         }
-        return 300;
+        return DEFAULT_TIMEOUT;
     }
 
     public Optional<GlobalBlackDuckConfigEntity> getBlackDuckConfig() {

@@ -58,9 +58,10 @@ public class CommonDistributionRepositoryTestIT {
         final Long distributionConfigId = 1L;
         final String distributionType = EmailGroupChannel.COMPONENT_NAME;
         final String name = "My Config";
+        final String providerName = "provider_blackduck";
         final DigestType frequency = DigestType.DAILY;
         final Boolean filterByProject = Boolean.TRUE;
-        final CommonDistributionConfigEntity entity = new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, frequency, filterByProject);
+        final CommonDistributionConfigEntity entity = new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, providerName, frequency, filterByProject);
         final CommonDistributionConfigEntity savedEntity = commonDistributionRepository.save(entity);
 
         assertEquals(1, commonDistributionRepository.count());

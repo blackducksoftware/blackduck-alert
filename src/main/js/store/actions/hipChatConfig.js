@@ -156,7 +156,6 @@ export function updateConfig(config) {
                 } else {
                     response.json()
                         .then((data) => {
-                            console.log('data', data.message);
                             switch (response.status) {
                                 case 400:
                                     return dispatch(configError(data.message, data.errors));
@@ -195,7 +194,6 @@ export function testConfig(config) {
                 } else {
                     response.json()
                         .then((data) => {
-                            console.log('data', data.message);
                             switch (response.status) {
                                 case 400:
                                     return dispatch(testFailed(data.message, data.errors));
