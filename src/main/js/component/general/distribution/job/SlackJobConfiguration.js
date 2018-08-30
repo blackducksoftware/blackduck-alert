@@ -26,11 +26,12 @@ class SlackJobConfiguration extends Component {
 
     componentWillReceiveProps(nextProps) {
         if (!nextProps.fetching && !nextProps.inProgress) {
-            if (nextProps.jobs[nextProps.distributionConfigId]) {
+            const jobConfig = nextProps.jobs[nextProps.distributionConfigId];
+            if (jobConfig) {
                 this.setState({
-                    webhook: nextProps.jobs[nextProps.distributionConfigId].webhook,
-                    channelUsername: nextProps.jobs[nextProps.distributionConfigId].channelUsername,
-                    channelName: nextProps.jobs[nextProps.distributionConfigId].channelName
+                    webhook: jobConfig.webhook,
+                    channelUsername: jobConfig.channelUsername,
+                    channelName: jobConfig.channelName
                 });
             }
         }
@@ -65,7 +66,7 @@ class SlackJobConfiguration extends Component {
         return (<BaseJobConfiguration
             baseUrl={this.props.baseUrl}
             testUrl={this.props.testUrl}
-            channelName={this.props.channelName}
+            alertChannelName={this.props.alertChannelName}
             distributionConfigId={this.props.distributionConfigId}
             handleCancel={this.props.handleCancel}
             handleSaveBtnClick={this.props.handleSaveBtnClick}
@@ -86,7 +87,7 @@ SlackJobConfiguration.propTypes = {
     errors: PropTypes.object,
     handleCancel: PropTypes.func.isRequired,
     handleSaveBtnClick: PropTypes.func.isRequired,
-    channelName: PropTypes.string.isRequired
+    alertChannelName: PropTypes.string.isRequired
 };
 
 SlackJobConfiguration.defaultProps = {

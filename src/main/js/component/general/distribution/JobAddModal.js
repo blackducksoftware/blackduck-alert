@@ -8,7 +8,7 @@ import GroupEmailJobConfiguration from './job/GroupEmailJobConfiguration';
 import HipChatJobConfiguration from './job/HipChatJobConfiguration';
 import SlackJobConfiguration from './job/SlackJobConfiguration';
 import DescriptorOption from "../../common/DescriptorOption";
-
+import {resetDistributionDescriptor} from '../../../store/actions/descriptors';
 
 class JobAddModal extends Component {
     constructor(props) {
@@ -25,11 +25,15 @@ class JobAddModal extends Component {
         this.createJobTypeOptions = this.createJobTypeOptions.bind(this);
     }
 
+    componentDidMount() {
+        this.props.resetDistributionDescriptor();
+    }
+
     getCurrentJobConfig() {
         switch (this.state.values.typeValue) {
             case 'channel_email':
                 return (<GroupEmailJobConfiguration
-                    channelName={this.state.values.typeValue}
+                    alertChannelName={this.state.values.typeValue}
                     projects={this.props.projects}
                     handleCancel={this.handleClose}
                     handleSaveBtnClick={this.handleSaveBtnClick}
@@ -37,14 +41,14 @@ class JobAddModal extends Component {
                 />);
             case 'channel_hipchat':
                 return (<HipChatJobConfiguration
-                    channelName={this.state.values.typeValue}
+                    alertChannelName={this.state.values.typeValue}
                     projects={this.props.projects}
                     handleCancel={this.handleClose}
                     handleSaveBtnClick={this.handleSaveBtnClick}
                 />);
             case 'channel_slack':
                 return (<SlackJobConfiguration
-                    channelName={this.state.values.typeValue}
+                    alertChannelName={this.state.values.typeValue}
                     projects={this.props.projects}
                     handleCancel={this.handleClose}
                     handleSaveBtnClick={this.handleSaveBtnClick}
@@ -162,6 +166,8 @@ const mapStateToProps = state => ({
     descriptors: state.descriptors
 });
 
-const mapDispatchToProps = dispatch => ({});
+const mapDispatchToProps = dispatch => ({
+    resetDistributionDescriptor: () => dispatch(resetDistributionDescriptor())
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(JobAddModal);
