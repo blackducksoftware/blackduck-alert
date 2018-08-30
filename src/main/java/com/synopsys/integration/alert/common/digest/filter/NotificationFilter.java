@@ -44,13 +44,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.CommonTypeConverter;
+import com.synopsys.integration.alert.common.distribution.CommonDistributionConfigReader;
 import com.synopsys.integration.alert.common.enumeration.DigestType;
 import com.synopsys.integration.alert.common.field.HierarchicalField;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
-import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
-import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.workflow.filter.AndFieldFilterBuilder;
 import com.synopsys.integration.alert.workflow.filter.DefaultFilterBuilders;
@@ -61,23 +59,25 @@ import com.synopsys.integration.alert.workflow.filter.OrFieldFilterBuilder;
 @Component
 @Transactional
 public class NotificationFilter {
+    final CommonDistributionConfigReader commonDistributionConfigReader;
     private final Gson gson;
     private final List<ProviderDescriptor> providerDescriptors;
-    private final CommonTypeConverter commonTypeConverter;
-    private final CommonDistributionRepository commonDistributionRepository;
 
     @Autowired
-    public NotificationFilter(final Gson gson, final List<ProviderDescriptor> providerDescriptors, final CommonDistributionRepository commonDistributionRepository, final CommonTypeConverter commonTypeConverter) {
+    public NotificationFilter(final Gson gson, final List<ProviderDescriptor> providerDescriptors, final CommonDistributionConfigReader commonDistributionConfigReader) {
         this.gson = gson;
         this.providerDescriptors = providerDescriptors;
-        this.commonTypeConverter = commonTypeConverter;
-        this.commonDistributionRepository = commonDistributionRepository;
+        this.commonDistributionConfigReader = commonDistributionConfigReader;
     }
 
-    public Collection<NotificationContent> apply(final DigestType frequency, final Collection<NotificationContent> notificationList) {
+    /**
+     * Creates a java.util.Collection of NotificationContent objects that are applicable for at least one Distribution Job.
+     * @return A java.util.List of sorted (by createdAt) NotificationContent objects.
+     */
+    public Collection<NotificationContent> extractApplicableNotifications(final DigestType frequency, final Collection<NotificationContent> notificationList) {
         final Set<NotificationContent> filteredNotifications = new HashSet<>();
 
-        final List<CommonDistributionConfig> unfilteredDistributionConfigs = getAllDistributionConfigs();
+        final List<CommonDistributionConfig> unfilteredDistributionConfigs = commonDistributionConfigReader.getPopulatedConfigs();
         if (unfilteredDistributionConfigs.isEmpty()) {
             return filteredNotifications;
         }
@@ -108,18 +108,6 @@ public class NotificationFilter {
                    .parallelStream()
                    .sorted(Comparator.comparing(NotificationContent::getCreatedAt))
                    .collect(Collectors.toList());
-    }
-
-    private List<CommonDistributionConfig> getAllDistributionConfigs() {
-        final List<CommonDistributionConfigEntity> foundEntities = commonDistributionRepository.findAll();
-
-        final List<CommonDistributionConfig> configs = new ArrayList<>(foundEntities.size());
-        foundEntities.parallelStream().forEach(entity -> {
-            final CommonDistributionConfig newConfig = new CommonDistributionConfig();
-            commonTypeConverter.populateCommonFieldsFromEntity(newConfig, entity);
-            configs.add(newConfig);
-        });
-        return configs;
     }
 
     private Set<String> getConfiguredNotificationTypes(final List<CommonDistributionConfig> distributionConfigs) {
@@ -171,6 +159,10 @@ public class NotificationFilter {
     }
 
     private Collection<String> getValuesFromConfig(final String configKey, final CommonDistributionConfig config) {
+        if (!shouldFilter(config)) {
+            // FIXME this is extremely specific and we need a way to avoid it
+            return null;
+        }
         final JsonObject jsonConfig = gson.toJsonTree(config).getAsJsonObject();
         final JsonElement jsonElement = jsonConfig.get(configKey);
 
@@ -201,5 +193,11 @@ public class NotificationFilter {
                    .parallelStream()
                    .filter(filter)
                    .collect(Collectors.toList());
+    }
+
+    // TODO find a way to get rid of this
+    private boolean shouldFilter(final CommonDistributionConfig config) {
+        final String filterByProject = config.getFilterByProject();
+        return Boolean.parseBoolean(filterByProject);
     }
 }

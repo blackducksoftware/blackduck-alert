@@ -6,12 +6,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.transaction.Transactional;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -52,13 +53,16 @@ import com.synopsys.integration.test.annotation.ExternalConnectionTest;
 @Transactional
 @WebAppConfiguration
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
-public class NotificationEventManagerTest {
+public class NotificationToEventConverterTest {
 
     @Autowired
     private CommonDistributionRepository commonDistributionRepository;
 
     @Autowired
-    private NotificationToEventConverter notificationEventMananger;
+    private NotificationFilter notificationFilter;
+
+    @Autowired
+    private NotificationToEventConverter notificationToEventConverter;
 
     @Autowired
     private DistributionNotificationTypeRepository distributionNotificationTypeRepository;
@@ -88,6 +92,7 @@ public class NotificationEventManagerTest {
         }
     }
 
+    @After
     public void cleanUp() {
         commonDistributionRepository.deleteAll();
         distributionNotificationTypeRepository.deleteAll();
@@ -104,8 +109,8 @@ public class NotificationEventManagerTest {
         final NotificationContent notificationModel = createNotificationModel("Project_1", "1.0.0", NotificationType.RULE_VIOLATION);
         final List<NotificationContent> notificationModels = Arrays.asList(notificationModel);
 
-        final Map<CommonDistributionConfigEntity, List<NotificationContent>> configToNotifications = notificationEventMananger.mapDistributionConfigurationsToNotifications(DigestType.DAILY, notificationModels);
-        final List<ChannelEvent> channelEvents = notificationEventMananger.createChannelEvents(configToNotifications);
+        final Collection<NotificationContent> filteredNotifications = notificationFilter.extractApplicableNotifications(DigestType.DAILY, notificationModels);
+        final List<ChannelEvent> channelEvents = notificationToEventConverter.convertToEvents(filteredNotifications);
         assertTrue(channelEvents.isEmpty());
     }
 
@@ -116,10 +121,11 @@ public class NotificationEventManagerTest {
         final NotificationContent notification_1 = createNotificationModel("Project_1", "1.0.0", NotificationType.RULE_VIOLATION);
         final NotificationContent notification_2 = createNotificationModel("Project_2", "1.0.0", NotificationType.RULE_VIOLATION);
         final NotificationContent notification_3 = createNotificationModel("Project_1", "2.0.0", NotificationType.RULE_VIOLATION);
-        final List<NotificationContent> notificationModelList = Arrays.asList(notification_1, notification_2, notification_3);
-        final Map<CommonDistributionConfigEntity, List<NotificationContent>> configToNotifications = notificationEventMananger.mapDistributionConfigurationsToNotifications(DigestType.REAL_TIME, notificationModelList);
-        final List<ChannelEvent> channelEvents = notificationEventMananger.createChannelEvents(configToNotifications);
-        assertEquals(configEntityList.size() * notificationModelList.size(), channelEvents.size());
+        final List<NotificationContent> notificationModels = Arrays.asList(notification_1, notification_2, notification_3);
+
+        final Collection<NotificationContent> filteredNotifications = notificationFilter.extractApplicableNotifications(DigestType.REAL_TIME, notificationModels);
+        final List<ChannelEvent> channelEvents = notificationToEventConverter.convertToEvents(filteredNotifications);
+        assertEquals(configEntityList.size() * filteredNotifications.size(), channelEvents.size());
 
         channelEvents.forEach(event -> {
             assertNotNull(event.getContent());

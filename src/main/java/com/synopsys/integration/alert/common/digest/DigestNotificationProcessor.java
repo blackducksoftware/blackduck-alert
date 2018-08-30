@@ -23,33 +23,32 @@
  */
 package com.synopsys.integration.alert.common.digest;
 
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
+import com.synopsys.integration.alert.common.digest.filter.NotificationFilter;
 import com.synopsys.integration.alert.common.digest.filter.NotificationToEventConverter;
 import com.synopsys.integration.alert.common.enumeration.DigestType;
-import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 
 @Component
 public class DigestNotificationProcessor {
+    private final NotificationFilter notificationFilter;
     private final NotificationToEventConverter notificationToEventConverter;
 
     @Autowired
-    public DigestNotificationProcessor(final NotificationToEventConverter notificationToEventConverter) {
+    public DigestNotificationProcessor(final NotificationFilter notificationFilter, final NotificationToEventConverter notificationToEventConverter) {
+        this.notificationFilter = notificationFilter;
         this.notificationToEventConverter = notificationToEventConverter;
     }
 
     public List<ChannelEvent> processNotifications(final DigestType digestType, final List<NotificationContent> notificationList) {
-        // Step 1. Apply Filters
-        final Map<CommonDistributionConfigEntity, List<NotificationContent>> distributionToNotifications = notificationToEventConverter.mapDistributionConfigurationsToNotifications(digestType, notificationList);
-
-        // Step 2. Convert to ChannelEvents
-        final List<ChannelEvent> events = notificationToEventConverter.createChannelEvents(distributionToNotifications);
-        return events;
+        final Collection<NotificationContent> filteredNotifications = notificationFilter.extractApplicableNotifications(digestType, notificationList);
+        final List<ChannelEvent> notificationEvents = notificationToEventConverter.convertToEvents(filteredNotifications);
+        return notificationEvents;
     }
 }
