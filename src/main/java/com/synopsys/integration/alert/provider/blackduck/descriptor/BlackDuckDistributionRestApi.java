@@ -31,7 +31,6 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.descriptor.config.RestApi;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.web.model.Config;
-import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class BlackDuckDistributionRestApi extends RestApi {
@@ -47,7 +46,7 @@ public class BlackDuckDistributionRestApi extends RestApi {
     }
 
     @Override
-    public void testConfig(final DatabaseEntity entity) throws IntegrationException {
+    public void testConfig(final DatabaseEntity entity) {
 
     }
 }

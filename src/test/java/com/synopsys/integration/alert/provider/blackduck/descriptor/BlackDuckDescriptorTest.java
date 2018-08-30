@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.provider.blackduck;
+package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
 import static org.junit.Assert.assertEquals;
 
@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
