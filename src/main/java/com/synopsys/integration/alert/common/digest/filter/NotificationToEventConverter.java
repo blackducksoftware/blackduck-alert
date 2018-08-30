@@ -24,11 +24,8 @@
 package com.synopsys.integration.alert.common.digest.filter;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 
 import javax.transaction.Transactional;
 
@@ -39,64 +36,46 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.channel.event.ChannelEventFactory;
-import com.synopsys.integration.alert.common.enumeration.DigestType;
-import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
+import com.synopsys.integration.alert.common.distribution.CommonDistributionConfigReader;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
-import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
+import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 
-@Transactional
 @Component
+@Transactional
 public class NotificationToEventConverter {
     private final Logger logger = LoggerFactory.getLogger(NotificationToEventConverter.class);
-    private final NotificationPostProcessor notificationPostProcessor;
-    private final CommonDistributionRepository commonDistributionRepository;
     private final ChannelEventFactory channelEventFactory;
+    private final CommonDistributionConfigReader commonDistributionConfigReader;
 
     @Autowired
-    public NotificationToEventConverter(final NotificationPostProcessor notificationPostProcessor, final ChannelEventFactory channelEventFactory, final CommonDistributionRepository commonDistributionRepository) {
-        this.notificationPostProcessor = notificationPostProcessor;
+    public NotificationToEventConverter(final ChannelEventFactory channelEventFactory, final CommonDistributionConfigReader commonDistributionConfigReader) {
         this.channelEventFactory = channelEventFactory;
-        this.commonDistributionRepository = commonDistributionRepository;
+        this.commonDistributionConfigReader = commonDistributionConfigReader;
     }
 
-    public Map<CommonDistributionConfigEntity, List<NotificationContent>> mapDistributionConfigurationsToNotifications(final DigestType digestType, final List<NotificationContent> notificationContentList) {
-        final Map<CommonDistributionConfigEntity, List<NotificationContent>> distributionConfigNotificationMap = new HashMap<>();
-
-        final List<CommonDistributionConfigEntity> distributionConfigurations = commonDistributionRepository.findAll();
-        distributionConfigurations.forEach(distributionConfig -> {
-            distributionConfigNotificationMap.put(distributionConfig, new ArrayList<>());
-        });
-
-        notificationContentList.forEach(notificationContent -> {
-            final Set<CommonDistributionConfigEntity> applicableConfigurations = notificationPostProcessor.getApplicableConfigurations(distributionConfigurations, notificationContent, digestType);
-
-            applicableConfigurations.forEach(distributionConfig -> {
-                final Optional<NotificationContent> filteredNotification = notificationPostProcessor.filterMatchingNotificationTypes(distributionConfig, notificationContent);
-                filteredNotification.ifPresent(notification -> {
-                    distributionConfigNotificationMap.get(distributionConfig).add(notification);
-                });
-            });
-        });
-        return distributionConfigNotificationMap;
-    }
-
-    public List<ChannelEvent> createChannelEvents(final Map<CommonDistributionConfigEntity, List<NotificationContent>> distributionConfigNotificationMap) {
+    public List<ChannelEvent> convertToEvents(final Collection<NotificationContent> sortedNotifications) {
         final List<ChannelEvent> channelEvents = new ArrayList<>();
-        distributionConfigNotificationMap.entrySet().forEach(entry -> {
-            final CommonDistributionConfigEntity distributionConfig = entry.getKey();
-            final List<NotificationContent> notificationList = entry.getValue();
-            if (!notificationList.isEmpty()) {
-                notificationList.forEach(notificationContent -> {
-                    channelEvents.add(createChannelEvent(distributionConfig, notificationContent));
-                });
-            }
+
+        final Collection<CommonDistributionConfig> distributionConfigs = commonDistributionConfigReader.getPopulatedConfigs();
+        distributionConfigs.forEach(config -> {
+            sortedNotifications.forEach(notification -> {
+                if (doesNotificationApplyToConfig(config, notification)) {
+                    final ChannelEvent newEvent = createChannelEvent(config, notification);
+                    channelEvents.add(newEvent);
+                }
+            });
         });
         logger.debug("Created {} events.", channelEvents.size());
         return channelEvents;
     }
 
-    private ChannelEvent createChannelEvent(final CommonDistributionConfigEntity commonEntity, final NotificationContent notificationContent) {
-        return channelEventFactory.createChannelEvent(commonEntity.getId(), commonEntity.getDistributionType(), notificationContent);
+    private boolean doesNotificationApplyToConfig(final CommonDistributionConfig config, final NotificationContent notification) {
+        return config.getNotificationTypes().contains(notification.getNotificationType());
+    }
+
+    private ChannelEvent createChannelEvent(final CommonDistributionConfig config, final NotificationContent notificationContent) {
+        final Long configId = Long.parseLong(config.getId());
+        return channelEventFactory.createChannelEvent(configId, config.getDistributionType(), notificationContent);
     }
 
 }
