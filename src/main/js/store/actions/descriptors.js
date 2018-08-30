@@ -1,4 +1,4 @@
-import {DESCRIPTORS_DISTRIBUTION_FETCH_ERROR, DESCRIPTORS_DISTRIBUTION_FETCHED, DESCRIPTORS_DISTRIBUTION_FETCHING, DESCRIPTORS_FETCH_ERROR, DESCRIPTORS_FETCHED, DESCRIPTORS_FETCHING} from './types';
+import {DESCRIPTORS_DISTRIBUTION_FETCH_ERROR, DESCRIPTORS_DISTRIBUTION_FETCHED, DESCRIPTORS_DISTRIBUTION_FETCHING, DESCRIPTORS_DISTRIBUTION_RESET, DESCRIPTORS_FETCH_ERROR, DESCRIPTORS_FETCHED, DESCRIPTORS_FETCHING} from './types';
 
 import {verifyLoginByStatus} from './session';
 
@@ -58,6 +58,12 @@ function distributionDescriptorError(message, error) {
     };
 }
 
+function distributionDescriptorReset() {
+    return {
+        type: DESCRIPTORS_DISTRIBUTION_RESET
+    };
+}
+
 export function getDescriptorByType(distributionConfigType) {
     return (dispatch) => {
         dispatch(fetchingDescriptors());
@@ -99,5 +105,11 @@ export function getDistributionDescriptor(provider, channel) {
                 }
             });
         }).catch(dispatch(distributionDescriptorError(console.error)));
+    };
+}
+
+export function resetDistributionDescriptor() {
+    return (dispatch) => {
+        dispatch(distributionDescriptorReset());
     };
 }

@@ -1,4 +1,13 @@
-import {DESCRIPTORS_DISTRIBUTION_FETCH_ERROR, DESCRIPTORS_DISTRIBUTION_FETCHED, DESCRIPTORS_DISTRIBUTION_FETCHING, DESCRIPTORS_FETCH_ERROR, DESCRIPTORS_FETCHED, DESCRIPTORS_FETCHING, SERIALIZE} from '../actions/types';
+import {
+    DESCRIPTORS_DISTRIBUTION_FETCH_ERROR,
+    DESCRIPTORS_DISTRIBUTION_FETCHED,
+    DESCRIPTORS_DISTRIBUTION_FETCHING,
+    DESCRIPTORS_DISTRIBUTION_RESET,
+    DESCRIPTORS_FETCH_ERROR,
+    DESCRIPTORS_FETCHED,
+    DESCRIPTORS_FETCHING,
+    SERIALIZE
+} from '../actions/types';
 
 const initialState = {
     fetching: false,
@@ -62,6 +71,15 @@ const config = (state = initialState, action) => {
                 error: {
                     message: action.message,
                     error: action.error
+                }
+            });
+
+        case DESCRIPTORS_DISTRIBUTION_RESET:
+            return Object.assign({}, state, {
+                fetching: false,
+                currentDistributionComponents: null,
+                error: {
+                    message: ''
                 }
             });
 

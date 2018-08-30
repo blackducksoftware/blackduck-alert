@@ -36,6 +36,7 @@ class BaseJobConfiguration extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        console.log("Base Job next props", nextProps);
         if (!nextProps.fetching && !nextProps.inProgress) {
             const stateValues = {
                 fetching: nextProps.fetching,
@@ -48,19 +49,25 @@ class BaseJobConfiguration extends Component {
             const callHandleSaveBtnClick = this.state.configurationMessage === 'Saving...' && nextProps.success;
 
             if (nextProps.distributionConfigId) {
+                const jobConfig = nextProps.jobs[nextProps.distributionConfigId];
+                if (jobConfig) {
+                    const readDescriptorDistribution = !this.state.providerName && jobConfig.providerName
+                    if (readDescriptorDistribution) {
+                        nextProps.getDistributionDescriptor(jobConfig.providerName, nextProps.alertChannelName);
+                    }
+                }
                 const newState = Object.assign({}, stateValues, {
                     id: nextProps.id,
                     distributionConfigId: nextProps.distributionConfigId,
-                    name: nextProps.jobs[nextProps.distributionConfigId].name,
-                    providerName: nextProps.jobs[nextProps.distributionConfigId].providerName,
-                    distributionType: nextProps.jobs[nextProps.distributionConfigId].distributionType,
-                    frequency: nextProps.jobs[nextProps.distributionConfigId].frequency,
-                    includeAllProjects: nextProps.jobs[nextProps.distributionConfigId].filterByProject == 'false',
-                    filterByProject: nextProps.jobs[nextProps.distributionConfigId].filterByProject,
-                    notificationTypes: nextProps.jobs[nextProps.distributionConfigId].notificationTypes,
-                    configuredProjects: nextProps.jobs[nextProps.distributionConfigId].configuredProjects
+                    name: jobConfig.name,
+                    providerName: jobConfig.providerName,
+                    distributionType: jobConfig.distributionType,
+                    frequency: jobConfig.frequency,
+                    includeAllProjects: jobConfig.filterByProject == 'false',
+                    filterByProject: jobConfig.filterByProject,
+                    notificationTypes: jobConfig.notificationTypes,
+                    configuredProjects: jobConfig.configuredProjects
                 });
-
                 this.setState(newState);
             } else {
                 this.setState(stateValues);
@@ -156,10 +163,10 @@ class BaseJobConfiguration extends Component {
     handleProviderChanged(option) {
         if (option) {
             this.handleStateValues('providerName', option.value);
-            this.props.getDistributionDescriptor(option.value, this.props.channelName);
+            this.props.getDistributionDescriptor(option.value, this.props.alertChannelName);
         } else {
             this.handleStateValues('providerName', option);
-            this.props.getDistributionDescriptor(null, this.props.channelName);
+            this.props.getDistributionDescriptor('', this.props.alertChannelName);
         }
     }
 
@@ -318,7 +325,7 @@ BaseJobConfiguration.propTypes = {
     handleSaveBtnClick: PropTypes.func.isRequired,
     getParentConfiguration: PropTypes.func.isRequired,
     childContent: PropTypes.object.isRequired,
-    channelName: PropTypes.string.isRequired,
+    alertChannelName: PropTypes.string.isRequired,
     currentDistributionComponents: PropTypes.object
 };
 

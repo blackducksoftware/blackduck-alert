@@ -29,11 +29,12 @@ class HipChatJobConfiguration extends Component {
 
     componentWillReceiveProps(nextProps) {
         if (!nextProps.fetching && !nextProps.inProgress) {
-            if (nextProps.jobs[nextProps.distributionConfigId]) {
+            const jobConfig = nextProps.jobs[nextProps.distributionConfigId];
+            if (jobConfig) {
                 this.setState({
-                    roomId: nextProps.jobs[nextProps.distributionConfigId].roomId,
-                    notify: nextProps.jobs[nextProps.distributionConfigId].notify,
-                    color: nextProps.jobs[nextProps.distributionConfigId].color,
+                    roomId: jobConfig.roomId,
+                    notify: jobConfig.notify,
+                    color: jobConfig.color,
                     colorOptions: nextProps.colorOptions
                 });
             }
@@ -91,7 +92,7 @@ class HipChatJobConfiguration extends Component {
         return (<BaseJobConfiguration
             baseUrl={this.props.baseUrl}
             testUrl={this.props.testUrl}
-            channelName={this.props.channelName}
+            alertChannelName={this.props.alertChannelName}
             distributionConfigId={this.props.distributionConfigId}
             handleCancel={this.props.handleCancel}
             handleSaveBtnClick={this.props.handleSaveBtnClick}
@@ -114,7 +115,7 @@ HipChatJobConfiguration.propTypes = {
     errors: PropTypes.object,
     handleCancel: PropTypes.func.isRequired,
     handleSaveBtnClick: PropTypes.func.isRequired,
-    channelName: PropTypes.string.isRequired
+    alertChannelName: PropTypes.string.isRequired
 };
 
 HipChatJobConfiguration.defaultProps = {
