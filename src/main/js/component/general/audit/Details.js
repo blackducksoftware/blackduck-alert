@@ -1,9 +1,11 @@
-import React, {Component} from 'react';
-
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import {connect} from 'react-redux';
+import DescriptorLabel from '../../common/DescriptorLabel';
 import TextInput from '../../../field/input/TextInput';
+import LabeledField from '../../../field/LabeledField';
 import TextArea from '../../../field/input/TextArea';
-
-import {ReactBsTable} from 'react-bootstrap-table';
+import { ReactBsTable, BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 
 class Details extends Component {
     constructor(props) {
@@ -26,23 +28,21 @@ class Details extends Component {
     }
 
     getEventType() {
-        let fontAwesomeClass = '';
-        let cellText = '';
-        if (this.state.values.eventType === 'channel_email') {
-            fontAwesomeClass = 'fa fa-envelope fa-fw';
-            cellText = 'Group Email';
-        } else if (this.state.values.eventType === 'channel_hipchat') {
-            fontAwesomeClass = 'fa fa-comments fa-fw';
-            cellText = 'HipChat';
-        } else if (this.state.values.eventType === 'channel_slack') {
-            fontAwesomeClass = 'fa fa-slack  fa-fw';
-            cellText = 'Slack';
-        }
+        const descriptorList = this.props.descriptors.items['CHANNEL_DISTRIBUTION_CONFIG'];
+        if(descriptorList) {
+            const filteredList = descriptorList.filter(descriptor => descriptor.descriptorName === this.state.values.eventType)
 
-        return (<div className="inline">
-            <span key="icon" className={fontAwesomeClass} aria-hidden="true"/>
-            {cellText}
-        </div>);
+            if(filteredList && filteredList.length > 0) {
+                const foundDescriptor = filteredList[0];
+                return (<DescriptorLabel keyPrefix='audit-detail-icon' descriptor={foundDescriptor}/>);
+            } else {
+                const cellText = "Unknown";
+                return (<div className="inline">{cellText}</div>);
+            }
+        } else {
+            const cellText = "Unknown";
+            return (<div className="inline">{cellText}</div>);
+        }
     }
 
 
@@ -74,5 +74,18 @@ class Details extends Component {
         );
     }
 }
+Details.propTypes = {
+    descriptors: PropTypes.object
+};
 
-export default Details;
+Details.defaultProps = {
+    descriptor: {}
+};
+
+const mapStateToProps = state => ({
+    descriptors: state.descriptors
+});
+
+const mapDispatchToProps = dispatch => ({});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Details);

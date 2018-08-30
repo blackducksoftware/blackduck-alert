@@ -22,7 +22,7 @@ class AboutInfo extends React.Component {
 
     createDescriptorTable(tableData) {
         const tableOptions = {
-            defaultSortName: 'name',
+            defaultSortName: 'label',
             defaultSortOrder: 'asc',
             noDataText: 'No data found',
         };
@@ -33,9 +33,9 @@ class AboutInfo extends React.Component {
                     options={tableOptions}
                     headerContainerClass="scrollable"
                     bodyContainerClass="scrollable">
-                    <TableHeaderColumn dataField="iconKey" className="iconTableRow" columnClassName="iconTableRow" dataFormat={this.iconColumnRenderer}>
+                    <TableHeaderColumn dataField="fontAwesomeIcon" className="iconTableRow" columnClassName="iconTableRow" dataFormat={this.iconColumnRenderer}>
                     </TableHeaderColumn>
-                    <TableHeaderColumn dataField="name" isKey>
+                    <TableHeaderColumn dataField="label" isKey>
                         Name
                     </TableHeaderColumn>
                 </BootstrapTable>
@@ -44,7 +44,9 @@ class AboutInfo extends React.Component {
     }
 
     render() {
-        const { version,description, projectUrl, channelList, providerList } = this.props;
+        const { version,description, projectUrl } = this.props;
+        const providerList = this.props.descriptors.items['PROVIDER_CONFIG'];
+        const channelList = this.props.descriptors.items['CHANNEL_DISTRIBUTION_CONFIG'];
         const projectUrlLink = <a alt={projectUrl} href={projectUrl}>{projectUrl}</a>;
         const providerTable = this.createDescriptorTable(providerList);
         const channelTable = this.createDescriptorTable(channelList);
@@ -59,10 +61,24 @@ class AboutInfo extends React.Component {
                     <ReadOnlyField label="Version" name="version" readOnly="true" value={version}/>
                     <ReadOnlyField label="Project URL" name="projectUrl" readOnly="true" value={projectUrlLink}/>
                     <div className="form-group">
-                        <ReadOnlyField label="Supported Providers" name="providerTable" readOnly="true" value={providerTable}/>
+                        <div className="form-group">
+                            <label className="col-sm-3 control-label">Supported Providers</label>
+                            <div className="col-sm-8">
+                                <div className="form-control-static">
+                                {providerTable}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div className="form-group">
-                        <ReadOnlyField label="Supported Distribution Channels" name="channelTable" readOnly="true" value={channelTable}/>
+                        <div className="form-group">
+                            <label className="col-sm-3 control-label">Supported Distribution Channels</label>
+                            <div className="col-sm-8">
+                                <div className="form-control-static">
+                                {channelTable}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -75,8 +91,7 @@ AboutInfo.propTypes = {
     version: PropTypes.string.isRequired,
     description: PropTypes.string,
     projectUrl: PropTypes.string.isRequired,
-    channelList: PropTypes.arrayOf(PropTypes.object),
-    providerList: PropTypes.arrayOf(PropTypes.object)
+    descriptors: PropTypes.object
 };
 
 AboutInfo.defaultProps = {
@@ -84,8 +99,7 @@ AboutInfo.defaultProps = {
     version: '',
     description: '',
     projectUrl: '',
-    channelList: [],
-    providerList: []
+    descriptors: {}
 };
 
 const mapStateToProps = state => ({
@@ -93,8 +107,7 @@ const mapStateToProps = state => ({
     version: state.about.version,
     description: state.about.description,
     projectUrl: state.about.projectUrl,
-    channelList: state.about.channelList,
-    providerList: state.about.providerList
+    descriptors: state.descriptors
 });
 
 const mapDispatchToProps = dispatch => ({

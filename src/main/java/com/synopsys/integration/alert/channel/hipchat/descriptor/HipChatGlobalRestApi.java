@@ -44,7 +44,7 @@ public class HipChatGlobalRestApi extends RestApi {
 
     @Autowired
     public HipChatGlobalRestApi(final HipChatGlobalTypeConverter databaseContentConverter, final HipChatGlobalRepositoryAccessor repositoryAccessor, final HipChatChannel hipChatChannel,
-            final HipChatStartupComponent hipChatStartupComponent) {
+    final HipChatStartupComponent hipChatStartupComponent) {
         super(databaseContentConverter, repositoryAccessor, hipChatStartupComponent);
         this.hipChatChannel = hipChatChannel;
     }

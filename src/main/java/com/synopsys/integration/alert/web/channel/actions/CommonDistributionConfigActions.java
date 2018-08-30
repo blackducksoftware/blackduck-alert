@@ -46,7 +46,7 @@ public class CommonDistributionConfigActions {
 
     @Autowired
     public CommonDistributionConfigActions(final ConfiguredProjectsActions configuredProjectsActions, final NotificationTypesActions notificationTypesActions, final CommonDistributionRepository commonDistributionRepository,
-            final ContentConverter contentConverter) {
+    final ContentConverter contentConverter) {
         this.configuredProjectsActions = configuredProjectsActions;
         this.notificationTypesActions = notificationTypesActions;
         this.commonDistributionRepository = commonDistributionRepository;
@@ -103,7 +103,7 @@ public class CommonDistributionConfigActions {
         final Long distributionConfigId = contentConverter.getLongValue(commonConfig.getDistributionConfigId());
         final DigestType digestType = Enum.valueOf(DigestType.class, commonConfig.getFrequency());
         final Boolean filterByProject = contentConverter.getBooleanValue(commonConfig.getFilterByProject());
-        final CommonDistributionConfigEntity commonEntity = new CommonDistributionConfigEntity(distributionConfigId, commonConfig.getDistributionType(), commonConfig.getName(), digestType, filterByProject);
+        final CommonDistributionConfigEntity commonEntity = new CommonDistributionConfigEntity(distributionConfigId, commonConfig.getDistributionType(), commonConfig.getName(), commonConfig.getProviderName(), digestType, filterByProject);
         final Long longId = contentConverter.getLongValue(commonConfig.getId());
         commonEntity.setId(longId);
         return commonEntity;

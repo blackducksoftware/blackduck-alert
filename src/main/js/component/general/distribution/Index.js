@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import {BootstrapTable, DeleteButton, InsertButton, ReactBsTable, TableHeaderColumn} from 'react-bootstrap-table';
 
 import AutoRefresh from '../../common/AutoRefresh';
+import DescriptorLabel from '../../common/DescriptorLabel';
 import GroupEmailJobConfiguration from './job/GroupEmailJobConfiguration';
 import HipChatJobConfiguration from './job/HipChatJobConfiguration';
 import SlackJobConfiguration from './job/SlackJobConfiguration';
@@ -34,33 +35,6 @@ function statusColumnClassNameFormat(fieldValue) {
  * @param cell
  * @returns {*}
  */
-function typeColumnDataFormat(cell) {
-    let fontAwesomeClass = '';
-    let cellText = '';
-    if (cell === 'channel_email') {
-        fontAwesomeClass = 'fa fa-envelope fa-fw';
-        cellText = 'Group Email';
-    } else if (cell === 'channel_hipchat') {
-        fontAwesomeClass = 'fa fa-comments fa-fw';
-        cellText = 'HipChat';
-    } else if (cell === 'channel_slack') {
-        fontAwesomeClass = 'fa fa-slack fa-fw';
-        cellText = 'Slack';
-    }
-
-    return (
-        <div title={cellText}>
-            <span key="icon" className={fontAwesomeClass} aria-hidden="true"/>
-            {cellText}
-        </div>
-    );
-}
-
-/**
- * Return type column data
- * @param cell
- * @returns {*}
- */
 function frequencyColumnDataFormat(cell) {
     let cellText = '';
     if (cell === 'REAL_TIME') {
@@ -80,9 +54,7 @@ class Index extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            jobs: [],
-            groups: [],
-            waitingForGroups: true
+            jobs: []
         };
         this.startAutoReload = this.startAutoReload.bind(this);
         this.startAutoReloadIfConfigured = this.startAutoReloadIfConfigured.bind(this);
@@ -95,10 +67,11 @@ class Index extends Component {
         this.customJobConfigDeletionConfirm = this.customJobConfigDeletionConfirm.bind(this);
         this.reloadJobs = this.reloadJobs.bind(this);
         this.saveBtn = this.saveBtn.bind(this);
+        this.typeColumnDataFormat = this.typeColumnDataFormat.bind(this);
+        this.providerColumnDataFormat = this.providerColumnDataFormat.bind(this);
     }
 
     componentDidMount() {
-        this.retrieveGroups();
         this.reloadJobs();
     }
 
@@ -108,48 +81,22 @@ class Index extends Component {
 
     getCurrentJobConfig(currentRowSelected) {
         if (currentRowSelected != null) {
-            const {
-                id, name, distributionConfigId, distributionType, frequency, notificationTypes, groupName, includeAllProjects, configuredProjects
-            } = currentRowSelected;
+            const {distributionConfigId, distributionType} = currentRowSelected;
             if (distributionType === 'channel_email') {
                 return (<GroupEmailJobConfiguration
-                    csrfToken={this.props.csrfToken}
-                    id={id}
                     distributionConfigId={distributionConfigId}
-                    name={name}
-                    includeAllProjects={includeAllProjects}
-                    frequency={frequency}
-                    notificationTypes={notificationTypes}
-                    waitingForGroups={this.state.waitingForGroups}
-                    groups={this.state.groups}
-                    groupName={groupName}
-                    configuredProjects={configuredProjects}
                     handleCancel={this.cancelRowSelect}
                     handleSaveBtnClick={this.saveBtn}
                 />);
             } else if (distributionType === 'channel_hipchat') {
                 return (<HipChatJobConfiguration
-                    csrfToken={this.props.csrfToken}
-                    id={id}
                     distributionConfigId={distributionConfigId}
-                    name={name}
-                    includeAllProjects={includeAllProjects}
-                    frequency={frequency}
-                    notificationTypes={notificationTypes}
-                    configuredProjects={configuredProjects}
                     handleCancel={this.cancelRowSelect}
                     handleSaveBtnClick={this.saveBtn}
                 />);
             } else if (distributionType === 'channel_slack') {
                 return (<SlackJobConfiguration
-                    csrfToken={this.props.csrfToken}
-                    id={id}
                     distributionConfigId={distributionConfigId}
-                    name={name}
-                    includeAllProjects={includeAllProjects}
-                    frequency={frequency}
-                    notificationTypes={notificationTypes}
-                    configuredProjects={configuredProjects}
                     handleCancel={this.cancelRowSelect}
                     handleSaveBtnClick={this.saveBtn}
                 />);
@@ -196,12 +143,8 @@ class Index extends Component {
     createCustomModal(onModalClose, onSave, columns, validateState, ignoreEditable) {
         return (
             <JobAddModal
-                csrfToken={this.props.csrfToken}
-                waitingForGroups={this.state.waitingForGroups}
                 projects={this.state.projects}
                 includeAllProjects
-                groups={this.state.groups}
-                groupError={this.state.groupError}
                 handleCancel={this.cancelRowSelect}
                 onModalClose={() => {
                     this.fetchDistributionJobs();
@@ -257,31 +200,6 @@ class Index extends Component {
         }
     }
 
-    retrieveGroups() {
-        fetch('/alert/api/blackduck/groups', {
-            credentials: 'same-origin'
-        }).then((response) => {
-            this.setState({waitingForGroups: false});
-            if (!response.ok) {
-                return response.json().then((json) => {
-                    this.setState({groupError: json.message});
-                });
-            }
-            return response.json().then((json) => {
-                this.setState({groupError: ''});
-                const jsonArray = JSON.parse(json.message);
-                if (jsonArray != null && jsonArray.length > 0) {
-                    const groups = jsonArray.map(({name, active, url}) => ({name, active, url}));
-                    this.setState({
-                        groups
-                    });
-                }
-            });
-        }).catch((error) => {
-            console.log(error);
-        });
-    }
-
     fetchDistributionJobs() {
         fetch('/alert/api/configuration/channel/distribution', {
             credentials: 'same-origin',
@@ -302,6 +220,7 @@ class Index extends Component {
                                 distributionConfigId: item.distributionConfigId,
                                 name: item.name,
                                 distributionType: item.distributionType,
+                                providerName: item.providerName,
                                 lastRan: item.lastRan,
                                 status: item.status,
                                 frequency: item.frequency,
@@ -371,6 +290,45 @@ class Index extends Component {
         );
     }
 
+    typeColumnDataFormat(cell) {
+        const defaultValue = <div className="inline">{cell}</div>;
+        if (this.props.descriptors) {
+            const descriptorList = this.props.descriptors.items['CHANNEL_DISTRIBUTION_CONFIG'];
+            if (descriptorList) {
+                const filteredList = descriptorList.filter(descriptor => descriptor.descriptorName === cell)
+                if (filteredList && filteredList.length > 0) {
+                    const foundDescriptor = filteredList[0];
+                    return (<DescriptorLabel keyPrefix='distribution-channel-icon' descriptor={foundDescriptor}/>);
+                } else {
+                    return defaultValue;
+                }
+            } else {
+                return defaultValue;
+            }
+        } else {
+            return defaultValue;
+        }
+    }
+
+    providerColumnDataFormat(cell) {
+        const defaultValue = <div className="inline">{cell}</div>;
+        if (this.props.descriptors) {
+            const descriptorList = this.props.descriptors.items['PROVIDER_CONFIG'];
+            if (descriptorList) {
+                const filteredList = descriptorList.filter(descriptor => descriptor.descriptorName === cell)
+                if (filteredList && filteredList.length > 0) {
+                    const foundDescriptor = filteredList[0];
+                    return (<DescriptorLabel keyPrefix='distribution-provider-icon' descriptor={foundDescriptor}/>);
+                } else {
+                    return defaultValue;
+                }
+            } else {
+                return defaultValue;
+            }
+        } else {
+            return defaultValue;
+        }
+    }
 
     render() {
         const jobTableOptions = {
@@ -390,7 +348,6 @@ class Index extends Component {
                 return null;
             }
         };
-
         let content = (
             <div>
                 <BootstrapTable
@@ -416,9 +373,10 @@ class Index extends Component {
                     <TableHeaderColumn dataField="name" dataSort columnTitle columnClassName="tableCell">
                         Distribution Job
                     </TableHeaderColumn>
-                    <TableHeaderColumn dataField="distributionType" dataSort columnClassName="tableCell" dataFormat={typeColumnDataFormat}>
+                    <TableHeaderColumn dataField="distributionType" dataSort columnClassName="tableCell" dataFormat={this.typeColumnDataFormat}>
                         Type
                     </TableHeaderColumn>
+                    <TableHeaderColumn dataField="providerName" dataSort columnClassName="tableCell" dataFormat={this.providerColumnDataFormat}> Provider </TableHeaderColumn>
                     <TableHeaderColumn dataField="frequency" dataSort columnClassName="tableCell" dataFormat={frequencyColumnDataFormat}>
                         Digest Type
                     </TableHeaderColumn>
@@ -462,16 +420,19 @@ class Index extends Component {
 
 Index.propTypes = {
     autoRefresh: PropTypes.bool,
-    csrfToken: PropTypes.string
+    csrfToken: PropTypes.string,
+    descriptors: PropTypes.object
 };
 
 Index.defaultProps = {
-    csrfToken: null
+    csrfToken: null,
+    descriptor: {}
 };
 
 const mapStateToProps = state => ({
     csrfToken: state.session.csrfToken,
-    autoRefresh: state.refresh.autoRefresh
+    autoRefresh: state.refresh.autoRefresh,
+    descriptors: state.descriptors
 });
 
 const mapDispatchToProps = dispatch => ({

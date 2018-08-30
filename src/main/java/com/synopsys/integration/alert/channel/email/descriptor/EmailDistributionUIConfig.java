@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
 import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
 import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
@@ -52,7 +53,7 @@ public class EmailDistributionUIConfig extends UIConfig {
 
     @Override
     public UIComponent generateUIComponent() {
-        return new UIComponent("Email", "email", "envelope", setupFields());
+        return new UIComponent("Email", "email", EmailGroupChannel.COMPONENT_NAME, "envelope", setupFields());
     }
 
     public List<ConfigField> setupFields() {
@@ -65,12 +66,11 @@ public class EmailDistributionUIConfig extends UIConfig {
         // TODO we currently query the hub to get the groups, change this when the group DB table is introduced
         try {
             return blackDuckDataActions.getBlackDuckGroups()
-                    .stream()
-                    .map(blackduckGroup -> blackduckGroup.getName())
-                    .collect(Collectors.toList());
-        } catch (final IntegrationException e) {
-            logger.error("Error retrieving email groups");
-            e.printStackTrace();
+                   .stream()
+                   .map(blackduckGroup -> blackduckGroup.getName())
+                   .collect(Collectors.toList());
+        } catch (final IntegrationException ex) {
+            logger.error("Error retrieving email groups", ex);
         }
 
         return Arrays.asList();

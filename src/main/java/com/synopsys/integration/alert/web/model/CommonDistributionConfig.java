@@ -29,6 +29,7 @@ public class CommonDistributionConfig extends Config {
     private String distributionConfigId;
     private String distributionType;
     private String name;
+    private String providerName;
     private String frequency;
     private String filterByProject;
     private List<String> configuredProjects;
@@ -39,12 +40,14 @@ public class CommonDistributionConfig extends Config {
     public CommonDistributionConfig() {
     }
 
-    public CommonDistributionConfig(final String id, final String distributionConfigId, final String distributionType, final String name, final String frequency, final String filterByProject, final List<String> configuredProjects,
+    public CommonDistributionConfig(final String id, final String distributionConfigId, final String distributionType, final String name, final String providerName, final String frequency, final String filterByProject,
+            final List<String> configuredProjects,
             final List<String> notificationTypes) {
         super(id);
         this.distributionConfigId = distributionConfigId;
         this.distributionType = distributionType;
         this.name = name;
+        this.providerName = providerName;
         this.frequency = frequency;
         this.filterByProject = filterByProject;
         this.configuredProjects = configuredProjects;
@@ -65,6 +68,14 @@ public class CommonDistributionConfig extends Config {
 
     public String getName() {
         return name;
+    }
+
+    public String getProviderName() {
+        return providerName;
+    }
+
+    public void setProviderName(final String providerName) {
+        this.providerName = providerName;
     }
 
     public String getFrequency() {

@@ -105,8 +105,8 @@ public class StartupManager {
 
     @Autowired
     public StartupManager(final SchedulingRepository schedulingRepository, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
-            final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer,
-            final List<ProviderDescriptor> providerDescriptorList) {
+    final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer,
+    final List<ProviderDescriptor> providerDescriptorList) {
         this.schedulingRepository = schedulingRepository;
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
@@ -187,14 +187,17 @@ public class StartupManager {
             } else {
                 final String blackDuckUrlString = blackDuckUrlOptional.get();
                 final Boolean trustCertificate = BooleanUtils.toBoolean(alertProperties.getAlertTrustCertificate().orElse(false));
-
+                final Integer timeout = blackDuckProperties.getBlackDuckTimeout();
+                logger.debug("  -> Black Duck Provider URL found validating: {}", blackDuckUrlString);
+                logger.debug("  -> Black Duck Provider Trust Cert: {}", trustCertificate);
+                logger.debug("  -> Black Duck Provider Timeout: {}", timeout);
                 final URL blackDuckUrl = new URL(blackDuckUrlString);
                 if ("localhost".equals(blackDuckUrl.getHost())) {
                     logger.warn("  -> Black Duck Provider Using localhost...");
                     final String blackDuckWebServerHost = blackDuckProperties.getPublicBlackDuckWebserverHost().orElse("");
                     logger.warn("  -> Black Duck Provider Using localhost because PUBLIC_BLACKDUCK_WEBSERVER_HOST environment variable is set to {}", blackDuckWebServerHost);
                 }
-                verifier.verifyIsHubServer(new URL(blackDuckUrlString), proxyInfo, trustCertificate, blackDuckProperties.getBlackDuckTimeout());
+                verifier.verifyIsHubServer(blackDuckUrl, proxyInfo, trustCertificate, timeout);
                 logger.info("  -> Black Duck Provider Valid!");
             }
         } catch (final MalformedURLException | IntegrationException ex) {

@@ -41,6 +41,9 @@ public class CommonDistributionConfigEntity extends DatabaseEntity {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "provider_name")
+    private String providerName;
+
     @Column(name = "frequency")
     private DigestType frequency;
 
@@ -51,10 +54,11 @@ public class CommonDistributionConfigEntity extends DatabaseEntity {
         // JPA requires default constructor definitions
     }
 
-    public CommonDistributionConfigEntity(final Long distributionConfigId, final String distributionType, final String name, final DigestType frequency, final Boolean filterByProject) {
+    public CommonDistributionConfigEntity(final Long distributionConfigId, final String distributionType, final String name, final String providerName, final DigestType frequency, final Boolean filterByProject) {
         this.distributionConfigId = distributionConfigId;
         this.distributionType = distributionType;
         this.name = name;
+        this.providerName = providerName;
         this.frequency = frequency;
         this.filterByProject = filterByProject;
     }
@@ -73,6 +77,10 @@ public class CommonDistributionConfigEntity extends DatabaseEntity {
 
     public String getName() {
         return name;
+    }
+
+    public String getProviderName() {
+        return providerName;
     }
 
     public DigestType getFrequency() {

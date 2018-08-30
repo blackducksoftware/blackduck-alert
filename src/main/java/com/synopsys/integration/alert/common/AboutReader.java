@@ -24,9 +24,6 @@
 package com.synopsys.integration.alert.common;
 
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,10 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.descriptor.Descriptor;
-import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
-import com.synopsys.integration.alert.common.enumeration.RestApiType;
-import com.synopsys.integration.alert.web.model.AboutDescriptorModel;
 import com.synopsys.integration.alert.web.model.AboutModel;
 import com.synopsys.integration.util.ResourceUtil;
 
@@ -46,32 +39,21 @@ public class AboutReader {
     public final static String PRODUCT_VERSION_UNKNOWN = "unknown";
     private final static Logger logger = LoggerFactory.getLogger(AboutReader.class);
     private final Gson gson;
-    private final DescriptorMap descriptorMap;
 
     @Autowired
-    public AboutReader(final Gson gson, final DescriptorMap descriptorMap) {
+    public AboutReader(final Gson gson) {
         this.gson = gson;
-        this.descriptorMap = descriptorMap;
     }
 
     public AboutModel getAboutModel() {
         try {
             final String aboutJson = ResourceUtil.getResourceAsString(getClass(), "/about.txt", StandardCharsets.UTF_8.toString());
             final AboutModel aboutModel = gson.fromJson(aboutJson, AboutModel.class);
-            final List<AboutDescriptorModel> channelNameList = getDescriptorLabels(descriptorMap.getChannelDescriptorMap(), RestApiType.CHANNEL_DISTRIBUTION_CONFIG);
-            final List<AboutDescriptorModel> providerNameList = getDescriptorLabels(descriptorMap.getProviderDescriptorMap(), RestApiType.PROVIDER_CONFIG);
-            return new AboutModel(aboutModel.getVersion(), aboutModel.getDescription(), aboutModel.getProjectUrl(), providerNameList, channelNameList);
+            return new AboutModel(aboutModel.getVersion(), aboutModel.getDescription(), aboutModel.getProjectUrl());
         } catch (final Exception e) {
             logger.error(e.getMessage(), e);
             return null;
         }
-    }
-
-    private List<AboutDescriptorModel> getDescriptorLabels(final Map<String, ? extends Descriptor> descriptorMap, final RestApiType restApiType) {
-        return descriptorMap.values().stream()
-                .map(descriptor -> descriptor.getUIConfig(restApiType).generateUIComponent())
-                .map(uiComponent -> new AboutDescriptorModel(uiComponent.getFontAwesomeIcon(), uiComponent.getLabel()))
-                .collect(Collectors.toList());
     }
 
     public String getProductVersion() {

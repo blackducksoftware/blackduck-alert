@@ -47,7 +47,7 @@ public class HipChatDistributionRestApi extends RestApi {
 
     @Autowired
     public HipChatDistributionRestApi(final HipChatDistributionTypeConverter databaseContentConverter, final HipChatDistributionRepositoryAccessor repositoryAccessor,
-            final ChannelEventFactory channelEventFactory, final HipChatChannel hipChatChannel) {
+    final ChannelEventFactory channelEventFactory, final HipChatChannel hipChatChannel) {
         super(databaseContentConverter, repositoryAccessor);
         this.channelEventFactory = channelEventFactory;
         this.hipChatChannel = hipChatChannel;

@@ -9,53 +9,32 @@ import {confirmLogout} from './store/actions/session';
 class Navigation extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            CHANNEL_GLOBAL_CONFIG: [],
-            PROVIDER_CONFIG: []
-        }
-        this.retrieveComponentData = this.retrieveComponentData.bind(this);
+        this.createNavItemForDescriptors = this.createNavItemForDescriptors.bind(this);
     }
 
-    componentDidMount() {
-        this.retrieveComponentData('CHANNEL_GLOBAL_CONFIG'),
-        this.retrieveComponentData('PROVIDER_CONFIG')
-    }
-
-    retrieveComponentData(distributionConfigType) {
-        const getUrl = `/alert/api/descriptor/restApi/${distributionConfigType}`;
-        fetch(getUrl, {
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json'
+    createNavItemForDescriptors(decriptorTypeKey, uriPrefix) {
+        const {descriptors} = this.props;
+        if (!descriptors.items) {
+            return null;
+        } else {
+            const descriptorList = descriptors.items[decriptorTypeKey];
+            if (!descriptorList) {
+                return null;
+            } else {
+                return descriptorList.map((component) =>
+                    <li>
+                        <NavLink to={`${uriPrefix}${component.urlName}`} activeClassName="activeNav">
+                            <FontAwesome name={component.fontAwesomeIcon} fixedWidth/>
+                            {component.label}
+                        </NavLink>
+                    </li>);
             }
-        }).then((response) => {
-            return response.json().then((json) => {
-                this.setState({
-                    [distributionConfigType]: json
-                });
-            });
-        }).catch(console.error);
+        }
     }
 
     render() {
-        const globals = this.state.CHANNEL_GLOBAL_CONFIG
-            .sort((first, second) => first.label > second.label)
-            .map((component) =>
-            <li>
-                <NavLink to={`/alert/channels/${component.urlName}`} activeClassName="activeNav">
-                    <FontAwesome name={component.fontAwesomeIcon} fixedWidth/>
-                    {component.label}
-                </NavLink>
-            </li>);
-        const providers = this.state.PROVIDER_CONFIG
-            .sort((first, second) => first.label > second.label)
-            .map((component) =>
-            <li>
-                <NavLink to={`/alert/providers/${component.urlName}`} activeClassName="activeNav">
-                    <FontAwesome name={component.fontAwesomeIcon} fixedWidth/>
-                    {component.label}
-                </NavLink>
-            </li>);
+        const channelGlobals = this.createNavItemForDescriptors('CHANNEL_GLOBAL_CONFIG', '/alert/channels/');
+        const providers = this.createNavItemForDescriptors('PROVIDER_CONFIG', '/alert/providers/');
 
         return (
             <div className="navigation">
@@ -71,7 +50,7 @@ class Navigation extends Component {
                         <li className="navHeader">
                             Channels
                         </li>
-                        {globals}
+                        {channelGlobals}
                         <li className="navHeader">
                             Jobs
                         </li>
@@ -92,9 +71,9 @@ class Navigation extends Component {
                             </NavLink>
                         </li>
                         <li>
-                        <NavLink to="/alert/general/about" activeClassName="activeNav">
-                            <FontAwesome name="info" fixedWidth/> About
-                        </NavLink>
+                            <NavLink to="/alert/general/about" activeClassName="activeNav">
+                                <FontAwesome name="info" fixedWidth/> About
+                            </NavLink>
                         </li>
                         <li className="logoutLink">
                             <a
@@ -102,7 +81,7 @@ class Navigation extends Component {
                                 tabIndex={0}
                                 onClick={(evt) => {
                                     evt.preventDefault();
-                                    props.confirmLogout();
+                                    this.props.confirmLogout();
                                 }}
                             >
                                 <FontAwesome name="sign-out" fixedWidth/> Logout
@@ -118,9 +97,9 @@ Navigation.propTypes = {
     confirmLogout: PropTypes.func.isRequired
 };
 
-// TODO Add Redux to this page
 const mapStateToProps = state => ({
-    csrfToken: state.session.csrfToken
+    csrfToken: state.session.csrfToken,
+    descriptors: state.descriptors
 });
 
 const mapDispatchToProps = dispatch => ({

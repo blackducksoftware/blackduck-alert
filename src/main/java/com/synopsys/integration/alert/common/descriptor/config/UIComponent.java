@@ -26,21 +26,24 @@ package com.synopsys.integration.alert.common.descriptor.config;
 import java.util.List;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.util.Stringable;
 
-public class UIComponent {
+public class UIComponent extends Stringable {
     private final String label;
     private final String urlName;
+    private final String descriptorName;
     private final String fontAwesomeIcon;
     private final List<ConfigField> fields;
     private final boolean automaticallyGenerateUI;
 
-    public UIComponent(final String label, final String urlName, final String fontAwesomeIcon, final List<ConfigField> fields) {
-        this(label, urlName, fontAwesomeIcon, true, fields);
+    public UIComponent(final String label, final String urlName, final String descriptorName, final String fontAwesomeIcon, final List<ConfigField> fields) {
+        this(label, urlName, descriptorName, fontAwesomeIcon, true, fields);
     }
 
-    public UIComponent(final String label, final String urlName, final String fontAwesomeIcon, final boolean automaticallyGenerateUI, final List<ConfigField> fields) {
+    public UIComponent(final String label, final String urlName, final String descriptorName, final String fontAwesomeIcon, final boolean automaticallyGenerateUI, final List<ConfigField> fields) {
         this.label = label;
         this.urlName = urlName;
+        this.descriptorName = descriptorName;
         this.fontAwesomeIcon = fontAwesomeIcon;
         this.automaticallyGenerateUI = automaticallyGenerateUI;
         this.fields = fields;
@@ -52,6 +55,10 @@ public class UIComponent {
 
     public String getUrlName() {
         return urlName;
+    }
+
+    public String getDescriptorName() {
+        return descriptorName;
     }
 
     public String getFontAwesomeIcon() {

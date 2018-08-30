@@ -57,7 +57,7 @@ public class BlackDuckTypeConverter extends TypeConverter {
     public DatabaseEntity populateEntityFromConfig(final Config restModel) {
         final BlackDuckConfig blackDuckConfig = (BlackDuckConfig) restModel;
         final Integer blackDuckTimeout = getContentConverter().getIntegerValue(blackDuckConfig.getBlackDuckTimeout());
-        final GlobalBlackDuckConfigEntity blackDuckEntity = new GlobalBlackDuckConfigEntity(blackDuckTimeout, blackDuckConfig.getBlackDuckApiKey());
+        final GlobalBlackDuckConfigEntity blackDuckEntity = new GlobalBlackDuckConfigEntity(blackDuckTimeout, blackDuckConfig.getBlackDuckApiKey(), blackDuckConfig.getBlackDuckUrl());
         addIdToEntityPK(blackDuckConfig.getId(), blackDuckEntity);
         return blackDuckEntity;
     }
