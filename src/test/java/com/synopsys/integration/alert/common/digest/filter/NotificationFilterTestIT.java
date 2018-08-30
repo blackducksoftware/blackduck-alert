@@ -42,7 +42,7 @@ import com.synopsys.integration.alert.database.relation.DistributionNotification
 import com.synopsys.integration.alert.database.relation.DistributionProjectRelation;
 import com.synopsys.integration.alert.database.relation.repository.DistributionNotificationTypeRepository;
 import com.synopsys.integration.alert.database.relation.repository.DistributionProjectRepository;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.test.annotation.DatabaseConnectionTest;
 
@@ -123,7 +123,7 @@ public class NotificationFilterTestIT {
     public void shortCircuitIfNoCommonConfigsTest() {
         commonDistributionRepository.deleteAll();
 
-        final NotificationContent applicableNotification = createVulnerabilityNotification(TEST_PROJECT_NAME, BlackDuckDescriptor.PROVIDER_NAME, NEW);
+        final NotificationContent applicableNotification = createVulnerabilityNotification(TEST_PROJECT_NAME, BlackDuckProvider.COMPONENT_NAME, NEW);
         final Collection<NotificationContent> filteredNotifications = notificationFilter.apply(DigestType.REAL_TIME, Arrays.asList(applicableNotification));
         Assert.assertEquals(0, filteredNotifications.size());
     }
@@ -134,12 +134,12 @@ public class NotificationFilterTestIT {
         if (foundEntity.isPresent()) {
             final CommonDistributionConfigEntity commonEntity = foundEntity.get();
             final CommonDistributionConfigEntity newEntity =
-                new CommonDistributionConfigEntity(commonEntity.getDistributionConfigId(), commonEntity.getDistributionType(), commonEntity.getName(), DigestType.DAILY, commonEntity.getFilterByProject());
+                new CommonDistributionConfigEntity(commonEntity.getDistributionConfigId(), commonEntity.getDistributionType(), commonEntity.getName(), BlackDuckProvider.COMPONENT_NAME, DigestType.DAILY, commonEntity.getFilterByProject());
             newEntity.setId(commonEntity.getId());
             commonDistributionRepository.save(newEntity);
         }
 
-        final NotificationContent applicableNotification = createVulnerabilityNotification(TEST_PROJECT_NAME, BlackDuckDescriptor.PROVIDER_NAME, NEW);
+        final NotificationContent applicableNotification = createVulnerabilityNotification(TEST_PROJECT_NAME, BlackDuckProvider.COMPONENT_NAME, NEW);
         final Collection<NotificationContent> filteredNotifications = notificationFilter.apply(DigestType.REAL_TIME, Arrays.asList(applicableNotification));
         Assert.assertEquals(0, filteredNotifications.size());
     }
@@ -149,15 +149,15 @@ public class NotificationFilterTestIT {
         notificationTypeRepository.deleteAll();
         distributionNotificationTypeRepository.deleteAll();
 
-        final NotificationContent applicableNotification = createVulnerabilityNotification(TEST_PROJECT_NAME, BlackDuckDescriptor.PROVIDER_NAME, NEW);
+        final NotificationContent applicableNotification = createVulnerabilityNotification(TEST_PROJECT_NAME, BlackDuckProvider.COMPONENT_NAME, NEW);
         final Collection<NotificationContent> filteredNotifications = notificationFilter.apply(DigestType.REAL_TIME, Arrays.asList(applicableNotification));
         Assert.assertEquals(0, filteredNotifications.size());
     }
 
     @Test
     public void applyWithOutOfOrderNotificationsTest() {
-        final NotificationContent applicableNotification1 = createVulnerabilityNotification(TEST_PROJECT_NAME, BlackDuckDescriptor.PROVIDER_NAME, NEW);
-        final NotificationContent applicableNotification2 = createVulnerabilityNotification(TEST_PROJECT_NAME, BlackDuckDescriptor.PROVIDER_NAME, OLD);
+        final NotificationContent applicableNotification1 = createVulnerabilityNotification(TEST_PROJECT_NAME, BlackDuckProvider.COMPONENT_NAME, NEW);
+        final NotificationContent applicableNotification2 = createVulnerabilityNotification(TEST_PROJECT_NAME, BlackDuckProvider.COMPONENT_NAME, OLD);
         final List<NotificationContent> notifications = Arrays.asList(applicableNotification1, applicableNotification2);
 
         final Collection<NotificationContent> filteredNotifications = notificationFilter.apply(DigestType.REAL_TIME, notifications);
@@ -170,10 +170,10 @@ public class NotificationFilterTestIT {
 
     @Test
     public void applyWithOneValidNotificationTest() {
-        final NotificationContent applicableNotification = createVulnerabilityNotification(TEST_PROJECT_NAME, BlackDuckDescriptor.PROVIDER_NAME, NEW);
-        final NotificationContent garbage1 = createVulnerabilityNotification("garbage1", BlackDuckDescriptor.PROVIDER_NAME, new Date());
-        final NotificationContent garbage2 = createVulnerabilityNotification("garbage2", BlackDuckDescriptor.PROVIDER_NAME, new Date());
-        final NotificationContent garbage3 = createVulnerabilityNotification("garbage3", BlackDuckDescriptor.PROVIDER_NAME, new Date());
+        final NotificationContent applicableNotification = createVulnerabilityNotification(TEST_PROJECT_NAME, BlackDuckProvider.COMPONENT_NAME, NEW);
+        final NotificationContent garbage1 = createVulnerabilityNotification("garbage1", BlackDuckProvider.COMPONENT_NAME, new Date());
+        final NotificationContent garbage2 = createVulnerabilityNotification("garbage2", BlackDuckProvider.COMPONENT_NAME, new Date());
+        final NotificationContent garbage3 = createVulnerabilityNotification("garbage3", BlackDuckProvider.COMPONENT_NAME, new Date());
         final List<NotificationContent> notifications = Arrays.asList(garbage1, applicableNotification, garbage2, garbage3);
 
         final Collection<NotificationContent> filteredNotifications = notificationFilter.apply(DigestType.REAL_TIME, notifications);
@@ -192,10 +192,11 @@ public class NotificationFilterTestIT {
 
     private CommonDistributionConfigEntity createCommonConfigEntity() {
         final String distributionType = "hipchat_channel";
+        final String providerName = BlackDuckProvider.COMPONENT_NAME;
         final String name = "name";
         final DigestType frequency = DigestType.REAL_TIME;
 
-        final CommonDistributionConfigEntity entity = new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, frequency, Boolean.TRUE);
+        final CommonDistributionConfigEntity entity = new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, providerName, frequency, Boolean.TRUE);
 
         return entity;
     }
