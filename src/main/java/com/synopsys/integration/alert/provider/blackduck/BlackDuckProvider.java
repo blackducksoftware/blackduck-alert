@@ -24,6 +24,7 @@
 package com.synopsys.integration.alert.provider.blackduck;
 
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -62,6 +63,10 @@ public class BlackDuckProvider extends Provider {
 
     @Override
     public Set<String> getNotificationTypes() {
-        return Arrays.stream(NotificationType.values()).map(NotificationType::name).collect(Collectors.toSet());
+        return Arrays.asList(NotificationType.RULE_VIOLATION, NotificationType.RULE_VIOLATION_CLEARED, NotificationType.POLICY_OVERRIDE, NotificationType.VULNERABILITY)
+               .stream()
+               .map(NotificationType::name)
+               .sorted()
+               .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 }

@@ -34,7 +34,10 @@ public class BlackDuckProviderTest {
     public void testGetNotificationTypes() {
         final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
         final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask);
-        final Set<String> expectedNotificationTypes = Arrays.stream(NotificationType.values()).map(NotificationType::name).collect(Collectors.toSet());
+        final Set<String> expectedNotificationTypes = Arrays.asList(NotificationType.RULE_VIOLATION, NotificationType.RULE_VIOLATION_CLEARED, NotificationType.POLICY_OVERRIDE, NotificationType.VULNERABILITY)
+                                                      .stream()
+                                                      .map(NotificationType::name)
+                                                      .collect(Collectors.toSet());
         final Set<String> providerNotificationTypes = provider.getNotificationTypes();
         assertEquals(expectedNotificationTypes, providerNotificationTypes);
     }
