@@ -1,6 +1,8 @@
 package com.synopsys.integration.alert.channel;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -43,7 +45,7 @@ public class ChannelFreemarkerTemplatingServiceTest {
     @Test
     public void testSubjectLine() throws IOException, TemplateException {
         final TestProperties testProperties = new TestProperties();
-        final ChannelFreemarkerTemplatingService channelFreemarkerTemplatingService = new ChannelFreemarkerTemplatingService(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_TEMPLATE));
+        final ChannelFreemarkerTemplatingService channelFreemarkerTemplatingService = new ChannelFreemarkerTemplatingService(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_EMAIL_TEMPLATE));
         final String subjectLine = channelFreemarkerTemplatingService.getResolvedSubjectLine(new HashMap<>());
 
         assertEquals("Default Subject Line - please define one", subjectLine);
