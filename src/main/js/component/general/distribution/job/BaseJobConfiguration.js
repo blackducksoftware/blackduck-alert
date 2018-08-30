@@ -36,7 +36,6 @@ class BaseJobConfiguration extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log("Base Job next props", nextProps);
         if (!nextProps.fetching && !nextProps.inProgress) {
             const stateValues = {
                 fetching: nextProps.fetching,
@@ -57,7 +56,7 @@ class BaseJobConfiguration extends Component {
                     }
                 }
                 const newState = Object.assign({}, stateValues, {
-                    id: nextProps.id,
+                    id: jobConfig.id,
                     distributionConfigId: nextProps.distributionConfigId,
                     name: jobConfig.name,
                     providerName: jobConfig.providerName,
@@ -99,7 +98,7 @@ class BaseJobConfiguration extends Component {
             event.preventDefault();
         }
         const jsonBody = this.buildJsonBody();
-        if (this.props.id) {
+        if (this.state.id) {
             this.props.updateDistributionJob(this.props.baseUrl, jsonBody);
         } else {
             this.props.saveDistributionJob(this.props.baseUrl, jsonBody);
@@ -122,7 +121,18 @@ class BaseJobConfiguration extends Component {
     }
 
     buildJsonBody() {
-        const configuration = Object.assign({}, this.state, this.props.getParentConfiguration());
+        const configuration = Object.assign({}, {
+            id: this.state.id,
+            distributionConfigId: this.state.distributionConfigId,
+            name: this.state.name,
+            providerName: this.state.providerName,
+            distributionType: this.state.distributionType,
+            frequency: this.state.frequency,
+            includeAllProjects: this.state.filterByProject == 'false',
+            filterByProject: this.state.filterByProject,
+            notificationTypes: this.state.notificationTypes,
+            configuredProjects: this.state.configuredProjects
+        }, this.props.getParentConfiguration());
         configuration.filterByProject = !configuration.includeAllProjects;
         if (configuration.notificationTypes && configuration.notificationTypes.length > 0) {
             configuration.notificationTypes = configuration.notificationTypes;
