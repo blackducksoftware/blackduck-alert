@@ -33,7 +33,6 @@ import com.synopsys.integration.alert.common.enumeration.DigestType;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
-import com.synopsys.integration.alert.database.entity.NotificationTypeEntity;
 import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.synopsys.integration.alert.database.entity.repository.NotificationTypeRepository;
 import com.synopsys.integration.alert.database.relation.DistributionNotificationTypeRelation;
@@ -77,11 +76,9 @@ public class NotificationEventManagerTest {
         emailDistributionConfig = commonDistributionRepository.save(emailDistributionConfig);
 
         for (final NotificationType notificationCategoryEnum : NotificationType.values()) {
-            final NotificationTypeEntity notificationTypeEntity = new NotificationTypeEntity(notificationCategoryEnum);
-            final NotificationTypeEntity savedNotificationType = notificationTypeRepository.save(notificationTypeEntity);
-            saveDistributionNotificationTypeRelation(slackDistributionConfig.getId(), savedNotificationType.getId());
-            saveDistributionNotificationTypeRelation(hipChatDistributionConfig.getId(), savedNotificationType.getId());
-            saveDistributionNotificationTypeRelation(emailDistributionConfig.getId(), savedNotificationType.getId());
+            saveDistributionNotificationTypeRelation(slackDistributionConfig.getId(), notificationCategoryEnum.name());
+            saveDistributionNotificationTypeRelation(hipChatDistributionConfig.getId(), notificationCategoryEnum.name());
+            saveDistributionNotificationTypeRelation(emailDistributionConfig.getId(), notificationCategoryEnum.name());
         }
     }
 
@@ -91,8 +88,8 @@ public class NotificationEventManagerTest {
         notificationTypeRepository.deleteAll();
     }
 
-    private void saveDistributionNotificationTypeRelation(final Long commonDistributionConfigId, final Long notificationTypeId) {
-        final DistributionNotificationTypeRelation notificationRelation = new DistributionNotificationTypeRelation(commonDistributionConfigId, notificationTypeId);
+    private void saveDistributionNotificationTypeRelation(final Long commonDistributionConfigId, final String notificationType) {
+        final DistributionNotificationTypeRelation notificationRelation = new DistributionNotificationTypeRelation(commonDistributionConfigId, notificationType);
         distributionNotificationTypeRepository.save(notificationRelation);
     }
 

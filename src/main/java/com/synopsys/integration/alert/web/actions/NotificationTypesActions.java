@@ -23,9 +23,8 @@
  */
 package com.synopsys.integration.alert.web.actions;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -35,11 +34,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
-import com.synopsys.integration.alert.database.entity.NotificationTypeEntity;
 import com.synopsys.integration.alert.database.entity.repository.NotificationTypeRepository;
 import com.synopsys.integration.alert.database.relation.DistributionNotificationTypeRelation;
 import com.synopsys.integration.alert.database.relation.repository.DistributionNotificationTypeRepository;
-import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 @Transactional
 @Component
@@ -65,13 +62,8 @@ public class NotificationTypesActions {
 
     public List<String> getNotificationTypes(final CommonDistributionConfigEntity commonEntity) {
         final List<DistributionNotificationTypeRelation> foundRelations = distributionNotificationTypeRepository.findByCommonDistributionConfigId(commonEntity.getId());
-        final List<String> notificationTypes = new ArrayList<>(foundRelations.size());
-        for (final DistributionNotificationTypeRelation relation : foundRelations) {
-            final Optional<NotificationTypeEntity> foundEntity = notificationTypeRepository.findById(relation.getNotificationTypeId());
-            foundEntity.ifPresent(entity -> notificationTypes.add(entity.getType().name()));
-            ;
-        }
-        return notificationTypes;
+        return foundRelations.stream().map(DistributionNotificationTypeRelation::getNotificationType).collect(Collectors.toList());
+
     }
 
     public void saveNotificationTypes(final long entityId, final List<String> configuredNotificationTypes) {
@@ -89,18 +81,7 @@ public class NotificationTypesActions {
     }
 
     private void addNewDistributionNotificationTypes(final Long commonDistributionConfigId, final List<String> notificationTypesFromRestModel) {
-        for (final String notificationType : notificationTypesFromRestModel) {
-            final NotificationType notificationTypeEnum = NotificationType.valueOf(notificationType);
-            final Long notificationTypeId;
-            final NotificationTypeEntity foundEntity = notificationTypeRepository.findByType(notificationTypeEnum);
-            if (foundEntity != null) {
-                notificationTypeId = foundEntity.getId();
-            } else {
-                final NotificationTypeEntity createdEntity = notificationTypeRepository.save(new NotificationTypeEntity(notificationTypeEnum));
-                notificationTypeId = createdEntity.getId();
-            }
-            distributionNotificationTypeRepository.save(new DistributionNotificationTypeRelation(commonDistributionConfigId, notificationTypeId));
-        }
+        notificationTypesFromRestModel.forEach(notificationType -> distributionNotificationTypeRepository.save(new DistributionNotificationTypeRelation(commonDistributionConfigId, notificationType)));
     }
 
 }

@@ -38,7 +38,6 @@ import com.synopsys.integration.alert.common.enumeration.DigestType;
 import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.ConfiguredProjectEntity;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
-import com.synopsys.integration.alert.database.entity.NotificationTypeEntity;
 import com.synopsys.integration.alert.database.entity.repository.ConfiguredProjectsRepository;
 import com.synopsys.integration.alert.database.entity.repository.NotificationTypeRepository;
 import com.synopsys.integration.alert.database.relation.DistributionNotificationTypeRelation;
@@ -56,7 +55,7 @@ public class NotificationPostProcessor {
 
     @Autowired
     public NotificationPostProcessor(final DistributionProjectRepository distributionProjectRepository, final ConfiguredProjectsRepository configuredProjectsRepository,
-            final DistributionNotificationTypeRepository distributionNotificationTypeRepository, final NotificationTypeRepository notificationTypeRepository) {
+    final DistributionNotificationTypeRepository distributionNotificationTypeRepository, final NotificationTypeRepository notificationTypeRepository) {
         this.distributionProjectRepository = distributionProjectRepository;
         this.configuredProjectsRepository = configuredProjectsRepository;
         this.distributionNotificationTypeRepository = distributionNotificationTypeRepository;
@@ -99,14 +98,16 @@ public class NotificationPostProcessor {
 
     public Optional<NotificationContent> filterMatchingNotificationTypes(final CommonDistributionConfigEntity commonDistributionConfigEntity, final NotificationContent notificationContent) {
         final List<DistributionNotificationTypeRelation> foundRelations = distributionNotificationTypeRepository.findByCommonDistributionConfigId(commonDistributionConfigEntity.getId());
-        for (final DistributionNotificationTypeRelation foundRelation : foundRelations) {
-            final Optional<NotificationTypeEntity> foundEntity = notificationTypeRepository.findById(foundRelation.getNotificationTypeId());
-            if (foundEntity.isPresent() && foundEntity.get().getType().name().equals(notificationContent.getNotificationType())) {
-                return Optional.of(notificationContent);
-            }
-        }
 
-        return Optional.empty();
+        final boolean notificationTypeMatches = foundRelations.stream()
+                                                .map(DistributionNotificationTypeRelation::getNotificationType)
+                                                .anyMatch(configuredNotificationType -> configuredNotificationType.equals(notificationContent.getNotificationType()));
+
+        if (notificationTypeMatches) {
+            return Optional.of(notificationContent);
+        } else {
+            return Optional.empty();
+        }
     }
 
 }

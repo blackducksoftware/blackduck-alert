@@ -33,7 +33,7 @@ import com.synopsys.integration.alert.database.relation.key.DistributionNotifica
 
 @Entity
 @IdClass(DistributionNotificationTypeRelationPK.class)
-@Table(schema = "alert", name = "distribution_notification_types_relation")
+@Table(schema = "alert", name = "distribution_notification_types")
 public class DistributionNotificationTypeRelation extends DatabaseRelation {
     @Id
     @Column
@@ -41,23 +41,23 @@ public class DistributionNotificationTypeRelation extends DatabaseRelation {
 
     @Id
     @Column
-    private Long notificationTypeId;
+    private String notificationType;
 
     public DistributionNotificationTypeRelation() {
         // JPA requires default constructor definitions
     }
 
-    public DistributionNotificationTypeRelation(final Long commonDistributionConfigId, final Long notificationTypeId) {
+    public DistributionNotificationTypeRelation(final Long commonDistributionConfigId, final String notificationType) {
         this.commonDistributionConfigId = commonDistributionConfigId;
-        this.notificationTypeId = notificationTypeId;
+        this.notificationType = notificationType;
     }
 
     public Long getCommonDistributionConfigId() {
         return commonDistributionConfigId;
     }
 
-    public Long getNotificationTypeId() {
-        return notificationTypeId;
+    public String getNotificationType() {
+        return notificationType;
     }
 
 }
