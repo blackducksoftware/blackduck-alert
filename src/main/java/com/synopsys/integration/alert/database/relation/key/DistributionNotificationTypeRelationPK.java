@@ -28,7 +28,7 @@ import java.io.Serializable;
 @SuppressWarnings("serial")
 public class DistributionNotificationTypeRelationPK implements Serializable {
     private Long commonDistributionConfigId;
-    private Long notificationTypeId;
+    private String notificationType;
 
     public DistributionNotificationTypeRelationPK() {
         // JPA requires default constructor definitions
@@ -42,11 +42,11 @@ public class DistributionNotificationTypeRelationPK implements Serializable {
         this.commonDistributionConfigId = commonDistributionConfigId;
     }
 
-    public Long getNotificationTypeId() {
-        return notificationTypeId;
+    public String getNotificationType() {
+        return notificationType;
     }
 
-    public void setNotificationTypeId(final Long notificationTypeId) {
-        this.notificationTypeId = notificationTypeId;
+    public void setNotificationType(final String notificationType) {
+        this.notificationType = notificationType;
     }
 }

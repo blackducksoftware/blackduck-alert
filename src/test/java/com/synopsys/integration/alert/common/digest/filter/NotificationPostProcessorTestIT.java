@@ -42,7 +42,6 @@ import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.ConfiguredProjectEntity;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
-import com.synopsys.integration.alert.database.entity.NotificationTypeEntity;
 import com.synopsys.integration.alert.database.entity.repository.ConfiguredProjectsRepository;
 import com.synopsys.integration.alert.database.entity.repository.NotificationTypeRepository;
 import com.synopsys.integration.alert.database.relation.DistributionNotificationTypeRelation;
@@ -90,10 +89,8 @@ public class NotificationPostProcessorTestIT {
 
         config2.setId(config2Id);
 
-        notificationTypeRepository.save(new NotificationTypeEntity(NotificationType.RULE_VIOLATION));
-        final Long notificationTypeId = notificationTypeRepository.findAll().get(0).getId();
-        distributionNotificationTypeRepository.save(new DistributionNotificationTypeRelation(config1.getId(), notificationTypeId));
-        distributionNotificationTypeRepository.save(new DistributionNotificationTypeRelation(config2.getId(), notificationTypeId));
+        distributionNotificationTypeRepository.save(new DistributionNotificationTypeRelation(config1.getId(), NotificationType.RULE_VIOLATION.name()));
+        distributionNotificationTypeRepository.save(new DistributionNotificationTypeRelation(config2.getId(), NotificationType.RULE_VIOLATION.name()));
 
         final ConfiguredProjectEntity configuredProjectEntity = configuredProjectsRepository.save(new ConfiguredProjectEntity(PROJECT_NAME));
         distributionProjectRepository.save(new DistributionProjectRelation(config1.getId(), configuredProjectEntity.getId()));
@@ -130,10 +127,7 @@ public class NotificationPostProcessorTestIT {
 
         config1.setId(config1Id);
 
-        notificationTypeRepository.save(new NotificationTypeEntity(NotificationType.RULE_VIOLATION));
-        final NotificationTypeEntity notificationType = notificationTypeRepository.findAll().get(0);
-        final Long notificationTypeId = notificationType.getId();
-        distributionNotificationTypeRepository.save(new DistributionNotificationTypeRelation(config1.getId(), notificationTypeId));
+        distributionNotificationTypeRepository.save(new DistributionNotificationTypeRelation(config1.getId(), NotificationType.RULE_VIOLATION.name()));
 
         final ConfiguredProjectEntity configuredProjectEntity = configuredProjectsRepository.save(new ConfiguredProjectEntity(PROJECT_NAME));
 
@@ -156,10 +150,7 @@ public class NotificationPostProcessorTestIT {
         final Long config1Id = 13L;
         final CommonDistributionConfigEntity config1 = new CommonDistributionConfigEntity(config1Id, EmailGroupChannel.COMPONENT_NAME, "Config 1", "provider_blackduck", DigestType.REAL_TIME, true);
         config1.setId(config1Id);
-        notificationTypeRepository.save(new NotificationTypeEntity(NotificationType.RULE_VIOLATION_CLEARED));
-        final NotificationTypeEntity notificationType = notificationTypeRepository.findAll().get(0);
-        final Long notificationTypeId = notificationType.getId();
-        distributionNotificationTypeRepository.save(new DistributionNotificationTypeRelation(config1.getId(), notificationTypeId));
+        distributionNotificationTypeRepository.save(new DistributionNotificationTypeRelation(config1.getId(), NotificationType.RULE_VIOLATION_CLEARED.name()));
 
         final ConfiguredProjectEntity configuredProjectEntity = configuredProjectsRepository.save(new ConfiguredProjectEntity(PROJECT_NAME));
         distributionProjectRepository.save(new DistributionProjectRelation(config1.getId(), configuredProjectEntity.getId()));
