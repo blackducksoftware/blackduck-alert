@@ -27,11 +27,9 @@ public class BlackDuckDescriptorTest {
         final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
         final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask);
         final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, null, null, null, provider);
-        final Set<String> expectedNotificationTypes = Arrays.asList(NotificationType.RULE_VIOLATION, NotificationType.RULE_VIOLATION_CLEARED, NotificationType.POLICY_OVERRIDE, NotificationType.VULNERABILITY)
-                                                      .stream()
-                                                      .map(NotificationType::name)
-                                                      .collect(Collectors.toSet());
-        final Set<String> providerNotificationTypes = descriptor.getNotificationTypes();
+        final Set<String> expectedNotificationTypes = Arrays.stream(NotificationType.values()).map(NotificationType::name).collect(Collectors.toSet());
+        final Set<String> providerNotificationTypes = descriptor.getProviderContentTypes().stream().map(contentType -> contentType.getNotificationType()).collect(Collectors.toSet());
+
         assertEquals(expectedNotificationTypes, providerNotificationTypes);
     }
 }

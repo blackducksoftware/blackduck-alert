@@ -23,8 +23,6 @@
  */
 package com.synopsys.integration.alert.provider.blackduck;
 
-import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,8 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.provider.Provider;
+import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
-import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 @Component(value = BlackDuckProvider.COMPONENT_NAME)
 public class BlackDuckProvider extends Provider {
@@ -62,11 +60,7 @@ public class BlackDuckProvider extends Provider {
     }
 
     @Override
-    public Set<String> getNotificationTypes() {
-        return Arrays.asList(NotificationType.RULE_VIOLATION, NotificationType.RULE_VIOLATION_CLEARED, NotificationType.POLICY_OVERRIDE, NotificationType.VULNERABILITY)
-               .stream()
-               .map(NotificationType::name)
-               .sorted()
-               .collect(Collectors.toCollection(LinkedHashSet::new));
+    public Set<ProviderContentType> getProviderContentTypes() {
+        return BlackDuckProviderContentTypes.ALL.stream().collect(Collectors.toSet());
     }
 }

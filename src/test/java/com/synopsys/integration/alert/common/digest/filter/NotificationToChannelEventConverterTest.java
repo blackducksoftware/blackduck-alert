@@ -1,14 +1,18 @@
 package com.synopsys.integration.alert.common.digest.filter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -27,6 +31,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.synopsys.integration.alert.Application;
 import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
+import com.synopsys.integration.alert.channel.event.NotificationToChannelEventConverter;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
 import com.synopsys.integration.alert.common.enumeration.DigestType;
@@ -37,6 +42,7 @@ import com.synopsys.integration.alert.database.entity.repository.CommonDistribut
 import com.synopsys.integration.alert.database.entity.repository.NotificationTypeRepository;
 import com.synopsys.integration.alert.database.relation.DistributionNotificationTypeRelation;
 import com.synopsys.integration.alert.database.relation.repository.DistributionNotificationTypeRepository;
+import com.synopsys.integration.alert.workflow.filter.NotificationFilter;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.test.annotation.DatabaseConnectionTest;
 import com.synopsys.integration.test.annotation.ExternalConnectionTest;
@@ -48,13 +54,16 @@ import com.synopsys.integration.test.annotation.ExternalConnectionTest;
 @Transactional
 @WebAppConfiguration
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
-public class NotificationEventManagerTest {
+public class NotificationToChannelEventConverterTest {
 
     @Autowired
     private CommonDistributionRepository commonDistributionRepository;
 
     @Autowired
-    private NotificationEventManager notificationEventMananger;
+    private NotificationFilter notificationFilter;
+
+    @Autowired
+    private NotificationToChannelEventConverter notificationToEventConverter;
 
     @Autowired
     private DistributionNotificationTypeRepository distributionNotificationTypeRepository;
@@ -82,6 +91,7 @@ public class NotificationEventManagerTest {
         }
     }
 
+    @After
     public void cleanUp() {
         commonDistributionRepository.deleteAll();
         distributionNotificationTypeRepository.deleteAll();
@@ -97,7 +107,9 @@ public class NotificationEventManagerTest {
     public void createInvalidDigestTypeTest() {
         final NotificationContent notificationModel = createNotificationModel("Project_1", "1.0.0", NotificationType.RULE_VIOLATION);
         final List<NotificationContent> notificationModels = Arrays.asList(notificationModel);
-        final List<ChannelEvent> channelEvents = notificationEventMananger.createChannelEvents(DigestType.DAILY, notificationModels);
+
+        final Collection<NotificationContent> filteredNotifications = notificationFilter.extractApplicableNotifications(DigestType.DAILY, notificationModels);
+        final List<ChannelEvent> channelEvents = notificationToEventConverter.convertToEvents(filteredNotifications);
         assertTrue(channelEvents.isEmpty());
     }
 
@@ -108,9 +120,11 @@ public class NotificationEventManagerTest {
         final NotificationContent notification_1 = createNotificationModel("Project_1", "1.0.0", NotificationType.RULE_VIOLATION);
         final NotificationContent notification_2 = createNotificationModel("Project_2", "1.0.0", NotificationType.RULE_VIOLATION);
         final NotificationContent notification_3 = createNotificationModel("Project_1", "2.0.0", NotificationType.RULE_VIOLATION);
-        final List<NotificationContent> notificationModelList = Arrays.asList(notification_1, notification_2, notification_3);
-        final List<ChannelEvent> channelEvents = notificationEventMananger.createChannelEvents(DigestType.REAL_TIME, notificationModelList);
-        assertEquals(configEntityList.size() * notificationModelList.size(), channelEvents.size());
+        final List<NotificationContent> notificationModels = Arrays.asList(notification_1, notification_2, notification_3);
+
+        final Collection<NotificationContent> filteredNotifications = notificationFilter.extractApplicableNotifications(DigestType.REAL_TIME, notificationModels);
+        final List<ChannelEvent> channelEvents = notificationToEventConverter.convertToEvents(filteredNotifications);
+        assertEquals(configEntityList.size() * filteredNotifications.size(), channelEvents.size());
 
         channelEvents.forEach(event -> {
             assertNotNull(event.getContent());
