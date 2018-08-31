@@ -28,6 +28,7 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.CommonTypeConverter;
@@ -41,6 +42,7 @@ public class CommonDistributionConfigReader {
     private final CommonDistributionRepository commonDistributionRepository;
     private final CommonTypeConverter commonTypeConverter;
 
+    @Autowired
     public CommonDistributionConfigReader(final CommonDistributionRepository commonDistributionRepository, final CommonTypeConverter commonTypeConverter) {
         this.commonDistributionRepository = commonDistributionRepository;
         this.commonTypeConverter = commonTypeConverter;

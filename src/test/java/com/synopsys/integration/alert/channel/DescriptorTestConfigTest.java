@@ -35,8 +35,8 @@ import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.RestApi;
 import com.synopsys.integration.alert.common.digest.model.DigestModel;
 import com.synopsys.integration.alert.common.digest.model.ProjectData;
-import com.synopsys.integration.alert.common.enumeration.RestApiType;
 import com.synopsys.integration.alert.common.enumeration.DigestType;
+import com.synopsys.integration.alert.common.enumeration.RestApiType;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.entity.channel.DistributionChannelConfigEntity;
@@ -64,7 +64,7 @@ public abstract class DescriptorTestConfigTest<R extends CommonDistributionConfi
         gson = new Gson();
         contentConverter = new ContentConverter(gson, new DefaultConversionService());
         properties = new TestProperties();
-        channelManager = new ChannelEventFactory(contentConverter);
+        channelManager = new ChannelEventFactory();
         cleanDistributionRepository();
         cleanGlobalRepository();
     }

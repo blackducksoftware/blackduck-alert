@@ -38,6 +38,4 @@ public interface NotificationRepository extends JpaRepository<NotificationEntity
     @Query("SELECT entity FROM NotificationEntity entity WHERE entity.createdAt BETWEEN ?1 AND ?2 ORDER BY created_at asc")
     List<NotificationEntity> findByCreatedAtBetween(final Date startDate, final Date endDate);
 
-    @Query("SELECT entity FROM NotificationEntity entity WHERE entity.createdAt < ?1 ORDER BY created_at asc")
-    List<NotificationEntity> findByCreatedAtBefore(final Date date);
 }
