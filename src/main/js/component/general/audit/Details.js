@@ -1,11 +1,10 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import DescriptorLabel from '../../common/DescriptorLabel';
 import TextInput from '../../../field/input/TextInput';
-import LabeledField from '../../../field/LabeledField';
 import TextArea from '../../../field/input/TextArea';
-import { ReactBsTable, BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import {ReactBsTable} from 'react-bootstrap-table';
 
 class Details extends Component {
     constructor(props) {
@@ -29,10 +28,10 @@ class Details extends Component {
 
     getEventType() {
         const descriptorList = this.props.descriptors.items['CHANNEL_DISTRIBUTION_CONFIG'];
-        if(descriptorList) {
+        if (descriptorList) {
             const filteredList = descriptorList.filter(descriptor => descriptor.descriptorName === this.state.values.eventType)
 
-            if(filteredList && filteredList.length > 0) {
+            if (filteredList && filteredList.length > 0) {
                 const foundDescriptor = filteredList[0];
                 return (<DescriptorLabel keyPrefix='audit-detail-icon' descriptor={foundDescriptor}/>);
             } else {
@@ -55,7 +54,7 @@ class Details extends Component {
         if (this.state.values.errorStackTrace) {
             errorStackTrace = <TextArea inputClass="stackTraceContainer" label="Stack Trace" readOnly name="errorStackTrace" value={this.state.values.errorStackTrace}/>;
         }
-
+        const jsonPrettyPrintContent = JSON.stringify(JSON.parse(this.state.values.content), null, 2);
         return (
             <div className="expandableContainer">
                 <div className="container-fluid">
@@ -66,7 +65,7 @@ class Details extends Component {
                     </div>
                 </div>
                 <div className="tableContainer">
-                    <TextArea inputClass="stackTraceContainer" label="Content" readOnly name="notificationContent" value={this.state.values.content}/>
+                    <TextArea inputClass="stackTraceContainer" label="Content" readOnly name="notificationContent" value={jsonPrettyPrintContent}/>
                 </div>
                 {errorMessage}
                 {errorStackTrace}
@@ -74,6 +73,7 @@ class Details extends Component {
         );
     }
 }
+
 Details.propTypes = {
     descriptors: PropTypes.object
 };

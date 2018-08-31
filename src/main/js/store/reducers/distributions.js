@@ -1,18 +1,17 @@
 import {
-    DISTRIBUTION_JOB_FETCHING,
-    DISTRIBUTION_JOB_FETCHED,
     DISTRIBUTION_JOB_FETCH_ERROR,
-    DISTRIBUTION_JOB_SAVING,
-    DISTRIBUTION_JOB_SAVED,
+    DISTRIBUTION_JOB_FETCHED,
+    DISTRIBUTION_JOB_FETCHING,
     DISTRIBUTION_JOB_SAVE_ERROR,
-    DISTRIBUTION_JOB_UPDATING,
-    DISTRIBUTION_JOB_UPDATED,
-    DISTRIBUTION_JOB_UPDATE_ERROR,
-    DISTRIBUTION_JOB_TESTING,
-    DISTRIBUTION_JOB_TEST_SUCCESS,
+    DISTRIBUTION_JOB_SAVED,
+    DISTRIBUTION_JOB_SAVING,
     DISTRIBUTION_JOB_TEST_FAILURE,
+    DISTRIBUTION_JOB_TEST_SUCCESS,
+    DISTRIBUTION_JOB_TESTING,
+    DISTRIBUTION_JOB_UPDATE_ERROR,
+    DISTRIBUTION_JOB_UPDATED,
+    DISTRIBUTION_JOB_UPDATING,
     SERIALIZE
-
 } from '../actions/types';
 
 const initialState = {
@@ -55,8 +54,8 @@ const config = (state = initialState, action) => {
 
         case DISTRIBUTION_JOB_FETCH_ERROR:
             return Object.assign({}, state, {
-                fetching: true,
-                inProgress: true,
+                fetching: false,
+                inProgress: false,
                 success: false,
                 configurationMessage: action.configurationMessage,
                 error: {
