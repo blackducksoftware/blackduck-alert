@@ -12,11 +12,11 @@ public class DistributionNotificationTypeRelationPKTest {
     public void testGetAndSetMethods() {
         final DistributionNotificationTypeRelationPK primaryKey = new DistributionNotificationTypeRelationPK();
         final Long commonDistributionConfigId = 1L;
-        final Long notificationTypeId = 2L;
+        final String notificationType = "notification_type";
         primaryKey.setCommonDistributionConfigId(commonDistributionConfigId);
-        primaryKey.setNotificationTypeId(notificationTypeId);
+        primaryKey.setNotificationType(notificationType);
 
         assertEquals(commonDistributionConfigId, primaryKey.getCommonDistributionConfigId());
-        assertEquals(notificationTypeId, primaryKey.getNotificationTypeId());
+        assertEquals(notificationType, primaryKey.getNotificationType());
     }
 }

@@ -23,7 +23,6 @@
  */
 package com.synopsys.integration.alert.provider.blackduck;
 
-import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -35,7 +34,6 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
-import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 @Component(value = BlackDuckProvider.COMPONENT_NAME)
 public class BlackDuckProvider extends Provider {

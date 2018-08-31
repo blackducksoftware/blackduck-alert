@@ -35,7 +35,7 @@ public class NotificationTypeMockUtils extends MockEntityUtil<NotificationTypeEn
     }
 
     public List<DistributionNotificationTypeRelation> getNotificationTypeRelations() {
-        final DistributionNotificationTypeRelation relation1 = new DistributionNotificationTypeRelation(1L, id);
+        final DistributionNotificationTypeRelation relation1 = new DistributionNotificationTypeRelation(1L, type.name());
         return Arrays.asList(relation1);
     }
 

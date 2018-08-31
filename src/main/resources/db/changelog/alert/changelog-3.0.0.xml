@@ -41,4 +41,15 @@
             <column name="BLACKDUCK_URL" type="varchar(255)"/>
         </addColumn>
     </changeSet>
+    <changeSet author="psantos" id="1533054185-8">
+        <createTable tableName="DISTRIBUTION_NOTIFICATION_TYPES" schemaName="ALERT">
+            <column name="COMMON_DISTRIBUTION_CONFIG_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="NOTIFICATION_TYPE" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey columnNames="COMMON_DISTRIBUTION_CONFIG_ID, NOTIFICATION_TYPE" constraintName="CONSTRAINT_NOTIFICATION_TYPE" tableName="DISTRIBUTION_NOTIFICATION_TYPES" schemaName="ALERT"/>
+    </changeSet>
 </databaseChangeLog>

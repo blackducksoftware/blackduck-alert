@@ -35,6 +35,4 @@ import com.synopsys.integration.alert.database.relation.key.DistributionNotifica
 @Transactional
 public interface DistributionNotificationTypeRepository extends JpaRepository<DistributionNotificationTypeRelation, DistributionNotificationTypeRelationPK> {
     public List<DistributionNotificationTypeRelation> findByCommonDistributionConfigId(final Long commonDistributionConfigId);
-
-    public List<DistributionNotificationTypeRelation> findByNotificationTypeId(final Long notificationTypeId);
 }
