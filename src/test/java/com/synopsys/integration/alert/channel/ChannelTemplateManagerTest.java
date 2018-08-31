@@ -44,13 +44,13 @@ public class ChannelTemplateManagerTest {
         final AuditNotificationRepository auditNotificationRepositoryWrapper = Mockito.mock(AuditNotificationRepository.class);
         final JmsTemplate jmsTemplate = Mockito.mock(JmsTemplate.class);
         Mockito.doNothing().when(jmsTemplate).convertAndSend(Mockito.anyString(), Mockito.any(Object.class));
-        final ChannelTemplateManager channelTemplateManager = new ChannelTemplateManager(gson, auditEntryRepository, auditNotificationRepositoryWrapper, jmsTemplate, contentConverter);
+        final ChannelTemplateManager channelTemplateManager = new ChannelTemplateManager(gson, auditEntryRepository, auditNotificationRepositoryWrapper, jmsTemplate);
 
         final ProjectData projectData = new ProjectData(DigestType.DAILY, "test", "version", Arrays.asList(), null);
         final DigestModel digestModel = new DigestModel(Arrays.asList(projectData));
         final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
         final ChannelEvent hipChatEvent = new ChannelEvent(HipChatChannel.COMPONENT_NAME, RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
-                notificationContent.getContent(), 1L, 1L);
+            notificationContent.getContent(), 1L, 1L);
         channelTemplateManager.sendEvents(Arrays.asList(hipChatEvent));
     }
 
@@ -62,7 +62,7 @@ public class ChannelTemplateManagerTest {
         final AuditNotificationRepository auditNotificationRepositoryWrapper = Mockito.mock(AuditNotificationRepository.class);
         final JmsTemplate jmsTemplate = Mockito.mock(JmsTemplate.class);
         Mockito.doNothing().when(jmsTemplate).convertAndSend(Mockito.anyString(), Mockito.any(Object.class));
-        final ChannelTemplateManager channelTemplateManager = new ChannelTemplateManager(gson, auditEntryRepositoryWrapper, auditNotificationRepositoryWrapper, jmsTemplate, contentConverter);
+        final ChannelTemplateManager channelTemplateManager = new ChannelTemplateManager(gson, auditEntryRepositoryWrapper, auditNotificationRepositoryWrapper, jmsTemplate);
 
         final AlertEvent dbStoreEvent = new AlertEvent("", RestConstants.formatDate(new Date()), "", "", null, 1L);
         final boolean isTrue = channelTemplateManager.sendEvent(dbStoreEvent);

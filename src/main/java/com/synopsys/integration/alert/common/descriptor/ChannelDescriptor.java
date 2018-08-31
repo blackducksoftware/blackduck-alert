@@ -33,14 +33,6 @@ public abstract class ChannelDescriptor extends Descriptor {
     private final String destinationName;
     private final MessageListener channelListener;
 
-    public ChannelDescriptor(final String name, final String destinationName, final MessageListener channelListener, final RestApi distributionRestApi) {
-        super(name, DescriptorType.CHANNEL);
-        this.destinationName = destinationName;
-        this.channelListener = channelListener;
-
-        addDistributionRestApi(distributionRestApi);
-    }
-
     public ChannelDescriptor(final String name, final String destinationName, final MessageListener channelListener, final RestApi distributionRestApi, final UIConfig distributionUIConfig) {
         super(name, DescriptorType.CHANNEL);
         this.destinationName = destinationName;
@@ -49,13 +41,8 @@ public abstract class ChannelDescriptor extends Descriptor {
         addDistributionUiConfigs(distributionRestApi, distributionUIConfig);
     }
 
-    public ChannelDescriptor(final String name, final String destinationName, final MessageListener channelListener, final RestApi distributionRestApi, final RestApi globalRestApi) {
-        this(name, destinationName, channelListener, distributionRestApi);
-        addGlobalRestApi(globalRestApi);
-    }
-
     public ChannelDescriptor(final String name, final String destinationName, final MessageListener channelListener, final RestApi distributionRestApi, final UIConfig distributionUIConfig,
-            final RestApi globalRestApi, final UIConfig globalUIConfig) {
+        final RestApi globalRestApi, final UIConfig globalUIConfig) {
         this(name, destinationName, channelListener, distributionRestApi, distributionUIConfig);
         addGlobalUiConfigs(globalRestApi, globalUIConfig);
     }

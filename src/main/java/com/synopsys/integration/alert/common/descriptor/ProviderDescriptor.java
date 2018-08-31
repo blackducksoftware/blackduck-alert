@@ -40,12 +40,6 @@ public abstract class ProviderDescriptor extends Descriptor {
         addProviderUiConfigs(providerRestApi, providerUiConfig);
     }
 
-    public ProviderDescriptor(final String name, final RestApi providerRestApi, final Provider provider) {
-        super(name, DescriptorType.PROVIDER);
-        this.provider = provider;
-        addProviderRestApi(providerRestApi);
-    }
-
     public Provider getProvider() {
         return provider;
     }
