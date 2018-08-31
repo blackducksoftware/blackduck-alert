@@ -21,28 +21,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.digest;
+package com.synopsys.integration.alert.workflow.filter.builder;
 
-import java.util.List;
+import java.util.function.Predicate;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import com.synopsys.integration.alert.channel.event.ChannelEvent;
-import com.synopsys.integration.alert.common.digest.filter.NotificationEventManager;
-import com.synopsys.integration.alert.common.enumeration.DigestType;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 
-@Component
-public class DigestNotificationProcessor {
-    private final NotificationEventManager eventManager;
-
-    @Autowired
-    public DigestNotificationProcessor(final NotificationEventManager eventManager) {
-        this.eventManager = eventManager;
-    }
-
-    public List<ChannelEvent> processNotifications(final DigestType digestType, final List<NotificationContent> notificationList) {
-        return eventManager.createChannelEvents(digestType, notificationList);
-    }
+public interface JsonFilterBuilder {
+    Predicate<NotificationContent> buildPredicate();
 }

@@ -54,7 +54,6 @@ public class NotificationContent extends DatabaseEntity {
         this.provider = provider;
         this.notificationType = notificationType;
         this.content = content;
-
     }
 
     public Date getCreatedAt() {

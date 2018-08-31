@@ -13,7 +13,7 @@ import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalConf
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalRepository;
 import com.synopsys.integration.alert.web.channel.model.HipChatDistributionConfig;
 
-public class HipChatManagerTestIT extends DescriptorTestConfigTest<HipChatDistributionConfig, HipChatDistributionConfigEntity, HipChatGlobalConfigEntity> {
+public class HipChatDescriptorTestIT extends DescriptorTestConfigTest<HipChatDistributionConfig, HipChatDistributionConfigEntity, HipChatGlobalConfigEntity> {
 
     @Autowired
     private HipChatGlobalRepository hipChatRepository;
