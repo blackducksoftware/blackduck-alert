@@ -23,18 +23,31 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
+import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.provider.ProviderUIConfig;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 
 @Component
-public class BlackDuckDescriptor extends ProviderDescriptor {
+public class BlackDuckDistributionUIConfig extends ProviderUIConfig {
 
     @Autowired
-    public BlackDuckDescriptor(final BlackDuckProviderRestApi providerRestApi, final BlackDuckProviderUIConfig blackDuckProviderUIConfig, final BlackDuckDistributionRestApi blackDuckDistributionRestApi,
-    final BlackDuckDistributionUIConfig blackDuckDistributionUIConfig, final BlackDuckProvider provider) {
-        super(BlackDuckProvider.COMPONENT_NAME, providerRestApi, blackDuckProviderUIConfig, blackDuckDistributionRestApi, blackDuckDistributionUIConfig, provider);
+    public BlackDuckDistributionUIConfig(final BlackDuckProvider provider) {
+        super(provider);
+    }
+
+    @Override
+    public UIComponent generateUIComponent() {
+        return new UIComponent("Black Duck", "blackduck", BlackDuckProvider.COMPONENT_NAME, "laptop", setupFields());
+    }
+
+    private List<ConfigField> setupFields() {
+        return Arrays.asList(getNotificationTypeField());
     }
 }
