@@ -29,6 +29,7 @@ import com.synopsys.integration.alert.common.descriptor.config.RestApi;
 import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.provider.Provider;
+import com.synopsys.integration.alert.common.provider.ProviderContentType;
 
 public abstract class ProviderDescriptor extends Descriptor {
     private final Provider provider;
@@ -49,7 +50,7 @@ public abstract class ProviderDescriptor extends Descriptor {
         return provider;
     }
 
-    public Set<String> getNotificationTypes() {
-        return getProvider().getNotificationTypes();
+    public Set<ProviderContentType> getProviderContentTypes() {
+        return getProvider().getProviderContentTypes();
     }
 }

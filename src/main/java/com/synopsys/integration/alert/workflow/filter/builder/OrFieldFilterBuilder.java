@@ -21,15 +21,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.provider;
+package com.synopsys.integration.alert.workflow.filter.builder;
 
-import java.util.Set;
+import java.util.function.Predicate;
 
-public abstract class Provider {
+public class OrFieldFilterBuilder extends BinaryOperatorFieldFilterBuilder {
 
-    public abstract void initialize();
-
-    public abstract void destroy();
-
-    public abstract Set<ProviderContentType> getProviderContentTypes();
+    public OrFieldFilterBuilder(final JsonFilterBuilder leftFilter, final JsonFilterBuilder rightFilter) {
+        super(leftFilter, rightFilter, Predicate::or);
+    }
 }

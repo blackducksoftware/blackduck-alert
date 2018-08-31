@@ -76,17 +76,15 @@ public class EmailChannelTestIT extends ChannelTest {
 
     @Test
     public void sendEmailNullGlobalTest() throws Exception {
-        final OutputLogger outputLogger = new OutputLogger();
-
-        final EmailGroupChannel emailChannel = new EmailGroupChannel(gson, null, null, null, null, null, null);
-        final DigestModel digestModel = new DigestModel(null);
-        final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
-        final ChannelEvent event = new ChannelEvent(EmailGroupChannel.COMPONENT_NAME, RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
-            notificationContent.getContent(), 1L, 1L);
-        emailChannel.sendMessage(event, null);
-        assertTrue(outputLogger.isLineContainingText("No configuration found with id"));
-
-        outputLogger.close();
+        try (final OutputLogger outputLogger = new OutputLogger()) {
+            final EmailGroupChannel emailChannel = new EmailGroupChannel(gson, null, null, null, null, null, null);
+            final DigestModel digestModel = new DigestModel(null);
+            final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
+            final ChannelEvent event = new ChannelEvent(EmailGroupChannel.COMPONENT_NAME, RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
+                notificationContent.getContent(), 1L, 1L);
+            emailChannel.sendMessage(event, null);
+            assertTrue(outputLogger.isLineContainingText("No configuration found with id"));
+        }
     }
 
 }
