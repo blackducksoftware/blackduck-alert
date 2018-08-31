@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.provider.Provider;
+import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
@@ -61,7 +62,7 @@ public class BlackDuckProvider extends Provider {
     }
 
     @Override
-    public Set<String> getNotificationTypes() {
-        return Arrays.stream(NotificationType.values()).map(NotificationType::name).collect(Collectors.toSet());
+    public Set<ProviderContentType> getProviderContentTypes() {
+        return BlackDuckProviderContentTypes.ALL.stream().collect(Collectors.toSet());
     }
 }

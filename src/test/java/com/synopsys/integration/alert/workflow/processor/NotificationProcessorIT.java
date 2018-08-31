@@ -9,7 +9,7 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.synopsys.integration.alert.common.digest;
+package com.synopsys.integration.alert.workflow.processor;
 
 import javax.transaction.Transactional;
 
@@ -28,13 +28,13 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
-import com.synopsys.integration.test.annotation.DatabaseConnectionTest;
 import com.synopsys.integration.alert.Application;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.synopsys.integration.alert.database.entity.repository.ConfiguredProjectsRepository;
 import com.synopsys.integration.alert.database.relation.repository.DistributionProjectRepository;
 import com.synopsys.integration.alert.web.actions.NotificationTypesActions;
+import com.synopsys.integration.test.annotation.DatabaseConnectionTest;
 
 @Category(DatabaseConnectionTest.class)
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -43,7 +43,7 @@ import com.synopsys.integration.alert.web.actions.NotificationTypesActions;
 @Transactional
 @WebAppConfiguration
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
-public class DigestNotificationProcessorIT {
+public class NotificationProcessorIT {
     @Autowired
     private CommonDistributionRepository commonDistributionRepository;
     @Autowired
@@ -53,7 +53,7 @@ public class DigestNotificationProcessorIT {
     @Autowired
     private NotificationTypesActions notificationActions;
     @Autowired
-    private DigestNotificationProcessor processor;
+    private NotificationProcessor processor;
 
     @Before
     public void cleanup() {
