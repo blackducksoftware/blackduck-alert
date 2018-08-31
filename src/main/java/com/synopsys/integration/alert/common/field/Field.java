@@ -21,15 +21,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.provider;
+package com.synopsys.integration.alert.common.field;
 
-import java.util.Set;
+public abstract class Field {
+    private String fieldKey;
 
-public abstract class Provider {
+    public Field(final String fieldKey) {
+        this.fieldKey = fieldKey;
+    }
 
-    public abstract void initialize();
+    public String getFieldKey() {
+        return fieldKey;
+    }
 
-    public abstract void destroy();
-
-    public abstract Set<ProviderContentType> getProviderContentTypes();
+    public void setFieldKey(final String fieldKey) {
+        this.fieldKey = fieldKey;
+    }
 }

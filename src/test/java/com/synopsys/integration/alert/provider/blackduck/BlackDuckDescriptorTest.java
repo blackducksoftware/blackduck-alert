@@ -28,7 +28,7 @@ public class BlackDuckDescriptorTest {
         final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask);
         final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, null, provider);
         final Set<String> expectedNotificationTypes = Arrays.stream(NotificationType.values()).map(NotificationType::name).collect(Collectors.toSet());
-        final Set<String> providerNotificationTypes = descriptor.getNotificationTypes();
+        final Set<String> providerNotificationTypes = descriptor.getProviderContentTypes().stream().map(contentType -> contentType.getNotificationType()).collect(Collectors.toSet());
         assertEquals(expectedNotificationTypes, providerNotificationTypes);
     }
 }

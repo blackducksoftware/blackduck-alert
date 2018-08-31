@@ -29,7 +29,7 @@ public class DigestRemovalProcessorTest {
     public void processVulnerabilitiesTest() {
         //TODO reimplement when tests
         //        final DigestRemovalProcessor digestRemovalProcessor = new DigestRemovalProcessor();
-        //        final List<NotificationModel> processed = digestRemovalProcessor.process(createVulnerabilityNotifications());
+        //        final List<NotificationModel> processed = digestRemovalProcessor.extractApplicableNotifications(createVulnerabilityNotifications());
         //        assertEquals(3, processed.size());
     }
 
@@ -37,7 +37,7 @@ public class DigestRemovalProcessorTest {
     public void processPoliciesTest() {
         //TODO reimplement when tests
         //        final DigestRemovalProcessor digestRemovalProcessor = new DigestRemovalProcessor();
-        //        final List<NotificationModel> processed = digestRemovalProcessor.process(createPolicyNotifications());
+        //        final List<NotificationModel> processed = digestRemovalProcessor.extractApplicableNotifications(createPolicyNotifications());
         //        assertEquals(1, processed.size());
     }
 
@@ -45,7 +45,7 @@ public class DigestRemovalProcessorTest {
     public void processSingleTest() {
         //TODO reimplement when tests
         //        final DigestRemovalProcessor digestRemovalProcessor = new DigestRemovalProcessor();
-        //        final List<NotificationModel> processed = digestRemovalProcessor.process(Arrays.asList(createVulnerabilityNotifications().get(0)));
+        //        final List<NotificationModel> processed = digestRemovalProcessor.extractApplicableNotifications(Arrays.asList(createVulnerabilityNotifications().get(0)));
         //        assertEquals(1, processed.size());
     }
 
