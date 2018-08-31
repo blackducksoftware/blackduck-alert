@@ -21,32 +21,32 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.relation.key;
+package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
-import java.io.Serializable;
+import java.util.Map;
 
-@SuppressWarnings("serial")
-public class DistributionNotificationTypeRelationPK implements Serializable {
-    private Long commonDistributionConfigId;
-    private String notificationType;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-    public DistributionNotificationTypeRelationPK() {
-        // JPA requires default constructor definitions
+import com.synopsys.integration.alert.common.descriptor.config.RestApi;
+import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+import com.synopsys.integration.alert.web.model.Config;
+
+@Component
+public class BlackDuckDistributionRestApi extends RestApi {
+
+    @Autowired
+    public BlackDuckDistributionRestApi(final BlackDuckTypeConverter typeConverter, final BlackDuckRepositoryAccessor repositoryAccessor) {
+        super(typeConverter, repositoryAccessor);
     }
 
-    public Long getCommonDistributionConfigId() {
-        return commonDistributionConfigId;
+    @Override
+    public void validateConfig(final Config restModel, final Map<String, String> fieldErrors) {
+
     }
 
-    public void setCommonDistributionConfigId(final Long commonDistributionConfigId) {
-        this.commonDistributionConfigId = commonDistributionConfigId;
-    }
+    @Override
+    public void testConfig(final DatabaseEntity entity) {
 
-    public String getNotificationType() {
-        return notificationType;
-    }
-
-    public void setNotificationType(final String notificationType) {
-        this.notificationType = notificationType;
     }
 }

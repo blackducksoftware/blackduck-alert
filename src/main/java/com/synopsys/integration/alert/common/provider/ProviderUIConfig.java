@@ -21,32 +21,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.relation.key;
+package com.synopsys.integration.alert.common.provider;
 
-import java.io.Serializable;
+import java.util.stream.Collectors;
 
-@SuppressWarnings("serial")
-public class DistributionNotificationTypeRelationPK implements Serializable {
-    private Long commonDistributionConfigId;
-    private String notificationType;
+import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 
-    public DistributionNotificationTypeRelationPK() {
-        // JPA requires default constructor definitions
+public abstract class ProviderUIConfig extends UIConfig {
+
+    private final Provider provider;
+
+    public ProviderUIConfig(final Provider provider) {
+        this.provider = provider;
     }
 
-    public Long getCommonDistributionConfigId() {
-        return commonDistributionConfigId;
-    }
-
-    public void setCommonDistributionConfigId(final Long commonDistributionConfigId) {
-        this.commonDistributionConfigId = commonDistributionConfigId;
-    }
-
-    public String getNotificationType() {
-        return notificationType;
-    }
-
-    public void setNotificationType(final String notificationType) {
-        this.notificationType = notificationType;
+    public ConfigField getNotificationTypeField() {
+        return new SelectConfigField("notificationTypes", "Notification Types", true, false, provider.getProviderContentTypes().stream().map(ProviderContentType::getNotificationType).collect(Collectors.toList()));
     }
 }

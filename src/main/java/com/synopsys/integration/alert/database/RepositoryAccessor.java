@@ -26,10 +26,13 @@ package com.synopsys.integration.alert.database;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 
+@Transactional
 public abstract class RepositoryAccessor {
     private final JpaRepository<? extends DatabaseEntity, Long> repository;
 

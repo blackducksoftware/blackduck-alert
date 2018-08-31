@@ -1,8 +1,9 @@
-import {DESCRIPTORS_FETCH_ERROR, DESCRIPTORS_FETCHED, DESCRIPTORS_FETCHING} from './types';
+import {DESCRIPTORS_DISTRIBUTION_FETCH_ERROR, DESCRIPTORS_DISTRIBUTION_FETCHED, DESCRIPTORS_DISTRIBUTION_FETCHING, DESCRIPTORS_DISTRIBUTION_RESET, DESCRIPTORS_FETCH_ERROR, DESCRIPTORS_FETCHED, DESCRIPTORS_FETCHING} from './types';
 
 import {verifyLoginByStatus} from './session';
 
-const FETCH_URL = "/alert/api/descriptor"
+const FETCH_DESCRIPTOR_URL = "/alert/api/descriptor"
+const FETCH_DISTRIBUTION_URL = `${FETCH_DESCRIPTOR_URL}/distribution`
 
 function fetchingDescriptors() {
     return {
@@ -36,10 +37,37 @@ function descriptorsError(message) {
     };
 }
 
+function fetchingDistributionDescriptor() {
+    return {
+        type: DESCRIPTORS_DISTRIBUTION_FETCHING
+    };
+}
+
+function fetchedDistributionDescriptors(items) {
+    return {
+        type: DESCRIPTORS_DISTRIBUTION_FETCHED,
+        currentDistributionComponents: items
+    }
+}
+
+function distributionDescriptorError(message, error) {
+    return {
+        type: DESCRIPTORS_DISTRIBUTION_FETCH_ERROR,
+        message,
+        error
+    };
+}
+
+function distributionDescriptorReset() {
+    return {
+        type: DESCRIPTORS_DISTRIBUTION_RESET
+    };
+}
+
 export function getDescriptorByType(distributionConfigType) {
-    return (dispatch, getState) => {
+    return (dispatch) => {
         dispatch(fetchingDescriptors());
-        const getUrl = `${FETCH_URL}?descriptorType=${distributionConfigType}`;
+        const getUrl = `${FETCH_DESCRIPTOR_URL}?descriptorType=${distributionConfigType}`;
         fetch(getUrl, {
             credentials: 'same-origin',
             headers: {
@@ -55,5 +83,33 @@ export function getDescriptorByType(distributionConfigType) {
                 }
             });
         }).catch(dispatch(descriptorsError(console.error)));
-    }
+    };
+}
+
+export function getDistributionDescriptor(provider, channel) {
+    return (dispatch) => {
+        dispatch(fetchingDistributionDescriptor());
+        const getUrl = `${FETCH_DISTRIBUTION_URL}?providerName=${provider}&channelName=${channel}`
+        fetch(getUrl, {
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((response) => {
+            response.json().then((json) => {
+                if (!response.ok) {
+                    dispatch(distributionDescriptorError(json.message, json.error));
+                    dispatch(verifyLoginByStatus(response.status));
+                } else {
+                    dispatch(fetchedDistributionDescriptors(json));
+                }
+            });
+        }).catch(dispatch(distributionDescriptorError(console.error)));
+    };
+}
+
+export function resetDistributionDescriptor() {
+    return (dispatch) => {
+        dispatch(distributionDescriptorReset());
+    };
 }

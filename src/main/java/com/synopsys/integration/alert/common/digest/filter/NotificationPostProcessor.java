@@ -21,32 +21,3 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.relation.key;
-
-import java.io.Serializable;
-
-@SuppressWarnings("serial")
-public class DistributionNotificationTypeRelationPK implements Serializable {
-    private Long commonDistributionConfigId;
-    private String notificationType;
-
-    public DistributionNotificationTypeRelationPK() {
-        // JPA requires default constructor definitions
-    }
-
-    public Long getCommonDistributionConfigId() {
-        return commonDistributionConfigId;
-    }
-
-    public void setCommonDistributionConfigId(final Long commonDistributionConfigId) {
-        this.commonDistributionConfigId = commonDistributionConfigId;
-    }
-
-    public String getNotificationType() {
-        return notificationType;
-    }
-
-    public void setNotificationType(final String notificationType) {
-        this.notificationType = notificationType;
-    }
-}
