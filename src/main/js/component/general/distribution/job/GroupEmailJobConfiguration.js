@@ -62,11 +62,12 @@ class GroupEmailJobConfiguration extends Component {
 
     componentWillReceiveProps(nextProps) {
         if (!nextProps.fetching && !nextProps.inProgress) {
-            if (nextProps.jobs[nextProps.distributionConfigId]) {
-                const groupOptions = this.createGroupOptions(nextProps.groups, nextProps.jobs[nextProps.distributionConfigId].groupName);
+            const jobConfig = nextProps.jobs[nextProps.distributionConfigId];
+            if (jobConfig) {
+                const groupOptions = this.createGroupOptions(nextProps.groups, jobConfig.groupName);
                 this.setState({
-                    emailSubjectLine: nextProps.jobs[nextProps.distributionConfigId].emailSubjectLine,
-                    groupName: nextProps.jobs[nextProps.distributionConfigId].groupName,
+                    emailSubjectLine: jobConfig.emailSubjectLine,
+                    groupName: jobConfig.groupName,
                     groupOptions: groupOptions
                 });
             } else {
@@ -156,6 +157,7 @@ class GroupEmailJobConfiguration extends Component {
         return (<BaseJobConfiguration
             baseUrl={this.props.baseUrl}
             testUrl={this.props.testUrl}
+            alertChannelName={this.props.alertChannelName}
             distributionConfigId={this.props.distributionConfigId}
             handleCancel={this.props.handleCancel}
             handleSaveBtnClick={this.props.handleSaveBtnClick}
@@ -175,8 +177,8 @@ GroupEmailJobConfiguration.propTypes = {
     groups: PropTypes.arrayOf(PropTypes.object),
     errors: PropTypes.object,
     handleCancel: PropTypes.func.isRequired,
-    handleSaveBtnClick: PropTypes.func.isRequired
-
+    handleSaveBtnClick: PropTypes.func.isRequired,
+    alertChannelName: PropTypes.string.isRequired
 };
 
 GroupEmailJobConfiguration.defaultProps = {

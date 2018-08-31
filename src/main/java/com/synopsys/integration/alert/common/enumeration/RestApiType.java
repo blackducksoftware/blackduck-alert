@@ -27,6 +27,7 @@ public enum RestApiType {
     CHANNEL_GLOBAL_CONFIG,
     CHANNEL_DISTRIBUTION_CONFIG,
     PROVIDER_CONFIG,
+    PROVIDER_DISTRIBUTION_CONFIG,
     COMPONENT_CONFIG;
 
     public static final RestApiType getRestApiType(final String restApiTypeName) {

@@ -23,17 +23,18 @@ class HipChatJobConfiguration extends Component {
     }
 
     componentDidMount() {
-        const {baseUrl,distributionConfigId} = this.props;
-        this.props.getDistributionJob(baseUrl,distributionConfigId);
+        const {baseUrl, distributionConfigId} = this.props;
+        this.props.getDistributionJob(baseUrl, distributionConfigId);
     }
 
     componentWillReceiveProps(nextProps) {
         if (!nextProps.fetching && !nextProps.inProgress) {
-            if(nextProps.jobs[nextProps.distributionConfigId]) {
+            const jobConfig = nextProps.jobs[nextProps.distributionConfigId];
+            if (jobConfig) {
                 this.setState({
-                    roomId: nextProps.jobs[nextProps.distributionConfigId].roomId,
-                    notify: nextProps.jobs[nextProps.distributionConfigId].notify,
-                    color: nextProps.jobs[nextProps.distributionConfigId].color,
+                    roomId: jobConfig.roomId,
+                    notify: jobConfig.notify,
+                    color: jobConfig.color,
                     colorOptions: nextProps.colorOptions
                 });
             }
@@ -70,32 +71,33 @@ class HipChatJobConfiguration extends Component {
 
         const content = (
             <div>
-                <TextInput id="jobHipChatRoomId" label="Room Id" name="roomId" value={this.state.roomId} onChange={this.handleChange} errorName="roomIdError" errorValue={this.props.errors.roomIdError} />
-                <CheckboxInput id="jobHipChatNotify" label="Notify" name="notify" value={this.state.notify} onChange={this.handleChange} errorName="notifyError" errorValue={this.props.notifyError} />
+                <TextInput id="jobHipChatRoomId" label="Room Id" name="roomId" value={this.state.roomId} onChange={this.handleChange} errorName="roomIdError" errorValue={this.props.errors.roomIdError}/>
+                <CheckboxInput id="jobHipChatNotify" label="Notify" name="notify" value={this.state.notify} onChange={this.handleChange} errorName="notifyError" errorValue={this.props.notifyError}/>
                 <div className="form-group">
                     <label className="col-sm-3 control-label">Color</label>
                     <div className="col-sm-8">
                         <Select
-                        id="jobHipChatColor"
-                        className="typeAheadField"
-                        onChange={this.handleColorChanged}
-                        searchable
-                        options={this.state.colorOptions}
-                        placeholder="Choose the message color"
-                        value={this.state.color}
+                            id="jobHipChatColor"
+                            className="typeAheadField"
+                            onChange={this.handleColorChanged}
+                            searchable
+                            options={this.state.colorOptions}
+                            placeholder="Choose the message color"
+                            value={this.state.color}
                         />
                     </div>
                 </div>
             </div>
         );
         return (<BaseJobConfiguration
-                    baseUrl={this.props.baseUrl}
-                    testUrl={this.props.testUrl}
-                    distributionConfigId = {this.props.distributionConfigId}
-                    handleCancel={this.props.handleCancel}
-                    handleSaveBtnClick={this.props.handleSaveBtnClick}
-                    getParentConfiguration={this.getConfiguration}
-                    childContent={content}/>);
+            baseUrl={this.props.baseUrl}
+            testUrl={this.props.testUrl}
+            alertChannelName={this.props.alertChannelName}
+            distributionConfigId={this.props.distributionConfigId}
+            handleCancel={this.props.handleCancel}
+            handleSaveBtnClick={this.props.handleSaveBtnClick}
+            getParentConfiguration={this.getConfiguration}
+            childContent={content}/>);
     }
 }
 
@@ -112,7 +114,8 @@ HipChatJobConfiguration.propTypes = {
     colorOptions: PropTypes.arrayOf(PropTypes.object),
     errors: PropTypes.object,
     handleCancel: PropTypes.func.isRequired,
-    handleSaveBtnClick: PropTypes.func.isRequired
+    handleSaveBtnClick: PropTypes.func.isRequired,
+    alertChannelName: PropTypes.string.isRequired
 };
 
 HipChatJobConfiguration.defaultProps = {
@@ -125,12 +128,12 @@ HipChatJobConfiguration.defaultProps = {
     notify: false,
     color: '',
     colorOptions: [
-        { label: 'Yellow', value: 'yellow' },
-        { label: 'Green', value: 'green' },
-        { label: 'Red', value: 'red' },
-        { label: 'Purple', value: 'purple' },
-        { label: 'Gray', value: 'gray' },
-        { label: 'Random', value: 'random' }
+        {label: 'Yellow', value: 'yellow'},
+        {label: 'Green', value: 'green'},
+        {label: 'Red', value: 'red'},
+        {label: 'Purple', value: 'purple'},
+        {label: 'Gray', value: 'gray'},
+        {label: 'Random', value: 'random'}
     ],
     errors: {}
 };
@@ -142,7 +145,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    getDistributionJob: (url,id) => dispatch(getDistributionJob(url,id))
+    getDistributionJob: (url, id) => dispatch(getDistributionJob(url, id))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(HipChatJobConfiguration);

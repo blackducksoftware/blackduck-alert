@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.provider.blackduck;
+package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
 import static org.junit.Assert.assertEquals;
 
@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
@@ -18,7 +18,7 @@ public class BlackDuckDescriptorTest {
     @Test
     public void testGetProvider() {
         final BlackDuckProvider provider = Mockito.mock(BlackDuckProvider.class);
-        final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, null, provider);
+        final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, null, null, null, provider);
         assertEquals(provider, descriptor.getProvider());
     }
 
@@ -26,9 +26,10 @@ public class BlackDuckDescriptorTest {
     public void testGetNotificationTypes() {
         final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
         final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask);
-        final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, null, provider);
+        final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, null, null, null, provider);
         final Set<String> expectedNotificationTypes = Arrays.stream(NotificationType.values()).map(NotificationType::name).collect(Collectors.toSet());
         final Set<String> providerNotificationTypes = descriptor.getProviderContentTypes().stream().map(contentType -> contentType.getNotificationType()).collect(Collectors.toSet());
+
         assertEquals(expectedNotificationTypes, providerNotificationTypes);
     }
 }
