@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.digest;
+package com.synopsys.integration.alert.workflow.processor;
 
 import java.util.Collection;
 import java.util.List;
@@ -30,18 +30,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
-import com.synopsys.integration.alert.common.digest.filter.NotificationFilter;
-import com.synopsys.integration.alert.common.digest.filter.NotificationToEventConverter;
+import com.synopsys.integration.alert.channel.event.NotificationToChannelEventConverter;
 import com.synopsys.integration.alert.common.enumeration.DigestType;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
+import com.synopsys.integration.alert.workflow.filter.NotificationFilter;
 
 @Component
-public class DigestNotificationProcessor {
+public class NotificationProcessor {
     private final NotificationFilter notificationFilter;
-    private final NotificationToEventConverter notificationToEventConverter;
+    private final NotificationToChannelEventConverter notificationToEventConverter;
 
     @Autowired
-    public DigestNotificationProcessor(final NotificationFilter notificationFilter, final NotificationToEventConverter notificationToEventConverter) {
+    public NotificationProcessor(final NotificationFilter notificationFilter, final NotificationToChannelEventConverter notificationToEventConverter) {
         this.notificationFilter = notificationFilter;
         this.notificationToEventConverter = notificationToEventConverter;
     }

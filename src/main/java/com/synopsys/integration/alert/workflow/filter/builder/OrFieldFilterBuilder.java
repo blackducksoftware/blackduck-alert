@@ -21,12 +21,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.workflow.filter;
+package com.synopsys.integration.alert.workflow.filter.builder;
 
 import java.util.function.Predicate;
 
-import com.synopsys.integration.alert.database.entity.NotificationContent;
+public class OrFieldFilterBuilder extends BinaryOperatorFieldFilterBuilder {
 
-public interface JsonFilterBuilder {
-    Predicate<NotificationContent> buildPredicate();
+    public OrFieldFilterBuilder(final JsonFilterBuilder leftFilter, final JsonFilterBuilder rightFilter) {
+        super(leftFilter, rightFilter, Predicate::or);
+    }
 }

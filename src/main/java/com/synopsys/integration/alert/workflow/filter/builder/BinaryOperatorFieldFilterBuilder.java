@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.workflow.filter;
+package com.synopsys.integration.alert.workflow.filter.builder;
 
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
@@ -34,7 +34,7 @@ public abstract class BinaryOperatorFieldFilterBuilder implements JsonFilterBuil
     private final BiFunction<Predicate<NotificationContent>, Predicate<NotificationContent>, Predicate<NotificationContent>> binaryOperator;
 
     public BinaryOperatorFieldFilterBuilder(final JsonFilterBuilder leftFilterBuilder, final JsonFilterBuilder rightFilterBuilder,
-            final BiFunction<Predicate<NotificationContent>, Predicate<NotificationContent>, Predicate<NotificationContent>> binaryOperator) {
+        final BiFunction<Predicate<NotificationContent>, Predicate<NotificationContent>, Predicate<NotificationContent>> binaryOperator) {
         this.leftFilterBuilder = leftFilterBuilder;
         this.rightFilterBuilder = rightFilterBuilder;
         this.binaryOperator = binaryOperator;

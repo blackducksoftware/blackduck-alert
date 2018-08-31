@@ -36,22 +36,22 @@ import org.springframework.scheduling.TaskScheduler;
 import com.synopsys.integration.alert.channel.ChannelTemplateManager;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.common.digest.DateRange;
-import com.synopsys.integration.alert.common.digest.DigestNotificationProcessor;
 import com.synopsys.integration.alert.common.enumeration.DigestType;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.workflow.NotificationManager;
+import com.synopsys.integration.alert.workflow.processor.NotificationProcessor;
 import com.synopsys.integration.alert.workflow.scheduled.ScheduledTask;
 import com.synopsys.integration.rest.RestConstants;
 
 public abstract class ProcessingTask extends ScheduledTask {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final NotificationManager notificationManager;
-    private final DigestNotificationProcessor notificationProcessor;
+    private final NotificationProcessor notificationProcessor;
     private final ChannelTemplateManager channelTemplateManager;
     private ZonedDateTime lastRunTime;
 
-    public ProcessingTask(final TaskScheduler taskScheduler, final String taskName, final NotificationManager notificationManager, final DigestNotificationProcessor notificationProcessor,
-            final ChannelTemplateManager channelTemplateManager) {
+    public ProcessingTask(final TaskScheduler taskScheduler, final String taskName, final NotificationManager notificationManager, final NotificationProcessor notificationProcessor,
+        final ChannelTemplateManager channelTemplateManager) {
         super(taskScheduler, taskName);
         this.notificationManager = notificationManager;
         this.notificationProcessor = notificationProcessor;

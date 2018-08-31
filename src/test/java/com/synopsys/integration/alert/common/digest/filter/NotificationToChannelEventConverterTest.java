@@ -31,6 +31,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.synopsys.integration.alert.Application;
 import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
+import com.synopsys.integration.alert.channel.event.NotificationToChannelEventConverter;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
 import com.synopsys.integration.alert.common.enumeration.DigestType;
@@ -42,6 +43,7 @@ import com.synopsys.integration.alert.database.entity.repository.CommonDistribut
 import com.synopsys.integration.alert.database.entity.repository.NotificationTypeRepository;
 import com.synopsys.integration.alert.database.relation.DistributionNotificationTypeRelation;
 import com.synopsys.integration.alert.database.relation.repository.DistributionNotificationTypeRepository;
+import com.synopsys.integration.alert.workflow.filter.NotificationFilter;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.test.annotation.DatabaseConnectionTest;
 import com.synopsys.integration.test.annotation.ExternalConnectionTest;
@@ -53,7 +55,7 @@ import com.synopsys.integration.test.annotation.ExternalConnectionTest;
 @Transactional
 @WebAppConfiguration
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
-public class NotificationToEventConverterTest {
+public class NotificationToChannelEventConverterTest {
 
     @Autowired
     private CommonDistributionRepository commonDistributionRepository;
@@ -62,7 +64,7 @@ public class NotificationToEventConverterTest {
     private NotificationFilter notificationFilter;
 
     @Autowired
-    private NotificationToEventConverter notificationToEventConverter;
+    private NotificationToChannelEventConverter notificationToEventConverter;
 
     @Autowired
     private DistributionNotificationTypeRepository distributionNotificationTypeRepository;

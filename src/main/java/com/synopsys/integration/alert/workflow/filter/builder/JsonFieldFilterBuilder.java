@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.workflow.filter;
+package com.synopsys.integration.alert.workflow.filter.builder;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -33,12 +33,12 @@ import com.google.gson.JsonPrimitive;
 import com.synopsys.integration.alert.common.field.HierarchicalField;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 
-public class JsonFieldFilter implements JsonFilterBuilder {
+public class JsonFieldFilterBuilder implements JsonFilterBuilder {
     private final Gson gson;
     private final List<String> fieldNameHierarchy;
     private final String value;
 
-    public JsonFieldFilter(final Gson gson, final HierarchicalField hierarchicalField, final String value) {
+    public JsonFieldFilterBuilder(final Gson gson, final HierarchicalField hierarchicalField, final String value) {
         this.gson = gson;
         this.value = value;
         this.fieldNameHierarchy = hierarchicalField.getFullPathToField();

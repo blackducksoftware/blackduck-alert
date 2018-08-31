@@ -21,34 +21,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.digest.filter;
+package com.synopsys.integration.alert.channel.event;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.event.ChannelEvent;
-import com.synopsys.integration.alert.channel.event.ChannelEventFactory;
 import com.synopsys.integration.alert.common.distribution.CommonDistributionConfigReader;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 
 @Component
-@Transactional
-public class NotificationToEventConverter {
-    private final Logger logger = LoggerFactory.getLogger(NotificationToEventConverter.class);
+public class NotificationToChannelEventConverter {
+    private final Logger logger = LoggerFactory.getLogger(NotificationToChannelEventConverter.class);
     private final ChannelEventFactory channelEventFactory;
     private final CommonDistributionConfigReader commonDistributionConfigReader;
 
     @Autowired
-    public NotificationToEventConverter(final ChannelEventFactory channelEventFactory, final CommonDistributionConfigReader commonDistributionConfigReader) {
+    public NotificationToChannelEventConverter(final ChannelEventFactory channelEventFactory, final CommonDistributionConfigReader commonDistributionConfigReader) {
         this.channelEventFactory = channelEventFactory;
         this.commonDistributionConfigReader = commonDistributionConfigReader;
     }
