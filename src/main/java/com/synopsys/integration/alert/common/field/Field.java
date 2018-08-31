@@ -21,3 +21,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package com.synopsys.integration.alert.common.field;
+
+public abstract class Field {
+    private String fieldKey;
+
+    public Field(final String fieldKey) {
+        this.fieldKey = fieldKey;
+    }
+
+    public String getFieldKey() {
+        return fieldKey;
+    }
+
+    public void setFieldKey(final String fieldKey) {
+        this.fieldKey = fieldKey;
+    }
+}
