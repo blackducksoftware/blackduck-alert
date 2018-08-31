@@ -1,7 +1,11 @@
 import {
-    DESCRIPTORS_FETCHING,
-    DESCRIPTORS_FETCHED,
+    DESCRIPTORS_DISTRIBUTION_FETCH_ERROR,
+    DESCRIPTORS_DISTRIBUTION_FETCHED,
+    DESCRIPTORS_DISTRIBUTION_FETCHING,
+    DESCRIPTORS_DISTRIBUTION_RESET,
     DESCRIPTORS_FETCH_ERROR,
+    DESCRIPTORS_FETCHED,
+    DESCRIPTORS_FETCHING,
     SERIALIZE
 } from '../actions/types';
 
@@ -10,6 +14,8 @@ const initialState = {
     error: {
         message: ''
     },
+    // may need to rethink this state object
+    currentDistributionComponents: null,
     items: []
 };
 
@@ -40,6 +46,40 @@ const config = (state = initialState, action) => {
                 fetching: false,
                 error: {
                     message: action.message
+                }
+            });
+
+        case DESCRIPTORS_DISTRIBUTION_FETCHING:
+            return Object.assign({}, state, {
+                fetching: true,
+                currentDistributionComponents: null,
+                error: {
+                    message: ''
+                }
+            });
+
+        case DESCRIPTORS_DISTRIBUTION_FETCHED:
+            return Object.assign({}, state, {
+                fetching: false,
+                currentDistributionComponents: action.currentDistributionComponents
+            });
+
+        case DESCRIPTORS_DISTRIBUTION_FETCH_ERROR:
+            return Object.assign({}, state, {
+                fetching: false,
+                currentDistributionComponents: null,
+                error: {
+                    message: action.message,
+                    error: action.error
+                }
+            });
+
+        case DESCRIPTORS_DISTRIBUTION_RESET:
+            return Object.assign({}, state, {
+                fetching: false,
+                currentDistributionComponents: null,
+                error: {
+                    message: ''
                 }
             });
 

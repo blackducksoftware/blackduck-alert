@@ -67,8 +67,12 @@ public abstract class Descriptor {
         restApis.put(RestApiType.CHANNEL_GLOBAL_CONFIG, restApi);
     }
 
-    public void addDistributionRestApi(final RestApi restApi) {
+    public void addChannelDistributionRestApi(final RestApi restApi) {
         restApis.put(RestApiType.CHANNEL_DISTRIBUTION_CONFIG, restApi);
+    }
+
+    public void addProviderDistributionRestApi(final RestApi restApi) {
+        restApis.put(RestApiType.PROVIDER_DISTRIBUTION_CONFIG, restApi);
     }
 
     public void addComponentRestApi(final RestApi restApi) {
@@ -85,9 +89,14 @@ public abstract class Descriptor {
         addGlobalRestApi(restApi);
     }
 
-    public void addDistributionUiConfigs(final RestApi restApi, final UIConfig uiConfig) {
+    public void addChannelDistributionUiConfigs(final RestApi restApi, final UIConfig uiConfig) {
         uiConfigs.put(RestApiType.CHANNEL_DISTRIBUTION_CONFIG, uiConfig);
-        addDistributionRestApi(restApi);
+        addChannelDistributionRestApi(restApi);
+    }
+
+    public void addProviderDistributionUiConfigs(final RestApi restApi, final UIConfig uiConfig) {
+        uiConfigs.put(RestApiType.PROVIDER_DISTRIBUTION_CONFIG, uiConfig);
+        addProviderDistributionRestApi(restApi);
     }
 
     public void addComponentUiConfigs(final RestApi restApi, final UIConfig uiConfig) {

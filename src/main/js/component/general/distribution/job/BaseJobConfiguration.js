@@ -6,9 +6,11 @@ import TextInput from '../../../../field/input/TextInput';
 import ProjectConfiguration from '../ProjectConfiguration';
 import ConfigButtons from '../../../common/ConfigButtons';
 
-import {frequencyOptions, notificationOptions} from '../../../../util/distribution-data';
+import {frequencyOptions} from '../../../../util/distribution-data';
 
 import {getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob} from '../../../../store/actions/distributions';
+import {getDistributionDescriptor} from '../../../../store/actions/descriptors';
+import DescriptorOption from "../../../common/DescriptorOption";
 
 class BaseJobConfiguration extends Component {
     constructor(props) {
@@ -28,38 +30,56 @@ class BaseJobConfiguration extends Component {
         this.handleTestSubmit = this.handleTestSubmit.bind(this);
         this.handleProviderChanged = this.handleProviderChanged.bind(this);
         this.createProviderOptions = this.createProviderOptions.bind(this);
+        this.createNotificationTypeOptions = this.createNotificationTypeOptions.bind(this);
         this.buildJsonBody = this.buildJsonBody.bind(this);
+        this.renderDistributionForm = this.renderDistributionForm.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
         if (!nextProps.fetching && !nextProps.inProgress) {
-            const stateValues = {
+            const providerOptions = this.createProviderOptions();
+            const stateValues = Object.assign({}, this.state, {
                 fetching: nextProps.fetching,
                 inProgress: nextProps.inProgress,
                 success: nextProps.success,
                 configurationMessage: nextProps.configurationMessage,
-                error: nextProps.error
-            };
+                error: nextProps.error,
+                providerOptions: providerOptions
+            });
 
             const callHandleSaveBtnClick = this.state.configurationMessage === 'Saving...' && nextProps.success;
 
             if (nextProps.distributionConfigId) {
+                const jobConfig = nextProps.jobs[nextProps.distributionConfigId];
+                if (jobConfig) {
+                    const readDescriptorDistribution = !this.state.providerName && jobConfig.providerName
+                    if (readDescriptorDistribution) {
+                        nextProps.getDistributionDescriptor(jobConfig.providerName, nextProps.alertChannelName);
+                    }
+                }
                 const newState = Object.assign({}, stateValues, {
-                    id: nextProps.id,
+                    id: jobConfig.id,
                     distributionConfigId: nextProps.distributionConfigId,
-                    name: nextProps.jobs[nextProps.distributionConfigId].name,
-                    providerName: nextProps.jobs[nextProps.distributionConfigId].providerName,
-                    distributionType: nextProps.jobs[nextProps.distributionConfigId].distributionType,
-                    frequency: nextProps.jobs[nextProps.distributionConfigId].frequency,
-                    includeAllProjects: nextProps.jobs[nextProps.distributionConfigId].filterByProject == 'false',
-                    filterByProject: nextProps.jobs[nextProps.distributionConfigId].filterByProject,
-                    notificationTypes: nextProps.jobs[nextProps.distributionConfigId].notificationTypes,
-                    configuredProjects: nextProps.jobs[nextProps.distributionConfigId].configuredProjects
+                    name: jobConfig.name,
+                    providerName: jobConfig.providerName,
+                    distributionType: jobConfig.distributionType,
+                    frequency: jobConfig.frequency,
+                    includeAllProjects: jobConfig.filterByProject == 'false',
+                    filterByProject: jobConfig.filterByProject,
+                    notificationTypes: jobConfig.notificationTypes,
+                    configuredProjects: jobConfig.configuredProjects
                 });
-
                 this.setState(newState);
             } else {
-                this.setState(stateValues);
+                if (!this.state.providerName && providerOptions.length == 1) {
+                    const providerSelection = providerOptions[0].value;
+                    nextProps.getDistributionDescriptor(providerSelection, nextProps.alertChannelName);
+                    this.setState(Object.assign({}, stateValues, {
+                        providerName: providerSelection
+                    }));
+                } else {
+                    this.setState(stateValues);
+                }
             }
 
             if (callHandleSaveBtnClick && nextProps.handleSaveBtnClick) {
@@ -88,7 +108,7 @@ class BaseJobConfiguration extends Component {
             event.preventDefault();
         }
         const jsonBody = this.buildJsonBody();
-        if (this.props.id) {
+        if (this.state.id) {
             this.props.updateDistributionJob(this.props.baseUrl, jsonBody);
         } else {
             this.props.saveDistributionJob(this.props.baseUrl, jsonBody);
@@ -111,7 +131,18 @@ class BaseJobConfiguration extends Component {
     }
 
     buildJsonBody() {
-        const configuration = Object.assign({}, this.state, this.props.getParentConfiguration());
+        const configuration = Object.assign({}, {
+            id: this.state.id,
+            distributionConfigId: this.state.distributionConfigId,
+            name: this.state.name,
+            providerName: this.state.providerName,
+            distributionType: this.state.distributionType,
+            frequency: this.state.frequency,
+            includeAllProjects: this.state.filterByProject == 'false',
+            filterByProject: this.state.filterByProject,
+            notificationTypes: this.state.notificationTypes,
+            configuredProjects: this.state.configuredProjects
+        }, this.props.getParentConfiguration());
         configuration.filterByProject = !configuration.includeAllProjects;
         if (configuration.notificationTypes && configuration.notificationTypes.length > 0) {
             configuration.notificationTypes = configuration.notificationTypes;
@@ -151,9 +182,15 @@ class BaseJobConfiguration extends Component {
 
     handleProviderChanged(option) {
         if (option) {
-            this.handleStateValues('providerName', option.value);
+            if (this.state.providerName != option.value) {
+                this.handleStateValues('providerName', option.value);
+                this.props.getDistributionDescriptor(option.value, this.props.alertChannelName);
+            }
         } else {
-            this.handleStateValues('providerName', option);
+            if (this.state.providerOptions.length > 1) {
+                this.handleStateValues('providerName', option);
+                this.props.getDistributionDescriptor('', this.props.alertChannelName);
+            }
         }
     }
 
@@ -196,30 +233,64 @@ class BaseJobConfiguration extends Component {
         } else {
             return [];
         }
+    }
 
+    createNotificationTypeOptions() {
+        const {fields} = this.props.currentDistributionComponents;
+        if (fields) {
+            const notificationTypeField = fields.filter(field => field.key === 'notificationTypes');
+            const {options} = notificationTypeField[0];
+
+            const optionList = options.map(option => Object.assign({}, {label: option, value: option}));
+            return optionList;
+        } else {
+            return [];
+        }
+    }
+
+    renderOption(option) {
+        return (<DescriptorOption icon={option.icon} label={option.label} value={option.value}/>);
+    }
+
+    renderDistributionForm() {
+        if (!this.props.currentDistributionComponents) {
+            return null;
+        } else {
+            return (
+                <div>
+                    <div className="form-group">
+                        <label className="col-sm-3 control-label">Notification Types</label>
+                        <div className="col-sm-8">
+                            <Select
+                                id="jobType"
+                                className="typeAheadField"
+                                onChange={this.handleNotificationChanged}
+                                searchable
+                                multi
+                                removeSelected
+                                options={this.createNotificationTypeOptions()}
+                                placeholder="Choose the notification types"
+                                value={this.state.notificationTypes}
+                            />
+                            {this.state.errors.notificationTypesError && <label className="fieldError" name="notificationTypesError">
+                                {this.state.errors.notificationTypesError}
+                            </label>}
+                        </div>
+                    </div>
+                    {this.props.childContent}
+                    <ProjectConfiguration includeAllProjects={this.state.includeAllProjects} handleChange={this.handleChange} handleProjectChanged={this.handleProjectChanged} projects={this.props.projects}
+                                          configuredProjects={this.state.configuredProjects}/>
+                    <ConfigButtons cancelId="job-cancel" submitId="job-submit" includeTest includeCancel onTestClick={this.handleTestSubmit} onCancelClick={this.props.handleCancel}/>
+                    <p name="configurationMessage">{this.state.configurationMessage}</p>
+                </div>
+            );
+        }
     }
 
     render() {
         return (
             <form className="form-horizontal" onSubmit={this.onSubmit}>
                 <TextInput id="name" label="Job Name" name="name" value={this.state.name} onChange={this.handleChange} errorName="nameError" errorValue={this.state.errors.nameError}/>
-                <div className="form-group">
-                    <label className="col-sm-3 control-label">Provider</label>
-                    <div className="col-sm-8">
-                        <Select
-                            id="providerName"
-                            className="typeAheadField"
-                            onChange={this.handleProviderChanged}
-                            searchable
-                            options={this.createProviderOptions()}
-                            placeholder="Choose the provider"
-                            value={this.state.providerName}
-                        />
-                        {this.state.errors.providerNameError && <label className="fieldError" name="providerNameError">
-                            {this.state.errors.providerNameError}
-                        </label>}
-                    </div>
-                </div>
                 <div className="form-group">
                     <label className="col-sm-3 control-label">Frequency</label>
                     <div className="col-sm-8">
@@ -238,29 +309,25 @@ class BaseJobConfiguration extends Component {
                     </div>
                 </div>
                 <div className="form-group">
-                    <label className="col-sm-3 control-label">Notification Types</label>
+                    <label className="col-sm-3 control-label">Provider</label>
                     <div className="col-sm-8">
                         <Select
-                            id="jobType"
+                            id="providerName"
                             className="typeAheadField"
-                            onChange={this.handleNotificationChanged}
+                            onChange={this.handleProviderChanged}
                             searchable
-                            multi
-                            removeSelected
-                            options={notificationOptions}
-                            placeholder="Choose the notification types"
-                            value={this.state.notificationTypes}
+                            options={this.state.providerOptions}
+                            optionRenderer={this.renderOption}
+                            placeholder="Choose the provider"
+                            value={this.state.providerName}
+                            valueRenderer={this.renderOption}
                         />
-                        {this.state.errors.notificationTypesError && <label className="fieldError" name="notificationTypesError">
-                            {this.state.errors.notificationTypesError}
+                        {this.state.errors.providerNameError && <label className="fieldError" name="providerNameError">
+                            {this.state.errors.providerNameError}
                         </label>}
                     </div>
                 </div>
-                {this.props.childContent}
-                <ProjectConfiguration includeAllProjects={this.state.includeAllProjects} handleChange={this.handleChange} handleProjectChanged={this.handleProjectChanged} projects={this.props.projects}
-                                      configuredProjects={this.state.configuredProjects}/>
-                <ConfigButtons cancelId="job-cancel" submitId="job-submit" includeTest includeCancel onTestClick={this.handleTestSubmit} onCancelClick={this.props.handleCancel}/>
-                <p name="configurationMessage">{this.state.configurationMessage}</p>
+                {this.renderDistributionForm()}
             </form>
         );
     }
@@ -281,7 +348,9 @@ BaseJobConfiguration.propTypes = {
     handleCancel: PropTypes.func.isRequired,
     handleSaveBtnClick: PropTypes.func.isRequired,
     getParentConfiguration: PropTypes.func.isRequired,
-    childContent: PropTypes.object.isRequired
+    childContent: PropTypes.object.isRequired,
+    alertChannelName: PropTypes.string.isRequired,
+    currentDistributionComponents: PropTypes.object
 };
 
 BaseJobConfiguration.defaultProps = {
@@ -295,14 +364,16 @@ BaseJobConfiguration.defaultProps = {
     success: false,
     configurationMessage: '',
     error: {},
-    distributionConfigId: null
+    distributionConfigId: null,
+    currentDistributionComponents: null
 };
 
 const mapDispatchToProps = dispatch => ({
     getDistributionJob: (url, id) => dispatch(getDistributionJob(url, id)),
     saveDistributionJob: (url, config) => dispatch(saveDistributionJob(url, config)),
     updateDistributionJob: (url, config) => dispatch(updateDistributionJob(url, config)),
-    testDistributionJob: (url, config) => dispatch(testDistributionJob(url, config))
+    testDistributionJob: (url, config) => dispatch(testDistributionJob(url, config)),
+    getDistributionDescriptor: (provider, channel) => dispatch(getDistributionDescriptor(provider, channel))
 });
 
 const mapStateToProps = state => ({
@@ -314,6 +385,7 @@ const mapStateToProps = state => ({
     success: state.distributions.success,
     configurationMessage: state.distributions.configurationMessage,
     error: state.distributions.error,
+    currentDistributionComponents: state.descriptors.currentDistributionComponents
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(BaseJobConfiguration);

@@ -34,7 +34,6 @@ import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributi
 import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.ConfiguredProjectEntity;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
-import com.synopsys.integration.alert.database.entity.NotificationTypeEntity;
 import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.synopsys.integration.alert.database.entity.repository.ConfiguredProjectsRepository;
 import com.synopsys.integration.alert.database.entity.repository.NotificationTypeRepository;
@@ -83,7 +82,7 @@ public class NotificationFilterTestIT {
     private Long commonDistributionId = 0L;
     private Long distributionConfigId = 0L;
     private Long projectId = 0L;
-    private Long notificationTypeId = 0L;
+    private String notificationType = "";
 
     @Before
     public void init() {
@@ -102,11 +101,9 @@ public class NotificationFilterTestIT {
         final DistributionProjectRelation distributionProjectRelation = new DistributionProjectRelation(commonDistributionId, projectId);
         distributionProjectRepository.save(distributionProjectRelation);
 
-        final NotificationTypeEntity typeEntity = new NotificationTypeEntity(NotificationType.VULNERABILITY);
-        final NotificationTypeEntity savedTypeEntity = notificationTypeRepository.save(typeEntity);
-        notificationTypeId = savedTypeEntity.getId();
+        notificationType = NotificationType.VULNERABILITY.name();
 
-        final DistributionNotificationTypeRelation typeRelation = new DistributionNotificationTypeRelation(commonDistributionId, notificationTypeId);
+        final DistributionNotificationTypeRelation typeRelation = new DistributionNotificationTypeRelation(commonDistributionId, notificationType);
         distributionNotificationTypeRepository.save(typeRelation);
     }
 
@@ -135,7 +132,7 @@ public class NotificationFilterTestIT {
         if (foundEntity.isPresent()) {
             final CommonDistributionConfigEntity commonEntity = foundEntity.get();
             final CommonDistributionConfigEntity newEntity =
-                new CommonDistributionConfigEntity(commonEntity.getDistributionConfigId(), commonEntity.getDistributionType(), commonEntity.getName(), BlackDuckProvider.COMPONENT_NAME, DigestType.DAILY, commonEntity.getFilterByProject());
+            new CommonDistributionConfigEntity(commonEntity.getDistributionConfigId(), commonEntity.getDistributionType(), commonEntity.getName(), BlackDuckProvider.COMPONENT_NAME, DigestType.DAILY, commonEntity.getFilterByProject());
             newEntity.setId(commonEntity.getId());
             commonDistributionRepository.save(newEntity);
         }
@@ -204,8 +201,8 @@ public class NotificationFilterTestIT {
 
     private NotificationContent createVulnerabilityNotification(final String projectName, final String providerName, final Date created) {
         final String content = "{\"content\":{\"affectedProjectVersions\":[{\"projectName\":\""
-                                   + projectName
-                                   + "\",\"dummyField\":\"dummyValue\"},{\"projectName\":\"Project Name\",\"dummyField\":\"dummyValue\"}],\"dummyField\":\"dummyValue\"},\"dummyField\":\"dummyValue\"}";
+                               + projectName
+                               + "\",\"dummyField\":\"dummyValue\"},{\"projectName\":\"Project Name\",\"dummyField\":\"dummyValue\"}],\"dummyField\":\"dummyValue\"},\"dummyField\":\"dummyValue\"}";
         final NotificationContent notification = new NotificationContent(created, providerName, NotificationType.VULNERABILITY.name(), content);
         notification.setId(1L);
 
