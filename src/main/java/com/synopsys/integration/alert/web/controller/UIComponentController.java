@@ -77,7 +77,7 @@ public class UIComponentController extends BaseController {
                     }
                 } else {
                     // name only
-                    return descriptor.getAllUIConfigs().stream().map(descriptorConfig -> descriptorConfig.generateUIComponent()).collect(Collectors.toList());
+                    return descriptor.getAllUIConfigs().stream().map(UIConfig::generateUIComponent).collect(Collectors.toList());
                 }
             } else {
                 return Collections.emptyList();
@@ -99,7 +99,7 @@ public class UIComponentController extends BaseController {
 
         final List<ConfigField> combinedFields = new ArrayList<>();
         final ConfigField name = new TextInputConfigField("name", "Name", true, false);
-        final ConfigField frequency = new SelectConfigField("frequency", "Digest type", true, false, Arrays.stream(DigestType.values()).map(type -> type.getDisplayName()).collect(Collectors.toList()));
+        final ConfigField frequency = new SelectConfigField("frequency", "Digest type", true, false, Arrays.stream(DigestType.values()).map(DigestType::getDisplayName).collect(Collectors.toList()));
         final ConfigField notificationTypes = new SelectConfigField("notificationTypes", "Notification Types", true, false, providerDescriptor.getNotificationTypes().stream().collect(Collectors.toList()));
         combinedFields.add(name);
         combinedFields.add(frequency);
@@ -107,7 +107,7 @@ public class UIComponentController extends BaseController {
         combinedFields.addAll(channelUIComponent.getFields());
 
         final UIComponent combinedUIComponent = new UIComponent(channelUIComponent.getLabel(), channelUIComponent.getUrlName(), channelUIComponent.getDescriptorName(), channelUIComponent.getFontAwesomeIcon(),
-        channelUIComponent.isAutomaticallyGenerateUI(), combinedFields);
+            channelUIComponent.isAutomaticallyGenerateUI(), combinedFields);
         return combinedUIComponent;
     }
 }

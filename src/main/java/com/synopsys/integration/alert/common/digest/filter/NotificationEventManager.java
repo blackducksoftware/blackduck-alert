@@ -54,7 +54,7 @@ public class NotificationEventManager {
 
     @Autowired
     public NotificationEventManager(final NotificationPostProcessor notificationPostProcessor, final ChannelEventFactory channelEventFactory,
-            final CommonDistributionRepository commonDistributionRepository) {
+        final CommonDistributionRepository commonDistributionRepository) {
         this.notificationPostProcessor = notificationPostProcessor;
         this.channelEventFactory = channelEventFactory;
         this.commonDistributionRepository = commonDistributionRepository;
@@ -80,9 +80,7 @@ public class NotificationEventManager {
             });
         });
 
-        distributionConfigNotificationMap.entrySet().forEach(entry -> {
-            final CommonDistributionConfigEntity distributionConfig = entry.getKey();
-            final List<NotificationContent> notificationList = entry.getValue();
+        distributionConfigNotificationMap.forEach((distributionConfig, notificationList) -> {
             if (!notificationList.isEmpty()) {
                 notificationList.forEach(notificationContent -> {
                     channelEvents.add(createChannelEvent(distributionConfig, notificationContent));
