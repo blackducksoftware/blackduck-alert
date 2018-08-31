@@ -23,7 +23,6 @@
  */
 package com.synopsys.integration.alert.provider.blackduck;
 
-import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -35,7 +34,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
-import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
+import com.synopsys.integration.alert.provider.blackduck.tasks.EmailSyncTask;
 
 @Component(value = BlackDuckProvider.COMPONENT_NAME)
 public class BlackDuckProvider extends Provider {
@@ -43,22 +42,26 @@ public class BlackDuckProvider extends Provider {
     private static final Logger logger = LoggerFactory.getLogger(BlackDuckProvider.class);
 
     private final BlackDuckAccumulator accumulatorTask;
+    private final EmailSyncTask emailSyncTask;
 
     @Autowired
-    public BlackDuckProvider(final BlackDuckAccumulator accumulatorTask) {
+    public BlackDuckProvider(final BlackDuckAccumulator accumulatorTask, final EmailSyncTask emailSyncTask) {
         this.accumulatorTask = accumulatorTask;
+        this.emailSyncTask = emailSyncTask;
     }
 
     @Override
     public void initialize() {
         logger.info("Initializing provider...");
         accumulatorTask.scheduleExecution(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION);
+        emailSyncTask.scheduleExecution(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION);
     }
 
     @Override
     public void destroy() {
         logger.info("Destroying provider...");
         accumulatorTask.scheduleExecution(BlackDuckAccumulator.STOP_SCHEDULE_EXPRESSION);
+        emailSyncTask.scheduleExecution(BlackDuckAccumulator.STOP_SCHEDULE_EXPRESSION);
     }
 
     @Override

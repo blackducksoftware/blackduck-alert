@@ -1,4 +1,4 @@
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
     <changeSet author="psantos" id="1533054185-1">
         <createTable tableName="RAW_NOTIFICATION_CONTENT" schemaName="ALERT">
@@ -40,5 +40,14 @@
         <addColumn tableName="GLOBAL_BLACKDUCK_CONFIG" schemaName="ALERT">
             <column name="BLACKDUCK_URL" type="varchar(255)"/>
         </addColumn>
+    </changeSet>
+    <changeSet author="jrichard" id="1533054185-8">
+        <createTable tableName="BLACKDUCK_EMAIL" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="BLACKDUCK_EMAIL_KEY"/>
+            </column>
+            <column name="EMAIL_ADDRESS" type="VARCHAR(255)"/>
+            <column name="OPT_OUT" type="BOOLEAN"/>
+        </createTable>
     </changeSet>
 </databaseChangeLog>
