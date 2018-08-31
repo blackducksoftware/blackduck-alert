@@ -28,16 +28,16 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.ChannelTemplateManager;
-import com.synopsys.integration.alert.common.digest.DigestNotificationProcessor;
 import com.synopsys.integration.alert.common.enumeration.DigestType;
 import com.synopsys.integration.alert.workflow.NotificationManager;
+import com.synopsys.integration.alert.workflow.processor.NotificationProcessor;
 
 @Component
 public class DailyTask extends ProcessingTask {
     public static final String TASK_NAME = "daily-frequency";
 
     @Autowired
-    public DailyTask(final TaskScheduler taskScheduler, final NotificationManager notificationManager, final DigestNotificationProcessor notificationProcessor, final ChannelTemplateManager channelTemplateManager) {
+    public DailyTask(final TaskScheduler taskScheduler, final NotificationManager notificationManager, final NotificationProcessor notificationProcessor, final ChannelTemplateManager channelTemplateManager) {
         super(taskScheduler, TASK_NAME, notificationManager, notificationProcessor, channelTemplateManager);
     }
 

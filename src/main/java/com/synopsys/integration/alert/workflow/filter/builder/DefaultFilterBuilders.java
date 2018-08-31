@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.workflow.filter;
+package com.synopsys.integration.alert.workflow.filter.builder;
 
 public class DefaultFilterBuilders {
     public static final JsonFilterBuilder ALWAYS_TRUE = () -> ignoredPredicateArgument -> true;

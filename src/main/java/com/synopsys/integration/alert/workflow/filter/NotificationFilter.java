@@ -21,11 +21,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.digest.filter;
+package com.synopsys.integration.alert.workflow.filter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,8 +35,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -50,14 +49,13 @@ import com.synopsys.integration.alert.common.field.HierarchicalField;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
-import com.synopsys.integration.alert.workflow.filter.AndFieldFilterBuilder;
-import com.synopsys.integration.alert.workflow.filter.DefaultFilterBuilders;
-import com.synopsys.integration.alert.workflow.filter.JsonFieldFilter;
-import com.synopsys.integration.alert.workflow.filter.JsonFilterBuilder;
-import com.synopsys.integration.alert.workflow.filter.OrFieldFilterBuilder;
+import com.synopsys.integration.alert.workflow.filter.builder.AndFieldFilterBuilder;
+import com.synopsys.integration.alert.workflow.filter.builder.DefaultFilterBuilders;
+import com.synopsys.integration.alert.workflow.filter.builder.JsonFieldFilterBuilder;
+import com.synopsys.integration.alert.workflow.filter.builder.JsonFilterBuilder;
+import com.synopsys.integration.alert.workflow.filter.builder.OrFieldFilterBuilder;
 
 @Component
-@Transactional
 public class NotificationFilter {
     final CommonDistributionConfigReader commonDistributionConfigReader;
     private final Gson gson;
@@ -75,27 +73,26 @@ public class NotificationFilter {
      * @return A java.util.List of sorted (by createdAt) NotificationContent objects.
      */
     public Collection<NotificationContent> extractApplicableNotifications(final DigestType frequency, final Collection<NotificationContent> notificationList) {
-        final Set<NotificationContent> filteredNotifications = new HashSet<>();
-
         final List<CommonDistributionConfig> unfilteredDistributionConfigs = commonDistributionConfigReader.getPopulatedConfigs();
         if (unfilteredDistributionConfigs.isEmpty()) {
-            return filteredNotifications;
+            return Collections.emptyList();
         }
 
         final Predicate<CommonDistributionConfig> frequencyFilter = config -> frequency.name().equals(config.getFrequency());
         final List<CommonDistributionConfig> distributionConfigs = applyFilter(unfilteredDistributionConfigs, frequencyFilter);
         if (distributionConfigs.isEmpty()) {
-            return filteredNotifications;
+            return Collections.emptyList();
         }
 
         final Set<String> configuredNotificationTypes = getConfiguredNotificationTypes(distributionConfigs);
         if (configuredNotificationTypes.isEmpty()) {
-            return filteredNotifications;
+            return Collections.emptyList();
         }
 
         final List<ProviderContentType> providerContentTypes = getProviderContentTypes();
         final Map<String, List<NotificationContent>> notificationsByType = getNotificationsByType(configuredNotificationTypes, notificationList);
 
+        final Set<NotificationContent> filteredNotifications = new HashSet<>();
         notificationsByType.forEach((type, groupedNotifications) -> {
             final Set<HierarchicalField> filterableFields = getFilterableFieldsByNotificationType(type, providerContentTypes);
             Predicate<NotificationContent> filterForNotificationType = createFilter(filterableFields, distributionConfigs);
@@ -182,7 +179,7 @@ public class NotificationFilter {
         JsonFilterBuilder filterBuilderForAllValues = DefaultFilterBuilders.ALWAYS_FALSE;
 
         for (final String value : applicableValues) {
-            JsonFilterBuilder filterBuilderForValue = new JsonFieldFilter(gson, field, value);
+            JsonFilterBuilder filterBuilderForValue = new JsonFieldFilterBuilder(gson, field, value);
             filterBuilderForAllValues = new OrFieldFilterBuilder(filterBuilderForAllValues, filterBuilderForValue);
         }
         return filterBuilderForAllValues;
