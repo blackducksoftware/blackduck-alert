@@ -37,13 +37,15 @@ class BaseJobConfiguration extends Component {
 
     componentWillReceiveProps(nextProps) {
         if (!nextProps.fetching && !nextProps.inProgress) {
-            const stateValues = {
+            const providerOptions = this.createProviderOptions();
+            const stateValues = Object.assign({}, this.state, {
                 fetching: nextProps.fetching,
                 inProgress: nextProps.inProgress,
                 success: nextProps.success,
                 configurationMessage: nextProps.configurationMessage,
-                error: nextProps.error
-            };
+                error: nextProps.error,
+                providerOptions: providerOptions
+            });
 
             const callHandleSaveBtnClick = this.state.configurationMessage === 'Saving...' && nextProps.success;
 
@@ -69,7 +71,15 @@ class BaseJobConfiguration extends Component {
                 });
                 this.setState(newState);
             } else {
-                this.setState(stateValues);
+                if (!this.state.providerName && providerOptions.length == 1) {
+                    const providerSelection = providerOptions[0].value;
+                    nextProps.getDistributionDescriptor(providerSelection, nextProps.alertChannelName);
+                    this.setState(Object.assign({}, stateValues, {
+                        providerName: providerSelection
+                    }));
+                } else {
+                    this.setState(stateValues);
+                }
             }
 
             if (callHandleSaveBtnClick && nextProps.handleSaveBtnClick) {
@@ -172,11 +182,15 @@ class BaseJobConfiguration extends Component {
 
     handleProviderChanged(option) {
         if (option) {
-            this.handleStateValues('providerName', option.value);
-            this.props.getDistributionDescriptor(option.value, this.props.alertChannelName);
+            if (this.state.providerName != option.value) {
+                this.handleStateValues('providerName', option.value);
+                this.props.getDistributionDescriptor(option.value, this.props.alertChannelName);
+            }
         } else {
-            this.handleStateValues('providerName', option);
-            this.props.getDistributionDescriptor('', this.props.alertChannelName);
+            if (this.state.providerOptions.length > 1) {
+                this.handleStateValues('providerName', option);
+                this.props.getDistributionDescriptor('', this.props.alertChannelName);
+            }
         }
     }
 
@@ -302,7 +316,7 @@ class BaseJobConfiguration extends Component {
                             className="typeAheadField"
                             onChange={this.handleProviderChanged}
                             searchable
-                            options={this.createProviderOptions()}
+                            options={this.state.providerOptions}
                             optionRenderer={this.renderOption}
                             placeholder="Choose the provider"
                             value={this.state.providerName}
