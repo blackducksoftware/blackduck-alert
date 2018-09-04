@@ -19,7 +19,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import com.synopsys.integration.alert.common.enumeration.DigestType;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.database.entity.NotificationCategoryEnum;
 
 public class ProjectDataBuilderTest {
@@ -30,7 +30,7 @@ public class ProjectDataBuilderTest {
 
         assertNotNull(projectDataBuilder.getCategoryBuilderMap());
         assertTrue(projectDataBuilder.getCategoryBuilderMap().isEmpty());
-        assertNull(projectDataBuilder.getDigestType());
+        assertNull(projectDataBuilder.getFrequencyType());
         assertNull(projectDataBuilder.getProjectName());
         assertNull(projectDataBuilder.getProjectVersion());
 
@@ -50,32 +50,32 @@ public class ProjectDataBuilderTest {
         final ProjectDataBuilder projectDataBuilder = new ProjectDataBuilder();
 
         projectDataBuilder.addCategoryBuilder(NotificationCategoryEnum.HIGH_VULNERABILITY, categoryDataBuilder);
-        projectDataBuilder.setDigestType(DigestType.DAILY);
+        projectDataBuilder.setFrequencyType(FrequencyType.DAILY);
         projectDataBuilder.setProjectName("Project");
         projectDataBuilder.setProjectVersion("Version");
 
         assertNotNull(projectDataBuilder.getCategoryBuilderMap());
         assertFalse(projectDataBuilder.getCategoryBuilderMap().isEmpty());
         assertEquals(categoryDataBuilder, projectDataBuilder.getCategoryBuilderMap().get(NotificationCategoryEnum.HIGH_VULNERABILITY));
-        assertEquals(DigestType.DAILY, projectDataBuilder.getDigestType());
+        assertEquals(FrequencyType.DAILY, projectDataBuilder.getFrequencyType());
         assertEquals("Project", projectDataBuilder.getProjectName());
         assertEquals("Version", projectDataBuilder.getProjectVersion());
 
         final Map<NotificationCategoryEnum, CategoryData> categoryMap = new HashMap<>();
         categoryMap.put(NotificationCategoryEnum.HIGH_VULNERABILITY, categoryDataBuilder.build());
 
-        ProjectData projectData = new ProjectData(DigestType.DAILY, "Project", "Version", Collections.emptyList(), categoryMap);
+        ProjectData projectData = new ProjectData(FrequencyType.DAILY, "Project", "Version", Collections.emptyList(), categoryMap);
         assertEquals(projectData, projectDataBuilder.build());
 
         projectDataBuilder.removeCategoryBuilder(NotificationCategoryEnum.HIGH_VULNERABILITY);
 
         assertNotNull(projectDataBuilder.getCategoryBuilderMap());
         assertTrue(projectDataBuilder.getCategoryBuilderMap().isEmpty());
-        assertEquals(DigestType.DAILY, projectDataBuilder.getDigestType());
+        assertEquals(FrequencyType.DAILY, projectDataBuilder.getFrequencyType());
         assertEquals("Project", projectDataBuilder.getProjectName());
         assertEquals("Version", projectDataBuilder.getProjectVersion());
 
-        projectData = new ProjectData(DigestType.DAILY, "Project", "Version", Collections.emptyList(), new HashMap<>());
+        projectData = new ProjectData(FrequencyType.DAILY, "Project", "Version", Collections.emptyList(), new HashMap<>());
         assertEquals(projectData, projectDataBuilder.build());
     }
 
