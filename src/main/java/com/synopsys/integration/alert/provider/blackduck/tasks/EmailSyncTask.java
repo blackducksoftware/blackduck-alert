@@ -24,7 +24,6 @@
 package com.synopsys.integration.alert.provider.blackduck.tasks;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -37,10 +36,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.workflow.scheduled.ScheduledTask;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;
 import com.synopsys.integration.blackduck.rest.BlackduckRestConnection;
@@ -50,7 +49,7 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
-public class EmailSyncTask extends ScheduledTask {
+public class EmailSyncTask extends SyncTask<String> {
     private final Logger logger = LoggerFactory.getLogger(EmailSyncTask.class);
     private final BlackDuckProperties blackDuckProperties;
     private final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor;
@@ -63,18 +62,7 @@ public class EmailSyncTask extends ScheduledTask {
     }
 
     @Override
-    public void run() {
-        logger.info("### Starting email address sync operation...");
-        try {
-            final Set<String> currentEmailAddresses = getCurrentEmailAddresses();
-            syncDBWithCurrentEmailAddresses(currentEmailAddresses);
-        } catch (final IOException | IntegrationException e) {
-            logger.error("Could not retrieve the current email addresses from the BlackDuck server : " + e.getMessage(), e);
-        }
-        logger.info("### Finished email address sync operation...");
-    }
-
-    public Set<String> getCurrentEmailAddresses() throws IOException, IntegrationException {
+    public Set<String> getCurrentData() throws IOException, IntegrationException {
         final Optional<BlackduckRestConnection> optionalConnection = blackDuckProperties.createRestConnectionAndLogErrors(logger);
         if (optionalConnection.isPresent()) {
             try (final BlackduckRestConnection restConnection = optionalConnection.get()) {
@@ -90,32 +78,36 @@ public class EmailSyncTask extends ScheduledTask {
         return null;
     }
 
-    public void syncDBWithCurrentEmailAddresses(final Set<String> currentEmailAddresses) {
-        final Set<String> emailsToAdd = new HashSet<>();
-        final Set<String> emailsToRemove = new HashSet<>();
-        final List<BlackDuckUserEntity> blackDuckUserEntities = (List<BlackDuckUserEntity>) blackDuckUserRepositoryAccessor.readEntities();
+    @Override
+    public List<? extends DatabaseEntity> getStoredEntities() {
+        return blackDuckUserRepositoryAccessor.readEntities();
+    }
+
+    @Override
+    public Set<String> getStoredData(final List<? extends DatabaseEntity> storedEntities) {
+        final List<BlackDuckUserEntity> blackDuckUserEntities = (List<BlackDuckUserEntity>) storedEntities;
 
         final Set<String> storedEmails = blackDuckUserEntities.stream().map(blackDuckUserEntity -> blackDuckUserEntity.getEmailAddress()).collect(Collectors.toSet());
-        currentEmailAddresses.stream().forEach(currentEmailAddress -> {
-            if (!storedEmails.contains(currentEmailAddress)) {
-                emailsToAdd.add(currentEmailAddress);
-            }
-        });
-        storedEmails.stream().forEach(storedEmailAddress -> {
-            if (!currentEmailAddresses.contains(storedEmailAddress)) {
-                emailsToRemove.add(storedEmailAddress);
-            }
-        });
-        logger.info("Adding {} users", emailsToAdd.size());
-        logger.info("Removing {} users", emailsToRemove.size());
+        return storedEmails;
+    }
 
-        final List<BlackDuckUserEntity> blackDuckUserEntitiesToRemove = blackDuckUserEntities.stream()
-                                                                            .filter(blackDuckUserEntity -> emailsToRemove.contains(blackDuckUserEntity.getEmailAddress()))
-                                                                            .collect(Collectors.toList());
-        blackDuckUserEntitiesToRemove.stream().forEach(blackDuckUserEntity -> blackDuckUserRepositoryAccessor.deleteEntity(blackDuckUserEntity.getId()));
+    @Override
+    public List<Long> getEntityIdsToRemove(final List<? extends DatabaseEntity> storedEntities, final Set<String> dataToRemove) {
+        final List<BlackDuckUserEntity> blackDuckUserEntities = (List<BlackDuckUserEntity>) storedEntities;
+        final List<Long> blackDuckUserIdsToRemove = blackDuckUserEntities.stream()
+                                                        .filter(blackDuckUserEntity -> dataToRemove.contains(blackDuckUserEntity.getEmailAddress()))
+                                                        .map(blackDuckUserEntity -> blackDuckUserEntity.getId())
+                                                        .collect(Collectors.toList());
+        return blackDuckUserIdsToRemove;
+    }
 
-        emailsToAdd.stream().forEach(emailToAdd ->
-                                         blackDuckUserRepositoryAccessor.saveEntity(new BlackDuckUserEntity(emailToAdd, false)));
-    
+    @Override
+    public void deleteEntity(final Long id) {
+        blackDuckUserRepositoryAccessor.deleteEntity(id);
+    }
+
+    @Override
+    public DatabaseEntity createAndSaveEntity(final String data) {
+        return blackDuckUserRepositoryAccessor.saveEntity(new BlackDuckUserEntity(data, false));
     }
 }
