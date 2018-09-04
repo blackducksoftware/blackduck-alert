@@ -35,6 +35,7 @@ import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.EmailSyncTask;
+import com.synopsys.integration.alert.provider.blackduck.tasks.GroupSyncTask;
 
 @Component(value = BlackDuckProvider.COMPONENT_NAME)
 public class BlackDuckProvider extends Provider {
@@ -43,11 +44,13 @@ public class BlackDuckProvider extends Provider {
 
     private final BlackDuckAccumulator accumulatorTask;
     private final EmailSyncTask emailSyncTask;
+    private final GroupSyncTask groupSyncTask;
 
     @Autowired
-    public BlackDuckProvider(final BlackDuckAccumulator accumulatorTask, final EmailSyncTask emailSyncTask) {
+    public BlackDuckProvider(final BlackDuckAccumulator accumulatorTask, final EmailSyncTask emailSyncTask, final GroupSyncTask groupSyncTask) {
         this.accumulatorTask = accumulatorTask;
         this.emailSyncTask = emailSyncTask;
+        this.groupSyncTask = groupSyncTask;
     }
 
     @Override
@@ -55,6 +58,7 @@ public class BlackDuckProvider extends Provider {
         logger.info("Initializing provider...");
         accumulatorTask.scheduleExecution(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION);
         emailSyncTask.scheduleExecution(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION);
+        groupSyncTask.scheduleExecution(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION);
     }
 
     @Override
@@ -62,6 +66,7 @@ public class BlackDuckProvider extends Provider {
         logger.info("Destroying provider...");
         accumulatorTask.scheduleExecution(BlackDuckAccumulator.STOP_SCHEDULE_EXPRESSION);
         emailSyncTask.scheduleExecution(BlackDuckAccumulator.STOP_SCHEDULE_EXPRESSION);
+        groupSyncTask.scheduleExecution(BlackDuckAccumulator.STOP_SCHEDULE_EXPRESSION);
     }
 
     @Override

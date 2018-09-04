@@ -61,4 +61,14 @@
             <column name="OPT_OUT" type="BOOLEAN"/>
         </createTable>
     </changeSet>
+    <changeSet author="jrichard" id="1533054185-10">
+        <createTable tableName="BLACKDUCK_GROUP" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="BLACKDUCK_GROUP_KEY"/>
+            </column>
+            <column name="NAME" type="VARCHAR(255)"/>
+            <column name="ACTIVE" type="BOOLEAN"/>
+            <column name="HREF" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>
