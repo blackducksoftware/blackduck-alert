@@ -19,7 +19,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
-import com.synopsys.integration.alert.common.enumeration.DigestType;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.mock.NotificationTypeMockUtils;
 import com.synopsys.integration.alert.mock.ProjectMockUtils;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
@@ -45,13 +45,14 @@ public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDis
     }
 
     private MockCommonDistributionRestModel(final String distributionConfigId) {
-        this("2", distributionConfigId, HipChatChannel.COMPONENT_NAME.toString(), "Name", "provider_blackduck", DigestType.REAL_TIME.name(), "true", projectMock.createProjectListing(), notificationTypeMock.createNotificiationTypeListing(),
-                null, null);
+        this("2", distributionConfigId, HipChatChannel.COMPONENT_NAME.toString(), "Name", "provider_blackduck", FrequencyType.REAL_TIME.name(), "true", projectMock.createProjectListing(),
+        notificationTypeMock.createNotificiationTypeListing(),
+        null, null);
     }
 
     private MockCommonDistributionRestModel(final String id, final String distributionConfigId, final String distributionType, final String name, final String providerName, final String frequency, final String filterByProject,
-            final List<String> configuredProjects,
-            final List<NotificationType> notificationTypes, final String lastRan, final String status) {
+    final List<String> configuredProjects,
+    final List<NotificationType> notificationTypes, final String lastRan, final String status) {
         super();
         this.id = id;
         this.distributionConfigId = distributionConfigId;

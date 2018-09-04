@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.RestApi;
 import com.synopsys.integration.alert.common.digest.model.DigestModel;
 import com.synopsys.integration.alert.common.digest.model.ProjectData;
-import com.synopsys.integration.alert.common.enumeration.DigestType;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.RestApiType;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
@@ -81,7 +81,7 @@ public abstract class DescriptorTestConfigTest<R extends CommonDistributionConfi
 
     @Test
     public void testCreateChannelEvent() {
-        final Collection<ProjectData> projectData = Arrays.asList(new ProjectData(DigestType.DAILY, "Test project", "1", Arrays.asList(), new HashMap<>()));
+        final Collection<ProjectData> projectData = Arrays.asList(new ProjectData(FrequencyType.DAILY, "Test project", "1", Arrays.asList(), new HashMap<>()));
         final DigestModel digestModel = new DigestModel(projectData);
         final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
         final ChannelEvent channelEvent = channelManager.createChannelEvent(1L, getDescriptor().getDestinationName(), notificationContent);
