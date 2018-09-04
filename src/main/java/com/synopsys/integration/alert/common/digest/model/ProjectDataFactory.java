@@ -34,11 +34,11 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.enumeration.DigestType;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.VulnerabilityOperation;
+import com.synopsys.integration.alert.common.model.NotificationModel;
 import com.synopsys.integration.alert.database.entity.NotificationCategoryEnum;
 import com.synopsys.integration.alert.database.entity.VulnerabilityEntity;
-import com.synopsys.integration.alert.common.model.NotificationModel;
 
 @Component
 public class ProjectDataFactory {
@@ -50,10 +50,10 @@ public class ProjectDataFactory {
     public final static String VULNERABILITY_DELETED_ID_SET = "vulnerabilityDeletedIdSet";
 
     public Collection<ProjectData> createProjectDataCollection(final Collection<NotificationModel> notifications) {
-        return createProjectDataCollection(notifications, DigestType.REAL_TIME);
+        return createProjectDataCollection(notifications, FrequencyType.REAL_TIME);
     }
 
-    public Collection<ProjectData> createProjectDataCollection(final Collection<NotificationModel> notifications, final DigestType digestType) {
+    public Collection<ProjectData> createProjectDataCollection(final Collection<NotificationModel> notifications, final FrequencyType frequencyType) {
         final Map<String, ProjectDataBuilder> projectDataMap = new LinkedHashMap<>();
         for (final NotificationModel entity : notifications) {
             final String projectKey = entity.getProjectName() + entity.getProjectVersion();
@@ -62,7 +62,7 @@ public class ProjectDataFactory {
             if (projectDataMap.containsKey(projectKey)) {
                 projectDataBuilder = projectDataMap.get(projectKey);
             } else {
-                projectDataBuilder = getProjectDataBuilder(entity, digestType);
+                projectDataBuilder = getProjectDataBuilder(entity, frequencyType);
                 projectDataMap.put(projectKey, projectDataBuilder);
             }
             projectDataBuilder.addNotificationId(entity.getNotificationEntity().getId());
@@ -73,11 +73,11 @@ public class ProjectDataFactory {
     }
 
     public ProjectData createProjectData(final NotificationModel notification) {
-        return createProjectData(notification, DigestType.REAL_TIME);
+        return createProjectData(notification, FrequencyType.REAL_TIME);
     }
 
-    public ProjectData createProjectData(final NotificationModel notification, final DigestType digestType) {
-        final ProjectDataBuilder projectDataBuilder = getProjectDataBuilder(notification, digestType);
+    public ProjectData createProjectData(final NotificationModel notification, final FrequencyType frequencyType) {
+        final ProjectDataBuilder projectDataBuilder = getProjectDataBuilder(notification, frequencyType);
         projectDataBuilder.addNotificationId(notification.getNotificationEntity().getId());
         final CategoryDataBuilder categoryData = getCategoryDataBuilder(notification, projectDataBuilder.getCategoryBuilderMap());
         categoryData.setCategoryKey(notification.getNotificationType().name());
@@ -86,10 +86,10 @@ public class ProjectDataFactory {
     }
 
     // get category map from the project or create the project data if it doesn't exist
-    private ProjectDataBuilder getProjectDataBuilder(final NotificationModel notification, final DigestType digestType) {
+    private ProjectDataBuilder getProjectDataBuilder(final NotificationModel notification, final FrequencyType frequencyType) {
         final ProjectDataBuilder projectBuilder;
         projectBuilder = new ProjectDataBuilder();
-        projectBuilder.setDigestType(digestType);
+        projectBuilder.setFrequencyType(frequencyType);
         projectBuilder.setProjectName(notification.getProjectName());
         projectBuilder.setProjectVersion(notification.getProjectVersion());
         return projectBuilder;

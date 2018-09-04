@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.channel.event.NotificationToChannelEventConverter;
-import com.synopsys.integration.alert.common.enumeration.DigestType;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.workflow.filter.NotificationFilter;
 
@@ -46,8 +46,8 @@ public class NotificationProcessor {
         this.notificationToEventConverter = notificationToEventConverter;
     }
 
-    public List<ChannelEvent> processNotifications(final DigestType digestType, final List<NotificationContent> notificationList) {
-        final Collection<NotificationContent> filteredNotifications = notificationFilter.extractApplicableNotifications(digestType, notificationList);
+    public List<ChannelEvent> processNotifications(final FrequencyType frequencyType, final List<NotificationContent> notificationList) {
+        final Collection<NotificationContent> filteredNotifications = notificationFilter.extractApplicableNotifications(frequencyType, notificationList);
         final List<ChannelEvent> notificationEvents = notificationToEventConverter.convertToEvents(filteredNotifications);
         return notificationEvents;
     }

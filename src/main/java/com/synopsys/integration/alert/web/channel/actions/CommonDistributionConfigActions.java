@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.common.enumeration.DigestType;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.synopsys.integration.alert.web.actions.ConfiguredProjectsActions;
@@ -101,9 +101,10 @@ public class CommonDistributionConfigActions {
 
     public CommonDistributionConfigEntity createCommonEntity(final CommonDistributionConfig commonConfig) {
         final Long distributionConfigId = contentConverter.getLongValue(commonConfig.getDistributionConfigId());
-        final DigestType digestType = Enum.valueOf(DigestType.class, commonConfig.getFrequency());
+        final FrequencyType frequencyType = Enum.valueOf(FrequencyType.class, commonConfig.getFrequency());
         final Boolean filterByProject = contentConverter.getBooleanValue(commonConfig.getFilterByProject());
-        final CommonDistributionConfigEntity commonEntity = new CommonDistributionConfigEntity(distributionConfigId, commonConfig.getDistributionType(), commonConfig.getName(), commonConfig.getProviderName(), digestType, filterByProject);
+        final CommonDistributionConfigEntity commonEntity = new CommonDistributionConfigEntity(distributionConfigId, commonConfig.getDistributionType(), commonConfig.getName(), commonConfig.getProviderName(), frequencyType,
+        filterByProject);
         final Long longId = contentConverter.getLongValue(commonConfig.getId());
         commonEntity.setId(longId);
         return commonEntity;
