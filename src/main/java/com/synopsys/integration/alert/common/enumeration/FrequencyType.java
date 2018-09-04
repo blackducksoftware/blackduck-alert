@@ -23,13 +23,13 @@
  */
 package com.synopsys.integration.alert.common.enumeration;
 
-public enum DigestType {
-    DAILY("Daily Digest"),
-    REAL_TIME("Real Time Digest");
+public enum FrequencyType {
+    DAILY("Daily"),
+    REAL_TIME("Real Time");
 
     private final String displayName;
 
-    private DigestType(final String displayName) {
+    FrequencyType(final String displayName) {
         this.displayName = displayName;
     }
 
