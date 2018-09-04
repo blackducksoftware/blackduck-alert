@@ -23,11 +23,8 @@
  */
 package com.synopsys.integration.alert.database.provider.blackduck;
 
-import javax.transaction.Transactional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
-@Transactional
 public interface GlobalBlackDuckRepository extends JpaRepository<GlobalBlackDuckConfigEntity, Long> {
 
 }
