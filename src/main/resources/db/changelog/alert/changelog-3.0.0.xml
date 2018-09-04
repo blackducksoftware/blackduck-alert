@@ -71,4 +71,14 @@
             <column name="HREF" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
+    <changeSet author="jrichard" id="1533054185-11">
+        <createTable tableName="BLACKDUCK_PROJECT" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="BLACKDUCK_PROJECT_KEY"/>
+            </column>
+            <column name="NAME" type="VARCHAR(255)"/>
+            <column name="DESCRIPTION" type="VARCHAR(255)"/>
+            <column name="HREF" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>

@@ -38,6 +38,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckGroupEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckGroupRepositoryAccessor;
+import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserGroupRelationRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.tasks.model.GroupData;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
@@ -53,12 +54,15 @@ public class GroupSyncTask extends SyncTask<GroupData> {
     private final Logger logger = LoggerFactory.getLogger(GroupSyncTask.class);
     private final BlackDuckProperties blackDuckProperties;
     private final BlackDuckGroupRepositoryAccessor blackDuckGroupRepositoryAccessor;
+    private final UserGroupRelationRepositoryAccessor userGroupRelationRepositoryAccessor;
 
     @Autowired
-    public GroupSyncTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final BlackDuckGroupRepositoryAccessor blackDuckGroupRepositoryAccessor) {
+    public GroupSyncTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final BlackDuckGroupRepositoryAccessor blackDuckGroupRepositoryAccessor,
+        final UserGroupRelationRepositoryAccessor userGroupRelationRepositoryAccessor) {
         super(taskScheduler, "blackduck-sync-group-task");
         this.blackDuckProperties = blackDuckProperties;
         this.blackDuckGroupRepositoryAccessor = blackDuckGroupRepositoryAccessor;
+        this.userGroupRelationRepositoryAccessor = userGroupRelationRepositoryAccessor;
     }
 
     @Override
@@ -69,8 +73,8 @@ public class GroupSyncTask extends SyncTask<GroupData> {
                 if (restConnection != null) {
                     final HubServicesFactory hubServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(restConnection, new Slf4jIntLogger(logger));
                     final HubService hubService = hubServicesFactory.createHubService();
-                    final List<UserGroupView> group = hubService.getAllResponses(ApiDiscovery.USERGROUPS_LINK_RESPONSE);
-                    final Set<GroupData> groups = group.stream().map(groupView -> new GroupData(groupView.name, groupView.active, groupView._meta.href)).collect(Collectors.toSet());
+                    final List<UserGroupView> groupResponses = hubService.getAllResponses(ApiDiscovery.USERGROUPS_LINK_RESPONSE);
+                    final Set<GroupData> groups = groupResponses.stream().map(groupView -> new GroupData(groupView.name, groupView.active, groupView._meta.href)).collect(Collectors.toSet());
                     return groups;
                 }
             }
@@ -95,22 +99,23 @@ public class GroupSyncTask extends SyncTask<GroupData> {
     @Override
     public List<Long> getEntityIdsToRemove(final List<? extends DatabaseEntity> storedEntities, final Set<GroupData> dataToRemove) {
         final List<BlackDuckGroupEntity> blackDuckGroupEntities = (List<BlackDuckGroupEntity>) storedEntities;
-        final List<Long> blackDuckUserIdsToRemove = blackDuckGroupEntities.stream()
-                                                        .filter(blackDuckGroupEntity -> {
-                                                                Optional<GroupData> found = dataToRemove.stream()
-                                                                                                .filter(data -> data.getName().equals(blackDuckGroupEntity.getName()))
-                                                                                                .findFirst();
-                                                                return found.isPresent();
-                                                            }
-                                                        )
-                                                        .map(blackDuckGroupEntity -> blackDuckGroupEntity.getId())
-                                                        .collect(Collectors.toList());
-        return blackDuckUserIdsToRemove;
+        final List<Long> blackDuckGroupIdsToRemove = blackDuckGroupEntities.stream()
+                                                         .filter(blackDuckGroupEntity -> {
+                                                                 Optional<GroupData> found = dataToRemove.stream()
+                                                                                                 .filter(data -> data.getName().equals(blackDuckGroupEntity.getName()))
+                                                                                                 .findFirst();
+                                                                 return found.isPresent();
+                                                             }
+                                                         )
+                                                         .map(blackDuckGroupEntity -> blackDuckGroupEntity.getId())
+                                                         .collect(Collectors.toList());
+        return blackDuckGroupIdsToRemove;
     }
 
     @Override
     public void deleteEntity(final Long id) {
         blackDuckGroupRepositoryAccessor.deleteEntity(id);
+        userGroupRelationRepositoryAccessor.deleteRelationByGroupId(id);
     }
 
     @Override
