@@ -22,7 +22,7 @@ import com.synopsys.integration.alert.Application;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDistributionTypeConverter;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.config.CommonTypeConverter;
-import com.synopsys.integration.alert.common.enumeration.DigestType;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
 import com.synopsys.integration.alert.database.channel.slack.SlackDistributionRepository;
@@ -66,7 +66,7 @@ public class SlackDistributionTypeConverterTest {
         final SlackDistributionConfigEntity slackDistributionConfigEntity = new SlackDistributionConfigEntity("webhook url", "ducky", "#myCoolRoom");
         final SlackDistributionConfigEntity savedSlackEntity = slackDistributionRepository.save(slackDistributionConfigEntity);
 
-        final CommonDistributionConfigEntity commonDistributionConfigEntity = new CommonDistributionConfigEntity(savedSlackEntity.getId(), SlackChannel.COMPONENT_NAME, "nice name", "some_provider", DigestType.REAL_TIME,
+        final CommonDistributionConfigEntity commonDistributionConfigEntity = new CommonDistributionConfigEntity(savedSlackEntity.getId(), SlackChannel.COMPONENT_NAME, "nice name", "some_provider", FrequencyType.REAL_TIME,
             Boolean.FALSE);
         final CommonDistributionConfigEntity savedCommonEntity = commonDistributionRepository.save(commonDistributionConfigEntity);
 

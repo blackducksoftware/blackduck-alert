@@ -28,7 +28,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.ChannelTemplateManager;
-import com.synopsys.integration.alert.common.enumeration.DigestType;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.workflow.NotificationManager;
 import com.synopsys.integration.alert.workflow.processor.NotificationProcessor;
 
@@ -39,12 +39,12 @@ public class OnDemandTask extends ProcessingTask {
 
     @Autowired
     public OnDemandTask(final TaskScheduler taskScheduler, final NotificationManager notificationManager,
-        final NotificationProcessor notificationProcessor, final ChannelTemplateManager channelTemplateManager) {
+    final NotificationProcessor notificationProcessor, final ChannelTemplateManager channelTemplateManager) {
         super(taskScheduler, TASK_NAME, notificationManager, notificationProcessor, channelTemplateManager);
     }
 
     @Override
-    public DigestType getDigestType() {
-        return DigestType.REAL_TIME;
+    public FrequencyType getDigestType() {
+        return FrequencyType.REAL_TIME;
     }
 }

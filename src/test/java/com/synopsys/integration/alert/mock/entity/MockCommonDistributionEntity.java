@@ -2,23 +2,23 @@ package com.synopsys.integration.alert.mock.entity;
 
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
-import com.synopsys.integration.alert.common.enumeration.DigestType;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 
 public class MockCommonDistributionEntity extends MockEntityUtil<CommonDistributionConfigEntity> {
     private Long distributionConfigId;
     private String distributionType;
     private String name;
-    private DigestType frequency;
+    private FrequencyType frequency;
     private Boolean filterByProject;
     private Long id;
     private String providerName;
 
     public MockCommonDistributionEntity() {
-        this(1L, HipChatChannel.COMPONENT_NAME.toString(), "Name", "provider_blackduck", DigestType.REAL_TIME, true, 2L);
+        this(1L, HipChatChannel.COMPONENT_NAME.toString(), "Name", "provider_blackduck", FrequencyType.REAL_TIME, true, 2L);
     }
 
-    private MockCommonDistributionEntity(final Long distributionConfigId, final String distributionType, final String name, final String providerName, final DigestType frequency, final Boolean filterByProject, final Long id) {
+    private MockCommonDistributionEntity(final Long distributionConfigId, final String distributionType, final String name, final String providerName, final FrequencyType frequency, final Boolean filterByProject, final Long id) {
         super();
         this.distributionConfigId = distributionConfigId;
         this.distributionType = distributionType;
@@ -61,11 +61,11 @@ public class MockCommonDistributionEntity extends MockEntityUtil<CommonDistribut
         this.providerName = providerName;
     }
 
-    public DigestType getFrequency() {
+    public FrequencyType getFrequency() {
         return frequency;
     }
 
-    public void setFrequency(final DigestType frequency) {
+    public void setFrequency(final FrequencyType frequency) {
         this.frequency = frequency;
     }
 

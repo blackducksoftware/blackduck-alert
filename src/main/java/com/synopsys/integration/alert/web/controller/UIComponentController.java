@@ -46,7 +46,7 @@ import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
-import com.synopsys.integration.alert.common.enumeration.DigestType;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.RestApiType;
 
 @RestController
@@ -103,7 +103,7 @@ public class UIComponentController extends BaseController {
             final UIComponent providerUIComponent = providerUIConfig.generateUIComponent();
             final List<ConfigField> combinedFields = new ArrayList<>();
             final ConfigField name = new TextInputConfigField("name", "Name", true, false);
-            final ConfigField frequency = new SelectConfigField("frequency", "Digest type", true, false, Arrays.stream(DigestType.values()).map(type -> type.getDisplayName()).collect(Collectors.toList()));
+            final ConfigField frequency = new SelectConfigField("frequency", "Frequency", true, false, Arrays.stream(FrequencyType.values()).map(type -> type.getDisplayName()).collect(Collectors.toList()));
             combinedFields.add(name);
             combinedFields.add(frequency);
             combinedFields.addAll(channelUIComponent.getFields());

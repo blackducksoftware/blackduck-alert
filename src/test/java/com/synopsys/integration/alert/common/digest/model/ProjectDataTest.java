@@ -21,7 +21,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import com.synopsys.integration.alert.common.enumeration.DigestType;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.database.entity.NotificationCategoryEnum;
 
 public class ProjectDataTest {
@@ -31,12 +31,12 @@ public class ProjectDataTest {
         final ProjectData projectData = new ProjectData(null, null, null, null, null);
 
         assertNull(projectData.getCategoryMap());
-        assertNull(projectData.getDigestType());
+        assertNull(projectData.getFrequencyType());
         assertNull(projectData.getProjectKey());
         assertNull(projectData.getProjectName());
         assertNull(projectData.getProjectVersion());
 
-        assertEquals("{\"digestType\":null,\"projectKey\":null,\"projectName\":null,\"projectVersion\":null,\"notificationIds\":null,\"categoryMap\":null}", projectData.toString());
+        assertEquals("{\"frequencyType\":null,\"projectKey\":null,\"projectName\":null,\"projectVersion\":null,\"notificationIds\":null,\"categoryMap\":null}", projectData.toString());
     }
 
     @Test
@@ -63,16 +63,16 @@ public class ProjectDataTest {
         final List<Long> notificationIds = new ArrayList<>();
         notificationIds.add(1L);
 
-        final ProjectData projectData = new ProjectData(DigestType.REAL_TIME, "Project", "Version", notificationIds, categoryMap);
+        final ProjectData projectData = new ProjectData(FrequencyType.REAL_TIME, "Project", "Version", notificationIds, categoryMap);
 
         assertEquals(categoryMap, projectData.getCategoryMap());
-        assertEquals(DigestType.REAL_TIME, projectData.getDigestType());
+        assertEquals(FrequencyType.REAL_TIME, projectData.getFrequencyType());
         assertEquals("ProjectVersion", projectData.getProjectKey());
         assertEquals("Project", projectData.getProjectName());
         assertEquals("Version", projectData.getProjectVersion());
 
         assertEquals(
-                "{\"digestType\":\"REAL_TIME\",\"projectKey\":\"ProjectVersion\",\"projectName\":\"Project\",\"projectVersion\":\"Version\",\"notificationIds\":[1],\"categoryMap\":{HIGH_VULNERABILITY={\"categoryKey\":null,\"items\":null,\"itemCount\":0}}}",
-                projectData.toString());
+        "{\"frequencyType\":\"REAL_TIME\",\"projectKey\":\"ProjectVersion\",\"projectName\":\"Project\",\"projectVersion\":\"Version\",\"notificationIds\":[1],\"categoryMap\":{HIGH_VULNERABILITY={\"categoryKey\":null,\"items\":null,\"itemCount\":0}}}",
+        projectData.toString());
     }
 }

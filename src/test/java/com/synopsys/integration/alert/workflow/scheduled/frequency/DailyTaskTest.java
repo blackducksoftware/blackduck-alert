@@ -4,14 +4,14 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.synopsys.integration.alert.common.enumeration.DigestType;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 
 public class DailyTaskTest {
 
     @Test
     public void testDigestType() {
         final DailyTask task = new DailyTask(null, null, null, null);
-        assertEquals(DigestType.DAILY, task.getDigestType());
+        assertEquals(FrequencyType.DAILY, task.getDigestType());
     }
 
     @Test

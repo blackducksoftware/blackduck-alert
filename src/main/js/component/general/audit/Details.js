@@ -54,7 +54,7 @@ class Details extends Component {
         if (this.state.values.errorStackTrace) {
             errorStackTrace = <TextArea inputClass="stackTraceContainer" label="Stack Trace" readOnly name="errorStackTrace" value={this.state.values.errorStackTrace}/>;
         }
-
+        const jsonPrettyPrintContent = JSON.stringify(JSON.parse(this.state.values.content), null, 2);
         return (
             <div className="expandableContainer">
                 <div className="container-fluid">
@@ -65,7 +65,7 @@ class Details extends Component {
                     </div>
                 </div>
                 <div className="tableContainer">
-                    <TextArea inputClass="stackTraceContainer" label="Content" readOnly name="notificationContent" value={this.state.values.content}/>
+                    <TextArea inputClass="stackTraceContainer" label="Content" readOnly name="notificationContent" value={jsonPrettyPrintContent}/>
                 </div>
                 {errorMessage}
                 {errorStackTrace}
