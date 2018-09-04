@@ -74,14 +74,18 @@ public abstract class SyncTask<T> extends ScheduledTask {
         final List<? extends DatabaseEntity> storedEntities = getStoredEntities();
 
         final Set<T> storedDataSet = getStoredData(storedEntities);
-        currentDataSet.stream().forEach(currentData -> {
-            if (!storedDataSet.contains(currentData)) {
-                dataToAdd.add(currentData);
-            }
-        });
         storedDataSet.stream().forEach(storedData -> {
+            // If the storedData no longer exists in the current then we need to remove the entry
+            // If any of the fields have changed in the currentData, then the storedData will not be in the currentData so we will need to remove the old entry
             if (!currentDataSet.contains(storedData)) {
                 dataToRemove.add(storedData);
+            }
+        });
+        currentDataSet.stream().forEach(currentData -> {
+            // If the currentData is not found in the stored data then we will need to add a new entry
+            // If any of the fields have changed in the currentData, then it wont be in the stored data so we will need to add a new entry
+            if (!storedDataSet.contains(currentData)) {
+                dataToAdd.add(currentData);
             }
         });
         logger.info("Adding {}", dataToAdd.size());

@@ -39,6 +39,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserRepositoryAccessor;
+import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserGroupRelationRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;
@@ -53,12 +54,15 @@ public class EmailSyncTask extends SyncTask<String> {
     private final Logger logger = LoggerFactory.getLogger(EmailSyncTask.class);
     private final BlackDuckProperties blackDuckProperties;
     private final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor;
+    private final UserGroupRelationRepositoryAccessor userGroupRelationRepositoryAccessor;
 
     @Autowired
-    public EmailSyncTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor) {
+    public EmailSyncTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor,
+        final UserGroupRelationRepositoryAccessor userGroupRelationRepositoryAccessor) {
         super(taskScheduler, "blackduck-sync-email-task");
         this.blackDuckProperties = blackDuckProperties;
         this.blackDuckUserRepositoryAccessor = blackDuckUserRepositoryAccessor;
+        this.userGroupRelationRepositoryAccessor = userGroupRelationRepositoryAccessor;
     }
 
     @Override
@@ -69,8 +73,8 @@ public class EmailSyncTask extends SyncTask<String> {
                 if (restConnection != null) {
                     final HubServicesFactory hubServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(restConnection, new Slf4jIntLogger(logger));
                     final HubService hubService = hubServicesFactory.createHubService();
-                    final List<UserView> users = hubService.getAllResponses(ApiDiscovery.USERS_LINK_RESPONSE);
-                    final Set<String> emailAddresses = users.stream().filter(userView -> StringUtils.isNotBlank(userView.email)).map(userView -> userView.email).collect(Collectors.toSet());
+                    final List<UserView> userResponses = hubService.getAllResponses(ApiDiscovery.USERS_LINK_RESPONSE);
+                    final Set<String> emailAddresses = userResponses.stream().filter(userView -> StringUtils.isNotBlank(userView.email)).map(userView -> userView.email).collect(Collectors.toSet());
                     return emailAddresses;
                 }
             }
@@ -104,6 +108,7 @@ public class EmailSyncTask extends SyncTask<String> {
     @Override
     public void deleteEntity(final Long id) {
         blackDuckUserRepositoryAccessor.deleteEntity(id);
+        userGroupRelationRepositoryAccessor.deleteRelationByUserId(id);
     }
 
     @Override
