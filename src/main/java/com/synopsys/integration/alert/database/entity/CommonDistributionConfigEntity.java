@@ -27,7 +27,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
-import com.synopsys.integration.alert.common.enumeration.DigestType;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 
 @Entity
 @Table(schema = "alert", name = "common_distribution_config")
@@ -45,7 +45,7 @@ public class CommonDistributionConfigEntity extends DatabaseEntity {
     private String providerName;
 
     @Column(name = "frequency")
-    private DigestType frequency;
+    private FrequencyType frequency;
 
     @Column(name = "filter_by_project")
     private Boolean filterByProject;
@@ -54,7 +54,7 @@ public class CommonDistributionConfigEntity extends DatabaseEntity {
         // JPA requires default constructor definitions
     }
 
-    public CommonDistributionConfigEntity(final Long distributionConfigId, final String distributionType, final String name, final String providerName, final DigestType frequency, final Boolean filterByProject) {
+    public CommonDistributionConfigEntity(final Long distributionConfigId, final String distributionType, final String name, final String providerName, final FrequencyType frequency, final Boolean filterByProject) {
         this.distributionConfigId = distributionConfigId;
         this.distributionType = distributionType;
         this.name = name;
@@ -83,7 +83,7 @@ public class CommonDistributionConfigEntity extends DatabaseEntity {
         return providerName;
     }
 
-    public DigestType getFrequency() {
+    public FrequencyType getFrequency() {
         return frequency;
     }
 

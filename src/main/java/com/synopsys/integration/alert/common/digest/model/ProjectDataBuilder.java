@@ -28,11 +28,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import com.synopsys.integration.alert.common.enumeration.DigestType;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.database.entity.NotificationCategoryEnum;
 
 public class ProjectDataBuilder {
-    private DigestType digestType;
+    private FrequencyType frequencyType;
     private String projectName;
     private String projectVersion;
 
@@ -61,12 +61,12 @@ public class ProjectDataBuilder {
         return categoryBuilderMap;
     }
 
-    public DigestType getDigestType() {
-        return digestType;
+    public FrequencyType getFrequencyType() {
+        return frequencyType;
     }
 
-    public void setDigestType(final DigestType digestType) {
-        this.digestType = digestType;
+    public void setFrequencyType(final FrequencyType frequencyType) {
+        this.frequencyType = frequencyType;
     }
 
     public String getProjectName() {
@@ -90,6 +90,6 @@ public class ProjectDataBuilder {
         for (final Map.Entry<NotificationCategoryEnum, CategoryDataBuilder> entry : categoryBuilderMap.entrySet()) {
             categoryMap.put(entry.getKey(), entry.getValue().build());
         }
-        return new ProjectData(digestType, projectName, projectVersion, notificationIds, categoryMap);
+        return new ProjectData(frequencyType, projectName, projectVersion, notificationIds, categoryMap);
     }
 }
