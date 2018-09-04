@@ -19,7 +19,7 @@ import java.util.Date;
 
 import org.junit.Test;
 
-import com.synopsys.integration.alert.common.enumeration.DigestType;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.VulnerabilityOperation;
 import com.synopsys.integration.alert.common.model.NotificationModel;
 import com.synopsys.integration.alert.database.entity.NotificationCategoryEnum;
@@ -35,7 +35,7 @@ public class ProjectDataFactoryTest {
         final ProjectDataFactory projectDataFactory = new ProjectDataFactory();
         final Collection<ProjectData> projectDataCollection = projectDataFactory.createProjectDataCollection(notifications);
 
-        assertFieldsForMultiple(notifications, projectDataCollection, DigestType.REAL_TIME);
+        assertFieldsForMultiple(notifications, projectDataCollection, FrequencyType.REAL_TIME);
     }
 
     @Test
@@ -43,10 +43,10 @@ public class ProjectDataFactoryTest {
         final Collection<NotificationModel> notifications = createNotificationCollection();
 
         final ProjectDataFactory projectDataFactory = new ProjectDataFactory();
-        final DigestType digestType = DigestType.DAILY;
-        final Collection<ProjectData> projectDataCollection = projectDataFactory.createProjectDataCollection(notifications, digestType);
+        final FrequencyType frequencyType = FrequencyType.DAILY;
+        final Collection<ProjectData> projectDataCollection = projectDataFactory.createProjectDataCollection(notifications, frequencyType);
 
-        assertFieldsForMultiple(notifications, projectDataCollection, digestType);
+        assertFieldsForMultiple(notifications, projectDataCollection, frequencyType);
     }
 
     @Test
@@ -57,7 +57,7 @@ public class ProjectDataFactoryTest {
         final ProjectData projectData = projectDataFactory.createProjectData(notification);
 
         assertFields(notification, projectData);
-        assertEquals(DigestType.REAL_TIME, projectData.getDigestType());
+        assertEquals(FrequencyType.REAL_TIME, projectData.getFrequencyType());
     }
 
     @Test
@@ -65,23 +65,23 @@ public class ProjectDataFactoryTest {
         final NotificationModel notification = createPolicyNotification();
 
         final ProjectDataFactory projectDataFactory = new ProjectDataFactory();
-        DigestType digestType = DigestType.DAILY;
-        ProjectData projectData = projectDataFactory.createProjectData(notification, digestType);
+        FrequencyType frequencyType = FrequencyType.DAILY;
+        ProjectData projectData = projectDataFactory.createProjectData(notification, frequencyType);
 
         assertFields(notification, projectData);
-        assertEquals(digestType, projectData.getDigestType());
+        assertEquals(frequencyType, projectData.getFrequencyType());
 
-        digestType = DigestType.REAL_TIME;
-        projectData = projectDataFactory.createProjectData(notification, digestType);
+        frequencyType = FrequencyType.REAL_TIME;
+        projectData = projectDataFactory.createProjectData(notification, frequencyType);
         assertFields(notification, projectData);
-        assertEquals(digestType, projectData.getDigestType());
+        assertEquals(frequencyType, projectData.getFrequencyType());
     }
 
-    private void assertFieldsForMultiple(final Collection<NotificationModel> notifications, final Collection<ProjectData> projectData, final DigestType digestType) {
+    private void assertFieldsForMultiple(final Collection<NotificationModel> notifications, final Collection<ProjectData> projectData, final FrequencyType frequencyType) {
         for (final NotificationModel notification : notifications) {
             final ProjectData projData = find(projectData, notification.getProjectName(), notification.getProjectVersion());
             assertFields(notification, projData);
-            assertEquals(digestType, projData.getDigestType());
+            assertEquals(frequencyType, projData.getFrequencyType());
         }
     }
 
@@ -111,7 +111,7 @@ public class ProjectDataFactoryTest {
         final String differentProject = "Different Project";
         final String differentVersion = "Different Project Version";
         return Arrays.asList(createVulnerabilityNotification(), createPolicyNotification(), createVulnerabilityNotification(differentProject, differentVersion), createPolicyNotification(differentProject, differentVersion),
-                createPolicyNotification("One More", "1.0.0"));
+        createPolicyNotification("One More", "1.0.0"));
     }
 
     private NotificationModel createVulnerabilityNotification() {
