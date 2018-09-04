@@ -103,7 +103,7 @@ public class UIComponentController extends BaseController {
             final UIComponent providerUIComponent = providerUIConfig.generateUIComponent();
             final List<ConfigField> combinedFields = new ArrayList<>();
             final ConfigField name = new TextInputConfigField("name", "Name", true, false);
-            final ConfigField frequency = new SelectConfigField("frequency", "Digest type", true, false, Arrays.stream(FrequencyType.values()).map(type -> type.getDisplayName()).collect(Collectors.toList()));
+            final ConfigField frequency = new SelectConfigField("frequency", "Frequency", true, false, Arrays.stream(FrequencyType.values()).map(type -> type.getDisplayName()).collect(Collectors.toList()));
             combinedFields.add(name);
             combinedFields.add(frequency);
             combinedFields.addAll(channelUIComponent.getFields());
