@@ -53,9 +53,9 @@
         <addPrimaryKey columnNames="COMMON_DISTRIBUTION_CONFIG_ID, NOTIFICATION_TYPE" constraintName="CONSTRAINT_NOTIFICATION_TYPE" tableName="DISTRIBUTION_NOTIFICATION_TYPES" schemaName="ALERT"/>
     </changeSet>
     <changeSet author="jrichard" id="1533054185-9">
-        <createTable tableName="BLACKDUCK_EMAIL" schemaName="ALERT">
+        <createTable tableName="BLACKDUCK_USER" schemaName="ALERT">
             <column autoIncrement="true" name="ID" type="BIGINT(19)">
-                <constraints primaryKey="true" primaryKeyName="BLACKDUCK_EMAIL_KEY"/>
+                <constraints primaryKey="true" primaryKeyName="BLACKDUCK_USER_KEY"/>
             </column>
             <column name="EMAIL_ADDRESS" type="VARCHAR(255)"/>
             <column name="OPT_OUT" type="BOOLEAN"/>

@@ -30,16 +30,15 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.transaction.Transactional;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserRepository;
+import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.workflow.scheduled.ScheduledTask;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
@@ -51,29 +50,26 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
-@Transactional
 public class EmailSyncTask extends ScheduledTask {
     private final Logger logger = LoggerFactory.getLogger(EmailSyncTask.class);
     private final BlackDuckProperties blackDuckProperties;
-    private final BlackDuckUserRepository blackDuckUserRepository;
+    private final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor;
 
-    public EmailSyncTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final BlackDuckUserRepository blackDuckUserRepository) {
+    @Autowired
+    public EmailSyncTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor) {
         super(taskScheduler, "blackduck-sync-email-task");
         this.blackDuckProperties = blackDuckProperties;
-        this.blackDuckUserRepository = blackDuckUserRepository;
+        this.blackDuckUserRepositoryAccessor = blackDuckUserRepositoryAccessor;
     }
 
     @Override
     public void run() {
         logger.info("### Starting email address sync operation...");
-        Set<String> currentEmailAddresses = null;
         try {
-            currentEmailAddresses = getCurrentEmailAddresses();
+            final Set<String> currentEmailAddresses = getCurrentEmailAddresses();
+            syncDBWithCurrentEmailAddresses(currentEmailAddresses);
         } catch (final IOException | IntegrationException e) {
             logger.error("Could not retrieve the current email addresses from the BlackDuck server : " + e.getMessage(), e);
-        }
-        if (null != currentEmailAddresses && !currentEmailAddresses.isEmpty()) {
-            syncDBWithCurrentEmailAddresses(currentEmailAddresses);
         }
         logger.info("### Finished email address sync operation...");
     }
@@ -95,10 +91,9 @@ public class EmailSyncTask extends ScheduledTask {
     }
 
     public void syncDBWithCurrentEmailAddresses(final Set<String> currentEmailAddresses) {
-        // TODO: if a User has opted out (when we have that feature) and they are removed from the Hub, do we removed them from our DB? what if they get added back in the Hub?
         final Set<String> emailsToAdd = new HashSet<>();
         final Set<String> emailsToRemove = new HashSet<>();
-        final List<BlackDuckUserEntity> blackDuckUserEntities = blackDuckUserRepository.findAll();
+        final List<BlackDuckUserEntity> blackDuckUserEntities = (List<BlackDuckUserEntity>) blackDuckUserRepositoryAccessor.readEntities();
 
         final Set<String> storedEmails = blackDuckUserEntities.stream().map(blackDuckUserEntity -> blackDuckUserEntity.getEmailAddress()).collect(Collectors.toSet());
         currentEmailAddresses.stream().forEach(currentEmailAddress -> {
@@ -111,16 +106,16 @@ public class EmailSyncTask extends ScheduledTask {
                 emailsToRemove.add(storedEmailAddress);
             }
         });
+        logger.info("Adding {} users", emailsToAdd.size());
+        logger.info("Removing {} users", emailsToRemove.size());
 
         final List<BlackDuckUserEntity> blackDuckUserEntitiesToRemove = blackDuckUserEntities.stream()
                                                                             .filter(blackDuckUserEntity -> emailsToRemove.contains(blackDuckUserEntity.getEmailAddress()))
                                                                             .collect(Collectors.toList());
-        blackDuckUserEntitiesToRemove.stream().forEach(blackDuckUserEntity -> blackDuckUserRepository.delete(blackDuckUserEntity));
+        blackDuckUserEntitiesToRemove.stream().forEach(blackDuckUserEntity -> blackDuckUserRepositoryAccessor.deleteEntity(blackDuckUserEntity.getId()));
 
-        emailsToAdd.stream().forEach(emailToAdd -> {
-            // TODO why isnt this saving into the DB?
-            blackDuckUserRepository.save(new BlackDuckUserEntity(emailToAdd, false));
-        });
-
+        emailsToAdd.stream().forEach(emailToAdd ->
+                                         blackDuckUserRepositoryAccessor.saveEntity(new BlackDuckUserEntity(emailToAdd, false)));
+    
     }
 }

@@ -11,6 +11,7 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
+import com.synopsys.integration.alert.provider.blackduck.tasks.EmailSyncTask;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 public class BlackDuckDescriptorTest {
@@ -25,7 +26,8 @@ public class BlackDuckDescriptorTest {
     @Test
     public void testGetNotificationTypes() {
         final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
-        final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask);
+        final EmailSyncTask emailSyncTask = Mockito.mock(EmailSyncTask.class);
+        final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, emailSyncTask);
         final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, null, null, null, provider);
         final Set<String> expectedNotificationTypes = Arrays.stream(NotificationType.values()).map(NotificationType::name).collect(Collectors.toSet());
         final Set<String> providerNotificationTypes = descriptor.getProviderContentTypes().stream().map(contentType -> contentType.getNotificationType()).collect(Collectors.toSet());
