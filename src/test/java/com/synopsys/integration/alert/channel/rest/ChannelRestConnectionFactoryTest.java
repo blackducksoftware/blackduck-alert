@@ -1,6 +1,9 @@
-package com.synopsys.integration.alert.channel;
+package com.synopsys.integration.alert.channel.rest;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
@@ -10,7 +13,6 @@ import org.junit.Test;
 
 import com.synopsys.integration.alert.OutputLogger;
 import com.synopsys.integration.alert.TestAlertProperties;
-import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.exception.EncryptionException;
 import com.synopsys.integration.rest.connection.RestConnection;
 import com.synopsys.integration.rest.credentials.Credentials;

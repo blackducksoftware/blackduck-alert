@@ -7,29 +7,15 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.util.HashMap;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.synopsys.integration.alert.AlertConstants;
-import com.synopsys.integration.alert.OutputLogger;
 import com.synopsys.integration.alert.TestProperties;
 import com.synopsys.integration.alert.TestPropertyKey;
 
 import freemarker.template.TemplateException;
 
 public class ChannelFreemarkerTemplatingServiceTest {
-    private OutputLogger outputLogger;
-
-    @Before
-    public void init() throws IOException {
-        outputLogger = new OutputLogger();
-    }
-
-    @After
-    public void cleanup() throws IOException {
-        outputLogger.cleanup();
-    }
 
     @Test
     public void testDirectoryFileException() throws IOException {
