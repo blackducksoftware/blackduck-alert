@@ -25,6 +25,8 @@ package com.synopsys.integration.alert.common.event;
 
 import java.util.List;
 
+import com.synopsys.integration.alert.common.model.TopicContent;
+
 public class TopicEvent extends AlertEvent {
 
     private final List<TopicContent> topicList;

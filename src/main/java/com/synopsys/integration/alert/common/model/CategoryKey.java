@@ -21,28 +21,32 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.event;
+package com.synopsys.integration.alert.common.model;
+
+import java.util.Arrays;
 
 import com.synopsys.integration.util.Stringable;
 
-public class CategoryKey extends Stringable {
+public final class CategoryKey extends Stringable {
 
+    private final String type;
     private final String key;
 
-    private CategoryKey(final String key) {
+    private CategoryKey(final String type, final String key) {
+        this.type = type;
         this.key = key;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public String getKey() {
         return key;
     }
 
-    public static final CategoryKey fromName(final String name) {
-        return new CategoryKey(name);
+    public static final CategoryKey from(final String type, final String... keyComponentArray) {
+        Arrays.sort(keyComponentArray);
+        return new CategoryKey(type, String.join("_", keyComponentArray));
     }
-
-    public static final CategoryKey fromPair(final String name, final String value) {
-        return new CategoryKey(String.format("%s_%s", name, value));
-    }
-
 }
