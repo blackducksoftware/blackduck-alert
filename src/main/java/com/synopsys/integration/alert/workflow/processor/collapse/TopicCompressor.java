@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
@@ -45,8 +46,11 @@ public class TopicCompressor {
             topic.getCategoryItemList().forEach(item -> {
                 processOperation(categoryDataCache, item);
             });
-            final TopicContent collapsedContent = rebuildTopic(topic, categoryDataCache.values());
-            collapsedTopicList.add(collapsedContent);
+
+            final Optional<TopicContent> collapsedContent = rebuildTopic(topic, categoryDataCache.values());
+            if (collapsedContent.isPresent()) {
+                collapsedTopicList.add(collapsedContent.get());
+            }
         });
 
         return collapsedTopicList;
@@ -75,9 +79,13 @@ public class TopicCompressor {
         }
     }
 
-    private TopicContent rebuildTopic(final TopicContent currentContent, final Collection<CategoryItem> categoryItemCollection) {
-        final String url = currentContent.getUrl().orElse(null);
-        final LinkableItem subTopic = currentContent.getSubTopic().orElse(null);
-        return new TopicContent(currentContent.getName(), currentContent.getValue(), url, subTopic, new ArrayList<>(categoryItemCollection));
+    private Optional<TopicContent> rebuildTopic(final TopicContent currentContent, final Collection<CategoryItem> categoryItemCollection) {
+        if (categoryItemCollection.isEmpty()) {
+            return Optional.empty();
+        } else {
+            final String url = currentContent.getUrl().orElse(null);
+            final LinkableItem subTopic = currentContent.getSubTopic().orElse(null);
+            return Optional.of(new TopicContent(currentContent.getName(), currentContent.getValue(), url, subTopic, new ArrayList<>(categoryItemCollection)));
+        }
     }
 }
