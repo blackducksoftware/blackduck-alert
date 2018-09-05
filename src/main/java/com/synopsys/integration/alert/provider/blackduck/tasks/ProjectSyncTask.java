@@ -24,9 +24,12 @@
 package com.synopsys.integration.alert.provider.blackduck.tasks;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -39,44 +42,48 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
+import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserEntity;
+import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserRepositoryAccessor;
+import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelationRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.tasks.model.ProjectData;
+import com.synopsys.integration.blackduck.api.core.HubView;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
+import com.synopsys.integration.blackduck.api.generated.response.AssignedUserGroupView;
+import com.synopsys.integration.blackduck.api.generated.view.AssignedUserView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
-import com.synopsys.integration.blackduck.rest.BlackduckRestConnection;
+import com.synopsys.integration.blackduck.api.generated.view.UserGroupView;
+import com.synopsys.integration.blackduck.api.generated.view.UserView;
 import com.synopsys.integration.blackduck.service.HubService;
-import com.synopsys.integration.blackduck.service.HubServicesFactory;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
 public class ProjectSyncTask extends SyncTask<ProjectData> {
     private final Logger logger = LoggerFactory.getLogger(ProjectSyncTask.class);
-    private final BlackDuckProperties blackDuckProperties;
+    private final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor;
     private final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
+    private final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor;
 
     @Autowired
-    public ProjectSyncTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor) {
-        super(taskScheduler, "blackduck-sync-project-task");
-        this.blackDuckProperties = blackDuckProperties;
+    public ProjectSyncTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor,
+        final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor, final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor) {
+        super(taskScheduler, "blackduck-sync-project-task", blackDuckProperties);
+        this.blackDuckUserRepositoryAccessor = blackDuckUserRepositoryAccessor;
         this.blackDuckProjectRepositoryAccessor = blackDuckProjectRepositoryAccessor;
+        this.userProjectRelationRepositoryAccessor = userProjectRelationRepositoryAccessor;
     }
 
     @Override
-    public Set<ProjectData> getCurrentData() throws IOException, IntegrationException {
-        final Optional<BlackduckRestConnection> optionalConnection = blackDuckProperties.createRestConnectionAndLogErrors(logger);
-        if (optionalConnection.isPresent()) {
-            try (final BlackduckRestConnection restConnection = optionalConnection.get()) {
-                if (restConnection != null) {
-                    final HubServicesFactory hubServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(restConnection, new Slf4jIntLogger(logger));
-                    final HubService hubService = hubServicesFactory.createHubService();
-                    final List<ProjectView> projectResponses = hubService.getAllResponses(ApiDiscovery.PROJECTS_LINK_RESPONSE);
-                    final Set<ProjectData> projects = projectResponses.stream().map(projectView -> new ProjectData(projectView.name, StringUtils.trimToEmpty(projectView.description), projectView._meta.href)).collect(Collectors.toSet());
-                    return projects;
-                }
-            }
-        }
-        return null;
+    public List<ProjectView> getHubViews(final HubService hubService) throws IntegrationException {
+        return hubService.getAllResponses(ApiDiscovery.PROJECTS_LINK_RESPONSE);
+    }
+
+    @Override
+    public Map<ProjectData, ? extends HubView> getCurrentData(final List<? extends HubView> hubViews) {
+        final List<ProjectView> projectViews = (List<ProjectView>) hubViews;
+        final Map<ProjectData, ? extends HubView> projectMap = projectViews.stream().collect(
+            Collectors.toMap(projectView -> new ProjectData(projectView.name, StringUtils.trimToEmpty(projectView.description), projectView._meta.href), Function.identity()));
+        return projectMap;
     }
 
     @Override
@@ -94,24 +101,24 @@ public class ProjectSyncTask extends SyncTask<ProjectData> {
     }
 
     @Override
-    public List<Long> getEntityIdsToRemove(final List<? extends DatabaseEntity> storedEntities, final Set<ProjectData> dataToRemove) {
+    public List<BlackDuckProjectEntity> getEntitiesToRemove(final List<? extends DatabaseEntity> storedEntities, final Set<ProjectData> dataToRemove) {
         final List<BlackDuckProjectEntity> blackDuckProjectEntities = (List<BlackDuckProjectEntity>) storedEntities;
-        final List<Long> blackDuckProjectIdsToRemove = blackDuckProjectEntities.stream()
-                                                           .filter(blackDuckProjectEntity -> {
-                                                                   Optional<ProjectData> found = dataToRemove.stream()
-                                                                                                     .filter(data -> data.getName().equals(blackDuckProjectEntity.getName()))
-                                                                                                     .findFirst();
-                                                                   return found.isPresent();
-                                                               }
-                                                           )
-                                                           .map(blackDuckProjectEntity -> blackDuckProjectEntity.getId())
-                                                           .collect(Collectors.toList());
-        return blackDuckProjectIdsToRemove;
+        final List<BlackDuckProjectEntity> blackDuckProjectsToRemove = blackDuckProjectEntities.stream()
+                                                                           .filter(blackDuckProjectEntity -> {
+                                                                                   Optional<ProjectData> found = dataToRemove.stream()
+                                                                                                                     .filter(data -> data.getName().equals(blackDuckProjectEntity.getName()))
+                                                                                                                     .findFirst();
+                                                                                   return found.isPresent();
+                                                                               }
+                                                                           )
+                                                                           .collect(Collectors.toList());
+        return blackDuckProjectsToRemove;
     }
 
     @Override
     public void deleteEntity(final Long id) {
         blackDuckProjectRepositoryAccessor.deleteEntity(id);
+        userProjectRelationRepositoryAccessor.deleteRelationByProjectId(id);
     }
 
     @Override
@@ -119,6 +126,53 @@ public class ProjectSyncTask extends SyncTask<ProjectData> {
         return blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity(data.getName(), data.getDescription(), data.getHref()));
     }
 
+    @Override
+    public void addRelations(final Map<ProjectData, ? extends HubView> currentDataMap, final List<? extends DatabaseEntity> storedEntities, final HubService hubService) throws IOException, IntegrationException {
+        final List<BlackDuckProjectEntity> blackDuckProjectEntities = (List<BlackDuckProjectEntity>) storedEntities;
+
+        for (final Map.Entry<ProjectData, ? extends HubView> entry : currentDataMap.entrySet()) {
+            final ProjectData projectData = entry.getKey();
+            final ProjectView projectView = (ProjectView) entry.getValue();
+
+            final Optional<BlackDuckProjectEntity> optionalBlackDuckProjectEntity = blackDuckProjectEntities.stream().filter(blackDuckProjectEntity -> blackDuckProjectEntity.getName().equals(projectData.getName())).findFirst();
+            final BlackDuckProjectEntity projectEntity = optionalBlackDuckProjectEntity.get();
+
+            final List<AssignedUserView> assignedUsersForThisProject = hubService.getAllResponses(projectView, ProjectView.USERS_LINK_RESPONSE);
+            final List<AssignedUserGroupView> assignedGroupsForThisProject = hubService.getAllResponses(projectView, ProjectView.USERGROUPS_LINK_RESPONSE);
+
+            final List<BlackDuckUserEntity> storedUsers = (List<BlackDuckUserEntity>) blackDuckUserRepositoryAccessor.readEntities();
+
+            final Set<BlackDuckUserEntity> userEntitiesForThisProject = new HashSet<>();
+
+            for (final AssignedUserGroupView assignedUserGroupView : assignedGroupsForThisProject) {
+                final UserGroupView userGroupView = hubService.getResponse(assignedUserGroupView.group, UserGroupView.class);
+                final List<UserView> usersForThisGroup = hubService.getAllResponses(userGroupView, UserGroupView.USERS_LINK_RESPONSE);
+                for (final UserView userView : usersForThisGroup) {
+                    if (StringUtils.isNotBlank(userView.email)) {
+                        final Optional<BlackDuckUserEntity> matchingUser = storedUsers.stream().filter(blackDuckUserEntity -> blackDuckUserEntity.getEmailAddress().equals(userView.email)).findFirst();
+                        if (matchingUser.isPresent()) {
+                            final BlackDuckUserEntity userEntity = matchingUser.get();
+                            userEntitiesForThisProject.add(userEntity);
+                        }
+                    }
+                }
+            }
+            for (final AssignedUserView assignedUserView : assignedUsersForThisProject) {
+                final Optional<BlackDuckUserEntity> matchingUser = storedUsers.stream().filter(blackDuckUserEntity -> blackDuckUserEntity.getEmailAddress().equals(assignedUserView.email)).findFirst();
+                if (matchingUser.isPresent()) {
+                    final BlackDuckUserEntity userEntity = matchingUser.get();
+                    userEntitiesForThisProject.add(userEntity);
+                }
+            }
+            for (final BlackDuckUserEntity blackDuckUserEntity : userEntitiesForThisProject) {
+                try {
+                    userProjectRelationRepositoryAccessor.addUserProjectRelation(blackDuckUserEntity.getId(), projectEntity.getId());
+                } catch (final Exception e) {
+                    logger.error("COULD NOT SAVE THIS RELATION {}", e.getMessage());
+                }
+            }
+
+        }
+    }
+
 }
-
-

@@ -24,8 +24,9 @@
 package com.synopsys.integration.alert.provider.blackduck.tasks;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -40,46 +41,47 @@ import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserGroupRelationRepositoryAccessor;
+import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelationRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.blackduck.api.core.HubView;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;
-import com.synopsys.integration.blackduck.rest.BlackduckRestConnection;
 import com.synopsys.integration.blackduck.service.HubService;
-import com.synopsys.integration.blackduck.service.HubServicesFactory;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
 public class EmailSyncTask extends SyncTask<String> {
     private final Logger logger = LoggerFactory.getLogger(EmailSyncTask.class);
-    private final BlackDuckProperties blackDuckProperties;
     private final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor;
     private final UserGroupRelationRepositoryAccessor userGroupRelationRepositoryAccessor;
+    private final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor;
 
     @Autowired
     public EmailSyncTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor,
-        final UserGroupRelationRepositoryAccessor userGroupRelationRepositoryAccessor) {
-        super(taskScheduler, "blackduck-sync-email-task");
-        this.blackDuckProperties = blackDuckProperties;
+        final UserGroupRelationRepositoryAccessor userGroupRelationRepositoryAccessor, final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor) {
+        super(taskScheduler, "blackduck-sync-email-task", blackDuckProperties);
         this.blackDuckUserRepositoryAccessor = blackDuckUserRepositoryAccessor;
         this.userGroupRelationRepositoryAccessor = userGroupRelationRepositoryAccessor;
+        this.userProjectRelationRepositoryAccessor = userProjectRelationRepositoryAccessor;
     }
 
     @Override
-    public Set<String> getCurrentData() throws IOException, IntegrationException {
-        final Optional<BlackduckRestConnection> optionalConnection = blackDuckProperties.createRestConnectionAndLogErrors(logger);
-        if (optionalConnection.isPresent()) {
-            try (final BlackduckRestConnection restConnection = optionalConnection.get()) {
-                if (restConnection != null) {
-                    final HubServicesFactory hubServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(restConnection, new Slf4jIntLogger(logger));
-                    final HubService hubService = hubServicesFactory.createHubService();
-                    final List<UserView> userResponses = hubService.getAllResponses(ApiDiscovery.USERS_LINK_RESPONSE);
-                    final Set<String> emailAddresses = userResponses.stream().filter(userView -> StringUtils.isNotBlank(userView.email)).map(userView -> userView.email).collect(Collectors.toSet());
-                    return emailAddresses;
-                }
+    public List<UserView> getHubViews(final HubService hubService) throws IntegrationException {
+        return hubService.getAllResponses(ApiDiscovery.USERS_LINK_RESPONSE);
+    }
+
+    @Override
+    public Map<String, ? extends HubView> getCurrentData(final List<? extends HubView> hubViews) {
+        final List<UserView> userViews = (List<UserView>) hubViews;
+
+        final Map<String, ? extends HubView> emailAddressMap = new HashMap<>();
+        for (final UserView userView : userViews) {
+            if (StringUtils.isNotBlank(userView.email)) {
+                // We do not need the HubView's here because that is used for adding relations and we wont be adding relations in the EmailSyncTask
+                emailAddressMap.put(userView.email, null);
             }
         }
-        return null;
+        return emailAddressMap;
     }
 
     @Override
@@ -96,23 +98,29 @@ public class EmailSyncTask extends SyncTask<String> {
     }
 
     @Override
-    public List<Long> getEntityIdsToRemove(final List<? extends DatabaseEntity> storedEntities, final Set<String> dataToRemove) {
+    public List<? extends DatabaseEntity> getEntitiesToRemove(final List<? extends DatabaseEntity> storedEntities, final Set<String> dataToRemove) {
         final List<BlackDuckUserEntity> blackDuckUserEntities = (List<BlackDuckUserEntity>) storedEntities;
-        final List<Long> blackDuckUserIdsToRemove = blackDuckUserEntities.stream()
-                                                        .filter(blackDuckUserEntity -> dataToRemove.contains(blackDuckUserEntity.getEmailAddress()))
-                                                        .map(blackDuckUserEntity -> blackDuckUserEntity.getId())
-                                                        .collect(Collectors.toList());
-        return blackDuckUserIdsToRemove;
+        final List<BlackDuckUserEntity> blackDuckUsersToRemove = blackDuckUserEntities.stream()
+                                                                     .filter(blackDuckUserEntity -> dataToRemove.contains(blackDuckUserEntity.getEmailAddress()))
+                                                                     .collect(Collectors.toList());
+        return blackDuckUsersToRemove;
     }
 
     @Override
     public void deleteEntity(final Long id) {
         blackDuckUserRepositoryAccessor.deleteEntity(id);
         userGroupRelationRepositoryAccessor.deleteRelationByUserId(id);
+        userProjectRelationRepositoryAccessor.deleteRelationByUserId(id);
     }
 
     @Override
     public DatabaseEntity createAndSaveEntity(final String data) {
         return blackDuckUserRepositoryAccessor.saveEntity(new BlackDuckUserEntity(data, false));
     }
+
+    @Override
+    public void addRelations(final Map<String, ? extends HubView> currentDataMap, final List<? extends DatabaseEntity> storedEntities, final HubService hubService) throws IOException, IntegrationException {
+
+    }
+
 }
