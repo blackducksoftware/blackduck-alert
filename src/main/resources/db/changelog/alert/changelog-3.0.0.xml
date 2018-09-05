@@ -81,4 +81,24 @@
             <column name="HREF" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
+    <changeSet author="jrichard" id="1533054185-12">
+        <createTable tableName="BLACKDUCK_USER_GROUP_RELATION" schemaName="ALERT">
+            <column name="BLACKDUCK_USER_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="BLACKDUCK_GROUP_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="jrichard" id="1533054185-13">
+        <createTable tableName="BLACKDUCK_USER_PROJECT_RELATION" schemaName="ALERT">
+            <column name="BLACKDUCK_USER_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="BLACKDUCK_PROJECT_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>
