@@ -54,6 +54,7 @@ public class NotificationProcessor {
     public List<ChannelEvent> processNotifications(final FrequencyType frequencyType, final List<NotificationContent> notificationList) {
         final Collection<NotificationContent> filteredNotifications = notificationFilter.extractApplicableNotifications(frequencyType, notificationList);
         // TODO convert notification content to topic contents.  Provider will be responsible for this.
+        // TODO only collapse if the format is of type DIGEST.
         final List<TopicContent> topicContentList = topicCompressor.collapseTopics(Collections.emptyList());
 
         final List<ChannelEvent> notificationEvents = notificationToEventConverter.convertToEvents(filteredNotifications);
