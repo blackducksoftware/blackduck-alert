@@ -28,24 +28,8 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 public class AlertNotificationPurgedException extends AlertException {
     private static final long serialVersionUID = -1163748183484212814L;
 
-    public AlertNotificationPurgedException() {
-        super();
-    }
-
-    public AlertNotificationPurgedException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
-
-    public AlertNotificationPurgedException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
-
     public AlertNotificationPurgedException(final String message) {
         super(message);
-    }
-
-    public AlertNotificationPurgedException(final Throwable cause) {
-        super(cause);
     }
 
 }

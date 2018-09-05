@@ -38,7 +38,7 @@ public class ChannelEventFactoryTest {
     public void createEventWithChannelManagerTest() {
         final Gson gson = new Gson();
         final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
-        final ChannelEventFactory factory = new ChannelEventFactory(contentConverter);
+        final ChannelEventFactory factory = new ChannelEventFactory();
 
         final Long id = 25L;
 

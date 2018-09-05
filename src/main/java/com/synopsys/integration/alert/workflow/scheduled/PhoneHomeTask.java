@@ -111,9 +111,8 @@ public class PhoneHomeTask extends ScheduledTask {
 
     public PhoneHomeRequestBody.Builder addChannelMetaData(final PhoneHomeRequestBody.Builder phoneHomeRequestBody) {
         final Map<String, Integer> createdSupportedChannels = getChannelMetaData();
-        createdSupportedChannels.entrySet().forEach(entry -> {
-            final Integer count = entry.getValue();
-            final String supportedChannelkey = "channel." + entry.getKey();
+        createdSupportedChannels.forEach((key, count) -> {
+            final String supportedChannelkey = "channel." + key;
             phoneHomeRequestBody.addToMetaData(supportedChannelkey, count.toString());
         });
 

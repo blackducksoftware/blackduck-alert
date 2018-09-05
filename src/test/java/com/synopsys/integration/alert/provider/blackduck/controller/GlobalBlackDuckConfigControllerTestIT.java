@@ -39,10 +39,10 @@ public class GlobalBlackDuckConfigControllerTestIT extends GlobalControllerTest 
     @Override
     public Config getGlobalConfig() {
         final MockGlobalBlackDuckRestModel mockBlackDuckRestModel = new MockGlobalBlackDuckRestModel();
-        final String hubUrl = testProperties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL);
-        final String timeout = testProperties.getProperty(TestPropertyKey.TEST_HUB_TIMEOUT);
-        final String apiKey = testProperties.getProperty(TestPropertyKey.TEST_HUB_API_KEY);
-        final String alwaysTrust = testProperties.getProperty(TestPropertyKey.TEST_TRUST_HTTPS_CERT);
+        final String hubUrl = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL);
+        final String timeout = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT);
+        final String apiKey = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY);
+        final String alwaysTrust = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TRUST_HTTPS_CERT);
         mockBlackDuckRestModel.setBlackDuckUrl(hubUrl);
         mockBlackDuckRestModel.setBlackDuckTimeout(timeout);
         mockBlackDuckRestModel.setBlackDuckApiKey(apiKey);
@@ -62,7 +62,7 @@ public class GlobalBlackDuckConfigControllerTestIT extends GlobalControllerTest 
 
     @Override
     public void testTestConfig() throws Exception {
-        ReflectionTestUtils.setField(alertProperties, "alertTrustCertificate", Boolean.valueOf(testProperties.getProperty(TestPropertyKey.TEST_TRUST_HTTPS_CERT)));
+        ReflectionTestUtils.setField(alertProperties, "alertTrustCertificate", Boolean.valueOf(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TRUST_HTTPS_CERT)));
         super.testTestConfig();
         ReflectionTestUtils.setField(alertProperties, "alertTrustCertificate", false);
     }
