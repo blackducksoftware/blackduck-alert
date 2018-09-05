@@ -47,7 +47,7 @@ public class DescriptorMap {
 
     @Autowired
     public DescriptorMap(final List<ChannelDescriptor> channelDescriptors, final List<ProviderDescriptor> providerDescriptors, final List<ComponentDescriptor> componentDescriptors, final List<RestApi> restApis)
-    throws AlertException {
+        throws AlertException {
         this.restApis = restApis;
         descriptorMap = new HashMap<>(channelDescriptors.size() + providerDescriptors.size());
         channelDescriptorMap = initDescriptorMap(channelDescriptors);
@@ -70,9 +70,9 @@ public class DescriptorMap {
 
     public List<RestApi> getStartupRestApis() {
         return restApis
-               .stream()
-               .filter(descriptorConfig -> descriptorConfig.hasStartupProperties())
-               .collect(Collectors.toList());
+                   .stream()
+                   .filter(RestApi::hasStartupProperties)
+                   .collect(Collectors.toList());
     }
 
     public List<UIComponent> getDistributionUIConfigs() {
@@ -93,16 +93,16 @@ public class DescriptorMap {
 
     public List<UIComponent> getUIComponents(final RestApiType configType) {
         return descriptorMap.values()
-               .stream()
-               .filter(descriptor -> descriptor.hasUIConfigForType(configType))
-               .map(descriptor -> descriptor.getUIConfig(configType).generateUIComponent())
-               .collect(Collectors.toList());
+                   .stream()
+                   .filter(descriptor -> descriptor.hasUIConfigForType(configType))
+                   .map(descriptor -> descriptor.getUIConfig(configType).generateUIComponent())
+                   .collect(Collectors.toList());
     }
 
     public List<UIComponent> getAllUIComponents() {
         return Arrays.stream(RestApiType.values())
-               .flatMap(type -> getUIComponents(type).stream())
-               .collect(Collectors.toList());
+                   .flatMap(type -> getUIComponents(type).stream())
+                   .collect(Collectors.toList());
     }
 
     public List<RestApi> getAllDescriptorConfigs() {

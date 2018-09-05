@@ -39,10 +39,5 @@ public abstract class NotificationTypeProcessor {
         this.applicableNotificationTypes = applicableNotificationTypes;
     }
 
-    public boolean isApplicable(final NotificationDetailResult notificationDetailResult) {
-        final boolean isApplicable = applicableNotificationTypes.contains(notificationDetailResult.getType());
-        return isApplicable;
-    }
-
     public abstract List<NotificationModel> process(final BlackDuckProperties blackDuckProperties, final NotificationDetailResult notificationDetailResult, final HubBucket bucket);
 }

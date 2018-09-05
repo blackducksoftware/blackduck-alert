@@ -77,7 +77,7 @@ public class UIComponentController extends BaseController {
                     }
                 } else {
                     // name only
-                    return descriptor.getAllUIConfigs().stream().map(descriptorConfig -> descriptorConfig.generateUIComponent()).collect(Collectors.toList());
+                    return descriptor.getAllUIConfigs().stream().map(UIConfig::generateUIComponent).collect(Collectors.toList());
                 }
             } else {
                 return Collections.emptyList();

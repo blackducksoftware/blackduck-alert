@@ -34,7 +34,6 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
-import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.event.AlertEvent;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
@@ -49,16 +48,13 @@ public class ChannelTemplateManager {
     private final JmsTemplate jmsTemplate;
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
-    private final ContentConverter contentConverter;
 
     @Autowired
-    public ChannelTemplateManager(final Gson gson, final AuditEntryRepository auditEntryRepository, final AuditNotificationRepository auditNotificationRepository, final JmsTemplate jmsTemplate,
-            final ContentConverter contentConverter) {
+    public ChannelTemplateManager(final Gson gson, final AuditEntryRepository auditEntryRepository, final AuditNotificationRepository auditNotificationRepository, final JmsTemplate jmsTemplate) {
         this.gson = gson;
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;
         this.jmsTemplate = jmsTemplate;
-        this.contentConverter = contentConverter;
     }
 
     public void sendEvents(final List<? extends AlertEvent> eventList) {
