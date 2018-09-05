@@ -40,8 +40,6 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserRepositoryAccessor;
-import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserGroupRelationRepositoryAccessor;
-import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelationRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.blackduck.api.core.HubView;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
@@ -53,16 +51,11 @@ import com.synopsys.integration.exception.IntegrationException;
 public class EmailSyncTask extends SyncTask<String> {
     private final Logger logger = LoggerFactory.getLogger(EmailSyncTask.class);
     private final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor;
-    private final UserGroupRelationRepositoryAccessor userGroupRelationRepositoryAccessor;
-    private final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor;
 
     @Autowired
-    public EmailSyncTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor,
-        final UserGroupRelationRepositoryAccessor userGroupRelationRepositoryAccessor, final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor) {
+    public EmailSyncTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor) {
         super(taskScheduler, "blackduck-sync-email-task", blackDuckProperties);
         this.blackDuckUserRepositoryAccessor = blackDuckUserRepositoryAccessor;
-        this.userGroupRelationRepositoryAccessor = userGroupRelationRepositoryAccessor;
-        this.userProjectRelationRepositoryAccessor = userProjectRelationRepositoryAccessor;
     }
 
     @Override
@@ -109,8 +102,6 @@ public class EmailSyncTask extends SyncTask<String> {
     @Override
     public void deleteEntity(final Long id) {
         blackDuckUserRepositoryAccessor.deleteEntity(id);
-        userGroupRelationRepositoryAccessor.deleteRelationByUserId(id);
-        userProjectRelationRepositoryAccessor.deleteRelationByUserId(id);
     }
 
     @Override
