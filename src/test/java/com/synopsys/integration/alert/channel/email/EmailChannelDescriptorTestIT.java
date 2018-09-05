@@ -13,7 +13,7 @@ import com.synopsys.integration.alert.database.channel.email.EmailGroupDistribut
 import com.synopsys.integration.alert.database.channel.email.EmailGroupDistributionRepository;
 import com.synopsys.integration.alert.web.channel.model.EmailDistributionConfig;
 
-public class EmailChannelManagerTestIT extends DescriptorTestConfigTest<EmailDistributionConfig, EmailGroupDistributionConfigEntity, EmailGlobalConfigEntity> {
+public class EmailChannelDescriptorTestIT extends DescriptorTestConfigTest<EmailDistributionConfig, EmailGroupDistributionConfigEntity, EmailGlobalConfigEntity> {
 
     @Autowired
     private EmailGlobalRepository emailGlobalRepository;
@@ -34,7 +34,7 @@ public class EmailChannelManagerTestIT extends DescriptorTestConfigTest<EmailDis
         final String smtpHost = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST);
         final String smtpFrom = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM);
         final EmailGlobalConfigEntity emailGlobalConfigEntity = new EmailGlobalConfigEntity(smtpHost, null, null, null, null, null, null, smtpFrom, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+            null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
         emailGlobalRepository.save(emailGlobalConfigEntity);
     }
 

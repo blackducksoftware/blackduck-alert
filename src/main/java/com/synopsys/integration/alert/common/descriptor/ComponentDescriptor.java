@@ -29,11 +29,6 @@ import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 
 public class ComponentDescriptor extends Descriptor {
 
-    public ComponentDescriptor(final String name, final RestApi componentRestApi) {
-        super(name, DescriptorType.COMPONENT);
-        addComponentRestApi(componentRestApi);
-    }
-
     public ComponentDescriptor(final String name, final RestApi componentRestApi, final UIConfig componentUIConfig) {
         super(name, DescriptorType.COMPONENT);
         addComponentUiConfigs(componentRestApi, componentUIConfig);

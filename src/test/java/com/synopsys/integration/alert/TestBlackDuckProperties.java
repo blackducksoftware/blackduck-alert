@@ -44,13 +44,8 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
         this.blackDuckTimeout = blackDuckTimeout;
         this.testAlertProperties = alertProperties;
         testProperties = new TestProperties();
-        setHubTimeout(Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_HUB_TIMEOUT)));
-        testAlertProperties.setAlertTrustCertificate(Boolean.valueOf(testProperties.getProperty(TestPropertyKey.TEST_TRUST_HTTPS_CERT)));
-    }
-
-    public void setBlackDuckUrl(final String blackDuckUrl) {
-        this.blackDuckUrl = blackDuckUrl;
-        urlSet = true;
+        setHubTimeout(Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT)));
+        testAlertProperties.setAlertTrustCertificate(Boolean.valueOf(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TRUST_HTTPS_CERT)));
     }
 
     @Override
@@ -58,7 +53,12 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
         if (urlSet) {
             return Optional.ofNullable(blackDuckUrl);
         }
-        return Optional.of(testProperties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL));
+        return Optional.of(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
+    }
+
+    public void setBlackDuckUrl(final String blackDuckUrl) {
+        this.blackDuckUrl = blackDuckUrl;
+        urlSet = true;
     }
 
     @Override
@@ -78,8 +78,8 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
 
     @Override
     public Optional<GlobalBlackDuckConfigEntity> getBlackDuckConfig() {
-        return Optional.of(new GlobalBlackDuckConfigEntity(Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_HUB_TIMEOUT)), testProperties.getProperty(TestPropertyKey.TEST_HUB_API_KEY),
-        testProperties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL)));
+        return Optional.of(new GlobalBlackDuckConfigEntity(Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT)), testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY),
+            testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL)));
     }
 
     @Override
@@ -88,8 +88,8 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
     }
 
     public HubServerConfig createHubServerConfigWithCredentials(final IntLogger logger) throws NumberFormatException, AlertException {
-        return super.createBlackDuckServerConfig(logger, Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_HUB_TIMEOUT)), testProperties.getProperty(TestPropertyKey.TEST_USERNAME),
-        testProperties.getProperty(TestPropertyKey.TEST_PASSWORD));
+        return super.createBlackDuckServerConfig(logger, Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT)), testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_USERNAME),
+            testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PASSWORD));
     }
 
     public HubServicesFactory createHubServicesFactoryWithCredential(final IntLogger logger) throws Exception {

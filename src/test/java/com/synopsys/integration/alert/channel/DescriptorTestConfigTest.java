@@ -64,7 +64,7 @@ public abstract class DescriptorTestConfigTest<R extends CommonDistributionConfi
         gson = new Gson();
         contentConverter = new ContentConverter(gson, new DefaultConversionService());
         properties = new TestProperties();
-        channelManager = new ChannelEventFactory(contentConverter);
+        channelManager = new ChannelEventFactory();
         cleanDistributionRepository();
         cleanGlobalRepository();
     }
