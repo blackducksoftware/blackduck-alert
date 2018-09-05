@@ -70,7 +70,7 @@ public class NotificationProcessorIT {
         //        final Long distributionConfigId = 10L;
         //        final String distributionType = HipChatChannel.COMPONENT_NAME;
         //        final String name = "Config Name";
-        //        final DigestType frequency = DigestType.REAL_TIME;
+        //        final FrequencyType frequency = FrequencyType.REAL_TIME;
         //        final Boolean filterByProject = true;
         //
         //        final String projectName = "Test Hub Project Name";
@@ -89,7 +89,7 @@ public class NotificationProcessorIT {
         //        notificationList.add(new NotificationModel(applicableNotification, Collections.emptyList()));
         //        notificationList.add(new NotificationModel(nonApplicableNotification, Collections.emptyList()));
         //
-        //        final List<ChannelEvent> eventsCreated = processor.processNotifications(DigestType.REAL_TIME, notificationList);
+        //        final List<ChannelEvent> eventsCreated = processor.processNotifications(FrequencyType.REAL_TIME, notificationList);
         //        assertEquals(1, eventsCreated.size());
         //        final ChannelEvent event = eventsCreated.get(0);
         //        assertTrue(HipChatChannel.COMPONENT_NAME.equals(event.getDestination()));
@@ -102,7 +102,7 @@ public class NotificationProcessorIT {
         //        final Long distributionConfigId = 10L;
         //        final String distributionType = HipChatChannel.COMPONENT_NAME;
         //        final String name = "Config Name";
-        //        final DigestType frequency = DigestType.REAL_TIME;
+        //        final FrequencyType frequency = FrequencyType.REAL_TIME;
         //        final Boolean filterByProject = true;
         //
         //        final String eventKey = "event_key";
@@ -123,7 +123,7 @@ public class NotificationProcessorIT {
         //        notificationList.add(new NotificationModel(applicableNotification, Collections.emptyList()));
         //        notificationList.add(new NotificationModel(otherApplicableNotification, Collections.emptyList()));
         //
-        //        final List<ChannelEvent> eventsCreated = processor.processNotifications(DigestType.REAL_TIME, notificationList);
+        //        final List<ChannelEvent> eventsCreated = processor.processNotifications(FrequencyType.REAL_TIME, notificationList);
         //        assertEquals(1, eventsCreated.size());
         //        final ChannelEvent event = eventsCreated.get(0);
         //        assertTrue(HipChatChannel.COMPONENT_NAME.equals(event.getDestination()));
@@ -136,7 +136,7 @@ public class NotificationProcessorIT {
         //        final Long distributionConfigId = 10L;
         //        final String distributionType = HipChatChannel.COMPONENT_NAME;
         //        final String name = "Config Name";
-        //        final DigestType frequency = DigestType.REAL_TIME;
+        //        final FrequencyType frequency = FrequencyType.REAL_TIME;
         //        final Boolean filterByProject = true;
         //
         //        final String eventKey = "event_key";
@@ -157,7 +157,7 @@ public class NotificationProcessorIT {
         //        notificationList.add(new NotificationModel(applicableNotification, Collections.emptyList()));
         //        notificationList.add(new NotificationModel(nonApplicableNotification, Collections.emptyList()));
         //
-        //        final List<ChannelEvent> eventsCreated = processor.processNotifications(DigestType.REAL_TIME, notificationList);
+        //        final List<ChannelEvent> eventsCreated = processor.processNotifications(FrequencyType.REAL_TIME, notificationList);
         //        assertEquals(0, eventsCreated.size());
     }
 

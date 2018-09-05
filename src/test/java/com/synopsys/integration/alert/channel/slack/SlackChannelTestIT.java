@@ -11,10 +11,7 @@
  */
 package com.synopsys.integration.alert.channel.slack;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -41,7 +38,7 @@ import com.synopsys.integration.alert.common.digest.model.DigestModel;
 import com.synopsys.integration.alert.common.digest.model.ItemData;
 import com.synopsys.integration.alert.common.digest.model.ProjectData;
 import com.synopsys.integration.alert.common.digest.model.ProjectDataFactory;
-import com.synopsys.integration.alert.common.enumeration.DigestType;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.NotificationCategoryEnum;
@@ -72,7 +69,7 @@ public class SlackChannelTestIT extends ChannelTest {
         final DigestModel digestModel = new DigestModel(projectData);
         final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
         final ChannelEvent event = new ChannelEvent(SlackChannel.COMPONENT_NAME, RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
-                notificationContent.getContent(), new Long(0), 1L);
+        notificationContent.getContent(), new Long(0), 1L);
 
         slackChannel.sendAuditedMessage(event, config);
 
@@ -110,7 +107,7 @@ public class SlackChannelTestIT extends ChannelTest {
         final DigestModel digestModel = new DigestModel(projectData);
         final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
         final ChannelEvent event = new ChannelEvent(SlackChannel.COMPONENT_NAME, RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
-                notificationContent.getContent(), new Long(0), 1L);
+        notificationContent.getContent(), new Long(0), 1L);
 
         final SlackChannel spySlackChannel = Mockito.spy(slackChannel);
         final List<Request> request = spySlackChannel.createRequests(mockSlackEntity.createEntity(), null, event);
@@ -125,7 +122,7 @@ public class SlackChannelTestIT extends ChannelTest {
         final MockSlackEntity mockSlackEntity = new MockSlackEntity();
         final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", "");
         final ChannelEvent event = new ChannelEvent(SlackChannel.COMPONENT_NAME, RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
-                notificationContent.getContent(), new Long(0), 1L);
+        notificationContent.getContent(), new Long(0), 1L);
 
         final SlackChannel spySlackChannel = Mockito.spy(slackChannel);
         final List<Request> requests = slackChannel.createRequests(mockSlackEntity.createEntity(), null, event);
@@ -137,7 +134,7 @@ public class SlackChannelTestIT extends ChannelTest {
         final Map<NotificationCategoryEnum, CategoryData> categoryMap = new HashMap<>();
         categoryMap.put(NotificationCategoryEnum.HIGH_VULNERABILITY, createCategoryData());
 
-        final ProjectData projectData = new ProjectData(DigestType.DAILY, "Slack", "1", null, categoryMap);
+        final ProjectData projectData = new ProjectData(FrequencyType.DAILY, "Slack", "1", null, categoryMap);
 
         return Arrays.asList(projectData);
     }

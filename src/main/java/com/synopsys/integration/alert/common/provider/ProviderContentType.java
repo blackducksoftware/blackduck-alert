@@ -43,10 +43,6 @@ public class ProviderContentType extends Stringable {
         return notificationType;
     }
 
-    public boolean hasFilterableFields() {
-        return !filterableFields.isEmpty();
-    }
-
     public Collection<HierarchicalField> getFilterableFields() {
         return filterableFields;
     }

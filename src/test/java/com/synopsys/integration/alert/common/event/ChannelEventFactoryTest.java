@@ -27,7 +27,7 @@ import com.synopsys.integration.alert.channel.event.ChannelEventFactory;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.digest.model.DigestModel;
 import com.synopsys.integration.alert.common.digest.model.ProjectData;
-import com.synopsys.integration.alert.common.enumeration.DigestType;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.rest.RestConstants;
 
@@ -38,16 +38,16 @@ public class ChannelEventFactoryTest {
     public void createEventWithChannelManagerTest() {
         final Gson gson = new Gson();
         final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
-        final ChannelEventFactory factory = new ChannelEventFactory(contentConverter);
+        final ChannelEventFactory factory = new ChannelEventFactory();
 
         final Long id = 25L;
 
-        final Collection<ProjectData> projectData = Arrays.asList(new ProjectData(DigestType.REAL_TIME, "Project Name", "Project Version", Collections.emptyList(), Collections.emptyMap()));
+        final Collection<ProjectData> projectData = Arrays.asList(new ProjectData(FrequencyType.REAL_TIME, "Project Name", "Project Version", Collections.emptyList(), Collections.emptyMap()));
         final DigestModel digestModel = new DigestModel(projectData);
 
         final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
         final ChannelEvent expected = new ChannelEvent(DISTRIBUTION_TYPE, RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
-                notificationContent.getContent(), id, 1L);
+        notificationContent.getContent(), id, 1L);
 
         final ChannelEvent event = factory.createChannelEvent(id, "TYPE", notificationContent);
         assertEquals(expected.getAuditEntryId(), event.getAuditEntryId());

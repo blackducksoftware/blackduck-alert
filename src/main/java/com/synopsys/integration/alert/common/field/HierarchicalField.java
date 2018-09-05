@@ -49,10 +49,6 @@ public class HierarchicalField extends Field {
         return fieldList;
     }
 
-    public String innermostFieldName() {
-        return getFieldKey();
-    }
-
     public String getConfigNameMapping() {
         return configNameMapping;
     }

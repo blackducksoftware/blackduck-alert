@@ -39,6 +39,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckDataActions;
+import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckGroup;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -66,9 +67,9 @@ public class EmailDistributionUIConfig extends UIConfig {
         // TODO we currently query the hub to get the groups, change this when the group DB table is introduced
         try {
             return blackDuckDataActions.getBlackDuckGroups()
-                   .stream()
-                   .map(blackduckGroup -> blackduckGroup.getName())
-                   .collect(Collectors.toList());
+                       .stream()
+                       .map(BlackDuckGroup::getName)
+                       .collect(Collectors.toList());
         } catch (final IntegrationException ex) {
             logger.error("Error retrieving email groups", ex);
         }

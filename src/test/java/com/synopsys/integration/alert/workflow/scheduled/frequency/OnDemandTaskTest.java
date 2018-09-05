@@ -4,14 +4,14 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.synopsys.integration.alert.common.enumeration.DigestType;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 
 public class OnDemandTaskTest {
 
     @Test
     public void testDigestType() {
         final OnDemandTask task = new OnDemandTask(null, null, null, null);
-        assertEquals(DigestType.REAL_TIME, task.getDigestType());
+        assertEquals(FrequencyType.REAL_TIME, task.getDigestType());
     }
 
     @Test

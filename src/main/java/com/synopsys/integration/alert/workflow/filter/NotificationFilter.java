@@ -44,7 +44,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.distribution.CommonDistributionConfigReader;
-import com.synopsys.integration.alert.common.enumeration.DigestType;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.field.HierarchicalField;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
@@ -72,7 +72,7 @@ public class NotificationFilter {
      * Creates a java.util.Collection of NotificationContent objects that are applicable for at least one Distribution Job.
      * @return A java.util.List of sorted (by createdAt) NotificationContent objects.
      */
-    public Collection<NotificationContent> extractApplicableNotifications(final DigestType frequency, final Collection<NotificationContent> notificationList) {
+    public Collection<NotificationContent> extractApplicableNotifications(final FrequencyType frequency, final Collection<NotificationContent> notificationList) {
         final List<CommonDistributionConfig> unfilteredDistributionConfigs = commonDistributionConfigReader.getPopulatedConfigs();
         if (unfilteredDistributionConfigs.isEmpty()) {
             return Collections.emptyList();
@@ -95,32 +95,32 @@ public class NotificationFilter {
         final Set<NotificationContent> filteredNotifications = new HashSet<>();
         notificationsByType.forEach((type, groupedNotifications) -> {
             final Set<HierarchicalField> filterableFields = getFilterableFieldsByNotificationType(type, providerContentTypes);
-            Predicate<NotificationContent> filterForNotificationType = createFilter(filterableFields, distributionConfigs);
+            final Predicate<NotificationContent> filterForNotificationType = createFilter(filterableFields, distributionConfigs);
 
             final List<NotificationContent> matchingNotifications = applyFilter(groupedNotifications, filterForNotificationType);
             filteredNotifications.addAll(matchingNotifications);
         });
 
         return filteredNotifications
-                   .parallelStream()
-                   .sorted(Comparator.comparing(NotificationContent::getCreatedAt))
-                   .collect(Collectors.toList());
+               .parallelStream()
+               .sorted(Comparator.comparing(NotificationContent::getCreatedAt))
+               .collect(Collectors.toList());
     }
 
     private Set<String> getConfiguredNotificationTypes(final List<CommonDistributionConfig> distributionConfigs) {
         return distributionConfigs
-                   .parallelStream()
-                   .flatMap(config -> config.getNotificationTypes().stream())
-                   .collect(Collectors.toSet());
+               .parallelStream()
+               .flatMap(config -> config.getNotificationTypes().stream())
+               .collect(Collectors.toSet());
     }
 
     private Map<String, List<NotificationContent>> getNotificationsByType(final Set<String> notificationTypes, final Collection<NotificationContent> notifications) {
         final Map<String, List<NotificationContent>> notificationsByType = new HashMap<>();
         notificationTypes.parallelStream().forEach(type -> {
             final List<NotificationContent> applicableNotifications = notifications
-                                                                          .stream()
-                                                                          .filter(notification -> type.equals(notification.getNotificationType()))
-                                                                          .collect(Collectors.toList());
+                                                                      .stream()
+                                                                      .filter(notification -> type.equals(notification.getNotificationType()))
+                                                                      .collect(Collectors.toList());
             notificationsByType.put(type, applicableNotifications);
         });
         return notificationsByType;
@@ -128,24 +128,24 @@ public class NotificationFilter {
 
     public List<ProviderContentType> getProviderContentTypes() {
         return providerDescriptors
-                   .parallelStream()
-                   .flatMap(descriptor -> descriptor.getProviderContentTypes().stream())
-                   .collect(Collectors.toList());
+               .parallelStream()
+               .flatMap(descriptor -> descriptor.getProviderContentTypes().stream())
+               .collect(Collectors.toList());
     }
 
     public Set<HierarchicalField> getFilterableFieldsByNotificationType(final String notificationType, final List<ProviderContentType> contentTypes) {
         return contentTypes
-                   .parallelStream()
-                   .filter(contentType -> notificationType.equals(contentType.getNotificationType()))
-                   .flatMap(contentType -> contentType.getFilterableFields().stream())
-                   .collect(Collectors.toSet());
+               .parallelStream()
+               .filter(contentType -> notificationType.equals(contentType.getNotificationType()))
+               .flatMap(contentType -> contentType.getFilterableFields().stream())
+               .collect(Collectors.toSet());
     }
 
-    private Predicate<NotificationContent> createFilter(Collection<HierarchicalField> filterableFields, final Collection<CommonDistributionConfig> distributionConfigs) {
+    private Predicate<NotificationContent> createFilter(final Collection<HierarchicalField> filterableFields, final Collection<CommonDistributionConfig> distributionConfigs) {
         JsonFilterBuilder filterBuilder = DefaultFilterBuilders.ALWAYS_TRUE;
         for (final CommonDistributionConfig config : distributionConfigs) {
             for (final HierarchicalField field : filterableFields) {
-                Collection<String> valuesFromField = getValuesFromConfig(field.getConfigNameMapping(), config);
+                final Collection<String> valuesFromField = getValuesFromConfig(field.getConfigNameMapping(), config);
                 if (valuesFromField != null) {
                     final JsonFilterBuilder fieldFilter = createFilterBuilderForAllValues(field, valuesFromField);
                     filterBuilder = new AndFieldFilterBuilder(filterBuilder, fieldFilter);
@@ -168,7 +168,7 @@ public class NotificationFilter {
             return Arrays.asList(jsonElement.getAsString());
         } else if (jsonElement.isJsonArray()) {
             values = new ArrayList<>();
-            for (JsonElement arrayElement : jsonElement.getAsJsonArray()) {
+            for (final JsonElement arrayElement : jsonElement.getAsJsonArray()) {
                 values.add(arrayElement.getAsString());
             }
         }
@@ -179,7 +179,7 @@ public class NotificationFilter {
         JsonFilterBuilder filterBuilderForAllValues = DefaultFilterBuilders.ALWAYS_FALSE;
 
         for (final String value : applicableValues) {
-            JsonFilterBuilder filterBuilderForValue = new JsonFieldFilterBuilder(gson, field, value);
+            final JsonFilterBuilder filterBuilderForValue = new JsonFieldFilterBuilder(gson, field, value);
             filterBuilderForAllValues = new OrFieldFilterBuilder(filterBuilderForAllValues, filterBuilderForValue);
         }
         return filterBuilderForAllValues;
@@ -187,9 +187,9 @@ public class NotificationFilter {
 
     private <T> List<T> applyFilter(final Collection<T> notificationList, final Predicate<T> filter) {
         return notificationList
-                   .parallelStream()
-                   .filter(filter)
-                   .collect(Collectors.toList());
+               .parallelStream()
+               .filter(filter)
+               .collect(Collectors.toList());
     }
 
     // TODO find a way to get rid of this

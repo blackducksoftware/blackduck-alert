@@ -381,7 +381,7 @@ class Index extends Component {
                     </TableHeaderColumn>
                     <TableHeaderColumn dataField="providerName" dataSort columnClassName="tableCell" dataFormat={this.providerColumnDataFormat}> Provider </TableHeaderColumn>
                     <TableHeaderColumn dataField="frequency" dataSort columnClassName="tableCell" dataFormat={frequencyColumnDataFormat}>
-                        Digest Type
+                        Frequency Type
                     </TableHeaderColumn>
                     <TableHeaderColumn dataField="lastRan" dataSort columnTitle columnClassName="tableCell">
                         Last Run

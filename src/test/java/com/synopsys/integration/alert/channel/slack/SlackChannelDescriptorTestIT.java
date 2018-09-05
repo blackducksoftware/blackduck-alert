@@ -12,7 +12,7 @@ import com.synopsys.integration.alert.database.channel.slack.SlackDistributionRe
 import com.synopsys.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
 import com.synopsys.integration.alert.web.channel.model.SlackDistributionConfig;
 
-public class SlackChannelManagerTestIT extends DescriptorTestConfigTest<SlackDistributionConfig, SlackDistributionConfigEntity, GlobalChannelConfigEntity> {
+public class SlackChannelDescriptorTestIT extends DescriptorTestConfigTest<SlackDistributionConfig, SlackDistributionConfigEntity, GlobalChannelConfigEntity> {
 
     @Autowired
     private SlackDistributionRepository distributionRepository;

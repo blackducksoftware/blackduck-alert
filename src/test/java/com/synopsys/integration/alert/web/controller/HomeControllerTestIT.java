@@ -84,8 +84,8 @@ public class HomeControllerTestIT {
         final HttpHeaders headers = new HttpHeaders();
         headers.add("X-CSRF-TOKEN", UUID.randomUUID().toString());
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(homeVerifyUrl)
-                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
-                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
+                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
         request.headers(headers);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
@@ -94,8 +94,8 @@ public class HomeControllerTestIT {
     @WithMockUser(roles = "ADMIN")
     public void testVerifyMissingCSRFToken() throws Exception {
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(homeVerifyUrl)
-                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
-                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
+                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 
@@ -103,8 +103,8 @@ public class HomeControllerTestIT {
     @WithMockUser(roles = "ADMIN")
     public void testVerifyNullStringCSRFToken() throws Exception {
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(homeVerifyUrl)
-                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
-                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
+                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
         final HttpHeaders headers = new HttpHeaders();
         headers.add("X-CSRF-TOKEN", "null");
         request.headers(headers);

@@ -27,26 +27,18 @@ import java.util.Date;
 
 import javax.transaction.Transactional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.rest.RestConstants;
 
 @Transactional
 @Component
 public class ChannelEventFactory {
-    private final ContentConverter contentConverter;
-
-    @Autowired
-    public ChannelEventFactory(final ContentConverter contentConverter) {
-        this.contentConverter = contentConverter;
-    }
 
     public ChannelEvent createChannelEvent(final Long commonDistributionConfigId, final String destination, final NotificationContent notificationContent) {
         return new ChannelEvent(destination, RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(), notificationContent.getContent(),
-                commonDistributionConfigId, notificationContent.getId());
+            commonDistributionConfigId, notificationContent.getId());
     }
 
     public ChannelEvent createChannelTestEvent(final String destination) {

@@ -26,7 +26,7 @@ package com.synopsys.integration.alert.common.digest.model;
 import java.util.List;
 import java.util.Map;
 
-import com.synopsys.integration.alert.common.enumeration.DigestType;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.database.entity.NotificationCategoryEnum;
 
 public class ProjectData extends DigestData {
@@ -35,15 +35,15 @@ public class ProjectData extends DigestData {
     public static final String DATASET_KEY_RULE = "RULE";
     public static final String DATASET_KEY_VERSION = "VERSION";
 
-    private final DigestType digestType;
+    private final FrequencyType frequencyType;
     private final String projectKey;
     private final String projectName;
     private final String projectVersion;
     private final List<Long> notificationIds;
     private final Map<NotificationCategoryEnum, CategoryData> categoryMap;
 
-    public ProjectData(final DigestType digestType, final String projectName, final String projectVersion, final List<Long> notificationIds, final Map<NotificationCategoryEnum, CategoryData> categoryMap) {
-        this.digestType = digestType;
+    public ProjectData(final FrequencyType frequencyType, final String projectName, final String projectVersion, final List<Long> notificationIds, final Map<NotificationCategoryEnum, CategoryData> categoryMap) {
+        this.frequencyType = frequencyType;
         this.projectName = projectName;
         this.projectVersion = projectVersion;
         this.notificationIds = notificationIds;
@@ -57,8 +57,8 @@ public class ProjectData extends DigestData {
         }
     }
 
-    public DigestType getDigestType() {
-        return digestType;
+    public FrequencyType getFrequencyType() {
+        return frequencyType;
     }
 
     public String getProjectKey() {
