@@ -29,7 +29,7 @@ import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.digest.model.CategoryData;
 import com.synopsys.integration.alert.common.digest.model.ItemData;
 import com.synopsys.integration.alert.common.digest.model.ProjectData;
-import com.synopsys.integration.alert.common.enumeration.DigestType;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.database.entity.NotificationCategoryEnum;
 
 public class ChannelTest {
@@ -74,7 +74,7 @@ public class ChannelTest {
         categoryMap.put(NotificationCategoryEnum.POLICY_VIOLATION, createMockPolicyViolation());
         categoryMap.put(NotificationCategoryEnum.MEDIUM_VULNERABILITY, createMockVulnerability());
 
-        final ProjectData projectData = new ProjectData(DigestType.REAL_TIME, testName, testName + " Version", Collections.emptyList(), categoryMap);
+        final ProjectData projectData = new ProjectData(FrequencyType.REAL_TIME, testName, testName + " Version", Collections.emptyList(), categoryMap);
         return Arrays.asList(projectData);
     }
 }

@@ -48,6 +48,9 @@ import com.synopsys.integration.test.annotation.ExternalConnectionTest;
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class LoginControllerTestIT {
 
+    private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
+    private final String loginUrl = BaseController.BASE_PATH + "/login";
+    private final String logoutUrl = BaseController.BASE_PATH + "/logout";
     @Autowired
     protected WebApplicationContext webApplicationContext;
     @Autowired
@@ -56,11 +59,7 @@ public class LoginControllerTestIT {
     protected BlackDuckProperties blackDuckProperties;
     @Autowired
     protected AlertProperties alertProperties;
-
-    private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
     private MockMvc mockMvc;
-    private final String loginUrl = BaseController.BASE_PATH + "/login";
-    private final String logoutUrl = BaseController.BASE_PATH + "/logout";
 
     @Before
     public void setup() {
@@ -80,16 +79,16 @@ public class LoginControllerTestIT {
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(loginUrl);
         final TestProperties testProperties = new TestProperties();
         final MockLoginRestModel mockLoginRestModel = new MockLoginRestModel();
-        mockLoginRestModel.setBlackDuckUsername(testProperties.getProperty(TestPropertyKey.TEST_USERNAME));
-        mockLoginRestModel.setBlackDuckPassword(testProperties.getProperty(TestPropertyKey.TEST_PASSWORD));
+        mockLoginRestModel.setBlackDuckUsername(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_USERNAME));
+        mockLoginRestModel.setBlackDuckPassword(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PASSWORD));
 
-        final String blackDuckUrl = testProperties.getProperty(TestPropertyKey.TEST_HUB_SERVER_URL);
-        final String blackDuckApiToken = testProperties.getProperty(TestPropertyKey.TEST_HUB_API_KEY);
-        final String blackDuckTimeout = testProperties.getProperty(TestPropertyKey.TEST_HUB_TIMEOUT);
+        final String blackDuckUrl = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL);
+        final String blackDuckApiToken = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY);
+        final String blackDuckTimeout = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT);
         final GlobalBlackDuckConfigEntity blackDuckConfigEntity = new GlobalBlackDuckConfigEntity(Integer.valueOf(blackDuckTimeout), blackDuckApiToken, blackDuckUrl);
         blackDuckRepository.save(blackDuckConfigEntity);
 
-        ReflectionTestUtils.setField(alertProperties, "alertTrustCertificate", Boolean.valueOf(testProperties.getProperty(TestPropertyKey.TEST_TRUST_HTTPS_CERT)));
+        ReflectionTestUtils.setField(alertProperties, "alertTrustCertificate", Boolean.valueOf(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TRUST_HTTPS_CERT)));
         final String restModel = mockLoginRestModel.getRestModelJson();
         request.content(restModel);
         request.contentType(contentType);

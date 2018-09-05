@@ -68,7 +68,7 @@ public class HipChatChannelTest extends ChannelTest {
         final DigestModel digestModel = new DigestModel(data);
         final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
         final ChannelEvent event = new ChannelEvent(HipChatChannel.COMPONENT_NAME, RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
-                notificationContent.getContent(), null, null);
+            notificationContent.getContent(), null, null);
         final int roomId = Integer.parseInt(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_ROOM_ID));
         final boolean notify = false;
         final String color = "random";
@@ -84,6 +84,7 @@ public class HipChatChannelTest extends ChannelTest {
         assertTrue(responseLine);
     }
 
+    @Test
     public void createRequestThrowsExceptionWhenRoomIdIsNullTest() {
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, null, null, null, null, null, null, null);
 
@@ -106,7 +107,7 @@ public class HipChatChannelTest extends ChannelTest {
         final DigestModel digestModel = new DigestModel(data);
         final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
         final ChannelEvent event = new ChannelEvent(HipChatChannel.COMPONENT_NAME, RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
-                notificationContent.getContent(), null, null);
+            notificationContent.getContent(), null, null);
         final String userDir = System.getProperties().getProperty("user.dir");
         try {
             System.getProperties().setProperty("user.dir", "garbage");
@@ -221,7 +222,7 @@ public class HipChatChannelTest extends ChannelTest {
 
         final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", "");
         final ChannelEvent event = new ChannelEvent(HipChatChannel.COMPONENT_NAME, RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
-                notificationContent.getContent(), null, null);
+            notificationContent.getContent(), null, null);
         final int roomId = Integer.parseInt(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_ROOM_ID));
         final boolean notify = false;
         final String color = "random";
@@ -249,7 +250,7 @@ public class HipChatChannelTest extends ChannelTest {
 
         final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentBuilder.toString());
         final ChannelEvent event = new ChannelEvent(HipChatChannel.COMPONENT_NAME, RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
-                notificationContent.getContent(), null, null);
+            notificationContent.getContent(), null, null);
         final int roomId = Integer.parseInt(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_ROOM_ID));
         final boolean notify = false;
         final String color = "random";

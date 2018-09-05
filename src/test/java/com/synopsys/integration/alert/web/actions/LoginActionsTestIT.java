@@ -11,7 +11,9 @@
  */
 package com.synopsys.integration.alert.web.actions;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 
@@ -49,8 +51,8 @@ public class LoginActionsTestIT {
     public void init() throws IOException {
         outputLogger = new OutputLogger();
 
-        mockLoginRestModel.setBlackDuckUsername(properties.getProperty(TestPropertyKey.TEST_USERNAME));
-        mockLoginRestModel.setBlackDuckPassword(properties.getProperty(TestPropertyKey.TEST_PASSWORD));
+        mockLoginRestModel.setBlackDuckUsername(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_USERNAME));
+        mockLoginRestModel.setBlackDuckPassword(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PASSWORD));
     }
 
     @After
@@ -68,7 +70,7 @@ public class LoginActionsTestIT {
 
     @Test
     public void testAuthenticateUserFailIT() throws IntegrationException, IOException {
-        mockLoginRestModel.setBlackDuckUsername(properties.getProperty(TestPropertyKey.TEST_ACTIVE_USER));
+        mockLoginRestModel.setBlackDuckUsername(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_ACTIVE_USER));
         final LoginActions loginActions = new LoginActions(new TestBlackDuckProperties(new TestAlertProperties()));
         final MockLoginRestModel badRestModel = new MockLoginRestModel();
         badRestModel.setBlackDuckPassword("badpassword");
@@ -80,7 +82,7 @@ public class LoginActionsTestIT {
 
     @Test
     public void testAuthenticateUserRoleFailIT() throws IntegrationException, IOException {
-        mockLoginRestModel.setBlackDuckUsername(properties.getProperty(TestPropertyKey.TEST_ACTIVE_USER));
+        mockLoginRestModel.setBlackDuckUsername(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_ACTIVE_USER));
         final LoginActions loginActions = new LoginActions(new TestBlackDuckProperties(new TestAlertProperties()));
 
         final boolean userAuthenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel(), new Slf4jIntLogger(logger));

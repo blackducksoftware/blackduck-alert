@@ -1,15 +1,15 @@
 package com.synopsys.integration.alert;
 
 public enum TestPropertyKey {
-    TEST_HUB_SERVER_URL("blackduck.hub.url"),
-    TEST_HUB_PORT("blackduck.hub.port"),
-    TEST_USERNAME("blackduck.hub.username"),
-    TEST_PASSWORD("blackduck.hub.password"),
-    TEST_HUB_API_KEY("blackduck.hub.api.key"),
-    TEST_TRUST_HTTPS_CERT("blackduck.hub.trust.cert"),
-    TEST_HUB_TIMEOUT("blackduck.hub.timeout"),
-    TEST_ACTIVE_USER("blackduck.hub.active.user"),
-    TEST_INACTIVE_USER("blackduck.hub.inactive.user"),
+    TEST_BLACKDUCK_PROVIDER_URL("blackduck.provider.url"),
+    TEST_BLACKDUCK_PROVIDER_PORT("blackduck.provider.port"),
+    TEST_BLACKDUCK_PROVIDER_USERNAME("blackduck.provider.username"),
+    TEST_BLACKDUCK_PROVIDER_PASSWORD("blackduck.provider.password"),
+    TEST_BLACKDUCK_PROVIDER_API_KEY("blackduck.provider.api.key"),
+    TEST_BLACKDUCK_PROVIDER_TRUST_HTTPS_CERT("blackduck.provider.trust.cert"),
+    TEST_BLACKDUCK_PROVIDER_TIMEOUT("blackduck.provider.timeout"),
+    TEST_BLACKDUCK_PROVIDER_ACTIVE_USER("blackduck.provider.active.user"),
+    TEST_BLACKDUCK_PROVIDER_INACTIVE_USER("blackduck.provider.inactive.user"),
     TEST_CRON("alert.tasks.cron"),
     TEST_DAILY_DIGEST("alert.digest.daily.cron"),
     TEST_REALTIME_DIGEST("alert.digest.realtime.cron"),
@@ -27,12 +27,12 @@ public enum TestPropertyKey {
     TEST_EMAIL_SMTP_AUTH("mail.smtp.auth"),
     TEST_EMAIL_SMTP_EHLO("mail.smtp.ehlo"),
     TEST_EMAIL_SMTP_PORT("mail.smtp.port"),
-    TEST_EMAIL_TEMPLATE("hub.email.template.directory"),
+    TEST_BLACKDUCK_PROVIDER_EMAIL_TEMPLATE("blackduck.provider.email.template.directory"),
     TEST_EMAIL_LOGO("logo.image");
 
     private final String propertyKey;
 
-    private TestPropertyKey(final String propertyKey) {
+    TestPropertyKey(final String propertyKey) {
         this.propertyKey = propertyKey;
     }
 
