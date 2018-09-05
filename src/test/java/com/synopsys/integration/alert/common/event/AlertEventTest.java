@@ -18,45 +18,23 @@ import org.junit.Test;
 
 public class AlertEventTest {
     private static final String TOPIC = "TOPIC";
-    private static final String PROVIDER = "PROVIDER";
-    private static final String NOTIFICATION_TYPE = "NOTIFICATION_TYPE";
-    private static final String CONTENT = "CONTENT";
-    private static final String CREATED_AT = "CREATED_AT_STRING";
 
     @Test
     public void getIdTest() {
-        final AlertEvent event = new AlertEvent(TOPIC, CREATED_AT, PROVIDER, NOTIFICATION_TYPE, CONTENT, 1L);
+        final AlertEvent event = new AlertEvent(TOPIC, 1L);
         assertNotNull(event.getEventId());
     }
 
     @Test
     public void getDestinationTest() {
-        final AlertEvent event = new AlertEvent(TOPIC, CREATED_AT, PROVIDER, NOTIFICATION_TYPE, CONTENT, 1L);
+        final AlertEvent event = new AlertEvent(TOPIC, 1L);
         assertEquals(TOPIC, event.getDestination());
-    }
-
-    @Test
-    public void getCreatedAtDateTest() {
-        final AlertEvent event = new AlertEvent(TOPIC, CREATED_AT, PROVIDER, NOTIFICATION_TYPE, CONTENT, 1L);
-        assertEquals(CREATED_AT, event.getCreatedAt());
-    }
-
-    @Test
-    public void getProviderTest() {
-        final AlertEvent event = new AlertEvent(TOPIC, CREATED_AT, PROVIDER, NOTIFICATION_TYPE, CONTENT, 1L);
-        assertEquals(PROVIDER, event.getProvider());
-    }
-
-    @Test
-    public void getNotificationTypeTest() {
-        final AlertEvent event = new AlertEvent(TOPIC, CREATED_AT, PROVIDER, NOTIFICATION_TYPE, CONTENT, 1L);
-        assertEquals(NOTIFICATION_TYPE, event.getNotificationType());
     }
 
     @Test
     public void getNotificationIdTest() {
         final Long notificationId = new Long(1);
-        final AlertEvent event = new AlertEvent(TOPIC, CREATED_AT, PROVIDER, NOTIFICATION_TYPE, CONTENT, notificationId);
+        final AlertEvent event = new AlertEvent(TOPIC, notificationId);
         assertEquals(notificationId, event.getNotificationId());
     }
 }

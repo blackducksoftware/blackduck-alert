@@ -29,9 +29,8 @@ public class TopicEvent extends AlertEvent {
 
     private final List<TopicContent> topicList;
 
-    public TopicEvent(final String destination, final String createdAt, final String provider, final String notificationType, final String content, final Long notificationId,
-    final List<TopicContent> topicList) {
-        super(destination, createdAt, provider, notificationType, content, notificationId);
+    public TopicEvent(final String destination, final Long notificationId, final List<TopicContent> topicList) {
+        super(destination, notificationId);
         this.topicList = topicList;
     }
 

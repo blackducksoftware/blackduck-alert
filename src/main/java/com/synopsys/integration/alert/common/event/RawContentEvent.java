@@ -21,19 +21,36 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.enumeration;
+package com.synopsys.integration.alert.common.event;
 
-public enum InternalEventTypes {
-    DB_STORE_EVENT("DB_STORE_EVENT"), REAL_TIME_EVENT("REAL_TIME_EVENT");
+public class RawContentEvent extends AlertEvent {
 
-    private final String destination;
+    private final String createdAt;
+    private final String provider;
+    private final String notificationType;
+    private final String content;
 
-    InternalEventTypes(final String destination) {
-        this.destination = destination;
+    public RawContentEvent(final String destination, final String createdAt, final String provider, final String notificationType, final String content, final Long notificationId) {
+        super(destination, notificationId);
+        this.createdAt = createdAt;
+        this.provider = provider;
+        this.notificationType = notificationType;
+        this.content = content;
     }
 
-    public String getDestination() {
-        return destination;
+    public String getCreatedAt() {
+        return createdAt;
     }
 
+    public String getProvider() {
+        return provider;
+    }
+
+    public String getNotificationType() {
+        return notificationType;
+    }
+
+    public String getContent() {
+        return content;
+    }
 }
