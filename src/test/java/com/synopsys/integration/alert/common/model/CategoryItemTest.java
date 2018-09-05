@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.common.event;
+package com.synopsys.integration.alert.common.model;
 
 import static org.junit.Assert.assertEquals;
 
@@ -14,7 +14,7 @@ public class CategoryItemTest {
     @Test
     public void testCategoryItemFields() {
 
-        final CategoryKey categoryKey = CategoryKey.fromName("categoryKey");
+        final CategoryKey categoryKey = CategoryKey.from("categoryKey");
         final ItemOperation operation = ItemOperation.ADD;
         final List<LinkableItem> itemList = Collections.emptyList();
         final CategoryItem categoryItem = new CategoryItem(categoryKey, operation, itemList);

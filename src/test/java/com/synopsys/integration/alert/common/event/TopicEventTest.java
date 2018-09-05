@@ -7,6 +7,8 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.synopsys.integration.alert.common.model.TopicContent;
+
 public class TopicEventTest {
 
     @Test
