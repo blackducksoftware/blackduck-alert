@@ -40,10 +40,14 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckGroupEntity;
+import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckGroupRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserRepositoryAccessor;
+import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserGroupRelation;
+import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserGroupRelationRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelationRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.tasks.model.ProjectData;
@@ -52,8 +56,6 @@ import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.response.AssignedUserGroupView;
 import com.synopsys.integration.blackduck.api.generated.view.AssignedUserView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
-import com.synopsys.integration.blackduck.api.generated.view.UserGroupView;
-import com.synopsys.integration.blackduck.api.generated.view.UserView;
 import com.synopsys.integration.blackduck.service.HubService;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -61,14 +63,19 @@ import com.synopsys.integration.exception.IntegrationException;
 public class ProjectSyncTask extends SyncTask<ProjectData> {
     private final Logger logger = LoggerFactory.getLogger(ProjectSyncTask.class);
     private final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor;
+    private final BlackDuckGroupRepositoryAccessor blackDuckGroupRepositoryAccessor;
+    private final UserGroupRelationRepositoryAccessor userGroupRelationRepositoryAccessor;
     private final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
     private final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor;
 
     @Autowired
     public ProjectSyncTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor,
+        final BlackDuckGroupRepositoryAccessor blackDuckGroupRepositoryAccessor, final UserGroupRelationRepositoryAccessor userGroupRelationRepositoryAccessor,
         final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor, final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor) {
         super(taskScheduler, "blackduck-sync-project-task", blackDuckProperties);
         this.blackDuckUserRepositoryAccessor = blackDuckUserRepositoryAccessor;
+        this.blackDuckGroupRepositoryAccessor = blackDuckGroupRepositoryAccessor;
+        this.userGroupRelationRepositoryAccessor = userGroupRelationRepositoryAccessor;
         this.blackDuckProjectRepositoryAccessor = blackDuckProjectRepositoryAccessor;
         this.userProjectRelationRepositoryAccessor = userProjectRelationRepositoryAccessor;
     }
@@ -118,7 +125,6 @@ public class ProjectSyncTask extends SyncTask<ProjectData> {
     @Override
     public void deleteEntity(final Long id) {
         blackDuckProjectRepositoryAccessor.deleteEntity(id);
-        userProjectRelationRepositoryAccessor.deleteRelationByProjectId(id);
     }
 
     @Override
@@ -130,6 +136,8 @@ public class ProjectSyncTask extends SyncTask<ProjectData> {
     public void addRelations(final Map<ProjectData, ? extends HubView> currentDataMap, final List<? extends DatabaseEntity> storedEntities, final HubService hubService) throws IOException, IntegrationException {
         final List<BlackDuckProjectEntity> blackDuckProjectEntities = (List<BlackDuckProjectEntity>) storedEntities;
 
+        // We delete all the relations to start, we have to make all the rest calls anyway so it is less work to delete all and add than it is to get the diff
+        userProjectRelationRepositoryAccessor.deleteAllRelations();
         for (final Map.Entry<ProjectData, ? extends HubView> entry : currentDataMap.entrySet()) {
             final ProjectData projectData = entry.getKey();
             final ProjectView projectView = (ProjectView) entry.getValue();
@@ -140,33 +148,32 @@ public class ProjectSyncTask extends SyncTask<ProjectData> {
             final List<AssignedUserView> assignedUsersForThisProject = hubService.getAllResponses(projectView, ProjectView.USERS_LINK_RESPONSE);
             final List<AssignedUserGroupView> assignedGroupsForThisProject = hubService.getAllResponses(projectView, ProjectView.USERGROUPS_LINK_RESPONSE);
 
-            final List<BlackDuckUserEntity> storedUsers = (List<BlackDuckUserEntity>) blackDuckUserRepositoryAccessor.readEntities();
+            final Set<Long> userEntityIdsForThisProject = new HashSet<>();
 
-            final Set<BlackDuckUserEntity> userEntitiesForThisProject = new HashSet<>();
-
+            final List<BlackDuckGroupEntity> storedGroups = (List<BlackDuckGroupEntity>) blackDuckGroupRepositoryAccessor.readEntities();
             for (final AssignedUserGroupView assignedUserGroupView : assignedGroupsForThisProject) {
-                final UserGroupView userGroupView = hubService.getResponse(assignedUserGroupView.group, UserGroupView.class);
-                final List<UserView> usersForThisGroup = hubService.getAllResponses(userGroupView, UserGroupView.USERS_LINK_RESPONSE);
-                for (final UserView userView : usersForThisGroup) {
-                    if (StringUtils.isNotBlank(userView.email)) {
-                        final Optional<BlackDuckUserEntity> matchingUser = storedUsers.stream().filter(blackDuckUserEntity -> blackDuckUserEntity.getEmailAddress().equals(userView.email)).findFirst();
-                        if (matchingUser.isPresent()) {
-                            final BlackDuckUserEntity userEntity = matchingUser.get();
-                            userEntitiesForThisProject.add(userEntity);
-                        }
+                final Optional<BlackDuckGroupEntity> matchingGroup = storedGroups.stream().filter(storedGroup -> storedGroup.getName().equals(assignedUserGroupView.name)).findFirst();
+                if (matchingGroup.isPresent()) {
+                    // If the group is not present, it will be in the next run of the task and we will create the relations then
+                    final List<UserGroupRelation> userGroupRelations = userGroupRelationRepositoryAccessor.findByBlackDuckGroupId(matchingGroup.get().getId());
+                    for (final UserGroupRelation userGroupRelation : userGroupRelations) {
+                        userEntityIdsForThisProject.add(userGroupRelation.getBlackDuckUserId());
                     }
                 }
             }
+
+            final List<BlackDuckUserEntity> storedUsers = (List<BlackDuckUserEntity>) blackDuckUserRepositoryAccessor.readEntities();
             for (final AssignedUserView assignedUserView : assignedUsersForThisProject) {
                 final Optional<BlackDuckUserEntity> matchingUser = storedUsers.stream().filter(blackDuckUserEntity -> blackDuckUserEntity.getEmailAddress().equals(assignedUserView.email)).findFirst();
                 if (matchingUser.isPresent()) {
+                    // If the user is not present, it will be in the next run of the task and we will create the relation then
                     final BlackDuckUserEntity userEntity = matchingUser.get();
-                    userEntitiesForThisProject.add(userEntity);
+                    userEntityIdsForThisProject.add(userEntity.getId());
                 }
             }
-            for (final BlackDuckUserEntity blackDuckUserEntity : userEntitiesForThisProject) {
+            for (final Long blackDuckUserEntityId : userEntityIdsForThisProject) {
                 try {
-                    userProjectRelationRepositoryAccessor.addUserProjectRelation(blackDuckUserEntity.getId(), projectEntity.getId());
+                    userProjectRelationRepositoryAccessor.addUserProjectRelation(blackDuckUserEntityId, projectEntity.getId());
                 } catch (final Exception e) {
                     logger.error("COULD NOT SAVE THIS RELATION {}", e.getMessage());
                 }

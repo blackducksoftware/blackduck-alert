@@ -24,6 +24,7 @@
 package com.synopsys.integration.alert.provider.blackduck.tasks;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -114,7 +115,6 @@ public class GroupSyncTask extends SyncTask<GroupData> {
     @Override
     public void deleteEntity(final Long id) {
         blackDuckGroupRepositoryAccessor.deleteEntity(id);
-        userGroupRelationRepositoryAccessor.deleteRelationByGroupId(id);
     }
 
     @Override
@@ -126,6 +126,8 @@ public class GroupSyncTask extends SyncTask<GroupData> {
     public void addRelations(final Map<GroupData, ? extends HubView> currentDataMap, final List<? extends DatabaseEntity> storedEntities, final HubService hubService) throws IOException, IntegrationException {
         final List<BlackDuckGroupEntity> blackDuckGroupEntities = (List<BlackDuckGroupEntity>) storedEntities;
 
+        // We delete all the relations to start, we have to make all the rest calls anyway so it is less work to delete all and add than it is to get the diff
+        userGroupRelationRepositoryAccessor.deleteAllRelations();
         for (final Map.Entry<GroupData, ? extends HubView> entry : currentDataMap.entrySet()) {
             final GroupData groupData = entry.getKey();
             final UserGroupView userGroupView = (UserGroupView) entry.getValue();
@@ -134,18 +136,23 @@ public class GroupSyncTask extends SyncTask<GroupData> {
 
             final List<BlackDuckUserEntity> storedUsers = (List<BlackDuckUserEntity>) blackDuckUserRepositoryAccessor.readEntities();
 
+            final Set<BlackDuckUserEntity> userEntitiesForThisGroup = new HashSet<>();
             final List<UserView> usersForThisGroup = hubService.getAllResponses(userGroupView, UserGroupView.USERS_LINK_RESPONSE);
             for (final UserView userView : usersForThisGroup) {
                 if (StringUtils.isNotBlank(userView.email)) {
                     final Optional<BlackDuckUserEntity> matchingUser = storedUsers.stream().filter(blackDuckUserEntity -> blackDuckUserEntity.getEmailAddress().equals(userView.email)).findFirst();
                     if (matchingUser.isPresent()) {
+                        // If the user is not present, it will be in the next run of the task and we will create the relation then
                         final BlackDuckUserEntity userEntity = matchingUser.get();
-                        try {
-                            userGroupRelationRepositoryAccessor.addUserGroupRelation(userEntity.getId(), groupEntity.getId());
-                        } catch (final Exception e) {
-                            logger.error("COULD NOT SAVE THIS RELATION {}", e.getMessage());
-                        }
+                        userEntitiesForThisGroup.add(userEntity);
                     }
+                }
+            }
+            for (final BlackDuckUserEntity userEntity : userEntitiesForThisGroup) {
+                try {
+                    userGroupRelationRepositoryAccessor.addUserGroupRelation(userEntity.getId(), groupEntity.getId());
+                } catch (final Exception e) {
+                    logger.error("COULD NOT SAVE THIS RELATION {}", e.getMessage());
                 }
             }
         }
