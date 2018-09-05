@@ -131,8 +131,8 @@ public class NotificationFilterTestIT {
         final Optional<CommonDistributionConfigEntity> foundEntity = commonDistributionRepository.findById(commonDistributionId);
         if (foundEntity.isPresent()) {
             final CommonDistributionConfigEntity commonEntity = foundEntity.get();
-            final CommonDistributionConfigEntity newEntity =
-            new CommonDistributionConfigEntity(commonEntity.getDistributionConfigId(), commonEntity.getDistributionType(), commonEntity.getName(), BlackDuckProvider.COMPONENT_NAME, FrequencyType.DAILY, commonEntity.getFilterByProject());
+            final CommonDistributionConfigEntity newEntity = new CommonDistributionConfigEntity(commonEntity.getDistributionConfigId(), commonEntity.getDistributionType(), commonEntity.getName(), BlackDuckProvider.COMPONENT_NAME,
+                FrequencyType.DAILY, commonEntity.getFilterByProject());
             newEntity.setId(commonEntity.getId());
             commonDistributionRepository.save(newEntity);
         }
@@ -201,8 +201,8 @@ public class NotificationFilterTestIT {
 
     private NotificationContent createVulnerabilityNotification(final String projectName, final String providerName, final Date created) {
         final String content = "{\"content\":{\"affectedProjectVersions\":[{\"projectName\":\""
-                               + projectName
-                               + "\",\"dummyField\":\"dummyValue\"},{\"projectName\":\"Project Name\",\"dummyField\":\"dummyValue\"}],\"dummyField\":\"dummyValue\"},\"dummyField\":\"dummyValue\"}";
+                                   + projectName
+                                   + "\",\"dummyField\":\"dummyValue\"},{\"projectName\":\"Project Name\",\"dummyField\":\"dummyValue\"}],\"dummyField\":\"dummyValue\"},\"dummyField\":\"dummyValue\"}";
         final NotificationContent notification = new NotificationContent(created, providerName, NotificationType.VULNERABILITY.name(), content);
         notification.setId(1L);
 
