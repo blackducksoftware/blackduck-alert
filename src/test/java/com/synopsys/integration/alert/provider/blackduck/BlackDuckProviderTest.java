@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.provider.blackduck;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -39,4 +40,10 @@ public class BlackDuckProviderTest {
         assertEquals(expectedNotificationTypes, providerNotificationTypes);
     }
 
+    @Test
+    public void testGetCollectorLoopup() {
+        final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
+        final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask);
+        assertNotNull(provider.getCollectorLookup());
+    }
 }
