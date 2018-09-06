@@ -41,8 +41,7 @@ public class CommonDistributionConfig extends Config {
     }
 
     public CommonDistributionConfig(final String id, final String distributionConfigId, final String distributionType, final String name, final String providerName, final String frequency, final String filterByProject,
-            final List<String> configuredProjects,
-            final List<String> notificationTypes) {
+        final List<String> configuredProjects, final List<String> notificationTypes) {
         super(id);
         this.distributionConfigId = distributionConfigId;
         this.distributionType = distributionType;
@@ -66,8 +65,16 @@ public class CommonDistributionConfig extends Config {
         return distributionType;
     }
 
+    public void setDistributionType(final String distributionType) {
+        this.distributionType = distributionType;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
     }
 
     public String getProviderName() {
@@ -82,8 +89,16 @@ public class CommonDistributionConfig extends Config {
         return frequency;
     }
 
+    public void setFrequency(final String frequency) {
+        this.frequency = frequency;
+    }
+
     public String getFilterByProject() {
         return filterByProject;
+    }
+
+    public void setFilterByProject(final String filterByProject) {
+        this.filterByProject = filterByProject;
     }
 
     public List<String> getConfiguredProjects() {
@@ -116,21 +131,5 @@ public class CommonDistributionConfig extends Config {
 
     public void setStatus(final String status) {
         this.status = status;
-    }
-
-    public void setDistributionType(final String distributionType) {
-        this.distributionType = distributionType;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public void setFrequency(final String frequency) {
-        this.frequency = frequency;
-    }
-
-    public void setFilterByProject(final String filterByProject) {
-        this.filterByProject = filterByProject;
     }
 }
