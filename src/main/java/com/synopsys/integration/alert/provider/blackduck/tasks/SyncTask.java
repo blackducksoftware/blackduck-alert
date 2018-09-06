@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
 
+import com.synopsys.integration.alert.database.RepositoryAccessor;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.workflow.scheduled.ScheduledTask;
@@ -47,10 +48,12 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 public abstract class SyncTask<T> extends ScheduledTask {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final BlackDuckProperties blackDuckProperties;
+    private final RepositoryAccessor repositoryAccessor;
 
-    public SyncTask(final TaskScheduler taskScheduler, final String taskName, final BlackDuckProperties blackDuckProperties) {
+    public SyncTask(final TaskScheduler taskScheduler, final String taskName, final BlackDuckProperties blackDuckProperties, final RepositoryAccessor repositoryAccessor) {
         super(taskScheduler, taskName);
         this.blackDuckProperties = blackDuckProperties;
+        this.repositoryAccessor = repositoryAccessor;
     }
 
     @Override
@@ -85,15 +88,23 @@ public abstract class SyncTask<T> extends ScheduledTask {
 
     public abstract Map<T, ? extends HubView> getCurrentData(List<? extends HubView> hubViews);
 
-    public abstract List<? extends DatabaseEntity> getStoredEntities();
+    public List<? extends DatabaseEntity> getStoredEntities() {
+        return repositoryAccessor.readEntities();
+    }
 
     public abstract Set<T> getStoredData(List<? extends DatabaseEntity> storedEntities);
 
     public abstract List<? extends DatabaseEntity> getEntitiesToRemove(List<? extends DatabaseEntity> storedEntities, Set<T> dataToRemove);
 
-    public abstract void deleteEntity(Long id);
+    public void deleteEntity(final Long id) {
+        repositoryAccessor.deleteEntity(id);
+    }
 
-    public abstract DatabaseEntity createAndSaveEntity(T data);
+    public abstract DatabaseEntity createEntity(T data);
+
+    public DatabaseEntity createAndSaveEntity(final T data) {
+        return repositoryAccessor.saveEntity(createEntity(data));
+    }
 
     public abstract void addRelations(final Map<T, ? extends HubView> currentDataMap, final List<? extends DatabaseEntity> storedEntities, HubService hubService) throws IOException, IntegrationException;
 

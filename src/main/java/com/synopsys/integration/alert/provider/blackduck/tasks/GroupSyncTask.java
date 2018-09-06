@@ -58,16 +58,14 @@ import com.synopsys.integration.exception.IntegrationException;
 public class GroupSyncTask extends SyncTask<GroupData> {
     private final Logger logger = LoggerFactory.getLogger(GroupSyncTask.class);
     private final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor;
-    private final BlackDuckGroupRepositoryAccessor blackDuckGroupRepositoryAccessor;
     private final UserGroupRelationRepositoryAccessor userGroupRelationRepositoryAccessor;
 
     @Autowired
     public GroupSyncTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor,
         final BlackDuckGroupRepositoryAccessor blackDuckGroupRepositoryAccessor,
         final UserGroupRelationRepositoryAccessor userGroupRelationRepositoryAccessor) {
-        super(taskScheduler, "blackduck-sync-group-task", blackDuckProperties);
+        super(taskScheduler, "blackduck-sync-group-task", blackDuckProperties, blackDuckGroupRepositoryAccessor);
         this.blackDuckUserRepositoryAccessor = blackDuckUserRepositoryAccessor;
-        this.blackDuckGroupRepositoryAccessor = blackDuckGroupRepositoryAccessor;
         this.userGroupRelationRepositoryAccessor = userGroupRelationRepositoryAccessor;
     }
 
@@ -81,11 +79,6 @@ public class GroupSyncTask extends SyncTask<GroupData> {
         final List<UserGroupView> userGroupViews = (List<UserGroupView>) hubViews;
         final Map<GroupData, ? extends HubView> groupMap = userGroupViews.stream().collect(Collectors.toMap(groupView -> new GroupData(groupView.name, groupView.active, groupView._meta.href), Function.identity()));
         return groupMap;
-    }
-
-    @Override
-    public List<? extends DatabaseEntity> getStoredEntities() {
-        return blackDuckGroupRepositoryAccessor.readEntities();
     }
 
     @Override
@@ -113,13 +106,8 @@ public class GroupSyncTask extends SyncTask<GroupData> {
     }
 
     @Override
-    public void deleteEntity(final Long id) {
-        blackDuckGroupRepositoryAccessor.deleteEntity(id);
-    }
-
-    @Override
-    public DatabaseEntity createAndSaveEntity(final GroupData data) {
-        return blackDuckGroupRepositoryAccessor.saveEntity(new BlackDuckGroupEntity(data.getName(), data.getActive(), data.getHref()));
+    public DatabaseEntity createEntity(final GroupData data) {
+        return new BlackDuckGroupEntity(data.getName(), data.getActive(), data.getHref());
     }
 
     @Override

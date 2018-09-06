@@ -31,8 +31,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
@@ -49,13 +47,10 @@ import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class EmailSyncTask extends SyncTask<String> {
-    private final Logger logger = LoggerFactory.getLogger(EmailSyncTask.class);
-    private final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor;
 
     @Autowired
     public EmailSyncTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor) {
-        super(taskScheduler, "blackduck-sync-email-task", blackDuckProperties);
-        this.blackDuckUserRepositoryAccessor = blackDuckUserRepositoryAccessor;
+        super(taskScheduler, "blackduck-sync-email-task", blackDuckProperties, blackDuckUserRepositoryAccessor);
     }
 
     @Override
@@ -78,11 +73,6 @@ public class EmailSyncTask extends SyncTask<String> {
     }
 
     @Override
-    public List<? extends DatabaseEntity> getStoredEntities() {
-        return blackDuckUserRepositoryAccessor.readEntities();
-    }
-
-    @Override
     public Set<String> getStoredData(final List<? extends DatabaseEntity> storedEntities) {
         final List<BlackDuckUserEntity> blackDuckUserEntities = (List<BlackDuckUserEntity>) storedEntities;
 
@@ -100,13 +90,8 @@ public class EmailSyncTask extends SyncTask<String> {
     }
 
     @Override
-    public void deleteEntity(final Long id) {
-        blackDuckUserRepositoryAccessor.deleteEntity(id);
-    }
-
-    @Override
-    public DatabaseEntity createAndSaveEntity(final String data) {
-        return blackDuckUserRepositoryAccessor.saveEntity(new BlackDuckUserEntity(data, false));
+    public DatabaseEntity createEntity(final String data) {
+        return new BlackDuckUserEntity(data, false);
     }
 
     @Override

@@ -27,6 +27,9 @@ public class BlackDuckProviderTest {
         provider.initialize();
         Mockito.verify(accumulatorTask).scheduleExecution(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION);
         Mockito.verify(emailSyncTask).scheduleExecution(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION);
+        Mockito.verify(groupSyncTask).scheduleExecution(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION);
+        Mockito.verify(projectSyncTask).scheduleExecution(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION);
+
     }
 
     @Test
@@ -39,6 +42,9 @@ public class BlackDuckProviderTest {
         provider.destroy();
         Mockito.verify(accumulatorTask).scheduleExecution(BlackDuckAccumulator.STOP_SCHEDULE_EXPRESSION);
         Mockito.verify(emailSyncTask).scheduleExecution(BlackDuckAccumulator.STOP_SCHEDULE_EXPRESSION);
+        Mockito.verify(groupSyncTask).scheduleExecution(BlackDuckAccumulator.STOP_SCHEDULE_EXPRESSION);
+        Mockito.verify(projectSyncTask).scheduleExecution(BlackDuckAccumulator.STOP_SCHEDULE_EXPRESSION);
+
     }
 
     @Test
@@ -52,7 +58,5 @@ public class BlackDuckProviderTest {
         final Set<String> providerNotificationTypes = provider.getProviderContentTypes().stream().map(contentType -> contentType.getNotificationType()).collect(Collectors.toSet());
         assertEquals(expectedNotificationTypes, providerNotificationTypes);
     }
-
-    //TODO add tests for sync tasks
 
 }
