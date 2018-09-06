@@ -53,7 +53,7 @@ public class JsonExtractor {
     public Optional<String> getFirstValueFromJson(final HierarchicalField hierarchicalField, final String json) {
         final List<String> foundValues = getValuesFromJson(hierarchicalField, json);
         if (!foundValues.isEmpty()) {
-            Optional.of(foundValues.get(0));
+            return Optional.of(foundValues.get(0));
         }
         return Optional.empty();
     }
@@ -66,9 +66,9 @@ public class JsonExtractor {
         return getValuesFromElement(foundElement, hierarchicalField.getFieldKey());
     }
 
-    public List<String> getValuesFromConfig(final String fieldKey, final Config config) {
+    public List<String> getValuesFromConfig(final HierarchicalField hierarchicalField, final Config config) {
         final JsonObject jsonConfig = gson.toJsonTree(config).getAsJsonObject();
-        return getValuesFromElement(jsonConfig, fieldKey);
+        return getValuesFromElement(jsonConfig, hierarchicalField.getConfigNameMapping());
     }
 
     private JsonElement getFieldContainingValue(final JsonElement jsonElement, final List<String> fieldNameHierarchy, final String fieldName, final int nextIndex) {

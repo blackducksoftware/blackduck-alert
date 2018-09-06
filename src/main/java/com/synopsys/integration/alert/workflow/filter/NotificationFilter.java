@@ -141,7 +141,7 @@ public class NotificationFilter {
         for (final CommonDistributionConfig config : distributionConfigs) {
             for (final HierarchicalField field : filterableFields) {
                 if (shouldFilter(config)) {
-                    final Collection<String> valuesFromField = jsonExtractor.getValuesFromConfig(field.getConfigNameMapping(), config);
+                    final Collection<String> valuesFromField = jsonExtractor.getValuesFromConfig(field, config);
                     final JsonFilterBuilder fieldFilter = createFilterBuilderForAllValues(field, valuesFromField);
                     filterBuilder = new AndFieldFilterBuilder(filterBuilder, fieldFilter);
                 }
