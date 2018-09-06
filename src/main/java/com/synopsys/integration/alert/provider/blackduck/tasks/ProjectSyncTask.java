@@ -65,18 +65,16 @@ public class ProjectSyncTask extends SyncTask<ProjectData> {
     private final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor;
     private final BlackDuckGroupRepositoryAccessor blackDuckGroupRepositoryAccessor;
     private final UserGroupRelationRepositoryAccessor userGroupRelationRepositoryAccessor;
-    private final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
     private final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor;
 
     @Autowired
     public ProjectSyncTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor,
         final BlackDuckGroupRepositoryAccessor blackDuckGroupRepositoryAccessor, final UserGroupRelationRepositoryAccessor userGroupRelationRepositoryAccessor,
         final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor, final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor) {
-        super(taskScheduler, "blackduck-sync-project-task", blackDuckProperties);
+        super(taskScheduler, "blackduck-sync-project-task", blackDuckProperties, blackDuckProjectRepositoryAccessor);
         this.blackDuckUserRepositoryAccessor = blackDuckUserRepositoryAccessor;
         this.blackDuckGroupRepositoryAccessor = blackDuckGroupRepositoryAccessor;
         this.userGroupRelationRepositoryAccessor = userGroupRelationRepositoryAccessor;
-        this.blackDuckProjectRepositoryAccessor = blackDuckProjectRepositoryAccessor;
         this.userProjectRelationRepositoryAccessor = userProjectRelationRepositoryAccessor;
     }
 
@@ -91,11 +89,6 @@ public class ProjectSyncTask extends SyncTask<ProjectData> {
         final Map<ProjectData, ? extends HubView> projectMap = projectViews.stream().collect(
             Collectors.toMap(projectView -> new ProjectData(projectView.name, StringUtils.trimToEmpty(projectView.description), projectView._meta.href), Function.identity()));
         return projectMap;
-    }
-
-    @Override
-    public List<? extends DatabaseEntity> getStoredEntities() {
-        return blackDuckProjectRepositoryAccessor.readEntities();
     }
 
     @Override
@@ -123,13 +116,8 @@ public class ProjectSyncTask extends SyncTask<ProjectData> {
     }
 
     @Override
-    public void deleteEntity(final Long id) {
-        blackDuckProjectRepositoryAccessor.deleteEntity(id);
-    }
-
-    @Override
-    public DatabaseEntity createAndSaveEntity(final ProjectData data) {
-        return blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity(data.getName(), data.getDescription(), data.getHref()));
+    public DatabaseEntity createEntity(final ProjectData data) {
+        return new BlackDuckProjectEntity(data.getName(), data.getDescription(), data.getHref());
     }
 
     @Override
