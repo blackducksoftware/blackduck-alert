@@ -23,6 +23,7 @@
  */
 package com.synopsys.integration.alert.provider.blackduck;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,6 +34,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
+import com.synopsys.integration.alert.common.workflow.processor.CollectorLookup;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 
 @Component(value = BlackDuckProvider.COMPONENT_NAME)
@@ -41,10 +43,13 @@ public class BlackDuckProvider extends Provider {
     private static final Logger logger = LoggerFactory.getLogger(BlackDuckProvider.class);
 
     private final BlackDuckAccumulator accumulatorTask;
+    private final CollectorLookup collectorLookup;
 
     @Autowired
     public BlackDuckProvider(final BlackDuckAccumulator accumulatorTask) {
         this.accumulatorTask = accumulatorTask;
+        // TODO initialize with correct topic collectors
+        this.collectorLookup = new CollectorLookup(Collections.emptyList());
     }
 
     @Override
@@ -62,5 +67,10 @@ public class BlackDuckProvider extends Provider {
     @Override
     public Set<ProviderContentType> getProviderContentTypes() {
         return BlackDuckProviderContentTypes.ALL.stream().collect(Collectors.toSet());
+    }
+
+    @Override
+    public CollectorLookup getCollectorLookup() {
+        return collectorLookup;
     }
 }
