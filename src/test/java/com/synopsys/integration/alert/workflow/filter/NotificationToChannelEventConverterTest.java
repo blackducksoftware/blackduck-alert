@@ -1,6 +1,8 @@
-package com.synopsys.integration.alert.common.digest.filter;
+package com.synopsys.integration.alert.workflow.filter;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -40,7 +42,6 @@ import com.synopsys.integration.alert.database.entity.repository.CommonDistribut
 import com.synopsys.integration.alert.database.entity.repository.NotificationTypeRepository;
 import com.synopsys.integration.alert.database.relation.DistributionNotificationTypeRelation;
 import com.synopsys.integration.alert.database.relation.repository.DistributionNotificationTypeRepository;
-import com.synopsys.integration.alert.workflow.filter.NotificationFilter;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.test.annotation.DatabaseConnectionTest;
 import com.synopsys.integration.test.annotation.ExternalConnectionTest;
