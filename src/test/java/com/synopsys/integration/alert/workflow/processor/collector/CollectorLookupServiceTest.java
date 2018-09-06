@@ -17,7 +17,7 @@ import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.workflow.processor.CollectorLookup;
 import com.synopsys.integration.alert.common.workflow.processor.TopicCollector;
 
-public class TopicCollectorTest {
+public class CollectorLookupServiceTest {
 
     private CollectorLookupService lookupService;
 
