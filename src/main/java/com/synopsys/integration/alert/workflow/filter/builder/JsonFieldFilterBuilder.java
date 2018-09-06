@@ -26,66 +26,32 @@ package com.synopsys.integration.alert.workflow.filter.builder;
 import java.util.List;
 import java.util.function.Predicate;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import com.synopsys.integration.alert.common.field.HierarchicalField;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
+import com.synopsys.integration.alert.workflow.filter.JsonExtractor;
 
 public class JsonFieldFilterBuilder implements JsonFilterBuilder {
-    private final Gson gson;
-    private final List<String> fieldNameHierarchy;
+    private final JsonExtractor jsonExtractor;
+    private final HierarchicalField hierarchicalField;
     private final String value;
 
-    public JsonFieldFilterBuilder(final Gson gson, final HierarchicalField hierarchicalField, final String value) {
-        this.gson = gson;
+    public JsonFieldFilterBuilder(final JsonExtractor jsonExtractor, final HierarchicalField hierarchicalField, final String value) {
+        this.jsonExtractor = jsonExtractor;
+        this.hierarchicalField = hierarchicalField;
         this.value = value;
-        this.fieldNameHierarchy = hierarchicalField.getFullPathToField();
     }
 
     @Override
     public Predicate<NotificationContent> buildPredicate() {
         final Predicate<NotificationContent> contentPredicate = (notification) -> {
-            final JsonObject object = gson.fromJson(notification.getContent(), JsonObject.class);
-
-            final JsonElement foundObject = getFieldContainingValue(object, fieldNameHierarchy.get(0), 1);
-            return foundObject != null;
+            final List<String> contentValues = jsonExtractor.getValuesFromJson(hierarchicalField, notification.getContent());
+            for (final String contentValue : contentValues) {
+                if (value.equals(contentValue)) {
+                    return true;
+                }
+            }
+            return false;
         };
         return contentPredicate;
-    }
-
-    private JsonElement getFieldContainingValue(final JsonElement jsonElement, final String fieldName, final int nextIndex) {
-        if (jsonElement != null) {
-            final JsonElement jsonField = getFieldValue(jsonElement, fieldName, nextIndex);
-
-            // check if we are at the expected depth
-            if (nextIndex < fieldNameHierarchy.size()) {
-                return getFieldContainingValue(jsonField, fieldNameHierarchy.get(nextIndex), nextIndex + 1);
-            } else if (jsonField != null && jsonField.isJsonPrimitive()) {
-                final JsonPrimitive jsonPrimitive = jsonField.getAsJsonPrimitive();
-                if (jsonPrimitive.isString() && value.equals(jsonPrimitive.getAsString())) {
-                    return jsonField;
-                }
-            }
-        }
-        return null;
-    }
-
-    private JsonElement getFieldValue(final JsonElement jsonElement, final String fieldName, final int nextIndex) {
-        if (jsonElement.isJsonObject()) {
-            final JsonObject jsonObject = jsonElement.getAsJsonObject();
-            return jsonObject.get(fieldName);
-        } else if (jsonElement.isJsonArray()) {
-            // TODO we might be able to parallelize this
-            for (final JsonElement arrayElement : jsonElement.getAsJsonArray()) {
-                // search each element of the array; if something matches, we're done
-                final JsonElement jsonField = getFieldContainingValue(arrayElement, fieldName, nextIndex + 1);
-                if (jsonField != null) {
-                    return jsonField;
-                }
-            }
-        }
-        return null;
     }
 }
