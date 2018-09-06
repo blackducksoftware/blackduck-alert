@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.synopsys.integration.alert.common.field.Field;
 import com.synopsys.integration.alert.common.field.HierarchicalField;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
@@ -45,25 +46,25 @@ public class BlackDuckProviderContentTypes {
     public static final ProviderContentType POLICY_OVERRIDE = new ProviderContentType(
         NotificationType.POLICY_OVERRIDE.name(),
         Arrays.asList(
-            new HierarchicalField(Arrays.asList("content"), "projectName", "configuredProjects")
+            new HierarchicalField(Arrays.asList("content"), "projectName", "configuredProjects", Field.LABEL_TOPIC)
         )
     );
     public static final ProviderContentType RULE_VIOLATION = new ProviderContentType(
         NotificationType.RULE_VIOLATION.name(),
         Arrays.asList(
-            new HierarchicalField(Arrays.asList("content"), "projectName", "configuredProjects")
+            new HierarchicalField(Arrays.asList("content"), "projectName", "configuredProjects", Field.LABEL_TOPIC)
         )
     );
     public static final ProviderContentType RULE_VIOLATION_CLEARED = new ProviderContentType(
         NotificationType.RULE_VIOLATION_CLEARED.name(),
         Arrays.asList(
-            new HierarchicalField(Arrays.asList("content"), "projectName", "configuredProjects")
+            new HierarchicalField(Arrays.asList("content"), "projectName", "configuredProjects", Field.LABEL_TOPIC)
         )
     );
     public static final ProviderContentType VULNERABILITY = new ProviderContentType(
         NotificationType.VULNERABILITY.name(),
         Arrays.asList(
-            new HierarchicalField(Arrays.asList("content", "affectedProjectVersions"), "projectName", "configuredProjects")
+            new HierarchicalField(Arrays.asList("content", "affectedProjectVersions"), "projectName", "configuredProjects", Field.LABEL_TOPIC)
         )
     );
 
