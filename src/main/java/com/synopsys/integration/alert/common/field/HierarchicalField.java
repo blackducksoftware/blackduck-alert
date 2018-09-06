@@ -32,8 +32,8 @@ public class HierarchicalField extends Field {
     private final List<String> fieldList;
     private final String configNameMapping;
 
-    public HierarchicalField(final Collection<String> pathToField, final String innerMostFieldName, final String configNameMapping) {
-        super(innerMostFieldName);
+    public HierarchicalField(final Collection<String> pathToField, final String innerMostFieldName, final String configNameMapping, final String label) {
+        super(innerMostFieldName, label);
 
         final List<String> list = new ArrayList<>();
         list.addAll(pathToField);
