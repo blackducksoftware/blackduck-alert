@@ -26,5 +26,6 @@ package com.synopsys.integration.alert.common.enumeration;
 public enum ItemOperation {
     ADD,
     DELETE,
+    NOOP,
     UPDATE
 }
