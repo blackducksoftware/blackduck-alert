@@ -31,6 +31,7 @@ class BaseJobConfiguration extends Component {
         this.handleProviderChanged = this.handleProviderChanged.bind(this);
         this.createProviderOptions = this.createProviderOptions.bind(this);
         this.createNotificationTypeOptions = this.createNotificationTypeOptions.bind(this);
+        this.createFormatTypeOptions = this.createFormatTypeOptions.bind(this);
         this.buildJsonBody = this.buildJsonBody.bind(this);
         this.renderDistributionForm = this.renderDistributionForm.bind(this);
     }
@@ -138,6 +139,7 @@ class BaseJobConfiguration extends Component {
             providerName: this.state.providerName,
             distributionType: this.state.distributionType,
             frequency: this.state.frequency,
+            formatType: this.state.formatType,
             includeAllProjects: this.state.filterByProject == 'false',
             filterByProject: this.state.filterByProject,
             notificationTypes: this.state.notificationTypes,
@@ -219,6 +221,14 @@ class BaseJobConfiguration extends Component {
         }
     }
 
+    handleFormatChanged(option) {
+        if (option) {
+            this.handleStateValues('formatType', option.value);
+        } else {
+            this.handleStateValues('formatType', option);
+        }
+    }
+
     createProviderOptions() {
         const providers = this.props.descriptors.items['PROVIDER_CONFIG'];
         if (providers) {
@@ -248,6 +258,19 @@ class BaseJobConfiguration extends Component {
         }
     }
 
+    createFormatTypeOptions() {
+        const {fields} = this.props.currentDistributionComponents;
+        if (fields) {
+            const formatTypeField = fields.filter(field => field.key === 'formatType');
+            const {options} = formatTypeField[0];
+
+            const optionList = options.map(option => Object.assign({}, {label: option, value: option}));
+            return optionList;
+        } else {
+            return [];
+        }
+    }
+
     renderOption(option) {
         return (<DescriptorOption icon={option.icon} label={option.label} value={option.value}/>);
     }
@@ -258,6 +281,23 @@ class BaseJobConfiguration extends Component {
         } else {
             return (
                 <div>
+                    <div className="form-group">
+                        <label className="col-sm-3 control-label">Format</label>
+                        <div className="col-sm-8">
+                            <Select
+                                id="formatType"
+                                className="typeAheadField"
+                                onChange={this.handleFormatChanged}
+                                removeSelected
+                                options={this.createFormatTypeOptions()}
+                                placeholder="Choose the format for the job"
+                                value={this.state.formatType}
+                            />
+                            {this.state.errors.formatTypeError && <label className="fieldError" name="formatTypeError">
+                                {this.state.errors.formatTypeError}
+                            </label>}
+                        </div>
+                    </div>
                     <div className="form-group">
                         <label className="col-sm-3 control-label">Notification Types</label>
                         <div className="col-sm-8">

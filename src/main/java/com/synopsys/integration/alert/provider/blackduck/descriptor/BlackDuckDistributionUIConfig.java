@@ -48,6 +48,6 @@ public class BlackDuckDistributionUIConfig extends ProviderUIConfig {
     }
 
     private List<ConfigField> setupFields() {
-        return Arrays.asList(getNotificationTypeField());
+        return Arrays.asList(getSupportedFormatTypeField(), getNotificationTypeField());
     }
 }
