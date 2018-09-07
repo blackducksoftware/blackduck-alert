@@ -24,6 +24,8 @@
 package com.synopsys.integration.alert.common.provider;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
@@ -32,18 +34,22 @@ import com.synopsys.integration.util.Stringable;
 
 public class ProviderContentType extends Stringable {
     private final String notificationType;
-    private final Collection<HierarchicalField> filterableFields;
+    private final Collection<HierarchicalField> notificationFields;
 
-    public ProviderContentType(@NotNull final String notificationType, @NotNull final Collection<HierarchicalField> filterableFields) {
+    public ProviderContentType(@NotNull final String notificationType, @NotNull final Collection<HierarchicalField> notificationFields) {
         this.notificationType = notificationType;
-        this.filterableFields = filterableFields;
+        this.notificationFields = notificationFields;
     }
 
     public String getNotificationType() {
         return notificationType;
     }
 
-    public Collection<HierarchicalField> getFilterableFields() {
-        return filterableFields;
+    public List<HierarchicalField> getNotificationFields() {
+        return notificationFields.parallelStream().collect(Collectors.toList());
+    }
+
+    public List<HierarchicalField> getFilterableFields() {
+        return notificationFields.parallelStream().filter(HierarchicalField::isFilterable).collect(Collectors.toList());
     }
 }
