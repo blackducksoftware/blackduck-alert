@@ -115,7 +115,9 @@ public abstract class TopicCollector {
     }
 
     protected final boolean hasSubTopic(final List<HierarchicalField> notificationFields) {
-        return notificationFields.stream().anyMatch(field -> HierarchicalField.LABEL_SUB_TOPIC.equals(field.getLabel()));
+        return notificationFields
+                   .stream()
+                   .anyMatch(field -> HierarchicalField.LABEL_SUB_TOPIC.equals(field.getLabel()));
     }
 
     protected final Optional<String> getSubTopicName(final List<HierarchicalField> notificationFields) {
@@ -167,6 +169,13 @@ public abstract class TopicCollector {
             return jsonExtractor.getFirstValueFromJson(field, notificationJson);
         }
         return Optional.empty();
+    }
+
+    protected final Optional<HierarchicalField> getRelatedUrlField(final HierarchicalField relatedField, final List<HierarchicalField> categoryFields) {
+        return categoryFields
+                   .parallelStream()
+                   .filter(field -> field.getLabel().equals(relatedField.getLabel() + HierarchicalField.LABEL_URL_SUFFIX))
+                   .findFirst();
     }
 
     private final TopicContent findTopicContent(final String topicName, final String topicValue, final String subTopicName, final String subTopicValue) {
