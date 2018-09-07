@@ -28,12 +28,18 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import com.synopsys.integration.alert.common.field.Field;
 import com.synopsys.integration.alert.common.field.HierarchicalField;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 public class BlackDuckProviderContentTypes {
+    public static final String LABEL_SUFFIX_COMPONENT_NAME = "componentName";
+    public static final String LABEL_SUFFIX_COMPONENT_URL = "componentUrl";
+    public static final String LABEL_SUFFIX_COMPONENT_VERSION_NAME = "componentVersionName";
+    public static final String LABEL_SUFFIX_COMPONENT_VERSION_URL = "componentVersionUrl";
+    public static final String LABEL_SUFFIX_POLICY_NAME = "policyName";
+    public static final String LABEL_SUFFIX_POLICY_URL = "policyUrl";
+
     public static final List<ProviderContentType> ALL = new ArrayList();
     public static final ProviderContentType BOM_EDIT = new ProviderContentType(
         NotificationType.BOM_EDIT.name(),
@@ -46,26 +52,47 @@ public class BlackDuckProviderContentTypes {
     public static final ProviderContentType POLICY_OVERRIDE = new ProviderContentType(
         NotificationType.POLICY_OVERRIDE.name(),
         Arrays.asList(
-            new HierarchicalField(Arrays.asList("content"), "projectName", "configuredProjects", Field.LABEL_TOPIC)
-        )
-    );
-    public static final ProviderContentType RULE_VIOLATION = new ProviderContentType(
-        NotificationType.RULE_VIOLATION.name(),
-        Arrays.asList(
-            new HierarchicalField(Arrays.asList("content"), "projectName", "configuredProjects", Field.LABEL_TOPIC)
-        )
-    );
-    public static final ProviderContentType RULE_VIOLATION_CLEARED = new ProviderContentType(
-        NotificationType.RULE_VIOLATION_CLEARED.name(),
-        Arrays.asList(
-            new HierarchicalField(Arrays.asList("content"), "projectName", "configuredProjects", Field.LABEL_TOPIC)
+            new HierarchicalField(Arrays.asList("content"), "projectName", HierarchicalField.LABEL_TOPIC, "configuredProjects"),
+            new HierarchicalField(Arrays.asList("content"), "projectVersionName", HierarchicalField.LABEL_SUB_TOPIC),
+            new HierarchicalField(Arrays.asList("content"), "projectVersion", HierarchicalField.LABEL_SUB_TOPIC + HierarchicalField.LABEL_URL_SUFFIX),
+            new HierarchicalField(Arrays.asList("content"), "componentName", HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + LABEL_SUFFIX_COMPONENT_NAME),
+            new HierarchicalField(Arrays.asList("content"), "component", HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + LABEL_SUFFIX_COMPONENT_URL),
+            new HierarchicalField(Arrays.asList("content"), "versionName", HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + LABEL_SUFFIX_COMPONENT_VERSION_NAME),
+            new HierarchicalField(Arrays.asList("content"), "componentVersion", HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + LABEL_SUFFIX_COMPONENT_VERSION_URL),
+            new HierarchicalField(Arrays.asList("content", "policyInfos"), "policyName", HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + LABEL_SUFFIX_POLICY_NAME),
+            new HierarchicalField(Arrays.asList("content", "policyInfos"), "policy", HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + LABEL_SUFFIX_POLICY_URL)
         )
     );
     public static final ProviderContentType VULNERABILITY = new ProviderContentType(
         NotificationType.VULNERABILITY.name(),
         Arrays.asList(
-            new HierarchicalField(Arrays.asList("content", "affectedProjectVersions"), "projectName", "configuredProjects", Field.LABEL_TOPIC)
+            new HierarchicalField(Arrays.asList("content", "affectedProjectVersions"), "projectName", HierarchicalField.LABEL_TOPIC, "configuredProjects"),
+            new HierarchicalField(Arrays.asList("content", "affectedProjectVersions"), "projectVersionName", HierarchicalField.LABEL_SUB_TOPIC),
+            new HierarchicalField(Arrays.asList("content", "affectedProjectVersions"), "projectVersion", HierarchicalField.LABEL_SUB_TOPIC + HierarchicalField.LABEL_URL_SUFFIX),
+            new HierarchicalField(Arrays.asList("content"), "componentName", HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + LABEL_SUFFIX_COMPONENT_NAME),
+            new HierarchicalField(Arrays.asList("content"), "component", HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + LABEL_SUFFIX_COMPONENT_URL),
+            new HierarchicalField(Arrays.asList("content"), "versionName", HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + LABEL_SUFFIX_COMPONENT_VERSION_NAME),
+            new HierarchicalField(Arrays.asList("content"), "componentVersion", HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + LABEL_SUFFIX_COMPONENT_VERSION_URL)
         )
+    );
+    private static List<HierarchicalField> RULE_VIOLATION_FIELD_LIST = Arrays.asList(
+        new HierarchicalField(Arrays.asList("content"), "projectName", HierarchicalField.LABEL_TOPIC, "configuredProjects"),
+        new HierarchicalField(Arrays.asList("content"), "projectVersionName", HierarchicalField.LABEL_SUB_TOPIC),
+        new HierarchicalField(Arrays.asList("content"), "projectVersion", HierarchicalField.LABEL_SUB_TOPIC + HierarchicalField.LABEL_URL_SUFFIX),
+        new HierarchicalField(Arrays.asList("content", "componentVersionStatuses"), "componentName", HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + LABEL_SUFFIX_COMPONENT_NAME),
+        new HierarchicalField(Arrays.asList("content", "componentVersionStatuses"), "component", HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + LABEL_SUFFIX_COMPONENT_URL),
+        new HierarchicalField(Arrays.asList("content", "componentVersionStatuses"), "componentVersionName", HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + LABEL_SUFFIX_COMPONENT_VERSION_NAME),
+        new HierarchicalField(Arrays.asList("content", "componentVersionStatuses"), "componentVersion", HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + LABEL_SUFFIX_COMPONENT_VERSION_URL),
+        new HierarchicalField(Arrays.asList("content", "policyInfos"), "policyName", HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + LABEL_SUFFIX_POLICY_NAME),
+        new HierarchicalField(Arrays.asList("content", "policyInfos"), "policy", HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + LABEL_SUFFIX_POLICY_URL)
+    );
+    public static final ProviderContentType RULE_VIOLATION = new ProviderContentType(
+        NotificationType.RULE_VIOLATION.name(),
+        RULE_VIOLATION_FIELD_LIST
+    );
+    public static final ProviderContentType RULE_VIOLATION_CLEARED = new ProviderContentType(
+        NotificationType.RULE_VIOLATION_CLEARED.name(),
+        RULE_VIOLATION_FIELD_LIST
     );
 
     static {

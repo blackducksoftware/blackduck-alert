@@ -72,15 +72,15 @@ public class JsonExtractorTest {
         final List<String> notificationTypes = Arrays.asList("type1", "type2");
         final CommonDistributionConfig commonDistributionConfig = new CommonDistributionConfig(id, distributionConfigId, distributionType, name, providerName, frequency, filterByProject, configuredProjects, notificationTypes);
 
-        final HierarchicalField nameField = new HierarchicalField(Arrays.asList(), null, "name", null);
+        final HierarchicalField nameField = new HierarchicalField(Arrays.asList(), null, null, "name");
         final List<String> nameValues = jsonExtractor.getValuesFromConfig(nameField, commonDistributionConfig);
         Assert.assertEquals(Arrays.asList(name), nameValues);
 
-        final HierarchicalField configuredProjectsField = new HierarchicalField(Arrays.asList(), null, "configuredProjects", null);
+        final HierarchicalField configuredProjectsField = new HierarchicalField(Arrays.asList(), null, null, "configuredProjects");
         final List<String> configuredProjectValues = jsonExtractor.getValuesFromConfig(configuredProjectsField, commonDistributionConfig);
         Assert.assertEquals(configuredProjects, configuredProjectValues);
 
-        final HierarchicalField notificationTypesField = new HierarchicalField(Arrays.asList(), null, "notificationTypes", null);
+        final HierarchicalField notificationTypesField = new HierarchicalField(Arrays.asList(), null, null, "notificationTypes");
         final List<String> notificationTypeValues = jsonExtractor.getValuesFromConfig(notificationTypesField, commonDistributionConfig);
         Assert.assertEquals(notificationTypes, notificationTypeValues);
     }

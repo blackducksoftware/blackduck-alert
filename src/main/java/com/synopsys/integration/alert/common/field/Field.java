@@ -26,9 +26,6 @@ package com.synopsys.integration.alert.common.field;
 import com.synopsys.integration.util.Stringable;
 
 public abstract class Field extends Stringable {
-    public static final String LABEL_TOPIC = "topic";
-    public static final String LABEL_SUB_TOPIC = "sub_topic";
-
     private String fieldKey;
     private String label;
 
