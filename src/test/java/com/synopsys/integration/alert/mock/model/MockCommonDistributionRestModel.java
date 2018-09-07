@@ -19,6 +19,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
+import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.mock.NotificationTypeMockUtils;
 import com.synopsys.integration.alert.mock.ProjectMockUtils;
@@ -39,6 +40,7 @@ public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDis
     private List<NotificationType> notificationTypes;
     private String lastRan;
     private String status;
+    private String formatType;
 
     public MockCommonDistributionRestModel() {
         this("1");
@@ -46,13 +48,13 @@ public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDis
 
     private MockCommonDistributionRestModel(final String distributionConfigId) {
         this("2", distributionConfigId, HipChatChannel.COMPONENT_NAME.toString(), "Name", "provider_blackduck", FrequencyType.REAL_TIME.name(), "true", projectMock.createProjectListing(),
-        notificationTypeMock.createNotificiationTypeListing(),
-        null, null);
+            notificationTypeMock.createNotificiationTypeListing(),
+            null, null, FormatType.DEFAULT.name());
     }
 
     private MockCommonDistributionRestModel(final String id, final String distributionConfigId, final String distributionType, final String name, final String providerName, final String frequency, final String filterByProject,
-    final List<String> configuredProjects,
-    final List<NotificationType> notificationTypes, final String lastRan, final String status) {
+        final List<String> configuredProjects,
+        final List<NotificationType> notificationTypes, final String lastRan, final String status, final String formatType) {
         super();
         this.id = id;
         this.distributionConfigId = distributionConfigId;
@@ -65,6 +67,7 @@ public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDis
         this.notificationTypes = notificationTypes;
         this.lastRan = lastRan;
         this.status = status;
+        this.formatType = formatType;
     }
 
     public String getDistributionConfigId() {
@@ -135,6 +138,10 @@ public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDis
         return status;
     }
 
+    public String getFormatType() {
+        return formatType;
+    }
+
     public void setStatus(final String status) {
         this.status = status;
     }
@@ -145,6 +152,10 @@ public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDis
 
     public void setNotificationTypes(final List<NotificationType> notificationTypes) {
         this.notificationTypes = notificationTypes;
+    }
+
+    public void setFormatType(final String formatType) {
+        this.formatType = formatType;
     }
 
     @Override
@@ -163,7 +174,8 @@ public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDis
 
     @Override
     public CommonDistributionConfig createRestModel() {
-        return new CommonDistributionConfig(id, distributionConfigId, distributionType, name, providerName, frequency, filterByProject, projectMock.createProjectListing(), notificationTypeMock.createNotificiationTypeListingAsStrings());
+        return new CommonDistributionConfig(id, distributionConfigId, distributionType, name, providerName, frequency, filterByProject, projectMock.createProjectListing(), notificationTypeMock.createNotificiationTypeListingAsStrings(),
+            formatType);
     }
 
     @Override
@@ -177,6 +189,7 @@ public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDis
         json.addProperty("filterByProject", filterByProject);
         json.add("configuredProjects", projectMock.getProjectListingJson());
         json.add("notificationTypes", notificationTypeMock.getNotificationListingJson());
+        json.addProperty("formatType", formatType);
         json.addProperty("id", id);
         return json.toString();
     }
