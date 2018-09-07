@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.channel.event.NotificationToChannelEventConverter;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
+import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
@@ -75,9 +76,9 @@ public class NotificationToChannelEventConverterTest {
         cleanUp();
 
         long configId = 1;
-        CommonDistributionConfigEntity slackDistributionConfig = new CommonDistributionConfigEntity(configId++, SlackChannel.COMPONENT_NAME, "Slack Config", "provider_blackduck", FrequencyType.REAL_TIME, false);
-        CommonDistributionConfigEntity hipChatDistributionConfig = new CommonDistributionConfigEntity(configId++, HipChatChannel.COMPONENT_NAME, "HipChat Config", "provider_blackduck", FrequencyType.REAL_TIME, false);
-        CommonDistributionConfigEntity emailDistributionConfig = new CommonDistributionConfigEntity(configId++, EmailGroupChannel.COMPONENT_NAME, "Email Config", "provider_blackduck", FrequencyType.REAL_TIME, false);
+        CommonDistributionConfigEntity slackDistributionConfig = new CommonDistributionConfigEntity(configId++, SlackChannel.COMPONENT_NAME, "Slack Config", "provider_blackduck", FrequencyType.REAL_TIME, false, FormatType.DEFAULT);
+        CommonDistributionConfigEntity hipChatDistributionConfig = new CommonDistributionConfigEntity(configId++, HipChatChannel.COMPONENT_NAME, "HipChat Config", "provider_blackduck", FrequencyType.REAL_TIME, false, FormatType.DEFAULT);
+        CommonDistributionConfigEntity emailDistributionConfig = new CommonDistributionConfigEntity(configId++, EmailGroupChannel.COMPONENT_NAME, "Email Config", "provider_blackduck", FrequencyType.REAL_TIME, false, FormatType.DEFAULT);
 
         slackDistributionConfig = commonDistributionRepository.save(slackDistributionConfig);
         hipChatDistributionConfig = commonDistributionRepository.save(hipChatDistributionConfig);
