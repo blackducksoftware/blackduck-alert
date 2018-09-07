@@ -27,18 +27,31 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class HierarchicalField extends Field {
-    private final List<String> fieldList;
-    private final String configNameMapping;
+    public static final String LABEL_TOPIC = "topic";
+    public static final String LABEL_SUB_TOPIC = "sub_topic";
+    public static final String LABEL_URL_SUFFIX = "_url";
+    public static final String LABEL_CATEGORY_ITEM_PREFIX = "category_item_";
 
-    public HierarchicalField(final Collection<String> pathToField, final String innerMostFieldName, final String configNameMapping, final String label) {
+    private final boolean filterable;
+    private final String configNameMapping;
+    private List<String> fieldList;
+
+    public HierarchicalField(final Collection<String> pathToField, final String innerMostFieldName, final String label) {
         super(innerMostFieldName, label);
 
-        final List<String> list = new ArrayList<>();
-        list.addAll(pathToField);
-        list.add(innerMostFieldName);
-        this.fieldList = Collections.unmodifiableList(list);
+        initFieldList(pathToField, innerMostFieldName);
+        this.filterable = false;
+        this.configNameMapping = null;
+    }
+
+    public HierarchicalField(final Collection<String> pathToField, final String innerMostFieldName, final String label, final String configNameMapping) {
+        super(innerMostFieldName, label);
+
+        initFieldList(pathToField, innerMostFieldName);
+        this.filterable = true;
         this.configNameMapping = configNameMapping;
     }
 
@@ -49,7 +62,18 @@ public class HierarchicalField extends Field {
         return fieldList;
     }
 
-    public String getConfigNameMapping() {
-        return configNameMapping;
+    public Optional<String> getConfigNameMapping() {
+        return Optional.ofNullable(configNameMapping);
+    }
+
+    public boolean isFilterable() {
+        return filterable;
+    }
+
+    private void initFieldList(final Collection<String> pathToField, final String innerMostFieldName) {
+        final List<String> list = new ArrayList<>();
+        list.addAll(pathToField);
+        list.add(innerMostFieldName);
+        this.fieldList = Collections.unmodifiableList(list);
     }
 }

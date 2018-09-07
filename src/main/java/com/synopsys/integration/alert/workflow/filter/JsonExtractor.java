@@ -68,7 +68,11 @@ public class JsonExtractor {
 
     public List<String> getValuesFromConfig(final HierarchicalField hierarchicalField, final Config config) {
         final JsonObject jsonConfig = gson.toJsonTree(config).getAsJsonObject();
-        return getValuesFromElement(jsonConfig, hierarchicalField.getConfigNameMapping());
+        final Optional<String> configNameMapping = hierarchicalField.getConfigNameMapping();
+        if (configNameMapping.isPresent()) {
+            return getValuesFromElement(jsonConfig, configNameMapping.get());
+        }
+        return Collections.emptyList();
     }
 
     private JsonElement getFieldContainingValue(final JsonElement jsonElement, final List<String> fieldNameHierarchy, final String fieldName, final int nextIndex) {
