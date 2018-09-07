@@ -140,7 +140,7 @@ public class GroupSyncTask extends SyncTask<GroupData> {
                 try {
                     userGroupRelationRepositoryAccessor.addUserGroupRelation(userEntity.getId(), groupEntity.getId());
                 } catch (final Exception e) {
-                    logger.error("COULD NOT SAVE THIS RELATION {}", e.getMessage());
+                    logger.error("Could not save the relation from user {} to group {}: {}", userEntity.getId(), groupEntity.getId(), e.getMessage());
                 }
             }
         }

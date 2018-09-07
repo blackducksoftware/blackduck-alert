@@ -8,7 +8,6 @@ import java.util.List;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.mock.MockBlackDuckUserRepositoryAccessor;
 import com.synopsys.integration.blackduck.api.core.HubPathMultipleResponses;
@@ -20,7 +19,7 @@ public class EmailSyncTaskTest extends SyncTaskSharedTest {
     @Test
     public void testRunInitial() throws Exception {
         final BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
-        final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor = new MockBlackDuckUserRepositoryAccessor();
+        final MockBlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor = new MockBlackDuckUserRepositoryAccessor();
 
         final HubService hubService = createMockHubService(blackDuckProperties);
 
@@ -40,7 +39,7 @@ public class EmailSyncTaskTest extends SyncTaskSharedTest {
     @Test
     public void testRunAdd() throws Exception {
         final BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
-        final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor = new MockBlackDuckUserRepositoryAccessor();
+        final MockBlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor = new MockBlackDuckUserRepositoryAccessor();
 
         final HubService hubService = createMockHubService(blackDuckProperties);
 
@@ -64,7 +63,7 @@ public class EmailSyncTaskTest extends SyncTaskSharedTest {
     @Test
     public void testRunDelete() throws Exception {
         final BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
-        final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor = new MockBlackDuckUserRepositoryAccessor();
+        final MockBlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor = new MockBlackDuckUserRepositoryAccessor();
 
         final HubService hubService = createMockHubService(blackDuckProperties);
 

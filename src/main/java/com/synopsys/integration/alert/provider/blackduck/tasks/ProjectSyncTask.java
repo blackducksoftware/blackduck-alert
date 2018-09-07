@@ -163,7 +163,7 @@ public class ProjectSyncTask extends SyncTask<ProjectData> {
                 try {
                     userProjectRelationRepositoryAccessor.addUserProjectRelation(blackDuckUserEntityId, projectEntity.getId());
                 } catch (final Exception e) {
-                    logger.error("COULD NOT SAVE THIS RELATION {}", e.getMessage());
+                    logger.error("Could not save the relation from user {} to project {}: {}", blackDuckUserEntityId, projectEntity.getId(), e.getMessage());
                 }
             }
 
