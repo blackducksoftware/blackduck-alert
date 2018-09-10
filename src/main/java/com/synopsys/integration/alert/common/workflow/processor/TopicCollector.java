@@ -107,24 +107,27 @@ public abstract class TopicCollector {
         if (topicField == null) {
             throw new IllegalStateException(String.format("The notification provided did not contain the required field: ", HierarchicalField.LABEL_TOPIC));
         }
-        final String topicName = topicField.getFieldKey();
-        final List<String> topicValues = getFieldValues(topicField, notificationJson);
         final HierarchicalField topicUrlField = getFieldForLabel(notificationFields, HierarchicalField.LABEL_TOPIC + HierarchicalField.LABEL_URL_SUFFIX);
-        List<String> topicUrlValues = Collections.emptyList();
-        if (topicUrlField != null) {
-            topicUrlValues = getFieldValues(topicUrlField, notificationJson);
-        }
-
-        final List<LinkableItem> topicItems = new ArrayList<>();
-        for (int i = 0; i < topicValues.size(); i++) {
-            if (topicUrlValues.isEmpty()) {
-                topicItems.add(new LinkableItem(topicName, topicValues.get(i)));
-            } else {
-                // TODO make sure that topicUrlValues is the same size as topicValues if it is not empty
-                topicItems.add(new LinkableItem(topicName, topicValues.get(i), topicUrlValues.get(i)));
-            }
-        }
-        return topicItems;
+        return jsonExtractor.getLinkableItemsFromJson(topicField, topicUrlField, notificationJson);
+        // TODO if the JsonExtractor works correctly, we don't need the rest of this code
+        //        final String topicName = topicField.getFieldKey();
+        //        final List<String> topicValues = getFieldValues(topicField, notificationJson);
+        //        final HierarchicalField topicUrlField = getFieldForLabel(notificationFields, HierarchicalField.LABEL_TOPIC + HierarchicalField.LABEL_URL_SUFFIX);
+        //        List<String> topicUrlValues = Collections.emptyList();
+        //        if (topicUrlField != null) {
+        //            topicUrlValues = getFieldValues(topicUrlField, notificationJson);
+        //        }
+        //
+        //        final List<LinkableItem> topicItems = new ArrayList<>();
+        //        for (int i = 0; i < topicValues.size(); i++) {
+        //            if (topicUrlValues.isEmpty()) {
+        //                topicItems.add(new LinkableItem(topicName, topicValues.get(i)));
+        //            } else {
+        //                // TODO make sure that topicUrlValues is the same size as topicValues if it is not empty
+        //                topicItems.add(new LinkableItem(topicName, topicValues.get(i), topicUrlValues.get(i)));
+        //            }
+        //        }
+        //        return topicItems;
     }
 
     protected final boolean hasSubTopic(final List<HierarchicalField> notificationFields) {
