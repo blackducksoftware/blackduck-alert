@@ -168,6 +168,16 @@ public abstract class TopicCollector {
                    .collect(Collectors.toMap(HierarchicalField::getLabel, Function.identity()));
     }
 
+    protected void addItem(final List<CategoryItem> categoryItems, final CategoryItem newItem) {
+        final Optional<CategoryItem> foundItem = categoryItems.stream().filter(item -> item.getCategoryKey().equals(newItem.getCategoryKey())).findFirst();
+        if (foundItem.isPresent()) {
+            final CategoryItem categoryItem = foundItem.get();
+            categoryItem.getItemList().addAll(newItem.getItemList());
+        } else {
+            categoryItems.add(newItem);
+        }
+    }
+
     protected final HierarchicalField getFieldForLabel(final List<HierarchicalField> fields, final String label) {
         for (final HierarchicalField field : fields) {
             if (field.getLabel().equals(label)) {
@@ -179,6 +189,11 @@ public abstract class TopicCollector {
 
     protected final List<String> getFieldValues(final HierarchicalField field, final String notificationJson) {
         return jsonExtractor.getValuesFromJson(field, notificationJson);
+    }
+
+    protected List<String> getFieldValuesByLabelSuffix(final Map<String, HierarchicalField> categoryFields, final String suffix, final String notificationJson) {
+        final HierarchicalField field = categoryFields.get(HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + suffix);
+        return getFieldValues(field, notificationJson);
     }
 
     protected final String getRequiredFieldValue(final HierarchicalField field, final String notificationJson) {

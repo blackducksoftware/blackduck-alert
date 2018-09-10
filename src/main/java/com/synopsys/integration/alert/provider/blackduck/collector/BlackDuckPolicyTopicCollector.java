@@ -27,7 +27,6 @@ package com.synopsys.integration.alert.provider.blackduck.collector;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -52,6 +51,7 @@ public class BlackDuckPolicyTopicCollector extends BlackDuckTopicCollector {
         super(jsonExtractor, blackDuckDescriptor);
     }
 
+    @Override
     protected void addCategoryItemsToContent(final TopicContent content, final NotificationContent notification) {
         final List<CategoryItem> categoryItems = content.getCategoryItemList();
         final Map<String, HierarchicalField> categoryFields = getCategoryFieldMap(notification.getNotificationType());
@@ -86,6 +86,7 @@ public class BlackDuckPolicyTopicCollector extends BlackDuckTopicCollector {
         }
     }
 
+    @Override
     protected ItemOperation getOperationFromNotification(final NotificationContent notification) {
         final String notificationType = notification.getNotificationType();
         if (NotificationType.RULE_VIOLATION_CLEARED.name().equals(notificationType)) {
@@ -96,22 +97,6 @@ public class BlackDuckPolicyTopicCollector extends BlackDuckTopicCollector {
             return ItemOperation.DELETE;
         }
         return ItemOperation.NOOP;
-    }
-
-    // TODO move this method up
-    private List<String> getFieldValuesByLabelSuffix(final Map<String, HierarchicalField> categoryFields, final String suffix, final String notificationJson) {
-        final HierarchicalField field = categoryFields.get(HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + suffix);
-        return getFieldValues(field, notificationJson);
-    }
-
-    private void addItem(final List<CategoryItem> categoryItems, final CategoryItem newItem) {
-        final Optional<CategoryItem> foundItem = categoryItems.stream().filter(item -> item.getCategoryKey().equals(newItem.getCategoryKey())).findFirst();
-        if (foundItem.isPresent()) {
-            final CategoryItem categoryItem = foundItem.get();
-            categoryItem.getItemList().addAll(newItem.getItemList());
-        } else {
-            categoryItems.add(newItem);
-        }
     }
 
     private List<LinkableItem> asList(final LinkableItem... items) {

@@ -40,6 +40,19 @@ public class BlackDuckProviderContentTypes {
     public static final String LABEL_SUFFIX_POLICY_NAME = "policyName";
     public static final String LABEL_SUFFIX_POLICY_URL = "policyUrl";
 
+    // vulnerability
+    public static final String LABEL_SUFFIX_VULNERABILITY_NEW_SOURCE = "newSource";
+    public static final String LABEL_SUFFIX_VULNERABILITY_NEW_ID = "newVulnerabilityId";
+    public static final String LABEL_SUFFIX_VULNERABILITY_NEW_URL = "newVulnerabilityUrl";
+
+    public static final String LABEL_SUFFIX_VULNERABILITY_UPDATED_SOURCE = "updatedSource";
+    public static final String LABEL_SUFFIX_VULNERABILITY_UPDATED_ID = "updatedVulnerabilityId";
+    public static final String LABEL_SUFFIX_VULNERABILITY_UPDATED_URL = "updatedVulnerabilityUrl";
+
+    public static final String LABEL_SUFFIX_VULNERABILITY_DELETED_SOURCE = "deletedSource";
+    public static final String LABEL_SUFFIX_VULNERABILITY_DELETED_ID = "newVulnerabilityId";
+    public static final String LABEL_SUFFIX_VULNERABILITY_DELETED_URL = "newVulnerabilityUrl";
+
     public static final List<ProviderContentType> ALL = new ArrayList();
     public static final ProviderContentType BOM_EDIT = new ProviderContentType(
         NotificationType.BOM_EDIT.name(),
@@ -72,10 +85,20 @@ public class BlackDuckProviderContentTypes {
             new HierarchicalField(Arrays.asList("content"), "componentName", HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + LABEL_SUFFIX_COMPONENT_NAME),
             new HierarchicalField(Arrays.asList("content"), "component", HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + LABEL_SUFFIX_COMPONENT_URL),
             new HierarchicalField(Arrays.asList("content"), "versionName", HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + LABEL_SUFFIX_COMPONENT_VERSION_NAME),
-            new HierarchicalField(Arrays.asList("content"), "componentVersion", HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + LABEL_SUFFIX_COMPONENT_VERSION_URL)
+            new HierarchicalField(Arrays.asList("content"), "componentVersion", HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + LABEL_SUFFIX_COMPONENT_VERSION_URL),
+            new HierarchicalField(Arrays.asList("content", "newVulnerabilityIds"), "source", HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + LABEL_SUFFIX_VULNERABILITY_NEW_SOURCE),
+            new HierarchicalField(Arrays.asList("content", "newVulnerabilityIds"), "vulnerabilityId", HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + LABEL_SUFFIX_VULNERABILITY_NEW_ID),
+            new HierarchicalField(Arrays.asList("content", "newVulnerabilityIds"), "vulnerability", HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + LABEL_SUFFIX_VULNERABILITY_NEW_URL),
+            new HierarchicalField(Arrays.asList("content", "updatedVulnerabilityIds"), "source", HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + LABEL_SUFFIX_VULNERABILITY_UPDATED_SOURCE),
+            new HierarchicalField(Arrays.asList("content", "updatedVulnerabilityIds"), "vulnerabilityId", HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + LABEL_SUFFIX_VULNERABILITY_UPDATED_ID),
+            new HierarchicalField(Arrays.asList("content", "updatedVulnerabilityIds"), "vulnerability", HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + LABEL_SUFFIX_VULNERABILITY_UPDATED_URL),
+            new HierarchicalField(Arrays.asList("content", "deletedVulnerabilityIds"), "source", HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + LABEL_SUFFIX_VULNERABILITY_DELETED_SOURCE),
+            new HierarchicalField(Arrays.asList("content", "deletedVulnerabilityIds"), "vulnerabilityId", HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + LABEL_SUFFIX_VULNERABILITY_DELETED_ID),
+            new HierarchicalField(Arrays.asList("content", "deletedVulnerabilityIds"), "vulnerability", HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + LABEL_SUFFIX_VULNERABILITY_DELETED_URL)
+
         )
     );
-    private static List<HierarchicalField> RULE_VIOLATION_FIELD_LIST = Arrays.asList(
+    private static final List<HierarchicalField> RULE_VIOLATION_FIELD_LIST = Arrays.asList(
         new HierarchicalField(Arrays.asList("content"), "projectName", HierarchicalField.LABEL_TOPIC, "configuredProjects"),
         new HierarchicalField(Arrays.asList("content"), "projectVersionName", HierarchicalField.LABEL_SUB_TOPIC),
         new HierarchicalField(Arrays.asList("content"), "projectVersion", HierarchicalField.LABEL_SUB_TOPIC + HierarchicalField.LABEL_URL_SUFFIX),
