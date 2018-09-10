@@ -27,7 +27,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
@@ -155,6 +158,14 @@ public abstract class TopicCollector {
             }
         }
         throw new IllegalArgumentException(String.format("No such notification type '%s' for provider: %s", notificationType, providerDescriptor.getName()));
+    }
+
+    protected final Map<String, HierarchicalField> getCategoryFieldMap(final String notificationType) {
+        final List<HierarchicalField> notificationFields = getFieldsForNotificationType(notificationType);
+        return notificationFields
+                   .parallelStream()
+                   .filter(field -> field.getLabel().startsWith(HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX))
+                   .collect(Collectors.toMap(HierarchicalField::getLabel, Function.identity()));
     }
 
     protected final HierarchicalField getFieldForLabel(final List<HierarchicalField> fields, final String label) {
