@@ -52,4 +52,9 @@
         </createTable>
         <addPrimaryKey columnNames="COMMON_DISTRIBUTION_CONFIG_ID, NOTIFICATION_TYPE" constraintName="CONSTRAINT_NOTIFICATION_TYPE" tableName="DISTRIBUTION_NOTIFICATION_TYPES" schemaName="ALERT"/>
     </changeSet>
+    <changeSet author="psantos" id="1533054185-14">
+        <addColumn tableName="COMMON_DISTRIBUTION_CONFIG" schemaName="ALERT">
+            <column name="FORMAT_TYPE" type="INT(10)" value="0"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

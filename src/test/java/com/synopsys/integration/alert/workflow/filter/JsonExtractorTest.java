@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.field.HierarchicalField;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 
@@ -70,7 +71,8 @@ public class JsonExtractorTest {
         final String filterByProject = "true";
         final List<String> configuredProjects = Arrays.asList("project1", "project2", "project3");
         final List<String> notificationTypes = Arrays.asList("type1", "type2");
-        final CommonDistributionConfig commonDistributionConfig = new CommonDistributionConfig(id, distributionConfigId, distributionType, name, providerName, frequency, filterByProject, configuredProjects, notificationTypes);
+        final CommonDistributionConfig commonDistributionConfig = new CommonDistributionConfig(id, distributionConfigId, distributionType, name, providerName, frequency, filterByProject, configuredProjects, notificationTypes,
+            FormatType.DEFAULT.name());
 
         final HierarchicalField nameField = new HierarchicalField(Arrays.asList(), null, null, "name");
         final List<String> nameValues = jsonExtractor.getValuesFromConfig(nameField, commonDistributionConfig);

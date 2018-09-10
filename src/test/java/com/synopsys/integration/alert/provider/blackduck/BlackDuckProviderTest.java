@@ -4,12 +4,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
@@ -41,9 +43,18 @@ public class BlackDuckProviderTest {
     }
 
     @Test
-    public void testGetCollectorLoopup() {
+    public void testGetCollectorLookup() {
         final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
         final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask);
         assertNotNull(provider.getCollectorLookup());
+    }
+
+    @Test
+    public void testGetSupportedFormatTypes() {
+        final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
+        final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask);
+        final Set<FormatType> expectedNotificationTypes = EnumSet.of(FormatType.DEFAULT, FormatType.DIGEST);
+        final Set<FormatType> providerNotificationTypes = provider.getSupportedFormatTypes();
+        assertEquals(expectedNotificationTypes, providerNotificationTypes);
     }
 }

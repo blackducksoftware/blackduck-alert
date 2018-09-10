@@ -27,6 +27,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.synopsys.integration.alert.Application;
+import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
@@ -131,7 +132,7 @@ public class NotificationFilterTestIT {
         if (foundEntity.isPresent()) {
             final CommonDistributionConfigEntity commonEntity = foundEntity.get();
             final CommonDistributionConfigEntity newEntity = new CommonDistributionConfigEntity(commonEntity.getDistributionConfigId(), commonEntity.getDistributionType(), commonEntity.getName(), BlackDuckProvider.COMPONENT_NAME,
-                FrequencyType.DAILY, commonEntity.getFilterByProject());
+                FrequencyType.DAILY, commonEntity.getFilterByProject(), FormatType.DEFAULT);
             newEntity.setId(commonEntity.getId());
             commonDistributionRepository.save(newEntity);
         }
@@ -193,7 +194,7 @@ public class NotificationFilterTestIT {
         final String name = "name";
         final FrequencyType frequency = FrequencyType.REAL_TIME;
 
-        final CommonDistributionConfigEntity entity = new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, providerName, frequency, Boolean.TRUE);
+        final CommonDistributionConfigEntity entity = new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, providerName, frequency, Boolean.TRUE, FormatType.DEFAULT);
 
         return entity;
     }
