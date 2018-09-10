@@ -24,10 +24,10 @@
 
 package com.synopsys.integration.alert.provider.blackduck.collector;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -39,6 +39,7 @@ import com.synopsys.integration.alert.common.model.CategoryKey;
 import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.common.model.TopicContent;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderContentTypes;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.workflow.filter.JsonExtractor;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
@@ -53,33 +54,34 @@ public class BlackDuckPolicyTopicCollector extends BlackDuckTopicCollector {
 
     protected void addCategoryItemsToContent(final TopicContent content, final NotificationContent notification) {
         final List<CategoryItem> categoryItems = content.getCategoryItemList();
-        final List<HierarchicalField> notificationFields = getFieldsForNotificationType(notification.getNotificationType());
-        final List<HierarchicalField> categoryFields = notificationFields
-                                                           .parallelStream()
-                                                           .filter(field -> field.getLabel().startsWith(HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX))
-                                                           .collect(Collectors.toList());
+        final Map<String, HierarchicalField> categoryFields = getCategoryFieldMap(notification.getNotificationType());
+        final String notificationJson = notification.getContent();
 
-        //        Optional<String> componentName = categoryFields.stream().filter(field -> field.getLabel().endsWith(BlackDuckProviderContentTypes.LABEL_SUFFIX_COMPONENT_NAME)).findFirst();
-        //        String componentVersionName = null;
+        final List<String> componentNames = getFieldValuesByLabelSuffix(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_COMPONENT_NAME, notificationJson);
+        final List<String> componentUrls = getFieldValuesByLabelSuffix(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_COMPONENT_URL, notificationJson);
 
-        // FIXME create this key correctly
-        final CategoryKey key = CategoryKey.from(notification.getNotificationType());
-        for (final HierarchicalField field : categoryFields) {
-            final Optional<String> fieldValue = getOptionalFieldValue(field, notification.getContent());
-            if (fieldValue.isPresent()) {
-                final String fieldName = field.getFieldKey();
-                final Optional<HierarchicalField> urlField = getRelatedUrlField(field, categoryFields);
+        final List<String> componentVersionNames = getFieldValuesByLabelSuffix(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_COMPONENT_VERSION_NAME, notificationJson);
+        final List<String> componentVersionUrls = getFieldValuesByLabelSuffix(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_COMPONENT_VERSION_URL, notificationJson);
 
-                Optional<String> fieldUrl = Optional.empty();
-                if (urlField.isPresent()) {
-                    fieldUrl = getOptionalFieldValue(urlField.get(), notification.getContent());
-                }
+        final List<String> policyNames = getFieldValuesByLabelSuffix(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_POLICY_NAME, notificationJson);
+        final List<String> policyUrls = getFieldValuesByLabelSuffix(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_POLICY_URL, notificationJson);
 
-                final ItemOperation op = getOperationFromNotification(notification);
-                // TODO figure out how we will know how to properly get this stuff
-                final LinkableItem fieldItem = new LinkableItem(fieldName, fieldValue.get(), fieldUrl.orElse(null));
-                final CategoryItem categoryItem = new CategoryItem(key, op, Arrays.asList(fieldItem));
-                categoryItems.add(categoryItem);
+        final ItemOperation operation = getOperationFromNotification(notification);
+        for (int policyIndex = 0; policyIndex < policyUrls.size(); policyIndex++) {
+            final String policyName = policyNames.get(policyIndex);
+            final String policyUrl = policyUrls.get(policyIndex);
+            final LinkableItem policyItem = new LinkableItem(BlackDuckProviderContentTypes.LABEL_SUFFIX_POLICY_NAME, policyName, policyUrl);
+            for (int componentIndex = 0; componentIndex < componentUrls.size(); componentIndex++) {
+                // TODO figure out how to deal with versionless components (url mappings will not be one to one)
+            }
+            for (int componentVersionIndex = 0; componentVersionIndex < componentVersionUrls.size(); componentVersionIndex++) {
+                final String componentName = componentNames.get(componentVersionIndex);
+                final String componentVersionName = componentVersionNames.get(componentVersionIndex);
+                final String componentVersionUrl = componentVersionUrls.get(componentVersionIndex);
+
+                final CategoryKey categoryKey = CategoryKey.from(notification.getNotificationType(), policyUrl, componentVersionUrl);
+                final LinkableItem componentVersionItem = new LinkableItem(BlackDuckProviderContentTypes.LABEL_SUFFIX_COMPONENT_VERSION_NAME, String.format("%s > %s", componentName, componentVersionName), componentVersionUrl);
+                addItem(categoryItems, new CategoryItem(categoryKey, operation, asList(policyItem, componentVersionItem)));
             }
         }
     }
@@ -94,5 +96,31 @@ public class BlackDuckPolicyTopicCollector extends BlackDuckTopicCollector {
             return ItemOperation.DELETE;
         }
         return ItemOperation.NOOP;
+    }
+
+    // TODO move this method up
+    private List<String> getFieldValuesByLabelSuffix(final Map<String, HierarchicalField> categoryFields, final String suffix, final String notificationJson) {
+        final HierarchicalField field = categoryFields.get(HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + suffix);
+        return getFieldValues(field, notificationJson);
+    }
+
+    private void addItem(final List<CategoryItem> categoryItems, final CategoryItem newItem) {
+        final Optional<CategoryItem> foundItem = categoryItems.stream().filter(item -> item.getCategoryKey().equals(newItem.getCategoryKey())).findFirst();
+        if (foundItem.isPresent()) {
+            final CategoryItem categoryItem = foundItem.get();
+            categoryItem.getItemList().addAll(newItem.getItemList());
+        } else {
+            categoryItems.add(newItem);
+        }
+    }
+
+    private List<LinkableItem> asList(final LinkableItem... items) {
+        final List<LinkableItem> list = new ArrayList<>();
+        if (items != null) {
+            for (final LinkableItem item : items) {
+                list.add(item);
+            }
+        }
+        return list;
     }
 }
