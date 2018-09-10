@@ -66,7 +66,7 @@ public class BlackDuckPolicyTopicCollector extends BlackDuckTopicCollector {
         final List<String> policyNames = getFieldValuesByLabelSuffix(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_POLICY_NAME, notificationJson);
         final List<String> policyUrls = getFieldValuesByLabelSuffix(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_POLICY_URL, notificationJson);
 
-        final ItemOperation operation = getOperationFromNotification(notification);
+        final ItemOperation operation = getOperationFromNotification(notification.getNotificationType());
         for (int policyIndex = 0; policyIndex < policyUrls.size(); policyIndex++) {
             final String policyName = policyNames.get(policyIndex);
             final String policyUrl = policyUrls.get(policyIndex);
@@ -86,9 +86,7 @@ public class BlackDuckPolicyTopicCollector extends BlackDuckTopicCollector {
         }
     }
 
-    @Override
-    protected ItemOperation getOperationFromNotification(final NotificationContent notification) {
-        final String notificationType = notification.getNotificationType();
+    protected ItemOperation getOperationFromNotification(final String notificationType) {
         if (NotificationType.RULE_VIOLATION_CLEARED.name().equals(notificationType)) {
             return ItemOperation.DELETE;
         } else if (NotificationType.RULE_VIOLATION.name().equals(notificationType)) {
@@ -96,7 +94,7 @@ public class BlackDuckPolicyTopicCollector extends BlackDuckTopicCollector {
         } else if (NotificationType.POLICY_OVERRIDE.name().equals(notificationType)) {
             return ItemOperation.DELETE;
         }
-        return ItemOperation.NOOP;
+        throw new IllegalArgumentException(String.format("The notification type '%s' is not valid for this collector.", notificationType));
     }
 
     private List<LinkableItem> asList(final LinkableItem... items) {

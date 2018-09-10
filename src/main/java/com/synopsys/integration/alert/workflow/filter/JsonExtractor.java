@@ -39,6 +39,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.synopsys.integration.alert.common.field.HierarchicalField;
+import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.web.model.Config;
 
 @Component
@@ -48,6 +49,27 @@ public class JsonExtractor {
     @Autowired
     public JsonExtractor(final Gson gson) {
         this.gson = gson;
+    }
+
+    // TODO This is a P.O.C. Abstract this to use common functionality.
+    public List<LinkableItem> getLinkableItemsFromJson(final HierarchicalField dataField, final HierarchicalField linkField, final String json) {
+        final List<String> fieldNameHierarchy = dataField.getFullPathToField();
+        final JsonObject object = gson.fromJson(json, JsonObject.class);
+
+        final JsonElement foundElement = getFieldContainingValue(object, fieldNameHierarchy, fieldNameHierarchy.get(0), 1);
+        final List<LinkableItem> items = new ArrayList<>();
+        if (foundElement.isJsonArray()) {
+            for (final JsonElement element : foundElement.getAsJsonArray()) {
+                if (element.isJsonObject()) {
+                    List<String> values = getValuesFromElement(element, dataField.getFieldKey());
+                    List<String> urls = getValuesFromElement(element, linkField.getFieldKey());
+                    if (values.size() == 1 && urls.size() == 1) {
+                        items.add(new LinkableItem(dataField.getFieldKey(), values.get(0), urls.get(0)));
+                    }
+                }
+            }
+        }
+        return items;
     }
 
     public Optional<String> getFirstValueFromJson(final HierarchicalField hierarchicalField, final String json) {
