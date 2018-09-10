@@ -167,6 +167,7 @@ public class ProjectSyncTask extends SyncTask<BlackDuckProject> {
 
         }
         userProjectRelationRepositoryAccessor.deleteAllRelations();
+        logger.info("User to project relationships {}", newRelations.size());
         for (final Pair<Long, Long> relation : newRelations) {
             try {
                 userProjectRelationRepositoryAccessor.addUserProjectRelation(relation.getKey(), relation.getValue());

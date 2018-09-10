@@ -142,6 +142,7 @@ public class GroupSyncTask extends SyncTask<BlackDuckGroup> {
             }
         }
         userGroupRelationRepositoryAccessor.deleteAllRelations();
+        logger.info("User to group relationships {}", newRelations.size());
         for (final Pair<Long, Long> relation : newRelations) {
             try {
                 userGroupRelationRepositoryAccessor.addUserGroupRelation(relation.getKey(), relation.getValue());
