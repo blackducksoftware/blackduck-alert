@@ -100,14 +100,12 @@ public class GroupSyncTaskTest extends SyncTaskSharedTest {
         groupSyncTask.run();
 
         assertEquals(3, blackDuckGroupRepositoryAccessor.readEntities().size());
-        //No relations because there are no Users in the database yet
         assertEquals(6, userGroupRelationRepositoryAccessor.getUserGroupRelationSet().size());
 
         Mockito.when(hubService.getAllResponses(Mockito.any(HubPathMultipleResponses.class))).thenReturn(Arrays.asList(userGroupView1, userGroupView2));
         groupSyncTask.run();
 
         assertEquals(2, blackDuckGroupRepositoryAccessor.readEntities().size());
-        //No relations because there are no Users in the database yet
         assertEquals(4, userGroupRelationRepositoryAccessor.getUserGroupRelationSet().size());
     }
 
