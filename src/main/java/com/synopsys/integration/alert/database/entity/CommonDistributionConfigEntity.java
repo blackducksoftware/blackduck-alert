@@ -27,6 +27,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 
 @Entity
@@ -50,17 +51,22 @@ public class CommonDistributionConfigEntity extends DatabaseEntity {
     @Column(name = "filter_by_project")
     private Boolean filterByProject;
 
+    @Column(name = "format_type")
+    private FormatType formatType;
+
     public CommonDistributionConfigEntity() {
         // JPA requires default constructor definitions
     }
 
-    public CommonDistributionConfigEntity(final Long distributionConfigId, final String distributionType, final String name, final String providerName, final FrequencyType frequency, final Boolean filterByProject) {
+    public CommonDistributionConfigEntity(final Long distributionConfigId, final String distributionType, final String name, final String providerName, final FrequencyType frequency, final Boolean filterByProject,
+        final FormatType formatType) {
         this.distributionConfigId = distributionConfigId;
         this.distributionType = distributionType;
         this.name = name;
         this.providerName = providerName;
         this.frequency = frequency;
         this.filterByProject = filterByProject;
+        this.formatType = formatType;
     }
 
     public Long getDistributionConfigId() {
@@ -89,6 +95,10 @@ public class CommonDistributionConfigEntity extends DatabaseEntity {
 
     public Boolean getFilterByProject() {
         return filterByProject;
+    }
+
+    public FormatType getFormatType() {
+        return formatType;
     }
 
 }

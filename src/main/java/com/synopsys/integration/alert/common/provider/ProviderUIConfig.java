@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
+import com.synopsys.integration.alert.common.enumeration.FormatType;
 
 public abstract class ProviderUIConfig extends UIConfig {
 
@@ -38,6 +39,10 @@ public abstract class ProviderUIConfig extends UIConfig {
     }
 
     public ConfigField getNotificationTypeField() {
-        return new SelectConfigField("notificationTypes", "Notification Types", true, false, provider.getProviderContentTypes().stream().map(ProviderContentType::getNotificationType).collect(Collectors.toList()));
+        return new SelectConfigField("notificationTypes", "Notification Types", true, false, false, true, provider.getProviderContentTypes().stream().map(ProviderContentType::getNotificationType).collect(Collectors.toList()));
+    }
+
+    public ConfigField getSupportedFormatTypeField() {
+        return new SelectConfigField("formatType", "Format", true, false, false, false, provider.getSupportedFormatTypes().stream().map(FormatType::name).collect(Collectors.toList()));
     }
 }

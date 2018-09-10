@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.mock.entity;
 
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
+import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 
@@ -13,12 +14,14 @@ public class MockCommonDistributionEntity extends MockEntityUtil<CommonDistribut
     private Boolean filterByProject;
     private Long id;
     private String providerName;
+    private FormatType formatType;
 
     public MockCommonDistributionEntity() {
-        this(1L, HipChatChannel.COMPONENT_NAME.toString(), "Name", "provider_blackduck", FrequencyType.REAL_TIME, true, 2L);
+        this(1L, HipChatChannel.COMPONENT_NAME.toString(), "Name", "provider_blackduck", FrequencyType.REAL_TIME, FormatType.DEFAULT, true, 2L);
     }
 
-    private MockCommonDistributionEntity(final Long distributionConfigId, final String distributionType, final String name, final String providerName, final FrequencyType frequency, final Boolean filterByProject, final Long id) {
+    private MockCommonDistributionEntity(final Long distributionConfigId, final String distributionType, final String name, final String providerName, final FrequencyType frequency, final FormatType formatType,
+        final Boolean filterByProject, final Long id) {
         super();
         this.distributionConfigId = distributionConfigId;
         this.distributionType = distributionType;
@@ -27,6 +30,7 @@ public class MockCommonDistributionEntity extends MockEntityUtil<CommonDistribut
         this.filterByProject = filterByProject;
         this.id = id;
         this.providerName = providerName;
+        this.formatType = formatType;
     }
 
     public Long getDistributionConfigId() {
@@ -77,6 +81,14 @@ public class MockCommonDistributionEntity extends MockEntityUtil<CommonDistribut
         this.filterByProject = filterByProject;
     }
 
+    public FormatType getFormatType() {
+        return formatType;
+    }
+
+    public void setFormatType(final FormatType formatType) {
+        this.formatType = formatType;
+    }
+
     @Override
     public Long getId() {
         return id;
@@ -88,7 +100,7 @@ public class MockCommonDistributionEntity extends MockEntityUtil<CommonDistribut
 
     @Override
     public CommonDistributionConfigEntity createEntity() {
-        final CommonDistributionConfigEntity entity = new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, providerName, frequency, filterByProject);
+        final CommonDistributionConfigEntity entity = new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, providerName, frequency, filterByProject, formatType);
         entity.setId(id);
         return entity;
     }
@@ -108,6 +120,7 @@ public class MockCommonDistributionEntity extends MockEntityUtil<CommonDistribut
         json.addProperty("providerName", providerName);
         json.addProperty("frequency", frequency.name());
         json.addProperty("filterByProject", filterByProject);
+        json.addProperty("formatType", formatType.name());
         return json.toString();
     }
 

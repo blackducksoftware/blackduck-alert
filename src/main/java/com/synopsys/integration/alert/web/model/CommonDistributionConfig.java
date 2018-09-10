@@ -36,12 +36,13 @@ public class CommonDistributionConfig extends Config {
     private List<String> notificationTypes;
     private String lastRan;
     private String status;
+    private String formatType;
 
     public CommonDistributionConfig() {
     }
 
     public CommonDistributionConfig(final String id, final String distributionConfigId, final String distributionType, final String name, final String providerName, final String frequency, final String filterByProject,
-        final List<String> configuredProjects, final List<String> notificationTypes) {
+        final List<String> configuredProjects, final List<String> notificationTypes, final String formatType) {
         super(id);
         this.distributionConfigId = distributionConfigId;
         this.distributionType = distributionType;
@@ -51,6 +52,7 @@ public class CommonDistributionConfig extends Config {
         this.filterByProject = filterByProject;
         this.configuredProjects = configuredProjects;
         this.notificationTypes = notificationTypes;
+        this.formatType = formatType;
     }
 
     public String getDistributionConfigId() {
@@ -131,5 +133,13 @@ public class CommonDistributionConfig extends Config {
 
     public void setStatus(final String status) {
         this.status = status;
+    }
+
+    public String getFormatType() {
+        return formatType;
+    }
+
+    public void setFormatType(final String formatType) {
+        this.formatType = formatType;
     }
 }

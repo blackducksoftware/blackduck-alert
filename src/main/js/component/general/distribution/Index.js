@@ -227,6 +227,7 @@ class Index extends Component {
                                 lastRan: item.lastRan,
                                 status: item.status,
                                 frequency: item.frequency,
+                                formatType: item.formatType,
                                 notificationTypes: item.notificationTypes,
                                 configuredProjects: item.configuredProjects
                             };
