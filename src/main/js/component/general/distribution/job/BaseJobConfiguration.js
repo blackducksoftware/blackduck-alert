@@ -29,6 +29,7 @@ class BaseJobConfiguration extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTestSubmit = this.handleTestSubmit.bind(this);
         this.handleProviderChanged = this.handleProviderChanged.bind(this);
+        this.handleFormatChanged = this.handleFormatChanged.bind(this);
         this.createProviderOptions = this.createProviderOptions.bind(this);
         this.createNotificationTypeOptions = this.createNotificationTypeOptions.bind(this);
         this.createFormatTypeOptions = this.createFormatTypeOptions.bind(this);
@@ -58,6 +59,7 @@ class BaseJobConfiguration extends Component {
                         nextProps.getDistributionDescriptor(jobConfig.providerName, nextProps.alertChannelName);
                     }
                 }
+                console.log("Next properties", nextProps);
                 const newState = Object.assign({}, stateValues, {
                     id: jobConfig.id,
                     distributionConfigId: nextProps.distributionConfigId,
@@ -65,6 +67,7 @@ class BaseJobConfiguration extends Component {
                     providerName: jobConfig.providerName,
                     distributionType: jobConfig.distributionType,
                     frequency: jobConfig.frequency,
+                    formatType: jobConfig.formatType,
                     includeAllProjects: jobConfig.filterByProject == 'false',
                     filterByProject: jobConfig.filterByProject,
                     notificationTypes: jobConfig.notificationTypes,
