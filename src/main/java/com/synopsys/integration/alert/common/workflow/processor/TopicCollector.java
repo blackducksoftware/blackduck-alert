@@ -40,6 +40,8 @@ import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.workflow.filter.JsonExtractor;
 
 public abstract class TopicCollector {
+    private static final String DEFAULT_VALUE = "unknown";
+
     private final JsonExtractor jsonExtractor;
     private final ProviderDescriptor providerDescriptor;
     private final Collection<ProviderContentType> contentTypes;
@@ -66,52 +68,60 @@ public abstract class TopicCollector {
         collectedContent.add(content);
     }
 
-    protected final TopicContent getContentOrCreateIfDoesNotExist(final NotificationContent notification) {
+    // TODO think about how to maintain order
+    protected final List<TopicContent> getContentsOrCreateIfDoesNotExist(final NotificationContent notification) {
         final List<HierarchicalField> notificationFields = getFieldsForNotificationType(notification.getNotificationType());
         final String notificationJson = notification.getContent();
 
-        final String topicName = getTopicName(notificationFields);
-        final String topicValue = getTopicValue(notificationFields, notificationJson);
-        final String topicUrl = getTopicUrl(notificationFields, notificationJson).orElse(null);
+        final List<TopicContent> topicContentsForNotifications = new ArrayList<>();
 
-        String subTopicName = null;
-        String subTopicValue = null;
-        LinkableItem subTopic = null;
-        if (hasSubTopic(notificationFields)) {
-            subTopicName = getSubTopicName(notificationFields).orElse("unknown");
-            subTopicValue = getSubTopicValue(notificationFields, notificationJson).orElse("unknown");
-            final String subTopicUrl = getSubTopicUrl(notificationFields, notificationJson).orElse(null);
+        final List<LinkableItem> topicItems = getTopicItems(notificationFields, notificationJson);
+        for (final LinkableItem topicItem : topicItems) {
+            // FIXME get the correct subtopic for each topic
+            String subTopicName = null;
+            String subTopicValue = null;
+            LinkableItem subTopic = null;
+            if (hasSubTopic(notificationFields)) {
+                subTopicName = getSubTopicName(notificationFields).orElse(DEFAULT_VALUE);
+                subTopicValue = getSubTopicValue(notificationFields, notificationJson).orElse(DEFAULT_VALUE);
+                final String subTopicUrl = getSubTopicUrl(notificationFields, notificationJson).orElse(null);
 
-            subTopic = new LinkableItem(subTopicName, subTopicValue, subTopicUrl);
+                subTopic = new LinkableItem(subTopicName, subTopicValue, subTopicUrl);
+            }
+
+            final TopicContent foundContent = findTopicContent(topicItem.getName(), topicItem.getValue(), subTopicName, subTopicValue);
+            if (foundContent != null) {
+                topicContentsForNotifications.add(foundContent);
+            }
+            final List<CategoryItem> categoryList = new ArrayList<>();
+            topicContentsForNotifications.add(new TopicContent(topicItem.getName(), topicItem.getValue(), topicItem.getUrl().orElse(null), subTopic, categoryList));
         }
-
-        final TopicContent foundContent = findTopicContent(topicName, topicValue, subTopicName, subTopicValue);
-        if (foundContent != null) {
-            return foundContent;
-        }
-        final List<CategoryItem> categoryList = new ArrayList<>();
-        return new TopicContent(topicName, topicValue, topicUrl, subTopic, categoryList);
+        return topicContentsForNotifications;
     }
 
-    protected final String getTopicName(final List<HierarchicalField> notificationFields) {
+    protected final List<LinkableItem> getTopicItems(final List<HierarchicalField> notificationFields, final String notificationJson) {
         final HierarchicalField topicField = getFieldForLabel(notificationFields, HierarchicalField.LABEL_TOPIC);
-        if (topicField != null) {
-            return topicField.getFieldKey();
+        if (topicField == null) {
+            throw new IllegalStateException(String.format("The notification provided did not contain the required field: ", HierarchicalField.LABEL_TOPIC));
         }
-        throw new IllegalStateException(String.format("The notification provided did not contain the required field: ", HierarchicalField.LABEL_TOPIC));
-    }
-
-    protected final String getTopicValue(final List<HierarchicalField> notificationFields, final String notificationJson) {
-        final HierarchicalField topicField = getFieldForLabel(notificationFields, HierarchicalField.LABEL_TOPIC);
-        if (topicField != null) {
-            return getRequiredFieldValue(topicField, notificationJson);
-        }
-        throw new IllegalStateException(String.format("The notification provided did not contain the required field: ", HierarchicalField.LABEL_TOPIC));
-    }
-
-    protected final Optional<String> getTopicUrl(final List<HierarchicalField> notificationFields, final String notificationJson) {
+        final String topicName = topicField.getFieldKey();
+        final List<String> topicValues = getFieldValues(topicField, notificationJson);
         final HierarchicalField topicUrlField = getFieldForLabel(notificationFields, HierarchicalField.LABEL_TOPIC + HierarchicalField.LABEL_URL_SUFFIX);
-        return getOptionalFieldValue(topicUrlField, notificationJson);
+        List<String> topicUrlValues = Collections.emptyList();
+        if (topicUrlField != null) {
+            topicUrlValues = getFieldValues(topicUrlField, notificationJson);
+        }
+
+        final List<LinkableItem> topicItems = new ArrayList<>();
+        for (int i = 0; i < topicValues.size(); i++) {
+            if (topicUrlValues.isEmpty()) {
+                topicItems.add(new LinkableItem(topicName, topicValues.get(i)));
+            } else {
+                // TODO make sure that topicUrlValues is the same size as topicValues if it is not empty
+                topicItems.add(new LinkableItem(topicName, topicValues.get(i), topicUrlValues.get(i)));
+            }
+        }
+        return topicItems;
     }
 
     protected final boolean hasSubTopic(final List<HierarchicalField> notificationFields) {
@@ -156,6 +166,10 @@ public abstract class TopicCollector {
         return null;
     }
 
+    protected final List<String> getFieldValues(final HierarchicalField field, final String notificationJson) {
+        return jsonExtractor.getValuesFromJson(field, notificationJson);
+    }
+
     protected final String getRequiredFieldValue(final HierarchicalField field, final String notificationJson) {
         final Optional<String> value = jsonExtractor.getFirstValueFromJson(field, notificationJson);
         if (value.isPresent()) {
@@ -178,6 +192,7 @@ public abstract class TopicCollector {
                    .findFirst();
     }
 
+    // TODO create TopicKey class
     private final TopicContent findTopicContent(final String topicName, final String topicValue, final String subTopicName, final String subTopicValue) {
         for (final TopicContent contentItem : collectedContent) {
             if (contentItem.getName().equals(topicName) && contentItem.getValue().equals(topicValue)) {

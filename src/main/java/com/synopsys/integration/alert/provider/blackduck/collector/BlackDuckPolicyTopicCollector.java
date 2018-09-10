@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.provider.blackduck;
+package com.synopsys.integration.alert.provider.blackduck.collector;
 
 import java.util.Arrays;
 import java.util.List;
@@ -8,47 +8,35 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.field.HierarchicalField;
 import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.common.model.CategoryKey;
 import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.common.model.TopicContent;
-import com.synopsys.integration.alert.common.workflow.processor.TopicCollector;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.workflow.filter.JsonExtractor;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 @Component
-public class BlackDuckTopicCollector extends TopicCollector {
+public class BlackDuckPolicyTopicCollector extends BlackDuckTopicCollector {
 
     @Autowired
-    public BlackDuckTopicCollector(final JsonExtractor jsonExtractor, final BlackDuckDescriptor blackDuckDescriptor) {
+    public BlackDuckPolicyTopicCollector(final JsonExtractor jsonExtractor, final BlackDuckDescriptor blackDuckDescriptor) {
         super(jsonExtractor, blackDuckDescriptor);
     }
 
-    @Override
-    public void insert(final NotificationContent notification) {
-        final TopicContent content = getContentOrCreateIfDoesNotExist(notification);
-        addCategoryItems(content, notification);
-        addContent(content);
-    }
-
-    @Override
-    public List<TopicContent> collect(final FormatType format) {
-        // TODO implement
-        return getCopyOfCollectedContent();
-    }
-
-    private void addCategoryItems(final TopicContent content, final NotificationContent notification) {
+    protected void addCategoryItemsToContent(final TopicContent content, final NotificationContent notification) {
         final List<CategoryItem> categoryItems = content.getCategoryItemList();
         final List<HierarchicalField> notificationFields = getFieldsForNotificationType(notification.getNotificationType());
         final List<HierarchicalField> categoryFields = notificationFields
                                                            .parallelStream()
                                                            .filter(field -> field.getLabel().startsWith(HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX))
                                                            .collect(Collectors.toList());
+
+        //        Optional<String> componentName = categoryFields.stream().filter(field -> field.getLabel().endsWith(BlackDuckProviderContentTypes.LABEL_SUFFIX_COMPONENT_NAME)).findFirst();
+        //        String componentVersionName = null;
 
         // FIXME create this key correctly
         final CategoryKey key = CategoryKey.from(notification.getNotificationType());
@@ -72,7 +60,7 @@ public class BlackDuckTopicCollector extends TopicCollector {
         }
     }
 
-    private ItemOperation getOperationFromNotification(final NotificationContent notification) {
+    protected ItemOperation getOperationFromNotification(final NotificationContent notification) {
         final String notificationType = notification.getNotificationType();
         if (NotificationType.RULE_VIOLATION_CLEARED.name().equals(notificationType)) {
             return ItemOperation.DELETE;
@@ -80,8 +68,6 @@ public class BlackDuckTopicCollector extends TopicCollector {
             return ItemOperation.ADD;
         } else if (NotificationType.POLICY_OVERRIDE.name().equals(notificationType)) {
             return ItemOperation.DELETE;
-        } else if (NotificationType.VULNERABILITY.name().equals(notificationType)) {
-            // TODO get this from the field(s)
         }
         return ItemOperation.NOOP;
     }
