@@ -138,12 +138,11 @@ class BaseJobConfiguration extends Component {
             providerName: this.state.providerName,
             distributionType: this.state.distributionType,
             frequency: this.state.frequency,
-            includeAllProjects: this.state.filterByProject == 'false',
-            filterByProject: this.state.filterByProject,
+            filterByProject: !this.state.includeAllProjects,
             notificationTypes: this.state.notificationTypes,
             configuredProjects: this.state.configuredProjects
         }, this.props.getParentConfiguration());
-        configuration.filterByProject = !configuration.includeAllProjects;
+        configuration.includeAllProjects = !configuration.filterByProject;
         if (configuration.notificationTypes && configuration.notificationTypes.length > 0) {
             configuration.notificationTypes = configuration.notificationTypes;
         } else {
