@@ -44,4 +44,9 @@ public class MockBlackDuckGroupRepositoryAccessor extends BlackDuckGroupReposito
         blackDuckGroupEntityMap.remove(new Long(id));
     }
 
+    public BlackDuckGroupEntity findByName(final String name) {
+        final Optional<BlackDuckGroupEntity> optionalBlackDuckGroupEntity = blackDuckGroupEntityMap.values().stream().filter(blackDuckGroupEntity -> blackDuckGroupEntity.getName().equals(name)).findFirst();
+        return optionalBlackDuckGroupEntity.orElse(null);
+    }
+
 }
