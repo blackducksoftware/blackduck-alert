@@ -24,6 +24,7 @@
 package com.synopsys.integration.alert.provider.blackduck.tasks;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +48,7 @@ import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuck
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserGroupRelationRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.provider.blackduck.tasks.model.GroupData;
+import com.synopsys.integration.alert.provider.blackduck.model.BlackDuckGroup;
 import com.synopsys.integration.blackduck.api.core.HubView;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.view.UserGroupView;
@@ -55,7 +57,7 @@ import com.synopsys.integration.blackduck.service.HubService;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class GroupSyncTask extends SyncTask<GroupData> {
+public class GroupSyncTask extends SyncTask<BlackDuckGroup> {
     private final Logger logger = LoggerFactory.getLogger(GroupSyncTask.class);
     private final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor;
     private final UserGroupRelationRepositoryAccessor userGroupRelationRepositoryAccessor;
@@ -75,29 +77,29 @@ public class GroupSyncTask extends SyncTask<GroupData> {
     }
 
     @Override
-    public Map<GroupData, ? extends HubView> getCurrentData(final List<? extends HubView> hubViews) {
+    public Map<BlackDuckGroup, ? extends HubView> getCurrentData(final List<? extends HubView> hubViews) {
         final List<UserGroupView> userGroupViews = (List<UserGroupView>) hubViews;
-        final Map<GroupData, ? extends HubView> groupMap = userGroupViews.stream().collect(Collectors.toMap(groupView -> new GroupData(groupView.name, groupView.active, groupView._meta.href), Function.identity()));
+        final Map<BlackDuckGroup, ? extends HubView> groupMap = userGroupViews.stream().collect(Collectors.toMap(groupView -> new BlackDuckGroup(groupView.name, groupView.active, groupView._meta.href), Function.identity()));
         return groupMap;
     }
 
     @Override
-    public Set<GroupData> getStoredData(final List<? extends DatabaseEntity> storedEntities) {
+    public Set<BlackDuckGroup> getStoredData(final List<? extends DatabaseEntity> storedEntities) {
         final List<BlackDuckGroupEntity> blackDuckGroupEntities = (List<BlackDuckGroupEntity>) storedEntities;
 
-        final Set<GroupData> storedGroups = blackDuckGroupEntities.stream().map(blackDuckGroupEntity -> new GroupData(blackDuckGroupEntity.getName(), blackDuckGroupEntity.getActive(), blackDuckGroupEntity.getHref()))
-                                                .collect(Collectors.toSet());
+        final Set<BlackDuckGroup> storedGroups = blackDuckGroupEntities.stream().map(blackDuckGroupEntity -> new BlackDuckGroup(blackDuckGroupEntity.getName(), blackDuckGroupEntity.getActive(), blackDuckGroupEntity.getHref()))
+                                                     .collect(Collectors.toSet());
         return storedGroups;
     }
 
     @Override
-    public List<BlackDuckGroupEntity> getEntitiesToRemove(final List<? extends DatabaseEntity> storedEntities, final Set<GroupData> dataToRemove) {
+    public List<BlackDuckGroupEntity> getEntitiesToRemove(final List<? extends DatabaseEntity> storedEntities, final Set<BlackDuckGroup> dataToRemove) {
         final List<BlackDuckGroupEntity> blackDuckGroupEntities = (List<BlackDuckGroupEntity>) storedEntities;
         final List<BlackDuckGroupEntity> blackDuckGroupsToRemove = blackDuckGroupEntities.stream()
                                                                        .filter(blackDuckGroupEntity -> {
-                                                                               Optional<GroupData> found = dataToRemove.stream()
-                                                                                                               .filter(data -> data.getName().equals(blackDuckGroupEntity.getName()))
-                                                                                                               .findFirst();
+                                                                               Optional<BlackDuckGroup> found = dataToRemove.stream()
+                                                                                                                    .filter(data -> data.getName().equals(blackDuckGroupEntity.getName()))
+                                                                                                                    .findFirst();
                                                                                return found.isPresent();
                                                                            }
                                                                        )
@@ -106,20 +108,19 @@ public class GroupSyncTask extends SyncTask<GroupData> {
     }
 
     @Override
-    public DatabaseEntity createEntity(final GroupData data) {
+    public DatabaseEntity createEntity(final BlackDuckGroup data) {
         return new BlackDuckGroupEntity(data.getName(), data.getActive(), data.getHref());
     }
 
     @Override
-    public void addRelations(final Map<GroupData, ? extends HubView> currentDataMap, final List<? extends DatabaseEntity> storedEntities, final HubService hubService) throws IOException, IntegrationException {
+    public void addRelations(final Map<BlackDuckGroup, ? extends HubView> currentDataMap, final List<? extends DatabaseEntity> storedEntities, final HubService hubService) throws IOException, IntegrationException {
         final List<BlackDuckGroupEntity> blackDuckGroupEntities = (List<BlackDuckGroupEntity>) storedEntities;
 
-        // We delete all the relations to start, we have to make all the rest calls anyway so it is less work to delete all and add than it is to get the diff
-        userGroupRelationRepositoryAccessor.deleteAllRelations();
-        for (final Map.Entry<GroupData, ? extends HubView> entry : currentDataMap.entrySet()) {
-            final GroupData groupData = entry.getKey();
+        final List<Pair<Long, Long>> newRelations = new ArrayList<>();
+        for (final Map.Entry<BlackDuckGroup, ? extends HubView> entry : currentDataMap.entrySet()) {
+            final BlackDuckGroup blackDuckGroup = entry.getKey();
             final UserGroupView userGroupView = (UserGroupView) entry.getValue();
-            final Optional<BlackDuckGroupEntity> optionalBlackDuckGroupEntity = blackDuckGroupEntities.stream().filter(blackDuckGroupEntity -> blackDuckGroupEntity.getName().equals(groupData.getName())).findFirst();
+            final Optional<BlackDuckGroupEntity> optionalBlackDuckGroupEntity = blackDuckGroupEntities.stream().filter(blackDuckGroupEntity -> blackDuckGroupEntity.getName().equals(blackDuckGroup.getName())).findFirst();
             final BlackDuckGroupEntity groupEntity = optionalBlackDuckGroupEntity.get();
 
             final List<BlackDuckUserEntity> storedUsers = (List<BlackDuckUserEntity>) blackDuckUserRepositoryAccessor.readEntities();
@@ -137,11 +138,15 @@ public class GroupSyncTask extends SyncTask<GroupData> {
                 }
             }
             for (final BlackDuckUserEntity userEntity : userEntitiesForThisGroup) {
-                try {
-                    userGroupRelationRepositoryAccessor.addUserGroupRelation(userEntity.getId(), groupEntity.getId());
-                } catch (final Exception e) {
-                    logger.error("Could not save the relation from user {} to group {}: {}", userEntity.getId(), groupEntity.getId(), e.getMessage());
-                }
+                newRelations.add(Pair.of(userEntity.getId(), groupEntity.getId()));
+            }
+        }
+        userGroupRelationRepositoryAccessor.deleteAllRelations();
+        for (final Pair<Long, Long> relation : newRelations) {
+            try {
+                userGroupRelationRepositoryAccessor.addUserGroupRelation(relation.getKey(), relation.getValue());
+            } catch (final Exception e) {
+                logger.error("Could not save the relation from user {} to group {}: {}", relation.getKey(), relation.getValue(), e.getMessage());
             }
         }
     }

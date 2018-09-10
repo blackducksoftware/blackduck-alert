@@ -21,16 +21,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.tasks.model;
+package com.synopsys.integration.alert.provider.blackduck.model;
 
 import com.synopsys.integration.util.Stringable;
 
-public class GroupData extends Stringable {
+public class BlackDuckGroup extends Stringable {
     private final String name;
     private final Boolean active;
     private final String href;
 
-    public GroupData(final String name, final Boolean active, final String href) {
+    public BlackDuckGroup(final String name, final Boolean active, final String href) {
         this.name = name;
         this.active = active;
         this.href = href;

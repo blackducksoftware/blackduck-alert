@@ -24,6 +24,7 @@
 package com.synopsys.integration.alert.provider.blackduck.tasks;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +52,7 @@ import com.synopsys.integration.alert.database.provider.blackduck.data.relation.
 import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserGroupRelationRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelationRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.provider.blackduck.tasks.model.ProjectData;
+import com.synopsys.integration.alert.provider.blackduck.model.BlackDuckProject;
 import com.synopsys.integration.blackduck.api.core.HubView;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.response.AssignedUserGroupView;
@@ -60,7 +62,7 @@ import com.synopsys.integration.blackduck.service.HubService;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class ProjectSyncTask extends SyncTask<ProjectData> {
+public class ProjectSyncTask extends SyncTask<BlackDuckProject> {
     private final Logger logger = LoggerFactory.getLogger(ProjectSyncTask.class);
     private final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor;
     private final BlackDuckGroupRepositoryAccessor blackDuckGroupRepositoryAccessor;
@@ -84,30 +86,31 @@ public class ProjectSyncTask extends SyncTask<ProjectData> {
     }
 
     @Override
-    public Map<ProjectData, ? extends HubView> getCurrentData(final List<? extends HubView> hubViews) {
+    public Map<BlackDuckProject, ? extends HubView> getCurrentData(final List<? extends HubView> hubViews) {
         final List<ProjectView> projectViews = (List<ProjectView>) hubViews;
-        final Map<ProjectData, ? extends HubView> projectMap = projectViews.stream().collect(
-            Collectors.toMap(projectView -> new ProjectData(projectView.name, StringUtils.trimToEmpty(projectView.description), projectView._meta.href), Function.identity()));
+        final Map<BlackDuckProject, ? extends HubView> projectMap = projectViews.stream().collect(
+            Collectors.toMap(projectView -> new BlackDuckProject(projectView.name, StringUtils.trimToEmpty(projectView.description), projectView._meta.href), Function.identity()));
         return projectMap;
     }
 
     @Override
-    public Set<ProjectData> getStoredData(final List<? extends DatabaseEntity> storedEntities) {
+    public Set<BlackDuckProject> getStoredData(final List<? extends DatabaseEntity> storedEntities) {
         final List<BlackDuckProjectEntity> blackDuckProjectEntities = (List<BlackDuckProjectEntity>) storedEntities;
 
-        final Set<ProjectData> storedGroups = blackDuckProjectEntities.stream().map(blackDuckProjectEntity -> new ProjectData(blackDuckProjectEntity.getName(), blackDuckProjectEntity.getDescription(), blackDuckProjectEntity.getHref()))
-                                                  .collect(Collectors.toSet());
+        final Set<BlackDuckProject> storedGroups = blackDuckProjectEntities.stream()
+                                                       .map(blackDuckProjectEntity -> new BlackDuckProject(blackDuckProjectEntity.getName(), blackDuckProjectEntity.getDescription(), blackDuckProjectEntity.getHref()))
+                                                       .collect(Collectors.toSet());
         return storedGroups;
     }
 
     @Override
-    public List<BlackDuckProjectEntity> getEntitiesToRemove(final List<? extends DatabaseEntity> storedEntities, final Set<ProjectData> dataToRemove) {
+    public List<BlackDuckProjectEntity> getEntitiesToRemove(final List<? extends DatabaseEntity> storedEntities, final Set<BlackDuckProject> dataToRemove) {
         final List<BlackDuckProjectEntity> blackDuckProjectEntities = (List<BlackDuckProjectEntity>) storedEntities;
         final List<BlackDuckProjectEntity> blackDuckProjectsToRemove = blackDuckProjectEntities.stream()
                                                                            .filter(blackDuckProjectEntity -> {
-                                                                                   Optional<ProjectData> found = dataToRemove.stream()
-                                                                                                                     .filter(data -> data.getName().equals(blackDuckProjectEntity.getName()))
-                                                                                                                     .findFirst();
+                                                                                   Optional<BlackDuckProject> found = dataToRemove.stream()
+                                                                                                                          .filter(data -> data.getName().equals(blackDuckProjectEntity.getName()))
+                                                                                                                          .findFirst();
                                                                                    return found.isPresent();
                                                                                }
                                                                            )
@@ -116,21 +119,20 @@ public class ProjectSyncTask extends SyncTask<ProjectData> {
     }
 
     @Override
-    public DatabaseEntity createEntity(final ProjectData data) {
+    public DatabaseEntity createEntity(final BlackDuckProject data) {
         return new BlackDuckProjectEntity(data.getName(), data.getDescription(), data.getHref());
     }
 
     @Override
-    public void addRelations(final Map<ProjectData, ? extends HubView> currentDataMap, final List<? extends DatabaseEntity> storedEntities, final HubService hubService) throws IOException, IntegrationException {
+    public void addRelations(final Map<BlackDuckProject, ? extends HubView> currentDataMap, final List<? extends DatabaseEntity> storedEntities, final HubService hubService) throws IOException, IntegrationException {
         final List<BlackDuckProjectEntity> blackDuckProjectEntities = (List<BlackDuckProjectEntity>) storedEntities;
 
-        // We delete all the relations to start, we have to make all the rest calls anyway so it is less work to delete all and add than it is to get the diff
-        userProjectRelationRepositoryAccessor.deleteAllRelations();
-        for (final Map.Entry<ProjectData, ? extends HubView> entry : currentDataMap.entrySet()) {
-            final ProjectData projectData = entry.getKey();
+        final List<Pair<Long, Long>> newRelations = new ArrayList<>();
+        for (final Map.Entry<BlackDuckProject, ? extends HubView> entry : currentDataMap.entrySet()) {
+            final BlackDuckProject blackDuckProject = entry.getKey();
             final ProjectView projectView = (ProjectView) entry.getValue();
 
-            final Optional<BlackDuckProjectEntity> optionalBlackDuckProjectEntity = blackDuckProjectEntities.stream().filter(blackDuckProjectEntity -> blackDuckProjectEntity.getName().equals(projectData.getName())).findFirst();
+            final Optional<BlackDuckProjectEntity> optionalBlackDuckProjectEntity = blackDuckProjectEntities.stream().filter(blackDuckProjectEntity -> blackDuckProjectEntity.getName().equals(blackDuckProject.getName())).findFirst();
             final BlackDuckProjectEntity projectEntity = optionalBlackDuckProjectEntity.get();
 
             final List<AssignedUserView> assignedUsersForThisProject = hubService.getAllResponses(projectView, ProjectView.USERS_LINK_RESPONSE);
@@ -160,14 +162,19 @@ public class ProjectSyncTask extends SyncTask<ProjectData> {
                 }
             }
             for (final Long blackDuckUserEntityId : userEntityIdsForThisProject) {
-                try {
-                    userProjectRelationRepositoryAccessor.addUserProjectRelation(blackDuckUserEntityId, projectEntity.getId());
-                } catch (final Exception e) {
-                    logger.error("Could not save the relation from user {} to project {}: {}", blackDuckUserEntityId, projectEntity.getId(), e.getMessage());
-                }
+                newRelations.add(Pair.of(blackDuckUserEntityId, projectEntity.getId()));
             }
 
         }
+        userProjectRelationRepositoryAccessor.deleteAllRelations();
+        for (final Pair<Long, Long> relation : newRelations) {
+            try {
+                userProjectRelationRepositoryAccessor.addUserProjectRelation(relation.getKey(), relation.getValue());
+            } catch (final Exception e) {
+                logger.error("Could not save the relation from user {} to project {}: {}", relation.getKey(), relation.getValue(), e.getMessage());
+            }
+        }
+
     }
 
 }

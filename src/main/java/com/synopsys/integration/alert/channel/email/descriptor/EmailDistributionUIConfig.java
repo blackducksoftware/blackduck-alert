@@ -27,8 +27,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -38,13 +36,11 @@ import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
+import com.synopsys.integration.alert.provider.blackduck.model.BlackDuckGroup;
 import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckDataActions;
-import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckGroup;
-import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class EmailDistributionUIConfig extends UIConfig {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final BlackDuckDataActions blackDuckDataActions;
 
     @Autowired
@@ -64,17 +60,10 @@ public class EmailDistributionUIConfig extends UIConfig {
     }
 
     private List<String> getEmailGroups() {
-        // TODO we currently query the hub to get the groups, change this when the group DB table is introduced
-        try {
-            return blackDuckDataActions.getBlackDuckGroups()
-                       .stream()
-                       .map(BlackDuckGroup::getName)
-                       .collect(Collectors.toList());
-        } catch (final IntegrationException ex) {
-            logger.error("Error retrieving email groups", ex);
-        }
-
-        return Arrays.asList();
+        return blackDuckDataActions.getBlackDuckGroups()
+                   .stream()
+                   .map(BlackDuckGroup::getName)
+                   .collect(Collectors.toList());
     }
 
 }
