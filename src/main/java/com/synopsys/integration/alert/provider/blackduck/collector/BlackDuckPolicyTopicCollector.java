@@ -57,14 +57,14 @@ public class BlackDuckPolicyTopicCollector extends BlackDuckTopicCollector {
         final Map<String, HierarchicalField> categoryFields = getCategoryFieldMap(notification.getNotificationType());
         final String notificationJson = notification.getContent();
 
-        final List<String> componentNames = getFieldValuesByLabelSuffix(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_COMPONENT_NAME, notificationJson);
-        final List<String> componentUrls = getFieldValuesByLabelSuffix(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_COMPONENT_URL, notificationJson);
+        final List<String> componentNames = getFieldValuesByLabel(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_COMPONENT_NAME, notificationJson);
+        final List<String> componentUrls = getFieldValuesByLabel(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_COMPONENT_URL, notificationJson);
 
-        final List<String> componentVersionNames = getFieldValuesByLabelSuffix(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_COMPONENT_VERSION_NAME, notificationJson);
-        final List<String> componentVersionUrls = getFieldValuesByLabelSuffix(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_COMPONENT_VERSION_URL, notificationJson);
+        final List<String> componentVersionNames = getFieldValuesByLabel(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_COMPONENT_VERSION_NAME, notificationJson);
+        final List<String> componentVersionUrls = getFieldValuesByLabel(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_COMPONENT_VERSION_URL, notificationJson);
 
-        final List<String> policyNames = getFieldValuesByLabelSuffix(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_POLICY_NAME, notificationJson);
-        final List<String> policyUrls = getFieldValuesByLabelSuffix(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_POLICY_URL, notificationJson);
+        final List<String> policyNames = getFieldValuesByLabel(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_POLICY_NAME, notificationJson);
+        final List<String> policyUrls = getFieldValuesByLabel(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_POLICY_URL, notificationJson);
 
         final ItemOperation operation = getOperationFromNotification(notification.getNotificationType());
         for (int policyIndex = 0; policyIndex < policyUrls.size(); policyIndex++) {

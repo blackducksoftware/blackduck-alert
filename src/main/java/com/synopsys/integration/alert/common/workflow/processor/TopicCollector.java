@@ -33,8 +33,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
+import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.field.HierarchicalField;
+import com.synopsys.integration.alert.common.field.ObjectHierarchicalField;
 import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.common.model.TopicContent;
@@ -103,16 +105,16 @@ public abstract class TopicCollector {
     }
 
     protected final List<LinkableItem> getTopicItems(final List<HierarchicalField> notificationFields, final String notificationJson) {
-        final HierarchicalField topicField = getFieldForLabel(notificationFields, HierarchicalField.LABEL_TOPIC);
-        if (topicField == null) {
-            throw new IllegalStateException(String.format("The notification provided did not contain the required field: ", HierarchicalField.LABEL_TOPIC));
+        final Optional<HierarchicalField> topicField = getFieldForContentIdentifier(notificationFields, FieldContentIdentifier.TOPIC);
+        if (!topicField.isPresent()) {
+            throw new IllegalStateException(String.format("The notification provided did not contain the required field: ", FieldContentIdentifier.TOPIC));
         }
-        final HierarchicalField topicUrlField = getFieldForLabel(notificationFields, HierarchicalField.LABEL_TOPIC + HierarchicalField.LABEL_URL_SUFFIX);
-        return jsonExtractor.getLinkableItemsFromJson(topicField, topicUrlField, notificationJson);
+        final Optional<HierarchicalField> topicUrlField = getFieldForContentIdentifier(notificationFields, FieldContentIdentifier.TOPIC_URL);
+        return jsonExtractor.getLinkableItemsFromJson(topicField.get(), topicUrlField.orElse(null), notificationJson);
         // TODO if the JsonExtractor works correctly, we don't need the rest of this code
         //        final String topicName = topicField.getFieldKey();
         //        final List<String> topicValues = getFieldValues(topicField, notificationJson);
-        //        final HierarchicalField topicUrlField = getFieldForLabel(notificationFields, HierarchicalField.LABEL_TOPIC + HierarchicalField.LABEL_URL_SUFFIX);
+        //        final HierarchicalField topicUrlField = getFieldForContentIdentifier(notificationFields, FieldContentIdentifier.TOPIC + HierarchicalField.LABEL_URL_SUFFIX);
         //        List<String> topicUrlValues = Collections.emptyList();
         //        if (topicUrlField != null) {
         //            topicUrlValues = getFieldValues(topicUrlField, notificationJson);
@@ -133,24 +135,24 @@ public abstract class TopicCollector {
     protected final boolean hasSubTopic(final List<HierarchicalField> notificationFields) {
         return notificationFields
                    .stream()
-                   .anyMatch(field -> HierarchicalField.LABEL_SUB_TOPIC.equals(field.getLabel()));
+                   .anyMatch(field -> FieldContentIdentifier.SUB_TOPIC.equals(field.getContentIdentifier()));
     }
 
     protected final Optional<String> getSubTopicName(final List<HierarchicalField> notificationFields) {
-        final HierarchicalField subTopicField = getFieldForLabel(notificationFields, HierarchicalField.LABEL_SUB_TOPIC);
-        if (subTopicField != null) {
-            return Optional.of(subTopicField.getFieldKey());
+        final Optional<HierarchicalField> subTopicField = getFieldForContentIdentifier(notificationFields, FieldContentIdentifier.SUB_TOPIC);
+        if (subTopicField.isPresent()) {
+            return Optional.of(subTopicField.get().getFieldKey());
         }
         return Optional.empty();
     }
 
     protected final Optional<String> getSubTopicValue(final List<HierarchicalField> notificationFields, final String notificationJson) {
-        final HierarchicalField subTopicField = getFieldForLabel(notificationFields, HierarchicalField.LABEL_SUB_TOPIC);
+        final Optional<HierarchicalField> subTopicField = getFieldForContentIdentifier(notificationFields, FieldContentIdentifier.SUB_TOPIC);
         return getOptionalFieldValue(subTopicField, notificationJson);
     }
 
     protected final Optional<String> getSubTopicUrl(final List<HierarchicalField> notificationFields, final String notificationJson) {
-        final HierarchicalField subTopicUrlField = getFieldForLabel(notificationFields, HierarchicalField.LABEL_SUB_TOPIC + HierarchicalField.LABEL_URL_SUFFIX);
+        final Optional<HierarchicalField> subTopicUrlField = getFieldForContentIdentifier(notificationFields, FieldContentIdentifier.SUB_TOPIC_URL);
         return getOptionalFieldValue(subTopicUrlField, notificationJson);
     }
 
@@ -167,7 +169,7 @@ public abstract class TopicCollector {
         final List<HierarchicalField> notificationFields = getFieldsForNotificationType(notificationType);
         return notificationFields
                    .parallelStream()
-                   .filter(field -> field.getLabel().startsWith(HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX))
+                   .filter(field -> field.getContentIdentifier().equals(FieldContentIdentifier.CATEGORY_ITEM))
                    .collect(Collectors.toMap(HierarchicalField::getLabel, Function.identity()));
     }
 
@@ -181,22 +183,32 @@ public abstract class TopicCollector {
         }
     }
 
-    protected final HierarchicalField getFieldForLabel(final List<HierarchicalField> fields, final String label) {
-        for (final HierarchicalField field : fields) {
-            if (field.getLabel().equals(label)) {
-                return field;
-            }
-        }
-        return null;
+    protected final Optional<HierarchicalField> getFieldForContentIdentifier(final List<HierarchicalField> fields, final FieldContentIdentifier contentIdentifier) {
+        return fields.stream().filter(field -> field.getContentIdentifier().equals(contentIdentifier)).findFirst();
     }
 
     protected final List<String> getFieldValues(final HierarchicalField field, final String notificationJson) {
         return jsonExtractor.getValuesFromJson(field, notificationJson);
     }
 
-    protected List<String> getFieldValuesByLabelSuffix(final Map<String, HierarchicalField> categoryFields, final String suffix, final String notificationJson) {
-        final HierarchicalField field = categoryFields.get(HierarchicalField.LABEL_CATEGORY_ITEM_PREFIX + suffix);
+    protected final <T> List<T> getFieldValuesFromObject(final ObjectHierarchicalField field, final String notificationJson) {
+        return jsonExtractor.getObjectFromJson(field, notificationJson);
+    }
+
+    protected List<String> getFieldValuesByLabel(final Map<String, HierarchicalField> categoryFields, final String label, final String notificationJson) {
+        final HierarchicalField field = categoryFields.get(label);
         return getFieldValues(field, notificationJson);
+    }
+
+    protected <T> List<T> getFieldValuesObjectByLabel(final Map<String, HierarchicalField> categoryFields, final String label, final String notificationJson) {
+        final HierarchicalField field = categoryFields.get(label);
+        final Class<ObjectHierarchicalField> expected = ObjectHierarchicalField.class;
+        if (expected.isAssignableFrom(field.getClass())) {
+            return getFieldValuesFromObject((ObjectHierarchicalField) field, notificationJson);
+        } else {
+            // TODO throw an exception or handle this case more appropriately.
+            return Collections.emptyList();
+        }
     }
 
     protected final String getRequiredFieldValue(final HierarchicalField field, final String notificationJson) {
@@ -207,9 +219,9 @@ public abstract class TopicCollector {
         throw new IllegalStateException(String.format("The required field did not contain a value: ", field));
     }
 
-    protected final Optional<String> getOptionalFieldValue(final HierarchicalField field, final String notificationJson) {
-        if (field != null) {
-            return jsonExtractor.getFirstValueFromJson(field, notificationJson);
+    protected final Optional<String> getOptionalFieldValue(final Optional<HierarchicalField> field, final String notificationJson) {
+        if (field.isPresent()) {
+            return jsonExtractor.getFirstValueFromJson(field.get(), notificationJson);
         }
         return Optional.empty();
     }
