@@ -24,7 +24,6 @@
 package com.synopsys.integration.alert.provider.blackduck.tasks;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +33,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +44,7 @@ import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuck
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckGroupRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserRepositoryAccessor;
+import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserGroupRelation;
 import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserGroupRelationRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.model.BlackDuckGroup;
@@ -116,7 +115,7 @@ public class GroupSyncTask extends SyncTask<BlackDuckGroup> {
     public void addRelations(final Map<BlackDuckGroup, ? extends HubView> currentDataMap, final List<? extends DatabaseEntity> storedEntities, final HubService hubService) throws IOException, IntegrationException {
         final List<BlackDuckGroupEntity> blackDuckGroupEntities = (List<BlackDuckGroupEntity>) storedEntities;
 
-        final List<Pair<Long, Long>> newRelations = new ArrayList<>();
+        final Set<UserGroupRelation> newRelations = new HashSet<>();
         for (final Map.Entry<BlackDuckGroup, ? extends HubView> entry : currentDataMap.entrySet()) {
             final BlackDuckGroup blackDuckGroup = entry.getKey();
             final UserGroupView userGroupView = (UserGroupView) entry.getValue();
@@ -138,16 +137,16 @@ public class GroupSyncTask extends SyncTask<BlackDuckGroup> {
                 }
             }
             for (final BlackDuckUserEntity userEntity : userEntitiesForThisGroup) {
-                newRelations.add(Pair.of(userEntity.getId(), groupEntity.getId()));
+                newRelations.add(new UserGroupRelation(userEntity.getId(), groupEntity.getId()));
             }
         }
         userGroupRelationRepositoryAccessor.deleteAllRelations();
         logger.info("User to group relationships {}", newRelations.size());
-        for (final Pair<Long, Long> relation : newRelations) {
+        for (final UserGroupRelation relation : newRelations) {
             try {
-                userGroupRelationRepositoryAccessor.addUserGroupRelation(relation.getKey(), relation.getValue());
+                userGroupRelationRepositoryAccessor.addUserGroupRelation(relation);
             } catch (final Exception e) {
-                logger.error("Could not save the relation from user {} to group {}: {}", relation.getKey(), relation.getValue(), e.getMessage());
+                logger.error("Could not save the relation from user {} to group {}: {}", relation.getBlackDuckUserId(), relation.getBlackDuckGroupId(), e.getMessage());
             }
         }
     }

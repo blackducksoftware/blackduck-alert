@@ -14,10 +14,9 @@ public class MockUserProjectRelationRepositoryAccessor extends UserProjectRelati
         super(null);
     }
 
-    public DatabaseRelation addUserProjectRelation(final Long userId, final Long projectId) {
-        final UserProjectRelation newRelation = new UserProjectRelation(userId, projectId);
-        userProjectRelations.add(newRelation);
-        return newRelation;
+    public DatabaseRelation addUserProjectRelation(final UserProjectRelation userProjectRelation) {
+        userProjectRelations.add(userProjectRelation);
+        return userProjectRelation;
     }
 
     public void deleteAllRelations() {

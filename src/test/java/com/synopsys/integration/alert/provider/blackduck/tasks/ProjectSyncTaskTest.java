@@ -15,6 +15,7 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckGroupEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserEntity;
+import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserGroupRelation;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.mock.MockBlackDuckGroupRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.mock.MockBlackDuckProjectRepositoryAccessor;
@@ -168,7 +169,7 @@ public class ProjectSyncTaskTest extends SyncTaskSharedTest {
         blackDuckGroupEntity = (BlackDuckGroupEntity) blackDuckGroupRepositoryAccessor.saveEntity(blackDuckGroupEntity);
 
         for (final BlackDuckUserEntity userEntity : userEntities) {
-            userGroupRelationRepositoryAccessor.addUserGroupRelation(userEntity.getId(), blackDuckGroupEntity.getId());
+            userGroupRelationRepositoryAccessor.addUserGroupRelation(new UserGroupRelation(userEntity.getId(), blackDuckGroupEntity.getId()));
         }
     }
 
