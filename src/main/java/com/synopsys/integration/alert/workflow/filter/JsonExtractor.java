@@ -23,11 +23,11 @@
  */
 package com.synopsys.integration.alert.workflow.filter;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,11 +36,9 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import com.synopsys.integration.alert.common.field.HierarchicalField;
-import com.synopsys.integration.alert.common.field.ObjectHierarchicalField;
+import com.synopsys.integration.alert.common.field.StringHierarchicalField;
 import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.web.model.Config;
 
@@ -53,51 +51,33 @@ public class JsonExtractor {
         this.gson = gson;
     }
 
-    // TODO This is a P.O.C. Abstract this to use common functionality.
-    public List<LinkableItem> getLinkableItemsFromJson(final HierarchicalField dataField, final HierarchicalField linkField, final String json) {
-        final List<String> fieldNameHierarchy = dataField.getFullPathToField();
-        final JsonObject object = gson.fromJson(json, JsonObject.class);
+    public List<String> getValuesFromConfig(final StringHierarchicalField field, final Config config) {
+        final JsonElement element = gson.toJsonTree(config);
+        final Optional<String> mapping = field.getConfigNameMapping();
+        if (mapping.isPresent()) {
+            final List<String> pathToField = Arrays.asList(mapping.get());
+            final List<JsonElement> foundElements = getInnerElements(element, pathToField.listIterator());
 
-        final JsonElement foundElement = getFieldContainingValue(object, fieldNameHierarchy, fieldNameHierarchy.get(0), 1);
-        final List<LinkableItem> items = new ArrayList<>();
-        if (foundElement.isJsonArray()) {
-            for (final JsonElement element : foundElement.getAsJsonArray()) {
-                if (element.isJsonObject()) {
-                    final List<String> values = getValuesFromElement(element, dataField.getFieldKey());
-                    final List<String> urls = getValuesFromElement(element, linkField.getFieldKey());
-                    if (values.size() == 1 && urls.size() == 1) {
-                        items.add(new LinkableItem(dataField.getFieldKey(), values.get(0), urls.get(0)));
-                    }
-                }
-            }
+            // FIXME return a list of values from foundElements
         }
-        return items;
+        return Collections.emptyList();
     }
 
-    // TODO another P.O.C
-    public <T> List<T> getObjectFromJson(final ObjectHierarchicalField dataField, final String json) {
-        final List<String> fieldNameHierarchy = dataField.getFullPathToField();
-        final JsonObject object = gson.fromJson(json, JsonObject.class);
+    // TODO This is a P.O.C.
+    public List<LinkableItem> getLinkableItemsFromJson(final StringHierarchicalField dataField, final StringHierarchicalField linkField, final String json) {
+        final List<String> values = getValuesFromJson(dataField, json);
+        final List<String> links = getValuesFromJson(linkField, json);
 
-        final JsonElement foundElement = getFieldContainingValue(object, fieldNameHierarchy, fieldNameHierarchy.get(0), 1);
-        final List<T> items = new ArrayList<>();
-        final Type type = dataField.getType();
-        if (foundElement.isJsonArray()) {
-            for (final JsonElement element : foundElement.getAsJsonArray()) {
-                if (element.isJsonObject()) {
-                    final T item = gson.fromJson(element, type);
-                    items.add(item);
-                }
+        if (values.size() == links.size()) {
+            final List<LinkableItem> linkableItems = new ArrayList<>();
+            for (int i = 0; i < links.size(); i++) {
+                linkableItems.add(new LinkableItem(dataField.getLabel(), values.get(i), links.get(i)));
             }
-        } else if (foundElement.isJsonObject()) {
-            final JsonObject element = foundElement.getAsJsonObject();
-            final T item = gson.fromJson(element, type);
-            items.add(item);
         }
-        return items;
+        throw new IllegalArgumentException("The json provided did not contain the correct field pairings.");
     }
 
-    public Optional<String> getFirstValueFromJson(final HierarchicalField hierarchicalField, final String json) {
+    public Optional<String> getFirstValueFromJson(final StringHierarchicalField hierarchicalField, final String json) {
         final List<String> foundValues = getValuesFromJson(hierarchicalField, json);
         if (!foundValues.isEmpty()) {
             return Optional.of(foundValues.get(0));
@@ -105,58 +85,50 @@ public class JsonExtractor {
         return Optional.empty();
     }
 
-    public List<String> getValuesFromJson(final HierarchicalField hierarchicalField, final String json) {
-        final List<String> fieldNameHierarchy = hierarchicalField.getFullPathToField();
+    public <T> Optional<T> getFirstValueFromJson(final HierarchicalField hierarchicalField, final String json) {
+        final List<T> foundValues = getObjectsFromJson(hierarchicalField, json);
+        if (!foundValues.isEmpty()) {
+            return Optional.of(foundValues.get(0));
+        }
+        return Optional.empty();
+    }
+
+    public List<String> getValuesFromJson(final StringHierarchicalField field, final String json) {
+        return getObjectsFromJson(field, json);
+    }
+
+    // TODO determine what we want to do about JsonSyntaxExceptions
+    // TODO we know the type, so how do we get rid of generic types
+    public <T> List<T> getObjectsFromJson(final HierarchicalField field, final String json) {
+        final List<String> fieldNameHierarchy = field.getFullPathToField();
         final JsonObject object = gson.fromJson(json, JsonObject.class);
 
-        final JsonElement foundElement = getFieldContainingValue(object, fieldNameHierarchy, fieldNameHierarchy.get(0), 1);
-        return getValuesFromElement(foundElement, hierarchicalField.getFieldKey());
-    }
+        final List<JsonElement> foundElements = getInnerElements(object, fieldNameHierarchy.listIterator());
 
-    public List<String> getValuesFromConfig(final HierarchicalField hierarchicalField, final Config config) {
-        final JsonObject jsonConfig = gson.toJsonTree(config).getAsJsonObject();
-        final Optional<String> configNameMapping = hierarchicalField.getConfigNameMapping();
-        if (configNameMapping.isPresent()) {
-            return getValuesFromElement(jsonConfig, configNameMapping.get());
+        final List<T> objectsFromJson = new ArrayList<>();
+        for (final JsonElement element : foundElements) {
+            final T fromJson = gson.fromJson(element, field.getType());
+            objectsFromJson.add(fromJson);
         }
-        return Collections.emptyList();
+        return objectsFromJson;
     }
 
-    private JsonElement getFieldContainingValue(final JsonElement jsonElement, final List<String> fieldNameHierarchy, final String fieldName, final int nextIndex) {
-        if (jsonElement != null && jsonElement.isJsonObject()) {
-            final JsonObject jsonObject = jsonElement.getAsJsonObject();
-            final JsonElement jsonField = jsonObject.get(fieldName);
-            if (jsonField != null) {
-                if (nextIndex == fieldNameHierarchy.size() - 1 && jsonField.isJsonArray()) {
-                    return jsonField;
-                } else if (nextIndex < fieldNameHierarchy.size()) {
-                    return getFieldContainingValue(jsonField, fieldNameHierarchy, fieldNameHierarchy.get(nextIndex), nextIndex + 1);
-                } else if (jsonField.isJsonPrimitive()) {
-                    return jsonField.getAsJsonPrimitive();
+    private List<JsonElement> getInnerElements(final JsonElement element, final ListIterator<String> path) {
+        if (path.hasNext() && !element.isJsonPrimitive()) {
+            final String nextKey = path.next();
+            if (element.isJsonObject()) {
+                final JsonObject jsonObject = element.getAsJsonObject();
+                return getInnerElements(jsonObject.get(nextKey), path);
+            } else if (element.isJsonArray()) {
+                final JsonArray foundArray = element.getAsJsonArray();
+
+                final List<JsonElement> foundValues = new ArrayList<>(foundArray.size());
+                for (final JsonElement arrayElement : foundArray) {
+                    foundValues.addAll(getInnerElements(arrayElement, path));
                 }
+                return foundValues;
             }
         }
-        return JsonNull.INSTANCE;
-    }
-
-    private List<String> getValuesFromElement(final JsonElement element, final String key) {
-        if (element.isJsonPrimitive()) {
-            final JsonPrimitive foundPrimitive = element.getAsJsonPrimitive();
-            if (foundPrimitive.isString()) {
-                return Arrays.asList(foundPrimitive.getAsString());
-            }
-        } else if (element.isJsonObject()) {
-            final JsonObject jsonObject = element.getAsJsonObject();
-            return (getValuesFromElement(jsonObject.get(key), key));
-        } else if (element.isJsonArray()) {
-            final JsonArray foundArray = element.getAsJsonArray();
-
-            final List<String> foundValues = new ArrayList<>(foundArray.size());
-            for (final JsonElement arrayElement : foundArray) {
-                foundValues.addAll(getValuesFromElement(arrayElement, key));
-            }
-            return foundValues;
-        }
-        return Collections.emptyList();
+        return Arrays.asList(element);
     }
 }
