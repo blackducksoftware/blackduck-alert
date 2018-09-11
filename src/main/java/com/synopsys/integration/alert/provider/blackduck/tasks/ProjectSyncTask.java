@@ -107,15 +107,15 @@ public class ProjectSyncTask extends SyncTask<BlackDuckProject> {
     public List<BlackDuckProjectEntity> getEntitiesToRemove(final List<? extends DatabaseEntity> storedEntities, final Set<BlackDuckProject> dataToRemove) {
         final List<BlackDuckProjectEntity> blackDuckProjectEntities = (List<BlackDuckProjectEntity>) storedEntities;
         final List<BlackDuckProjectEntity> blackDuckProjectsToRemove = blackDuckProjectEntities.stream()
-                                                                           .filter(blackDuckProjectEntity -> {
-                                                                                   Optional<BlackDuckProject> found = dataToRemove.stream()
-                                                                                                                          .filter(data -> data.getName().equals(blackDuckProjectEntity.getName()))
-                                                                                                                          .findFirst();
-                                                                                   return found.isPresent();
-                                                                               }
-                                                                           )
+                                                                           .filter(blackDuckProjectEntity -> isEntityWithNamePresent(dataToRemove, blackDuckProjectEntity))
                                                                            .collect(Collectors.toList());
         return blackDuckProjectsToRemove;
+    }
+
+    private Boolean isEntityWithNamePresent(final Set<BlackDuckProject> projectDataSet, final BlackDuckProjectEntity blackDuckProjectEntity) {
+        return projectDataSet.stream()
+                   .filter(projectData -> projectData.getName().equals(blackDuckProjectEntity.getName()))
+                   .findFirst().isPresent();
     }
 
     @Override
