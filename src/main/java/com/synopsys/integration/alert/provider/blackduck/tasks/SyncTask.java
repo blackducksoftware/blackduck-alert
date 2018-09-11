@@ -63,17 +63,15 @@ public abstract class SyncTask<T> extends ScheduledTask {
             final Optional<BlackduckRestConnection> optionalConnection = blackDuckProperties.createRestConnectionAndLogErrors(logger);
             if (optionalConnection.isPresent()) {
                 try (final BlackduckRestConnection restConnection = optionalConnection.get()) {
-                    if (restConnection != null) {
-                        final HubServicesFactory hubServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(restConnection, new Slf4jIntLogger(logger));
-                        final HubService hubService = hubServicesFactory.createHubService();
-                        final List<? extends HubView> hubViews = getHubViews(hubService);
-                        final Map<T, ? extends HubView> currentDataMap = getCurrentData(hubViews);
-                        List<? extends DatabaseEntity> storedEntities = getStoredEntities();
-                        syncDBWithCurrentData(currentDataMap, storedEntities);
+                    final HubServicesFactory hubServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(restConnection, new Slf4jIntLogger(logger));
+                    final HubService hubService = hubServicesFactory.createHubService();
+                    final List<? extends HubView> hubViews = getHubViews(hubService);
+                    final Map<T, ? extends HubView> currentDataMap = getCurrentData(hubViews);
+                    List<? extends DatabaseEntity> storedEntities = getStoredEntities();
+                    syncDBWithCurrentData(currentDataMap, storedEntities);
 
-                        storedEntities = getStoredEntities();
-                        addRelations(currentDataMap, storedEntities, hubService);
-                    }
+                    storedEntities = getStoredEntities();
+                    addRelations(currentDataMap, storedEntities, hubService);
                 }
             } else {
                 logger.error("Missing BlackDuck global configuration.");
