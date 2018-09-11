@@ -38,6 +38,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.alert.common.field.HierarchicalField;
 import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.web.model.Config;
@@ -61,13 +62,36 @@ public class JsonExtractor {
         if (foundElement.isJsonArray()) {
             for (final JsonElement element : foundElement.getAsJsonArray()) {
                 if (element.isJsonObject()) {
-                    List<String> values = getValuesFromElement(element, dataField.getFieldKey());
-                    List<String> urls = getValuesFromElement(element, linkField.getFieldKey());
+                    final List<String> values = getValuesFromElement(element, dataField.getFieldKey());
+                    final List<String> urls = getValuesFromElement(element, linkField.getFieldKey());
                     if (values.size() == 1 && urls.size() == 1) {
                         items.add(new LinkableItem(dataField.getFieldKey(), values.get(0), urls.get(0)));
                     }
                 }
             }
+        }
+        return items;
+    }
+
+    // TODO another P.O.C
+    public <T> List<T> getObjectFromJson(final HierarchicalField dataField, final String json) {
+        final List<String> fieldNameHierarchy = dataField.getFullPathToField();
+        final JsonObject object = gson.fromJson(json, JsonObject.class);
+
+        final JsonElement foundElement = getFieldContainingValue(object, fieldNameHierarchy, fieldNameHierarchy.get(0), 1);
+        final List<T> items = new ArrayList<>();
+        final TypeToken<T> typeToken = new TypeToken<T>() {};
+        if (foundElement.isJsonArray()) {
+            for (final JsonElement element : foundElement.getAsJsonArray()) {
+                if (element.isJsonObject()) {
+                    final T item = gson.fromJson(element, typeToken.getType());
+                    items.add(item);
+                }
+            }
+        } else if (foundElement.isJsonObject()) {
+            final JsonObject element = foundElement.getAsJsonObject();
+            final T item = gson.fromJson(element, typeToken.getType());
+            items.add(item);
         }
         return items;
     }
@@ -100,7 +124,7 @@ public class JsonExtractor {
     private JsonElement getFieldContainingValue(final JsonElement jsonElement, final List<String> fieldNameHierarchy, final String fieldName, final int nextIndex) {
         if (jsonElement != null && jsonElement.isJsonObject()) {
             final JsonObject jsonObject = jsonElement.getAsJsonObject();
-            JsonElement jsonField = jsonObject.get(fieldName);
+            final JsonElement jsonField = jsonObject.get(fieldName);
             if (jsonField != null) {
                 if (nextIndex == fieldNameHierarchy.size() - 1 && jsonField.isJsonArray()) {
                     return jsonField;
