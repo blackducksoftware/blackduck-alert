@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 
 import com.synopsys.integration.alert.common.field.HierarchicalField;
+import com.synopsys.integration.alert.common.field.StringHierarchicalField;
 import com.synopsys.integration.util.Stringable;
 
 public class ProviderContentType extends Stringable {
@@ -49,7 +50,13 @@ public class ProviderContentType extends Stringable {
         return notificationFields.parallelStream().collect(Collectors.toList());
     }
 
-    public List<HierarchicalField> getFilterableFields() {
-        return notificationFields.parallelStream().filter(HierarchicalField::isFilterable).collect(Collectors.toList());
+    public List<StringHierarchicalField> getFilterableFields() {
+        final Class<StringHierarchicalField> targetClass = StringHierarchicalField.class;
+        return notificationFields
+                   .parallelStream()
+                   .filter(field -> targetClass.isAssignableFrom(field.getClass()))
+                   .map(field -> targetClass.cast(field))
+                   .filter(StringHierarchicalField::isFilterable)
+                   .collect(Collectors.toList());
     }
 }

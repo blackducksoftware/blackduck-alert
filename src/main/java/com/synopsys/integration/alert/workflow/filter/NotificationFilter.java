@@ -40,7 +40,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.distribution.CommonDistributionConfigReader;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.field.HierarchicalField;
+import com.synopsys.integration.alert.common.field.StringHierarchicalField;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
@@ -89,7 +89,7 @@ public class NotificationFilter {
 
         final Set<NotificationContent> filteredNotifications = new HashSet<>();
         notificationsByType.forEach((type, groupedNotifications) -> {
-            final Set<HierarchicalField> filterableFields = getFilterableFieldsByNotificationType(type, providerContentTypes);
+            final Set<StringHierarchicalField> filterableFields = getFilterableFieldsByNotificationType(type, providerContentTypes);
             final Predicate<NotificationContent> filterForNotificationType = createFilter(filterableFields, distributionConfigs);
 
             final List<NotificationContent> matchingNotifications = applyFilter(groupedNotifications, filterForNotificationType);
@@ -128,7 +128,7 @@ public class NotificationFilter {
                    .collect(Collectors.toList());
     }
 
-    private Set<HierarchicalField> getFilterableFieldsByNotificationType(final String notificationType, final List<ProviderContentType> contentTypes) {
+    private Set<StringHierarchicalField> getFilterableFieldsByNotificationType(final String notificationType, final List<ProviderContentType> contentTypes) {
         return contentTypes
                    .parallelStream()
                    .filter(contentType -> notificationType.equals(contentType.getNotificationType()))
@@ -136,10 +136,10 @@ public class NotificationFilter {
                    .collect(Collectors.toSet());
     }
 
-    private Predicate<NotificationContent> createFilter(final Collection<HierarchicalField> filterableFields, final Collection<CommonDistributionConfig> distributionConfigs) {
+    private Predicate<NotificationContent> createFilter(final Collection<StringHierarchicalField> filterableFields, final Collection<CommonDistributionConfig> distributionConfigs) {
         JsonFilterBuilder filterBuilder = DefaultFilterBuilders.ALWAYS_TRUE;
         for (final CommonDistributionConfig config : distributionConfigs) {
-            for (final HierarchicalField field : filterableFields) {
+            for (final StringHierarchicalField field : filterableFields) {
                 if (shouldFilter(config)) {
                     final Collection<String> valuesFromField = jsonExtractor.getValuesFromConfig(field, config);
                     final JsonFilterBuilder fieldFilter = createFilterBuilderForAllValues(field, valuesFromField);
@@ -150,7 +150,7 @@ public class NotificationFilter {
         return filterBuilder.buildPredicate();
     }
 
-    private JsonFilterBuilder createFilterBuilderForAllValues(final HierarchicalField field, final Collection<String> applicableValues) {
+    private JsonFilterBuilder createFilterBuilderForAllValues(final StringHierarchicalField field, final Collection<String> applicableValues) {
         JsonFilterBuilder filterBuilderForAllValues = DefaultFilterBuilders.ALWAYS_FALSE;
 
         for (final String value : applicableValues) {

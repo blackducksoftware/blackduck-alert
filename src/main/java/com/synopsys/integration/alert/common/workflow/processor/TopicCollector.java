@@ -37,6 +37,7 @@ import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.field.HierarchicalField;
 import com.synopsys.integration.alert.common.field.ObjectHierarchicalField;
+import com.synopsys.integration.alert.common.field.StringHierarchicalField;
 import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.common.model.TopicContent;
@@ -105,31 +106,17 @@ public abstract class TopicCollector {
     }
 
     protected final List<LinkableItem> getTopicItems(final List<HierarchicalField> notificationFields, final String notificationJson) {
-        final Optional<HierarchicalField> topicField = getFieldForContentIdentifier(notificationFields, FieldContentIdentifier.TOPIC);
-        if (!topicField.isPresent()) {
+        final Optional<HierarchicalField> optionalTopicField = getFieldForContentIdentifier(notificationFields, FieldContentIdentifier.TOPIC);
+        if (!optionalTopicField.isPresent()) {
             throw new IllegalStateException(String.format("The notification provided did not contain the required field: ", FieldContentIdentifier.TOPIC));
         }
-        final Optional<HierarchicalField> topicUrlField = getFieldForContentIdentifier(notificationFields, FieldContentIdentifier.TOPIC_URL);
-        return jsonExtractor.getLinkableItemsFromJson(topicField.get(), topicUrlField.orElse(null), notificationJson);
-        // TODO if the JsonExtractor works correctly, we don't need the rest of this code
-        //        final String topicName = topicField.getFieldKey();
-        //        final List<String> topicValues = getFieldValues(topicField, notificationJson);
-        //        final HierarchicalField topicUrlField = getFieldForContentIdentifier(notificationFields, FieldContentIdentifier.TOPIC + HierarchicalField.LABEL_URL_SUFFIX);
-        //        List<String> topicUrlValues = Collections.emptyList();
-        //        if (topicUrlField != null) {
-        //            topicUrlValues = getFieldValues(topicUrlField, notificationJson);
-        //        }
-        //
-        //        final List<LinkableItem> topicItems = new ArrayList<>();
-        //        for (int i = 0; i < topicValues.size(); i++) {
-        //            if (topicUrlValues.isEmpty()) {
-        //                topicItems.add(new LinkableItem(topicName, topicValues.get(i)));
-        //            } else {
-        //                // TODO make sure that topicUrlValues is the same size as topicValues if it is not empty
-        //                topicItems.add(new LinkableItem(topicName, topicValues.get(i), topicUrlValues.get(i)));
-        //            }
-        //        }
-        //        return topicItems;
+        final Optional<HierarchicalField> optionalTopicUrlField = getFieldForContentIdentifier(notificationFields, FieldContentIdentifier.TOPIC_URL);
+
+        // These will always be String fields
+        final StringHierarchicalField topicField = (StringHierarchicalField) optionalTopicField.get();
+        final StringHierarchicalField topicUrlField = (StringHierarchicalField) optionalTopicUrlField.orElse(null);
+
+        return jsonExtractor.getLinkableItemsFromJson(topicField, topicUrlField, notificationJson);
     }
 
     protected final boolean hasSubTopic(final List<HierarchicalField> notificationFields) {
@@ -187,12 +174,12 @@ public abstract class TopicCollector {
         return fields.stream().filter(field -> field.getContentIdentifier().equals(contentIdentifier)).findFirst();
     }
 
-    protected final List<String> getFieldValues(final HierarchicalField field, final String notificationJson) {
+    protected final List<String> getFieldValues(final StringHierarchicalField field, final String notificationJson) {
         return jsonExtractor.getValuesFromJson(field, notificationJson);
     }
 
-    protected final <T> List<T> getFieldValuesFromObject(final ObjectHierarchicalField field, final String notificationJson) {
-        return jsonExtractor.getObjectFromJson(field, notificationJson);
+    protected final <T> List<T> getFieldValues(final HierarchicalField field, final String notificationJson) {
+        return jsonExtractor.getObjectsFromJson(field, notificationJson);
     }
 
     protected List<String> getFieldValuesByLabel(final Map<String, HierarchicalField> categoryFields, final String label, final String notificationJson) {
@@ -204,7 +191,7 @@ public abstract class TopicCollector {
         final HierarchicalField field = categoryFields.get(label);
         final Class<ObjectHierarchicalField> expected = ObjectHierarchicalField.class;
         if (expected.isAssignableFrom(field.getClass())) {
-            return getFieldValuesFromObject((ObjectHierarchicalField) field, notificationJson);
+            return getFieldValues((ObjectHierarchicalField) field, notificationJson);
         } else {
             // TODO throw an exception or handle this case more appropriately.
             return Collections.emptyList();

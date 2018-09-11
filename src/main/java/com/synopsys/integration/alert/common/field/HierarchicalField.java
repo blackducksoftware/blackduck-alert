@@ -37,9 +37,9 @@ public abstract class HierarchicalField extends Field {
 
     private final boolean filterable;
     private final String configNameMapping;
-    private List<String> fieldList;
     private final FieldContentIdentifier contentIdentifier;
     private final Type type;
+    private List<String> fieldList;
 
     public HierarchicalField(final Collection<String> pathToField, final String innerMostFieldName, final FieldContentIdentifier contentIdentifier, final String label, final Type type) {
         super(innerMostFieldName, label);
@@ -80,6 +80,7 @@ public abstract class HierarchicalField extends Field {
         return type;
     }
 
+    // TODO move to StringHierarchicalField
     public boolean isFilterable() {
         return filterable;
     }
