@@ -23,6 +23,7 @@
  */
 package com.synopsys.integration.alert.workflow.filter;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,8 +39,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.alert.common.field.HierarchicalField;
+import com.synopsys.integration.alert.common.field.ObjectHierarchicalField;
 import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.web.model.Config;
 
@@ -74,23 +75,23 @@ public class JsonExtractor {
     }
 
     // TODO another P.O.C
-    public <T> List<T> getObjectFromJson(final HierarchicalField dataField, final String json) {
+    public <T> List<T> getObjectFromJson(final ObjectHierarchicalField dataField, final String json) {
         final List<String> fieldNameHierarchy = dataField.getFullPathToField();
         final JsonObject object = gson.fromJson(json, JsonObject.class);
 
         final JsonElement foundElement = getFieldContainingValue(object, fieldNameHierarchy, fieldNameHierarchy.get(0), 1);
         final List<T> items = new ArrayList<>();
-        final TypeToken<T> typeToken = new TypeToken<T>() {};
+        final Type type = dataField.getType();
         if (foundElement.isJsonArray()) {
             for (final JsonElement element : foundElement.getAsJsonArray()) {
                 if (element.isJsonObject()) {
-                    final T item = gson.fromJson(element, typeToken.getType());
+                    final T item = gson.fromJson(element, type);
                     items.add(item);
                 }
             }
         } else if (foundElement.isJsonObject()) {
             final JsonObject element = foundElement.getAsJsonObject();
-            final T item = gson.fromJson(element, typeToken.getType());
+            final T item = gson.fromJson(element, type);
             items.add(item);
         }
         return items;
