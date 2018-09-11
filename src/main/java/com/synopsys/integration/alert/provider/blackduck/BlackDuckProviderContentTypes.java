@@ -93,7 +93,7 @@ public class BlackDuckProviderContentTypes {
         NotificationType.VULNERABILITY.name(),
         Arrays.asList(
             new StringHierarchicalField(Arrays.asList("content", "affectedProjectVersions"), "projectName", FieldContentIdentifier.TOPIC, LABEL_PROJECT_NAME, "configuredProjects"),
-            new StringHierarchicalField(Arrays.asList("content", "affectedProjectVersions"), "projectVersionName", FieldContentIdentifier.SUB_TOPIC, LABEL_PROJECT_VERSION_NAME, ""),
+            new StringHierarchicalField(Arrays.asList("content", "affectedProjectVersions"), "projectVersionName", FieldContentIdentifier.SUB_TOPIC, LABEL_PROJECT_VERSION_NAME),
             new StringHierarchicalField(Arrays.asList("content", "affectedProjectVersions"), "projectVersion", FieldContentIdentifier.SUB_TOPIC_URL, LABEL_PROJECT_VERSION_NAME + HierarchicalField.LABEL_URL_SUFFIX),
             new StringHierarchicalField(Arrays.asList("content"), "componentName", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_COMPONENT_NAME),
             new StringHierarchicalField(Arrays.asList("content"), "component", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_COMPONENT_URL),
