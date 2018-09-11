@@ -94,15 +94,15 @@ public class GroupSyncTask extends SyncTask<GroupData> {
     public List<BlackDuckGroupEntity> getEntitiesToRemove(final List<? extends DatabaseEntity> storedEntities, final Set<GroupData> dataToRemove) {
         final List<BlackDuckGroupEntity> blackDuckGroupEntities = (List<BlackDuckGroupEntity>) storedEntities;
         final List<BlackDuckGroupEntity> blackDuckGroupsToRemove = blackDuckGroupEntities.stream()
-                                                                       .filter(blackDuckGroupEntity -> {
-                                                                               Optional<GroupData> found = dataToRemove.stream()
-                                                                                                               .filter(data -> data.getName().equals(blackDuckGroupEntity.getName()))
-                                                                                                               .findFirst();
-                                                                               return found.isPresent();
-                                                                           }
-                                                                       )
+                                                                       .filter(blackDuckGroupEntity -> isEntityWithNamePresent(dataToRemove, blackDuckGroupEntity))
                                                                        .collect(Collectors.toList());
         return blackDuckGroupsToRemove;
+    }
+
+    private Boolean isEntityWithNamePresent(final Set<GroupData> groupDataSet, final BlackDuckGroupEntity blackDuckGroupEntity) {
+        return groupDataSet.stream()
+                   .filter(groupData -> groupData.getName().equals(blackDuckGroupEntity.getName()))
+                   .findFirst().isPresent();
     }
 
     @Override
