@@ -16,10 +16,9 @@ public class MockUserGroupRelationRepositoryAccessor extends UserGroupRelationRe
         super(null);
     }
 
-    public DatabaseRelation addUserGroupRelation(final Long userId, final Long groupId) {
-        final UserGroupRelation newRelation = new UserGroupRelation(userId, groupId);
-        userGroupRelationSet.add(newRelation);
-        return newRelation;
+    public DatabaseRelation addUserGroupRelation(final UserGroupRelation userGroupRelation) {
+        userGroupRelationSet.add(userGroupRelation);
+        return userGroupRelation;
     }
 
     public List<UserGroupRelation> findByBlackDuckGroupId(final Long groupId) {

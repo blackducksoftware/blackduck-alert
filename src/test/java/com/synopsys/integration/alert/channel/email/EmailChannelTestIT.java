@@ -26,6 +26,7 @@ import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuck
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckGroupRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserRepositoryAccessor;
+import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserGroupRelation;
 import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserGroupRelationRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.mock.MockBlackDuckGroupRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.mock.MockBlackDuckUserRepositoryAccessor;
@@ -51,7 +52,7 @@ public class EmailChannelTestIT extends ChannelTest {
 
         final BlackDuckUserEntity userEntity = (BlackDuckUserEntity) blackDuckUserRepositoryAccessor.saveEntity(new BlackDuckUserEntity("noreply@blackducksoftware.com", false));
         final BlackDuckGroupEntity groupEntity = (BlackDuckGroupEntity) blackDuckGroupRepositoryAccessor.saveEntity(new BlackDuckGroupEntity("IntegrationTest", true, "Href"));
-        userGroupRelationRepositoryAccessor.addUserGroupRelation(userEntity.getId(), groupEntity.getId());
+        userGroupRelationRepositoryAccessor.addUserGroupRelation(new UserGroupRelation(userEntity.getId(), groupEntity.getId()));
 
         EmailGroupChannel emailChannel = new EmailGroupChannel(gson, testAlertProperties, globalProperties, auditEntryRepository, null, null, null, blackDuckUserRepositoryAccessor, blackDuckGroupRepositoryAccessor,
             userGroupRelationRepositoryAccessor);

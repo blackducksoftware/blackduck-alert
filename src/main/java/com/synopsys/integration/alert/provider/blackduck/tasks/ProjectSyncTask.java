@@ -24,7 +24,6 @@
 package com.synopsys.integration.alert.provider.blackduck.tasks;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +33,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +48,7 @@ import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuck
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserGroupRelation;
 import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserGroupRelationRepositoryAccessor;
+import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelation;
 import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelationRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.model.BlackDuckProject;
@@ -127,7 +126,7 @@ public class ProjectSyncTask extends SyncTask<BlackDuckProject> {
     public void addRelations(final Map<BlackDuckProject, ? extends HubView> currentDataMap, final List<? extends DatabaseEntity> storedEntities, final HubService hubService) throws IOException, IntegrationException {
         final List<BlackDuckProjectEntity> blackDuckProjectEntities = (List<BlackDuckProjectEntity>) storedEntities;
 
-        final List<Pair<Long, Long>> newRelations = new ArrayList<>();
+        final Set<UserProjectRelation> newRelations = new HashSet<>();
         for (final Map.Entry<BlackDuckProject, ? extends HubView> entry : currentDataMap.entrySet()) {
             final BlackDuckProject blackDuckProject = entry.getKey();
             final ProjectView projectView = (ProjectView) entry.getValue();
@@ -162,17 +161,17 @@ public class ProjectSyncTask extends SyncTask<BlackDuckProject> {
                 }
             }
             for (final Long blackDuckUserEntityId : userEntityIdsForThisProject) {
-                newRelations.add(Pair.of(blackDuckUserEntityId, projectEntity.getId()));
+                newRelations.add(new UserProjectRelation(blackDuckUserEntityId, projectEntity.getId()));
             }
 
         }
         userProjectRelationRepositoryAccessor.deleteAllRelations();
         logger.info("User to project relationships {}", newRelations.size());
-        for (final Pair<Long, Long> relation : newRelations) {
+        for (final UserProjectRelation relation : newRelations) {
             try {
-                userProjectRelationRepositoryAccessor.addUserProjectRelation(relation.getKey(), relation.getValue());
+                userProjectRelationRepositoryAccessor.addUserProjectRelation(relation);
             } catch (final Exception e) {
-                logger.error("Could not save the relation from user {} to project {}: {}", relation.getKey(), relation.getValue(), e.getMessage());
+                logger.error("Could not save the relation from user {} to project {}: {}", relation.getBlackDuckUserId(), relation.getBlackDuckProjectId(), e.getMessage());
             }
         }
 
