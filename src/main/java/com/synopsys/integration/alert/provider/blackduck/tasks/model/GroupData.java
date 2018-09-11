@@ -21,10 +21,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.provider.blackduck;
+package com.synopsys.integration.alert.provider.blackduck.tasks.model;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.synopsys.integration.util.Stringable;
 
-public interface GlobalBlackDuckRepository extends JpaRepository<GlobalBlackDuckConfigEntity, Long> {
+public class GroupData extends Stringable {
+    private final String name;
+    private final Boolean active;
+    private final String href;
 
+    public GroupData(final String name, final Boolean active, final String href) {
+        this.name = name;
+        this.active = active;
+        this.href = href;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public String getHref() {
+        return href;
+    }
 }
