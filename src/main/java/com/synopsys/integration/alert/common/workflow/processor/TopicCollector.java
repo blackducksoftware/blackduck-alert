@@ -156,6 +156,16 @@ public abstract class TopicCollector {
         throw new IllegalArgumentException(String.format("No such notification type '%s' for provider: %s", notificationType, providerDescriptor.getName()));
     }
 
+    protected final List<StringHierarchicalField> getStringFields(final String notificationType) {
+        final List<HierarchicalField> notificationFields = getFieldsForNotificationType(notificationType);
+        final Class<StringHierarchicalField> targetClass = StringHierarchicalField.class;
+        return notificationFields
+                   .parallelStream()
+                   .filter(field -> targetClass.isAssignableFrom(field.getClass()))
+                   .map(field -> targetClass.cast(field))
+                   .collect(Collectors.toList());
+    }
+
     protected final Map<String, HierarchicalField> getCategoryFieldMap(final String notificationType) {
         final List<HierarchicalField> notificationFields = getFieldsForNotificationType(notificationType);
         return notificationFields
@@ -176,6 +186,16 @@ public abstract class TopicCollector {
 
     protected final Optional<HierarchicalField> getFieldForContentIdentifier(final List<HierarchicalField> fields, final FieldContentIdentifier contentIdentifier) {
         return fields.stream().filter(field -> contentIdentifier.equals(field.getContentIdentifier())).findFirst();
+    }
+
+    protected final List<LinkableItem> getLinkableItemsByLabel(final List<StringHierarchicalField> fields, final String notificationJson, final String label) {
+        final Optional<StringHierarchicalField> foundField = getFieldByLabel(fields, label);
+        if (foundField.isPresent()) {
+            final StringHierarchicalField valueField = foundField.get();
+            final Optional<StringHierarchicalField> foundUrlField = getRelatedUrlField(fields, label);
+            return jsonExtractor.getLinkableItemsFromJson(valueField, foundUrlField.orElse(null), notificationJson);
+        }
+        return Collections.emptyList();
     }
 
     protected final List<String> getFieldValues(final StringHierarchicalField field, final String notificationJson) {
@@ -217,10 +237,17 @@ public abstract class TopicCollector {
         return Optional.empty();
     }
 
-    protected final Optional<HierarchicalField> getRelatedUrlField(final HierarchicalField relatedField, final List<HierarchicalField> categoryFields) {
+    private final <T extends HierarchicalField> Optional<T> getRelatedUrlField(final List<T> categoryFields, final String label) {
         return categoryFields
                    .parallelStream()
-                   .filter(field -> field.getLabel().equals(relatedField.getLabel() + HierarchicalField.LABEL_URL_SUFFIX))
+                   .filter(field -> field.getLabel().equals(label + HierarchicalField.LABEL_URL_SUFFIX))
+                   .findFirst();
+    }
+
+    private <T extends HierarchicalField> Optional<T> getFieldByLabel(final List<T> fields, final String label) {
+        return fields
+                   .parallelStream()
+                   .filter(field -> label.equals(field.getLabel()))
                    .findFirst();
     }
 
