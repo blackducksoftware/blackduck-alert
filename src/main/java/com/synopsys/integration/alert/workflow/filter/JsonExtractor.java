@@ -88,7 +88,10 @@ public class JsonExtractor {
             }
             throw new IllegalArgumentException("The json provided did not contain the correct field pairings.");
         }
-        return values.stream().map(value -> new LinkableItem(dataField.getFieldKey(), value)).collect(Collectors.toList());
+        return values
+                   .parallelStream()
+                   .map(value -> new LinkableItem(dataField.getFieldKey(), value))
+                   .collect(Collectors.toList());
     }
 
     public Optional<String> getFirstValueFromJson(final StringHierarchicalField hierarchicalField, final String json) {

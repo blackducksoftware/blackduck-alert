@@ -26,13 +26,13 @@ package com.synopsys.integration.alert.provider.blackduck.collector;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.field.HierarchicalField;
+import com.synopsys.integration.alert.common.field.StringHierarchicalField;
 import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.common.model.CategoryKey;
 import com.synopsys.integration.alert.common.model.LinkableItem;
@@ -54,34 +54,31 @@ public class BlackDuckPolicyTopicCollector extends BlackDuckTopicCollector {
     @Override
     protected void addCategoryItemsToContent(final TopicContent content, final NotificationContent notification) {
         final List<CategoryItem> categoryItems = content.getCategoryItemList();
-        final Map<String, HierarchicalField> categoryFields = getCategoryFieldMap(notification.getNotificationType());
+        final List<StringHierarchicalField> categoryFields = getStringFields(notification.getNotificationType());
         final String notificationJson = notification.getContent();
 
-        final List<String> componentNames = getFieldValuesByLabel(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_COMPONENT_NAME, notificationJson);
-        final List<String> componentUrls = getFieldValuesByLabel(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_COMPONENT_URL, notificationJson);
-
-        final List<String> componentVersionNames = getFieldValuesByLabel(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_COMPONENT_VERSION_NAME, notificationJson);
-        final List<String> componentVersionUrls = getFieldValuesByLabel(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_COMPONENT_VERSION_URL, notificationJson);
-
-        final List<String> policyNames = getFieldValuesByLabel(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_POLICY_NAME, notificationJson);
-        final List<String> policyUrls = getFieldValuesByLabel(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_POLICY_URL, notificationJson);
+        final List<LinkableItem> componentItems = getLinkableItemsByLabel(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_COMPONENT_NAME, notificationJson);
+        final List<LinkableItem> componentVersionItems = getLinkableItemsByLabel(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_COMPONENT_VERSION_NAME, notificationJson);
+        final List<LinkableItem> policyItems = getLinkableItemsByLabel(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_POLICY_NAME, notificationJson);
 
         final ItemOperation operation = getOperationFromNotification(notification.getNotificationType());
-        for (int policyIndex = 0; policyIndex < policyUrls.size(); policyIndex++) {
-            final String policyName = policyNames.get(policyIndex);
-            final String policyUrl = policyUrls.get(policyIndex);
-            final LinkableItem policyItem = new LinkableItem(BlackDuckProviderContentTypes.LABEL_SUFFIX_POLICY_NAME, policyName, policyUrl);
-            for (int componentIndex = 0; componentIndex < componentUrls.size(); componentIndex++) {
-                // TODO figure out how to deal with versionless components (url mappings will not be one to one)
-            }
-            for (int componentVersionIndex = 0; componentVersionIndex < componentVersionUrls.size(); componentVersionIndex++) {
-                final String componentName = componentNames.get(componentVersionIndex);
-                final String componentVersionName = componentVersionNames.get(componentVersionIndex);
-                final String componentVersionUrl = componentVersionUrls.get(componentVersionIndex);
+        for (final LinkableItem policyItem : policyItems) {
+            for (int i = 0; i < componentItems.size(); i++) {
+                final String policyUrl = policyItem.getUrl().orElse(null);
+                final LinkableItem componentItem = componentItems.get(i);
+                final Optional<String> componentUrl = componentItem.getUrl();
 
-                final CategoryKey categoryKey = CategoryKey.from(notification.getNotificationType(), policyUrl, componentVersionUrl);
-                final LinkableItem componentVersionItem = new LinkableItem(BlackDuckProviderContentTypes.LABEL_SUFFIX_COMPONENT_VERSION_NAME, String.format("%s > %s", componentName, componentVersionName), componentVersionUrl);
-                addItem(categoryItems, new CategoryItem(categoryKey, operation, asList(policyItem, componentVersionItem)));
+                if (componentUrl.isPresent()) {
+                    final CategoryKey categoryKey = CategoryKey.from(notification.getNotificationType(), policyUrl, componentUrl.get());
+                    addItem(categoryItems, new CategoryItem(categoryKey, operation, asList(policyItem, componentItem)));
+                } else {
+                    final LinkableItem componentVersionItem = componentVersionItems.get(i);
+                    final Optional<String> componentVersionUrl = componentVersionItem.getUrl();
+                    if (componentVersionUrl.isPresent()) {
+                        final CategoryKey categoryKey = CategoryKey.from(notification.getNotificationType(), policyUrl, componentVersionUrl.get());
+                        addItem(categoryItems, new CategoryItem(categoryKey, operation, asList(policyItem, componentVersionItem)));
+                    }
+                }
             }
         }
     }
