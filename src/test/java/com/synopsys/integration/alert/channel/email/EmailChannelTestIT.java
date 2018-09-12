@@ -24,6 +24,12 @@ import com.synopsys.integration.alert.database.channel.email.EmailGlobalConfigEn
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
+import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
+import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserRepositoryAccessor;
+import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelationRepositoryAccessor;
+import com.synopsys.integration.alert.provider.blackduck.mock.MockBlackDuckProjectRepositoryAccessor;
+import com.synopsys.integration.alert.provider.blackduck.mock.MockBlackDuckUserRepositoryAccessor;
+import com.synopsys.integration.alert.provider.blackduck.mock.MockUserProjectRelationRepositoryAccessor;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.test.annotation.ExternalConnectionTest;
 
@@ -34,6 +40,7 @@ public class EmailChannelTestIT extends ChannelTest {
     public void sendEmailTest() throws Exception {
         final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         final GlobalBlackDuckRepository globalRepository = Mockito.mock(GlobalBlackDuckRepository.class);
+
         final GlobalBlackDuckConfigEntity globalConfig = new GlobalBlackDuckConfigEntity(300, properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY), properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
         Mockito.when(globalRepository.findAll()).thenReturn(Arrays.asList(globalConfig));
 
@@ -46,7 +53,12 @@ public class EmailChannelTestIT extends ChannelTest {
             testAlertProperties.setAlertTrustCertificate(Boolean.valueOf(trustCert));
         }
 
-        EmailGroupChannel emailChannel = new EmailGroupChannel(gson, testAlertProperties, globalProperties, auditEntryRepository, null, null, null);
+        final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor = new MockBlackDuckUserRepositoryAccessor();
+        final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor = new MockBlackDuckProjectRepositoryAccessor();
+        final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor = new MockUserProjectRelationRepositoryAccessor();
+
+        EmailGroupChannel emailChannel = new EmailGroupChannel(gson, testAlertProperties, globalProperties, auditEntryRepository, null, null, null, blackDuckUserRepositoryAccessor, blackDuckProjectRepositoryAccessor,
+            userProjectRelationRepositoryAccessor);
         final Collection<ProjectData> projectData = createProjectData("Manual test project");
         final DigestModel digestModel = new DigestModel(projectData);
         final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
@@ -70,14 +82,14 @@ public class EmailChannelTestIT extends ChannelTest {
         Mockito.doReturn(emailGlobalConfigEntity).when(emailChannel).getGlobalConfigEntity();
 
         final MockEmailEntity mockEmailEntity = new MockEmailEntity();
-        mockEmailEntity.setGroupName("IntegrationTest");
+        mockEmailEntity.setGroupName(properties.getProperty(TestPropertyKey.TEST_EMAIL_GROUP));
         emailChannel.sendAuditedMessage(event, mockEmailEntity.createEntity());
     }
 
     @Test
     public void sendEmailNullGlobalTest() throws Exception {
         try (final OutputLogger outputLogger = new OutputLogger()) {
-            final EmailGroupChannel emailChannel = new EmailGroupChannel(gson, null, null, null, null, null, null);
+            final EmailGroupChannel emailChannel = new EmailGroupChannel(gson, null, null, null, null, null, null, null, null, null);
             final DigestModel digestModel = new DigestModel(null);
             final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
             final ChannelEvent event = new ChannelEvent(EmailGroupChannel.COMPONENT_NAME, RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),

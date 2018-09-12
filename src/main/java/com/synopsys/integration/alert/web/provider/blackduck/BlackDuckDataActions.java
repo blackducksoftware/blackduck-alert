@@ -35,9 +35,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectEntity;
+import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.provider.blackduck.model.BlackDuckGroup;
+import com.synopsys.integration.alert.provider.blackduck.model.BlackDuckProject;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
-import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.UserGroupView;
 import com.synopsys.integration.blackduck.rest.BlackduckRestConnection;
 import com.synopsys.integration.blackduck.service.HubServicesFactory;
@@ -48,13 +51,16 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 public class BlackDuckDataActions {
     private final Logger logger = LoggerFactory.getLogger(BlackDuckDataActions.class);
     private final BlackDuckProperties blackDuckProperties;
+    private final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
 
     @Autowired
-    public BlackDuckDataActions(final BlackDuckProperties blackDuckProperties) {
+    public BlackDuckDataActions(final BlackDuckProperties blackDuckProperties, final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor) {
         this.blackDuckProperties = blackDuckProperties;
+        this.blackDuckProjectRepositoryAccessor = blackDuckProjectRepositoryAccessor;
     }
 
     public List<BlackDuckGroup> getBlackDuckGroups() throws IntegrationException {
+        // TODO remove the group configuration
         final Optional<BlackduckRestConnection> optionalRestConnection = blackDuckProperties.createRestConnectionAndLogErrors(logger);
         if (optionalRestConnection.isPresent()) {
             try (final BlackduckRestConnection restConnection = optionalRestConnection.get()) {
@@ -76,24 +82,17 @@ public class BlackDuckDataActions {
         return Collections.emptyList();
     }
 
-    public List<BlackDuckProject> getBlackDuckProjects() throws IntegrationException {
-        final Optional<BlackduckRestConnection> optionalRestConnection = blackDuckProperties.createRestConnectionAndLogErrors(logger);
-        if (optionalRestConnection.isPresent()) {
-            try (final BlackduckRestConnection restConnection = optionalRestConnection.get()) {
-                final HubServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(restConnection, new Slf4jIntLogger(logger));
-                final List<ProjectView> rawProjects = blackDuckServicesFactory.createHubService().getAllResponses(ApiDiscovery.PROJECTS_LINK_RESPONSE);
-
-                final List<BlackDuckProject> projects = new ArrayList<>();
-                for (final ProjectView projectView : rawProjects) {
-                    final BlackDuckProject project = new BlackDuckProject(projectView.name, projectView.description);
-                    projects.add(project);
-                }
-                return projects;
-            } catch (final IOException e) {
-                logger.error(e.getMessage(), e);
+    public List<BlackDuckProject> getBlackDuckProjects() {
+        final List<BlackDuckProjectEntity> blackDuckProjectEntities = (List<BlackDuckProjectEntity>) blackDuckProjectRepositoryAccessor.readEntities();
+        if (!blackDuckProjectEntities.isEmpty()) {
+            final List<BlackDuckProject> projects = new ArrayList<>();
+            for (final BlackDuckProjectEntity blackDuckProjectEntity : blackDuckProjectEntities) {
+                final BlackDuckProject project = new BlackDuckProject(blackDuckProjectEntity.getName(), blackDuckProjectEntity.getDescription(), blackDuckProjectEntity.getHref());
+                projects.add(project);
             }
+            return projects;
         } else {
-            throw new AlertException("Missing global configuration.");
+            logger.info("No BlackDuck projects found in the database.");
         }
         return Collections.emptyList();
     }

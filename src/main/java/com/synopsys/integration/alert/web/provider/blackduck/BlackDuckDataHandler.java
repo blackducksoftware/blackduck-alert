@@ -33,9 +33,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.provider.blackduck.model.BlackDuckGroup;
+import com.synopsys.integration.alert.provider.blackduck.model.BlackDuckProject;
 import com.synopsys.integration.alert.web.controller.handler.ControllerHandler;
-import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 @Component
 public class BlackDuckDataHandler extends ControllerHandler {
@@ -53,12 +53,6 @@ public class BlackDuckDataHandler extends ControllerHandler {
             final List<BlackDuckGroup> groups = blackDuckDataActions.getBlackDuckGroups();
             final String usersJson = getContentConverter().getJsonString(groups);
             return createResponse(HttpStatus.OK, usersJson);
-        } catch (final IntegrationRestException e) {
-            logger.error(e.getMessage(), e);
-            return createResponse(HttpStatus.valueOf(e.getHttpStatusCode()), e.getHttpStatusMessage() + " : " + e.getMessage());
-        } catch (final IntegrationException e) {
-            logger.error(e.getMessage(), e);
-            return createResponse(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (final Exception e) {
             logger.error(e.getMessage(), e);
             return createResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
@@ -70,12 +64,6 @@ public class BlackDuckDataHandler extends ControllerHandler {
             final List<BlackDuckProject> projects = blackDuckDataActions.getBlackDuckProjects();
             final String usersJson = getContentConverter().getJsonString(projects);
             return createResponse(HttpStatus.OK, usersJson);
-        } catch (final IntegrationRestException e) {
-            logger.error(e.getMessage(), e);
-            return createResponse(HttpStatus.valueOf(e.getHttpStatusCode()), e.getHttpStatusMessage() + " : " + e.getMessage());
-        } catch (final IntegrationException e) {
-            logger.error(e.getMessage(), e);
-            return createResponse(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (final Exception e) {
             logger.error(e.getMessage(), e);
             return createResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());

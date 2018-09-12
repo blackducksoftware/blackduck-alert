@@ -21,17 +21,34 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.provider.blackduck;
+package com.synopsys.integration.alert.database.provider.blackduck.data;
 
-import com.synopsys.integration.util.Stringable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-public class BlackDuckProject extends Stringable {
-    private final String name;
-    private final String description;
+import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 
-    public BlackDuckProject(final String name, final String description) {
+@Entity
+@Table(schema = "alert", name = "blackduck_project")
+public class BlackDuckProjectEntity extends DatabaseEntity {
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "description")
+    private String description;
+
+    @Column(name = "href")
+    private String href;
+
+    public BlackDuckProjectEntity() {
+        // JPA requires default constructor definitions
+    }
+
+    public BlackDuckProjectEntity(final String name, final String description, final String href) {
         this.name = name;
         this.description = description;
+        this.href = href;
     }
 
     public String getName() {
@@ -40,5 +57,9 @@ public class BlackDuckProject extends Stringable {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getHref() {
+        return href;
     }
 }

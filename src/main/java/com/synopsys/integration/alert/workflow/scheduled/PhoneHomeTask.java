@@ -73,7 +73,7 @@ public class PhoneHomeTask extends ScheduledTask {
             final ExecutorService executorService = Executors.newSingleThreadExecutor();
             try (final BlackduckRestConnection restConnection = optionalRestConnection.get()) {
                 final HubServicesFactory hubServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(restConnection, new Slf4jIntLogger(logger));
-                //TODO refactor to create a PhoneHomeCallable for alert.  May phone home per provider and channel.
+                // TODO refactor to create a PhoneHomeCallable for alert.  May phone home per provider and channel.
                 final PhoneHomeService phoneHomeService = hubServicesFactory.createPhoneHomeService(executorService);
                 final Optional<PhoneHomeCallable> callable = createPhoneHomeCallable(hubServicesFactory);
                 if (callable.isPresent()) {

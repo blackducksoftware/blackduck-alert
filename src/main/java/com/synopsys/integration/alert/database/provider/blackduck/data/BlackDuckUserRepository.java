@@ -21,10 +21,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.provider.blackduck;
+package com.synopsys.integration.alert.database.provider.blackduck.data;
+
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface GlobalBlackDuckRepository extends JpaRepository<GlobalBlackDuckConfigEntity, Long> {
-
+public interface BlackDuckUserRepository extends JpaRepository<BlackDuckUserEntity, Long> {
+    public List<BlackDuckUserEntity> findByEmailAddress(final String emailAddress);
 }

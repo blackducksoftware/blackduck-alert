@@ -21,10 +21,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.provider.blackduck;
+package com.synopsys.integration.alert.common.exception;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+public class AlertRuntimeException extends RuntimeException {
+    private static final long serialVersionUID = -6181133427798683517L;
 
-public interface GlobalBlackDuckRepository extends JpaRepository<GlobalBlackDuckConfigEntity, Long> {
+    public AlertRuntimeException() {
+        super();
+    }
 
+    public AlertRuntimeException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
+
+    public AlertRuntimeException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
+
+    public AlertRuntimeException(final String message) {
+        super(message);
+    }
+
+    public AlertRuntimeException(final Throwable cause) {
+        super(cause);
+    }
 }
