@@ -21,30 +21,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.provider.blackduck;
+package com.synopsys.integration.alert.common.exception;
 
-import com.synopsys.integration.util.Stringable;
+public class AlertRuntimeException extends RuntimeException {
+    private static final long serialVersionUID = -6181133427798683517L;
 
-public class BlackDuckGroup extends Stringable {
-    private final String name;
-    private final Boolean active;
-    private final String url;
-
-    public BlackDuckGroup(final String name, final Boolean active, final String url) {
-        this.name = name;
-        this.active = active;
-        this.url = url;
+    public AlertRuntimeException() {
+        super();
     }
 
-    public String getName() {
-        return name;
+    public AlertRuntimeException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 
-    public Boolean getActive() {
-        return active;
+    public AlertRuntimeException(final String message, final Throwable cause) {
+        super(message, cause);
     }
 
-    public String getUrl() {
-        return url;
+    public AlertRuntimeException(final String message) {
+        super(message);
+    }
+
+    public AlertRuntimeException(final Throwable cause) {
+        super(cause);
     }
 }

@@ -26,9 +26,9 @@ package com.synopsys.integration.alert.database;
 import java.util.List;
 import java.util.Optional;
 
-import javax.transaction.Transactional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 
@@ -40,10 +40,12 @@ public abstract class RepositoryAccessor {
         this.repository = repository;
     }
 
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<? extends DatabaseEntity> readEntities() {
         return repository.findAll();
     }
 
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public Optional<? extends DatabaseEntity> readEntity(final long id) {
         return repository.findById(id);
     }

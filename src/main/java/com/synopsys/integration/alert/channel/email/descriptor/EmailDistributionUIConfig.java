@@ -38,8 +38,8 @@ import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
+import com.synopsys.integration.alert.provider.blackduck.model.BlackDuckGroup;
 import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckDataActions;
-import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckGroup;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -59,12 +59,14 @@ public class EmailDistributionUIConfig extends UIConfig {
 
     public List<ConfigField> setupFields() {
         final ConfigField subjectLine = new TextInputConfigField("emailSubjectLine", "Subject Line", false, false);
+
+        // TODO remove the group configuration field
         final ConfigField groupName = new SelectConfigField("groupName", "Group Name", true, false, getEmailGroups());
         return Arrays.asList(subjectLine, groupName);
     }
 
     private List<String> getEmailGroups() {
-        // TODO we currently query the hub to get the groups, change this when the group DB table is introduced
+        // TODO remove the group configuration field
         try {
             return blackDuckDataActions.getBlackDuckGroups()
                        .stream()
