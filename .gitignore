@@ -12,20 +12,20 @@ out/
 
 # build tool
 .gradle/
-build/
+/build/
 
 classes/
-log/
-testDB/
-src/main/resources/version.txt
-src/main/resources/about.txt
-src/test/resources/application.properties
-src/test/resources/test.properties
+/log/
+/testDB/
+/src/main/resources/version.txt
+/src/main/resources/about.txt
+/src/test/resources/application.properties
+/src/test/resources/test.properties
 /activemq-data/
 *-lastrun.txt
 *-last-search.txt
-node_modules
-data/
+/node_modules
+/data/
 sonar-project.properties
 .scannerwork/
-coverage/
+/coverage/

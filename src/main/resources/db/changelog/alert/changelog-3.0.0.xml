@@ -1,4 +1,4 @@
-<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
     <changeSet author="psantos" id="1533054185-1">
         <createTable tableName="RAW_NOTIFICATION_CONTENT" schemaName="ALERT">
@@ -52,7 +52,36 @@
         </createTable>
         <addPrimaryKey columnNames="COMMON_DISTRIBUTION_CONFIG_ID, NOTIFICATION_TYPE" constraintName="CONSTRAINT_NOTIFICATION_TYPE" tableName="DISTRIBUTION_NOTIFICATION_TYPES" schemaName="ALERT"/>
     </changeSet>
-    <changeSet author="psantos" id="1533054185-14">
+    <changeSet author="jrichard" id="1533054185-9">
+        <createTable tableName="BLACKDUCK_USER" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="BLACKDUCK_USER_KEY"/>
+            </column>
+            <column name="EMAIL_ADDRESS" type="VARCHAR(255)"/>
+            <column name="OPT_OUT" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jrichard" id="1533054185-10">
+        <createTable tableName="BLACKDUCK_PROJECT" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="BLACKDUCK_PROJECT_KEY"/>
+            </column>
+            <column name="NAME" type="VARCHAR(255)"/>
+            <column name="DESCRIPTION" type="VARCHAR(255)"/>
+            <column name="HREF" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="jrichard" id="1533054185-11">
+        <createTable tableName="BLACKDUCK_USER_PROJECT_RELATION" schemaName="ALERT">
+            <column name="BLACKDUCK_USER_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="BLACKDUCK_PROJECT_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos" id="1533054185-12">
         <addColumn tableName="COMMON_DISTRIBUTION_CONFIG" schemaName="ALERT">
             <column name="FORMAT_TYPE" type="INT(10)" value="0"/>
         </addColumn>

@@ -110,7 +110,7 @@ class GroupEmailJobConfiguration extends Component {
     renderOption(option) {
         if (option.missing) {
             return (
-                <span className="missingBlackDuckData"><span className="fa fa-exclamation-triangle fa-fw" aria-hidden="true"/>{option.label} (Group not found on Black Duck server)</span>
+                <span className="missingBlackDuckData"><span className="fa fa-exclamation-triangle fa-fw" aria-hidden="true"/>{option.label} (Group not found for provider BlackDuck)</span>
             );
         }
 
