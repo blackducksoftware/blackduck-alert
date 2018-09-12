@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.workflow.filter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Optional;
@@ -54,13 +53,18 @@ public class JsonExtractor {
     public List<String> getValuesFromConfig(final StringHierarchicalField field, final Config config) {
         final JsonElement element = gson.toJsonTree(config);
         final Optional<String> mapping = field.getConfigNameMapping();
+
+        final List<String> values = new ArrayList<>();
         if (mapping.isPresent()) {
             final List<String> pathToField = Arrays.asList(mapping.get());
             final List<JsonElement> foundElements = getInnerElements(element, pathToField.listIterator());
-
-            // FIXME return a list of values from foundElements
+            for (final JsonElement found : foundElements) {
+                if (found.isJsonPrimitive()) {
+                    values.add(found.getAsString());
+                }
+            }
         }
-        return Collections.emptyList();
+        return values;
     }
 
     // TODO This is a P.O.C.
