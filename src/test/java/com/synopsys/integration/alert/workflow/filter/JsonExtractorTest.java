@@ -49,7 +49,7 @@ public class JsonExtractorTest {
         Assert.assertEquals(Arrays.asList(value), values);
     }
 
-    // FIXME @Test
+    @Test
     public void getValuesFromJsonWithArrayTest() {
         final String key = "innerField";
         final String value1 = "thing that I want";
@@ -61,7 +61,7 @@ public class JsonExtractorTest {
         Assert.assertEquals(Arrays.asList(value1, value2), values);
     }
 
-    // FIXME @Test
+    @Test
     public void getValuesFromConfig() {
         final String id = "1";
         final String distributionConfigId = "1";
