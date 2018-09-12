@@ -118,10 +118,13 @@ public class JsonExtractor {
             final String nextKey = path.next();
             if (element.isJsonObject()) {
                 final JsonObject jsonObject = element.getAsJsonObject();
-                return getInnerElements(jsonObject.get(nextKey), path);
+                final JsonElement foundElement = jsonObject.get(nextKey);
+                return getInnerElements(foundElement, path);
             } else if (element.isJsonArray()) {
                 final JsonArray foundArray = element.getAsJsonArray();
-
+                // TODO vulnerabilities with affected project version causes an issue.
+                // iterating here the path iterator may be at the lowest level therefore there aren't
+                // any additional items and we want to use the next key.  Need some work
                 final List<JsonElement> foundValues = new ArrayList<>(foundArray.size());
                 for (final JsonElement arrayElement : foundArray) {
                     foundValues.addAll(getInnerElements(arrayElement, path));
