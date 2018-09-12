@@ -25,7 +25,7 @@ src/test/resources/test.properties
 *-lastrun.txt
 *-last-search.txt
 node_modules
-data/
+/data/
 sonar-project.properties
 .scannerwork/
 coverage/
