@@ -10,7 +10,6 @@ import org.junit.Test;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
-import com.synopsys.integration.alert.common.field.HierarchicalField;
 import com.synopsys.integration.alert.common.field.StringHierarchicalField;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 
@@ -29,7 +28,7 @@ public class JsonExtractorTest {
         final String value = "thing that I want";
         final String json = "{\"content\":{\"someObject\":{\"" + key + "\":\"" + value + "\"}}}";
         final List<String> pathToField = Arrays.asList("content", "someObject");
-        final HierarchicalField field = new StringHierarchicalField(pathToField, key, null, null);
+        final StringHierarchicalField field = new StringHierarchicalField(pathToField, key, null, null);
         final Optional<String> foundValue = jsonExtractor.getFirstValueFromJson(field, json);
         if (foundValue.isPresent()) {
             Assert.assertEquals(value, foundValue.get());

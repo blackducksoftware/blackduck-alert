@@ -171,7 +171,7 @@ public abstract class TopicCollector {
     }
 
     protected final Optional<HierarchicalField> getFieldForContentIdentifier(final List<HierarchicalField> fields, final FieldContentIdentifier contentIdentifier) {
-        return fields.stream().filter(field -> field.getContentIdentifier().equals(contentIdentifier)).findFirst();
+        return fields.stream().filter(field -> contentIdentifier.equals(field.getContentIdentifier())).findFirst();
     }
 
     protected final List<String> getFieldValues(final StringHierarchicalField field, final String notificationJson) {
@@ -191,7 +191,7 @@ public abstract class TopicCollector {
         final HierarchicalField field = categoryFields.get(label);
         final Class<ObjectHierarchicalField> expected = ObjectHierarchicalField.class;
         if (expected.isAssignableFrom(field.getClass())) {
-            return getFieldValues((ObjectHierarchicalField) field, notificationJson);
+            return getFieldValues(field, notificationJson);
         } else {
             // TODO throw an exception or handle this case more appropriately.
             return Collections.emptyList();
