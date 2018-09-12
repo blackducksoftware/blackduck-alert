@@ -58,9 +58,9 @@ public class BlackDuckPolicyTopicCollector extends BlackDuckTopicCollector {
         final String notificationType = notification.getNotificationType();
 
         final List<StringHierarchicalField> categoryFields = getStringFields(notificationType);
-        final List<LinkableItem> componentItems = getLinkableItemsByLabel(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_COMPONENT_NAME, notificationJson);
-        final List<LinkableItem> componentVersionItems = getLinkableItemsByLabel(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_COMPONENT_VERSION_NAME, notificationJson);
-        final List<LinkableItem> policyItems = getLinkableItemsByLabel(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_POLICY_NAME, notificationJson);
+        final List<LinkableItem> componentItems = getLinkableItemsByLabel(categoryFields, notificationJson, BlackDuckProviderContentTypes.LABEL_SUFFIX_COMPONENT_NAME);
+        final List<LinkableItem> componentVersionItems = getLinkableItemsByLabel(categoryFields, notificationJson, BlackDuckProviderContentTypes.LABEL_SUFFIX_COMPONENT_VERSION_NAME);
+        final List<LinkableItem> policyItems = getLinkableItemsByLabel(categoryFields, notificationJson, BlackDuckProviderContentTypes.LABEL_SUFFIX_POLICY_NAME);
 
         final ItemOperation operation = getOperationFromNotification(notificationType);
         for (final LinkableItem policyItem : policyItems) {
