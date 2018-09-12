@@ -39,21 +39,17 @@ import com.synopsys.integration.blackduck.api.generated.enumeration.Notification
 import com.synopsys.integration.blackduck.notification.content.VulnerabilitySourceQualifiedId;
 
 public class BlackDuckProviderContentTypes {
-    public static final String LABEL_SUFFIX_COMPONENT_NAME = "componentName";
-    public static final String LABEL_SUFFIX_COMPONENT_URL = "componentUrl";
-    public static final String LABEL_SUFFIX_COMPONENT_VERSION_NAME = "componentVersionName";
-    public static final String LABEL_SUFFIX_COMPONENT_VERSION_URL = "componentVersionUrl";
-    public static final String LABEL_SUFFIX_POLICY_NAME = "policyName";
-    public static final String LABEL_SUFFIX_POLICY_URL = "policyUrl";
+    public static final String LABEL_COMPONENT_NAME = "componentName";
+    public static final String LABEL_COMPONENT_VERSION_NAME = "componentVersionName";
+    public static final String LABEL_POLICY_NAME = "policyName";
     public static final String LABEL_PROJECT_NAME = "projectName";
     public static final String LABEL_PROJECT_VERSION_NAME = "projectVersionName";
 
     // vulnerability
+    // TODO remove suffix from the constant name
     public static final String LABEL_SUFFIX_VULNERABILITY_NEW = "newVulnerabilities";
     public static final String LABEL_SUFFIX_VULNERABILITY_UPDATED = "updatedVulnerabilities";
     public static final String LABEL_SUFFIX_VULNERABILITY_DELETED = "deletedVulnerabilities";
-    private static final Type VULNERABILITY_TYPE = new TypeToken<VulnerabilitySourceQualifiedId>() {}.getType();
-
     public static final List<ProviderContentType> ALL = new ArrayList();
     public static final ProviderContentType BOM_EDIT = new ProviderContentType(
         NotificationType.BOM_EDIT.name(),
@@ -69,24 +65,25 @@ public class BlackDuckProviderContentTypes {
             new StringHierarchicalField(Arrays.asList("content"), "projectName", FieldContentIdentifier.TOPIC, LABEL_PROJECT_NAME, "configuredProjects"),
             new StringHierarchicalField(Arrays.asList("content"), "projectVersionName", FieldContentIdentifier.SUB_TOPIC, LABEL_PROJECT_VERSION_NAME),
             new StringHierarchicalField(Arrays.asList("content"), "projectVersion", FieldContentIdentifier.SUB_TOPIC_URL, LABEL_PROJECT_VERSION_NAME + HierarchicalField.LABEL_URL_SUFFIX),
-            new StringHierarchicalField(Arrays.asList("content"), "componentName", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_COMPONENT_NAME),
-            new StringHierarchicalField(Arrays.asList("content"), "component", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_COMPONENT_URL),
-            new StringHierarchicalField(Arrays.asList("content"), "versionName", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_COMPONENT_VERSION_NAME),
-            new StringHierarchicalField(Arrays.asList("content"), "componentVersion", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_COMPONENT_VERSION_URL),
-            new StringHierarchicalField(Arrays.asList("content", "policyInfos"), "policyName", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_POLICY_NAME),
-            new StringHierarchicalField(Arrays.asList("content", "policyInfos"), "policy", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_POLICY_URL)
+            new StringHierarchicalField(Arrays.asList("content"), "componentName", FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_NAME),
+            new StringHierarchicalField(Arrays.asList("content"), "component", FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_NAME + HierarchicalField.LABEL_URL_SUFFIX),
+            new StringHierarchicalField(Arrays.asList("content"), "versionName", FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_VERSION_NAME),
+            new StringHierarchicalField(Arrays.asList("content"), "componentVersion", FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_VERSION_NAME + HierarchicalField.LABEL_URL_SUFFIX),
+            new StringHierarchicalField(Arrays.asList("content", "policyInfos"), "policyName", FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_NAME),
+            new StringHierarchicalField(Arrays.asList("content", "policyInfos"), "policy", FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_VERSION_NAME + HierarchicalField.LABEL_URL_SUFFIX)
         )
     );
+    private static final Type VULNERABILITY_TYPE = new TypeToken<VulnerabilitySourceQualifiedId>() {}.getType();
     public static final ProviderContentType VULNERABILITY = new ProviderContentType(
         NotificationType.VULNERABILITY.name(),
         Arrays.asList(
             new StringHierarchicalField(Arrays.asList("content", "affectedProjectVersions"), "projectName", FieldContentIdentifier.TOPIC, LABEL_PROJECT_NAME, "configuredProjects"),
             new StringHierarchicalField(Arrays.asList("content", "affectedProjectVersions"), "projectVersionName", FieldContentIdentifier.SUB_TOPIC, LABEL_PROJECT_VERSION_NAME),
             new StringHierarchicalField(Arrays.asList("content", "affectedProjectVersions"), "projectVersion", FieldContentIdentifier.SUB_TOPIC_URL, LABEL_PROJECT_VERSION_NAME + HierarchicalField.LABEL_URL_SUFFIX),
-            new StringHierarchicalField(Arrays.asList("content"), "componentName", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_COMPONENT_NAME),
-            new StringHierarchicalField(Arrays.asList("content"), "component", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_COMPONENT_URL),
-            new StringHierarchicalField(Arrays.asList("content"), "versionName", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_COMPONENT_VERSION_NAME),
-            new StringHierarchicalField(Arrays.asList("content"), "componentVersion", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_COMPONENT_VERSION_URL),
+            new StringHierarchicalField(Arrays.asList("content"), "componentName", FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_NAME),
+            new StringHierarchicalField(Arrays.asList("content"), "component", FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_NAME + HierarchicalField.LABEL_URL_SUFFIX),
+            new StringHierarchicalField(Arrays.asList("content"), "versionName", FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_VERSION_NAME),
+            new StringHierarchicalField(Arrays.asList("content"), "componentVersion", FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_VERSION_NAME + HierarchicalField.LABEL_URL_SUFFIX),
             new ObjectHierarchicalField(Arrays.asList("content"), "newVulnerabilityIds", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_VULNERABILITY_NEW, VULNERABILITY_TYPE),
             new ObjectHierarchicalField(Arrays.asList("content"), "updatedVulnerabilityIds", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_VULNERABILITY_UPDATED, VULNERABILITY_TYPE),
             new ObjectHierarchicalField(Arrays.asList("content"), "deletedVulnerabilityIds", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_VULNERABILITY_DELETED, VULNERABILITY_TYPE)
@@ -96,12 +93,12 @@ public class BlackDuckProviderContentTypes {
         new StringHierarchicalField(Arrays.asList("content"), "projectName", FieldContentIdentifier.TOPIC, LABEL_PROJECT_NAME, "configuredProjects"),
         new StringHierarchicalField(Arrays.asList("content"), "projectVersionName", FieldContentIdentifier.SUB_TOPIC, LABEL_PROJECT_VERSION_NAME),
         new StringHierarchicalField(Arrays.asList("content"), "projectVersion", FieldContentIdentifier.SUB_TOPIC_URL, LABEL_PROJECT_VERSION_NAME + HierarchicalField.LABEL_URL_SUFFIX),
-        new StringHierarchicalField(Arrays.asList("content", "componentVersionStatuses"), "componentName", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_COMPONENT_NAME),
-        new StringHierarchicalField(Arrays.asList("content", "componentVersionStatuses"), "component", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_COMPONENT_URL),
-        new StringHierarchicalField(Arrays.asList("content", "componentVersionStatuses"), "componentVersionName", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_COMPONENT_VERSION_NAME),
-        new StringHierarchicalField(Arrays.asList("content", "componentVersionStatuses"), "componentVersion", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_COMPONENT_VERSION_URL),
-        new StringHierarchicalField(Arrays.asList("content", "policyInfos"), "policyName", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_POLICY_NAME),
-        new StringHierarchicalField(Arrays.asList("content", "policyInfos"), "policy", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_POLICY_URL)
+        new StringHierarchicalField(Arrays.asList("content", "componentVersionStatuses"), "componentName", FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_NAME),
+        new StringHierarchicalField(Arrays.asList("content", "componentVersionStatuses"), "component", FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_NAME + HierarchicalField.LABEL_URL_SUFFIX),
+        new StringHierarchicalField(Arrays.asList("content", "componentVersionStatuses"), "componentVersionName", FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_VERSION_NAME),
+        new StringHierarchicalField(Arrays.asList("content", "componentVersionStatuses"), "componentVersion", FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_VERSION_NAME + HierarchicalField.LABEL_URL_SUFFIX),
+        new StringHierarchicalField(Arrays.asList("content", "policyInfos"), "policyName", FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_NAME),
+        new StringHierarchicalField(Arrays.asList("content", "policyInfos"), "policy", FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_NAME + HierarchicalField.LABEL_URL_SUFFIX)
     );
     public static final ProviderContentType RULE_VIOLATION = new ProviderContentType(
         NotificationType.RULE_VIOLATION.name(),

@@ -78,15 +78,15 @@ public class JsonExtractor {
         final List<String> values = getValuesFromJson(dataField, json);
         if (linkField != null) {
             final List<String> links = getValuesFromJson(linkField, json);
-
             if (values.size() == links.size()) {
                 final List<LinkableItem> linkableItems = new ArrayList<>();
                 for (int i = 0; i < links.size(); i++) {
                     linkableItems.add(new LinkableItem(dataField.getLabel(), values.get(i), links.get(i)));
                 }
                 return linkableItems;
+            } else if (!links.isEmpty()) {
+                throw new IllegalArgumentException("The json provided did not contain the correct field pairings.");
             }
-            throw new IllegalArgumentException("The json provided did not contain the correct field pairings.");
         }
         return values
                    .parallelStream()

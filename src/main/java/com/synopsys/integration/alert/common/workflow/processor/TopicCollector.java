@@ -71,6 +71,12 @@ public abstract class TopicCollector {
     }
 
     protected final void addContent(final TopicContent content) {
+        for (final TopicContent existingContent : collectedContent) {
+            if (existingContent.equals(content)) {
+                // No need to add content
+                return;
+            }
+        }
         collectedContent.add(content);
     }
 
@@ -103,9 +109,10 @@ public abstract class TopicCollector {
             final TopicContent foundContent = findTopicContent(topicItem.getName(), topicItem.getValue(), subTopic.getName(), subTopic.getValue());
             if (foundContent != null) {
                 topicContentsForNotifications.add(foundContent);
+            } else {
+                final List<CategoryItem> categoryList = new ArrayList<>();
+                topicContentsForNotifications.add(new TopicContent(topicItem.getName(), topicItem.getValue(), topicItem.getUrl().orElse(null), subTopic, categoryList));
             }
-            final List<CategoryItem> categoryList = new ArrayList<>();
-            topicContentsForNotifications.add(new TopicContent(topicItem.getName(), topicItem.getValue(), topicItem.getUrl().orElse(null), subTopic, categoryList));
         }
         return topicContentsForNotifications;
     }
@@ -115,6 +122,7 @@ public abstract class TopicCollector {
     }
 
     protected final List<LinkableItem> getSubTopicItems(final List<HierarchicalField> notificationFields, final String notificationJson) {
+        // TODO is SubTopic something we should require? If not then we should not use the same method to get it.
         return getTopicItems(notificationFields, notificationJson, FieldContentIdentifier.SUB_TOPIC, FieldContentIdentifier.SUB_TOPIC_URL);
     }
 
