@@ -24,11 +24,11 @@
 package com.synopsys.integration.alert.channel.email;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -51,14 +51,17 @@ import com.synopsys.integration.alert.database.channel.email.EmailGlobalReposito
 import com.synopsys.integration.alert.database.channel.email.EmailGroupDistributionConfigEntity;
 import com.synopsys.integration.alert.database.channel.email.EmailGroupDistributionRepository;
 import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
-import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckGroupEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckGroupRepositoryAccessor;
-import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserEntity;
+import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserRepositoryAccessor;
-import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserGroupRelation;
-import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserGroupRelationRepositoryAccessor;
+import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelationRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.blackduck.api.generated.view.UserGroupView;
+import com.synopsys.integration.blackduck.api.generated.view.UserView;
+import com.synopsys.integration.blackduck.rest.BlackduckRestConnection;
+import com.synopsys.integration.blackduck.service.HubServicesFactory;
+import com.synopsys.integration.blackduck.service.UserGroupService;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component(value = EmailGroupChannel.COMPONENT_NAME)
 @Transactional
@@ -66,18 +69,17 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
     public final static String COMPONENT_NAME = "channel_email";
     private final static Logger logger = LoggerFactory.getLogger(EmailGroupChannel.class);
     private final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor;
-    private final BlackDuckGroupRepositoryAccessor blackDuckGroupRepositoryAccessor;
-    private final UserGroupRelationRepositoryAccessor userGroupRelationRepositoryAccessor;
+    private final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
+    private final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor;
 
     @Autowired
     public EmailGroupChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditEntryRepository auditEntryRepository, final EmailGlobalRepository emailRepository,
         final EmailGroupDistributionRepository emailGroupDistributionRepository, final CommonDistributionRepository commonDistributionRepository, final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor,
-        final BlackDuckGroupRepositoryAccessor blackDuckGroupRepositoryAccessor,
-        final UserGroupRelationRepositoryAccessor userGroupRelationRepositoryAccessor) {
+        final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor, final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor) {
         super(gson, alertProperties, blackDuckProperties, auditEntryRepository, emailRepository, emailGroupDistributionRepository, commonDistributionRepository);
         this.blackDuckUserRepositoryAccessor = blackDuckUserRepositoryAccessor;
-        this.blackDuckGroupRepositoryAccessor = blackDuckGroupRepositoryAccessor;
-        this.userGroupRelationRepositoryAccessor = userGroupRelationRepositoryAccessor;
+        this.blackDuckProjectRepositoryAccessor = blackDuckProjectRepositoryAccessor;
+        this.userProjectRelationRepositoryAccessor = userProjectRelationRepositoryAccessor;
     }
 
     @Override
@@ -132,22 +134,40 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
         return globalConfigEntity != null && StringUtils.isNotBlank(globalConfigEntity.getMailSmtpHost()) && StringUtils.isNotBlank(globalConfigEntity.getMailSmtpFrom());
     }
 
-    private List<String> getEmailAddressesForGroup(final String blackDuckGroup) {
-        final BlackDuckGroupEntity blackDuckGroupEntity = blackDuckGroupRepositoryAccessor.findByName(blackDuckGroup);
-        if (null != blackDuckGroupEntity) {
-            final List<UserGroupRelation> userGroupRelations = userGroupRelationRepositoryAccessor.findByBlackDuckGroupId(blackDuckGroupEntity.getId());
+    private List<String> getEmailAddressesForGroup(final String blackDuckGroup) throws IntegrationException {
+        //TODO change this to get emails for project
+        //        final String projectName = "";
+        //        final BlackDuckProjectEntity blackDuckProjectEntity = blackDuckProjectRepositoryAccessor.findByName(projectName);
+        //        final List<UserProjectRelation> userProjectRelations = userProjectRelationRepositoryAccessor.findByBlackDuckProjectId(blackDuckProjectEntity.getId());
+        //        final List<String> emailAddresses = userProjectRelations
+        //                                                .stream()
+        //                                                .map(userProjectRelation -> blackDuckUserRepositoryAccessor.readEntity(userProjectRelation.getBlackDuckUserId()))
+        //                                                .filter(userEntity -> userEntity.isPresent())
+        //                                                .map(userEntity -> ((BlackDuckUserEntity) userEntity.get()).getEmailAddress())
+        //                                                .collect(Collectors.toList());
 
-            final List<String> emails = new ArrayList<>();
-            for (final UserGroupRelation userGroupRelation : userGroupRelations) {
-                final Optional<BlackDuckUserEntity> optionalBlackDuckUserEntity = (Optional<BlackDuckUserEntity>) blackDuckUserRepositoryAccessor.readEntity(userGroupRelation.getBlackDuckUserId());
-                if (optionalBlackDuckUserEntity.isPresent()) {
-                    final BlackDuckUserEntity userEntity = optionalBlackDuckUserEntity.get();
-                    emails.add(userEntity.getEmailAddress());
+        final Optional<BlackduckRestConnection> optionalRestConnection = getBlackDuckProperties().createRestConnectionAndLogErrors(logger);
+        if (optionalRestConnection.isPresent()) {
+            try (final BlackduckRestConnection restConnection = optionalRestConnection.get()) {
+                if (restConnection != null) {
+                    final HubServicesFactory blackDuckServicesFactory = getBlackDuckProperties().createBlackDuckServicesFactory(restConnection, new Slf4jIntLogger(logger));
+                    final UserGroupService groupService = blackDuckServicesFactory.createUserGroupService();
+                    final UserGroupView userGroupView = groupService.getGroupByName(blackDuckGroup);
+
+                    if (userGroupView == null) {
+                        throw new IntegrationException("Could not find the Black Duck group: " + blackDuckGroup);
+                    }
+
+                    logger.debug("Current user groups {}", userGroupView.toString());
+
+                    final List<UserView> users = blackDuckServicesFactory.createHubService().getAllResponses(userGroupView, UserGroupView.USERS_LINK_RESPONSE);
+                    return users.stream().map(user -> user.email).collect(Collectors.toList());
                 }
+            } catch (final IOException e) {
+                logger.error(e.getMessage(), e);
             }
-            return emails;
         } else {
-            logger.warn("Could not get the email addresses for this group. Group not found in the database.");
+            logger.warn("Could not get the email addresses for this group, could not create the connection.");
         }
         return Collections.emptyList();
     }

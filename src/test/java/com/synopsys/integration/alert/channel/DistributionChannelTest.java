@@ -40,13 +40,13 @@ import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEn
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
 import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
-import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckGroupRepositoryAccessor;
+import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserRepositoryAccessor;
-import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserGroupRelationRepositoryAccessor;
+import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelationRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.provider.blackduck.mock.MockBlackDuckGroupRepositoryAccessor;
+import com.synopsys.integration.alert.provider.blackduck.mock.MockBlackDuckProjectRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.mock.MockBlackDuckUserRepositoryAccessor;
-import com.synopsys.integration.alert.provider.blackduck.mock.MockUserGroupRelationRepositoryAccessor;
+import com.synopsys.integration.alert.provider.blackduck.mock.MockUserProjectRelationRepositoryAccessor;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
 
@@ -124,11 +124,11 @@ public class DistributionChannelTest extends ChannelTest {
         final CommonDistributionRepository commonRepository = Mockito.mock(CommonDistributionRepository.class);
 
         final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor = new MockBlackDuckUserRepositoryAccessor();
-        final BlackDuckGroupRepositoryAccessor blackDuckGroupRepositoryAccessor = new MockBlackDuckGroupRepositoryAccessor();
-        final UserGroupRelationRepositoryAccessor userGroupRelationRepositoryAccessor = new MockUserGroupRelationRepositoryAccessor();
+        final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor = new MockBlackDuckProjectRepositoryAccessor();
+        final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor = new MockUserProjectRelationRepositoryAccessor();
 
         final EmailGroupChannel channel = new EmailGroupChannel(gson, testAlertProperties, hubProperties, auditEntryRepository, emailGlobalRepository, emailGroupRepository, commonRepository, blackDuckUserRepositoryAccessor,
-            blackDuckGroupRepositoryAccessor, userGroupRelationRepositoryAccessor);
+            blackDuckProjectRepositoryAccessor, userProjectRelationRepositoryAccessor);
 
         final Long commonId = 1L;
         final DigestModel digestModel = new DigestModel(createProjectData("Distribution Channel Test"));

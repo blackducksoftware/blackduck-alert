@@ -27,6 +27,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -38,9 +40,11 @@ import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfi
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.provider.blackduck.model.BlackDuckGroup;
 import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckDataActions;
+import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class EmailDistributionUIConfig extends UIConfig {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final BlackDuckDataActions blackDuckDataActions;
 
     @Autowired
@@ -55,15 +59,24 @@ public class EmailDistributionUIConfig extends UIConfig {
 
     public List<ConfigField> setupFields() {
         final ConfigField subjectLine = new TextInputConfigField("emailSubjectLine", "Subject Line", false, false);
+
+        //TODO remove the group configuration field
         final ConfigField groupName = new SelectConfigField("groupName", "Group Name", true, false, getEmailGroups());
         return Arrays.asList(subjectLine, groupName);
     }
 
     private List<String> getEmailGroups() {
-        return blackDuckDataActions.getBlackDuckGroups()
-                   .stream()
-                   .map(BlackDuckGroup::getName)
-                   .collect(Collectors.toList());
+        //TODO remove the group configuration field
+        try {
+            return blackDuckDataActions.getBlackDuckGroups()
+                       .stream()
+                       .map(BlackDuckGroup::getName)
+                       .collect(Collectors.toList());
+        } catch (final IntegrationException ex) {
+            logger.error("Error retrieving email groups", ex);
+        }
+
+        return Arrays.asList();
     }
 
 }
