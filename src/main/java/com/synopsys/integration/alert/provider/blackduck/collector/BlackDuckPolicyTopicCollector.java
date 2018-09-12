@@ -58,9 +58,9 @@ public class BlackDuckPolicyTopicCollector extends BlackDuckTopicCollector {
         final String notificationType = notification.getNotificationType();
 
         final List<StringHierarchicalField> categoryFields = getStringFields(notificationType);
-        final List<LinkableItem> componentItems = getLinkableItemsByLabel(categoryFields, notificationJson, BlackDuckProviderContentTypes.LABEL_SUFFIX_COMPONENT_NAME);
-        final List<LinkableItem> componentVersionItems = getLinkableItemsByLabel(categoryFields, notificationJson, BlackDuckProviderContentTypes.LABEL_SUFFIX_COMPONENT_VERSION_NAME);
-        final List<LinkableItem> policyItems = getLinkableItemsByLabel(categoryFields, notificationJson, BlackDuckProviderContentTypes.LABEL_SUFFIX_POLICY_NAME);
+        final List<LinkableItem> componentItems = getLinkableItemsByLabel(categoryFields, notificationJson, BlackDuckProviderContentTypes.LABEL_COMPONENT_NAME);
+        final List<LinkableItem> componentVersionItems = getLinkableItemsByLabel(categoryFields, notificationJson, BlackDuckProviderContentTypes.LABEL_COMPONENT_VERSION_NAME);
+        final List<LinkableItem> policyItems = getLinkableItemsByLabel(categoryFields, notificationJson, BlackDuckProviderContentTypes.LABEL_POLICY_NAME);
 
         final ItemOperation operation = getOperationFromNotification(notificationType);
         for (final LinkableItem policyItem : policyItems) {
@@ -83,9 +83,9 @@ public class BlackDuckPolicyTopicCollector extends BlackDuckTopicCollector {
 
     private void addApplicableItems(final List<CategoryItem> categoryItems, final String notificationType, final LinkableItem policyItem, final String policyUrl, final ItemOperation operation, final List<LinkableItem> applicableItems) {
         for (final LinkableItem item : applicableItems) {
-            final Optional<String> componentVersionUrl = item.getUrl();
-            if (componentVersionUrl.isPresent()) {
-                final CategoryKey categoryKey = CategoryKey.from(notificationType, policyUrl, componentVersionUrl.get());
+            final Optional<String> itemUrl = item.getUrl();
+            if (itemUrl.isPresent()) {
+                final CategoryKey categoryKey = CategoryKey.from(notificationType, policyUrl, itemUrl.get());
                 addItem(categoryItems, new CategoryItem(categoryKey, operation, createLinkableItemList(policyItem, item)));
             }
         }
