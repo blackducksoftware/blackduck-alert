@@ -39,6 +39,8 @@ import com.synopsys.integration.alert.common.model.TopicContent;
 
 @Component
 public class TopicCompressor {
+
+    //TODO remove this class
     public List<TopicContent> collapseTopics(final List<TopicContent> topicList) {
         final List<TopicContent> collapsedTopicList = new ArrayList<>(topicList.size());
         topicList.forEach(topic -> {

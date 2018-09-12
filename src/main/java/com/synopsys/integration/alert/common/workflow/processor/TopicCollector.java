@@ -51,20 +51,29 @@ public abstract class TopicCollector {
     private final JsonExtractor jsonExtractor;
     private final ProviderDescriptor providerDescriptor;
     private final Collection<ProviderContentType> contentTypes;
+    private final Map<FormatType, TopicFormatter> topicFormatterMap;
 
     private final List<TopicContent> collectedContent;
 
-    public TopicCollector(final JsonExtractor jsonExtractor, final ProviderDescriptor providerDescriptor) {
+    public TopicCollector(final JsonExtractor jsonExtractor, final ProviderDescriptor providerDescriptor, final List<TopicFormatter> topicFormatterList) {
         this.jsonExtractor = jsonExtractor;
         this.providerDescriptor = providerDescriptor;
         this.contentTypes = providerDescriptor.getProviderContentTypes();
+        this.topicFormatterMap = topicFormatterList.stream().collect(Collectors.toMap(TopicFormatter::getFormat, Function.identity()));
 
         this.collectedContent = new ArrayList<>();
     }
 
     public abstract void insert(final NotificationContent notification);
 
-    public abstract List<TopicContent> collect(final FormatType format);
+    public List<TopicContent> collect(final FormatType format) {
+        if (topicFormatterMap.containsKey(format)) {
+            final TopicFormatter formatter = topicFormatterMap.get(format);
+            return formatter.format(collectedContent);
+        } else {
+            return Collections.emptyList();
+        }
+    }
 
     protected final List<TopicContent> getCopyOfCollectedContent() {
         return Collections.unmodifiableList(collectedContent);

@@ -36,6 +36,7 @@ import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.common.model.CategoryKey;
 import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.common.model.TopicContent;
+import com.synopsys.integration.alert.common.workflow.processor.TopicFormatter;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderContentTypes;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
@@ -46,8 +47,8 @@ import com.synopsys.integration.blackduck.api.generated.enumeration.Notification
 public class BlackDuckPolicyTopicCollector extends BlackDuckTopicCollector {
 
     @Autowired
-    public BlackDuckPolicyTopicCollector(final JsonExtractor jsonExtractor, final BlackDuckDescriptor blackDuckDescriptor) {
-        super(jsonExtractor, blackDuckDescriptor);
+    public BlackDuckPolicyTopicCollector(final JsonExtractor jsonExtractor, final BlackDuckDescriptor blackDuckDescriptor, final List<TopicFormatter> topicFormatterList) {
+        super(jsonExtractor, blackDuckDescriptor, topicFormatterList);
     }
 
     @Override

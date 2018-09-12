@@ -1,0 +1,92 @@
+package com.synopsys.integration.alert.common.workflow.processor;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.BiFunction;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.synopsys.integration.alert.common.enumeration.FormatType;
+import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import com.synopsys.integration.alert.common.model.CategoryItem;
+import com.synopsys.integration.alert.common.model.CategoryKey;
+import com.synopsys.integration.alert.common.model.LinkableItem;
+import com.synopsys.integration.alert.common.model.TopicContent;
+
+@Component
+public class DigestTopicFormatter extends TopicFormatter {
+
+    private final Map<ItemOperation, BiFunction<Map<CategoryKey, CategoryItem>, CategoryItem, Void>> operationFunctionMap;
+
+    @Autowired
+    public DigestTopicFormatter() {
+        super(FormatType.DIGEST);
+        final BiFunction<Map<CategoryKey, CategoryItem>, CategoryItem, Void> addFunction = createAddFunction();
+        final BiFunction<Map<CategoryKey, CategoryItem>, CategoryItem, Void> deleteFunction = createDeleteFunction();
+        operationFunctionMap = new HashMap<>();
+        operationFunctionMap.put(ItemOperation.ADD, addFunction);
+        operationFunctionMap.put(ItemOperation.UPDATE, addFunction);
+        operationFunctionMap.put(ItemOperation.DELETE, deleteFunction);
+    }
+
+    @Override
+    public List<TopicContent> format(final List<TopicContent> contentList) {
+        final List<TopicContent> collapsedTopicList = new ArrayList<>(contentList.size());
+        for (final TopicContent topic : contentList) {
+            final Map<CategoryKey, CategoryItem> categoryDataCache = new LinkedHashMap<>();
+            topic.getCategoryItemList().forEach(item -> {
+                processOperation(categoryDataCache, item);
+            });
+
+            final Optional<TopicContent> collapsedContent = rebuildTopic(topic, categoryDataCache.values());
+            if (collapsedContent.isPresent()) {
+                collapsedTopicList.add(collapsedContent.get());
+            }
+        }
+
+        return collapsedTopicList;
+    }
+
+    private BiFunction<Map<CategoryKey, CategoryItem>, CategoryItem, Void> createAddFunction() {
+        return (categoryDataCache, categoryItem) -> {
+            categoryDataCache.put(categoryItem.getCategoryKey(), categoryItem);
+            return null;
+        };
+    }
+
+    private BiFunction<Map<CategoryKey, CategoryItem>, CategoryItem, Void> createDeleteFunction() {
+        return (categoryDataCache, categoryItem) -> {
+            final CategoryKey key = categoryItem.getCategoryKey();
+            if (categoryDataCache.containsKey(key)) {
+                categoryDataCache.remove(key);
+            } else {
+                categoryDataCache.put(key, categoryItem);
+            }
+            return null;
+        };
+    }
+
+    private void processOperation(final Map<CategoryKey, CategoryItem> categoryDataCache, final CategoryItem item) {
+        final ItemOperation operation = item.getOperation();
+        if (operationFunctionMap.containsKey(operation)) {
+            final BiFunction<Map<CategoryKey, CategoryItem>, CategoryItem, Void> operationFunction = operationFunctionMap.get(operation);
+            operationFunction.apply(categoryDataCache, item);
+        }
+    }
+
+    private Optional<TopicContent> rebuildTopic(final TopicContent currentContent, final Collection<CategoryItem> categoryItemCollection) {
+        if (categoryItemCollection.isEmpty()) {
+            return Optional.empty();
+        } else {
+            final String url = currentContent.getUrl().orElse(null);
+            final LinkableItem subTopic = currentContent.getSubTopic().orElse(null);
+            return Optional.of(new TopicContent(currentContent.getName(), currentContent.getValue(), url, subTopic, new ArrayList<>(categoryItemCollection)));
+        }
+    }
+}
