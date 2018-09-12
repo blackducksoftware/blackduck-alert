@@ -81,4 +81,9 @@
             </column>
         </createTable>
     </changeSet>
+    <changeSet author="jrichard" id="1533054185-12">
+        <dropColumn tableName="GLOBAL_SCHEDULING_CONFIG" schemaName="ALERT" columnName="ALERT_ACCUMULATOR_CRON"/>
+        <dropColumn tableName="GLOBAL_SCHEDULING_CONFIG" schemaName="ALERT" columnName="ALERT_DIGEST_DAILY_CRON"/>
+        <dropColumn tableName="GLOBAL_SCHEDULING_CONFIG" schemaName="ALERT" columnName="ALERT_PURGE_DATA_CRON"/>
+    </changeSet>
 </databaseChangeLog>
