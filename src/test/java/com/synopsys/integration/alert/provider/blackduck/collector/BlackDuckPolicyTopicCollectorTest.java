@@ -26,6 +26,7 @@ import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
+import com.synopsys.integration.alert.provider.blackduck.tasks.ProjectSyncTask;
 import com.synopsys.integration.alert.workflow.filter.JsonExtractor;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
@@ -92,7 +93,9 @@ public class BlackDuckPolicyTopicCollectorTest {
     }
 
     private BlackDuckPolicyTopicCollector createCollector() {
-        final BlackDuckProvider provider = new BlackDuckProvider(Mockito.mock(BlackDuckAccumulator.class));
+        final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
+        final ProjectSyncTask projectSyncTask = Mockito.mock(ProjectSyncTask.class);
+        final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask);
         final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, null, null, null, provider);
         return new BlackDuckPolicyTopicCollector(jsonExtractor, descriptor, topicFormatterList);
     }

@@ -59,7 +59,6 @@ class BaseJobConfiguration extends Component {
                         nextProps.getDistributionDescriptor(jobConfig.providerName, nextProps.alertChannelName);
                     }
                 }
-                console.log("Next properties", nextProps);
                 const newState = Object.assign({}, stateValues, {
                     id: jobConfig.id,
                     distributionConfigId: nextProps.distributionConfigId,
@@ -75,15 +74,19 @@ class BaseJobConfiguration extends Component {
                 });
                 this.setState(newState);
             } else {
+                if (null == this.state.includeAllProjects || undefined == this.state.includeAllProjects) {
+                    this.setState({
+                        includeAllProjects: true
+                    });
+                }
                 if (!this.state.providerName && providerOptions.length == 1) {
                     const providerSelection = providerOptions[0].value;
                     nextProps.getDistributionDescriptor(providerSelection, nextProps.alertChannelName);
-                    this.setState(Object.assign({}, stateValues, {
+                    this.setState({
                         providerName: providerSelection
-                    }));
-                } else {
-                    this.setState(stateValues);
+                    });
                 }
+                this.setState(stateValues);
             }
 
             if (callHandleSaveBtnClick && nextProps.handleSaveBtnClick) {
@@ -143,12 +146,11 @@ class BaseJobConfiguration extends Component {
             distributionType: this.state.distributionType,
             frequency: this.state.frequency,
             formatType: this.state.formatType,
-            includeAllProjects: this.state.filterByProject == 'false',
-            filterByProject: this.state.filterByProject,
+            filterByProject: !this.state.includeAllProjects,
             notificationTypes: this.state.notificationTypes,
             configuredProjects: this.state.configuredProjects
         }, this.props.getParentConfiguration());
-        configuration.filterByProject = !configuration.includeAllProjects;
+        configuration.includeAllProjects = !configuration.filterByProject;
         if (configuration.notificationTypes && configuration.notificationTypes.length > 0) {
             configuration.notificationTypes = configuration.notificationTypes;
         } else {
