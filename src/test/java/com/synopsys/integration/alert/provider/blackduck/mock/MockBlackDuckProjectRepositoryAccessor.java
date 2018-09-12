@@ -18,6 +18,7 @@ public class MockBlackDuckProjectRepositoryAccessor extends BlackDuckProjectRepo
         super(null);
     }
 
+    @Override
     public DatabaseEntity saveEntity(final DatabaseEntity entity) {
         final BlackDuckProjectEntity blackDuckProjectEntity = (BlackDuckProjectEntity) entity;
 
@@ -32,16 +33,28 @@ public class MockBlackDuckProjectRepositoryAccessor extends BlackDuckProjectRepo
         return newEntity;
     }
 
+    @Override
     public List<? extends DatabaseEntity> readEntities() {
         return new ArrayList<>(blackDuckProjectEntityMap.values());
     }
 
+    @Override
     public Optional<? extends DatabaseEntity> readEntity(final long id) {
         return Optional.ofNullable(blackDuckProjectEntityMap.get(new Long(id)));
     }
 
+    @Override
     public void deleteEntity(final long id) {
         blackDuckProjectEntityMap.remove(new Long(id));
     }
 
+    @Override
+    public List<BlackDuckProjectEntity> deleteAndSaveAll(final Iterable<BlackDuckProjectEntity> blackDuckProjectEntities) {
+        blackDuckProjectEntityMap.clear();
+        final List<BlackDuckProjectEntity> blackDuckProjectEntitiesSaved = new ArrayList<>();
+        blackDuckProjectEntities.forEach(blackDuckProjectEntity -> {
+            blackDuckProjectEntitiesSaved.add((BlackDuckProjectEntity) saveEntity(blackDuckProjectEntity));
+        });
+        return blackDuckProjectEntitiesSaved;
+    }
 }

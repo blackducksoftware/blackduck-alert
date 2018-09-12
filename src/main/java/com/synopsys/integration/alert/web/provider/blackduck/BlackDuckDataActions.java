@@ -23,46 +23,61 @@
  */
 package com.synopsys.integration.alert.web.provider.blackduck;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckGroupEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckGroupRepositoryAccessor;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.model.BlackDuckGroup;
 import com.synopsys.integration.alert.provider.blackduck.model.BlackDuckProject;
+import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
+import com.synopsys.integration.blackduck.api.generated.view.UserGroupView;
+import com.synopsys.integration.blackduck.rest.BlackduckRestConnection;
+import com.synopsys.integration.blackduck.service.HubServicesFactory;
+import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
 public class BlackDuckDataActions {
     private final Logger logger = LoggerFactory.getLogger(BlackDuckDataActions.class);
-    private final BlackDuckGroupRepositoryAccessor blackDuckGroupRepositoryAccessor;
+    private final BlackDuckProperties blackDuckProperties;
     private final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
 
     @Autowired
-    public BlackDuckDataActions(final BlackDuckGroupRepositoryAccessor blackDuckGroupRepositoryAccessor, final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor) {
-        this.blackDuckGroupRepositoryAccessor = blackDuckGroupRepositoryAccessor;
+    public BlackDuckDataActions(final BlackDuckProperties blackDuckProperties, final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor) {
+        this.blackDuckProperties = blackDuckProperties;
         this.blackDuckProjectRepositoryAccessor = blackDuckProjectRepositoryAccessor;
     }
 
-    public List<BlackDuckGroup> getBlackDuckGroups() {
-        final List<BlackDuckGroupEntity> blackDuckGroupEntities = (List<BlackDuckGroupEntity>) blackDuckGroupRepositoryAccessor.readEntities();
-        if (!blackDuckGroupEntities.isEmpty()) {
-            final List<BlackDuckGroup> groups = new ArrayList<>();
-            for (final BlackDuckGroupEntity blackDuckGroupEntity : blackDuckGroupEntities) {
-                final BlackDuckGroup blackDuckGroup = new BlackDuckGroup(blackDuckGroupEntity.getName(), blackDuckGroupEntity.getActive(), blackDuckGroupEntity.getHref());
-                groups.add(blackDuckGroup);
-            }
-            return groups;
+    public List<BlackDuckGroup> getBlackDuckGroups() throws IntegrationException {
+        //TODO JR remove the group configuration
+        final Optional<BlackduckRestConnection> optionalRestConnection = blackDuckProperties.createRestConnectionAndLogErrors(logger);
+        if (optionalRestConnection.isPresent()) {
+            try (final BlackduckRestConnection restConnection = optionalRestConnection.get()) {
+                final HubServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(restConnection, new Slf4jIntLogger(logger));
+                final List<UserGroupView> rawGroups = blackDuckServicesFactory.createHubService().getAllResponses(ApiDiscovery.USERGROUPS_LINK_RESPONSE);
 
+                final List<BlackDuckGroup> groups = new ArrayList<>();
+                for (final UserGroupView userGroupView : rawGroups) {
+                    final BlackDuckGroup blackDuckGroup = new BlackDuckGroup(userGroupView.name, userGroupView.active, userGroupView._meta.href);
+                    groups.add(blackDuckGroup);
+                }
+                return groups;
+            } catch (final IOException e) {
+                logger.error(e.getMessage(), e);
+            }
         } else {
-            logger.info("No BlackDuck groups found in the database.");
+            throw new AlertException("Missing global configuration.");
         }
         return Collections.emptyList();
     }

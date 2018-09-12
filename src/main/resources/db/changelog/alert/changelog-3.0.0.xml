@@ -62,16 +62,6 @@
         </createTable>
     </changeSet>
     <changeSet author="jrichard" id="1533054185-10">
-        <createTable tableName="BLACKDUCK_GROUP" schemaName="ALERT">
-            <column autoIncrement="true" name="ID" type="BIGINT(19)">
-                <constraints primaryKey="true" primaryKeyName="BLACKDUCK_GROUP_KEY"/>
-            </column>
-            <column name="NAME" type="VARCHAR(255)"/>
-            <column name="ACTIVE" type="BOOLEAN"/>
-            <column name="HREF" type="VARCHAR(255)"/>
-        </createTable>
-    </changeSet>
-    <changeSet author="jrichard" id="1533054185-11">
         <createTable tableName="BLACKDUCK_PROJECT" schemaName="ALERT">
             <column autoIncrement="true" name="ID" type="BIGINT(19)">
                 <constraints primaryKey="true" primaryKeyName="BLACKDUCK_PROJECT_KEY"/>
@@ -81,17 +71,7 @@
             <column name="HREF" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
-    <changeSet author="jrichard" id="1533054185-12">
-        <createTable tableName="BLACKDUCK_USER_GROUP_RELATION" schemaName="ALERT">
-            <column name="BLACKDUCK_USER_ID" type="BIGINT(19)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="BLACKDUCK_GROUP_ID" type="BIGINT(19)">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-    <changeSet author="jrichard" id="1533054185-13">
+    <changeSet author="jrichard" id="1533054185-11">
         <createTable tableName="BLACKDUCK_USER_PROJECT_RELATION" schemaName="ALERT">
             <column name="BLACKDUCK_USER_ID" type="BIGINT(19)">
                 <constraints nullable="false"/>
