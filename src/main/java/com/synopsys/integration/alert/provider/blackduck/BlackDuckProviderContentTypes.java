@@ -54,18 +54,6 @@ public class BlackDuckProviderContentTypes {
     public static final String LABEL_SUFFIX_VULNERABILITY_DELETED = "deletedVulnerabilities";
     private static final Type VULNERABILITY_TYPE = new TypeToken<VulnerabilitySourceQualifiedId>() {}.getType();
 
-    public static final String LABEL_SUFFIX_VULNERABILITY_NEW_SOURCE = "newSource";
-    public static final String LABEL_SUFFIX_VULNERABILITY_NEW_ID = "newVulnerabilityId";
-    public static final String LABEL_SUFFIX_VULNERABILITY_NEW_URL = "newVulnerabilityUrl";
-
-    public static final String LABEL_SUFFIX_VULNERABILITY_UPDATED_SOURCE = "updatedSource";
-    public static final String LABEL_SUFFIX_VULNERABILITY_UPDATED_ID = "updatedVulnerabilityId";
-    public static final String LABEL_SUFFIX_VULNERABILITY_UPDATED_URL = "updatedVulnerabilityUrl";
-
-    public static final String LABEL_SUFFIX_VULNERABILITY_DELETED_SOURCE = "deletedSource";
-    public static final String LABEL_SUFFIX_VULNERABILITY_DELETED_ID = "newVulnerabilityId";
-    public static final String LABEL_SUFFIX_VULNERABILITY_DELETED_URL = "newVulnerabilityUrl";
-
     public static final List<ProviderContentType> ALL = new ArrayList();
     public static final ProviderContentType BOM_EDIT = new ProviderContentType(
         NotificationType.BOM_EDIT.name(),
@@ -102,16 +90,6 @@ public class BlackDuckProviderContentTypes {
             new ObjectHierarchicalField(Arrays.asList("content"), "newVulnerabilityIds", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_VULNERABILITY_NEW, VULNERABILITY_TYPE),
             new ObjectHierarchicalField(Arrays.asList("content"), "updatedVulnerabilityIds", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_VULNERABILITY_UPDATED, VULNERABILITY_TYPE),
             new ObjectHierarchicalField(Arrays.asList("content"), "deletedVulnerabilityIds", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_VULNERABILITY_DELETED, VULNERABILITY_TYPE)
-            //            new StringHierarchicalField(Arrays.asList("content", "newVulnerabilityIds"), "source", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_VULNERABILITY_NEW_SOURCE),
-            //            new StringHierarchicalField(Arrays.asList("content", "newVulnerabilityIds"), "vulnerabilityId", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_VULNERABILITY_NEW_ID),
-            //            new StringHierarchicalField(Arrays.asList("content", "newVulnerabilityIds"), "vulnerability", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_VULNERABILITY_NEW_URL),
-            //            new StringHierarchicalField(Arrays.asList("content", "updatedVulnerabilityIds"), "source", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_VULNERABILITY_UPDATED_SOURCE),
-            //            new StringHierarchicalField(Arrays.asList("content", "updatedVulnerabilityIds"), "vulnerabilityId", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_VULNERABILITY_UPDATED_ID),
-            //            new StringHierarchicalField(Arrays.asList("content", "updatedVulnerabilityIds"), "vulnerability", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_VULNERABILITY_UPDATED_URL),
-            //            new StringHierarchicalField(Arrays.asList("content", "deletedVulnerabilityIds"), "source", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_VULNERABILITY_DELETED_SOURCE),
-            //            new StringHierarchicalField(Arrays.asList("content", "deletedVulnerabilityIds"), "vulnerabilityId", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_VULNERABILITY_DELETED_ID),
-            //            new StringHierarchicalField(Arrays.asList("content", "deletedVulnerabilityIds"), "vulnerability", FieldContentIdentifier.CATEGORY_ITEM, LABEL_SUFFIX_VULNERABILITY_DELETED_URL)
-
         )
     );
     private static final List<HierarchicalField> RULE_VIOLATION_FIELD_LIST = Arrays.asList(
