@@ -60,7 +60,7 @@ public class BlackDuckDataActions {
     }
 
     public List<BlackDuckGroup> getBlackDuckGroups() throws IntegrationException {
-        //TODO JR remove the group configuration
+        // TODO remove the group configuration
         final Optional<BlackduckRestConnection> optionalRestConnection = blackDuckProperties.createRestConnectionAndLogErrors(logger);
         if (optionalRestConnection.isPresent()) {
             try (final BlackduckRestConnection restConnection = optionalRestConnection.get()) {

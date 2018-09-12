@@ -60,13 +60,13 @@ public class EmailDistributionUIConfig extends UIConfig {
     public List<ConfigField> setupFields() {
         final ConfigField subjectLine = new TextInputConfigField("emailSubjectLine", "Subject Line", false, false);
 
-        //TODO remove the group configuration field
+        // TODO remove the group configuration field
         final ConfigField groupName = new SelectConfigField("groupName", "Group Name", true, false, getEmailGroups());
         return Arrays.asList(subjectLine, groupName);
     }
 
     private List<String> getEmailGroups() {
-        //TODO remove the group configuration field
+        // TODO remove the group configuration field
         try {
             return blackDuckDataActions.getBlackDuckGroups()
                        .stream()

@@ -135,7 +135,7 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
     }
 
     private List<String> getEmailAddressesForGroup(final String blackDuckGroup) throws IntegrationException {
-        //TODO change this to get emails for project
+        // TODO change this to get emails for project
         //        final String projectName = "";
         //        final BlackDuckProjectEntity blackDuckProjectEntity = blackDuckProjectRepositoryAccessor.findByName(projectName);
         //        final List<UserProjectRelation> userProjectRelations = userProjectRelationRepositoryAccessor.findByBlackDuckProjectId(blackDuckProjectEntity.getId());
