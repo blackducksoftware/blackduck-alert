@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.workflow.filter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -121,23 +122,28 @@ public class JsonExtractor {
     }
 
     private List<JsonElement> getInnerElements(final JsonElement element, final PathNode pathNode) {
-        if (element != null && !element.isJsonPrimitive()) {
-            if (pathNode != null && element.isJsonObject()) {
-                final String key = pathNode.getKey();
-                final JsonObject jsonObject = element.getAsJsonObject();
-                final JsonElement foundElement = jsonObject.get(key);
-                return getInnerElements(foundElement, pathNode.getNextNode());
-            } else if (element.isJsonArray()) {
-                final JsonArray foundArray = element.getAsJsonArray();
-                final List<JsonElement> foundValues = new ArrayList<>(foundArray.size());
-                for (final JsonElement arrayElement : foundArray) {
-                    foundValues.addAll(getInnerElements(arrayElement, pathNode));
+        if (element == null) {
+            return Collections.emptyList();
+        } else {
+            if (element.isJsonPrimitive()) {
+                return Arrays.asList(element);
+            } else {
+                if (pathNode != null && element.isJsonObject()) {
+                    final String key = pathNode.getKey();
+                    final JsonObject jsonObject = element.getAsJsonObject();
+                    final JsonElement foundElement = jsonObject.get(key);
+                    return getInnerElements(foundElement, pathNode.getNextNode());
+                } else if (element.isJsonArray()) {
+                    final JsonArray foundArray = element.getAsJsonArray();
+                    final List<JsonElement> foundValues = new ArrayList<>(foundArray.size());
+                    for (final JsonElement arrayElement : foundArray) {
+                        foundValues.addAll(getInnerElements(arrayElement, pathNode));
+                    }
+                    return foundValues;
                 }
-                return foundValues;
+                return Arrays.asList(element);
             }
         }
-        // TODO In the case of the element being null, should we return an empty list?
-        return Arrays.asList(element);
     }
 
     private <T> List<T> getValuesFromJsonElements(final Iterable<JsonElement> elementList, final Function<JsonElement, T> function) {
