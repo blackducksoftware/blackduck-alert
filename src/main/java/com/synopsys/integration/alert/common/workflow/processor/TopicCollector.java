@@ -175,7 +175,10 @@ public abstract class TopicCollector {
     }
 
     protected void addItem(final List<CategoryItem> categoryItems, final CategoryItem newItem) {
-        final Optional<CategoryItem> foundItem = categoryItems.stream().filter(item -> item.getCategoryKey().equals(newItem.getCategoryKey())).findFirst();
+        final Optional<CategoryItem> foundItem = categoryItems
+                                                     .stream()
+                                                     .filter(item -> item.getCategoryKey().equals(newItem.getCategoryKey()))
+                                                     .findFirst();
         if (foundItem.isPresent()) {
             final CategoryItem categoryItem = foundItem.get();
             categoryItem.getItemList().addAll(newItem.getItemList());

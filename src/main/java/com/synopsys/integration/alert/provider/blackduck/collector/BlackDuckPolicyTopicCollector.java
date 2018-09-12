@@ -54,32 +54,19 @@ public class BlackDuckPolicyTopicCollector extends BlackDuckTopicCollector {
     @Override
     protected void addCategoryItemsToContent(final TopicContent content, final NotificationContent notification) {
         final List<CategoryItem> categoryItems = content.getCategoryItemList();
-        final List<StringHierarchicalField> categoryFields = getStringFields(notification.getNotificationType());
         final String notificationJson = notification.getContent();
+        final String notificationType = notification.getNotificationType();
 
+        final List<StringHierarchicalField> categoryFields = getStringFields(notificationType);
         final List<LinkableItem> componentItems = getLinkableItemsByLabel(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_COMPONENT_NAME, notificationJson);
         final List<LinkableItem> componentVersionItems = getLinkableItemsByLabel(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_COMPONENT_VERSION_NAME, notificationJson);
         final List<LinkableItem> policyItems = getLinkableItemsByLabel(categoryFields, BlackDuckProviderContentTypes.LABEL_SUFFIX_POLICY_NAME, notificationJson);
 
-        final ItemOperation operation = getOperationFromNotification(notification.getNotificationType());
+        final ItemOperation operation = getOperationFromNotification(notificationType);
         for (final LinkableItem policyItem : policyItems) {
-            for (int i = 0; i < componentItems.size(); i++) {
-                final String policyUrl = policyItem.getUrl().orElse(null);
-                final LinkableItem componentItem = componentItems.get(i);
-                final Optional<String> componentUrl = componentItem.getUrl();
-
-                if (componentUrl.isPresent()) {
-                    final CategoryKey categoryKey = CategoryKey.from(notification.getNotificationType(), policyUrl, componentUrl.get());
-                    addItem(categoryItems, new CategoryItem(categoryKey, operation, asList(policyItem, componentItem)));
-                } else {
-                    final LinkableItem componentVersionItem = componentVersionItems.get(i);
-                    final Optional<String> componentVersionUrl = componentVersionItem.getUrl();
-                    if (componentVersionUrl.isPresent()) {
-                        final CategoryKey categoryKey = CategoryKey.from(notification.getNotificationType(), policyUrl, componentVersionUrl.get());
-                        addItem(categoryItems, new CategoryItem(categoryKey, operation, asList(policyItem, componentVersionItem)));
-                    }
-                }
-            }
+            final String policyUrl = policyItem.getUrl().orElse("");
+            addApplicableItems(categoryItems, notificationType, policyItem, policyUrl, operation, componentItems);
+            addApplicableItems(categoryItems, notificationType, policyItem, policyUrl, operation, componentVersionItems);
         }
     }
 
@@ -92,6 +79,16 @@ public class BlackDuckPolicyTopicCollector extends BlackDuckTopicCollector {
             return ItemOperation.DELETE;
         }
         throw new IllegalArgumentException(String.format("The notification type '%s' is not valid for this collector.", notificationType));
+    }
+
+    private void addApplicableItems(final List<CategoryItem> categoryItems, final String notificationType, final LinkableItem policyItem, final String policyUrl, final ItemOperation operation, final List<LinkableItem> applicableItems) {
+        for (final LinkableItem item : applicableItems) {
+            final Optional<String> componentVersionUrl = item.getUrl();
+            if (componentVersionUrl.isPresent()) {
+                final CategoryKey categoryKey = CategoryKey.from(notificationType, policyUrl, componentVersionUrl.get());
+                addItem(categoryItems, new CategoryItem(categoryKey, operation, asList(policyItem, item)));
+            }
+        }
     }
 
     private List<LinkableItem> asList(final LinkableItem... items) {
