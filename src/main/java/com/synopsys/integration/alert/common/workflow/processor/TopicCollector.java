@@ -82,20 +82,15 @@ public abstract class TopicCollector {
         final List<TopicContent> topicContentsForNotifications = new ArrayList<>();
 
         final List<LinkableItem> topicItems = getTopicItems(notificationFields, notificationJson);
-        for (final LinkableItem topicItem : topicItems) {
-            // FIXME get the correct subtopic for each topic
-            String subTopicName = null;
-            String subTopicValue = null;
-            LinkableItem subTopic = null;
-            if (hasSubTopic(notificationFields)) {
-                subTopicName = getSubTopicName(notificationFields).orElse(DEFAULT_VALUE);
-                subTopicValue = getSubTopicValue(notificationFields, notificationJson).orElse(DEFAULT_VALUE);
-                final String subTopicUrl = getSubTopicUrl(notificationFields, notificationJson).orElse(null);
+        final List<LinkableItem> subTopicItems = getSubTopicItems(notificationFields, notificationJson);
+        // for the number of topics assume there is an equal number of sub topics and the order is the same.
+        // this seems fragile at the moment.
+        final int count = topicItems.size();
+        for (int index = 0; index < count; index++) {
+            final LinkableItem topicItem = topicItems.get(index);
+            final LinkableItem subTopic = subTopicItems.get(index);
 
-                subTopic = new LinkableItem(subTopicName, subTopicValue, subTopicUrl);
-            }
-
-            final TopicContent foundContent = findTopicContent(topicItem.getName(), topicItem.getValue(), subTopicName, subTopicValue);
+            final TopicContent foundContent = findTopicContent(topicItem.getName(), topicItem.getValue(), subTopic.getName(), subTopic.getValue());
             if (foundContent != null) {
                 topicContentsForNotifications.add(foundContent);
             }
@@ -106,17 +101,26 @@ public abstract class TopicCollector {
     }
 
     protected final List<LinkableItem> getTopicItems(final List<HierarchicalField> notificationFields, final String notificationJson) {
-        final Optional<HierarchicalField> optionalTopicField = getFieldForContentIdentifier(notificationFields, FieldContentIdentifier.TOPIC);
-        if (!optionalTopicField.isPresent()) {
-            throw new IllegalStateException(String.format("The notification provided did not contain the required field: ", FieldContentIdentifier.TOPIC));
+        return getTopicItems(notificationFields, notificationJson, FieldContentIdentifier.TOPIC, FieldContentIdentifier.TOPIC_URL);
+    }
+
+    protected final List<LinkableItem> getSubTopicItems(final List<HierarchicalField> notificationFields, final String notificationJson) {
+        return getTopicItems(notificationFields, notificationJson, FieldContentIdentifier.SUB_TOPIC, FieldContentIdentifier.SUB_TOPIC_URL);
+    }
+
+    protected final List<LinkableItem> getTopicItems(final List<HierarchicalField> notificationFields, final String notificationJson, final FieldContentIdentifier fieldContentIdentifier,
+        final FieldContentIdentifier urlFieldContentIdentifier) {
+        final Optional<HierarchicalField> optionalSubTopicField = getFieldForContentIdentifier(notificationFields, fieldContentIdentifier);
+        if (!optionalSubTopicField.isPresent()) {
+            throw new IllegalStateException(String.format("The notification provided did not contain the required field: ", fieldContentIdentifier));
         }
-        final Optional<HierarchicalField> optionalTopicUrlField = getFieldForContentIdentifier(notificationFields, FieldContentIdentifier.TOPIC_URL);
+        final Optional<HierarchicalField> optionalSubTopicUrlField = getFieldForContentIdentifier(notificationFields, urlFieldContentIdentifier);
 
         // These will always be String fields
-        final StringHierarchicalField topicField = (StringHierarchicalField) optionalTopicField.get();
-        final StringHierarchicalField topicUrlField = (StringHierarchicalField) optionalTopicUrlField.orElse(null);
+        final StringHierarchicalField subTopicField = (StringHierarchicalField) optionalSubTopicField.get();
+        final StringHierarchicalField subTopicUrlField = (StringHierarchicalField) optionalSubTopicUrlField.orElse(null);
 
-        return jsonExtractor.getLinkableItemsFromJson(topicField, topicUrlField, notificationJson);
+        return jsonExtractor.getLinkableItemsFromJson(subTopicField, subTopicUrlField, notificationJson);
     }
 
     protected final boolean hasSubTopic(final List<HierarchicalField> notificationFields) {
