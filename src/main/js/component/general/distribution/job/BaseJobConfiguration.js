@@ -71,15 +71,19 @@ class BaseJobConfiguration extends Component {
                 });
                 this.setState(newState);
             } else {
+                 if (null == this.state.includeAllProjects || undefined == this.state.includeAllProjects) {
+                    this.setState({
+                        includeAllProjects: true
+                    });
+                }
                 if (!this.state.providerName && providerOptions.length == 1) {
                     const providerSelection = providerOptions[0].value;
                     nextProps.getDistributionDescriptor(providerSelection, nextProps.alertChannelName);
-                    this.setState(Object.assign({}, stateValues, {
+                    this.setState({
                         providerName: providerSelection
-                    }));
-                } else {
-                    this.setState(stateValues);
+                    });
                 }
+                this.setState(stateValues);
             }
 
             if (callHandleSaveBtnClick && nextProps.handleSaveBtnClick) {
