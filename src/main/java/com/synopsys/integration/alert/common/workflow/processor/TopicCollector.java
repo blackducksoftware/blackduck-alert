@@ -74,6 +74,16 @@ public abstract class TopicCollector {
         collectedContent.add(content);
     }
 
+    protected final List<LinkableItem> createLinkableItemList(final LinkableItem... items) {
+        final List<LinkableItem> list = new ArrayList<>();
+        if (items != null) {
+            for (final LinkableItem item : items) {
+                list.add(item);
+            }
+        }
+        return list;
+    }
+
     // TODO think about how to maintain order
     protected final List<TopicContent> getContentsOrCreateIfDoesNotExist(final NotificationContent notification) {
         final List<HierarchicalField> notificationFields = getFieldsForNotificationType(notification.getNotificationType());
@@ -181,7 +191,12 @@ public abstract class TopicCollector {
                                                      .findFirst();
         if (foundItem.isPresent()) {
             final CategoryItem categoryItem = foundItem.get();
-            categoryItem.getItemList().addAll(newItem.getItemList());
+            if (categoryItem.getOperation().equals(newItem.getOperation())) {
+                categoryItem.getItemList().addAll(newItem.getItemList());
+            } else {
+                // operation is different treat like another category item
+                categoryItems.add(newItem);
+            }
         } else {
             categoryItems.add(newItem);
         }

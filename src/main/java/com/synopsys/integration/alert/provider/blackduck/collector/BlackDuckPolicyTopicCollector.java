@@ -24,7 +24,6 @@
 
 package com.synopsys.integration.alert.provider.blackduck.collector;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -86,18 +85,8 @@ public class BlackDuckPolicyTopicCollector extends BlackDuckTopicCollector {
             final Optional<String> componentVersionUrl = item.getUrl();
             if (componentVersionUrl.isPresent()) {
                 final CategoryKey categoryKey = CategoryKey.from(notificationType, policyUrl, componentVersionUrl.get());
-                addItem(categoryItems, new CategoryItem(categoryKey, operation, asList(policyItem, item)));
+                addItem(categoryItems, new CategoryItem(categoryKey, operation, createLinkableItemList(policyItem, item)));
             }
         }
-    }
-
-    private List<LinkableItem> asList(final LinkableItem... items) {
-        final List<LinkableItem> list = new ArrayList<>();
-        if (items != null) {
-            for (final LinkableItem item : items) {
-                list.add(item);
-            }
-        }
-        return list;
     }
 }
