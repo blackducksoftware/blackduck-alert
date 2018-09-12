@@ -51,6 +51,9 @@ import com.synopsys.integration.alert.database.channel.email.EmailGlobalReposito
 import com.synopsys.integration.alert.database.channel.email.EmailGroupDistributionConfigEntity;
 import com.synopsys.integration.alert.database.channel.email.EmailGroupDistributionRepository;
 import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
+import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
+import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserRepositoryAccessor;
+import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelationRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.blackduck.api.generated.view.UserGroupView;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;
@@ -65,11 +68,18 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEntity, EmailGroupDistributionConfigEntity> {
     public final static String COMPONENT_NAME = "channel_email";
     private final static Logger logger = LoggerFactory.getLogger(EmailGroupChannel.class);
+    private final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor;
+    private final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
+    private final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor;
 
     @Autowired
     public EmailGroupChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditEntryRepository auditEntryRepository, final EmailGlobalRepository emailRepository,
-            final EmailGroupDistributionRepository emailGroupDistributionRepository, final CommonDistributionRepository commonDistributionRepository) {
+        final EmailGroupDistributionRepository emailGroupDistributionRepository, final CommonDistributionRepository commonDistributionRepository, final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor,
+        final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor, final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor) {
         super(gson, alertProperties, blackDuckProperties, auditEntryRepository, emailRepository, emailGroupDistributionRepository, commonDistributionRepository);
+        this.blackDuckUserRepositoryAccessor = blackDuckUserRepositoryAccessor;
+        this.blackDuckProjectRepositoryAccessor = blackDuckProjectRepositoryAccessor;
+        this.userProjectRelationRepositoryAccessor = userProjectRelationRepositoryAccessor;
     }
 
     @Override
@@ -125,6 +135,17 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
     }
 
     private List<String> getEmailAddressesForGroup(final String blackDuckGroup) throws IntegrationException {
+        // TODO change this to get emails for project
+        //        final String projectName = "";
+        //        final BlackDuckProjectEntity blackDuckProjectEntity = blackDuckProjectRepositoryAccessor.findByName(projectName);
+        //        final List<UserProjectRelation> userProjectRelations = userProjectRelationRepositoryAccessor.findByBlackDuckProjectId(blackDuckProjectEntity.getId());
+        //        final List<String> emailAddresses = userProjectRelations
+        //                                                .stream()
+        //                                                .map(userProjectRelation -> blackDuckUserRepositoryAccessor.readEntity(userProjectRelation.getBlackDuckUserId()))
+        //                                                .filter(userEntity -> userEntity.isPresent())
+        //                                                .map(userEntity -> ((BlackDuckUserEntity) userEntity.get()).getEmailAddress())
+        //                                                .collect(Collectors.toList());
+
         final Optional<BlackduckRestConnection> optionalRestConnection = getBlackDuckProperties().createRestConnectionAndLogErrors(logger);
         if (optionalRestConnection.isPresent()) {
             try (final BlackduckRestConnection restConnection = optionalRestConnection.get()) {

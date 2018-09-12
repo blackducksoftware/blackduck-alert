@@ -63,7 +63,7 @@ public class BlackDuckDescriptorConfigTest {
     //
     // final BlackDuckProviderDescriptorConfig hubDescriptor = new BlackDuckProviderDescriptorConfig(hubContentConverter, null, null, null);
     //
-    // final GlobalBlackDuckConfigEntity hubEntity = mockBlackDuckEntity.createGlobalEntity();
+    // final BlackDuckUserEntity hubEntity = mockBlackDuckEntity.createGlobalEntity();
     // final BlackDuckConfig hubRestModel = mockBlackDuckRestModel.createGlobalRestModel();
     //
     // final Config restModel = hubDescriptor.getTypeConverter().populateConfigFromEntity(hubEntity);

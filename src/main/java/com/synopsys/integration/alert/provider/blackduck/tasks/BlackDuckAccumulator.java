@@ -31,8 +31,6 @@ import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -74,11 +72,11 @@ public class BlackDuckAccumulator extends ScheduledTask {
 
     @Autowired
     public BlackDuckAccumulator(final TaskScheduler taskScheduler, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
-            final NotificationManager notificationManager) {
+        final NotificationManager notificationManager) {
         super(taskScheduler, "blackduck-accumulator-task");
         this.blackDuckProperties = blackDuckProperties;
         this.notificationManager = notificationManager;
-        //TODO: do not store a file with the timestamp save this information into a database table for tasks.  Perhaps a task metadata object stored in the database.
+        // TODO: do not store a file with the timestamp save this information into a database table for tasks.  Perhaps a task metadata object stored in the database.
         final String accumulatorFileName = String.format("%s-last-search.txt", getTaskName());
         this.searchRangeFilePath = new File(alertProperties.getAlertConfigHome(), accumulatorFileName);
     }
@@ -91,17 +89,13 @@ public class BlackDuckAccumulator extends ScheduledTask {
         return RestConstants.formatDate(date);
     }
 
-    public String createLoggerMessage(final String messageFormat) {
-        return String.format("[ %s ] %s", getTaskName(), messageFormat);
-    }
-
     @Override
     public void run() {
         accumulate();
     }
 
     public void accumulate() {
-        logger.info(createLoggerMessage("### Accumulator Starting Operation..."));
+        logger.info("### Accumulator Starting Operation...");
         try {
             if (!getSearchRangeFilePath().exists()) {
                 initializeSearchRangeFile();
@@ -109,17 +103,17 @@ public class BlackDuckAccumulator extends ScheduledTask {
             final DateRange dateRange = createDateRange(getSearchRangeFilePath());
             final Date nextSearchStartTime = accumulate(dateRange);
             final String nextSearchStartString = formatDate(nextSearchStartTime);
-            logger.info(createLoggerMessage("Accumulator Next Range Start Time: {} "), nextSearchStartString);
+            logger.info("Accumulator Next Range Start Time: {} ", nextSearchStartString);
             saveNextSearchStart(nextSearchStartString);
         } catch (final IOException ex) {
-            logger.error(createLoggerMessage("Error occurred accumulating data! "), ex);
+            logger.error("Error occurred accumulating data! ", ex);
         } finally {
             final Optional<Long> nextRun = getMillisecondsToNextRun();
             if (nextRun.isPresent()) {
                 final Long seconds = TimeUnit.MILLISECONDS.toSeconds(nextRun.get());
-                logger.debug(createLoggerMessage("Accumulator next run: {} seconds"), seconds);
+                logger.debug("Accumulator next run: {} seconds", seconds);
             }
-            logger.info(createLoggerMessage("### Accumulator Finished Operation."));
+            logger.info("### Accumulator Finished Operation.");
         }
     }
 
@@ -153,7 +147,7 @@ public class BlackDuckAccumulator extends ScheduledTask {
             }
             startDate = Date.from(zonedStartDate.toInstant());
         } catch (final IOException | ParseException e) {
-            logger.error(createLoggerMessage("Error creating date range"), e);
+            logger.error("Error creating date range", e);
         }
         return new DateRange(startDate, endDate);
     }
@@ -180,7 +174,6 @@ public class BlackDuckAccumulator extends ScheduledTask {
     }
 
     protected Optional<CommonNotificationViewResults> read(final DateRange dateRange) {
-        final ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), Executors.defaultThreadFactory());
         final Optional<BlackduckRestConnection> optionalConnection = blackDuckProperties.createRestConnectionAndLogErrors(logger);
         if (optionalConnection.isPresent()) {
             try (final BlackduckRestConnection restConnection = optionalConnection.get()) {
@@ -188,7 +181,7 @@ public class BlackDuckAccumulator extends ScheduledTask {
                     final HubServicesFactory hubServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(restConnection, new Slf4jIntLogger(logger));
                     final Date startDate = dateRange.getStart();
                     final Date endDate = dateRange.getEnd();
-                    logger.info(createLoggerMessage("Accumulating Notifications Between {} and {} "), RestConstants.formatDate(startDate), RestConstants.formatDate(endDate));
+                    logger.info("Accumulating Notifications Between {} and {} ", RestConstants.formatDate(startDate), RestConstants.formatDate(endDate));
                     final NotificationService notificationService = hubServicesFactory.createNotificationService();
                     final NotificationContentDetailFactory notificationContentDetailFactory = new NotificationContentDetailFactory(hubServicesFactory.getGson(), HubServicesFactory.createDefaultJsonParser());
                     final CommonNotificationService commonNotificationService = hubServicesFactory.createCommonNotificationService(notificationContentDetailFactory, true);
@@ -197,23 +190,21 @@ public class BlackDuckAccumulator extends ScheduledTask {
                     final CommonNotificationViewResults notificationResults = commonNotificationService.getCommonNotificationViewResults(commonNotificationViews);
 
                     if (notificationResults.isEmpty()) {
-                        logger.debug(createLoggerMessage("Read Notification Count: 0"));
+                        logger.debug("Read Notification Count: 0");
                         return Optional.empty();
                     }
-                    logger.debug(createLoggerMessage("Read Notification Count: {}"), notificationResults.getResults().size());
+                    logger.debug("Read Notification Count: {}", notificationResults.getResults().size());
                     return Optional.of(notificationResults);
                 }
             } catch (final Exception ex) {
-                logger.error(createLoggerMessage("Error Reading notifications"), ex);
-            } finally {
-                executor.shutdownNow();
+                logger.error("Error Reading notifications", ex);
             }
         }
         return Optional.empty();
     }
 
     protected List<NotificationContent> process(final CommonNotificationViewResults notificationData) {
-        logger.info(createLoggerMessage("Processing accumulated notifications"));
+        logger.info("Processing accumulated notifications");
         return notificationData.getResults().stream().map(this::createContent).collect(Collectors.toList());
     }
 
@@ -228,7 +219,7 @@ public class BlackDuckAccumulator extends ScheduledTask {
     }
 
     protected void write(final List<NotificationContent> contentList) {
-        logger.info(createLoggerMessage("Writing Notifications..."));
+        logger.info("Writing Notifications...");
         contentList.forEach(notificationManager::saveNotification);
     }
 
@@ -240,9 +231,9 @@ public class BlackDuckAccumulator extends ScheduledTask {
             // increment 1 millisecond
             newSearchStart = newSearchStart.plusNanos(1000000);
             newStartDate = Date.from(newSearchStart.toInstant());
-            logger.info(createLoggerMessage("Notifications found; updating to latest notification found"));
+            logger.info("Notifications found; updating to latest notification found");
         } else {
-            logger.info(createLoggerMessage("No notifications found; using current search time"));
+            logger.info("No notifications found; using current search time");
         }
         return newStartDate;
     }
