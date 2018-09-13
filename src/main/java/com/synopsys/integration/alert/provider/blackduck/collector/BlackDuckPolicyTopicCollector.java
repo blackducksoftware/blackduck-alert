@@ -36,6 +36,7 @@ import com.synopsys.integration.alert.common.field.StringHierarchicalField;
 import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.common.model.CategoryKey;
 import com.synopsys.integration.alert.common.model.LinkableItem;
+import com.synopsys.integration.alert.common.workflow.processor.TopicCollector;
 import com.synopsys.integration.alert.common.workflow.processor.TopicFormatter;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderContentTypes;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
@@ -44,7 +45,7 @@ import com.synopsys.integration.alert.workflow.filter.JsonFieldAccessor;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 @Component
-public class BlackDuckPolicyTopicCollector extends BlackDuckTopicCollector {
+public class BlackDuckPolicyTopicCollector extends TopicCollector {
 
     @Autowired
     public BlackDuckPolicyTopicCollector(final JsonExtractor jsonExtractor, final BlackDuckDescriptor blackDuckDescriptor, final List<TopicFormatter> topicFormatterList) {
