@@ -29,13 +29,13 @@ import com.synopsys.integration.alert.common.model.TopicContent;
 import com.synopsys.integration.alert.common.workflow.processor.TopicCollector;
 import com.synopsys.integration.alert.common.workflow.processor.TopicFormatter;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.workflow.filter.JsonExtractor;
 
 public abstract class BlackDuckTopicCollector extends TopicCollector {
 
-    public BlackDuckTopicCollector(final JsonExtractor jsonExtractor, final BlackDuckDescriptor blackDuckDescriptor, final List<TopicFormatter> topicFormatterList) {
-        super(jsonExtractor, blackDuckDescriptor, topicFormatterList);
+    public BlackDuckTopicCollector(final JsonExtractor jsonExtractor, final BlackDuckProvider blackDuckProvider, final List<TopicFormatter> topicFormatterList) {
+        super(jsonExtractor, blackDuckProvider, topicFormatterList);
     }
 
     @Override

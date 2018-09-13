@@ -67,6 +67,11 @@ public class BlackDuckProvider extends Provider {
     }
 
     @Override
+    public String getName() {
+        return BlackDuckProvider.COMPONENT_NAME;
+    }
+
+    @Override
     public Set<ProviderContentType> getProviderContentTypes() {
         return BlackDuckProviderContentTypes.ALL.stream().collect(Collectors.toSet());
     }

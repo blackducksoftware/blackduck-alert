@@ -32,7 +32,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.field.HierarchicalField;
@@ -41,6 +40,7 @@ import com.synopsys.integration.alert.common.field.StringHierarchicalField;
 import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.common.model.TopicContent;
+import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.workflow.filter.JsonExtractor;
@@ -49,16 +49,16 @@ public abstract class TopicCollector {
     private static final String DEFAULT_VALUE = "unknown";
 
     private final JsonExtractor jsonExtractor;
-    private final ProviderDescriptor providerDescriptor;
+    private final Provider provider;
     private final Collection<ProviderContentType> contentTypes;
     private final Map<FormatType, TopicFormatter> topicFormatterMap;
 
     private final List<TopicContent> collectedContent;
 
-    public TopicCollector(final JsonExtractor jsonExtractor, final ProviderDescriptor providerDescriptor, final List<TopicFormatter> topicFormatterList) {
+    public TopicCollector(final JsonExtractor jsonExtractor, final Provider provider, final List<TopicFormatter> topicFormatterList) {
         this.jsonExtractor = jsonExtractor;
-        this.providerDescriptor = providerDescriptor;
-        this.contentTypes = providerDescriptor.getProviderContentTypes();
+        this.provider = provider;
+        this.contentTypes = provider.getProviderContentTypes();
         this.topicFormatterMap = topicFormatterList.stream().collect(Collectors.toMap(TopicFormatter::getFormat, Function.identity()));
 
         this.collectedContent = new ArrayList<>();
@@ -180,7 +180,7 @@ public abstract class TopicCollector {
                 return providerContentType.getNotificationFields();
             }
         }
-        throw new IllegalArgumentException(String.format("No such notification type '%s' for provider: %s", notificationType, providerDescriptor.getName()));
+        throw new IllegalArgumentException(String.format("No such notification type '%s' for provider: %s", notificationType, provider));
     }
 
     protected final List<StringHierarchicalField> getStringFields(final String notificationType) {
