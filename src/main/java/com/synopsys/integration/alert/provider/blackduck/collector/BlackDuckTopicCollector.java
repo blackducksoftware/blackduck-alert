@@ -25,17 +25,17 @@ package com.synopsys.integration.alert.provider.blackduck.collector;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.model.TopicContent;
 import com.synopsys.integration.alert.common.workflow.processor.TopicCollector;
+import com.synopsys.integration.alert.common.workflow.processor.TopicFormatter;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.workflow.filter.JsonExtractor;
 
 public abstract class BlackDuckTopicCollector extends TopicCollector {
 
-    public BlackDuckTopicCollector(final JsonExtractor jsonExtractor, final BlackDuckDescriptor blackDuckDescriptor) {
-        super(jsonExtractor, blackDuckDescriptor);
+    public BlackDuckTopicCollector(final JsonExtractor jsonExtractor, final BlackDuckDescriptor blackDuckDescriptor, final List<TopicFormatter> topicFormatterList) {
+        super(jsonExtractor, blackDuckDescriptor, topicFormatterList);
     }
 
     @Override
@@ -45,12 +45,6 @@ public abstract class BlackDuckTopicCollector extends TopicCollector {
             addCategoryItemsToContent(content, notification);
             addContent(content);
         }
-    }
-
-    @Override
-    public List<TopicContent> collect(final FormatType format) {
-        // TODO implement
-        return getCopyOfCollectedContent();
     }
 
     protected abstract void addCategoryItemsToContent(final TopicContent content, final NotificationContent notification);
