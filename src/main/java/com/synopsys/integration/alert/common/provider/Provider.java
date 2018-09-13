@@ -26,7 +26,6 @@ package com.synopsys.integration.alert.common.provider;
 import java.util.Set;
 
 import com.synopsys.integration.alert.common.enumeration.FormatType;
-import com.synopsys.integration.alert.common.workflow.processor.CollectorLookup;
 
 public abstract class Provider {
 
@@ -35,8 +34,6 @@ public abstract class Provider {
     public abstract void destroy();
 
     public abstract Set<ProviderContentType> getProviderContentTypes();
-
-    public abstract CollectorLookup getCollectorLookup();
 
     public abstract Set<FormatType> getSupportedFormatTypes();
 }
