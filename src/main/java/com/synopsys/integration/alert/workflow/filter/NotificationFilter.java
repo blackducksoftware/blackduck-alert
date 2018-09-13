@@ -102,6 +102,35 @@ public class NotificationFilter {
                    .collect(Collectors.toList());
     }
 
+    /**
+     * Creates a java.util.Collection of NotificationContent objects that are applicable for at least one Distribution Job.
+     * @return A java.util.List of sorted (by createdAt) NotificationContent objects.
+     */
+    public Collection<NotificationContent> extractApplicableNotifications(final CommonDistributionConfig jobConfiguration, final Collection<NotificationContent> notificationList) {
+
+        final Set<String> configuredNotificationTypes = jobConfiguration.getNotificationTypes().stream().collect(Collectors.toSet());
+        if (configuredNotificationTypes.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        final List<ProviderContentType> providerContentTypes = getProviderContentTypes();
+        final Map<String, List<NotificationContent>> notificationsByType = getNotificationsByType(configuredNotificationTypes, notificationList);
+
+        final Set<NotificationContent> filteredNotifications = new HashSet<>();
+        notificationsByType.forEach((type, groupedNotifications) -> {
+            final Set<StringHierarchicalField> filterableFields = getFilterableFieldsByNotificationType(type, providerContentTypes);
+            final Predicate<NotificationContent> filterForNotificationType = createJobFilter(filterableFields, jobConfiguration);
+
+            final List<NotificationContent> matchingNotifications = applyFilter(groupedNotifications, filterForNotificationType);
+            filteredNotifications.addAll(matchingNotifications);
+        });
+
+        return filteredNotifications
+                   .parallelStream()
+                   .sorted(Comparator.comparing(NotificationContent::getCreatedAt))
+                   .collect(Collectors.toList());
+    }
+
     private Set<String> getConfiguredNotificationTypes(final List<CommonDistributionConfig> distributionConfigs) {
         return distributionConfigs
                    .parallelStream()
@@ -145,6 +174,18 @@ public class NotificationFilter {
                     final JsonFilterBuilder fieldFilter = createFilterBuilderForAllValues(field, valuesFromField);
                     filterBuilder = new AndFieldFilterBuilder(filterBuilder, fieldFilter);
                 }
+            }
+        }
+        return filterBuilder.buildPredicate();
+    }
+
+    private Predicate<NotificationContent> createJobFilter(final Collection<StringHierarchicalField> filterableFields, final CommonDistributionConfig config) {
+        JsonFilterBuilder filterBuilder = DefaultFilterBuilders.ALWAYS_TRUE;
+        if (shouldFilter(config)) {
+            for (final StringHierarchicalField field : filterableFields) {
+                final Collection<String> valuesFromField = jsonExtractor.getValuesFromConfig(field, config);
+                final JsonFilterBuilder fieldFilter = createFilterBuilderForAllValues(field, valuesFromField);
+                filterBuilder = new AndFieldFilterBuilder(filterBuilder, fieldFilter);
             }
         }
         return filterBuilder.buildPredicate();

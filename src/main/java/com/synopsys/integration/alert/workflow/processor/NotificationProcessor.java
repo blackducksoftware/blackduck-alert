@@ -37,13 +37,15 @@ import com.synopsys.integration.alert.workflow.filter.NotificationFilter;
 
 @Component
 public class NotificationProcessor {
+    private final JobProcessor jobProcessor;
     private final NotificationFilter notificationFilter;
     private final NotificationToChannelEventConverter notificationToEventConverter;
 
     @Autowired
-    public NotificationProcessor(final NotificationFilter notificationFilter, final NotificationToChannelEventConverter notificationToEventConverter) {
+    public NotificationProcessor(final NotificationFilter notificationFilter, final NotificationToChannelEventConverter notificationToEventConverter, final JobProcessor jobProcessor) {
         this.notificationFilter = notificationFilter;
         this.notificationToEventConverter = notificationToEventConverter;
+        this.jobProcessor = jobProcessor;
     }
 
     public List<ChannelEvent> processNotifications(final FrequencyType frequencyType, final List<NotificationContent> notificationList) {
