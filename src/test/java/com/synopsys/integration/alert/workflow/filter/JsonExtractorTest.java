@@ -2,7 +2,6 @@ package com.synopsys.integration.alert.workflow.filter;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -22,20 +21,7 @@ public class JsonExtractorTest {
         jsonExtractor = new JsonExtractor(new Gson());
     }
 
-    @Test
-    public void getFirstValueFromJsonTest() {
-        final String key = "innerField";
-        final String value = "thing that I want";
-        final String json = "{\"content\":{\"someObject\":{\"" + key + "\":\"" + value + "\"}}}";
-        final List<String> pathToField = Arrays.asList("content", "someObject");
-        final StringHierarchicalField field = new StringHierarchicalField(pathToField, key, null, null);
-        final Optional<String> foundValue = jsonExtractor.getFirstValueFromJson(field, json);
-        if (foundValue.isPresent()) {
-            Assert.assertEquals(value, foundValue.get());
-        } else {
-            Assert.fail("The Optional<String> 'foundValue' was not present.");
-        }
-    }
+    // TODO add more test cases for new methods
 
     @Test
     public void getValuesFromJsonTest() {
