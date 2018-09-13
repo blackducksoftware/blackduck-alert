@@ -31,16 +31,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import com.synopsys.integration.alert.common.field.HierarchicalField;
 import com.synopsys.integration.alert.common.field.StringHierarchicalField;
 import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.common.model.CategoryKey;
 import com.synopsys.integration.alert.common.model.LinkableItem;
-import com.synopsys.integration.alert.common.model.TopicContent;
 import com.synopsys.integration.alert.common.workflow.processor.TopicFormatter;
-import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderContentTypes;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.workflow.filter.JsonExtractor;
+import com.synopsys.integration.alert.workflow.filter.JsonFieldAccessor;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 @Component
@@ -52,15 +52,11 @@ public class BlackDuckPolicyTopicCollector extends BlackDuckTopicCollector {
     }
 
     @Override
-    protected void addCategoryItemsToContent(final TopicContent content, final NotificationContent notification) {
-        final List<CategoryItem> categoryItems = content.getCategoryItemList();
-        final String notificationJson = notification.getContent();
-        final String notificationType = notification.getNotificationType();
-
-        final List<StringHierarchicalField> categoryFields = getStringFields(notificationType);
-        final List<LinkableItem> componentItems = getLinkableItemsByLabel(categoryFields, notificationJson, BlackDuckProviderContentTypes.LABEL_COMPONENT_NAME);
-        final List<LinkableItem> componentVersionItems = getLinkableItemsByLabel(categoryFields, notificationJson, BlackDuckProviderContentTypes.LABEL_COMPONENT_VERSION_NAME);
-        final List<LinkableItem> policyItems = getLinkableItemsByLabel(categoryFields, notificationJson, BlackDuckProviderContentTypes.LABEL_POLICY_NAME);
+    protected void addCategoryItems(final List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<HierarchicalField> notificationFields, final String notificationType) {
+        final List<StringHierarchicalField> categoryFields = getStringFields(notificationFields);
+        final List<LinkableItem> componentItems = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_COMPONENT_NAME);
+        final List<LinkableItem> componentVersionItems = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_COMPONENT_VERSION_NAME);
+        final List<LinkableItem> policyItems = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_POLICY_NAME);
 
         final ItemOperation operation = getOperationFromNotification(notificationType);
         for (final LinkableItem policyItem : policyItems) {
