@@ -95,7 +95,7 @@ public class BlackDuckPolicyTopicCollectorTest {
         final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
         final ProjectSyncTask projectSyncTask = Mockito.mock(ProjectSyncTask.class);
         final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask);
-        return new BlackDuckPolicyTopicCollector(jsonExtractor, provider, topicFormatterList);
+        return new BlackDuckPolicyTopicCollector(jsonExtractor, topicFormatterList);
     }
 
     private String getNotificationContentFromFile(final String notificationJsonFileName) throws Exception {

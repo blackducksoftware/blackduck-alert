@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -40,7 +41,6 @@ import com.synopsys.integration.alert.common.field.StringHierarchicalField;
 import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.common.model.TopicContent;
-import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.workflow.filter.JsonExtractor;
@@ -49,19 +49,21 @@ public abstract class TopicCollector {
     private static final String DEFAULT_VALUE = "unknown";
 
     private final JsonExtractor jsonExtractor;
-    private final Provider provider;
     private final Collection<ProviderContentType> contentTypes;
     private final Map<FormatType, TopicFormatter> topicFormatterMap;
-
+    private final Set<String> supportedNotificationTypes;
     private final List<TopicContent> collectedContent;
 
-    public TopicCollector(final JsonExtractor jsonExtractor, final Provider provider, final List<TopicFormatter> topicFormatterList) {
+    public TopicCollector(final JsonExtractor jsonExtractor, final List<TopicFormatter> topicFormatterList, final Collection<ProviderContentType> contentTypes) {
         this.jsonExtractor = jsonExtractor;
-        this.provider = provider;
-        this.contentTypes = provider.getProviderContentTypes();
+        this.contentTypes = contentTypes;
         this.topicFormatterMap = topicFormatterList.stream().collect(Collectors.toMap(TopicFormatter::getFormat, Function.identity()));
-
+        this.supportedNotificationTypes = contentTypes.stream().map(ProviderContentType::getNotificationType).collect(Collectors.toSet());
         this.collectedContent = new ArrayList<>();
+    }
+
+    public Set<String> getSupportedNotificationTypes() {
+        return supportedNotificationTypes;
     }
 
     public abstract void insert(final NotificationContent notification);
@@ -180,7 +182,7 @@ public abstract class TopicCollector {
                 return providerContentType.getNotificationFields();
             }
         }
-        throw new IllegalArgumentException(String.format("No such notification type '%s' for provider: %s", notificationType, provider));
+        throw new IllegalArgumentException(String.format("No such notification type '%s' supported; accepted values are: %s", notificationType, String.join(",", getSupportedNotificationTypes())));
     }
 
     protected final List<StringHierarchicalField> getStringFields(final String notificationType) {
