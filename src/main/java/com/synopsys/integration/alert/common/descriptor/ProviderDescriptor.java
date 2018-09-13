@@ -25,18 +25,21 @@ package com.synopsys.integration.alert.common.descriptor;
 
 import java.util.Set;
 
+import javax.validation.constraints.NotNull;
+
 import com.synopsys.integration.alert.common.descriptor.config.RestApi;
 import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.common.provider.ProviderUIConfig;
+import com.synopsys.integration.alert.common.workflow.processor.TopicCollector;
 
 public abstract class ProviderDescriptor extends Descriptor {
     private final Provider provider;
 
-    public ProviderDescriptor(final String name, final RestApi providerRestApi, final UIConfig providerUiConfig, final RestApi distributionRestApi, final ProviderUIConfig distributionUIConfig, final Provider provider) {
-        super(name, DescriptorType.PROVIDER);
+    public ProviderDescriptor(final RestApi providerRestApi, final UIConfig providerUiConfig, final RestApi distributionRestApi, final ProviderUIConfig distributionUIConfig, @NotNull final Provider provider) {
+        super(provider.getName(), DescriptorType.PROVIDER);
         this.provider = provider;
         addProviderUiConfigs(providerRestApi, providerUiConfig);
         addProviderDistributionUiConfigs(distributionRestApi, distributionUIConfig);
@@ -49,4 +52,6 @@ public abstract class ProviderDescriptor extends Descriptor {
     public Set<ProviderContentType> getProviderContentTypes() {
         return getProvider().getProviderContentTypes();
     }
+
+    public abstract Set<TopicCollector> createTopicCollectors();
 }

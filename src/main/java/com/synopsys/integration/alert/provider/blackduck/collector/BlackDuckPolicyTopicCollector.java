@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
@@ -38,17 +39,18 @@ import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.common.model.TopicContent;
 import com.synopsys.integration.alert.common.workflow.processor.TopicFormatter;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderContentTypes;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.workflow.filter.JsonExtractor;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 @Component
+@Scope("prototype")
 public class BlackDuckPolicyTopicCollector extends BlackDuckTopicCollector {
 
     @Autowired
-    public BlackDuckPolicyTopicCollector(final JsonExtractor jsonExtractor, final BlackDuckDescriptor blackDuckDescriptor, final List<TopicFormatter> topicFormatterList) {
-        super(jsonExtractor, blackDuckDescriptor, topicFormatterList);
+    public BlackDuckPolicyTopicCollector(final JsonExtractor jsonExtractor, final BlackDuckProvider blackDuckProvider, final List<TopicFormatter> topicFormatterList) {
+        super(jsonExtractor, blackDuckProvider, topicFormatterList);
     }
 
     @Override

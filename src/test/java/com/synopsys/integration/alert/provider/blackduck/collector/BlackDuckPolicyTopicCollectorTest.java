@@ -24,7 +24,6 @@ import com.synopsys.integration.alert.common.workflow.processor.DigestTopicForma
 import com.synopsys.integration.alert.common.workflow.processor.TopicFormatter;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.ProjectSyncTask;
 import com.synopsys.integration.alert.workflow.filter.JsonExtractor;
@@ -96,8 +95,7 @@ public class BlackDuckPolicyTopicCollectorTest {
         final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
         final ProjectSyncTask projectSyncTask = Mockito.mock(ProjectSyncTask.class);
         final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask);
-        final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, null, null, null, provider);
-        return new BlackDuckPolicyTopicCollector(jsonExtractor, descriptor, topicFormatterList);
+        return new BlackDuckPolicyTopicCollector(jsonExtractor, provider, topicFormatterList);
     }
 
     private String getNotificationContentFromFile(final String notificationJsonFileName) throws Exception {

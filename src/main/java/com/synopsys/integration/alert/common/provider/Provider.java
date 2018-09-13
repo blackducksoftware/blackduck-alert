@@ -33,6 +33,8 @@ public abstract class Provider {
 
     public abstract void destroy();
 
+    public abstract String getName();
+
     public abstract Set<ProviderContentType> getProviderContentTypes();
 
     public abstract Set<FormatType> getSupportedFormatTypes();
