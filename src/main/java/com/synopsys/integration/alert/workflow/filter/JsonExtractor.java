@@ -63,7 +63,7 @@ public class JsonExtractor {
             final Type fieldDataType = field.getType();
 
             final List<JsonElement> foundElements = getInnerElements(jsonObjectModel, fieldNameHierarchy);
-            final List values = getValuesFromJsonElements(foundElements, jsonElement -> gson.fromJson(jsonElement, fieldDataType));
+            final List<Object> values = getValuesFromJsonElements(foundElements, jsonElement -> gson.fromJson(jsonElement, fieldDataType));
 
             fieldToValuesMap.put(field, values);
         }
