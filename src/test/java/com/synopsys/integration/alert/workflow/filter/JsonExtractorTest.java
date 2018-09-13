@@ -1,27 +1,47 @@
 package com.synopsys.integration.alert.workflow.filter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
+import com.synopsys.integration.alert.common.field.HierarchicalField;
+import com.synopsys.integration.alert.common.field.ObjectHierarchicalField;
 import com.synopsys.integration.alert.common.field.StringHierarchicalField;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 
 public class JsonExtractorTest {
+    private final Gson gson = new Gson();
+    private final JsonExtractor jsonExtractor = new JsonExtractor(gson);
 
-    public JsonExtractor jsonExtractor;
+    @Test
+    public void createJsonFieldAccessorTest() {
+        final String innerString = "example string";
+        final List<String> stringValues = new ArrayList<>();
+        stringValues.add(innerString);
 
-    @Before
-    public void init() {
-        jsonExtractor = new JsonExtractor(new Gson());
+        final DummyClass innerObject = new DummyClass();
+        innerObject.dummyVariable = "example";
+        final List<Object> objectValues = new ArrayList<>();
+        objectValues.add(innerObject);
+
+        final String innerObjectJson = gson.toJson(innerObject);
+        final String json = "{\"innerString\":\"" + innerString + "\",\"innerObject\":" + innerObjectJson + "}";
+
+        final StringHierarchicalField stringField = new StringHierarchicalField(Collections.emptyList(), "innerString", null, null);
+        final ObjectHierarchicalField objectField = new ObjectHierarchicalField(Collections.emptyList(), "innerObject", null, null, new TypeToken<DummyClass>() {}.getType());
+        final List<HierarchicalField> fields = Arrays.asList(stringField, objectField);
+
+        final JsonFieldAccessor accessor = jsonExtractor.createJsonFieldAccessor(fields, json);
+        Assert.assertEquals(innerString, accessor.get(stringField).get(0));
+        Assert.assertEquals(innerObject, accessor.get(objectField).get(0));
     }
-
-    // TODO add more test cases for new methods
 
     @Test
     public void getValuesFromJsonTest() {
@@ -71,5 +91,14 @@ public class JsonExtractorTest {
         final StringHierarchicalField notificationTypesField = new StringHierarchicalField(Arrays.asList(), null, null, null, "notificationTypes");
         final List<String> notificationTypeValues = jsonExtractor.getValuesFromConfig(notificationTypesField, commonDistributionConfig);
         Assert.assertEquals(notificationTypes, notificationTypeValues);
+    }
+
+    private class DummyClass extends Object {
+        public String dummyVariable;
+
+        @Override
+        public boolean equals(final Object obj) {
+            return dummyVariable != null && DummyClass.class.isAssignableFrom(obj.getClass()) && dummyVariable.equals(((DummyClass) obj).dummyVariable);
+        }
     }
 }

@@ -40,8 +40,8 @@ public class JsonFieldAccessor {
     private Map<ObjectHierarchicalField, List<Object>> objectMappings = new HashMap<>();
 
     public JsonFieldAccessor(final Map<HierarchicalField, List<Object>> fieldToDataMap) {
-        initializeSubMappings(fieldToDataMap, stringMappings, StringHierarchicalField.class);
-        initializeSubMappings(fieldToDataMap, objectMappings, ObjectHierarchicalField.class);
+        initializeSubMap(fieldToDataMap, stringMappings, StringHierarchicalField.class);
+        initializeSubMap(fieldToDataMap, objectMappings, ObjectHierarchicalField.class);
     }
 
     public List<String> get(final StringHierarchicalField field) {
@@ -93,7 +93,7 @@ public class JsonFieldAccessor {
         return Optional.empty();
     }
 
-    private <K, V> void initializeSubMappings(final Map<HierarchicalField, List<Object>> fieldToDataMap, Map<K, List<V>> subMap, final Class<K> targetKeyClass) {
+    private <K, V> void initializeSubMap(final Map<HierarchicalField, List<Object>> fieldToDataMap, Map<K, List<V>> subMap, final Class<K> targetKeyClass) {
         for (final Map.Entry<HierarchicalField, List<Object>> entry : fieldToDataMap.entrySet()) {
             final HierarchicalField key = entry.getKey();
             if (targetKeyClass.isAssignableFrom(key.getClass())) {
