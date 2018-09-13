@@ -6,6 +6,7 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.sql.Date;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -18,6 +19,9 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.common.model.TopicContent;
+import com.synopsys.integration.alert.common.workflow.processor.DefaultTopicFormatter;
+import com.synopsys.integration.alert.common.workflow.processor.DigestTopicFormatter;
+import com.synopsys.integration.alert.common.workflow.processor.TopicFormatter;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
@@ -30,6 +34,7 @@ public class BlackDuckPolicyTopicCollectorTest {
 
     private final Gson gson = new Gson();
     private final JsonExtractor jsonExtractor = new JsonExtractor(gson);
+    private final List<TopicFormatter> topicFormatterList = Arrays.asList(new DefaultTopicFormatter(), new DigestTopicFormatter());
 
     @Test
     public void insertRuleViolationClearedNotificationTest() throws Exception {
@@ -92,7 +97,7 @@ public class BlackDuckPolicyTopicCollectorTest {
         final ProjectSyncTask projectSyncTask = Mockito.mock(ProjectSyncTask.class);
         final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask);
         final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, null, null, null, provider);
-        return new BlackDuckPolicyTopicCollector(jsonExtractor, descriptor);
+        return new BlackDuckPolicyTopicCollector(jsonExtractor, descriptor, topicFormatterList);
     }
 
     private String getNotificationContentFromFile(final String notificationJsonFileName) throws Exception {
