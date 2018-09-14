@@ -127,6 +127,32 @@ public class JobProcessorTest {
 
     }
 
+    @Test
+    public void testJobProcessingProviderMismatch() throws Exception {
+        final String unknownProvider = "unknown_provider";
+        final FrequencyType frequencyType = FrequencyType.REAL_TIME;
+        final String policyContent = getNotificationContentFromFile("json/policyRuleClearedNotification.json");
+        final NotificationContent policyNotification = createNotification(unknownProvider, policyContent, NotificationType.RULE_VIOLATION);
+
+        final String vulnerabilityContent = getNotificationContentFromFile("json/vulnerabilityTest.json");
+        final NotificationContent vulnerabilityNotification = createNotification(unknownProvider, vulnerabilityContent, NotificationType.VULNERABILITY);
+
+        final List<NotificationContent> notificationContentList = Arrays.asList(policyNotification, vulnerabilityNotification);
+
+        final List<String> projectList = Arrays.asList("bad-project");
+        final List<String> notificationTypesLIst = Arrays.asList(NotificationType.RULE_VIOLATION.name(), NotificationType.VULNERABILITY.name());
+        final CommonDistributionConfig jobConfig = createCommonDistributionJob("channel_email", BlackDuckProvider.COMPONENT_NAME, frequencyType.name(), projectList, notificationTypesLIst, FormatType.DEFAULT);
+
+        final CommonDistributionConfigReader spiedReader = Mockito.spy(commonDistributionConfigReader);
+        Mockito.when(spiedReader.getPopulatedConfigs()).thenReturn(Arrays.asList(jobConfig));
+
+        final JobProcessor jobProcessor = new JobProcessor(providerDescriptors, spiedReader, notificationFilter);
+        final List<TopicContent> topicContentList = jobProcessor.processNotifications(frequencyType, notificationContentList);
+
+        assertTrue(topicContentList.isEmpty());
+
+    }
+
     private CommonDistributionConfig createCommonDistributionJob(final String distributionType, final String providerName, final String frequency,
         final List<String> configuredProjects, final List<String> notificationTypes, final FormatType formatType) {
         return new CommonDistributionConfig("1L", "1L", distributionType, "Test Distribution Job", providerName, frequency, "true", configuredProjects, notificationTypes, formatType.name());

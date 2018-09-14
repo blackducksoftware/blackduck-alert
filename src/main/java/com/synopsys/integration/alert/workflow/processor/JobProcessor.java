@@ -3,7 +3,6 @@ package com.synopsys.integration.alert.workflow.processor;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,7 +37,6 @@ public class JobProcessor {
     }
 
     public List<TopicContent> processNotifications(final FrequencyType frequency, final Collection<NotificationContent> notificationList) {
-        List<TopicContent> topicContentList = new LinkedList<>();
 
         final List<CommonDistributionConfig> unfilteredDistributionConfigs = commonDistributionConfigReader.getPopulatedConfigs();
         if (unfilteredDistributionConfigs.isEmpty()) {
@@ -51,19 +49,25 @@ public class JobProcessor {
             return Collections.emptyList();
         }
 
-        topicContentList = distributionConfigs.parallelStream().flatMap(jobConfiguration -> collectTopics(jobConfiguration, notificationList).stream()).collect(Collectors.toList());
+        final List<TopicContent> topicContentList = distributionConfigs.parallelStream().flatMap(jobConfiguration -> collectTopics(jobConfiguration, notificationList).stream()).collect(Collectors.toList());
 
         return topicContentList;
     }
 
     private Collection<NotificationContent> filterNotifications(final CommonDistributionConfig jobConfiguration, final Collection<NotificationContent> notificationCollection) {
-        Predicate<NotificationContent> providerFilter = (notificationContent) -> jobConfiguration.getProviderName().equals(notificationContent.getProvider());
-        Collection<NotificationContent> providerNotifications = applyFilter(notificationCollection, providerFilter);
+        final Predicate<NotificationContent> providerFilter = (notificationContent) -> jobConfiguration.getProviderName().equals(notificationContent.getProvider());
+        final Collection<NotificationContent> providerNotifications = applyFilter(notificationCollection, providerFilter);
         final Collection<NotificationContent> filteredNotificationList = notificationFilter.extractApplicableNotifications(jobConfiguration, providerNotifications);
         return filteredNotificationList;
     }
 
     private List<TopicContent> collectTopics(final CommonDistributionConfig jobConfiguration, final Collection<NotificationContent> notificationCollection) {
+
+        final Collection<NotificationContent> notificationsForJob = filterNotifications(jobConfiguration, notificationCollection);
+        if (notificationsForJob.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         final FormatType formatType = FormatType.valueOf(jobConfiguration.getFormatType());
         final Map<String, TopicCollector> collectorMap = new HashMap<>();
 
@@ -75,15 +79,12 @@ public class JobProcessor {
                 }
             }
         }
-        final Collection<NotificationContent> notificationsForJob = filterNotifications(jobConfiguration, notificationCollection);
-        notificationsForJob.forEach(notificationContent -> {
-            String notificationType = notificationContent.getNotificationType();
-            if(collectorMap.containsKey(notificationType)) {
-                collectorMap.get(notificationType).insert(notificationContent);
-            }
-        });
 
-        return collectorMap.values().stream().flatMap(collector -> collector.collect(formatType).stream()).collect(Collectors.toList());
+        notificationsForJob.parallelStream()
+            .filter(notificationContent -> collectorMap.containsKey(notificationContent.getNotificationType()))
+            .forEach(notificationContent -> collectorMap.get(notificationContent.getNotificationType()).insert(notificationContent));
+
+        return collectorMap.values().parallelStream().flatMap(collector -> collector.collect(formatType).stream()).collect(Collectors.toList());
     }
 
     //TODO notificationFilter also has this should it be made common?
