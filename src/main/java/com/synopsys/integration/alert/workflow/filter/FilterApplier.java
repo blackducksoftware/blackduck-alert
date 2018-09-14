@@ -21,3 +21,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package com.synopsys.integration.alert.workflow.filter;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Component;
+
+@Component
+public class FilterApplier {
+
+    // TODO does it make sense to have a Component that is dedicated to such a generic operation?
+    public final <T> List<T> applyFilter(final Collection<T> notificationList, final Predicate<T> filter) {
+        return notificationList
+                   .parallelStream()
+                   .filter(filter)
+                   .collect(Collectors.toList());
+    }
+}

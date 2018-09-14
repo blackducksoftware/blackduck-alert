@@ -53,12 +53,14 @@ import com.synopsys.integration.alert.workflow.filter.builder.OrFieldFilterBuild
 @Component
 public class NotificationFilter {
     private final CommonDistributionConfigReader commonDistributionConfigReader;
+    private final FilterApplier filterApplier;
     private final JsonExtractor jsonExtractor;
     private final List<ProviderDescriptor> providerDescriptors;
 
     @Autowired
-    public NotificationFilter(final JsonExtractor jsonExtractor, final List<ProviderDescriptor> providerDescriptors, final CommonDistributionConfigReader commonDistributionConfigReader) {
+    public NotificationFilter(final JsonExtractor jsonExtractor, final FilterApplier filterApplier, final List<ProviderDescriptor> providerDescriptors, final CommonDistributionConfigReader commonDistributionConfigReader) {
         this.jsonExtractor = jsonExtractor;
+        this.filterApplier = filterApplier;
         this.providerDescriptors = providerDescriptors;
         this.commonDistributionConfigReader = commonDistributionConfigReader;
     }
@@ -74,7 +76,7 @@ public class NotificationFilter {
         }
 
         final Predicate<CommonDistributionConfig> frequencyFilter = config -> frequency.name().equals(config.getFrequency());
-        final List<CommonDistributionConfig> distributionConfigs = applyFilter(unfilteredDistributionConfigs, frequencyFilter);
+        final List<CommonDistributionConfig> distributionConfigs = filterApplier.applyFilter(unfilteredDistributionConfigs, frequencyFilter);
         if (distributionConfigs.isEmpty()) {
             return Collections.emptyList();
         }
@@ -92,10 +94,9 @@ public class NotificationFilter {
             final Set<StringHierarchicalField> filterableFields = getFilterableFieldsByNotificationType(type, providerContentTypes);
             final Predicate<NotificationContent> filterForNotificationType = createFilter(filterableFields, distributionConfigs);
 
-            final List<NotificationContent> matchingNotifications = applyFilter(groupedNotifications, filterForNotificationType);
+            final List<NotificationContent> matchingNotifications = filterApplier.applyFilter(groupedNotifications, filterForNotificationType);
             filteredNotifications.addAll(matchingNotifications);
         });
-
         return filteredNotifications
                    .parallelStream()
                    .sorted(Comparator.comparing(NotificationContent::getCreatedAt))
@@ -107,8 +108,7 @@ public class NotificationFilter {
      * @return A java.util.List of sorted (by createdAt) NotificationContent objects.
      */
     public Collection<NotificationContent> extractApplicableNotifications(final Set<ProviderContentType> providerContentTypes, final CommonDistributionConfig jobConfiguration, final Collection<NotificationContent> notificationList) {
-
-        final Set<String> configuredNotificationTypes = jobConfiguration.getNotificationTypes().stream().collect(Collectors.toSet());
+        final Set<String> configuredNotificationTypes = new HashSet<>(jobConfiguration.getNotificationTypes());
         if (configuredNotificationTypes.isEmpty()) {
             return Collections.emptyList();
         }
@@ -120,10 +120,9 @@ public class NotificationFilter {
             final Set<StringHierarchicalField> filterableFields = getFilterableFieldsByNotificationType(type, providerContentTypes);
             final Predicate<NotificationContent> filterForNotificationType = createJobFilter(filterableFields, jobConfiguration);
 
-            final List<NotificationContent> matchingNotifications = applyFilter(groupedNotifications, filterForNotificationType);
+            final List<NotificationContent> matchingNotifications = filterApplier.applyFilter(groupedNotifications, filterForNotificationType);
             filteredNotifications.addAll(matchingNotifications);
         });
-
         return filteredNotifications
                    .parallelStream()
                    .sorted(Comparator.comparing(NotificationContent::getCreatedAt))
@@ -166,17 +165,11 @@ public class NotificationFilter {
     }
 
     private Predicate<NotificationContent> createFilter(final Collection<StringHierarchicalField> filterableFields, final Collection<CommonDistributionConfig> distributionConfigs) {
-        JsonFilterBuilder filterBuilder = DefaultFilterBuilders.ALWAYS_TRUE;
+        Predicate<NotificationContent> orPredicate = DefaultFilterBuilders.ALWAYS_FALSE.buildPredicate();
         for (final CommonDistributionConfig config : distributionConfigs) {
-            for (final StringHierarchicalField field : filterableFields) {
-                if (shouldFilter(config)) {
-                    final Collection<String> valuesFromField = jsonExtractor.getValuesFromConfig(field, config);
-                    final JsonFilterBuilder fieldFilter = createFilterBuilderForAllValues(field, valuesFromField);
-                    filterBuilder = new AndFieldFilterBuilder(filterBuilder, fieldFilter);
-                }
-            }
+            orPredicate = orPredicate.or(createJobFilter(filterableFields, config));
         }
-        return filterBuilder.buildPredicate();
+        return orPredicate;
     }
 
     private Predicate<NotificationContent> createJobFilter(final Collection<StringHierarchicalField> filterableFields, final CommonDistributionConfig config) {
@@ -193,19 +186,11 @@ public class NotificationFilter {
 
     private JsonFilterBuilder createFilterBuilderForAllValues(final StringHierarchicalField field, final Collection<String> applicableValues) {
         JsonFilterBuilder filterBuilderForAllValues = DefaultFilterBuilders.ALWAYS_FALSE;
-
         for (final String value : applicableValues) {
             final JsonFilterBuilder filterBuilderForValue = new JsonFieldFilterBuilder(jsonExtractor, field, value);
             filterBuilderForAllValues = new OrFieldFilterBuilder(filterBuilderForAllValues, filterBuilderForValue);
         }
         return filterBuilderForAllValues;
-    }
-
-    private <T> List<T> applyFilter(final Collection<T> notificationList, final Predicate<T> filter) {
-        return notificationList
-                   .parallelStream()
-                   .filter(filter)
-                   .collect(Collectors.toList());
     }
 
     // FIXME this is extremely specific and we need a way to avoid it
