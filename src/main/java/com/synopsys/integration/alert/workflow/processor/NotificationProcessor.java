@@ -24,7 +24,6 @@
 package com.synopsys.integration.alert.workflow.processor;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,26 +35,25 @@ import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.model.TopicContent;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.workflow.filter.NotificationFilter;
-import com.synopsys.integration.alert.workflow.processor.collapse.TopicCompressor;
 
 @Component
 public class NotificationProcessor {
+    private final JobProcessor jobProcessor;
     private final NotificationFilter notificationFilter;
     private final NotificationToChannelEventConverter notificationToEventConverter;
-    private final TopicCompressor topicCompressor;
 
     @Autowired
-    public NotificationProcessor(final NotificationFilter notificationFilter, final NotificationToChannelEventConverter notificationToEventConverter, final TopicCompressor topicCompressor) {
+    public NotificationProcessor(final NotificationFilter notificationFilter, final NotificationToChannelEventConverter notificationToEventConverter, final JobProcessor jobProcessor) {
         this.notificationFilter = notificationFilter;
         this.notificationToEventConverter = notificationToEventConverter;
-        this.topicCompressor = topicCompressor;
+        this.jobProcessor = jobProcessor;
     }
 
     public List<ChannelEvent> processNotifications(final FrequencyType frequencyType, final List<NotificationContent> notificationList) {
         final Collection<NotificationContent> filteredNotifications = notificationFilter.extractApplicableNotifications(frequencyType, notificationList);
         // TODO convert notification content to topic contents.  Provider will be responsible for this.
         // TODO only collapse if the format is of type DIGEST.
-        final List<TopicContent> topicContentList = topicCompressor.collapseTopics(Collections.emptyList());
+        final List<TopicContent> topicContentList = jobProcessor.processNotifications(frequencyType, notificationList);
 
         final List<ChannelEvent> notificationEvents = notificationToEventConverter.convertToEvents(filteredNotifications);
         return notificationEvents;
