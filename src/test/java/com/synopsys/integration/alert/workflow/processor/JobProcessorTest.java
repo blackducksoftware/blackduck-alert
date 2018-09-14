@@ -39,6 +39,7 @@ import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
+import com.synopsys.integration.alert.workflow.filter.FilterApplier;
 import com.synopsys.integration.alert.workflow.filter.NotificationFilter;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.test.annotation.IntegrationTest;
@@ -57,6 +58,8 @@ public class JobProcessorTest {
     @Autowired
     private CommonDistributionConfigReader commonDistributionConfigReader;
     @Autowired
+    private FilterApplier filterApplier;
+    @Autowired
     private NotificationFilter notificationFilter;
 
     @Test
@@ -69,7 +72,7 @@ public class JobProcessorTest {
         final NotificationContent vulnerabilityNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, vulnerabilityContent, NotificationType.VULNERABILITY);
 
         final List<NotificationContent> notificationContentList = Arrays.asList(policyNotification, vulnerabilityNotification);
-        final JobProcessor jobProcessor = new JobProcessor(providerDescriptors, commonDistributionConfigReader, notificationFilter);
+        final JobProcessor jobProcessor = new JobProcessor(providerDescriptors, commonDistributionConfigReader, filterApplier, notificationFilter);
         final List<TopicContent> topicContentList = jobProcessor.processNotifications(frequencyType, notificationContentList);
 
         assertTrue(topicContentList.isEmpty());
@@ -94,7 +97,7 @@ public class JobProcessorTest {
         final CommonDistributionConfigReader spiedReader = Mockito.spy(commonDistributionConfigReader);
         Mockito.when(spiedReader.getPopulatedConfigs()).thenReturn(Arrays.asList(jobConfig));
 
-        final JobProcessor jobProcessor = new JobProcessor(providerDescriptors, spiedReader, notificationFilter);
+        final JobProcessor jobProcessor = new JobProcessor(providerDescriptors, spiedReader, filterApplier, notificationFilter);
         final List<TopicContent> topicContentList = jobProcessor.processNotifications(frequencyType, notificationContentList);
 
         assertFalse(topicContentList.isEmpty());
@@ -120,7 +123,7 @@ public class JobProcessorTest {
         final CommonDistributionConfigReader spiedReader = Mockito.spy(commonDistributionConfigReader);
         Mockito.when(spiedReader.getPopulatedConfigs()).thenReturn(Arrays.asList(jobConfig));
 
-        final JobProcessor jobProcessor = new JobProcessor(providerDescriptors, spiedReader, notificationFilter);
+        final JobProcessor jobProcessor = new JobProcessor(providerDescriptors, spiedReader, filterApplier, notificationFilter);
         final List<TopicContent> topicContentList = jobProcessor.processNotifications(frequencyType, notificationContentList);
 
         assertTrue(topicContentList.isEmpty());
@@ -146,7 +149,7 @@ public class JobProcessorTest {
         final CommonDistributionConfigReader spiedReader = Mockito.spy(commonDistributionConfigReader);
         Mockito.when(spiedReader.getPopulatedConfigs()).thenReturn(Arrays.asList(jobConfig));
 
-        final JobProcessor jobProcessor = new JobProcessor(providerDescriptors, spiedReader, notificationFilter);
+        final JobProcessor jobProcessor = new JobProcessor(providerDescriptors, spiedReader, filterApplier, notificationFilter);
         final List<TopicContent> topicContentList = jobProcessor.processNotifications(frequencyType, notificationContentList);
 
         assertTrue(topicContentList.isEmpty());
@@ -172,7 +175,7 @@ public class JobProcessorTest {
         final CommonDistributionConfigReader spiedReader = Mockito.spy(commonDistributionConfigReader);
         Mockito.when(spiedReader.getPopulatedConfigs()).thenReturn(Arrays.asList(jobConfig));
 
-        final JobProcessor jobProcessor = new JobProcessor(providerDescriptors, spiedReader, notificationFilter);
+        final JobProcessor jobProcessor = new JobProcessor(providerDescriptors, spiedReader, filterApplier, notificationFilter);
         final List<TopicContent> topicContentList = jobProcessor.processNotifications(frequencyType, notificationContentList);
 
         assertTrue(topicContentList.isEmpty());

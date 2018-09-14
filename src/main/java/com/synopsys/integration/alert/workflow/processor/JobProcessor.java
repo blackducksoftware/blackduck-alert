@@ -44,19 +44,21 @@ import com.synopsys.integration.alert.common.model.TopicContent;
 import com.synopsys.integration.alert.common.workflow.processor.TopicCollector;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
+import com.synopsys.integration.alert.workflow.filter.FilterApplier;
 import com.synopsys.integration.alert.workflow.filter.NotificationFilter;
 
 @Component
 public class JobProcessor {
-
     private final CommonDistributionConfigReader commonDistributionConfigReader;
     private final List<ProviderDescriptor> providerDescriptors;
+    private final FilterApplier filterApplier;
     private final NotificationFilter notificationFilter;
 
     @Autowired
-    public JobProcessor(final List<ProviderDescriptor> providerDescriptors, final CommonDistributionConfigReader commonDistributionConfigReader, final NotificationFilter notificationFilter) {
+    public JobProcessor(final List<ProviderDescriptor> providerDescriptors, final CommonDistributionConfigReader commonDistributionConfigReader, final FilterApplier filterApplier, final NotificationFilter notificationFilter) {
         this.providerDescriptors = providerDescriptors;
         this.commonDistributionConfigReader = commonDistributionConfigReader;
+        this.filterApplier = filterApplier;
         this.notificationFilter = notificationFilter;
     }
 
@@ -68,7 +70,7 @@ public class JobProcessor {
         }
 
         final Predicate<CommonDistributionConfig> frequencyFilter = config -> frequency.name().equals(config.getFrequency());
-        final List<CommonDistributionConfig> distributionConfigs = applyFilter(unfilteredDistributionConfigs, frequencyFilter);
+        final List<CommonDistributionConfig> distributionConfigs = filterApplier.applyFilter(unfilteredDistributionConfigs, frequencyFilter);
         if (distributionConfigs.isEmpty()) {
             return Collections.emptyList();
         }
@@ -80,7 +82,7 @@ public class JobProcessor {
 
     private Collection<NotificationContent> filterNotifications(final ProviderDescriptor providerDescriptor, final CommonDistributionConfig jobConfiguration, final Collection<NotificationContent> notificationCollection) {
         final Predicate<NotificationContent> providerFilter = (notificationContent) -> jobConfiguration.getProviderName().equals(notificationContent.getProvider());
-        final Collection<NotificationContent> providerNotifications = applyFilter(notificationCollection, providerFilter);
+        final Collection<NotificationContent> providerNotifications = filterApplier.applyFilter(notificationCollection, providerFilter);
         final Collection<NotificationContent> filteredNotificationList = notificationFilter.extractApplicableNotifications(providerDescriptor.getProviderContentTypes(), jobConfiguration, providerNotifications);
         return filteredNotificationList;
     }
@@ -114,13 +116,4 @@ public class JobProcessor {
             return collectorMap.values().parallelStream().flatMap(collector -> collector.collect(formatType).stream()).collect(Collectors.toList());
         }
     }
-
-    //TODO notificationFilter also has this should it be made common?
-    private <T> List<T> applyFilter(final Collection<T> notificationList, final Predicate<T> filter) {
-        return notificationList
-                   .parallelStream()
-                   .filter(filter)
-                   .collect(Collectors.toList());
-    }
-
 }
