@@ -23,9 +23,9 @@
  */
 package com.synopsys.integration.alert.channel.event;
 
-import com.synopsys.integration.alert.common.event.AlertEvent;
+import com.synopsys.integration.alert.common.event.RawContentEvent;
 
-public class ChannelEvent extends AlertEvent {
+public class ChannelEvent extends RawContentEvent {
 
     private final Long commonDistributionConfigId;
 

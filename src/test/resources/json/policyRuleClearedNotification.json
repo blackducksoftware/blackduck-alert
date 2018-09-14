@@ -1,0 +1,45 @@
+{
+  "content": {
+    "projectVersion": "https://a-hub-server.blackduck.com/api/projects/d9205017-4630-4f0c-8127-170e1db03d6f/versions/ec2a759d-e27d-4445-adb2-3176f8a78d24",
+    "projectName": "example",
+    "projectVersionName": "1",
+    "componentVersionStatuses": [
+      {
+        "componentVersion": "https://a-hub-server.blackduck.com/api/components/18dbecb7-a3b5-418b-9af1-44bf61ae0319/versions/3ef95202-5b60-4a62-ab07-02740212fd96",
+        "componentName": "Apache Commons FileUpload",
+        "componentVersionName": "1.2.1",
+        "bomComponentVersionPolicyStatus": "https://a-hub-server.blackduck.com/api/projects/d9205017-4630-4f0c-8127-170e1db03d6f/versions/ec2a759d-e27d-4445-adb2-3176f8a78d24/components/18dbecb7-a3b5-418b-9af1-44bf61ae0319/versions/3ef95202-5b60-4a62-ab07-02740212fd96/policy-status",
+        "componentIssueLink": "https://a-hub-server.blackduck.com/api/projects/d9205017-4630-4f0c-8127-170e1db03d6f/versions/ec2a759d-e27d-4445-adb2-3176f8a78d24/components/18dbecb7-a3b5-418b-9af1-44bf61ae0319/component-versions/3ef95202-5b60-4a62-ab07-02740212fd96/issues",
+        "policies": [
+          "https://a-hub-server.blackduck.com/api/policy-rules/fedc4472-34b4-4c12-88bb-9fa63bae40a3",
+          "https://a-hub-server.blackduck.com/api/policy-rules/0b602e42-e339-46ab-8061-b2219088f233",
+          "https://a-hub-server.blackduck.com/api/policy-rules/9f34466a-a088-45a6-8048-35f96fcb989f"
+        ],
+        "bomComponent": "https://a-hub-server.blackduck.com/api/projects/d9205017-4630-4f0c-8127-170e1db03d6f/versions/ec2a759d-e27d-4445-adb2-3176f8a78d24/components/18dbecb7-a3b5-418b-9af1-44bf61ae0319/versions/3ef95202-5b60-4a62-ab07-02740212fd96"
+      }
+    ],
+    "policyInfos": [
+      {
+        "policy": "https://a-hub-server.blackduck.com/api/policy-rules/9f34466a-a088-45a6-8048-35f96fcb989f",
+        "policyName": "No Apache Commons File Upload"
+      },
+      {
+        "policy": "https://a-hub-server.blackduck.com/api/policy-rules/0b602e42-e339-46ab-8061-b2219088f233",
+        "policyName": "No Apache Commons File Upload 1.2.1"
+      },
+      {
+        "policy": "https://a-hub-server.blackduck.com/api/policy-rules/fedc4472-34b4-4c12-88bb-9fa63bae40a3",
+        "policyName": "No Commons FileUpload 1.2.1"
+      }
+    ]
+  },
+  "contentType": "application/json",
+  "type": "RULE_VIOLATION_CLEARED",
+  "createdAt": "2018-09-10T17:00:16.982Z",
+  "_meta": {
+    "allow": [
+      "GET"
+    ],
+    "href": "https://a-hub-server.blackduck.com/api/notifications/47a04c09-33fc-4c83-84ee-d13a42f487ad"
+  }
+}

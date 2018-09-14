@@ -21,19 +21,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.enumeration;
+package com.synopsys.integration.alert.common.model;
 
-public enum InternalEventTypes {
-    DB_STORE_EVENT("DB_STORE_EVENT"), REAL_TIME_EVENT("REAL_TIME_EVENT");
+import java.util.List;
 
-    private final String destination;
+import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 
-    InternalEventTypes(final String destination) {
-        this.destination = destination;
+public class CategoryItem {
+
+    private final CategoryKey categoryKey;
+    private final ItemOperation operation;
+    private final List<LinkableItem> itemList;
+
+    public CategoryItem(final CategoryKey categoryKey, final ItemOperation operation, final List<LinkableItem> itemList) {
+        this.categoryKey = categoryKey;
+        this.operation = operation;
+        this.itemList = itemList;
     }
 
-    public String getDestination() {
-        return destination;
+    public CategoryKey getCategoryKey() {
+        return categoryKey;
     }
 
+    public ItemOperation getOperation() {
+        return operation;
+    }
+
+    public List<LinkableItem> getItemList() {
+        return itemList;
+    }
 }

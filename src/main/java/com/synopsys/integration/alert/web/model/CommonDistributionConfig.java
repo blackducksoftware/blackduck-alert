@@ -36,13 +36,13 @@ public class CommonDistributionConfig extends Config {
     private List<String> notificationTypes;
     private String lastRan;
     private String status;
+    private String formatType;
 
     public CommonDistributionConfig() {
     }
 
     public CommonDistributionConfig(final String id, final String distributionConfigId, final String distributionType, final String name, final String providerName, final String frequency, final String filterByProject,
-            final List<String> configuredProjects,
-            final List<String> notificationTypes) {
+        final List<String> configuredProjects, final List<String> notificationTypes, final String formatType) {
         super(id);
         this.distributionConfigId = distributionConfigId;
         this.distributionType = distributionType;
@@ -52,6 +52,7 @@ public class CommonDistributionConfig extends Config {
         this.filterByProject = filterByProject;
         this.configuredProjects = configuredProjects;
         this.notificationTypes = notificationTypes;
+        this.formatType = formatType;
     }
 
     public String getDistributionConfigId() {
@@ -66,8 +67,16 @@ public class CommonDistributionConfig extends Config {
         return distributionType;
     }
 
+    public void setDistributionType(final String distributionType) {
+        this.distributionType = distributionType;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
     }
 
     public String getProviderName() {
@@ -82,8 +91,16 @@ public class CommonDistributionConfig extends Config {
         return frequency;
     }
 
+    public void setFrequency(final String frequency) {
+        this.frequency = frequency;
+    }
+
     public String getFilterByProject() {
         return filterByProject;
+    }
+
+    public void setFilterByProject(final String filterByProject) {
+        this.filterByProject = filterByProject;
     }
 
     public List<String> getConfiguredProjects() {
@@ -118,19 +135,11 @@ public class CommonDistributionConfig extends Config {
         this.status = status;
     }
 
-    public void setDistributionType(final String distributionType) {
-        this.distributionType = distributionType;
+    public String getFormatType() {
+        return formatType;
     }
 
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public void setFrequency(final String frequency) {
-        this.frequency = frequency;
-    }
-
-    public void setFilterByProject(final String filterByProject) {
-        this.filterByProject = filterByProject;
+    public void setFormatType(final String formatType) {
+        this.formatType = formatType;
     }
 }

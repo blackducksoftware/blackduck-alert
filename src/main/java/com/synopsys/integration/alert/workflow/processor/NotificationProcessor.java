@@ -32,22 +32,29 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.channel.event.NotificationToChannelEventConverter;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.model.TopicContent;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.workflow.filter.NotificationFilter;
 
 @Component
 public class NotificationProcessor {
+    private final JobProcessor jobProcessor;
     private final NotificationFilter notificationFilter;
     private final NotificationToChannelEventConverter notificationToEventConverter;
 
     @Autowired
-    public NotificationProcessor(final NotificationFilter notificationFilter, final NotificationToChannelEventConverter notificationToEventConverter) {
+    public NotificationProcessor(final NotificationFilter notificationFilter, final NotificationToChannelEventConverter notificationToEventConverter, final JobProcessor jobProcessor) {
         this.notificationFilter = notificationFilter;
         this.notificationToEventConverter = notificationToEventConverter;
+        this.jobProcessor = jobProcessor;
     }
 
     public List<ChannelEvent> processNotifications(final FrequencyType frequencyType, final List<NotificationContent> notificationList) {
         final Collection<NotificationContent> filteredNotifications = notificationFilter.extractApplicableNotifications(frequencyType, notificationList);
+        // TODO convert notification content to topic contents.  Provider will be responsible for this.
+        // TODO only collapse if the format is of type DIGEST.
+        final List<TopicContent> topicContentList = jobProcessor.processNotifications(frequencyType, notificationList);
+
         final List<ChannelEvent> notificationEvents = notificationToEventConverter.convertToEvents(filteredNotifications);
         return notificationEvents;
     }
