@@ -23,29 +23,33 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
+import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.workflow.processor.TopicCollector;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyTopicCollector;
+import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckVulnerabilityTopicCollector;
 
 @Component
-public class BlackDuckDescriptor extends ProviderDescriptor {
+public class BlackDuckTopicCollectorFactory {
 
-    private final BlackDuckTopicCollectorFactory topicCollectorFactory;
+    private final ObjectFactory<BlackDuckVulnerabilityTopicCollector> vulnerabilityTopicCollectorFactory;
+    private final ObjectFactory<BlackDuckPolicyTopicCollector> policyTopicCollectorFactory;
 
     @Autowired
-    public BlackDuckDescriptor(final BlackDuckProviderRestApi providerRestApi, final BlackDuckProviderUIConfig blackDuckProviderUIConfig, final BlackDuckDistributionRestApi blackDuckDistributionRestApi,
-        final BlackDuckDistributionUIConfig blackDuckDistributionUIConfig, final BlackDuckProvider provider, final BlackDuckTopicCollectorFactory topicCollectorFactory) {
-        super(providerRestApi, blackDuckProviderUIConfig, blackDuckDistributionRestApi, blackDuckDistributionUIConfig, provider);
-        this.topicCollectorFactory = topicCollectorFactory;
+    public BlackDuckTopicCollectorFactory(final ObjectFactory<BlackDuckVulnerabilityTopicCollector> vulnerabilityTopicCollectorFactory, final ObjectFactory<BlackDuckPolicyTopicCollector> policyTopicCollectorFactory) {
+        this.vulnerabilityTopicCollectorFactory = vulnerabilityTopicCollectorFactory;
+        this.policyTopicCollectorFactory = policyTopicCollectorFactory;
     }
 
-    @Override
     public Set<TopicCollector> createTopicCollectors() {
-        return topicCollectorFactory.createTopicCollectors();
+        final Set<TopicCollector> collectorSet = new HashSet<>();
+        collectorSet.add(vulnerabilityTopicCollectorFactory.getObject());
+        collectorSet.add(policyTopicCollectorFactory.getObject());
+        return collectorSet;
     }
 }
