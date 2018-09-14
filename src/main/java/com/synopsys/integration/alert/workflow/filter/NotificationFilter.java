@@ -106,14 +106,13 @@ public class NotificationFilter {
      * Creates a java.util.Collection of NotificationContent objects that are applicable for at least one Distribution Job.
      * @return A java.util.List of sorted (by createdAt) NotificationContent objects.
      */
-    public Collection<NotificationContent> extractApplicableNotifications(final CommonDistributionConfig jobConfiguration, final Collection<NotificationContent> notificationList) {
+    public Collection<NotificationContent> extractApplicableNotifications(final Set<ProviderContentType> providerContentTypes, final CommonDistributionConfig jobConfiguration, final Collection<NotificationContent> notificationList) {
 
         final Set<String> configuredNotificationTypes = jobConfiguration.getNotificationTypes().stream().collect(Collectors.toSet());
         if (configuredNotificationTypes.isEmpty()) {
             return Collections.emptyList();
         }
 
-        final List<ProviderContentType> providerContentTypes = getProviderContentTypes();
         final Map<String, List<NotificationContent>> notificationsByType = getNotificationsByType(configuredNotificationTypes, notificationList);
 
         final Set<NotificationContent> filteredNotifications = new HashSet<>();
@@ -150,6 +149,7 @@ public class NotificationFilter {
         return notificationsByType;
     }
 
+    // TODO since this is used with the Job Processor we don't need to iterate again can be removed
     private List<ProviderContentType> getProviderContentTypes() {
         return providerDescriptors
                    .parallelStream()
@@ -157,7 +157,7 @@ public class NotificationFilter {
                    .collect(Collectors.toList());
     }
 
-    private Set<StringHierarchicalField> getFilterableFieldsByNotificationType(final String notificationType, final List<ProviderContentType> contentTypes) {
+    private Set<StringHierarchicalField> getFilterableFieldsByNotificationType(final String notificationType, final Collection<ProviderContentType> contentTypes) {
         return contentTypes
                    .parallelStream()
                    .filter(contentType -> notificationType.equals(contentType.getNotificationType()))
