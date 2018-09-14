@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.field.HierarchicalField;
 import com.synopsys.integration.alert.common.field.ObjectHierarchicalField;
 import com.synopsys.integration.alert.common.field.StringHierarchicalField;
@@ -44,10 +45,9 @@ import com.synopsys.integration.alert.common.model.TopicContent;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.workflow.filter.JsonExtractor;
+import com.synopsys.integration.alert.workflow.filter.JsonFieldAccessor;
 
 public abstract class TopicCollector {
-    private static final String DEFAULT_VALUE = "unknown";
-
     private final JsonExtractor jsonExtractor;
     private final ProviderDescriptor providerDescriptor;
     private final Collection<ProviderContentType> contentTypes;
@@ -64,7 +64,15 @@ public abstract class TopicCollector {
         this.collectedContent = new ArrayList<>();
     }
 
-    public abstract void insert(final NotificationContent notification);
+    public void insert(final NotificationContent notification) {
+        final List<HierarchicalField> notificationFields = getFieldsForNotificationType(notification.getNotificationType());
+        final JsonFieldAccessor jsonFieldAccessor = createJsonAccessor(notificationFields, notification.getContent());
+        final List<TopicContent> contents = getContentsOrCreateIfDoesNotExist(jsonFieldAccessor, notificationFields);
+        for (final TopicContent content : contents) {
+            addCategoryItems(content.getCategoryItemList(), jsonFieldAccessor, notificationFields, notification.getNotificationType());
+            addContent(content);
+        }
+    }
 
     public List<TopicContent> collect(final FormatType format) {
         if (topicFormatterMap.containsKey(format)) {
@@ -75,130 +83,23 @@ public abstract class TopicCollector {
         }
     }
 
+    // TODO implementing classes are components, so the data needs to be cleared after it is collected for the final time
+    public void clearCollectedContent() {
+        collectedContent.clear();
+    }
+
+    protected abstract void addCategoryItems(final List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<HierarchicalField> notificationFields, final String notificationType);
+
     protected final List<TopicContent> getCopyOfCollectedContent() {
         return Collections.unmodifiableList(collectedContent);
     }
 
-    protected final void addContent(final TopicContent content) {
-        for (final TopicContent existingContent : collectedContent) {
-            if (existingContent.equals(content)) {
-                // No need to add content
-                return;
-            }
-        }
-        collectedContent.add(content);
+    protected final List<StringHierarchicalField> getStringFields(final List<HierarchicalField> fields) {
+        return getTypedFields(fields, StringHierarchicalField.class);
     }
 
-    protected final List<LinkableItem> createLinkableItemList(final LinkableItem... items) {
-        final List<LinkableItem> list = new ArrayList<>();
-        if (items != null) {
-            for (final LinkableItem item : items) {
-                list.add(item);
-            }
-        }
-        return list;
-    }
-
-    // TODO think about how to maintain order
-    protected final List<TopicContent> getContentsOrCreateIfDoesNotExist(final NotificationContent notification) {
-        final List<HierarchicalField> notificationFields = getFieldsForNotificationType(notification.getNotificationType());
-        final String notificationJson = notification.getContent();
-
-        final List<TopicContent> topicContentsForNotifications = new ArrayList<>();
-
-        final List<LinkableItem> topicItems = getTopicItems(notificationFields, notificationJson);
-        final List<LinkableItem> subTopicItems = getSubTopicItems(notificationFields, notificationJson);
-        // for the number of topics assume there is an equal number of sub topics and the order is the same.
-        // this seems fragile at the moment.
-        final int count = topicItems.size();
-        for (int index = 0; index < count; index++) {
-            final LinkableItem topicItem = topicItems.get(index);
-            final LinkableItem subTopic = subTopicItems.get(index);
-
-            final TopicContent foundContent = findTopicContent(topicItem.getName(), topicItem.getValue(), subTopic.getName(), subTopic.getValue());
-            if (foundContent != null) {
-                topicContentsForNotifications.add(foundContent);
-            } else {
-                final List<CategoryItem> categoryList = new ArrayList<>();
-                topicContentsForNotifications.add(new TopicContent(topicItem.getName(), topicItem.getValue(), topicItem.getUrl().orElse(null), subTopic, categoryList));
-            }
-        }
-        return topicContentsForNotifications;
-    }
-
-    protected final List<LinkableItem> getTopicItems(final List<HierarchicalField> notificationFields, final String notificationJson) {
-        return getTopicItems(notificationFields, notificationJson, FieldContentIdentifier.TOPIC, FieldContentIdentifier.TOPIC_URL);
-    }
-
-    protected final List<LinkableItem> getSubTopicItems(final List<HierarchicalField> notificationFields, final String notificationJson) {
-        // TODO is SubTopic something we should require? If not then we should not use the same method to get it.
-        return getTopicItems(notificationFields, notificationJson, FieldContentIdentifier.SUB_TOPIC, FieldContentIdentifier.SUB_TOPIC_URL);
-    }
-
-    protected final List<LinkableItem> getTopicItems(final List<HierarchicalField> notificationFields, final String notificationJson, final FieldContentIdentifier fieldContentIdentifier,
-        final FieldContentIdentifier urlFieldContentIdentifier) {
-        final Optional<HierarchicalField> optionalSubTopicField = getFieldForContentIdentifier(notificationFields, fieldContentIdentifier);
-        if (!optionalSubTopicField.isPresent()) {
-            throw new IllegalStateException(String.format("The notification provided did not contain the required field: ", fieldContentIdentifier));
-        }
-        final Optional<HierarchicalField> optionalSubTopicUrlField = getFieldForContentIdentifier(notificationFields, urlFieldContentIdentifier);
-
-        // These will always be String fields
-        final StringHierarchicalField subTopicField = (StringHierarchicalField) optionalSubTopicField.get();
-        final StringHierarchicalField subTopicUrlField = (StringHierarchicalField) optionalSubTopicUrlField.orElse(null);
-
-        return jsonExtractor.getLinkableItemsFromJson(subTopicField, subTopicUrlField, notificationJson);
-    }
-
-    protected final boolean hasSubTopic(final List<HierarchicalField> notificationFields) {
-        return notificationFields
-                   .stream()
-                   .anyMatch(field -> FieldContentIdentifier.SUB_TOPIC.equals(field.getContentIdentifier()));
-    }
-
-    protected final Optional<String> getSubTopicName(final List<HierarchicalField> notificationFields) {
-        final Optional<HierarchicalField> subTopicField = getFieldForContentIdentifier(notificationFields, FieldContentIdentifier.SUB_TOPIC);
-        if (subTopicField.isPresent()) {
-            return Optional.of(subTopicField.get().getFieldKey());
-        }
-        return Optional.empty();
-    }
-
-    protected final Optional<String> getSubTopicValue(final List<HierarchicalField> notificationFields, final String notificationJson) {
-        final Optional<HierarchicalField> subTopicField = getFieldForContentIdentifier(notificationFields, FieldContentIdentifier.SUB_TOPIC);
-        return getOptionalFieldValue(subTopicField, notificationJson);
-    }
-
-    protected final Optional<String> getSubTopicUrl(final List<HierarchicalField> notificationFields, final String notificationJson) {
-        final Optional<HierarchicalField> subTopicUrlField = getFieldForContentIdentifier(notificationFields, FieldContentIdentifier.SUB_TOPIC_URL);
-        return getOptionalFieldValue(subTopicUrlField, notificationJson);
-    }
-
-    protected final List<HierarchicalField> getFieldsForNotificationType(final String notificationType) {
-        for (final ProviderContentType providerContentType : contentTypes) {
-            if (providerContentType.getNotificationType().equals(notificationType)) {
-                return providerContentType.getNotificationFields();
-            }
-        }
-        throw new IllegalArgumentException(String.format("No such notification type '%s' for provider: %s", notificationType, providerDescriptor.getName()));
-    }
-
-    protected final List<StringHierarchicalField> getStringFields(final String notificationType) {
-        final List<HierarchicalField> notificationFields = getFieldsForNotificationType(notificationType);
-        final Class<StringHierarchicalField> targetClass = StringHierarchicalField.class;
-        return notificationFields
-                   .parallelStream()
-                   .filter(field -> targetClass.isAssignableFrom(field.getClass()))
-                   .map(field -> targetClass.cast(field))
-                   .collect(Collectors.toList());
-    }
-
-    protected final Map<String, HierarchicalField> getCategoryFieldMap(final String notificationType) {
-        final List<HierarchicalField> notificationFields = getFieldsForNotificationType(notificationType);
-        return notificationFields
-                   .parallelStream()
-                   .filter(field -> field.getContentIdentifier().equals(FieldContentIdentifier.CATEGORY_ITEM))
-                   .collect(Collectors.toMap(HierarchicalField::getLabel, Function.identity()));
+    protected final List<ObjectHierarchicalField> getObjectFields(final List<HierarchicalField> fields) {
+        return getTypedFields(fields, ObjectHierarchicalField.class);
     }
 
     protected void addItem(final List<CategoryItem> categoryItems, final CategoryItem newItem) {
@@ -219,75 +120,96 @@ public abstract class TopicCollector {
         }
     }
 
-    protected final Optional<HierarchicalField> getFieldForContentIdentifier(final List<HierarchicalField> fields, final FieldContentIdentifier contentIdentifier) {
-        return fields.stream().filter(field -> contentIdentifier.equals(field.getContentIdentifier())).findFirst();
-    }
-
-    protected final List<LinkableItem> getLinkableItemsByLabel(final List<StringHierarchicalField> fields, final String notificationJson, final String label) {
+    protected final List<LinkableItem> getLinkableItemsByLabel(final JsonFieldAccessor accessor, final List<StringHierarchicalField> fields, final String label) {
         final Optional<StringHierarchicalField> foundField = getFieldByLabel(fields, label);
         if (foundField.isPresent()) {
             final StringHierarchicalField valueField = foundField.get();
             final Optional<StringHierarchicalField> foundUrlField = getRelatedUrlField(fields, label);
-            return jsonExtractor.getLinkableItemsFromJson(valueField, foundUrlField.orElse(null), notificationJson);
+            return createLinkableItemsFromFields(accessor, valueField, foundUrlField.orElse(null));
         }
         return Collections.emptyList();
     }
 
-    protected final List<String> getFieldValues(final StringHierarchicalField field, final String notificationJson) {
-        return jsonExtractor.getValuesFromJson(field, notificationJson);
-    }
-
-    protected final <T> List<T> getFieldValues(final HierarchicalField field, final String notificationJson) {
-        return jsonExtractor.getObjectsFromJson(field, notificationJson);
-    }
-
-    protected List<String> getFieldValuesByLabel(final Map<String, HierarchicalField> categoryFields, final String label, final String notificationJson) {
-        final HierarchicalField field = categoryFields.get(label);
-        return getFieldValues(field, notificationJson);
-    }
-
-    protected <T> List<T> getFieldValuesObjectByLabel(final Map<String, HierarchicalField> categoryFields, final String label, final String notificationJson) {
-        final HierarchicalField field = categoryFields.get(label);
-        final Class<ObjectHierarchicalField> expected = ObjectHierarchicalField.class;
-        if (expected.isAssignableFrom(field.getClass())) {
-            return getFieldValues(field, notificationJson);
-        } else {
-            // TODO throw an exception or handle this case more appropriately.
-            return Collections.emptyList();
-        }
-    }
-
-    protected final String getRequiredFieldValue(final HierarchicalField field, final String notificationJson) {
-        final Optional<String> value = jsonExtractor.getFirstValueFromJson(field, notificationJson);
-        if (value.isPresent()) {
-            return value.get();
-        }
-        throw new IllegalStateException(String.format("The required field did not contain a value: ", field));
-    }
-
-    protected final Optional<String> getOptionalFieldValue(final Optional<HierarchicalField> field, final String notificationJson) {
+    protected final <T> List<T> getFieldValueObjectsByLabel(final JsonFieldAccessor accessor, List<ObjectHierarchicalField> fields, final String label, final Class<T> targetClass) throws AlertException {
+        final Optional<ObjectHierarchicalField> field = getFieldByLabel(fields, label);
         if (field.isPresent()) {
-            return jsonExtractor.getFirstValueFromJson(field.get(), notificationJson);
+            return accessor.get(field.get(), targetClass);
         }
-        return Optional.empty();
+        throw new IllegalStateException(String.format("The list provided did not contain the required field: %s", label));
     }
 
-    private final <T extends HierarchicalField> Optional<T> getRelatedUrlField(final List<T> categoryFields, final String label) {
-        return categoryFields
-                   .parallelStream()
-                   .filter(field -> field.getLabel().equals(label + HierarchicalField.LABEL_URL_SUFFIX))
-                   .findFirst();
+    protected final List<LinkableItem> createLinkableItemList(final LinkableItem... items) {
+        final List<LinkableItem> list = new ArrayList<>();
+        if (items != null) {
+            for (final LinkableItem item : items) {
+                list.add(item);
+            }
+        }
+        return list;
     }
 
-    private <T extends HierarchicalField> Optional<T> getFieldByLabel(final List<T> fields, final String label) {
-        return fields
-                   .parallelStream()
-                   .filter(field -> label.equals(field.getLabel()))
-                   .findFirst();
+    private List<HierarchicalField> getFieldsForNotificationType(final String notificationType) {
+        for (final ProviderContentType providerContentType : contentTypes) {
+            if (providerContentType.getNotificationType().equals(notificationType)) {
+                return providerContentType.getNotificationFields();
+            }
+        }
+        throw new IllegalArgumentException(String.format("No such notification type '%s' for provider: %s", notificationType, providerDescriptor.getName()));
+    }
+
+    private JsonFieldAccessor createJsonAccessor(final List<HierarchicalField> notificationFields, final String notificationJson) {
+        return jsonExtractor.createJsonFieldAccessor(notificationFields, notificationJson);
+    }
+
+    // TODO think about how to maintain order
+    private List<TopicContent> getContentsOrCreateIfDoesNotExist(final JsonFieldAccessor accessor, final List<HierarchicalField> notificationFields) {
+        final List<TopicContent> topicContentsForNotifications = new ArrayList<>();
+
+        final List<LinkableItem> topicItems = getTopicItems(accessor, notificationFields);
+        final List<LinkableItem> subTopicItems = getSubTopicItems(accessor, notificationFields);
+        // for the number of topics assume there is an equal number of sub topics and the order is the same.
+        // this seems fragile at the moment.
+        final int count = topicItems.size();
+        for (int index = 0; index < count; index++) {
+            final LinkableItem topicItem = topicItems.get(index);
+            final LinkableItem subTopic = subTopicItems.get(index);
+
+            final TopicContent foundContent = findTopicContent(topicItem.getName(), topicItem.getValue(), subTopic.getName(), subTopic.getValue());
+            if (foundContent != null) {
+                topicContentsForNotifications.add(foundContent);
+            } else {
+                final List<CategoryItem> categoryList = new ArrayList<>();
+                topicContentsForNotifications.add(new TopicContent(topicItem.getName(), topicItem.getValue(), topicItem.getUrl().orElse(null), subTopic, categoryList));
+            }
+        }
+        return topicContentsForNotifications;
+    }
+
+    private List<LinkableItem> getTopicItems(final JsonFieldAccessor accessor, final List<HierarchicalField> fields) {
+        return getLinkableItems(accessor, fields, FieldContentIdentifier.TOPIC, FieldContentIdentifier.TOPIC_URL);
+    }
+
+    private List<LinkableItem> getSubTopicItems(final JsonFieldAccessor accessor, final List<HierarchicalField> fields) {
+        // TODO is SubTopic something we should require? If not then we should not use the same method to get it.
+        return getLinkableItems(accessor, fields, FieldContentIdentifier.SUB_TOPIC, FieldContentIdentifier.SUB_TOPIC_URL);
+    }
+
+    private List<LinkableItem> getLinkableItems(final JsonFieldAccessor accessor, final List<HierarchicalField> fields, final FieldContentIdentifier fieldContentIdentifier, final FieldContentIdentifier urlFieldContentIdentifier) {
+        final Optional<HierarchicalField> optionalField = getFieldForContentIdentifier(fields, fieldContentIdentifier);
+        if (!optionalField.isPresent()) {
+            throw new IllegalStateException(String.format("The list provided did not contain the required field: %s", fieldContentIdentifier));
+        }
+        final Optional<HierarchicalField> optionalUrlField = getFieldForContentIdentifier(fields, urlFieldContentIdentifier);
+
+        // These will always be String fields
+        final StringHierarchicalField valueField = (StringHierarchicalField) optionalField.get();
+        final StringHierarchicalField urlField = (StringHierarchicalField) optionalUrlField.orElse(null);
+
+        return createLinkableItemsFromFields(accessor, valueField, urlField);
     }
 
     // TODO create TopicKey class
-    private final TopicContent findTopicContent(final String topicName, final String topicValue, final String subTopicName, final String subTopicValue) {
+    private TopicContent findTopicContent(final String topicName, final String topicValue, final String subTopicName, final String subTopicValue) {
         for (final TopicContent contentItem : collectedContent) {
             if (contentItem.getName().equals(topicName) && contentItem.getValue().equals(topicValue)) {
                 if (contentItem.getSubTopic().isPresent()) {
@@ -301,5 +223,64 @@ public abstract class TopicCollector {
             }
         }
         return null;
+    }
+
+    private Optional<HierarchicalField> getFieldForContentIdentifier(final List<HierarchicalField> fields, final FieldContentIdentifier contentIdentifier) {
+        return fields
+                   .parallelStream()
+                   .filter(field -> contentIdentifier.equals(field.getContentIdentifier()))
+                   .findFirst();
+    }
+
+    private List<LinkableItem> createLinkableItemsFromFields(final JsonFieldAccessor jsonFieldAccessor, final StringHierarchicalField dataField, final StringHierarchicalField linkField) {
+        final List<String> values = jsonFieldAccessor.get(dataField);
+        if (linkField != null) {
+            final List<String> links = jsonFieldAccessor.get(linkField);
+            if (values.size() == links.size()) {
+                final List<LinkableItem> linkableItems = new ArrayList<>();
+                for (int i = 0; i < links.size(); i++) {
+                    linkableItems.add(new LinkableItem(dataField.getLabel(), values.get(i), links.get(i)));
+                }
+                return linkableItems;
+            } else if (!links.isEmpty()) {
+                throw new IllegalArgumentException("The json provided did not contain the correct field pairings.");
+            }
+        }
+        return values
+                   .parallelStream()
+                   .map(value -> new LinkableItem(dataField.getFieldKey(), value))
+                   .collect(Collectors.toList());
+    }
+
+    private void addContent(final TopicContent content) {
+        for (final TopicContent existingContent : collectedContent) {
+            if (existingContent.equals(content)) {
+                // This object is already in the list
+                return;
+            }
+        }
+        collectedContent.add(content);
+    }
+
+    private <T> List<T> getTypedFields(final List<HierarchicalField> fields, final Class<T> targetClass) {
+        return fields
+                   .parallelStream()
+                   .filter(field -> targetClass.isAssignableFrom(field.getClass()))
+                   .map(targetClass::cast)
+                   .collect(Collectors.toList());
+    }
+
+    private <T extends HierarchicalField> Optional<T> getRelatedUrlField(final List<T> categoryFields, final String label) {
+        return categoryFields
+                   .parallelStream()
+                   .filter(field -> field.getLabel().equals(label + HierarchicalField.LABEL_URL_SUFFIX))
+                   .findFirst();
+    }
+
+    private <T extends HierarchicalField> Optional<T> getFieldByLabel(final List<T> fields, final String label) {
+        return fields
+                   .parallelStream()
+                   .filter(field -> label.equals(field.getLabel()))
+                   .findFirst();
     }
 }
