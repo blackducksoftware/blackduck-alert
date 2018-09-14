@@ -32,6 +32,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.channel.event.NotificationToChannelEventConverter;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.model.TopicContent;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.workflow.filter.NotificationFilter;
 
@@ -52,6 +53,7 @@ public class NotificationProcessor {
         final Collection<NotificationContent> filteredNotifications = notificationFilter.extractApplicableNotifications(frequencyType, notificationList);
         // TODO convert notification content to topic contents.  Provider will be responsible for this.
         // TODO only collapse if the format is of type DIGEST.
+        final List<TopicContent> topicContentList = jobProcessor.processNotifications(frequencyType, notificationList);
 
         final List<ChannelEvent> notificationEvents = notificationToEventConverter.convertToEvents(filteredNotifications);
         return notificationEvents;
