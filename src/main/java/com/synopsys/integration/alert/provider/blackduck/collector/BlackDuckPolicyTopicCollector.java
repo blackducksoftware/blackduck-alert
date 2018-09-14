@@ -65,6 +65,7 @@ public class BlackDuckPolicyTopicCollector extends BlackDuckTopicCollector {
         final List<LinkableItem> policyItems = getLinkableItemsByLabel(categoryFields, notificationJson, BlackDuckProviderContentTypes.LABEL_POLICY_NAME);
 
         final ItemOperation operation = getOperationFromNotification(notificationType);
+        // TODO if the topic and sub-topic already exist then don't create a new topic per policy rule. add to the categories.
         for (final LinkableItem policyItem : policyItems) {
             final String policyUrl = policyItem.getUrl().orElse("");
             addApplicableItems(categoryItems, notificationType, policyItem, policyUrl, operation, componentItems);
