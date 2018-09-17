@@ -44,7 +44,6 @@ import com.synopsys.integration.alert.common.model.LinkableItem;
 
 @Component
 public class DigestMessageContentProcessor extends MessageContentProcessor {
-
     private final Map<ItemOperation, BiFunction<Map<CategoryKey, CategoryItem>, CategoryItem, Void>> operationFunctionMap;
 
     @Autowired

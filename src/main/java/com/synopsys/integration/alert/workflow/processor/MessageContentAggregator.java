@@ -64,7 +64,10 @@ public class MessageContentAggregator {
     }
 
     public Map<CommonDistributionConfig, List<AggregateMessageContent>> processNotifications(final FrequencyType frequency, final Collection<NotificationContent> notificationList) {
-        // TODO check if there are notifications to process
+        if (notificationList.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
         final List<CommonDistributionConfig> unfilteredDistributionConfigs = commonDistributionConfigReader.getPopulatedConfigs();
         if (unfilteredDistributionConfigs.isEmpty()) {
             return Collections.emptyMap();
@@ -81,19 +84,9 @@ public class MessageContentAggregator {
                    .collect(Collectors.toMap(Function.identity(), jobConfig -> collectTopics(jobConfig, notificationList)));
     }
 
-    private Collection<NotificationContent> filterNotifications(final ProviderDescriptor providerDescriptor, final CommonDistributionConfig jobConfiguration, final Collection<NotificationContent> notificationCollection) {
-        final Predicate<NotificationContent> providerFilter = (notificationContent) -> jobConfiguration.getProviderName().equals(notificationContent.getProvider());
-        final Collection<NotificationContent> providerNotifications = filterApplier.applyFilter(notificationCollection, providerFilter);
-        final Collection<NotificationContent> filteredNotificationList = notificationFilter.extractApplicableNotifications(providerDescriptor.getProviderContentTypes(), jobConfiguration, providerNotifications);
-        return filteredNotificationList;
-    }
-
     private List<AggregateMessageContent> collectTopics(final CommonDistributionConfig jobConfiguration, final Collection<NotificationContent> notificationCollection) {
-        final Optional<ProviderDescriptor> providerDescriptor = providerDescriptors.parallelStream().filter(descriptor -> jobConfiguration.getProviderName().equals(descriptor.getName())).findFirst();
-
-        if (!providerDescriptor.isPresent()) {
-            return Collections.emptyList();
-        } else {
+        final Optional<ProviderDescriptor> providerDescriptor = getProviderDescriptorByName(jobConfiguration.getProviderName());
+        if (providerDescriptor.isPresent()) {
             final Collection<NotificationContent> notificationsForJob = filterNotifications(providerDescriptor.get(), jobConfiguration, notificationCollection);
             if (notificationsForJob.isEmpty()) {
                 return Collections.emptyList();
@@ -109,6 +102,20 @@ public class MessageContentAggregator {
 
             return providerMessageContentCollectors.parallelStream().flatMap(collector -> collector.collect(formatType).stream()).collect(Collectors.toList());
         }
+        return Collections.emptyList();
+    }
+
+    private Optional<ProviderDescriptor> getProviderDescriptorByName(final String name) {
+        return providerDescriptors.parallelStream()
+                   .filter(descriptor -> name.equals(descriptor.getName()))
+                   .findFirst();
+    }
+
+    private Collection<NotificationContent> filterNotifications(final ProviderDescriptor providerDescriptor, final CommonDistributionConfig jobConfiguration, final Collection<NotificationContent> notificationCollection) {
+        final Predicate<NotificationContent> providerFilter = (notificationContent) -> jobConfiguration.getProviderName().equals(notificationContent.getProvider());
+        final Collection<NotificationContent> providerNotifications = filterApplier.applyFilter(notificationCollection, providerFilter);
+        final Collection<NotificationContent> filteredNotificationList = notificationFilter.extractApplicableNotifications(providerDescriptor.getProviderContentTypes(), jobConfiguration, providerNotifications);
+        return filteredNotificationList;
     }
 
     private Map<String, MessageContentCollector> createCollectorMap(final Set<MessageContentCollector> providerMessageContentCollectors) {
@@ -120,7 +127,6 @@ public class MessageContentAggregator {
                 collectorMap.put(notificationType, collector);
             }
         }
-
         return collectorMap;
     }
 }
