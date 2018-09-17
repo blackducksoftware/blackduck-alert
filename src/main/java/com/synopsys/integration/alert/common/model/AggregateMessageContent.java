@@ -49,11 +49,7 @@ public class AggregateMessageContent extends LinkableItem {
     }
 
     public Optional<LinkableItem> getSubTopic() {
-        if (subTopic == null) {
-            return Optional.empty();
-        } else {
-            return Optional.of(subTopic);
-        }
+        return Optional.ofNullable(subTopic);
     }
 
     public List<CategoryItem> getCategoryItemList() {

@@ -25,8 +25,6 @@ package com.synopsys.integration.alert.common.model;
 
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.synopsys.integration.util.Stringable;
 
 public class LinkableItem extends Stringable {
@@ -53,10 +51,6 @@ public class LinkableItem extends Stringable {
     }
 
     public Optional<String> getUrl() {
-        if (StringUtils.isBlank(url)) {
-            return Optional.empty();
-        } else {
-            return Optional.of(url);
-        }
+        return Optional.ofNullable(url);
     }
 }
