@@ -85,11 +85,6 @@ public abstract class MessageContentCollector {
         }
     }
 
-    // TODO implementing classes are components, so the data needs to be cleared after it is collected for the final time
-    public void clearCollectedContent() {
-        collectedContent.clear();
-    }
-
     protected abstract void addCategoryItems(final List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<HierarchicalField> notificationFields, final String notificationType);
 
     protected final List<AggregateMessageContent> getCopyOfCollectedContent() {
