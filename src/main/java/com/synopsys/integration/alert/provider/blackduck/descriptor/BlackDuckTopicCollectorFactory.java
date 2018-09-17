@@ -30,24 +30,24 @@ import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.workflow.processor.TopicCollector;
-import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyTopicCollector;
-import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckVulnerabilityTopicCollector;
+import com.synopsys.integration.alert.common.workflow.processor.MessageContentCollector;
+import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyMessageContentCollector;
+import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckVulnerabilityMessageContentCollector;
 
 @Component
 public class BlackDuckTopicCollectorFactory {
 
-    private final ObjectFactory<BlackDuckVulnerabilityTopicCollector> vulnerabilityTopicCollectorFactory;
-    private final ObjectFactory<BlackDuckPolicyTopicCollector> policyTopicCollectorFactory;
+    private final ObjectFactory<BlackDuckVulnerabilityMessageContentCollector> vulnerabilityTopicCollectorFactory;
+    private final ObjectFactory<BlackDuckPolicyMessageContentCollector> policyTopicCollectorFactory;
 
     @Autowired
-    public BlackDuckTopicCollectorFactory(final ObjectFactory<BlackDuckVulnerabilityTopicCollector> vulnerabilityTopicCollectorFactory, final ObjectFactory<BlackDuckPolicyTopicCollector> policyTopicCollectorFactory) {
+    public BlackDuckTopicCollectorFactory(final ObjectFactory<BlackDuckVulnerabilityMessageContentCollector> vulnerabilityTopicCollectorFactory, final ObjectFactory<BlackDuckPolicyMessageContentCollector> policyTopicCollectorFactory) {
         this.vulnerabilityTopicCollectorFactory = vulnerabilityTopicCollectorFactory;
         this.policyTopicCollectorFactory = policyTopicCollectorFactory;
     }
 
-    public Set<TopicCollector> createTopicCollectors() {
-        final Set<TopicCollector> collectorSet = new HashSet<>();
+    public Set<MessageContentCollector> createTopicCollectors() {
+        final Set<MessageContentCollector> collectorSet = new HashSet<>();
         collectorSet.add(vulnerabilityTopicCollectorFactory.getObject());
         collectorSet.add(policyTopicCollectorFactory.getObject());
         return collectorSet;

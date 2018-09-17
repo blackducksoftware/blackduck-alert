@@ -33,7 +33,7 @@ import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.common.provider.ProviderUIConfig;
-import com.synopsys.integration.alert.common.workflow.processor.TopicCollector;
+import com.synopsys.integration.alert.common.workflow.processor.MessageContentCollector;
 
 public abstract class ProviderDescriptor extends Descriptor {
     private final Provider provider;
@@ -53,5 +53,5 @@ public abstract class ProviderDescriptor extends Descriptor {
         return getProvider().getProviderContentTypes();
     }
 
-    public abstract Set<TopicCollector> createTopicCollectors();
+    public abstract Set<MessageContentCollector> createTopicCollectors();
 }

@@ -23,10 +23,10 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.synopsys.integration.alert.Application;
-import com.synopsys.integration.alert.common.workflow.processor.TopicCollector;
+import com.synopsys.integration.alert.common.workflow.processor.MessageContentCollector;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
-import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyTopicCollector;
-import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckVulnerabilityTopicCollector;
+import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyMessageContentCollector;
+import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckVulnerabilityMessageContentCollector;
 import com.synopsys.integration.test.annotation.IntegrationTest;
 
 @Category({ IntegrationTest.class })
@@ -36,24 +36,24 @@ import com.synopsys.integration.test.annotation.IntegrationTest;
 @Transactional
 @WebAppConfiguration
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
-public class BlackDuckTopicCollectorFactoryTest {
+public class BlackDuckMessageContentCollectorFactoryTest {
 
     @Autowired
-    private ObjectFactory<BlackDuckVulnerabilityTopicCollector> vulnerabilityTopicCollectorFactory;
+    private ObjectFactory<BlackDuckVulnerabilityMessageContentCollector> vulnerabilityTopicCollectorFactory;
     @Autowired
-    private ObjectFactory<BlackDuckPolicyTopicCollector> policyTopicCollectorFactory;
+    private ObjectFactory<BlackDuckPolicyMessageContentCollector> policyTopicCollectorFactory;
 
     @Test
     public void testCollectorCreation() {
         final BlackDuckTopicCollectorFactory topicCollectorFactory = new BlackDuckTopicCollectorFactory(vulnerabilityTopicCollectorFactory, policyTopicCollectorFactory);
-        final Set<TopicCollector> topicCollectorSet = topicCollectorFactory.createTopicCollectors();
-        assertFalse(topicCollectorSet.isEmpty());
-        assertEquals(2, topicCollectorSet.size());
-        final Set<TopicCollector> differentReferenceTopicCollectorSet = topicCollectorFactory.createTopicCollectors();
-        assertFalse(differentReferenceTopicCollectorSet.isEmpty());
-        assertEquals(2, differentReferenceTopicCollectorSet.size());
+        final Set<MessageContentCollector> messageContentCollectorSet = topicCollectorFactory.createTopicCollectors();
+        assertFalse(messageContentCollectorSet.isEmpty());
+        assertEquals(2, messageContentCollectorSet.size());
+        final Set<MessageContentCollector> differentReferenceMessageContentCollectorSet = topicCollectorFactory.createTopicCollectors();
+        assertFalse(differentReferenceMessageContentCollectorSet.isEmpty());
+        assertEquals(2, differentReferenceMessageContentCollectorSet.size());
 
-        // make sure they are different object references since TopicCollector does implement equals or hashcode which is ok. we want different instances.
-        assertFalse(topicCollectorSet.equals(differentReferenceTopicCollectorSet));
+        // make sure they are different object references since MessageContentCollector does implement equals or hashcode which is ok. we want different instances.
+        assertFalse(messageContentCollectorSet.equals(differentReferenceMessageContentCollectorSet));
     }
 }

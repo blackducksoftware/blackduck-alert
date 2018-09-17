@@ -29,7 +29,7 @@ import com.synopsys.integration.alert.provider.blackduck.tasks.ProjectSyncTask;
 import com.synopsys.integration.alert.workflow.filter.JsonExtractor;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
-public class BlackDuckPolicyTopicCollectorTest {
+public class BlackDuckPolicyMessageContentCollectorTest {
 
     private final Gson gson = new Gson();
     private final JsonExtractor jsonExtractor = new JsonExtractor(gson);
@@ -37,13 +37,13 @@ public class BlackDuckPolicyTopicCollectorTest {
 
     @Test
     public void insertRuleViolationClearedNotificationTest() throws Exception {
-        final BlackDuckPolicyTopicCollector collector = createCollector();
+        final BlackDuckPolicyMessageContentCollector collector = createCollector();
         runSingleTest(collector, "json/policyRuleClearedNotification.json", NotificationType.RULE_VIOLATION_CLEARED);
     }
 
     @Test
     public void insertPolicyOverrideNotificationTest() throws Exception {
-        final BlackDuckPolicyTopicCollector collector = createCollector();
+        final BlackDuckPolicyMessageContentCollector collector = createCollector();
         runSingleTest(collector, "json/policyOverrideNotification.json", NotificationType.POLICY_OVERRIDE);
     }
 
@@ -64,7 +64,7 @@ public class BlackDuckPolicyTopicCollectorTest {
         final NotificationContent n2 = createNotification(overrideContent, NotificationType.POLICY_OVERRIDE);
         final NotificationContent n3 = createNotification(overrideContent, NotificationType.POLICY_OVERRIDE);
 
-        final BlackDuckPolicyTopicCollector collector = createCollector();
+        final BlackDuckPolicyMessageContentCollector collector = createCollector();
 
         int categoryCount = numberOfPoliciesOverriden;
         int linkableItemsCount = numberOfPoliciesOverriden * numberOfPolicyOverrideComponents * 2;
@@ -85,17 +85,17 @@ public class BlackDuckPolicyTopicCollectorTest {
         Assert.assertEquals(1, collector.collect(FormatType.DEFAULT).size());
     }
 
-    private void runSingleTest(final BlackDuckPolicyTopicCollector collector, final String notificationJsonFileName, final NotificationType notificationType) throws Exception {
+    private void runSingleTest(final BlackDuckPolicyMessageContentCollector collector, final String notificationJsonFileName, final NotificationType notificationType) throws Exception {
         final String content = getNotificationContentFromFile("json/policyRuleClearedNotification.json");
         final NotificationContent notificationContent = createNotification(content, notificationType);
         test(collector, notificationContent);
     }
 
-    private BlackDuckPolicyTopicCollector createCollector() {
+    private BlackDuckPolicyMessageContentCollector createCollector() {
         final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
         final ProjectSyncTask projectSyncTask = Mockito.mock(ProjectSyncTask.class);
         final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask);
-        return new BlackDuckPolicyTopicCollector(jsonExtractor, messageContentProcessorList);
+        return new BlackDuckPolicyMessageContentCollector(jsonExtractor, messageContentProcessorList);
     }
 
     private String getNotificationContentFromFile(final String notificationJsonFileName) throws Exception {
@@ -108,13 +108,13 @@ public class BlackDuckPolicyTopicCollectorTest {
         return new NotificationContent(Date.from(Instant.now()), BlackDuckProvider.COMPONENT_NAME, type.name(), notificationContent);
     }
 
-    private void test(final BlackDuckPolicyTopicCollector collector, final NotificationContent notification) {
+    private void test(final BlackDuckPolicyMessageContentCollector collector, final NotificationContent notification) {
         collector.insert(notification);
         final List<AggregateMessageContent> aggregateMessageContentList = collector.collect(FormatType.DEFAULT);
         assertFalse(aggregateMessageContentList.isEmpty());
     }
 
-    private void insertAndAssertCountsOnTopic(final BlackDuckPolicyTopicCollector collector, final NotificationContent notification, final String topicName, final int expectedCategoryItemsCount, final int expectedLinkableItemsCount) {
+    private void insertAndAssertCountsOnTopic(final BlackDuckPolicyMessageContentCollector collector, final NotificationContent notification, final String topicName, final int expectedCategoryItemsCount, final int expectedLinkableItemsCount) {
         collector.insert(notification);
         final AggregateMessageContent content = collector.collect(FormatType.DEFAULT).stream().filter(topicContent -> topicName.equals(topicContent.getValue())).findFirst().orElse(null);
         final List<CategoryItem> items = content.getCategoryItemList();

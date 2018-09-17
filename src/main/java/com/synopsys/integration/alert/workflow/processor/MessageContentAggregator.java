@@ -42,7 +42,7 @@ import com.synopsys.integration.alert.common.distribution.CommonDistributionConf
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
-import com.synopsys.integration.alert.common.workflow.processor.TopicCollector;
+import com.synopsys.integration.alert.common.workflow.processor.MessageContentCollector;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.workflow.filter.FilterApplier;
@@ -100,22 +100,22 @@ public class MessageContentAggregator {
             }
 
             final FormatType formatType = FormatType.valueOf(jobConfiguration.getFormatType());
-            final Set<TopicCollector> providerTopicCollectors = providerDescriptor.get().createTopicCollectors();
-            final Map<String, TopicCollector> collectorMap = createCollectorMap(providerTopicCollectors);
+            final Set<MessageContentCollector> providerMessageContentCollectors = providerDescriptor.get().createTopicCollectors();
+            final Map<String, MessageContentCollector> collectorMap = createCollectorMap(providerMessageContentCollectors);
 
             notificationsForJob.parallelStream()
                 .filter(notificationContent -> collectorMap.containsKey(notificationContent.getNotificationType()))
                 .forEach(notificationContent -> collectorMap.get(notificationContent.getNotificationType()).insert(notificationContent));
 
-            return providerTopicCollectors.parallelStream().flatMap(collector -> collector.collect(formatType).stream()).collect(Collectors.toList());
+            return providerMessageContentCollectors.parallelStream().flatMap(collector -> collector.collect(formatType).stream()).collect(Collectors.toList());
         }
     }
 
-    private Map<String, TopicCollector> createCollectorMap(final Set<TopicCollector> providerTopicCollectors) {
-        final Map<String, TopicCollector> collectorMap = new HashMap<>();
+    private Map<String, MessageContentCollector> createCollectorMap(final Set<MessageContentCollector> providerMessageContentCollectors) {
+        final Map<String, MessageContentCollector> collectorMap = new HashMap<>();
 
         //TODO need better performance to map the notification type to the processor
-        for (final TopicCollector collector : providerTopicCollectors) {
+        for (final MessageContentCollector collector : providerMessageContentCollectors) {
             for (final String notificationType : collector.getSupportedNotificationTypes()) {
                 collectorMap.put(notificationType, collector);
             }

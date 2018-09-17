@@ -47,15 +47,14 @@ import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.workflow.filter.JsonExtractor;
 import com.synopsys.integration.alert.workflow.filter.JsonFieldAccessor;
 
-// TODO MessageContentCollector
-public abstract class TopicCollector {
+public abstract class MessageContentCollector {
     private final JsonExtractor jsonExtractor;
     private final Collection<ProviderContentType> contentTypes;
     private final Map<FormatType, MessageContentProcessor> messageContentProcessorMap;
     private final Set<String> supportedNotificationTypes;
     private final List<AggregateMessageContent> collectedContent;
 
-    public TopicCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList, final Collection<ProviderContentType> contentTypes) {
+    public MessageContentCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList, final Collection<ProviderContentType> contentTypes) {
         this.jsonExtractor = jsonExtractor;
         this.contentTypes = contentTypes;
         this.messageContentProcessorMap = messageContentProcessorList.stream().collect(Collectors.toMap(MessageContentProcessor::getFormat, Function.identity()));
