@@ -26,13 +26,13 @@ package com.synopsys.integration.alert.common.workflow.processor;
 import java.util.List;
 
 import com.synopsys.integration.alert.common.enumeration.FormatType;
-import com.synopsys.integration.alert.common.model.TopicContent;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 
 public abstract class TopicFormatter {
 
-    private FormatType formatType;
+    private final FormatType formatType;
 
-    public TopicFormatter(FormatType formatType) {
+    public TopicFormatter(final FormatType formatType) {
         this.formatType = formatType;
     }
 
@@ -40,5 +40,5 @@ public abstract class TopicFormatter {
         return formatType;
     }
 
-    public abstract List<TopicContent> format(List<TopicContent> contentList);
+    public abstract List<AggregateMessageContent> format(List<AggregateMessageContent> contentList);
 }

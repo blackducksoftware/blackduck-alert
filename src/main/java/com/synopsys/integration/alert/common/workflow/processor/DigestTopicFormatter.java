@@ -37,10 +37,10 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.common.model.CategoryKey;
 import com.synopsys.integration.alert.common.model.LinkableItem;
-import com.synopsys.integration.alert.common.model.TopicContent;
 
 @Component
 public class DigestTopicFormatter extends TopicFormatter {
@@ -59,15 +59,15 @@ public class DigestTopicFormatter extends TopicFormatter {
     }
 
     @Override
-    public List<TopicContent> format(final List<TopicContent> contentList) {
-        final List<TopicContent> collapsedTopicList = new ArrayList<>(contentList.size());
-        for (final TopicContent topic : contentList) {
+    public List<AggregateMessageContent> format(final List<AggregateMessageContent> contentList) {
+        final List<AggregateMessageContent> collapsedTopicList = new ArrayList<>(contentList.size());
+        for (final AggregateMessageContent topic : contentList) {
             final Map<CategoryKey, CategoryItem> categoryDataCache = new LinkedHashMap<>();
             topic.getCategoryItemList().forEach(item -> {
                 processOperation(categoryDataCache, item);
             });
 
-            final Optional<TopicContent> collapsedContent = rebuildTopic(topic, categoryDataCache.values());
+            final Optional<AggregateMessageContent> collapsedContent = rebuildTopic(topic, categoryDataCache.values());
             if (collapsedContent.isPresent()) {
                 collapsedTopicList.add(collapsedContent.get());
             }
@@ -103,13 +103,13 @@ public class DigestTopicFormatter extends TopicFormatter {
         }
     }
 
-    private Optional<TopicContent> rebuildTopic(final TopicContent currentContent, final Collection<CategoryItem> categoryItemCollection) {
+    private Optional<AggregateMessageContent> rebuildTopic(final AggregateMessageContent currentContent, final Collection<CategoryItem> categoryItemCollection) {
         if (categoryItemCollection.isEmpty()) {
             return Optional.empty();
         } else {
             final String url = currentContent.getUrl().orElse(null);
             final LinkableItem subTopic = currentContent.getSubTopic().orElse(null);
-            return Optional.of(new TopicContent(currentContent.getName(), currentContent.getValue(), url, subTopic, new ArrayList<>(categoryItemCollection)));
+            return Optional.of(new AggregateMessageContent(currentContent.getName(), currentContent.getValue(), url, subTopic, new ArrayList<>(categoryItemCollection)));
         }
     }
 }

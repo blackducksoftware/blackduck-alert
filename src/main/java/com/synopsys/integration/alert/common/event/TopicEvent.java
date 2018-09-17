@@ -25,18 +25,18 @@ package com.synopsys.integration.alert.common.event;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.common.model.TopicContent;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 
 public class TopicEvent extends AlertEvent {
 
-    private final List<TopicContent> topicList;
+    private final List<AggregateMessageContent> topicList;
 
-    public TopicEvent(final String destination, final Long notificationId, final List<TopicContent> topicList) {
+    public TopicEvent(final String destination, final Long notificationId, final List<AggregateMessageContent> topicList) {
         super(destination, notificationId);
         this.topicList = topicList;
     }
 
-    public List<TopicContent> getTopicList() {
+    public List<AggregateMessageContent> getTopicList() {
         return topicList;
     }
 }
