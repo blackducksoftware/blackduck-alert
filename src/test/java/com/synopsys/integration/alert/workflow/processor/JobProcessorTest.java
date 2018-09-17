@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.workflow.processor;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -67,7 +68,7 @@ public class JobProcessorTest {
     public void testNoJobProcessing() throws Exception {
         final FrequencyType frequencyType = FrequencyType.REAL_TIME;
         final String policyContent = getNotificationContentFromFile("json/policyRuleClearedNotification.json");
-        final NotificationContent policyNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, policyContent, NotificationType.RULE_VIOLATION);
+        final NotificationContent policyNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, policyContent, NotificationType.RULE_VIOLATION_CLEARED);
 
         final String vulnerabilityContent = getNotificationContentFromFile("json/vulnerabilityTest.json");
         final NotificationContent vulnerabilityNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, vulnerabilityContent, NotificationType.VULNERABILITY);
@@ -83,7 +84,7 @@ public class JobProcessorTest {
     public void testJobProcessing() throws Exception {
         final FrequencyType frequencyType = FrequencyType.REAL_TIME;
         final String policyContent = getNotificationContentFromFile("json/policyRuleClearedNotification.json");
-        final NotificationContent policyNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, policyContent, NotificationType.RULE_VIOLATION);
+        final NotificationContent policyNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, policyContent, NotificationType.RULE_VIOLATION_CLEARED);
 
         final String vulnerabilityContent = getNotificationContentFromFile("json/vulnerabilityTest.json");
         final NotificationContent vulnerabilityNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, vulnerabilityContent, NotificationType.VULNERABILITY);
@@ -91,7 +92,7 @@ public class JobProcessorTest {
         final List<NotificationContent> notificationContentList = Arrays.asList(policyNotification, vulnerabilityNotification);
 
         final List<String> projectList = Arrays.asList("example", "alert-test-project", "alert-test-project-2");
-        final List<String> notificationTypesLIst = Arrays.asList(NotificationType.RULE_VIOLATION.name(), NotificationType.VULNERABILITY.name());
+        final List<String> notificationTypesLIst = Arrays.asList(NotificationType.RULE_VIOLATION_CLEARED.name(), NotificationType.VULNERABILITY.name());
         final CommonDistributionConfig jobConfig = createCommonDistributionJob("channel_email", BlackDuckProvider.COMPONENT_NAME, frequencyType.name(), projectList, notificationTypesLIst, FormatType.DEFAULT);
 
         final CommonDistributionConfigReader spiedReader = Mockito.spy(commonDistributionConfigReader);
@@ -101,13 +102,16 @@ public class JobProcessorTest {
         final Map<CommonDistributionConfig, List<TopicContent>> topicContentMap = jobProcessor.processNotifications(frequencyType, notificationContentList);
 
         assertFalse(topicContentMap.isEmpty());
+        assertEquals(1, topicContentMap.size());
+        assertTrue(topicContentMap.containsKey(jobConfig));
+        assertEquals(4, topicContentMap.get(jobConfig).size());
     }
 
     @Test
     public void testJobProcessingFrequencyMismatch() throws Exception {
         final FrequencyType frequencyType = FrequencyType.REAL_TIME;
         final String policyContent = getNotificationContentFromFile("json/policyRuleClearedNotification.json");
-        final NotificationContent policyNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, policyContent, NotificationType.RULE_VIOLATION);
+        final NotificationContent policyNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, policyContent, NotificationType.RULE_VIOLATION_CLEARED);
 
         final String vulnerabilityContent = getNotificationContentFromFile("json/vulnerabilityTest.json");
         final NotificationContent vulnerabilityNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, vulnerabilityContent, NotificationType.VULNERABILITY);
@@ -115,7 +119,7 @@ public class JobProcessorTest {
         final List<NotificationContent> notificationContentList = Arrays.asList(policyNotification, vulnerabilityNotification);
 
         final List<String> projectList = Arrays.asList("example", "alert-test-project", "alert-test-project-2");
-        final List<String> notificationTypesLIst = Arrays.asList(NotificationType.RULE_VIOLATION.name(), NotificationType.VULNERABILITY.name());
+        final List<String> notificationTypesLIst = Arrays.asList(NotificationType.RULE_VIOLATION_CLEARED.name(), NotificationType.VULNERABILITY.name());
         final CommonDistributionConfig jobConfig = createCommonDistributionJob("channel_email", BlackDuckProvider.COMPONENT_NAME, FrequencyType.DAILY.name(), projectList, notificationTypesLIst, FormatType.DEFAULT);
 
         final CommonDistributionConfigReader spiedReader = Mockito.spy(commonDistributionConfigReader);
@@ -132,7 +136,7 @@ public class JobProcessorTest {
         final String unknownProvider = "unknown_provider";
         final FrequencyType frequencyType = FrequencyType.REAL_TIME;
         final String policyContent = getNotificationContentFromFile("json/policyRuleClearedNotification.json");
-        final NotificationContent policyNotification = createNotification(unknownProvider, policyContent, NotificationType.RULE_VIOLATION);
+        final NotificationContent policyNotification = createNotification(unknownProvider, policyContent, NotificationType.RULE_VIOLATION_CLEARED);
 
         final String vulnerabilityContent = getNotificationContentFromFile("json/vulnerabilityTest.json");
         final NotificationContent vulnerabilityNotification = createNotification(unknownProvider, vulnerabilityContent, NotificationType.VULNERABILITY);
@@ -140,7 +144,7 @@ public class JobProcessorTest {
         final List<NotificationContent> notificationContentList = Arrays.asList(policyNotification, vulnerabilityNotification);
 
         final List<String> projectList = Arrays.asList("bad-project");
-        final List<String> notificationTypesLIst = Arrays.asList(NotificationType.RULE_VIOLATION.name(), NotificationType.VULNERABILITY.name());
+        final List<String> notificationTypesLIst = Arrays.asList(NotificationType.RULE_VIOLATION_CLEARED.name(), NotificationType.VULNERABILITY.name());
         final CommonDistributionConfig jobConfig = createCommonDistributionJob("channel_email", unknownProvider, frequencyType.name(), projectList, notificationTypesLIst, FormatType.DEFAULT);
 
         final CommonDistributionConfigReader spiedReader = Mockito.spy(commonDistributionConfigReader);
@@ -158,7 +162,7 @@ public class JobProcessorTest {
         final String unknownProvider = "unknown_provider";
         final FrequencyType frequencyType = FrequencyType.REAL_TIME;
         final String policyContent = getNotificationContentFromFile("json/policyRuleClearedNotification.json");
-        final NotificationContent policyNotification = createNotification(unknownProvider, policyContent, NotificationType.RULE_VIOLATION);
+        final NotificationContent policyNotification = createNotification(unknownProvider, policyContent, NotificationType.RULE_VIOLATION_CLEARED);
 
         final String vulnerabilityContent = getNotificationContentFromFile("json/vulnerabilityTest.json");
         final NotificationContent vulnerabilityNotification = createNotification(unknownProvider, vulnerabilityContent, NotificationType.VULNERABILITY);
@@ -166,7 +170,7 @@ public class JobProcessorTest {
         final List<NotificationContent> notificationContentList = Arrays.asList(policyNotification, vulnerabilityNotification);
 
         final List<String> projectList = Arrays.asList("bad-project");
-        final List<String> notificationTypesLIst = Arrays.asList(NotificationType.RULE_VIOLATION.name(), NotificationType.VULNERABILITY.name());
+        final List<String> notificationTypesLIst = Arrays.asList(NotificationType.RULE_VIOLATION_CLEARED.name(), NotificationType.VULNERABILITY.name());
         final CommonDistributionConfig jobConfig = createCommonDistributionJob("channel_email", BlackDuckProvider.COMPONENT_NAME, frequencyType.name(), projectList, notificationTypesLIst, FormatType.DEFAULT);
 
         final CommonDistributionConfigReader spiedReader = Mockito.spy(commonDistributionConfigReader);

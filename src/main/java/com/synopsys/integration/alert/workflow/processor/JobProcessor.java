@@ -99,21 +99,27 @@ public class JobProcessor {
             }
 
             final FormatType formatType = FormatType.valueOf(jobConfiguration.getFormatType());
-            final Map<String, TopicCollector> collectorMap = new HashMap<>();
-
-            //TODO need better performance to map the notification type to the processor
             final Set<TopicCollector> providerTopicCollectors = providerDescriptor.get().createTopicCollectors();
-            for (final TopicCollector collector : providerTopicCollectors) {
-                for (final String notificationType : collector.getSupportedNotificationTypes()) {
-                    collectorMap.put(notificationType, collector);
-                }
-            }
+            final Map<String, TopicCollector> collectorMap = createCollectorMap(providerTopicCollectors);
 
             notificationsForJob.parallelStream()
                 .filter(notificationContent -> collectorMap.containsKey(notificationContent.getNotificationType()))
                 .forEach(notificationContent -> collectorMap.get(notificationContent.getNotificationType()).insert(notificationContent));
 
-            return collectorMap.values().parallelStream().flatMap(collector -> collector.collect(formatType).stream()).collect(Collectors.toList());
+            return providerTopicCollectors.parallelStream().flatMap(collector -> collector.collect(formatType).stream()).collect(Collectors.toList());
         }
+    }
+
+    private Map<String, TopicCollector> createCollectorMap(final Set<TopicCollector> providerTopicCollectors) {
+        final Map<String, TopicCollector> collectorMap = new HashMap<>();
+
+        //TODO need better performance to map the notification type to the processor
+        for (final TopicCollector collector : providerTopicCollectors) {
+            for (final String notificationType : collector.getSupportedNotificationTypes()) {
+                collectorMap.put(notificationType, collector);
+            }
+        }
+
+        return collectorMap;
     }
 }
