@@ -9,6 +9,7 @@ import java.sql.Date;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 
@@ -73,14 +74,13 @@ public class JobProcessorTest {
 
         final List<NotificationContent> notificationContentList = Arrays.asList(policyNotification, vulnerabilityNotification);
         final JobProcessor jobProcessor = new JobProcessor(providerDescriptors, commonDistributionConfigReader, filterApplier, notificationFilter);
-        final List<TopicContent> topicContentList = jobProcessor.processNotifications(frequencyType, notificationContentList);
+        final Map<CommonDistributionConfig, List<TopicContent>> topicContentMap = jobProcessor.processNotifications(frequencyType, notificationContentList);
 
-        assertTrue(topicContentList.isEmpty());
+        assertTrue(topicContentMap.isEmpty());
     }
 
     @Test
     public void testJobProcessing() throws Exception {
-
         final FrequencyType frequencyType = FrequencyType.REAL_TIME;
         final String policyContent = getNotificationContentFromFile("json/policyRuleClearedNotification.json");
         final NotificationContent policyNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, policyContent, NotificationType.RULE_VIOLATION);
@@ -98,15 +98,13 @@ public class JobProcessorTest {
         Mockito.when(spiedReader.getPopulatedConfigs()).thenReturn(Arrays.asList(jobConfig));
 
         final JobProcessor jobProcessor = new JobProcessor(providerDescriptors, spiedReader, filterApplier, notificationFilter);
-        final List<TopicContent> topicContentList = jobProcessor.processNotifications(frequencyType, notificationContentList);
+        final Map<CommonDistributionConfig, List<TopicContent>> topicContentMap = jobProcessor.processNotifications(frequencyType, notificationContentList);
 
-        assertFalse(topicContentList.isEmpty());
-
+        assertFalse(topicContentMap.isEmpty());
     }
 
     @Test
     public void testJobProcessingFrequencyMismatch() throws Exception {
-
         final FrequencyType frequencyType = FrequencyType.REAL_TIME;
         final String policyContent = getNotificationContentFromFile("json/policyRuleClearedNotification.json");
         final NotificationContent policyNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, policyContent, NotificationType.RULE_VIOLATION);
@@ -124,10 +122,9 @@ public class JobProcessorTest {
         Mockito.when(spiedReader.getPopulatedConfigs()).thenReturn(Arrays.asList(jobConfig));
 
         final JobProcessor jobProcessor = new JobProcessor(providerDescriptors, spiedReader, filterApplier, notificationFilter);
-        final List<TopicContent> topicContentList = jobProcessor.processNotifications(frequencyType, notificationContentList);
+        final Map<CommonDistributionConfig, List<TopicContent>> topicContentMap = jobProcessor.processNotifications(frequencyType, notificationContentList);
 
-        assertTrue(topicContentList.isEmpty());
-
+        assertTrue(topicContentMap.isEmpty());
     }
 
     @Test
@@ -150,10 +147,10 @@ public class JobProcessorTest {
         Mockito.when(spiedReader.getPopulatedConfigs()).thenReturn(Arrays.asList(jobConfig));
 
         final JobProcessor jobProcessor = new JobProcessor(providerDescriptors, spiedReader, filterApplier, notificationFilter);
-        final List<TopicContent> topicContentList = jobProcessor.processNotifications(frequencyType, notificationContentList);
+        final Map<CommonDistributionConfig, List<TopicContent>> topicContentMap = jobProcessor.processNotifications(frequencyType, notificationContentList);
 
-        assertTrue(topicContentList.isEmpty());
-
+        assertTrue(topicContentMap.containsKey(jobConfig));
+        assertTrue(topicContentMap.get(jobConfig).isEmpty());
     }
 
     @Test
@@ -176,10 +173,10 @@ public class JobProcessorTest {
         Mockito.when(spiedReader.getPopulatedConfigs()).thenReturn(Arrays.asList(jobConfig));
 
         final JobProcessor jobProcessor = new JobProcessor(providerDescriptors, spiedReader, filterApplier, notificationFilter);
-        final List<TopicContent> topicContentList = jobProcessor.processNotifications(frequencyType, notificationContentList);
+        final Map<CommonDistributionConfig, List<TopicContent>> topicContentMap = jobProcessor.processNotifications(frequencyType, notificationContentList);
 
-        assertTrue(topicContentList.isEmpty());
-
+        assertTrue(topicContentMap.containsKey(jobConfig));
+        assertTrue(topicContentMap.get(jobConfig).isEmpty());
     }
 
     private CommonDistributionConfig createCommonDistributionJob(final String distributionType, final String providerName, final String frequency,

@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Optional;
 
 public class TopicContent extends LinkableItem {
-
     private final LinkableItem subTopic;
     private final List<CategoryItem> categoryItemList;
 

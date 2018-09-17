@@ -28,7 +28,6 @@ import java.util.List;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 
 public class CategoryItem {
-
     private final CategoryKey categoryKey;
     private final ItemOperation operation;
     private final List<LinkableItem> itemList;

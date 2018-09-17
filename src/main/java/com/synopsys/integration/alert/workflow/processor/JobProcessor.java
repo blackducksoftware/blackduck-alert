@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -62,22 +63,21 @@ public class JobProcessor {
         this.notificationFilter = notificationFilter;
     }
 
-    public List<TopicContent> processNotifications(final FrequencyType frequency, final Collection<NotificationContent> notificationList) {
-
+    public Map<CommonDistributionConfig, List<TopicContent>> processNotifications(final FrequencyType frequency, final Collection<NotificationContent> notificationList) {
         final List<CommonDistributionConfig> unfilteredDistributionConfigs = commonDistributionConfigReader.getPopulatedConfigs();
         if (unfilteredDistributionConfigs.isEmpty()) {
-            return Collections.emptyList();
+            return Collections.emptyMap();
         }
 
         final Predicate<CommonDistributionConfig> frequencyFilter = config -> frequency.name().equals(config.getFrequency());
         final List<CommonDistributionConfig> distributionConfigs = filterApplier.applyFilter(unfilteredDistributionConfigs, frequencyFilter);
         if (distributionConfigs.isEmpty()) {
-            return Collections.emptyList();
+            return Collections.emptyMap();
         }
 
-        final List<TopicContent> topicContentList = distributionConfigs.parallelStream().flatMap(jobConfiguration -> collectTopics(jobConfiguration, notificationList).stream()).collect(Collectors.toList());
-
-        return topicContentList;
+        return distributionConfigs
+                   .parallelStream()
+                   .collect(Collectors.toMap(Function.identity(), jobConfig -> collectTopics(jobConfig, notificationList)));
     }
 
     private Collection<NotificationContent> filterNotifications(final ProviderDescriptor providerDescriptor, final CommonDistributionConfig jobConfiguration, final Collection<NotificationContent> notificationCollection) {
