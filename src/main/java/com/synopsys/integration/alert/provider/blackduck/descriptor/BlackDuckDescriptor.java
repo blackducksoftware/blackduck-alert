@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.workflow.processor.TopicCollector;
+import com.synopsys.integration.alert.common.workflow.processor.MessageContentCollector;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 
 @Component
@@ -45,7 +45,7 @@ public class BlackDuckDescriptor extends ProviderDescriptor {
     }
 
     @Override
-    public Set<TopicCollector> createTopicCollectors() {
+    public Set<MessageContentCollector> createTopicCollectors() {
         return topicCollectorFactory.createTopicCollectors();
     }
 }
