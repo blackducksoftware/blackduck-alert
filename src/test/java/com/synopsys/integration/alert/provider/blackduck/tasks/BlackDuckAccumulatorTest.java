@@ -26,7 +26,7 @@ import org.springframework.scheduling.TaskScheduler;
 
 import com.synopsys.integration.alert.TestAlertProperties;
 import com.synopsys.integration.alert.TestBlackDuckProperties;
-import com.synopsys.integration.alert.common.digest.DateRange;
+import com.synopsys.integration.alert.common.model.DateRange;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;

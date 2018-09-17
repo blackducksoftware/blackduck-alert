@@ -35,7 +35,7 @@ import org.springframework.scheduling.TaskScheduler;
 
 import com.synopsys.integration.alert.channel.ChannelTemplateManager;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
-import com.synopsys.integration.alert.common.digest.DateRange;
+import com.synopsys.integration.alert.common.model.DateRange;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.workflow.NotificationManager;

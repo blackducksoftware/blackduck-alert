@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.digest;
+package com.synopsys.integration.alert.common.model;
 
 import java.util.Date;
 
