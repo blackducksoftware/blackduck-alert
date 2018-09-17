@@ -57,7 +57,7 @@ public class UserProjectRelationRepositoryAccessor {
     }
 
     public List<UserProjectRelation> deleteAndSaveAll(final Set<UserProjectRelation> userProjectRelations) {
-        userProjectRelationRepository.deleteAll();
+        userProjectRelationRepository.deleteAllInBatch();
         return userProjectRelationRepository.saveAll(userProjectRelations);
     }
 

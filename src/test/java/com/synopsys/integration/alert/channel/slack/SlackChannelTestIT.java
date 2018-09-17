@@ -68,7 +68,7 @@ public class SlackChannelTestIT extends ChannelTest {
         final DigestModel digestModel = new DigestModel(projectData);
         final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
         final SlackChannelEvent event = new SlackChannelEvent(RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
-            notificationContent.getContent(), new Long(0), 1L, webHook, username, roomName);
+            notificationContent.getContent(), new Long(0), 1L, username, webHook, roomName);
 
         slackChannel.sendAuditedMessage(event);
 

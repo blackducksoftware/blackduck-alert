@@ -14,6 +14,7 @@ import com.synopsys.integration.alert.database.channel.email.EmailGlobalReposito
 import com.synopsys.integration.alert.database.channel.email.EmailGroupDistributionConfigEntity;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.database.channel.slack.SlackDistributionRepositoryAccessor;
+import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelationRepositoryAccessor;
@@ -38,10 +39,14 @@ public class EmailChannelDescriptorTestIT extends DescriptorTestConfigTest<Email
     private EmailDescriptor emailDescriptor;
 
     @Override
-    public ChannelEventFactory createChannelEventFactory() {
+    public DatabaseEntity getDistributionEntity() {
         final MockEmailEntity mockEmailEntity = new MockEmailEntity();
         final EmailGroupDistributionConfigEntity emailGroupDistributionConfigEntity = mockEmailEntity.createEntity();
-        emailDistributionRepositoryAccessor.saveEntity(emailGroupDistributionConfigEntity);
+        return emailDistributionRepositoryAccessor.saveEntity(emailGroupDistributionConfigEntity);
+    }
+
+    @Override
+    public ChannelEventFactory createChannelEventFactory() {
         return new ChannelEventFactory(emailDistributionRepositoryAccessor, hipChatDistributionRepositoryAccessor, slackDistributionRepositoryAccessor,
             blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
     }
@@ -49,6 +54,13 @@ public class EmailChannelDescriptorTestIT extends DescriptorTestConfigTest<Email
     @Override
     public void cleanGlobalRepository() {
         emailGlobalRepository.deleteAll();
+    }
+
+    @Override
+    public void cleanDistributionRepositories() {
+        emailDistributionRepositoryAccessor.deleteAll();
+        hipChatDistributionRepositoryAccessor.deleteAll();
+        slackDistributionRepositoryAccessor.deleteAll();
     }
 
     @Override

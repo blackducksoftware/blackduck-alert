@@ -14,6 +14,7 @@ import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributi
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalRepository;
 import com.synopsys.integration.alert.database.channel.slack.SlackDistributionRepositoryAccessor;
+import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelationRepositoryAccessor;
@@ -38,11 +39,14 @@ public class HipChatDescriptorTestIT extends DescriptorTestConfigTest<HipChatDis
     private HipChatDescriptor hipChatDescriptor;
 
     @Override
-    public ChannelEventFactory createChannelEventFactory() {
+    public DatabaseEntity getDistributionEntity() {
         final MockHipChatEntity mockHipChatEntity = new MockHipChatEntity();
         final HipChatDistributionConfigEntity hipChatDistributionConfigEntity = mockHipChatEntity.createEntity();
-        hipChatDistributionRepositoryAccessor.saveEntity(hipChatDistributionConfigEntity);
+        return hipChatDistributionRepositoryAccessor.saveEntity(hipChatDistributionConfigEntity);
+    }
 
+    @Override
+    public ChannelEventFactory createChannelEventFactory() {
         return new ChannelEventFactory(emailDistributionRepositoryAccessor, hipChatDistributionRepositoryAccessor, slackDistributionRepositoryAccessor,
             blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
     }
@@ -50,6 +54,13 @@ public class HipChatDescriptorTestIT extends DescriptorTestConfigTest<HipChatDis
     @Override
     public void cleanGlobalRepository() {
         hipChatRepository.deleteAll();
+    }
+
+    @Override
+    public void cleanDistributionRepositories() {
+        emailDistributionRepositoryAccessor.deleteAll();
+        hipChatDistributionRepositoryAccessor.deleteAll();
+        slackDistributionRepositoryAccessor.deleteAll();
     }
 
     @Override

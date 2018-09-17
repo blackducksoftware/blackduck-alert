@@ -38,6 +38,7 @@ import com.synopsys.integration.alert.common.digest.model.ProjectData;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.RestApiType;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
+import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.entity.channel.DistributionChannelConfigEntity;
 import com.synopsys.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
@@ -69,9 +70,12 @@ public abstract class DescriptorTestConfigTest<R extends CommonDistributionConfi
         properties = new TestProperties();
         channelEventFactory = createChannelEventFactory();
         cleanGlobalRepository();
+        cleanDistributionRepositories();
     }
 
     public abstract void cleanGlobalRepository();
+
+    public abstract void cleanDistributionRepositories();
 
     public abstract void saveGlobalConfiguration();
 
@@ -79,12 +83,15 @@ public abstract class DescriptorTestConfigTest<R extends CommonDistributionConfi
 
     public abstract MockEntityUtil<E> getMockEntityUtil();
 
+    public abstract DatabaseEntity getDistributionEntity();
+
     @Test
     public void testCreateChannelEvent() throws Exception {
         final Collection<ProjectData> projectData = Arrays.asList(new ProjectData(FrequencyType.DAILY, "Test project", "1", Arrays.asList(), new HashMap<>()));
         final DigestModel digestModel = new DigestModel(projectData);
         final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
-        final ChannelEvent channelEvent = channelEventFactory.createChannelEvent(1L, 1L, getDescriptor().getDestinationName(), notificationContent);
+        DatabaseEntity distributionEntity = getDistributionEntity();
+        final ChannelEvent channelEvent = channelEventFactory.createChannelEvent(1L, distributionEntity.getId(), getDescriptor().getDestinationName(), notificationContent);
 
         assertEquals(Long.valueOf(1L), channelEvent.getCommonDistributionConfigId());
         assertEquals(36, channelEvent.getEventId().length());

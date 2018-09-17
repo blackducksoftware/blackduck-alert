@@ -40,16 +40,12 @@ import com.synopsys.integration.test.annotation.DatabaseConnectionTest;
 @TestPropertySource(locations = "classpath:spring-test.properties")
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class EmailDistributionTypeConverterTestIT {
-
     @Autowired
     private CommonDistributionRepository commonDistributionRepository;
-
     @Autowired
     private EmailGroupDistributionRepository emailGroupDistributionRepository;
-
     @Autowired
     private CommonTypeConverter commonTypeConverter;
-
     @Autowired
     private ContentConverter contentConverter;
 
