@@ -153,7 +153,6 @@ public class JsonExtractor {
     }
 
     private class PathNode extends Stringable {
-
         private final String key;
         private PathNode nextNode;
 
@@ -172,10 +171,6 @@ public class JsonExtractor {
 
         public void setNextNode(final PathNode nextNode) {
             this.nextNode = nextNode;
-        }
-
-        public boolean hasNext() {
-            return getNextNode() != null;
         }
     }
 }
