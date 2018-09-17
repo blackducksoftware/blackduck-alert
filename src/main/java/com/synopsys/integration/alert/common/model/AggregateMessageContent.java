@@ -29,23 +29,27 @@ import java.util.Optional;
 public class AggregateMessageContent extends LinkableItem {
     private final LinkableItem subTopic;
     private final List<CategoryItem> categoryItemList;
+    private final MessageContentKey messageContentKey;
 
     public AggregateMessageContent(final String name, final String value, final List<CategoryItem> categoryItemList) {
         super(name, value);
         this.subTopic = null;
         this.categoryItemList = categoryItemList;
+        this.messageContentKey = MessageContentKey.from(name, value);
     }
 
     public AggregateMessageContent(final String name, final String value, final String url, final List<CategoryItem> categoryItemList) {
         super(name, value, url);
         this.subTopic = null;
         this.categoryItemList = categoryItemList;
+        this.messageContentKey = MessageContentKey.from(name, value);
     }
 
     public AggregateMessageContent(final String name, final String value, final String url, final LinkableItem subTopic, final List<CategoryItem> categoryItemList) {
         super(name, value, url);
         this.subTopic = subTopic;
         this.categoryItemList = categoryItemList;
+        this.messageContentKey = MessageContentKey.from(name, value, subTopic.getName(), subTopic.getValue());
     }
 
     public Optional<LinkableItem> getSubTopic() {
@@ -54,5 +58,9 @@ public class AggregateMessageContent extends LinkableItem {
 
     public List<CategoryItem> getCategoryItemList() {
         return categoryItemList;
+    }
+
+    public MessageContentKey getKey() {
+        return messageContentKey;
     }
 }

@@ -29,7 +29,6 @@ import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 
 public abstract class MessageContentProcessor {
-
     private final FormatType formatType;
 
     public MessageContentProcessor(final FormatType formatType) {
@@ -40,5 +39,5 @@ public abstract class MessageContentProcessor {
         return formatType;
     }
 
-    public abstract List<AggregateMessageContent> process(List<AggregateMessageContent> contentList);
+    public abstract List<AggregateMessageContent> process(final List<AggregateMessageContent> contentList);
 }

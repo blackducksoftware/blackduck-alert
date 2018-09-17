@@ -42,6 +42,7 @@ import com.synopsys.integration.alert.common.field.StringHierarchicalField;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.common.model.LinkableItem;
+import com.synopsys.integration.alert.common.model.MessageContentKey;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.workflow.filter.JsonExtractor;
@@ -158,7 +159,6 @@ public abstract class MessageContentCollector {
         return jsonExtractor.createJsonFieldAccessor(notificationFields, notificationJson);
     }
 
-    // TODO think about how to maintain order
     private List<AggregateMessageContent> getContentsOrCreateIfDoesNotExist(final JsonFieldAccessor accessor, final List<HierarchicalField> notificationFields) {
         final List<AggregateMessageContent> aggregateMessageContentsForNotifications = new ArrayList<>();
 
@@ -205,18 +205,11 @@ public abstract class MessageContentCollector {
         return createLinkableItemsFromFields(accessor, valueField, urlField);
     }
 
-    // TODO create TopicKey class
     private AggregateMessageContent findTopicContent(final String topicName, final String topicValue, final String subTopicName, final String subTopicValue) {
+        final MessageContentKey contentKey = MessageContentKey.from(topicName, topicValue, subTopicName, subTopicValue);
         for (final AggregateMessageContent contentItem : collectedContent) {
-            if (contentItem.getName().equals(topicName) && contentItem.getValue().equals(topicValue)) {
-                if (contentItem.getSubTopic().isPresent()) {
-                    final LinkableItem subTopicItem = contentItem.getSubTopic().get();
-                    if (subTopicName != null && subTopicName.equals(subTopicItem.getName()) && subTopicValue != null && subTopicValue.equals(subTopicItem.getValue())) {
-                        return contentItem;
-                    }
-                } else if (subTopicName == null && subTopicValue == null) {
-                    return contentItem;
-                }
+            if (contentKey.equals(contentItem.getKey())) {
+                return contentItem;
             }
         }
         return null;

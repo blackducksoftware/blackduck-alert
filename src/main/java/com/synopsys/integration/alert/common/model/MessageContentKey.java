@@ -23,26 +23,26 @@
  */
 package com.synopsys.integration.alert.common.model;
 
-import java.util.Arrays;
-
 import com.synopsys.integration.util.Stringable;
 
-public final class CategoryKey extends Stringable {
-    private final String type;
+public final class MessageContentKey extends Stringable {
     private final String key;
 
-    private CategoryKey(final String type, final String key) {
-        this.type = type;
+    private MessageContentKey(final String key) {
         this.key = key;
     }
 
-    public static final CategoryKey from(final String type, final String... keyComponentArray) {
-        Arrays.sort(keyComponentArray);
-        return new CategoryKey(type, String.join("_", keyComponentArray));
+    public static MessageContentKey from(final String topicName, final String topicValue) {
+        final String partialKey = String.format("%s_%s", topicName, topicValue);
+        return new MessageContentKey(partialKey);
     }
 
-    public String getType() {
-        return type;
+    public static MessageContentKey from(final String topicName, final String topicValue, final String subTopicName, final String subTopicValue) {
+        if (subTopicName == null || subTopicValue == null) {
+            return from(topicName, topicValue);
+        }
+        final String fullKey = String.format("%s_%s_%s_%s", topicName, topicValue, subTopicName, subTopicValue);
+        return new MessageContentKey(fullKey);
     }
 
     public String getKey() {
