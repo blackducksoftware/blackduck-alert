@@ -19,9 +19,9 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.CategoryItem;
-import com.synopsys.integration.alert.common.workflow.processor.DefaultTopicFormatter;
-import com.synopsys.integration.alert.common.workflow.processor.DigestTopicFormatter;
-import com.synopsys.integration.alert.common.workflow.processor.TopicFormatter;
+import com.synopsys.integration.alert.common.workflow.processor.DefaultMessageContentProcessor;
+import com.synopsys.integration.alert.common.workflow.processor.DigestMessageContentProcessor;
+import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
@@ -33,7 +33,7 @@ public class BlackDuckPolicyTopicCollectorTest {
 
     private final Gson gson = new Gson();
     private final JsonExtractor jsonExtractor = new JsonExtractor(gson);
-    private final List<TopicFormatter> topicFormatterList = Arrays.asList(new DefaultTopicFormatter(), new DigestTopicFormatter());
+    private final List<MessageContentProcessor> messageContentProcessorList = Arrays.asList(new DefaultMessageContentProcessor(), new DigestMessageContentProcessor());
 
     @Test
     public void insertRuleViolationClearedNotificationTest() throws Exception {
@@ -95,7 +95,7 @@ public class BlackDuckPolicyTopicCollectorTest {
         final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
         final ProjectSyncTask projectSyncTask = Mockito.mock(ProjectSyncTask.class);
         final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask);
-        return new BlackDuckPolicyTopicCollector(jsonExtractor, topicFormatterList);
+        return new BlackDuckPolicyTopicCollector(jsonExtractor, messageContentProcessorList);
     }
 
     private String getNotificationContentFromFile(final String notificationJsonFileName) throws Exception {

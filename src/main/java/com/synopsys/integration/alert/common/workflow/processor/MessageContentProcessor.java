@@ -25,22 +25,20 @@ package com.synopsys.integration.alert.common.workflow.processor;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 
-@Component
-public class DefaultTopicFormatter extends TopicFormatter {
+public abstract class MessageContentProcessor {
 
-    @Autowired
-    public DefaultTopicFormatter() {
-        super(FormatType.DEFAULT);
+    private final FormatType formatType;
+
+    public MessageContentProcessor(final FormatType formatType) {
+        this.formatType = formatType;
     }
 
-    @Override
-    public List<AggregateMessageContent> format(final List<AggregateMessageContent> contentList) {
-        return contentList;
+    public FormatType getFormat() {
+        return formatType;
     }
+
+    public abstract List<AggregateMessageContent> process(List<AggregateMessageContent> contentList);
 }

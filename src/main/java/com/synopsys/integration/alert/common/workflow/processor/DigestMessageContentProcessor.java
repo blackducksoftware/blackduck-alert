@@ -43,12 +43,12 @@ import com.synopsys.integration.alert.common.model.CategoryKey;
 import com.synopsys.integration.alert.common.model.LinkableItem;
 
 @Component
-public class DigestTopicFormatter extends TopicFormatter {
+public class DigestMessageContentProcessor extends MessageContentProcessor {
 
     private final Map<ItemOperation, BiFunction<Map<CategoryKey, CategoryItem>, CategoryItem, Void>> operationFunctionMap;
 
     @Autowired
-    public DigestTopicFormatter() {
+    public DigestMessageContentProcessor() {
         super(FormatType.DIGEST);
         final BiFunction<Map<CategoryKey, CategoryItem>, CategoryItem, Void> addFunction = createAddFunction();
         final BiFunction<Map<CategoryKey, CategoryItem>, CategoryItem, Void> deleteFunction = createDeleteFunction();
@@ -59,7 +59,7 @@ public class DigestTopicFormatter extends TopicFormatter {
     }
 
     @Override
-    public List<AggregateMessageContent> format(final List<AggregateMessageContent> contentList) {
+    public List<AggregateMessageContent> process(final List<AggregateMessageContent> contentList) {
         final List<AggregateMessageContent> collapsedTopicList = new ArrayList<>(contentList.size());
         for (final AggregateMessageContent topic : contentList) {
             final Map<CategoryKey, CategoryItem> categoryDataCache = new LinkedHashMap<>();
