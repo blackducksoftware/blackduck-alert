@@ -114,7 +114,8 @@ public class BlackDuckPolicyMessageContentCollectorTest {
         assertFalse(aggregateMessageContentList.isEmpty());
     }
 
-    private void insertAndAssertCountsOnTopic(final BlackDuckPolicyMessageContentCollector collector, final NotificationContent notification, final String topicName, final int expectedCategoryItemsCount, final int expectedLinkableItemsCount) {
+    private void insertAndAssertCountsOnTopic(final BlackDuckPolicyMessageContentCollector collector, final NotificationContent notification, final String topicName, final int expectedCategoryItemsCount,
+        final int expectedLinkableItemsCount) {
         collector.insert(notification);
         final AggregateMessageContent content = collector.collect(FormatType.DEFAULT).stream().filter(topicContent -> topicName.equals(topicContent.getValue())).findFirst().orElse(null);
         final List<CategoryItem> items = content.getCategoryItemList();
