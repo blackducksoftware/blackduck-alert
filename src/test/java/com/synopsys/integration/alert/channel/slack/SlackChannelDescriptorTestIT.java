@@ -12,6 +12,7 @@ import com.synopsys.integration.alert.database.channel.email.EmailDistributionRe
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
 import com.synopsys.integration.alert.database.channel.slack.SlackDistributionRepositoryAccessor;
+import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserRepositoryAccessor;
@@ -35,11 +36,14 @@ public class SlackChannelDescriptorTestIT extends DescriptorTestConfigTest<Slack
     private SlackDescriptor slackDescriptor;
 
     @Override
-    public ChannelEventFactory createChannelEventFactory() {
+    public DatabaseEntity getDistributionEntity() {
         final MockSlackEntity mockSlackEntity = new MockSlackEntity();
         final SlackDistributionConfigEntity slackDistributionConfigEntity = mockSlackEntity.createEntity();
-        slackDistributionRepositoryAccessor.saveEntity(slackDistributionConfigEntity);
+        return slackDistributionRepositoryAccessor.saveEntity(slackDistributionConfigEntity);
+    }
 
+    @Override
+    public ChannelEventFactory createChannelEventFactory() {
         return new ChannelEventFactory(emailDistributionRepositoryAccessor, hipChatDistributionRepositoryAccessor, slackDistributionRepositoryAccessor,
             blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
     }
@@ -47,6 +51,13 @@ public class SlackChannelDescriptorTestIT extends DescriptorTestConfigTest<Slack
     @Override
     public void cleanGlobalRepository() {
         // do nothing no global configuration
+    }
+
+    @Override
+    public void cleanDistributionRepositories() {
+        emailDistributionRepositoryAccessor.deleteAll();
+        hipChatDistributionRepositoryAccessor.deleteAll();
+        slackDistributionRepositoryAccessor.deleteAll();
     }
 
     @Override

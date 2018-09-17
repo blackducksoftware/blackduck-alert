@@ -54,5 +54,9 @@ public abstract class RepositoryAccessor {
         repository.deleteById(id);
     }
 
+    public void deleteAll() {
+        repository.deleteAllInBatch();
+    }
+
     public abstract DatabaseEntity saveEntity(final DatabaseEntity entity);
 }
