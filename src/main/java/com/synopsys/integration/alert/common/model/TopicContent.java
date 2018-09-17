@@ -26,6 +26,7 @@ package com.synopsys.integration.alert.common.model;
 import java.util.List;
 import java.util.Optional;
 
+// TODO AggregateMessageContent
 public class TopicContent extends LinkableItem {
     private final LinkableItem subTopic;
     private final List<CategoryItem> categoryItemList;
