@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.workflow.processor;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -34,6 +35,7 @@ import com.synopsys.integration.alert.channel.event.NotificationToChannelEventCo
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.model.TopicContent;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
+import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.workflow.filter.NotificationFilter;
 
 @Component
@@ -53,7 +55,7 @@ public class NotificationProcessor {
         final Collection<NotificationContent> filteredNotifications = notificationFilter.extractApplicableNotifications(frequencyType, notificationList);
         // TODO convert notification content to topic contents.  Provider will be responsible for this.
         // TODO only collapse if the format is of type DIGEST.
-        final List<TopicContent> topicContentList = jobProcessor.processNotifications(frequencyType, notificationList);
+        final Map<CommonDistributionConfig, List<TopicContent>> topicContentList = jobProcessor.processNotifications(frequencyType, notificationList);
 
         final List<ChannelEvent> notificationEvents = notificationToEventConverter.convertToEvents(filteredNotifications);
         return notificationEvents;
