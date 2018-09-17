@@ -19,26 +19,43 @@ import java.util.Collections;
 import java.util.Date;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.core.convert.support.DefaultConversionService;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.channel.email.EmailChannelEvent;
+import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.channel.event.ChannelEventFactory;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.digest.model.DigestModel;
 import com.synopsys.integration.alert.common.digest.model.ProjectData;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.database.channel.email.EmailGroupDistributionRepository;
+import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionRepository;
+import com.synopsys.integration.alert.database.channel.slack.SlackDistributionRepository;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
+import com.synopsys.integration.alert.provider.blackduck.mock.MockBlackDuckProjectRepositoryAccessor;
+import com.synopsys.integration.alert.provider.blackduck.mock.MockBlackDuckUserRepositoryAccessor;
+import com.synopsys.integration.alert.provider.blackduck.mock.MockUserProjectRelationRepositoryAccessor;
 import com.synopsys.integration.rest.RestConstants;
 
 public class ChannelEventFactoryTest {
-    private static final String DISTRIBUTION_TYPE = "TYPE";
 
     @Test
-    public void createEventWithChannelManagerTest() {
+    public void createEmailEvent() {
+        final EmailGroupDistributionRepository emailGroupDistributionRepository = Mockito.mock(EmailGroupDistributionRepository.class);
+        final HipChatDistributionRepository hipChatDistributionRepository = Mockito.mock(HipChatDistributionRepository.class);
+        final SlackDistributionRepository slackDistributionRepository = Mockito.mock(SlackDistributionRepository.class);
+
+        final MockBlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor = new MockBlackDuckProjectRepositoryAccessor();
+        final MockBlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor = new MockBlackDuckUserRepositoryAccessor();
+        final MockUserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor = new MockUserProjectRelationRepositoryAccessor();
+
         final Gson gson = new Gson();
         final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
-        final ChannelEventFactory factory = new ChannelEventFactory();
+        final ChannelEventFactory factory = new ChannelEventFactory(emailGroupDistributionRepository, hipChatDistributionRepository, slackDistributionRepository,
+            blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
 
         final Long id = 25L;
 
@@ -46,10 +63,10 @@ public class ChannelEventFactoryTest {
         final DigestModel digestModel = new DigestModel(projectData);
 
         final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
-        final ChannelEvent expected = new ChannelEvent(DISTRIBUTION_TYPE, RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
-        notificationContent.getContent(), id, 1L);
+        final EmailChannelEvent expected = new EmailChannelEvent(RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
+            notificationContent.getContent(), id, 1L, null, null);
 
-        final ChannelEvent event = factory.createChannelEvent(id, "TYPE", notificationContent);
+        final ChannelEvent event = factory.createChannelEvent(id, EmailGroupChannel.COMPONENT_NAME, notificationContent);
         assertEquals(expected.getAuditEntryId(), event.getAuditEntryId());
         assertEquals(expected.getDestination(), event.getDestination());
         assertEquals(expected.getContent(), event.getContent());

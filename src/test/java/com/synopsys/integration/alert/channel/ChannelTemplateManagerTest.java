@@ -13,8 +13,7 @@ import org.springframework.jms.core.JmsTemplate;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.audit.mock.MockAuditEntryEntity;
-import com.synopsys.integration.alert.channel.event.ChannelEvent;
-import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
+import com.synopsys.integration.alert.channel.hipchat.HipChatChannelEvent;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.digest.model.DigestModel;
 import com.synopsys.integration.alert.common.digest.model.ProjectData;
@@ -49,8 +48,8 @@ public class ChannelTemplateManagerTest {
         final ProjectData projectData = new ProjectData(FrequencyType.DAILY, "test", "version", Arrays.asList(), null);
         final DigestModel digestModel = new DigestModel(Arrays.asList(projectData));
         final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
-        final ChannelEvent hipChatEvent = new ChannelEvent(HipChatChannel.COMPONENT_NAME, RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
-            notificationContent.getContent(), 1L, 1L);
+        final HipChatChannelEvent hipChatEvent = new HipChatChannelEvent(RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
+            notificationContent.getContent(), 1L, 1L, 20, false, "red");
         channelTemplateManager.sendEvents(Arrays.asList(hipChatEvent));
     }
 

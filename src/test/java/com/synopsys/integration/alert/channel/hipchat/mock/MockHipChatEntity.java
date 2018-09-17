@@ -11,15 +11,21 @@
  */
 package com.synopsys.integration.alert.channel.hipchat.mock;
 
+import java.util.Collections;
+
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.mock.entity.MockEntityUtil;
+import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
+import com.synopsys.integration.alert.mock.entity.MockEntityUtil;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.web.channel.model.HipChatDistributionConfig;
+import com.synopsys.integration.alert.web.model.Config;
 
 public class MockHipChatEntity extends MockEntityUtil<HipChatDistributionConfigEntity> {
+    private final Long id;
     private Integer roomId;
     private Boolean notify;
     private String color;
-    private final Long id;
 
     public MockHipChatEntity() {
         this(11, false, "black", 1L);
@@ -36,6 +42,10 @@ public class MockHipChatEntity extends MockEntityUtil<HipChatDistributionConfigE
         return roomId;
     }
 
+    public void setRoomId(final Integer roomId) {
+        this.roomId = roomId;
+    }
+
     public Boolean isNotify() {
         return notify;
     }
@@ -44,9 +54,24 @@ public class MockHipChatEntity extends MockEntityUtil<HipChatDistributionConfigE
         return color;
     }
 
+    public void setColor(final String color) {
+        this.color = color;
+    }
+
     @Override
     public Long getId() {
         return id;
+    }
+
+    @Override
+    public Config createConfig() {
+        return new HipChatDistributionConfig(id.toString(), roomId.toString(), notify, color, "0L", HipChatChannel.COMPONENT_NAME, "HipChatTest", BlackDuckProvider.COMPONENT_NAME, "real_time", "false", Collections.emptyList(),
+            Collections.emptyList());
+    }
+
+    @Override
+    public Config createEmptyConfig() {
+        return new HipChatDistributionConfig();
     }
 
     @Override
@@ -73,14 +98,6 @@ public class MockHipChatEntity extends MockEntityUtil<HipChatDistributionConfigE
 
     public void setNotify(final Boolean notify) {
         this.notify = notify;
-    }
-
-    public void setRoomId(final Integer roomId) {
-        this.roomId = roomId;
-    }
-
-    public void setColor(final String color) {
-        this.color = color;
     }
 
 }

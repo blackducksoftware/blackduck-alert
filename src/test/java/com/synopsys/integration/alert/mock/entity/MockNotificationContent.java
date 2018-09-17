@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
+import com.synopsys.integration.alert.web.model.Config;
 
 public class MockNotificationContent extends MockEntityUtil<NotificationContent> {
 
@@ -23,6 +24,16 @@ public class MockNotificationContent extends MockEntityUtil<NotificationContent>
         this.notificationType = notificationType;
         this.content = content;
         this.id = id;
+    }
+
+    @Override
+    public Config createConfig() {
+        return null;
+    }
+
+    @Override
+    public Config createEmptyConfig() {
+        return null;
     }
 
     @Override

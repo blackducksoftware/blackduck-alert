@@ -30,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.RestApi;
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.scheduling.SchedulingRepositoryAccessor;
 import com.synopsys.integration.alert.web.component.scheduling.SchedulingConfig;
 import com.synopsys.integration.alert.web.model.Config;
@@ -75,7 +74,7 @@ public class SchedulingRestApi extends RestApi {
     }
 
     @Override
-    public void testConfig(final DatabaseEntity entity) throws IntegrationException {
+    public void testConfig(final Config restModel) throws IntegrationException {
         throw new IntegrationException("Should not be implemented");
     }
 

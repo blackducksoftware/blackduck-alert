@@ -19,6 +19,7 @@ import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.database.entity.NotificationTypeEntity;
 import com.synopsys.integration.alert.database.relation.DistributionNotificationTypeRelation;
 import com.synopsys.integration.alert.mock.entity.MockEntityUtil;
+import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 public class NotificationTypeMockUtils extends MockEntityUtil<NotificationTypeEntity> {
@@ -61,13 +62,23 @@ public class NotificationTypeMockUtils extends MockEntityUtil<NotificationTypeEn
         this.type = type;
     }
 
+    @Override
+    public Long getId() {
+        return id;
+    }
+
     public void setId(final Long id) {
         this.id = id;
     }
 
     @Override
-    public Long getId() {
-        return id;
+    public Config createConfig() {
+        return null;
+    }
+
+    @Override
+    public Config createEmptyConfig() {
+        return null;
     }
 
     @Override

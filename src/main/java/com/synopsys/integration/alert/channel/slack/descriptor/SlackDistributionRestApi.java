@@ -29,13 +29,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.channel.event.ChannelEventFactory;
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
+import com.synopsys.integration.alert.channel.slack.SlackChannelEvent;
 import com.synopsys.integration.alert.common.descriptor.config.RestApi;
-import com.synopsys.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
 import com.synopsys.integration.alert.database.channel.slack.SlackDistributionRepositoryAccessor;
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.web.channel.model.SlackDistributionConfig;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
@@ -47,7 +45,7 @@ public class SlackDistributionRestApi extends RestApi {
 
     @Autowired
     public SlackDistributionRestApi(final SlackDistributionTypeConverter databaseContentConverter, final SlackDistributionRepositoryAccessor repositoryAccessor, final ChannelEventFactory channelEventFactory,
-    final SlackChannel slackChannel) {
+        final SlackChannel slackChannel) {
         super(databaseContentConverter, repositoryAccessor);
         this.channelEventFactory = channelEventFactory;
         this.slackChannel = slackChannel;
@@ -66,10 +64,9 @@ public class SlackDistributionRestApi extends RestApi {
     }
 
     @Override
-    public void testConfig(final DatabaseEntity entity) throws IntegrationException {
-        final SlackDistributionConfigEntity slackEntity = (SlackDistributionConfigEntity) entity;
-        final ChannelEvent event = channelEventFactory.createChannelTestEvent(SlackChannel.COMPONENT_NAME);
-        slackChannel.sendAuditedMessage(event, slackEntity);
+    public void testConfig(final Config restModel) throws IntegrationException {
+        final SlackChannelEvent event = channelEventFactory.createSlackChannelTestEvent(restModel);
+        slackChannel.sendAuditedMessage(event);
     }
 
 }

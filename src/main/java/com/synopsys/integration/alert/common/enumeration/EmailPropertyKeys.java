@@ -28,7 +28,7 @@ public enum EmailPropertyKeys {
     EMAIL_LOGO_IMAGE("logo.image"),
     // keys for alert descriptor data.
     TEMPLATE_KEY_BLACKDUCK_SERVER_URL("blackduck_server_url"),
-    TEMPLATE_KEY_BLACKDUCK_GROUP_NAME("blackduck_group_name"),
+    TEMPLATE_KEY_BLACKDUCK_PROJECT_NAME("blackduck_project_name"),
     TEMPLATE_KEY_SUBJECT_LINE("subject_line"),
     TEMPLATE_KEY_TOPIC("topicsList"),
     TEMPLATE_KEY_START_DATE("startDate"),

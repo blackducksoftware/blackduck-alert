@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.mock.entity.MockEntityUtil;
+import com.synopsys.integration.alert.web.model.Config;
 
 public class MockAuditEntryEntity extends MockEntityUtil<AuditEntryEntity> {
     private Long commonConfigId;
@@ -35,48 +36,53 @@ public class MockAuditEntryEntity extends MockEntityUtil<AuditEntryEntity> {
         return commonConfigId;
     }
 
-    public Date getTimeCreated() {
-        return timeCreated;
-    }
-
-    public Date getTimeLastSent() {
-        return timeLastSent;
-    }
-
-    public AuditEntryStatus getStatus() {
-        return status;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    public String getErrorStackTrace() {
-        return errorStackTrace;
-    }
-
     public void setCommonConfigId(final Long commonConfigId) {
         this.commonConfigId = commonConfigId;
+    }
+
+    public Date getTimeCreated() {
+        return timeCreated;
     }
 
     public void setTimeCreated(final Date timeCreated) {
         this.timeCreated = timeCreated;
     }
 
+    public Date getTimeLastSent() {
+        return timeLastSent;
+    }
+
     public void setTimeLastSent(final Date timeLastSent) {
         this.timeLastSent = timeLastSent;
+    }
+
+    public AuditEntryStatus getStatus() {
+        return status;
     }
 
     public void setStatus(final AuditEntryStatus status) {
         this.status = status;
     }
 
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
     public void setErrorMessage(final String errorMessage) {
         this.errorMessage = errorMessage;
     }
 
+    public String getErrorStackTrace() {
+        return errorStackTrace;
+    }
+
     public void setErrorStackTrace(final String errorStackTrace) {
         this.errorStackTrace = errorStackTrace;
+    }
+
+    @Override
+    public Long getId() {
+        return id;
     }
 
     public void setId(final Long id) {
@@ -84,8 +90,13 @@ public class MockAuditEntryEntity extends MockEntityUtil<AuditEntryEntity> {
     }
 
     @Override
-    public Long getId() {
-        return id;
+    public Config createConfig() {
+        return null;
+    }
+
+    @Override
+    public Config createEmptyConfig() {
+        return null;
     }
 
     @Override

@@ -41,43 +41,35 @@ import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
-import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
-import com.synopsys.integration.alert.database.entity.channel.DistributionChannelConfigEntity;
 import com.synopsys.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
-import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.alert.workflow.MessageReceiver;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 @Transactional
-public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C extends DistributionChannelConfigEntity> extends MessageReceiver<ChannelEvent> {
+public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, E extends ChannelEvent> extends MessageReceiver<E> {
     private static final Logger logger = LoggerFactory.getLogger(DistributionChannel.class);
 
     private final JpaRepository<G, Long> globalRepository;
-    private final JpaRepository<C, Long> distributionRepository;
-    private final CommonDistributionRepository commonDistributionRepository;
     private final AuditEntryRepository auditEntryRepository;
     private final AlertProperties alertProperties;
     private final BlackDuckProperties blackDuckProperties;
 
     public DistributionChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditEntryRepository auditEntryRepository, final JpaRepository<G, Long> globalRepository,
-            final JpaRepository<C, Long> distributionRepository, final CommonDistributionRepository commonDistributionRepository) {
-        super(gson, ChannelEvent.class);
+        final Class eventClass) {
+        super(gson, eventClass);
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
         this.auditEntryRepository = auditEntryRepository;
         this.globalRepository = globalRepository;
-        this.distributionRepository = distributionRepository;
-        this.commonDistributionRepository = commonDistributionRepository;
     }
+
+    public abstract String getDistributionType();
 
     public AuditEntryRepository getAuditEntryRepository() {
         return auditEntryRepository;
-    }
-
-    public CommonDistributionRepository getCommonDistributionRepository() {
-        return commonDistributionRepository;
     }
 
     public AlertProperties getAlertProperties() {
@@ -101,29 +93,22 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C
     }
 
     @Override
-    public void handleEvent(final ChannelEvent event) {
-        final Long eventDistributionId = event.getCommonDistributionConfigId();
-        final Optional<CommonDistributionConfigEntity> commonDistributionEntity = getCommonDistributionRepository().findById(eventDistributionId);
-        if (commonDistributionEntity.isPresent()) {
-            if (event.getDestination().equals(commonDistributionEntity.get().getDistributionType())) {
-                try {
-                    final Long channelDistributionConfigId = commonDistributionEntity.get().getDistributionConfigId();
-                    final C channelDistributionEntity = distributionRepository.getOne(channelDistributionConfigId);
-                    sendAuditedMessage(event, channelDistributionEntity);
-                } catch (final IntegrationException ex) {
-                    logger.error("There was an error sending the message.", ex);
-                }
-            } else {
-                logger.warn("Received an event of type '{}', but the retrieved configuration was for an event of type '{}'.", event.getDestination(), commonDistributionEntity.get().getDistributionType());
+    public void handleEvent(final E event) {
+        if (event.getDestination().equals(getDistributionType())) {
+            try {
+                sendAuditedMessage(event);
+            } catch (final IntegrationException ex) {
+                logger.error("There was an error sending the message.", ex);
             }
         } else {
-            logger.error("Event distribution ID not found {}", eventDistributionId);
+            logger.warn("Received an event of type '{}', but this channel is for type '{}'.", event.getDestination(), getDistributionType());
         }
+
     }
 
-    public void sendAuditedMessage(final ChannelEvent event, final C config) throws IntegrationException {
+    public void sendAuditedMessage(final E event) throws IntegrationException {
         try {
-            sendMessage(event, config);
+            sendMessage(event);
             setAuditEntrySuccess(event.getAuditEntryId());
         } catch (final IntegrationRestException irex) {
             setAuditEntryFailure(event.getAuditEntryId(), irex.getMessage(), irex);
@@ -137,13 +122,13 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, C
         }
     }
 
-    public abstract void sendMessage(final ChannelEvent event, final C config) throws IntegrationException;
+    public abstract void sendMessage(final E event) throws IntegrationException;
 
-    public String testGlobalConfig(final G entity) throws IntegrationException {
-        if (entity != null) {
+    public String testGlobalConfig(final Config restModel) throws IntegrationException {
+        if (restModel != null) {
             throw new AlertException("Test method not implemented.");
         }
-        return "The provided entity was null.";
+        return "The provided config was null.";
     }
 
     public void setAuditEntrySuccess(final Long auditEntryId) {

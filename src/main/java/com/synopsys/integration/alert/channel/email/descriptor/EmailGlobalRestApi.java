@@ -31,9 +31,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
 import com.synopsys.integration.alert.common.descriptor.config.RestApi;
-import com.synopsys.integration.alert.database.channel.email.EmailGlobalConfigEntity;
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalRepositoryAccessor;
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.web.channel.model.EmailGlobalConfig;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
@@ -41,12 +39,11 @@ import com.synopsys.integration.exception.IntegrationException;
 @Component
 public class EmailGlobalRestApi extends RestApi {
     public static final String NOT_AN_INTEGER = "Not an Integer.";
-
     private final EmailGroupChannel emailGroupChannel;
 
     @Autowired
     public EmailGlobalRestApi(final EmailGlobalTypeConverter databaseContentConverter, final EmailGlobalRepositoryAccessor repositoryAccessor, final EmailGlobalStartupComponent startupComponent,
-            final EmailGroupChannel emailGroupChannel) {
+        final EmailGroupChannel emailGroupChannel) {
         super(databaseContentConverter, repositoryAccessor, startupComponent);
         this.emailGroupChannel = emailGroupChannel;
     }
@@ -68,9 +65,8 @@ public class EmailGlobalRestApi extends RestApi {
     }
 
     @Override
-    public void testConfig(final DatabaseEntity entity) throws IntegrationException {
-        final EmailGlobalConfigEntity emailEntity = (EmailGlobalConfigEntity) entity;
-        emailGroupChannel.testGlobalConfig(emailEntity);
+    public void testConfig(final Config restModel) throws IntegrationException {
+        emailGroupChannel.testGlobalConfig(restModel);
     }
 
 }

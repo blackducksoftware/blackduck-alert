@@ -15,8 +15,13 @@ import org.json.JSONException;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+import com.synopsys.integration.alert.web.model.Config;
 
 public abstract class MockGlobalEntityUtil<GE extends DatabaseEntity> implements MockUtils {
+
+    public abstract Config createGlobalConfig();
+
+    public abstract Config createEmptyGlobalConfig();
 
     public abstract GE createGlobalEntity();
 

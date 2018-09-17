@@ -121,8 +121,7 @@ public class DescriptorConfigActions {
     }
 
     public String testConfig(final Config config, final RestApi restApi) throws IntegrationException {
-        final DatabaseEntity entity = restApi.populateEntityFromConfig(config);
-        restApi.testConfig(entity);
+        restApi.testConfig(config);
         return "Succesfully sent test message.";
     }
 
