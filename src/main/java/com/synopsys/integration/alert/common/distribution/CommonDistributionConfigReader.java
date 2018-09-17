@@ -37,7 +37,6 @@ import com.synopsys.integration.alert.database.entity.repository.CommonDistribut
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 
 @Component
-@Transactional
 public class CommonDistributionConfigReader {
     private final CommonDistributionRepository commonDistributionRepository;
     private final CommonTypeConverter commonTypeConverter;
@@ -48,6 +47,7 @@ public class CommonDistributionConfigReader {
         this.commonTypeConverter = commonTypeConverter;
     }
 
+    @Transactional
     public List<CommonDistributionConfig> getPopulatedConfigs() {
         final List<CommonDistributionConfigEntity> foundEntities = commonDistributionRepository.findAll();
 
