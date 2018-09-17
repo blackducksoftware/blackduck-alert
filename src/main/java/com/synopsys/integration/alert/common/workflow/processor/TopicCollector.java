@@ -51,14 +51,14 @@ import com.synopsys.integration.alert.workflow.filter.JsonFieldAccessor;
 public abstract class TopicCollector {
     private final JsonExtractor jsonExtractor;
     private final Collection<ProviderContentType> contentTypes;
-    private final Map<FormatType, TopicFormatter> topicFormatterMap;
+    private final Map<FormatType, MessageContentProcessor> messageContentProcessorMap;
     private final Set<String> supportedNotificationTypes;
     private final List<AggregateMessageContent> collectedContent;
 
-    public TopicCollector(final JsonExtractor jsonExtractor, final List<TopicFormatter> topicFormatterList, final Collection<ProviderContentType> contentTypes) {
+    public TopicCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList, final Collection<ProviderContentType> contentTypes) {
         this.jsonExtractor = jsonExtractor;
         this.contentTypes = contentTypes;
-        this.topicFormatterMap = topicFormatterList.stream().collect(Collectors.toMap(TopicFormatter::getFormat, Function.identity()));
+        this.messageContentProcessorMap = messageContentProcessorList.stream().collect(Collectors.toMap(MessageContentProcessor::getFormat, Function.identity()));
         this.supportedNotificationTypes = contentTypes.stream().map(ProviderContentType::getNotificationType).collect(Collectors.toSet());
         this.collectedContent = new ArrayList<>();
     }
@@ -78,9 +78,9 @@ public abstract class TopicCollector {
     }
 
     public List<AggregateMessageContent> collect(final FormatType format) {
-        if (topicFormatterMap.containsKey(format)) {
-            final TopicFormatter formatter = topicFormatterMap.get(format);
-            return formatter.format(collectedContent);
+        if (messageContentProcessorMap.containsKey(format)) {
+            final MessageContentProcessor processor = messageContentProcessorMap.get(format);
+            return processor.process(collectedContent);
         } else {
             return Collections.emptyList();
         }

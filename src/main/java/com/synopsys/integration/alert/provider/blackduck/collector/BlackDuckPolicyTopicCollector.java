@@ -39,7 +39,7 @@ import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.common.model.CategoryKey;
 import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.common.workflow.processor.TopicCollector;
-import com.synopsys.integration.alert.common.workflow.processor.TopicFormatter;
+import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderContentTypes;
 import com.synopsys.integration.alert.workflow.filter.JsonExtractor;
 import com.synopsys.integration.alert.workflow.filter.JsonFieldAccessor;
@@ -50,8 +50,8 @@ import com.synopsys.integration.blackduck.api.generated.enumeration.Notification
 public class BlackDuckPolicyTopicCollector extends TopicCollector {
 
     @Autowired
-    public BlackDuckPolicyTopicCollector(final JsonExtractor jsonExtractor, final List<TopicFormatter> topicFormatterList) {
-        super(jsonExtractor, topicFormatterList, Arrays.asList(BlackDuckProviderContentTypes.POLICY_OVERRIDE, BlackDuckProviderContentTypes.RULE_VIOLATION, BlackDuckProviderContentTypes.RULE_VIOLATION_CLEARED));
+    public BlackDuckPolicyTopicCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList) {
+        super(jsonExtractor, messageContentProcessorList, Arrays.asList(BlackDuckProviderContentTypes.POLICY_OVERRIDE, BlackDuckProviderContentTypes.RULE_VIOLATION, BlackDuckProviderContentTypes.RULE_VIOLATION_CLEARED));
     }
 
     @Override
