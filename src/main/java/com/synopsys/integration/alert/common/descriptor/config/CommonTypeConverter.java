@@ -36,7 +36,6 @@ import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.web.model.Config;
 
 @Component
-@Transactional
 public class CommonTypeConverter {
     private final ConfiguredProjectsActions configuredProjectsActions;
     private final NotificationTypesActions notificationTypesActions;
@@ -49,6 +48,7 @@ public class CommonTypeConverter {
         this.contentConverter = contentConverter;
     }
 
+    @Transactional
     public Config populateCommonFieldsFromEntity(final CommonDistributionConfig channelConfig, final CommonDistributionConfigEntity commonEntity) {
         channelConfig.setId(contentConverter.getStringValue(commonEntity.getId()));
         channelConfig.setDistributionType(commonEntity.getDistributionType());

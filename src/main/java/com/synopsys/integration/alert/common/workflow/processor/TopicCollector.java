@@ -47,6 +47,7 @@ import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.workflow.filter.JsonExtractor;
 import com.synopsys.integration.alert.workflow.filter.JsonFieldAccessor;
 
+// TODO MessageContentCollector
 public abstract class TopicCollector {
     private final JsonExtractor jsonExtractor;
     private final Collection<ProviderContentType> contentTypes;
