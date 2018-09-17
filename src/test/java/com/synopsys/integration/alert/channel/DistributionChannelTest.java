@@ -131,7 +131,7 @@ public class DistributionChannelTest extends ChannelTest {
         final Config globalConfig = Mockito.mock(Config.class);
 
         final String nullMessage = slackChannel.testGlobalConfig(null);
-        assertEquals("The provided entity was null.", nullMessage);
+        assertEquals("The provided config was null.", nullMessage);
         try {
             slackChannel.testGlobalConfig(globalConfig);
         } catch (final AlertException ex) {

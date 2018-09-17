@@ -6,32 +6,44 @@ import com.synopsys.integration.alert.TestPropertyKey;
 import com.synopsys.integration.alert.channel.DescriptorTestConfigTest;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.email.mock.MockEmailEntity;
+import com.synopsys.integration.alert.channel.event.ChannelEventFactory;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
+import com.synopsys.integration.alert.database.channel.email.EmailDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalConfigEntity;
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalRepository;
 import com.synopsys.integration.alert.database.channel.email.EmailGroupDistributionConfigEntity;
-import com.synopsys.integration.alert.database.channel.email.EmailGroupDistributionRepository;
-import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionRepository;
-import com.synopsys.integration.alert.database.channel.slack.SlackDistributionRepository;
+import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionRepositoryAccessor;
+import com.synopsys.integration.alert.database.channel.slack.SlackDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelationRepositoryAccessor;
 import com.synopsys.integration.alert.web.channel.model.EmailDistributionConfig;
 
 public class EmailChannelDescriptorTestIT extends DescriptorTestConfigTest<EmailDistributionConfig, EmailGroupDistributionConfigEntity, EmailGlobalConfigEntity> {
-    private final EmailGlobalRepository emailGlobalRepository;
-    private final EmailDescriptor emailDescriptor;
-
     @Autowired
-    public EmailChannelDescriptorTestIT(final EmailGroupDistributionRepository emailGroupDistributionRepository,
-        final HipChatDistributionRepository hipChatDistributionRepository,
-        final SlackDistributionRepository slackDistributionRepository,
-        final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor,
-        final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor,
-        final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor, final EmailGlobalRepository emailGlobalRepository, final EmailDescriptor emailDescriptor) {
-        super(emailGroupDistributionRepository, hipChatDistributionRepository, slackDistributionRepository, blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
-        this.emailGlobalRepository = emailGlobalRepository;
-        this.emailDescriptor = emailDescriptor;
+    private EmailDistributionRepositoryAccessor emailDistributionRepositoryAccessor;
+    @Autowired
+    private HipChatDistributionRepositoryAccessor hipChatDistributionRepositoryAccessor;
+    @Autowired
+    private SlackDistributionRepositoryAccessor slackDistributionRepositoryAccessor;
+    @Autowired
+    private BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
+    @Autowired
+    private BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor;
+    @Autowired
+    private UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor;
+    @Autowired
+    private EmailGlobalRepository emailGlobalRepository;
+    @Autowired
+    private EmailDescriptor emailDescriptor;
+
+    @Override
+    public ChannelEventFactory createChannelEventFactory() {
+        final MockEmailEntity mockEmailEntity = new MockEmailEntity();
+        final EmailGroupDistributionConfigEntity emailGroupDistributionConfigEntity = mockEmailEntity.createEntity();
+        emailDistributionRepositoryAccessor.saveEntity(emailGroupDistributionConfigEntity);
+        return new ChannelEventFactory(emailDistributionRepositoryAccessor, hipChatDistributionRepositoryAccessor, slackDistributionRepositoryAccessor,
+            blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
     }
 
     @Override

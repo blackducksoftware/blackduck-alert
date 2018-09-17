@@ -74,8 +74,8 @@ public class AuditEntryActions {
 
     @Autowired
     public AuditEntryActions(final AuditEntryRepository auditEntryRepository, final NotificationManager notificationManager, final AuditNotificationRepository auditNotificationRepository,
-    final CommonDistributionRepository commonDistributionRepository, final NotificationContentConverter notificationContentConverter,
-    final ChannelEventFactory channelEventFactory, final ChannelTemplateManager channelTemplateManager) {
+        final CommonDistributionRepository commonDistributionRepository, final NotificationContentConverter notificationContentConverter,
+        final ChannelEventFactory channelEventFactory, final ChannelTemplateManager channelTemplateManager) {
         this.auditEntryRepository = auditEntryRepository;
         this.notificationManager = notificationManager;
         this.auditNotificationRepository = auditNotificationRepository;
@@ -176,17 +176,22 @@ public class AuditEntryActions {
         final List<Long> notificationIds = relations.stream().map(AuditNotificationRelation::getNotificationId).collect(Collectors.toList());
         final List<NotificationContent> notifications = notificationManager.findByIds(notificationIds);
         final Long commonConfigId = auditEntryEntity.getCommonConfigId();
-        final Optional<CommonDistributionConfigEntity> commonConfigEntity = commonDistributionRepository.findById(commonConfigId);
+        final Optional<CommonDistributionConfigEntity> optionalCommonConfigEntity = commonDistributionRepository.findById(commonConfigId);
         if (notifications == null || notifications.isEmpty()) {
             throw new AlertNotificationPurgedException("The notification for this entry was purged. To edit the purge schedule, please see the Scheduling Configuration.");
         }
-        if (!commonConfigEntity.isPresent()) {
+        if (!optionalCommonConfigEntity.isPresent()) {
             throw new AlertException("The job for this entry was deleted, can not re-send this entry.");
         }
+        final CommonDistributionConfigEntity commonConfigEntity = optionalCommonConfigEntity.get();
         notifications.forEach(notificationContent -> {
-            final ChannelEvent event = channelEventFactory.createChannelEvent(commonConfigId, commonConfigEntity.get().getDistributionType(), notificationContent);
-            event.setAuditEntryId(auditEntryEntity.getId());
-            channelTemplateManager.sendEvent(event);
+            try {
+                final ChannelEvent event = channelEventFactory.createChannelEvent(commonConfigId, commonConfigEntity.getDistributionConfigId(), commonConfigEntity.getDistributionType(), notificationContent);
+                event.setAuditEntryId(auditEntryEntity.getId());
+                channelTemplateManager.sendEvent(event);
+            } catch (final AlertException e) {
+                logger.error(e.getMessage(), e);
+            }
         });
         return get();
     }

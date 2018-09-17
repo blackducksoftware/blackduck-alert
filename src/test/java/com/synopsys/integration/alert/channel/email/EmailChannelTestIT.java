@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.channel.email;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,6 +26,7 @@ import com.synopsys.integration.alert.database.channel.email.EmailGlobalConfigEn
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
+import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.test.annotation.ExternalConnectionTest;
 
@@ -86,7 +88,9 @@ public class EmailChannelTestIT extends ChannelTest {
             final EmailChannelEvent event = new EmailChannelEvent(RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
                 notificationContent.getContent(), 1L, 1L, null, null);
             emailChannel.sendMessage(event);
-            assertTrue(outputLogger.isLineContainingText("No configuration found with id"));
+            fail();
+        } catch (final IntegrationException e) {
+            assertEquals("ERROR: Missing global config.", e.getMessage());
         }
     }
 

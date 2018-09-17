@@ -82,7 +82,7 @@ public class SlackChannelTestIT extends ChannelTest {
         List<Request> request = null;
 
         SlackChannelEvent event = new SlackChannelEvent(null, null, null,
-            null, null, null, "ChannelUsername", "Webhook", "ChannelName");
+            null, null, null, "ChannelUsername", "", "");
         try {
             request = slackChannel.createRequests(null, event);
             fail();
