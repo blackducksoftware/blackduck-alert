@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.distribution.CommonDistributionConfigReader;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 
@@ -55,8 +56,12 @@ public class NotificationToChannelEventConverter {
         distributionConfigs.forEach(config -> {
             sortedNotifications.forEach(notification -> {
                 if (doesNotificationApplyToConfig(config, notification)) {
-                    final ChannelEvent newEvent = createChannelEvent(config, notification);
-                    channelEvents.add(newEvent);
+                    try {
+                        final ChannelEvent newEvent = createChannelEvent(config, notification);
+                        channelEvents.add(newEvent);
+                    } catch (final AlertException e) {
+                        logger.error(e.getMessage(), e);
+                    }
                 }
             });
         });
@@ -68,9 +73,10 @@ public class NotificationToChannelEventConverter {
         return config.getNotificationTypes().contains(notification.getNotificationType());
     }
 
-    private ChannelEvent createChannelEvent(final CommonDistributionConfig config, final NotificationContent notificationContent) {
+    private ChannelEvent createChannelEvent(final CommonDistributionConfig config, final NotificationContent notificationContent) throws AlertException {
         final Long configId = Long.parseLong(config.getId());
-        return channelEventFactory.createChannelEvent(configId, config.getDistributionType(), notificationContent);
+        final Long distributionConfigId = Long.parseLong(config.getDistributionConfigId());
+        return channelEventFactory.createChannelEvent(configId, distributionConfigId, config.getDistributionType(), notificationContent);
     }
 
 }

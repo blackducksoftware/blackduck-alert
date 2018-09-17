@@ -23,13 +23,16 @@
  */
 package com.synopsys.integration.alert.channel.event;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -40,12 +43,14 @@ import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannelEvent;
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
 import com.synopsys.integration.alert.channel.slack.SlackChannelEvent;
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.database.channel.email.EmailDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.database.channel.email.EmailGroupDistributionConfigEntity;
-import com.synopsys.integration.alert.database.channel.email.EmailGroupDistributionRepository;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
-import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionRepository;
+import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
-import com.synopsys.integration.alert.database.channel.slack.SlackDistributionRepository;
+import com.synopsys.integration.alert.database.channel.slack.SlackDistributionRepositoryAccessor;
+import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
@@ -62,36 +67,48 @@ import com.synopsys.integration.rest.RestConstants;
 
 @Component
 public class ChannelEventFactory {
-    private final EmailGroupDistributionRepository emailGroupDistributionRepository;
-    private final HipChatDistributionRepository hipChatDistributionRepository;
-    private final SlackDistributionRepository slackDistributionRepository;
+    private final EmailDistributionRepositoryAccessor emailDistributionRepositoryAccessor;
+    private final HipChatDistributionRepositoryAccessor hipChatDistributionRepositoryAccessor;
+    private final SlackDistributionRepositoryAccessor slackDistributionRepositoryAccessor;
 
     private final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
     private final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor;
     private final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor;
 
     @Autowired
-    public ChannelEventFactory(final EmailGroupDistributionRepository emailGroupDistributionRepository, final HipChatDistributionRepository hipChatDistributionRepository,
-        final SlackDistributionRepository slackDistributionRepository, final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor,
+    public ChannelEventFactory(final EmailDistributionRepositoryAccessor emailDistributionRepositoryAccessor, final HipChatDistributionRepositoryAccessor hipChatDistributionRepositoryAccessor,
+        final SlackDistributionRepositoryAccessor slackDistributionRepositoryAccessor, final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor,
         final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor, final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor) {
-        this.emailGroupDistributionRepository = emailGroupDistributionRepository;
-        this.hipChatDistributionRepository = hipChatDistributionRepository;
-        this.slackDistributionRepository = slackDistributionRepository;
+        this.emailDistributionRepositoryAccessor = emailDistributionRepositoryAccessor;
+        this.hipChatDistributionRepositoryAccessor = hipChatDistributionRepositoryAccessor;
+        this.slackDistributionRepositoryAccessor = slackDistributionRepositoryAccessor;
 
         this.blackDuckProjectRepositoryAccessor = blackDuckProjectRepositoryAccessor;
         this.blackDuckUserRepositoryAccessor = blackDuckUserRepositoryAccessor;
         this.userProjectRelationRepositoryAccessor = userProjectRelationRepositoryAccessor;
     }
 
-    public ChannelEvent createChannelEvent(final Long commonDistributionConfigId, final String destination, final NotificationContent notificationContent) {
+    public ChannelEvent createChannelEvent(final Long commonDistributionConfigId, final Long distributionConfigId, final String destination, final NotificationContent notificationContent) throws AlertException {
         if (destination.equals(EmailGroupChannel.COMPONENT_NAME)) {
-            final EmailGroupDistributionConfigEntity emailGroupDistributionConfigEntity = emailGroupDistributionRepository.getOne(commonDistributionConfigId);
+            final Optional<? extends DatabaseEntity> optionalDatabaseEntity = emailDistributionRepositoryAccessor.readEntity(distributionConfigId);
+            if (!optionalDatabaseEntity.isPresent()) {
+                throw new AlertException("Could not find the email configuration with Id " + distributionConfigId);
+            }
+            final EmailGroupDistributionConfigEntity emailGroupDistributionConfigEntity = (EmailGroupDistributionConfigEntity) optionalDatabaseEntity.get();
             return createEmailEvent(commonDistributionConfigId, emailGroupDistributionConfigEntity, notificationContent);
         } else if (destination.equals(HipChatChannel.COMPONENT_NAME)) {
-            final HipChatDistributionConfigEntity hipChatDistributionConfigEntity = hipChatDistributionRepository.getOne(commonDistributionConfigId);
+            final Optional<? extends DatabaseEntity> optionalDatabaseEntity = hipChatDistributionRepositoryAccessor.readEntity(distributionConfigId);
+            if (!optionalDatabaseEntity.isPresent()) {
+                throw new AlertException("Could not find the hipchat configuration with Id " + distributionConfigId);
+            }
+            final HipChatDistributionConfigEntity hipChatDistributionConfigEntity = (HipChatDistributionConfigEntity) optionalDatabaseEntity.get();
             return createHipChatChannelEvent(commonDistributionConfigId, hipChatDistributionConfigEntity, notificationContent);
         } else if (destination.equals(SlackChannel.COMPONENT_NAME)) {
-            final SlackDistributionConfigEntity slackDistributionConfigEntity = slackDistributionRepository.getOne(commonDistributionConfigId);
+            final Optional<? extends DatabaseEntity> optionalDatabaseEntity = slackDistributionRepositoryAccessor.readEntity(distributionConfigId);
+            if (!optionalDatabaseEntity.isPresent()) {
+                throw new AlertException("Could not find the slack configuration with Id " + distributionConfigId);
+            }
+            final SlackDistributionConfigEntity slackDistributionConfigEntity = (SlackDistributionConfigEntity) optionalDatabaseEntity.get();
             return createSlackChannelEvent(commonDistributionConfigId, slackDistributionConfigEntity, notificationContent);
         }
         return null;
@@ -152,6 +169,9 @@ public class ChannelEventFactory {
     }
 
     private Set<String> getEmailAddressesForProject(final String projectName) {
+        if (StringUtils.isBlank(projectName)) {
+            return Collections.emptySet();
+        }
         final BlackDuckProjectEntity blackDuckProjectEntity = blackDuckProjectRepositoryAccessor.findByName(projectName);
         final List<UserProjectRelation> userProjectRelations = userProjectRelationRepositoryAccessor.findByBlackDuckProjectId(blackDuckProjectEntity.getId());
         final Set<String> emailAddresses = userProjectRelations

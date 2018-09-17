@@ -57,4 +57,15 @@ public class MockBlackDuckProjectRepositoryAccessor extends BlackDuckProjectRepo
         });
         return blackDuckProjectEntitiesSaved;
     }
+
+    @Override
+    public BlackDuckProjectEntity findByName(final String name) {
+        final Optional<BlackDuckProjectEntity> optionalBlackDuckProjectEntity = blackDuckProjectEntityMap.entrySet()
+                                                                                    .stream()
+                                                                                    .map(entry -> entry.getValue())
+                                                                                    .filter(blackDuckProjectEntity -> name.equals(blackDuckProjectEntity.getName()))
+                                                                                    .findFirst();
+        return optionalBlackDuckProjectEntity.orElse(null);
+    }
+
 }

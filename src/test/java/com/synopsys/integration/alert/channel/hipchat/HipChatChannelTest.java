@@ -134,7 +134,7 @@ public class HipChatChannelTest extends ChannelTest {
         Mockito.when(restFactory.createUnauthenticatedRestConnection(Mockito.anyString())).thenReturn(null);
 
         final String nullEntityMessage = hipChatChannel.testGlobalConfig(null);
-        assertEquals("The provided entity was null.", nullEntityMessage);
+        assertEquals("The provided config was null.", nullEntityMessage);
 
         hipChatMockUtil.setApiKey("apiKey");
         final Config config = hipChatMockUtil.createGlobalConfig();
@@ -151,7 +151,7 @@ public class HipChatChannelTest extends ChannelTest {
         Mockito.when(restFactory.createUnauthenticatedRestConnection(Mockito.anyString())).thenReturn(null);
 
         try {
-            final Config config = hipChatMockUtil.createGlobalConfig();
+            final Config config = hipChatMockUtil.createEmptyGlobalConfig();
             hipChatChannel.testGlobalConfig(config);
             fail();
         } catch (final IntegrationException ex) {

@@ -48,7 +48,7 @@ public class MockGlobalSchedulingEntity extends MockGlobalEntityUtil<SchedulingC
 
     @Override
     public Config createGlobalConfig() {
-        return new SchedulingConfig(id.toString(), final String accumulatorNextRun, final String dailyDigestHourOfDay, final String dailyDigestNextRun, final String purgeDataFrequencyDays, final String purgeDataNextRun);
+        return new SchedulingConfig(id.toString(), null, dailyDigestHourOfDay, null, purgeDataFrequencyDays, null);
     }
 
     @Override
