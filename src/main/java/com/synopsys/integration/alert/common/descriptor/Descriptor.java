@@ -160,8 +160,8 @@ public abstract class Descriptor {
         getRestApi(restApiType).validateConfig(config, fieldErrors);
     }
 
-    public void testConfig(final RestApiType restApiType, final DatabaseEntity entity) throws IntegrationException {
-        getRestApi(restApiType).testConfig(entity);
+    public void testConfig(final RestApiType restApiType, final Config config) throws IntegrationException {
+        getRestApi(restApiType).testConfig(config);
     }
 
 }

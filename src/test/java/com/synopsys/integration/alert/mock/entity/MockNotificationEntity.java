@@ -16,6 +16,7 @@ import java.util.Date;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.database.entity.NotificationCategoryEnum;
 import com.synopsys.integration.alert.database.entity.NotificationEntity;
+import com.synopsys.integration.alert.web.model.Config;
 
 public class MockNotificationEntity extends MockEntityUtil<NotificationEntity> {
     private final String eventKey;
@@ -36,7 +37,7 @@ public class MockNotificationEntity extends MockEntityUtil<NotificationEntity> {
     }
 
     private MockNotificationEntity(final String eventKey, final Date createdAt, final NotificationCategoryEnum notificationType, final String projectName, final String projectVersion, final String componentName,
-            final String componentVersion, final String policyRuleName, final String policyRuleUser, final String projectUrl, final String projectVersionUrl, final Long id) {
+        final String componentVersion, final String policyRuleName, final String policyRuleUser, final String projectUrl, final String projectVersionUrl, final Long id) {
         super();
         this.eventKey = eventKey;
         this.createdAt = createdAt;
@@ -99,6 +100,16 @@ public class MockNotificationEntity extends MockEntityUtil<NotificationEntity> {
     @Override
     public Long getId() {
         return id;
+    }
+
+    @Override
+    public Config createConfig() {
+        return null;
+    }
+
+    @Override
+    public Config createEmptyConfig() {
+        return null;
     }
 
     @Override

@@ -11,9 +11,15 @@
  */
 package com.synopsys.integration.alert.channel.slack.mock;
 
+import java.util.Collections;
+
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.mock.entity.MockEntityUtil;
+import com.synopsys.integration.alert.channel.slack.SlackChannel;
 import com.synopsys.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
+import com.synopsys.integration.alert.mock.entity.MockEntityUtil;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.web.channel.model.SlackDistributionConfig;
+import com.synopsys.integration.alert.web.model.Config;
 
 public class MockSlackEntity extends MockEntityUtil<SlackDistributionConfigEntity> {
     private String webhook;
@@ -63,6 +69,17 @@ public class MockSlackEntity extends MockEntityUtil<SlackDistributionConfigEntit
 
     public void setId(final Long id) {
         this.id = id;
+    }
+
+    @Override
+    public Config createConfig() {
+        return new SlackDistributionConfig(id.toString(), webhook, channelUsername, channelName, "0L", SlackChannel.COMPONENT_NAME, "SlackTest", BlackDuckProvider.COMPONENT_NAME, "real_time", "false", Collections.emptyList(),
+            Collections.emptyList());
+    }
+
+    @Override
+    public Config createEmptyConfig() {
+        return new SlackDistributionConfig();
     }
 
     @Override

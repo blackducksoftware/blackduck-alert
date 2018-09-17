@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.RestApi;
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.web.model.Config;
 
 @Component
@@ -46,7 +45,7 @@ public class BlackDuckDistributionRestApi extends RestApi {
     }
 
     @Override
-    public void testConfig(final DatabaseEntity entity) {
+    public void testConfig(final Config restModel) {
 
     }
 }

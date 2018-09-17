@@ -16,8 +16,13 @@ import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.mock.MockUtils;
+import com.synopsys.integration.alert.web.model.Config;
 
 public abstract class MockEntityUtil<E extends DatabaseEntity> implements MockUtils {
+
+    public abstract Config createConfig();
+
+    public abstract Config createEmptyConfig();
 
     public abstract E createEntity();
 

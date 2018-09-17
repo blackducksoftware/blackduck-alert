@@ -11,15 +11,21 @@
  */
 package com.synopsys.integration.alert.channel.email.mock;
 
+import java.util.Collections;
+
 import com.google.gson.JsonObject;
+import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
 import com.synopsys.integration.alert.database.channel.email.EmailGroupDistributionConfigEntity;
 import com.synopsys.integration.alert.mock.entity.MockEntityUtil;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.web.channel.model.EmailDistributionConfig;
+import com.synopsys.integration.alert.web.model.Config;
 
 public class MockEmailEntity extends MockEntityUtil<EmailGroupDistributionConfigEntity> {
-    private String groupName;
-    private Long id;
     private final String emailTemplateLogoImage;
     private final String emailSubjectLine;
+    private String groupName;
+    private Long id;
 
     public MockEmailEntity() {
         this("groupName", 1L, "emailTemplateLogoImage", "emailSubjectLine");
@@ -37,6 +43,10 @@ public class MockEmailEntity extends MockEntityUtil<EmailGroupDistributionConfig
         return groupName;
     }
 
+    public void setGroupName(final String groupName) {
+        this.groupName = groupName;
+    }
+
     public String getEmailTemplateLogoImage() {
         return emailTemplateLogoImage;
     }
@@ -45,8 +55,9 @@ public class MockEmailEntity extends MockEntityUtil<EmailGroupDistributionConfig
         return emailSubjectLine;
     }
 
-    public void setGroupName(final String groupName) {
-        this.groupName = groupName;
+    @Override
+    public Long getId() {
+        return id;
     }
 
     public void setId(final Long id) {
@@ -54,8 +65,14 @@ public class MockEmailEntity extends MockEntityUtil<EmailGroupDistributionConfig
     }
 
     @Override
-    public Long getId() {
-        return id;
+    public Config createConfig() {
+        return new EmailDistributionConfig(id.toString(), groupName, emailTemplateLogoImage, emailSubjectLine, "0L", EmailGroupChannel.COMPONENT_NAME, "EmailTest", BlackDuckProvider.COMPONENT_NAME, "real_time", "false",
+            Collections.emptyList(), Collections.emptyList());
+    }
+
+    @Override
+    public Config createEmptyConfig() {
+        return new EmailDistributionConfig();
     }
 
     @Override

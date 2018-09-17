@@ -4,6 +4,8 @@ import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
+import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
+import com.synopsys.integration.alert.web.model.Config;
 
 public class MockCommonDistributionEntity extends MockEntityUtil<CommonDistributionConfigEntity> {
     private Long distributionConfigId;
@@ -84,6 +86,17 @@ public class MockCommonDistributionEntity extends MockEntityUtil<CommonDistribut
 
     public void setId(final Long id) {
         this.id = id;
+    }
+
+    @Override
+    public Config createConfig() {
+        return new CommonDistributionConfig(id.toString(), distributionConfigId.toString(), distributionType, name, providerName, frequency.toString(), filterByProject.toString(),
+            null, null);
+    }
+
+    @Override
+    public Config createEmptyConfig() {
+        return new CommonDistributionConfig();
     }
 
     @Override

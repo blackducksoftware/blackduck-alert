@@ -29,13 +29,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.channel.event.ChannelEventFactory;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
+import com.synopsys.integration.alert.channel.hipchat.HipChatChannelEvent;
 import com.synopsys.integration.alert.common.descriptor.config.RestApi;
-import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionRepositoryAccessor;
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.web.channel.model.HipChatDistributionConfig;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
@@ -47,7 +45,7 @@ public class HipChatDistributionRestApi extends RestApi {
 
     @Autowired
     public HipChatDistributionRestApi(final HipChatDistributionTypeConverter databaseContentConverter, final HipChatDistributionRepositoryAccessor repositoryAccessor,
-    final ChannelEventFactory channelEventFactory, final HipChatChannel hipChatChannel) {
+        final ChannelEventFactory channelEventFactory, final HipChatChannel hipChatChannel) {
         super(databaseContentConverter, repositoryAccessor);
         this.channelEventFactory = channelEventFactory;
         this.hipChatChannel = hipChatChannel;
@@ -64,10 +62,9 @@ public class HipChatDistributionRestApi extends RestApi {
     }
 
     @Override
-    public void testConfig(final DatabaseEntity entity) throws IntegrationException {
-        final HipChatDistributionConfigEntity hipChatEntity = (HipChatDistributionConfigEntity) entity;
-        final ChannelEvent event = channelEventFactory.createChannelTestEvent(HipChatChannel.COMPONENT_NAME);
-        hipChatChannel.sendAuditedMessage(event, hipChatEntity);
+    public void testConfig(final Config restModel) throws IntegrationException {
+        final HipChatChannelEvent event = channelEventFactory.createHipChatChannelTestEvent(restModel);
+        hipChatChannel.sendAuditedMessage(event);
     }
 
 }

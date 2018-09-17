@@ -82,7 +82,7 @@
               </#list>
           </#if>
 <div style="display:inline-block;width:100%;">
-    <span style="font-family: Arial, FreeSans, Helvetica, sans-serif;font-size: 10px;color: #4A4A4A;">You are receiving this email because you are part of the group: ${blackduck_group_name}. If you would like to stop receiving this email, please contact your system administrator and have them remove you from the group.</span>
+    <span style="font-family: Arial, FreeSans, Helvetica, sans-serif;font-size: 10px;color: #4A4A4A;">You are receiving this email because you are assigned to project: ${blackduck_project_name}. If you would like to stop receiving this email, please contact your system administrator and have them remove you from the project.</span>
 </div>
 <br/>
 <div style="display:inline-block;width:100%;">

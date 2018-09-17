@@ -65,7 +65,7 @@ public abstract class RestApi {
 
     public abstract void validateConfig(Config restModel, Map<String, String> fieldErrors);
 
-    public abstract void testConfig(DatabaseEntity entity) throws IntegrationException;
+    public abstract void testConfig(Config restModel) throws IntegrationException;
 
     public Optional<? extends DatabaseEntity> readEntity(final long id) {
         return getRepositoryAccessor().readEntity(id);

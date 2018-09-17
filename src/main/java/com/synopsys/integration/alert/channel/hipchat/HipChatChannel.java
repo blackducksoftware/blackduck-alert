@@ -32,8 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.transaction.Transactional;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,6 +42,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.AlertConstants;
 import com.synopsys.integration.alert.channel.ChannelFreemarkerTemplatingService;
+import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.channel.rest.RestDistributionChannel;
@@ -51,11 +50,11 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
-import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionRepository;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalRepository;
-import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.web.channel.model.HipChatGlobalConfig;
+import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.connection.RestConnection;
 import com.synopsys.integration.rest.request.Request;
@@ -64,46 +63,56 @@ import com.synopsys.integration.rest.request.Response;
 import freemarker.template.TemplateException;
 
 @Component(value = HipChatChannel.COMPONENT_NAME)
-@Transactional
-public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigEntity, HipChatDistributionConfigEntity> {
-    private final Logger logger = LoggerFactory.getLogger(HipChatChannel.class);
+public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigEntity, HipChatDistributionConfigEntity, HipChatChannelEvent> {
     public static final String COMPONENT_NAME = "channel_hipchat";
     public static final String HIP_CHAT_API = "https://api.hipchat.com";
     public static final int MESSAGE_SIZE_LIMIT = 8000;
+    private final Logger logger = LoggerFactory.getLogger(HipChatChannel.class);
 
     @Autowired
     public HipChatChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditEntryRepository auditEntryRepository, final HipChatGlobalRepository hipChatGlobalRepository,
-            final CommonDistributionRepository commonDistributionRepository, final HipChatDistributionRepository hipChatDistributionRepository, final ChannelRestConnectionFactory channelRestConnectionFactory) {
-        super(gson, alertProperties, blackDuckProperties, auditEntryRepository, hipChatGlobalRepository, hipChatDistributionRepository, commonDistributionRepository, channelRestConnectionFactory);
+        final ChannelRestConnectionFactory channelRestConnectionFactory) {
+        super(gson, alertProperties, blackDuckProperties, auditEntryRepository, hipChatGlobalRepository, HipChatChannelEvent.class, channelRestConnectionFactory);
+    }
+
+    @Override
+    public String getDistributionType() {
+        return EmailGroupChannel.COMPONENT_NAME;
     }
 
     @Override
     public String getApiUrl(final HipChatGlobalConfigEntity globalConfig) {
+        return getApiUrl(globalConfig.getHostServer());
+    }
+
+    @Override
+    public String getApiUrl(final String apiUrl) {
         String hipChatHostServer = HIP_CHAT_API;
-        final String customHostServer = globalConfig.getHostServer();
-        if (!StringUtils.isBlank(customHostServer)) {
-            hipChatHostServer = customHostServer;
+        if (!StringUtils.isBlank(apiUrl)) {
+            hipChatHostServer = apiUrl;
         }
         return hipChatHostServer;
     }
 
     @Override
-    public String testGlobalConfig(final HipChatGlobalConfigEntity entity) throws IntegrationException {
-        if (entity == null) {
-            return "The provided entity was null.";
+    public String testGlobalConfig(final Config restModel) throws IntegrationException {
+        if (restModel == null) {
+            return "The provided config was null.";
         }
-        if (StringUtils.isBlank(entity.getApiKey())) {
+        final HipChatGlobalConfig hipChatGlobalConfig = (HipChatGlobalConfig) restModel;
+
+        if (StringUtils.isBlank(hipChatGlobalConfig.getApiKey())) {
             throw new IntegrationException("Invalid API key: API key not provided");
         }
-        final RestConnection restConnection = getChannelRestConnectionFactory().createUnauthenticatedRestConnection(getApiUrl(entity));
+        final RestConnection restConnection = getChannelRestConnectionFactory().createUnauthenticatedRestConnection(getApiUrl(hipChatGlobalConfig.getHostServer()));
         if (restConnection != null) {
             try {
-                final String url = getApiUrl(entity) + "/v2/room/*/notification";
+                final String url = getApiUrl(hipChatGlobalConfig.getHostServer()) + "/v2/room/*/notification";
                 final Map<String, Set<String>> queryParameters = new HashMap<>();
                 queryParameters.put("auth_test", new HashSet<>(Arrays.asList("true")));
 
                 final Map<String, String> requestHeaders = new HashMap<>();
-                requestHeaders.put("Authorization", "Bearer " + entity.getApiKey());
+                requestHeaders.put("Authorization", "Bearer " + hipChatGlobalConfig.getApiKey());
                 requestHeaders.put("Content-Type", "application/json");
 
                 // The {"message":"test"} is required to avoid a BAD_REQUEST (OkHttp issue: #854)
@@ -129,19 +138,19 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
     }
 
     @Override
-    public List<Request> createRequests(final HipChatDistributionConfigEntity config, final HipChatGlobalConfigEntity globalConfig, final ChannelEvent event)
-            throws IntegrationException {
+    public List<Request> createRequests(final HipChatGlobalConfigEntity globalConfig, final HipChatChannelEvent event)
+        throws IntegrationException {
         if (!isValidGlobalConfig(globalConfig)) {
             throw new IntegrationException("ERROR: Missing global config.");
         }
-        if (config.getRoomId() == null) {
+        if (event.getRoomId() == null) {
             throw new IntegrationException("Room ID missing");
         } else {
             if (isChunkedMessageNeeded(event)) {
-                return createChunkedRequestList(config, globalConfig, event);
+                return createChunkedRequestList(globalConfig, event);
             } else {
                 final String contentTitle = String.format("%s -> %s", event.getProvider(), event.getNotificationType());
-                return Arrays.asList(createRequest(config, globalConfig, contentTitle, event.getContent()));
+                return Arrays.asList(createRequest(globalConfig, event, contentTitle, event.getContent()));
             }
         }
     }
@@ -159,8 +168,8 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
         }
     }
 
-    private List<Request> createChunkedRequestList(final HipChatDistributionConfigEntity config, final HipChatGlobalConfigEntity globalConfig, final ChannelEvent event)
-            throws IntegrationException {
+    private List<Request> createChunkedRequestList(final HipChatGlobalConfigEntity globalConfig, final HipChatChannelEvent event)
+        throws IntegrationException {
         final String eventContent = event.getContent();
         final int contentLength = eventContent.length();
         logger.info("Message too large.  Creating chunks...");
@@ -182,19 +191,19 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
             } else {
                 content = eventContent.substring(start, end);
             }
-            requestList.add(createRequest(config, globalConfig, contentTitle, content));
+            requestList.add(createRequest(globalConfig, event, contentTitle, content));
             currentRequest++;
         }
 
         return requestList;
     }
 
-    private Request createRequest(final HipChatDistributionConfigEntity config, final HipChatGlobalConfigEntity globalConfig, final String contentTitle, final String content)
-            throws IntegrationException {
+    private Request createRequest(final HipChatGlobalConfigEntity globalConfig, final HipChatChannelEvent event, final String contentTitle, final String content)
+        throws IntegrationException {
         final String htmlMessage = createHtmlMessage(contentTitle, content);
-        final String jsonString = getJsonString(htmlMessage, AlertConstants.ALERT_APPLICATION_NAME, config.getNotify(), config.getColor());
+        final String jsonString = getJsonString(htmlMessage, AlertConstants.ALERT_APPLICATION_NAME, event.getNotify(), event.getColor());
 
-        final String url = getApiUrl(globalConfig) + "/v2/room/" + config.getRoomId().toString() + "/notification";
+        final String url = getApiUrl(globalConfig.getHostServer()) + "/v2/room/" + event.getRoomId().toString() + "/notification";
 
         final Map<String, String> requestHeaders = new HashMap<>();
         requestHeaders.put("Authorization", "Bearer " + globalConfig.getApiKey());

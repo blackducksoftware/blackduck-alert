@@ -31,9 +31,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.common.descriptor.config.RestApi;
-import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalRepositoryAccessor;
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.web.channel.model.HipChatGlobalConfig;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
@@ -44,7 +42,7 @@ public class HipChatGlobalRestApi extends RestApi {
 
     @Autowired
     public HipChatGlobalRestApi(final HipChatGlobalTypeConverter databaseContentConverter, final HipChatGlobalRepositoryAccessor repositoryAccessor, final HipChatChannel hipChatChannel,
-    final HipChatStartupComponent hipChatStartupComponent) {
+        final HipChatStartupComponent hipChatStartupComponent) {
         super(databaseContentConverter, repositoryAccessor, hipChatStartupComponent);
         this.hipChatChannel = hipChatChannel;
     }
@@ -58,9 +56,8 @@ public class HipChatGlobalRestApi extends RestApi {
     }
 
     @Override
-    public void testConfig(final DatabaseEntity entity) throws IntegrationException {
-        final HipChatGlobalConfigEntity hipChatEntity = (HipChatGlobalConfigEntity) entity;
-        hipChatChannel.testGlobalConfig(hipChatEntity);
+    public void testConfig(final Config restModel) throws IntegrationException {
+        hipChatChannel.testGlobalConfig(restModel);
     }
 
 }

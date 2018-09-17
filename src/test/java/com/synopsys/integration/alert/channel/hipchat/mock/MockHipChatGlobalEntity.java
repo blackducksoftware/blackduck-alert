@@ -14,6 +14,8 @@ package com.synopsys.integration.alert.channel.hipchat.mock;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
 import com.synopsys.integration.alert.mock.MockGlobalEntityUtil;
+import com.synopsys.integration.alert.web.channel.model.HipChatGlobalConfig;
+import com.synopsys.integration.alert.web.model.Config;
 
 public class MockHipChatGlobalEntity extends MockGlobalEntityUtil<HipChatGlobalConfigEntity> {
     private String apiKey;
@@ -36,25 +38,25 @@ public class MockHipChatGlobalEntity extends MockGlobalEntityUtil<HipChatGlobalC
         return apiKey;
     }
 
-    public boolean isApiKeyIsSet() {
-        return apiKeyIsSet;
-    }
-
     public void setApiKey(final String apiKey) {
         this.apiKey = apiKey;
+    }
+
+    public boolean isApiKeyIsSet() {
+        return apiKeyIsSet;
     }
 
     public void setApiKeyIsSet(final boolean apiKeyIsSet) {
         this.apiKeyIsSet = apiKeyIsSet;
     }
 
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
     @Override
     public Long getId() {
         return id;
+    }
+
+    public void setId(final Long id) {
+        this.id = id;
     }
 
     public String getHostServer() {
@@ -63,6 +65,17 @@ public class MockHipChatGlobalEntity extends MockGlobalEntityUtil<HipChatGlobalC
 
     public void setHostServer(final String hostServer) {
         this.hostServer = hostServer;
+    }
+
+    @Override
+    public Config createGlobalConfig() {
+        HipChatGlobalConfig config = new HipChatGlobalConfig(id.toString(), apiKey, true, hostServer);
+        return config;
+    }
+
+    @Override
+    public Config createEmptyGlobalConfig() {
+        return new HipChatGlobalConfig();
     }
 
     @Override

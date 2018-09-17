@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -38,11 +39,18 @@ import com.synopsys.integration.alert.common.digest.model.ProjectData;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.RestApiType;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
+import com.synopsys.integration.alert.database.channel.email.EmailGroupDistributionRepository;
+import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionRepository;
+import com.synopsys.integration.alert.database.channel.slack.SlackDistributionRepository;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.entity.channel.DistributionChannelConfigEntity;
 import com.synopsys.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
+import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
+import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserRepositoryAccessor;
+import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelationRepositoryAccessor;
 import com.synopsys.integration.alert.mock.entity.MockEntityUtil;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
+import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.test.annotation.DatabaseConnectionTest;
 
@@ -54,26 +62,43 @@ import com.synopsys.integration.test.annotation.DatabaseConnectionTest;
 @WebAppConfiguration
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public abstract class DescriptorTestConfigTest<R extends CommonDistributionConfig, E extends DistributionChannelConfigEntity, GE extends GlobalChannelConfigEntity> {
+    private final EmailGroupDistributionRepository emailGroupDistributionRepository;
+    private final HipChatDistributionRepository hipChatDistributionRepository;
+    private final SlackDistributionRepository slackDistributionRepository;
+    private final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
+    private final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor;
+    private final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor;
+
     protected Gson gson;
     protected ContentConverter contentConverter;
-    protected ChannelEventFactory channelManager;
+    protected ChannelEventFactory channelEventFactory;
     protected TestProperties properties;
+
+    @Autowired
+    public DescriptorTestConfigTest(final EmailGroupDistributionRepository emailGroupDistributionRepository, final HipChatDistributionRepository hipChatDistributionRepository,
+        final SlackDistributionRepository slackDistributionRepository, final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor,
+        final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor, final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor) {
+        this.emailGroupDistributionRepository = emailGroupDistributionRepository;
+        this.hipChatDistributionRepository = hipChatDistributionRepository;
+        this.slackDistributionRepository = slackDistributionRepository;
+        this.blackDuckProjectRepositoryAccessor = blackDuckProjectRepositoryAccessor;
+        this.blackDuckUserRepositoryAccessor = blackDuckUserRepositoryAccessor;
+        this.userProjectRelationRepositoryAccessor = userProjectRelationRepositoryAccessor;
+    }
 
     @Before
     public void init() {
         gson = new Gson();
         contentConverter = new ContentConverter(gson, new DefaultConversionService());
         properties = new TestProperties();
-        channelManager = new ChannelEventFactory();
-        cleanDistributionRepository();
+        channelEventFactory = new ChannelEventFactory(emailGroupDistributionRepository, hipChatDistributionRepository, slackDistributionRepository,
+            blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
         cleanGlobalRepository();
     }
 
     public abstract void cleanGlobalRepository();
 
     public abstract void saveGlobalConfiguration();
-
-    public abstract void cleanDistributionRepository();
 
     public abstract ChannelDescriptor getDescriptor();
 
@@ -84,7 +109,7 @@ public abstract class DescriptorTestConfigTest<R extends CommonDistributionConfi
         final Collection<ProjectData> projectData = Arrays.asList(new ProjectData(FrequencyType.DAILY, "Test project", "1", Arrays.asList(), new HashMap<>()));
         final DigestModel digestModel = new DigestModel(projectData);
         final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
-        final ChannelEvent channelEvent = channelManager.createChannelEvent(1L, getDescriptor().getDestinationName(), notificationContent);
+        final ChannelEvent channelEvent = channelEventFactory.createChannelEvent(1L, getDescriptor().getDestinationName(), notificationContent);
 
         assertEquals(Long.valueOf(1L), channelEvent.getCommonDistributionConfigId());
         assertEquals(36, channelEvent.getEventId().length());
@@ -96,9 +121,9 @@ public abstract class DescriptorTestConfigTest<R extends CommonDistributionConfi
         saveGlobalConfiguration();
         final RestApi restApi = getDescriptor().getRestApi(RestApiType.CHANNEL_DISTRIBUTION_CONFIG);
         final RestApi spyDescriptorConfig = Mockito.spy(restApi);
-        final E entity = getMockEntityUtil().createEntity();
+        final Config restModel = getMockEntityUtil().createConfig();
         try {
-            spyDescriptorConfig.testConfig(entity);
+            spyDescriptorConfig.testConfig(restModel);
         } catch (final IntegrationException e) {
             Assert.fail();
         }
