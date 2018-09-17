@@ -49,6 +49,7 @@ import com.synopsys.integration.alert.workflow.filter.FilterApplier;
 import com.synopsys.integration.alert.workflow.filter.NotificationFilter;
 
 @Component
+// TODO MessageContentAggregator
 public class JobProcessor {
     private final CommonDistributionConfigReader commonDistributionConfigReader;
     private final List<ProviderDescriptor> providerDescriptors;
@@ -64,6 +65,7 @@ public class JobProcessor {
     }
 
     public Map<CommonDistributionConfig, List<TopicContent>> processNotifications(final FrequencyType frequency, final Collection<NotificationContent> notificationList) {
+        // TODO check if there are notifications to process
         final List<CommonDistributionConfig> unfilteredDistributionConfigs = commonDistributionConfigReader.getPopulatedConfigs();
         if (unfilteredDistributionConfigs.isEmpty()) {
             return Collections.emptyMap();
