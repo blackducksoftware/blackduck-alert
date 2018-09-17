@@ -49,15 +49,14 @@ import com.synopsys.integration.alert.workflow.filter.FilterApplier;
 import com.synopsys.integration.alert.workflow.filter.NotificationFilter;
 
 @Component
-// TODO MessageContentAggregator
-public class JobProcessor {
+public class MessageContentAggregator {
     private final CommonDistributionConfigReader commonDistributionConfigReader;
     private final List<ProviderDescriptor> providerDescriptors;
     private final FilterApplier filterApplier;
     private final NotificationFilter notificationFilter;
 
     @Autowired
-    public JobProcessor(final List<ProviderDescriptor> providerDescriptors, final CommonDistributionConfigReader commonDistributionConfigReader, final FilterApplier filterApplier, final NotificationFilter notificationFilter) {
+    public MessageContentAggregator(final List<ProviderDescriptor> providerDescriptors, final CommonDistributionConfigReader commonDistributionConfigReader, final FilterApplier filterApplier, final NotificationFilter notificationFilter) {
         this.providerDescriptors = providerDescriptors;
         this.commonDistributionConfigReader = commonDistributionConfigReader;
         this.filterApplier = filterApplier;
