@@ -41,7 +41,7 @@ import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.distribution.CommonDistributionConfigReader;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.model.TopicContent;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.workflow.processor.TopicCollector;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
@@ -64,7 +64,7 @@ public class JobProcessor {
         this.notificationFilter = notificationFilter;
     }
 
-    public Map<CommonDistributionConfig, List<TopicContent>> processNotifications(final FrequencyType frequency, final Collection<NotificationContent> notificationList) {
+    public Map<CommonDistributionConfig, List<AggregateMessageContent>> processNotifications(final FrequencyType frequency, final Collection<NotificationContent> notificationList) {
         // TODO check if there are notifications to process
         final List<CommonDistributionConfig> unfilteredDistributionConfigs = commonDistributionConfigReader.getPopulatedConfigs();
         if (unfilteredDistributionConfigs.isEmpty()) {
@@ -89,7 +89,7 @@ public class JobProcessor {
         return filteredNotificationList;
     }
 
-    private List<TopicContent> collectTopics(final CommonDistributionConfig jobConfiguration, final Collection<NotificationContent> notificationCollection) {
+    private List<AggregateMessageContent> collectTopics(final CommonDistributionConfig jobConfiguration, final Collection<NotificationContent> notificationCollection) {
         final Optional<ProviderDescriptor> providerDescriptor = providerDescriptors.parallelStream().filter(descriptor -> jobConfiguration.getProviderName().equals(descriptor.getName())).findFirst();
 
         if (!providerDescriptor.isPresent()) {

@@ -36,7 +36,7 @@ import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.distribution.CommonDistributionConfigReader;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.model.TopicContent;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
@@ -75,7 +75,7 @@ public class JobProcessorTest {
 
         final List<NotificationContent> notificationContentList = Arrays.asList(policyNotification, vulnerabilityNotification);
         final JobProcessor jobProcessor = new JobProcessor(providerDescriptors, commonDistributionConfigReader, filterApplier, notificationFilter);
-        final Map<CommonDistributionConfig, List<TopicContent>> topicContentMap = jobProcessor.processNotifications(frequencyType, notificationContentList);
+        final Map<CommonDistributionConfig, List<AggregateMessageContent>> topicContentMap = jobProcessor.processNotifications(frequencyType, notificationContentList);
 
         assertTrue(topicContentMap.isEmpty());
     }
@@ -99,7 +99,7 @@ public class JobProcessorTest {
         Mockito.when(spiedReader.getPopulatedConfigs()).thenReturn(Arrays.asList(jobConfig));
 
         final JobProcessor jobProcessor = new JobProcessor(providerDescriptors, spiedReader, filterApplier, notificationFilter);
-        final Map<CommonDistributionConfig, List<TopicContent>> topicContentMap = jobProcessor.processNotifications(frequencyType, notificationContentList);
+        final Map<CommonDistributionConfig, List<AggregateMessageContent>> topicContentMap = jobProcessor.processNotifications(frequencyType, notificationContentList);
 
         assertFalse(topicContentMap.isEmpty());
         assertEquals(1, topicContentMap.size());
@@ -126,7 +126,7 @@ public class JobProcessorTest {
         Mockito.when(spiedReader.getPopulatedConfigs()).thenReturn(Arrays.asList(jobConfig));
 
         final JobProcessor jobProcessor = new JobProcessor(providerDescriptors, spiedReader, filterApplier, notificationFilter);
-        final Map<CommonDistributionConfig, List<TopicContent>> topicContentMap = jobProcessor.processNotifications(frequencyType, notificationContentList);
+        final Map<CommonDistributionConfig, List<AggregateMessageContent>> topicContentMap = jobProcessor.processNotifications(frequencyType, notificationContentList);
 
         assertTrue(topicContentMap.isEmpty());
     }
@@ -151,7 +151,7 @@ public class JobProcessorTest {
         Mockito.when(spiedReader.getPopulatedConfigs()).thenReturn(Arrays.asList(jobConfig));
 
         final JobProcessor jobProcessor = new JobProcessor(providerDescriptors, spiedReader, filterApplier, notificationFilter);
-        final Map<CommonDistributionConfig, List<TopicContent>> topicContentMap = jobProcessor.processNotifications(frequencyType, notificationContentList);
+        final Map<CommonDistributionConfig, List<AggregateMessageContent>> topicContentMap = jobProcessor.processNotifications(frequencyType, notificationContentList);
 
         assertTrue(topicContentMap.containsKey(jobConfig));
         assertTrue(topicContentMap.get(jobConfig).isEmpty());
@@ -177,7 +177,7 @@ public class JobProcessorTest {
         Mockito.when(spiedReader.getPopulatedConfigs()).thenReturn(Arrays.asList(jobConfig));
 
         final JobProcessor jobProcessor = new JobProcessor(providerDescriptors, spiedReader, filterApplier, notificationFilter);
-        final Map<CommonDistributionConfig, List<TopicContent>> topicContentMap = jobProcessor.processNotifications(frequencyType, notificationContentList);
+        final Map<CommonDistributionConfig, List<AggregateMessageContent>> topicContentMap = jobProcessor.processNotifications(frequencyType, notificationContentList);
 
         assertTrue(topicContentMap.containsKey(jobConfig));
         assertTrue(topicContentMap.get(jobConfig).isEmpty());

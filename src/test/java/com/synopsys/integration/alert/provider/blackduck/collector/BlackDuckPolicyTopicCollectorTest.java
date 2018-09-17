@@ -17,8 +17,8 @@ import org.springframework.core.io.ClassPathResource;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.CategoryItem;
-import com.synopsys.integration.alert.common.model.TopicContent;
 import com.synopsys.integration.alert.common.workflow.processor.DefaultTopicFormatter;
 import com.synopsys.integration.alert.common.workflow.processor.DigestTopicFormatter;
 import com.synopsys.integration.alert.common.workflow.processor.TopicFormatter;
@@ -110,13 +110,13 @@ public class BlackDuckPolicyTopicCollectorTest {
 
     private void test(final BlackDuckPolicyTopicCollector collector, final NotificationContent notification) {
         collector.insert(notification);
-        final List<TopicContent> topicContentList = collector.collect(FormatType.DEFAULT);
-        assertFalse(topicContentList.isEmpty());
+        final List<AggregateMessageContent> aggregateMessageContentList = collector.collect(FormatType.DEFAULT);
+        assertFalse(aggregateMessageContentList.isEmpty());
     }
 
     private void insertAndAssertCountsOnTopic(final BlackDuckPolicyTopicCollector collector, final NotificationContent notification, final String topicName, final int expectedCategoryItemsCount, final int expectedLinkableItemsCount) {
         collector.insert(notification);
-        final TopicContent content = collector.collect(FormatType.DEFAULT).stream().filter(topicContent -> topicName.equals(topicContent.getValue())).findFirst().orElse(null);
+        final AggregateMessageContent content = collector.collect(FormatType.DEFAULT).stream().filter(topicContent -> topicName.equals(topicContent.getValue())).findFirst().orElse(null);
         final List<CategoryItem> items = content.getCategoryItemList();
         Assert.assertEquals(expectedCategoryItemsCount, items.size());
         Assert.assertEquals(expectedLinkableItemsCount, getCategoryItemLinkableItemsCount(items));

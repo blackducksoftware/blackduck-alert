@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.FormatType;
-import com.synopsys.integration.alert.common.model.TopicContent;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 
 @Component
 public class DefaultTopicFormatter extends TopicFormatter {
@@ -40,7 +40,7 @@ public class DefaultTopicFormatter extends TopicFormatter {
     }
 
     @Override
-    public List<TopicContent> format(final List<TopicContent> contentList) {
+    public List<AggregateMessageContent> format(final List<AggregateMessageContent> contentList) {
         return contentList;
     }
 }

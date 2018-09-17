@@ -39,9 +39,9 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.field.HierarchicalField;
 import com.synopsys.integration.alert.common.field.ObjectHierarchicalField;
 import com.synopsys.integration.alert.common.field.StringHierarchicalField;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.common.model.LinkableItem;
-import com.synopsys.integration.alert.common.model.TopicContent;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.workflow.filter.JsonExtractor;
@@ -53,7 +53,7 @@ public abstract class TopicCollector {
     private final Collection<ProviderContentType> contentTypes;
     private final Map<FormatType, TopicFormatter> topicFormatterMap;
     private final Set<String> supportedNotificationTypes;
-    private final List<TopicContent> collectedContent;
+    private final List<AggregateMessageContent> collectedContent;
 
     public TopicCollector(final JsonExtractor jsonExtractor, final List<TopicFormatter> topicFormatterList, final Collection<ProviderContentType> contentTypes) {
         this.jsonExtractor = jsonExtractor;
@@ -70,14 +70,14 @@ public abstract class TopicCollector {
     public void insert(final NotificationContent notification) {
         final List<HierarchicalField> notificationFields = getFieldsForNotificationType(notification.getNotificationType());
         final JsonFieldAccessor jsonFieldAccessor = createJsonAccessor(notificationFields, notification.getContent());
-        final List<TopicContent> contents = getContentsOrCreateIfDoesNotExist(jsonFieldAccessor, notificationFields);
-        for (final TopicContent content : contents) {
+        final List<AggregateMessageContent> contents = getContentsOrCreateIfDoesNotExist(jsonFieldAccessor, notificationFields);
+        for (final AggregateMessageContent content : contents) {
             addCategoryItems(content.getCategoryItemList(), jsonFieldAccessor, notificationFields, notification.getNotificationType());
             addContent(content);
         }
     }
 
-    public List<TopicContent> collect(final FormatType format) {
+    public List<AggregateMessageContent> collect(final FormatType format) {
         if (topicFormatterMap.containsKey(format)) {
             final TopicFormatter formatter = topicFormatterMap.get(format);
             return formatter.format(collectedContent);
@@ -93,7 +93,7 @@ public abstract class TopicCollector {
 
     protected abstract void addCategoryItems(final List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<HierarchicalField> notificationFields, final String notificationType);
 
-    protected final List<TopicContent> getCopyOfCollectedContent() {
+    protected final List<AggregateMessageContent> getCopyOfCollectedContent() {
         return Collections.unmodifiableList(collectedContent);
     }
 
@@ -165,8 +165,8 @@ public abstract class TopicCollector {
     }
 
     // TODO think about how to maintain order
-    private List<TopicContent> getContentsOrCreateIfDoesNotExist(final JsonFieldAccessor accessor, final List<HierarchicalField> notificationFields) {
-        final List<TopicContent> topicContentsForNotifications = new ArrayList<>();
+    private List<AggregateMessageContent> getContentsOrCreateIfDoesNotExist(final JsonFieldAccessor accessor, final List<HierarchicalField> notificationFields) {
+        final List<AggregateMessageContent> aggregateMessageContentsForNotifications = new ArrayList<>();
 
         final List<LinkableItem> topicItems = getTopicItems(accessor, notificationFields);
         final List<LinkableItem> subTopicItems = getSubTopicItems(accessor, notificationFields);
@@ -177,15 +177,15 @@ public abstract class TopicCollector {
             final LinkableItem topicItem = topicItems.get(index);
             final LinkableItem subTopic = subTopicItems.get(index);
 
-            final TopicContent foundContent = findTopicContent(topicItem.getName(), topicItem.getValue(), subTopic.getName(), subTopic.getValue());
+            final AggregateMessageContent foundContent = findTopicContent(topicItem.getName(), topicItem.getValue(), subTopic.getName(), subTopic.getValue());
             if (foundContent != null) {
-                topicContentsForNotifications.add(foundContent);
+                aggregateMessageContentsForNotifications.add(foundContent);
             } else {
                 final List<CategoryItem> categoryList = new ArrayList<>();
-                topicContentsForNotifications.add(new TopicContent(topicItem.getName(), topicItem.getValue(), topicItem.getUrl().orElse(null), subTopic, categoryList));
+                aggregateMessageContentsForNotifications.add(new AggregateMessageContent(topicItem.getName(), topicItem.getValue(), topicItem.getUrl().orElse(null), subTopic, categoryList));
             }
         }
-        return topicContentsForNotifications;
+        return aggregateMessageContentsForNotifications;
     }
 
     private List<LinkableItem> getTopicItems(final JsonFieldAccessor accessor, final List<HierarchicalField> fields) {
@@ -212,8 +212,8 @@ public abstract class TopicCollector {
     }
 
     // TODO create TopicKey class
-    private TopicContent findTopicContent(final String topicName, final String topicValue, final String subTopicName, final String subTopicValue) {
-        for (final TopicContent contentItem : collectedContent) {
+    private AggregateMessageContent findTopicContent(final String topicName, final String topicValue, final String subTopicName, final String subTopicValue) {
+        for (final AggregateMessageContent contentItem : collectedContent) {
             if (contentItem.getName().equals(topicName) && contentItem.getValue().equals(topicValue)) {
                 if (contentItem.getSubTopic().isPresent()) {
                     final LinkableItem subTopicItem = contentItem.getSubTopic().get();
@@ -255,8 +255,8 @@ public abstract class TopicCollector {
                    .collect(Collectors.toList());
     }
 
-    private void addContent(final TopicContent content) {
-        for (final TopicContent existingContent : collectedContent) {
+    private void addContent(final AggregateMessageContent content) {
+        for (final AggregateMessageContent existingContent : collectedContent) {
             if (existingContent.equals(content)) {
                 // This object is already in the list
                 return;

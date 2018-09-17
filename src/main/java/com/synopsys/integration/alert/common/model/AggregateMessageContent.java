@@ -26,24 +26,23 @@ package com.synopsys.integration.alert.common.model;
 import java.util.List;
 import java.util.Optional;
 
-// TODO AggregateMessageContent
-public class TopicContent extends LinkableItem {
+public class AggregateMessageContent extends LinkableItem {
     private final LinkableItem subTopic;
     private final List<CategoryItem> categoryItemList;
 
-    public TopicContent(final String name, final String value, final List<CategoryItem> categoryItemList) {
+    public AggregateMessageContent(final String name, final String value, final List<CategoryItem> categoryItemList) {
         super(name, value);
         this.subTopic = null;
         this.categoryItemList = categoryItemList;
     }
 
-    public TopicContent(final String name, final String value, final String url, final List<CategoryItem> categoryItemList) {
+    public AggregateMessageContent(final String name, final String value, final String url, final List<CategoryItem> categoryItemList) {
         super(name, value, url);
         this.subTopic = null;
         this.categoryItemList = categoryItemList;
     }
 
-    public TopicContent(final String name, final String value, final String url, final LinkableItem subTopic, final List<CategoryItem> categoryItemList) {
+    public AggregateMessageContent(final String name, final String value, final String url, final LinkableItem subTopic, final List<CategoryItem> categoryItemList) {
         super(name, value, url);
         this.subTopic = subTopic;
         this.categoryItemList = categoryItemList;

@@ -7,14 +7,14 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.synopsys.integration.alert.common.model.TopicContent;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 
 public class TopicEventTest {
 
     @Test
     public void testTopicList() {
         final String topic = "TOPIC";
-        final List<TopicContent> contentList = Collections.emptyList();
+        final List<AggregateMessageContent> contentList = Collections.emptyList();
         final TopicEvent topicEvent = new TopicEvent(topic, 1L, contentList);
         assertEquals(contentList, topicEvent.getTopicList());
     }
