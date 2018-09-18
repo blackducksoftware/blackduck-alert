@@ -25,11 +25,17 @@ package com.synopsys.integration.alert.common.provider;
 
 import java.util.Set;
 
+import com.synopsys.integration.alert.common.enumeration.FormatType;
+
 public abstract class Provider {
 
     public abstract void initialize();
 
     public abstract void destroy();
 
+    public abstract String getName();
+
     public abstract Set<ProviderContentType> getProviderContentTypes();
+
+    public abstract Set<FormatType> getSupportedFormatTypes();
 }

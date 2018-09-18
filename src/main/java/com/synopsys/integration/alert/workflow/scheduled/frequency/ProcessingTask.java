@@ -35,8 +35,8 @@ import org.springframework.scheduling.TaskScheduler;
 
 import com.synopsys.integration.alert.channel.ChannelTemplateManager;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
-import com.synopsys.integration.alert.common.digest.DateRange;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.model.DateRange;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.workflow.NotificationManager;
 import com.synopsys.integration.alert.workflow.processor.NotificationProcessor;
@@ -51,7 +51,7 @@ public abstract class ProcessingTask extends ScheduledTask {
     private ZonedDateTime lastRunTime;
 
     public ProcessingTask(final TaskScheduler taskScheduler, final String taskName, final NotificationManager notificationManager, final NotificationProcessor notificationProcessor,
-    final ChannelTemplateManager channelTemplateManager) {
+        final ChannelTemplateManager channelTemplateManager) {
         super(taskScheduler, taskName);
         this.notificationManager = notificationManager;
         this.notificationProcessor = notificationProcessor;

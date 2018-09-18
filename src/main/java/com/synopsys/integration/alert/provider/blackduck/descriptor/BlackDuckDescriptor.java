@@ -23,18 +23,29 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
+import com.synopsys.integration.alert.common.workflow.processor.MessageContentCollector;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 
 @Component
 public class BlackDuckDescriptor extends ProviderDescriptor {
 
+    private final BlackDuckTopicCollectorFactory topicCollectorFactory;
+
     @Autowired
     public BlackDuckDescriptor(final BlackDuckProviderRestApi providerRestApi, final BlackDuckProviderUIConfig blackDuckProviderUIConfig, final BlackDuckDistributionRestApi blackDuckDistributionRestApi,
-    final BlackDuckDistributionUIConfig blackDuckDistributionUIConfig, final BlackDuckProvider provider) {
-        super(BlackDuckProvider.COMPONENT_NAME, providerRestApi, blackDuckProviderUIConfig, blackDuckDistributionRestApi, blackDuckDistributionUIConfig, provider);
+        final BlackDuckDistributionUIConfig blackDuckDistributionUIConfig, final BlackDuckProvider provider, final BlackDuckTopicCollectorFactory topicCollectorFactory) {
+        super(providerRestApi, blackDuckProviderUIConfig, blackDuckDistributionRestApi, blackDuckDistributionUIConfig, provider);
+        this.topicCollectorFactory = topicCollectorFactory;
+    }
+
+    @Override
+    public Set<MessageContentCollector> createTopicCollectors() {
+        return topicCollectorFactory.createTopicCollectors();
     }
 }

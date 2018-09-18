@@ -22,6 +22,7 @@ import com.synopsys.integration.alert.Application;
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDistributionTypeConverter;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.config.CommonTypeConverter;
+import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
@@ -67,7 +68,7 @@ public class HipChatDistributionTypeConverterTest {
         final HipChatDistributionConfigEntity savedHipChatEntity = hipChatDistributionRepository.save(hipChatDistributionConfigEntity);
 
         final CommonDistributionConfigEntity commonDistributionConfigEntity = new CommonDistributionConfigEntity(savedHipChatEntity.getId(), HipChatChannel.COMPONENT_NAME, "nice name", "some_provider", FrequencyType.REAL_TIME,
-            Boolean.FALSE);
+            Boolean.FALSE, FormatType.DEFAULT);
         final CommonDistributionConfigEntity savedCommonEntity = commonDistributionRepository.save(commonDistributionConfigEntity);
 
         final Config config = hipChatDistributionTypeConverter.populateConfigFromEntity(savedHipChatEntity);

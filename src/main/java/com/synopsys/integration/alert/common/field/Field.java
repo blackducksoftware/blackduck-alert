@@ -23,11 +23,15 @@
  */
 package com.synopsys.integration.alert.common.field;
 
-public abstract class Field {
-    private String fieldKey;
+import com.synopsys.integration.util.Stringable;
 
-    public Field(final String fieldKey) {
+public abstract class Field extends Stringable {
+    private String fieldKey;
+    private String label;
+
+    public Field(final String fieldKey, final String label) {
         this.fieldKey = fieldKey;
+        this.label = label;
     }
 
     public String getFieldKey() {
@@ -36,5 +40,13 @@ public abstract class Field {
 
     public void setFieldKey(final String fieldKey) {
         this.fieldKey = fieldKey;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(final String label) {
+        this.label = label;
     }
 }
