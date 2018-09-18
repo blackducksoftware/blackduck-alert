@@ -140,7 +140,7 @@ task webpack(type: Exec) {
 task createAboutText(type: Task) {
     final def aboutFile = new File("${projectDir}/src/main/resources/about.txt")
     aboutFile.delete()
-    def readmeContentArray = new File("README.md").text.readLines()
+    def readmeContentArray = new File("${projectDir}/README.md").text.readLines()
     def descriptionStart = readmeContentArray.indexOf("<!-- description-text-start -->") + 1
     def descriptionEnd = readmeContentArray.indexOf("<!-- description-text-end -->")
     def description = readmeContentArray.subList(descriptionStart, descriptionEnd).join(" ")
