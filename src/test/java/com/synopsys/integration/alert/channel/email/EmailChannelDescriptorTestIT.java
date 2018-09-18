@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.channel.email;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.TestPropertyKey;
 import com.synopsys.integration.alert.channel.DescriptorTestConfigTest;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
@@ -37,6 +38,8 @@ public class EmailChannelDescriptorTestIT extends DescriptorTestConfigTest<Email
     private EmailGlobalRepository emailGlobalRepository;
     @Autowired
     private EmailDescriptor emailDescriptor;
+    @Autowired
+    private Gson gson;
 
     @Override
     public DatabaseEntity getDistributionEntity() {
@@ -48,7 +51,7 @@ public class EmailChannelDescriptorTestIT extends DescriptorTestConfigTest<Email
     @Override
     public ChannelEventFactory createChannelEventFactory() {
         return new ChannelEventFactory(emailDistributionRepositoryAccessor, hipChatDistributionRepositoryAccessor, slackDistributionRepositoryAccessor,
-            blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
+            blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor, gson);
     }
 
     @Override

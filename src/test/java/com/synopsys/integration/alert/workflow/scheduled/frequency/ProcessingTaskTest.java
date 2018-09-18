@@ -36,7 +36,7 @@ public class ProcessingTaskTest {
     public void initTest() {
         final NotificationContent model = new MockNotificationContent(new Date(), "BlackDuck", "NotificationType", "{content: \"content is here\"}", null).createEntity();
         modelList = Arrays.asList(model);
-        eventList = Arrays.asList(new EmailChannelEvent(RestConstants.formatDate(new Date()), "provider", "notificationType", "content", 1L, null, null, null));
+        eventList = Arrays.asList(new EmailChannelEvent(RestConstants.formatDate(new Date()), "provider", "content", 1L, null, null));
     }
 
     public ProcessingTask createTask(final TaskScheduler taskScheduler, final NotificationManager notificationManager, final NotificationProcessor notificationProcessor, final ChannelTemplateManager channelTemplateManager) {

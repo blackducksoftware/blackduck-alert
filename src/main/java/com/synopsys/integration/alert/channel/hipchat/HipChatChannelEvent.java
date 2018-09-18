@@ -30,9 +30,9 @@ public class HipChatChannelEvent extends ChannelEvent {
     private final Boolean notify;
     private final String color;
 
-    public HipChatChannelEvent(final String createdAt, final String provider, final String notificationType, final String content, final Long notificationId, final Long commonConfigId, final Integer roomId, final Boolean notify,
+    public HipChatChannelEvent(final String createdAt, final String provider, final String content, final Long commonConfigId, final Integer roomId, final Boolean notify,
         final String color) {
-        super(HipChatChannel.COMPONENT_NAME, createdAt, provider, notificationType, content, notificationId, commonConfigId);
+        super(HipChatChannel.COMPONENT_NAME, createdAt, provider, content, commonConfigId);
         this.roomId = roomId;
         this.notify = notify;
         this.color = color;

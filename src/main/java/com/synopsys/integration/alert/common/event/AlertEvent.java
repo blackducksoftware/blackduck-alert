@@ -29,12 +29,10 @@ public class AlertEvent {
 
     private final String eventId;
     private final String destination;
-    private final Long notificationId;
 
-    public AlertEvent(final String destination, final Long notificationId) {
+    public AlertEvent(final String destination) {
         this.eventId = UUID.randomUUID().toString();
         this.destination = destination;
-        this.notificationId = notificationId;
     }
 
     public String getEventId() {
@@ -44,6 +42,4 @@ public class AlertEvent {
     public String getDestination() {
         return destination;
     }
-
-    public Long getNotificationId() { return notificationId;}
 }

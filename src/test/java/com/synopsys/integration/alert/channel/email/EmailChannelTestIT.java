@@ -57,8 +57,8 @@ public class EmailChannelTestIT extends ChannelTest {
         final Set<String> emailAddresses = Stream.of(properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM)).collect(Collectors.toSet());
         final String subjectLine = "Integration test subject line";
 
-        final EmailChannelEvent event = new EmailChannelEvent(RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
-            notificationContent.getContent(), 1L, 1L, emailAddresses, subjectLine);
+        final EmailChannelEvent event = new EmailChannelEvent(RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(),
+            notificationContent.getContent(), 1L, emailAddresses, subjectLine);
 
         final String smtpHost = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST);
         final String smtpFrom = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM);
@@ -85,8 +85,8 @@ public class EmailChannelTestIT extends ChannelTest {
             final EmailGroupChannel emailChannel = new EmailGroupChannel(gson, null, null, null, null);
             final DigestModel digestModel = new DigestModel(null);
             final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
-            final EmailChannelEvent event = new EmailChannelEvent(RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
-                notificationContent.getContent(), 1L, 1L, null, null);
+            final EmailChannelEvent event = new EmailChannelEvent(RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(),
+                notificationContent.getContent(), 1L, null, null);
             emailChannel.sendMessage(event);
             fail();
         } catch (final IntegrationException e) {

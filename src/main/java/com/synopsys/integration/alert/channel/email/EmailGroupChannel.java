@@ -64,10 +64,10 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
     @Override
     public void sendMessage(final EmailChannelEvent event) throws IntegrationException {
         //TODO get the project name from the content
-        sendMessage(event.getEmailAddresses(), event.getSubjectLine(), event.getProvider(), event.getNotificationType(), event.getContent(), "ProjectName");
+        sendMessage(event.getEmailAddresses(), event.getSubjectLine(), event.getProvider(), event.getContent(), "ProjectName");
     }
 
-    public void sendMessage(final Set<String> emailAddresses, final String subjectLine, final String provider, final String notificationType, final String content, final String blackDuckProjectName) throws IntegrationException {
+    public void sendMessage(final Set<String> emailAddresses, final String subjectLine, final String provider, final String content, final String blackDuckProjectName) throws IntegrationException {
         final EmailGlobalConfigEntity globalConfigEntity = getGlobalConfigEntity();
         if (!isValidGlobalConfigEntity(globalConfigEntity)) {
             throw new IntegrationException("ERROR: Missing global config.");
@@ -78,7 +78,7 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
 
             final HashMap<String, Object> model = new HashMap<>();
 
-            final String contentTitle = String.format("%s -> %s", provider, notificationType);
+            final String contentTitle = provider;
             model.put("content", content);
             model.put("contentTitle", contentTitle);
             model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), subjectLine);

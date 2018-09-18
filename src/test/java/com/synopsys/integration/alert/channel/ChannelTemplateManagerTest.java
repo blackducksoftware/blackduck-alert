@@ -19,7 +19,7 @@ import com.synopsys.integration.alert.common.digest.model.DigestModel;
 import com.synopsys.integration.alert.common.digest.model.ProjectData;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.event.AlertEvent;
-import com.synopsys.integration.alert.common.event.RawContentEvent;
+import com.synopsys.integration.alert.common.event.ContentEvent;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
@@ -49,8 +49,8 @@ public class ChannelTemplateManagerTest {
         final ProjectData projectData = new ProjectData(FrequencyType.DAILY, "test", "version", Arrays.asList(), null);
         final DigestModel digestModel = new DigestModel(Arrays.asList(projectData));
         final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
-        final HipChatChannelEvent hipChatEvent = new HipChatChannelEvent(RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
-            notificationContent.getContent(), 1L, 1L, 20, false, "red");
+        final HipChatChannelEvent hipChatEvent = new HipChatChannelEvent(RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(),
+            notificationContent.getContent(), 1L, 20, false, "red");
         channelTemplateManager.sendEvents(Arrays.asList(hipChatEvent));
     }
 
@@ -64,7 +64,7 @@ public class ChannelTemplateManagerTest {
         Mockito.doNothing().when(jmsTemplate).convertAndSend(Mockito.anyString(), Mockito.any(Object.class));
         final ChannelTemplateManager channelTemplateManager = new ChannelTemplateManager(gson, auditEntryRepositoryWrapper, auditNotificationRepositoryWrapper, jmsTemplate);
 
-        final AlertEvent dbStoreEvent = new RawContentEvent("", RestConstants.formatDate(new Date()), "", "", null, 1L);
+        final AlertEvent dbStoreEvent = new ContentEvent("", RestConstants.formatDate(new Date()), "", "");
         final boolean isTrue = channelTemplateManager.sendEvent(dbStoreEvent);
         assertTrue(isTrue);
     }

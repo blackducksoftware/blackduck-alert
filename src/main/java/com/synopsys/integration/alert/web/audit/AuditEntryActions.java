@@ -57,6 +57,7 @@ import com.synopsys.integration.alert.web.model.AlertPagedModel;
 import com.synopsys.integration.alert.web.model.NotificationConfig;
 import com.synopsys.integration.alert.web.model.NotificationContentConverter;
 import com.synopsys.integration.alert.workflow.NotificationManager;
+import com.synopsys.integration.alert.workflow.processor.NotificationProcessor;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Transactional
@@ -71,11 +72,12 @@ public class AuditEntryActions {
     private final NotificationContentConverter notificationContentConverter;
     private final ChannelEventFactory channelEventFactory;
     private final ChannelTemplateManager channelTemplateManager;
+    private final NotificationProcessor notificationProcessor;
 
     @Autowired
     public AuditEntryActions(final AuditEntryRepository auditEntryRepository, final NotificationManager notificationManager, final AuditNotificationRepository auditNotificationRepository,
         final CommonDistributionRepository commonDistributionRepository, final NotificationContentConverter notificationContentConverter,
-        final ChannelEventFactory channelEventFactory, final ChannelTemplateManager channelTemplateManager) {
+        final ChannelEventFactory channelEventFactory, final ChannelTemplateManager channelTemplateManager, final NotificationProcessor notificationProcessor) {
         this.auditEntryRepository = auditEntryRepository;
         this.notificationManager = notificationManager;
         this.auditNotificationRepository = auditNotificationRepository;
@@ -83,6 +85,7 @@ public class AuditEntryActions {
         this.notificationContentConverter = notificationContentConverter;
         this.channelEventFactory = channelEventFactory;
         this.channelTemplateManager = channelTemplateManager;
+        this.notificationProcessor = notificationProcessor;
     }
 
     public AlertPagedModel<AuditEntryConfig> get() {
@@ -184,14 +187,10 @@ public class AuditEntryActions {
             throw new AlertException("The job for this entry was deleted, can not re-send this entry.");
         }
         final CommonDistributionConfigEntity commonConfigEntity = optionalCommonConfigEntity.get();
-        notifications.forEach(notificationContent -> {
-            try {
-                final ChannelEvent event = channelEventFactory.createChannelEvent(commonConfigId, commonConfigEntity.getDistributionConfigId(), commonConfigEntity.getDistributionType(), notificationContent);
-                event.setAuditEntryId(auditEntryEntity.getId());
-                channelTemplateManager.sendEvent(event);
-            } catch (final AlertException e) {
-                logger.error(e.getMessage(), e);
-            }
+        final List<ChannelEvent> channelEvents = notificationProcessor.processNotifications(commonConfigEntity.getFrequency(), notifications);
+        channelEvents.forEach(event -> {
+            event.setAuditEntryId(auditEntryEntity.getId());
+            channelTemplateManager.sendEvent(event);
         });
         return get();
     }
