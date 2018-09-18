@@ -23,11 +23,10 @@
  */
 package com.synopsys.integration.alert.channel.event;
 
-import com.synopsys.integration.alert.common.event.AlertEvent;
+import com.synopsys.integration.alert.common.event.RawContentEvent;
 
-public abstract class ChannelEvent extends AlertEvent {
+public abstract class ChannelEvent extends RawContentEvent {
     private final Long commonDistributionConfigId;
-
     private Long auditEntryId;
 
     public ChannelEvent(final String destination, final String createdAt, final String provider, final String notificationType, final String content, final Long notificationId, final Long commonDistributionConfigId) {

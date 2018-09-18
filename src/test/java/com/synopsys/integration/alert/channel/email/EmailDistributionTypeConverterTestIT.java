@@ -22,6 +22,7 @@ import com.synopsys.integration.alert.Application;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDistributionTypeConverter;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.config.CommonTypeConverter;
+import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.database.channel.email.EmailGroupDistributionConfigEntity;
@@ -63,7 +64,7 @@ public class EmailDistributionTypeConverterTestIT {
         final EmailGroupDistributionConfigEntity savedEmailEntity = emailGroupDistributionRepository.save(emailGroupDistributionConfigEntity);
 
         final CommonDistributionConfigEntity commonDistributionConfigEntity = new CommonDistributionConfigEntity(savedEmailEntity.getId(), EmailGroupChannel.COMPONENT_NAME, "nice name", "some_provider", FrequencyType.REAL_TIME,
-            Boolean.FALSE);
+            Boolean.FALSE, FormatType.DEFAULT);
         final CommonDistributionConfigEntity savedCommonEntity = commonDistributionRepository.save(commonDistributionConfigEntity);
 
         final Config config = emailDistributionTypeConverter.populateConfigFromEntity(savedEmailEntity);

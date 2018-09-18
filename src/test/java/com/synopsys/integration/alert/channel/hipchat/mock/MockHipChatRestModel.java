@@ -74,9 +74,9 @@ public class MockHipChatRestModel extends MockRestModelUtil<HipChatDistributionC
     @Override
     public HipChatDistributionConfig createRestModel() {
         final HipChatDistributionConfig restModel = new HipChatDistributionConfig(String.valueOf(distributionMockUtil.getId()), roomId, notify, color, distributionMockUtil.getDistributionConfigId(),
-                distributionMockUtil.getDistributionType(), distributionMockUtil.getName(), distributionMockUtil.getProviderName(), distributionMockUtil.getFrequency(), distributionMockUtil.getFilterByProject(),
-                distributionMockUtil.getProjects(),
-                distributionMockUtil.getNotificationsAsStrings());
+            distributionMockUtil.getDistributionType(), distributionMockUtil.getName(), distributionMockUtil.getProviderName(), distributionMockUtil.getFrequency(), distributionMockUtil.getFilterByProject(),
+            distributionMockUtil.getProjects(),
+            distributionMockUtil.getNotificationsAsStrings(), distributionMockUtil.getFormatType());
         return restModel;
     }
 

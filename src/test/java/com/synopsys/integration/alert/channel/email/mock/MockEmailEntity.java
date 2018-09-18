@@ -67,7 +67,7 @@ public class MockEmailEntity extends MockEntityUtil<EmailGroupDistributionConfig
     @Override
     public Config createConfig() {
         return new EmailDistributionConfig(id.toString(), groupName, emailTemplateLogoImage, emailSubjectLine, "0L", EmailGroupChannel.COMPONENT_NAME, "EmailTest", BlackDuckProvider.COMPONENT_NAME, "real_time", "false",
-            Collections.emptyList(), Collections.emptyList());
+            Collections.emptyList(), Collections.emptyList(), "DEFAULT");
     }
 
     @Override

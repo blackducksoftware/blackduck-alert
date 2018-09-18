@@ -16,7 +16,7 @@
     "@type": "Project",
     "externalIdentifier": {
       "externalSystemTypeId": "maven",
-      "externalId": "com.blackducksoftware.integration:hub-alert-profiling-test:1.0.0",
+      "externalId": "com.blackducksoftware.integration:alert-profiling-test:1.0.0",
       "externalIdMetaData": {
         "forge": {
           "name": "maven",
