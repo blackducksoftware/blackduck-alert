@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.synopsys.integration.alert.Application;
 import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
+import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
@@ -61,7 +62,8 @@ public class CommonDistributionRepositoryTestIT {
         final String providerName = "provider_blackduck";
         final FrequencyType frequency = FrequencyType.DAILY;
         final Boolean filterByProject = Boolean.TRUE;
-        final CommonDistributionConfigEntity entity = new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, providerName, frequency, filterByProject);
+        final FormatType formatType = FormatType.DEFAULT;
+        final CommonDistributionConfigEntity entity = new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, providerName, frequency, filterByProject, formatType);
         final CommonDistributionConfigEntity savedEntity = commonDistributionRepository.save(entity);
 
         assertEquals(1, commonDistributionRepository.count());

@@ -23,23 +23,42 @@
  */
 package com.synopsys.integration.alert.common.field;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
-public class HierarchicalField extends Field {
-    private final List<String> fieldList;
+import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
+
+public abstract class HierarchicalField extends Field {
+    public static final String LABEL_URL_SUFFIX = "_url";
+
+    private final boolean filterable;
     private final String configNameMapping;
+    private final FieldContentIdentifier contentIdentifier;
+    private final Type type;
+    private List<String> fieldList;
 
-    public HierarchicalField(final Collection<String> pathToField, final String innerMostFieldName, final String configNameMapping) {
-        super(innerMostFieldName);
+    public HierarchicalField(final Collection<String> pathToField, final String innerMostFieldName, final FieldContentIdentifier contentIdentifier, final String label, final Type type) {
+        super(innerMostFieldName, label);
 
-        final List<String> list = new ArrayList<>();
-        list.addAll(pathToField);
-        list.add(innerMostFieldName);
-        this.fieldList = Collections.unmodifiableList(list);
+        initFieldList(pathToField, innerMostFieldName);
+        this.filterable = false;
+        this.configNameMapping = null;
+        this.contentIdentifier = contentIdentifier;
+        this.type = type;
+    }
+
+    public HierarchicalField(final Collection<String> pathToField, final String innerMostFieldName, final FieldContentIdentifier contentIdentifier, final String label, final String configNameMapping, final Type type) {
+        super(innerMostFieldName, label);
+
+        initFieldList(pathToField, innerMostFieldName);
+        this.filterable = true;
         this.configNameMapping = configNameMapping;
+        this.contentIdentifier = contentIdentifier;
+        this.type = type;
     }
 
     /**
@@ -49,7 +68,27 @@ public class HierarchicalField extends Field {
         return fieldList;
     }
 
-    public String getConfigNameMapping() {
-        return configNameMapping;
+    public Optional<String> getConfigNameMapping() {
+        return Optional.ofNullable(configNameMapping);
+    }
+
+    public FieldContentIdentifier getContentIdentifier() {
+        return contentIdentifier;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    // TODO move to StringHierarchicalField
+    public boolean isFilterable() {
+        return filterable;
+    }
+
+    private void initFieldList(final Collection<String> pathToField, final String innerMostFieldName) {
+        final List<String> list = new ArrayList<>();
+        list.addAll(pathToField);
+        list.add(innerMostFieldName);
+        this.fieldList = Collections.unmodifiableList(list);
     }
 }

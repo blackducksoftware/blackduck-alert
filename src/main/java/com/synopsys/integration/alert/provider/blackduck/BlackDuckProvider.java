@@ -23,6 +23,7 @@
  */
 package com.synopsys.integration.alert.provider.blackduck;
 
+import java.util.EnumSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
@@ -65,7 +67,17 @@ public class BlackDuckProvider extends Provider {
     }
 
     @Override
+    public String getName() {
+        return BlackDuckProvider.COMPONENT_NAME;
+    }
+
+    @Override
     public Set<ProviderContentType> getProviderContentTypes() {
         return BlackDuckProviderContentTypes.ALL.stream().collect(Collectors.toSet());
+    }
+
+    @Override
+    public Set<FormatType> getSupportedFormatTypes() {
+        return EnumSet.of(FormatType.DEFAULT, FormatType.DIGEST);
     }
 }

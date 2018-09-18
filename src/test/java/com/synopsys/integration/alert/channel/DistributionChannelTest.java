@@ -28,6 +28,7 @@ import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
 import com.synopsys.integration.alert.common.digest.model.DigestModel;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
+import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
@@ -136,7 +137,7 @@ public class DistributionChannelTest extends ChannelTest {
         final ChannelEvent event = new ChannelEvent(EmailGroupChannel.COMPONENT_NAME, RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
             notificationContent.getContent(), commonId, 1L);
 
-        final CommonDistributionConfigEntity commonEntity = new CommonDistributionConfigEntity(commonId, EmailGroupChannel.COMPONENT_NAME, "Email Config", "provider_blackduck", FrequencyType.REAL_TIME, false);
+        final CommonDistributionConfigEntity commonEntity = new CommonDistributionConfigEntity(commonId, EmailGroupChannel.COMPONENT_NAME, "Email Config", "provider_blackduck", FrequencyType.REAL_TIME, false, FormatType.DEFAULT);
         Mockito.when(commonRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(commonEntity));
 
         final EmailGroupDistributionConfigEntity specificEntity = new EmailGroupDistributionConfigEntity("admins", "", "TEST SUBJECT LINE");
@@ -166,7 +167,7 @@ public class DistributionChannelTest extends ChannelTest {
         final ChannelEvent event = new ChannelEvent(EmailGroupChannel.COMPONENT_NAME, RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
             notificationContent.getContent(), commonId, 1L);
 
-        final CommonDistributionConfigEntity commonEntity = new CommonDistributionConfigEntity(commonId, SlackChannel.COMPONENT_NAME, "Other Config", "provider_blackduck", FrequencyType.REAL_TIME, false);
+        final CommonDistributionConfigEntity commonEntity = new CommonDistributionConfigEntity(commonId, SlackChannel.COMPONENT_NAME, "Other Config", "provider_blackduck", FrequencyType.REAL_TIME, false, FormatType.DEFAULT);
         Mockito.when(commonRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(commonEntity));
 
         channel.handleEvent(event);

@@ -1,0 +1,32 @@
+{
+  "content": {
+    "projectVersion": "https://a-hub-server.blackduck.com/api/projects/d9205017-4630-4f0c-8127-170e1db03d6f/versions/ec2a759d-e27d-4445-adb2-3176f8a78d24",
+    "component": "https://a-hub-server.blackduck.com/api/components/e5a73809-0bf4-4b5c-985a-121525d0adca",
+    "projectName": "example",
+    "projectVersionName": "1",
+    "componentName": "OpenSSL",
+    "firstName": "",
+    "lastName": "",
+    "policyInfos": [
+      {
+        "policy": "https://a-hub-server.blackduck.com/api/policy-rules/14ed1322-7fd5-4766-876d-b0883a13ff58",
+        "policyName": "No OpenSSL (example)",
+        "severity": "MINOR"
+      }
+    ],
+    "policies": [
+      "https://a-hub-server.blackduck.com/api/policy-rules/14ed1322-7fd5-4766-876d-b0883a13ff58"
+    ],
+    "bomComponentVersionPolicyStatus": "https://a-hub-server.blackduck.com/api/projects/b9df44d3-8a80-4939-b4ed-b7258452d030/versions/49d2caf0-4ca0-4bba-bab0-69493b834db7/components/e5a73809-0bf4-4b5c-985a-121525d0adca/policy-status",
+    "bomComponent": "https://a-hub-server.blackduck.com/api/projects/b9df44d3-8a80-4939-b4ed-b7258452d030/versions/49d2caf0-4ca0-4bba-bab0-69493b834db7/components/e5a73809-0bf4-4b5c-985a-121525d0adca"
+  },
+  "contentType": "application/json",
+  "type": "POLICY_OVERRIDE",
+  "createdAt": "2018-08-23T18:22:37.846Z",
+  "_meta": {
+    "allow": [
+      "GET"
+    ],
+    "href": "https://a-hub-server.blackduck.com/api/notifications/edea20df-02cf-467b-a98f-d0dc9637770c"
+  }
+}
