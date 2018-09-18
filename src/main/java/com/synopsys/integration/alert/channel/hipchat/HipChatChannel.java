@@ -149,7 +149,7 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
             if (isChunkedMessageNeeded(event)) {
                 return createChunkedRequestList(globalConfig, event);
             } else {
-                final String contentTitle = String.format("%s -> %s", event.getProvider(), event.getNotificationType());
+                final String contentTitle = event.getProvider();
                 return Arrays.asList(createRequest(globalConfig, event, contentTitle, event.getContent()));
             }
         }
@@ -182,7 +182,7 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
         int currentRequest = 1;
         while (end < eventContent.length()) {
             logger.info("Creating request {} of {}", currentRequest, requestCount);
-            final String contentTitle = String.format("%s -> %s (part %d of %d)", event.getProvider(), event.getNotificationType(), currentRequest, requestCount);
+            final String contentTitle = String.format("%s (part %d of %d)", event.getProvider(), currentRequest, requestCount);
             final int start = end;
             end = end + MESSAGE_SIZE_LIMIT;
             final String content;

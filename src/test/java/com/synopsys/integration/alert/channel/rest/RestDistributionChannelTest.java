@@ -73,8 +73,8 @@ public class RestDistributionChannelTest extends ChannelTest {
         };
         final DigestModel digestModel = new DigestModel(createProjectData("Rest channel test"));
         final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
-        final SlackChannelEvent event = new SlackChannelEvent(RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
-            notificationContent.getContent(), 1L, 1L, "more garbage", "garbage", "garbage");
+        final SlackChannelEvent event = new SlackChannelEvent(RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(),
+            notificationContent.getContent(), 1L, "more garbage", "garbage", "garbage");
         Exception thrownException = null;
         try {
             restChannel.sendAuditedMessage(event);

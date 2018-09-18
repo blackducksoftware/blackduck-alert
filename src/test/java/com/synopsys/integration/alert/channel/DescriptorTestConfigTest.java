@@ -2,10 +2,7 @@ package com.synopsys.integration.alert.channel;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.Collections;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -33,13 +30,13 @@ import com.synopsys.integration.alert.channel.event.ChannelEventFactory;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.RestApi;
-import com.synopsys.integration.alert.common.digest.model.DigestModel;
-import com.synopsys.integration.alert.common.digest.model.ProjectData;
+import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.RestApiType;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
-import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.entity.channel.DistributionChannelConfigEntity;
 import com.synopsys.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
 import com.synopsys.integration.alert.mock.entity.MockEntityUtil;
@@ -87,11 +84,12 @@ public abstract class DescriptorTestConfigTest<R extends CommonDistributionConfi
 
     @Test
     public void testCreateChannelEvent() throws Exception {
-        final Collection<ProjectData> projectData = Arrays.asList(new ProjectData(FrequencyType.DAILY, "Test project", "1", Arrays.asList(), new HashMap<>()));
-        final DigestModel digestModel = new DigestModel(projectData);
-        final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
-        DatabaseEntity distributionEntity = getDistributionEntity();
-        final ChannelEvent channelEvent = channelEventFactory.createChannelEvent(1L, distributionEntity.getId(), getDescriptor().getDestinationName(), notificationContent);
+        final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
+        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "Alert Test Message", null, subTopic, Collections.emptyList());
+        final DatabaseEntity distributionEntity = getDistributionEntity();
+        final CommonDistributionConfig jobConfig = new CommonDistributionConfig("1", String.valueOf(distributionEntity.getId()), getDescriptor().getDestinationName(), "Test Job", "provider", FrequencyType.DAILY.name(), "false",
+            Collections.emptyList(), Collections.emptyList(), FormatType.DIGEST.name());
+        final ChannelEvent channelEvent = channelEventFactory.createChannelEvent(jobConfig, content);
 
         assertEquals(Long.valueOf(1L), channelEvent.getCommonDistributionConfigId());
         assertEquals(36, channelEvent.getEventId().length());

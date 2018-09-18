@@ -15,7 +15,7 @@ public class TopicEventTest {
     public void testTopicList() {
         final String topic = "TOPIC";
         final List<AggregateMessageContent> contentList = Collections.emptyList();
-        final TopicEvent topicEvent = new TopicEvent(topic, 1L, contentList);
+        final TopicEvent topicEvent = new TopicEvent(topic, contentList);
         assertEquals(contentList, topicEvent.getTopicList());
     }
 }

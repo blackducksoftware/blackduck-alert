@@ -39,7 +39,6 @@ import com.synopsys.integration.alert.common.event.AlertEvent;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
-import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
 
 @Transactional
 @Component
@@ -78,8 +77,9 @@ public class ChannelTemplateManager {
             final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);
             channelEvent.setAuditEntryId(savedAuditEntryEntity.getId());
 
-            final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), channelEvent.getNotificationId());
-            auditNotificationRepository.save(auditNotificationRelation);
+            // TODO Map the notifications to the audit entries.
+            //            final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), channelEvent.getNotificationId());
+            //            auditNotificationRepository.save(auditNotificationRelation);
 
             final String jsonMessage = gson.toJson(channelEvent);
             jmsTemplate.convertAndSend(destination, jsonMessage);

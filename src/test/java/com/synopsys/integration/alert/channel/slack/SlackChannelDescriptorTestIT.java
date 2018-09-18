@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.channel.slack;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.TestPropertyKey;
 import com.synopsys.integration.alert.channel.DescriptorTestConfigTest;
 import com.synopsys.integration.alert.channel.event.ChannelEventFactory;
@@ -34,6 +35,8 @@ public class SlackChannelDescriptorTestIT extends DescriptorTestConfigTest<Slack
     private UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor;
     @Autowired
     private SlackDescriptor slackDescriptor;
+    @Autowired
+    private Gson gson;
 
     @Override
     public DatabaseEntity getDistributionEntity() {
@@ -45,7 +48,7 @@ public class SlackChannelDescriptorTestIT extends DescriptorTestConfigTest<Slack
     @Override
     public ChannelEventFactory createChannelEventFactory() {
         return new ChannelEventFactory(emailDistributionRepositoryAccessor, hipChatDistributionRepositoryAccessor, slackDistributionRepositoryAccessor,
-            blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
+            blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor, gson);
     }
 
     @Override

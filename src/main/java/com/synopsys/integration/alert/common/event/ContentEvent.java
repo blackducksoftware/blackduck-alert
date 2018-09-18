@@ -23,18 +23,16 @@
  */
 package com.synopsys.integration.alert.common.event;
 
-public class RawContentEvent extends AlertEvent {
+public class ContentEvent extends AlertEvent {
 
     private final String createdAt;
     private final String provider;
-    private final String notificationType;
     private final String content;
 
-    public RawContentEvent(final String destination, final String createdAt, final String provider, final String notificationType, final String content, final Long notificationId) {
-        super(destination, notificationId);
+    public ContentEvent(final String destination, final String createdAt, final String provider, final String content) {
+        super(destination);
         this.createdAt = createdAt;
         this.provider = provider;
-        this.notificationType = notificationType;
         this.content = content;
     }
 
@@ -44,10 +42,6 @@ public class RawContentEvent extends AlertEvent {
 
     public String getProvider() {
         return provider;
-    }
-
-    public String getNotificationType() {
-        return notificationType;
     }
 
     public String getContent() {

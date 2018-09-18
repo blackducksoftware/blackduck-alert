@@ -99,8 +99,6 @@ public class SlackChannel extends RestDistributionChannel<GlobalChannelConfigEnt
         final StringBuilder messageBuilder = new StringBuilder();
         messageBuilder.append(System.lineSeparator());
         messageBuilder.append(event.getProvider());
-        messageBuilder.append(" > ");
-        messageBuilder.append(event.getNotificationType());
         messageBuilder.append(System.lineSeparator());
         messageBuilder.append("- - - - - - - - - - - - - - - - - - - -");
         messageBuilder.append(System.lineSeparator());

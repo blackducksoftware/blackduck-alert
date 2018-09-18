@@ -67,8 +67,8 @@ public class SlackChannelTestIT extends ChannelTest {
         final Collection<ProjectData> projectData = createProjectData("Slack test project");
         final DigestModel digestModel = new DigestModel(projectData);
         final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
-        final SlackChannelEvent event = new SlackChannelEvent(RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
-            notificationContent.getContent(), new Long(0), 1L, username, webHook, roomName);
+        final SlackChannelEvent event = new SlackChannelEvent(RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(),
+            notificationContent.getContent(), new Long(0), username, webHook, roomName);
 
         slackChannel.sendAuditedMessage(event);
 
@@ -81,8 +81,7 @@ public class SlackChannelTestIT extends ChannelTest {
         final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null);
         List<Request> request = null;
 
-        SlackChannelEvent event = new SlackChannelEvent(null, null, null,
-            null, null, null, "ChannelUsername", "", "");
+        SlackChannelEvent event = new SlackChannelEvent(null, null, null, null, "ChannelUsername", "", "");
         try {
             request = slackChannel.createRequests(null, event);
             fail();
@@ -91,7 +90,7 @@ public class SlackChannelTestIT extends ChannelTest {
         }
 
         event = new SlackChannelEvent(null, null, null,
-            null, null, null, "ChannelUsername", "Webhook", "");
+            null, "ChannelUsername", "Webhook", "");
         try {
             request = slackChannel.createRequests(null, event);
             fail();
@@ -107,8 +106,8 @@ public class SlackChannelTestIT extends ChannelTest {
         final DigestModel digestModel = new DigestModel(projectData);
         final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
 
-        final SlackChannelEvent event = new SlackChannelEvent(RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
-            notificationContent.getContent(), new Long(0), 1L, "ChannelUsername", "Webhook", "ChannelName");
+        final SlackChannelEvent event = new SlackChannelEvent(RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(),
+            notificationContent.getContent(), new Long(0), "ChannelUsername", "Webhook", "ChannelName");
 
         final SlackChannel spySlackChannel = Mockito.spy(slackChannel);
         final List<Request> request = spySlackChannel.createRequests(null, event);
@@ -122,8 +121,8 @@ public class SlackChannelTestIT extends ChannelTest {
         final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null);
         final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", "");
 
-        final SlackChannelEvent event = new SlackChannelEvent(RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
-            notificationContent.getContent(), new Long(0), 1L, "ChannelUsername", "Webhook", "ChannelName");
+        final SlackChannelEvent event = new SlackChannelEvent(RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(),
+            notificationContent.getContent(), new Long(0), "ChannelUsername", "Webhook", "ChannelName");
 
         final SlackChannel spySlackChannel = Mockito.spy(slackChannel);
         final List<Request> requests = slackChannel.createRequests(null, event);
