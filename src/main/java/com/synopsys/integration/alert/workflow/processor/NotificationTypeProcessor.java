@@ -23,6 +23,7 @@
  */
 package com.synopsys.integration.alert.workflow.processor;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -40,4 +41,8 @@ public abstract class NotificationTypeProcessor {
     }
 
     public abstract List<NotificationModel> process(final BlackDuckProperties blackDuckProperties, final NotificationDetailResult notificationDetailResult, final HubBucket bucket);
+
+    public Set<NotificationType> getApplicableNotificationTypes() {
+        return Collections.unmodifiableSet(applicableNotificationTypes);
+    }
 }
