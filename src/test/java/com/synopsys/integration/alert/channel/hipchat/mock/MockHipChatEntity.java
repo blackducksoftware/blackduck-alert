@@ -66,7 +66,7 @@ public class MockHipChatEntity extends MockEntityUtil<HipChatDistributionConfigE
     @Override
     public Config createConfig() {
         return new HipChatDistributionConfig(id.toString(), roomId.toString(), notify, color, "0L", HipChatChannel.COMPONENT_NAME, "HipChatTest", BlackDuckProvider.COMPONENT_NAME, "real_time", "false", Collections.emptyList(),
-            Collections.emptyList());
+            Collections.emptyList(), "DEFAULT");
     }
 
     @Override

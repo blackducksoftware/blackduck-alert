@@ -86,4 +86,9 @@
         <dropColumn tableName="GLOBAL_SCHEDULING_CONFIG" schemaName="ALERT" columnName="ALERT_DIGEST_DAILY_CRON"/>
         <dropColumn tableName="GLOBAL_SCHEDULING_CONFIG" schemaName="ALERT" columnName="ALERT_PURGE_DATA_CRON"/>
     </changeSet>
+    <changeSet author="psantos" id="1533054185-13">
+        <addColumn tableName="COMMON_DISTRIBUTION_CONFIG" schemaName="ALERT">
+            <column name="FORMAT_TYPE" type="INT(10)" value="0"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

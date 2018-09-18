@@ -74,7 +74,7 @@ public class MockSlackEntity extends MockEntityUtil<SlackDistributionConfigEntit
     @Override
     public Config createConfig() {
         return new SlackDistributionConfig(id.toString(), webhook, channelUsername, channelName, "0L", SlackChannel.COMPONENT_NAME, "SlackTest", BlackDuckProvider.COMPONENT_NAME, "real_time", "false", Collections.emptyList(),
-            Collections.emptyList());
+            Collections.emptyList(), "DEFAULT");
     }
 
     @Override

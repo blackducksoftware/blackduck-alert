@@ -24,8 +24,7 @@ class Navigation extends Component {
                 return descriptorList.map((component) =>
                     <li>
                         <NavLink to={`${uriPrefix}${component.urlName}`} activeClassName="activeNav">
-                            <FontAwesome name={component.fontAwesomeIcon} fixedWidth/>
-                            {component.label}
+                            <FontAwesome name={component.fontAwesomeIcon} fixedWidth/> {component.label}
                         </NavLink>
                     </li>);
             }

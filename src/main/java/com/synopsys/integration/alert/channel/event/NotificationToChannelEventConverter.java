@@ -78,5 +78,4 @@ public class NotificationToChannelEventConverter {
         final Long distributionConfigId = Long.parseLong(config.getDistributionConfigId());
         return channelEventFactory.createChannelEvent(configId, distributionConfigId, config.getDistributionType(), notificationContent);
     }
-
 }

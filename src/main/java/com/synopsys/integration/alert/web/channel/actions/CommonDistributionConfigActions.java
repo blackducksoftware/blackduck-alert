@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
@@ -46,7 +47,7 @@ public class CommonDistributionConfigActions {
 
     @Autowired
     public CommonDistributionConfigActions(final ConfiguredProjectsActions configuredProjectsActions, final NotificationTypesActions notificationTypesActions, final CommonDistributionRepository commonDistributionRepository,
-    final ContentConverter contentConverter) {
+        final ContentConverter contentConverter) {
         this.configuredProjectsActions = configuredProjectsActions;
         this.notificationTypesActions = notificationTypesActions;
         this.commonDistributionRepository = commonDistributionRepository;
@@ -103,8 +104,9 @@ public class CommonDistributionConfigActions {
         final Long distributionConfigId = contentConverter.getLongValue(commonConfig.getDistributionConfigId());
         final FrequencyType frequencyType = Enum.valueOf(FrequencyType.class, commonConfig.getFrequency());
         final Boolean filterByProject = contentConverter.getBooleanValue(commonConfig.getFilterByProject());
+        final FormatType formatType = Enum.valueOf(FormatType.class, commonConfig.getFormatType());
         final CommonDistributionConfigEntity commonEntity = new CommonDistributionConfigEntity(distributionConfigId, commonConfig.getDistributionType(), commonConfig.getName(), commonConfig.getProviderName(), frequencyType,
-        filterByProject);
+            filterByProject, formatType);
         final Long longId = contentConverter.getLongValue(commonConfig.getId());
         commonEntity.setId(longId);
         return commonEntity;

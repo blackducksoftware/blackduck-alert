@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.common.digest.filter;
+package com.synopsys.integration.alert.workflow.filter;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,6 +27,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.synopsys.integration.alert.Application;
+import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
@@ -42,7 +43,6 @@ import com.synopsys.integration.alert.database.relation.DistributionProjectRelat
 import com.synopsys.integration.alert.database.relation.repository.DistributionNotificationTypeRepository;
 import com.synopsys.integration.alert.database.relation.repository.DistributionProjectRepository;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.alert.workflow.filter.NotificationFilter;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.test.annotation.DatabaseConnectionTest;
 
@@ -132,7 +132,7 @@ public class NotificationFilterTestIT {
         if (foundEntity.isPresent()) {
             final CommonDistributionConfigEntity commonEntity = foundEntity.get();
             final CommonDistributionConfigEntity newEntity = new CommonDistributionConfigEntity(commonEntity.getDistributionConfigId(), commonEntity.getDistributionType(), commonEntity.getName(), BlackDuckProvider.COMPONENT_NAME,
-                FrequencyType.DAILY, commonEntity.getFilterByProject());
+                FrequencyType.DAILY, commonEntity.getFilterByProject(), FormatType.DEFAULT);
             newEntity.setId(commonEntity.getId());
             commonDistributionRepository.save(newEntity);
         }
@@ -174,6 +174,8 @@ public class NotificationFilterTestIT {
         final NotificationContent garbage3 = createVulnerabilityNotification("garbage3", BlackDuckProvider.COMPONENT_NAME, new Date());
         final List<NotificationContent> notifications = Arrays.asList(garbage1, applicableNotification, garbage2, garbage3);
 
+        //TODO refactor the test to use the ObjectHierarchicalField
+
         final Collection<NotificationContent> filteredNotifications = notificationFilter.extractApplicableNotifications(FrequencyType.REAL_TIME, notifications);
 
         Assert.assertEquals(1, filteredNotifications.size());
@@ -194,7 +196,7 @@ public class NotificationFilterTestIT {
         final String name = "name";
         final FrequencyType frequency = FrequencyType.REAL_TIME;
 
-        final CommonDistributionConfigEntity entity = new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, providerName, frequency, Boolean.TRUE);
+        final CommonDistributionConfigEntity entity = new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, providerName, frequency, Boolean.TRUE, FormatType.DEFAULT);
 
         return entity;
     }

@@ -19,6 +19,7 @@ import com.synopsys.integration.alert.common.digest.model.DigestModel;
 import com.synopsys.integration.alert.common.digest.model.ProjectData;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.event.AlertEvent;
+import com.synopsys.integration.alert.common.event.RawContentEvent;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
@@ -63,7 +64,7 @@ public class ChannelTemplateManagerTest {
         Mockito.doNothing().when(jmsTemplate).convertAndSend(Mockito.anyString(), Mockito.any(Object.class));
         final ChannelTemplateManager channelTemplateManager = new ChannelTemplateManager(gson, auditEntryRepositoryWrapper, auditNotificationRepositoryWrapper, jmsTemplate);
 
-        final AlertEvent dbStoreEvent = new AlertEvent("", RestConstants.formatDate(new Date()), "", "", null, 1L);
+        final AlertEvent dbStoreEvent = new RawContentEvent("", RestConstants.formatDate(new Date()), "", "", null, 1L);
         final boolean isTrue = channelTemplateManager.sendEvent(dbStoreEvent);
         assertTrue(isTrue);
     }
