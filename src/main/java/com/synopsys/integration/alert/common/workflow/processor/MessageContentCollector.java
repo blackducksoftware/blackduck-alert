@@ -247,7 +247,7 @@ public abstract class MessageContentCollector {
         }
         return values
                    .parallelStream()
-                   .map(value -> new LinkableItem(dataField.getFieldKey(), value))
+                   .map(value -> new LinkableItem(dataField.getLabel(), value))
                    .collect(Collectors.toList());
     }
 
