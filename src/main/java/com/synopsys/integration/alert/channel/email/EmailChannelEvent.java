@@ -26,12 +26,13 @@ package com.synopsys.integration.alert.channel.email;
 import java.util.Set;
 
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 
 public class EmailChannelEvent extends ChannelEvent {
     private final Set<String> emailAddresses;
     private final String subjectLine;
 
-    public EmailChannelEvent(final String createdAt, final String provider, final String content, final Long commonConfigId, final Set<String> emailAddresses,
+    public EmailChannelEvent(final String createdAt, final String provider, final AggregateMessageContent content, final Long commonConfigId, final Set<String> emailAddresses,
         final String subjectLine) {
         super(EmailGroupChannel.COMPONENT_NAME, createdAt, provider, content, commonConfigId);
         this.emailAddresses = emailAddresses;

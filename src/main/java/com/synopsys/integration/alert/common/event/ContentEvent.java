@@ -23,12 +23,14 @@
  */
 package com.synopsys.integration.alert.common.event;
 
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
+
 public class ContentEvent extends AlertEvent {
     private final String createdAt;
     private final String provider;
-    private final String content;
+    private final AggregateMessageContent content;
 
-    public ContentEvent(final String destination, final String createdAt, final String provider, final String content) {
+    public ContentEvent(final String destination, final String createdAt, final String provider, final AggregateMessageContent content) {
         super(destination);
         this.createdAt = createdAt;
         this.provider = provider;
@@ -43,7 +45,7 @@ public class ContentEvent extends AlertEvent {
         return provider;
     }
 
-    public String getContent() {
+    public AggregateMessageContent getContent() {
         return content;
     }
 }

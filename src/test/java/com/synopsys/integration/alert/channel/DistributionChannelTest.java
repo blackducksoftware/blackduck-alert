@@ -27,14 +27,14 @@ import com.synopsys.integration.alert.channel.email.EmailChannelEvent;
 import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
 import com.synopsys.integration.alert.channel.email.mock.MockEmailGlobalEntity;
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
-import com.synopsys.integration.alert.common.digest.model.DigestModel;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalConfigEntity;
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalRepository;
-import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
@@ -112,11 +112,11 @@ public class DistributionChannelTest extends ChannelTest {
         final EmailGlobalRepository emailGlobalRepository = Mockito.mock(EmailGlobalRepository.class);
 
         final EmailGroupChannel channel = new EmailGroupChannel(gson, testAlertProperties, hubProperties, auditEntryRepository, emailGlobalRepository);
-        final DigestModel digestModel = new DigestModel(createProjectData("Distribution Channel Test"));
-        final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
+        final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
+        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "Distribution Channel Test", null, subTopic, Collections.emptyList());
 
-        final EmailChannelEvent event = new EmailChannelEvent(RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(),
-            notificationContent.getContent(), 1L, Collections.emptySet(), "TEST SUBJECT LINE");
+        final EmailChannelEvent event = new EmailChannelEvent(RestConstants.formatDate(new Date()), "provider",
+            content, 1L, Collections.emptySet(), "TEST SUBJECT LINE");
 
         channel.handleEvent(event);
     }

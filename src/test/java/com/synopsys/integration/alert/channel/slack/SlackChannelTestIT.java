@@ -17,8 +17,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -35,14 +34,11 @@ import com.synopsys.integration.alert.TestPropertyKey;
 import com.synopsys.integration.alert.channel.ChannelTest;
 import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.common.digest.model.CategoryData;
-import com.synopsys.integration.alert.common.digest.model.DigestModel;
 import com.synopsys.integration.alert.common.digest.model.ItemData;
-import com.synopsys.integration.alert.common.digest.model.ProjectData;
 import com.synopsys.integration.alert.common.digest.model.ProjectDataFactory;
-import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
-import com.synopsys.integration.alert.database.entity.NotificationCategoryEnum;
-import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
@@ -64,11 +60,10 @@ public class SlackChannelTestIT extends ChannelTest {
         final String username = properties.getProperty(TestPropertyKey.TEST_SLACK_USERNAME);
         final String webHook = properties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK);
 
-        final Collection<ProjectData> projectData = createProjectData("Slack test project");
-        final DigestModel digestModel = new DigestModel(projectData);
-        final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
-        final SlackChannelEvent event = new SlackChannelEvent(RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(),
-            notificationContent.getContent(), new Long(0), username, webHook, roomName);
+        final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
+        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, Collections.emptyList());
+        final SlackChannelEvent event = new SlackChannelEvent(RestConstants.formatDate(new Date()), "provider",
+            content, new Long(0), username, webHook, roomName);
 
         slackChannel.sendAuditedMessage(event);
 
@@ -102,12 +97,11 @@ public class SlackChannelTestIT extends ChannelTest {
     @Test
     public void testCreateHtmlMessage() throws IntegrationException {
         final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null);
-        final Collection<ProjectData> projectData = createSlackProjectData();
-        final DigestModel digestModel = new DigestModel(projectData);
-        final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
+        final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
+        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, Collections.emptyList());
 
-        final SlackChannelEvent event = new SlackChannelEvent(RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(),
-            notificationContent.getContent(), new Long(0), "ChannelUsername", "Webhook", "ChannelName");
+        final SlackChannelEvent event = new SlackChannelEvent(RestConstants.formatDate(new Date()), "provider",
+            content, new Long(0), "ChannelUsername", "Webhook", "ChannelName");
 
         final SlackChannel spySlackChannel = Mockito.spy(slackChannel);
         final List<Request> request = spySlackChannel.createRequests(null, event);
@@ -119,24 +113,15 @@ public class SlackChannelTestIT extends ChannelTest {
     @Test
     public void testCreateHtmlMessageEmpty() throws IntegrationException {
         final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null);
-        final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", "");
+        final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
+        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
 
-        final SlackChannelEvent event = new SlackChannelEvent(RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(),
-            notificationContent.getContent(), new Long(0), "ChannelUsername", "Webhook", "ChannelName");
+        final SlackChannelEvent event = new SlackChannelEvent(RestConstants.formatDate(new Date()), "provider", content, new Long(0), "ChannelUsername", "Webhook", "ChannelName");
 
         final SlackChannel spySlackChannel = Mockito.spy(slackChannel);
         final List<Request> requests = slackChannel.createRequests(null, event);
         assertTrue(requests.isEmpty());
         Mockito.verify(spySlackChannel, Mockito.times(0)).createPostMessageRequest(Mockito.anyString(), Mockito.anyMap(), Mockito.anyString());
-    }
-
-    private Collection<ProjectData> createSlackProjectData() {
-        final Map<NotificationCategoryEnum, CategoryData> categoryMap = new HashMap<>();
-        categoryMap.put(NotificationCategoryEnum.HIGH_VULNERABILITY, createCategoryData());
-
-        final ProjectData projectData = new ProjectData(FrequencyType.DAILY, "Slack", "1", null, categoryMap);
-
-        return Arrays.asList(projectData);
     }
 
     private CategoryData createCategoryData() {

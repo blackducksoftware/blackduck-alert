@@ -76,12 +76,13 @@ public class SlackChannel extends RestDistributionChannel<GlobalChannelConfigEnt
 
     @Override
     public List<Request> createRequests(final GlobalChannelConfigEntity globalConfig, final SlackChannelEvent event) throws IntegrationException {
+
         if (StringUtils.isBlank(event.getWebHook())) {
             throw new IntegrationException("Missing Webhook URL");
         } else if (StringUtils.isBlank(event.getChannelName())) {
             throw new IntegrationException("Missing channel name");
         } else {
-            if (StringUtils.isBlank(event.getContent())) {
+            if (StringUtils.isBlank(event.getContent().getValue())) {
                 return Collections.emptyList();
             } else {
                 final String slackUrl = event.getWebHook();

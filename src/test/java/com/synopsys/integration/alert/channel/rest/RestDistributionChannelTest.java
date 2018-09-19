@@ -15,6 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -28,9 +29,9 @@ import com.synopsys.integration.alert.channel.ChannelTest;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.channel.slack.SlackChannelEvent;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.digest.model.DigestModel;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.database.entity.NotificationContent;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.entity.channel.DistributionChannelConfigEntity;
 import com.synopsys.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -71,10 +72,10 @@ public class RestDistributionChannelTest extends ChannelTest {
                 return Arrays.asList(new Request.Builder().uri("http://google.com").build());
             }
         };
-        final DigestModel digestModel = new DigestModel(createProjectData("Rest channel test"));
-        final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
-        final SlackChannelEvent event = new SlackChannelEvent(RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(),
-            notificationContent.getContent(), 1L, "more garbage", "garbage", "garbage");
+        final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
+        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, Collections.emptyList());
+        final SlackChannelEvent event = new SlackChannelEvent(RestConstants.formatDate(new Date()), "provider",
+            content, 1L, "more garbage", "garbage", "garbage");
         Exception thrownException = null;
         try {
             restChannel.sendAuditedMessage(event);
