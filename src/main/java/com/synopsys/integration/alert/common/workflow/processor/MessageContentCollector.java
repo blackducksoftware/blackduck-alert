@@ -72,7 +72,7 @@ public abstract class MessageContentCollector {
         final JsonFieldAccessor jsonFieldAccessor = createJsonAccessor(notificationFields, notification.getContent());
         final List<AggregateMessageContent> contents = getContentsOrCreateIfDoesNotExist(jsonFieldAccessor, notificationFields);
         for (final AggregateMessageContent content : contents) {
-            addCategoryItems(content.getCategoryItemList(), jsonFieldAccessor, notificationFields, notification.getNotificationType());
+            addCategoryItems(content.getCategoryItemList(), jsonFieldAccessor, notificationFields, notification);
             addContent(content);
         }
     }
@@ -86,7 +86,7 @@ public abstract class MessageContentCollector {
         }
     }
 
-    protected abstract void addCategoryItems(final List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<HierarchicalField> notificationFields, final String notificationType);
+    protected abstract void addCategoryItems(final List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<HierarchicalField> notificationFields, final NotificationContent notificationContent);
 
     protected final List<AggregateMessageContent> getCopyOfCollectedContent() {
         return Collections.unmodifiableList(collectedContent);

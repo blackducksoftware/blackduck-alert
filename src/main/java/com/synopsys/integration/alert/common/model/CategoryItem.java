@@ -31,10 +31,12 @@ public class CategoryItem {
     private final CategoryKey categoryKey;
     private final ItemOperation operation;
     private final List<LinkableItem> itemList;
+    private final Long notificationId;
 
-    public CategoryItem(final CategoryKey categoryKey, final ItemOperation operation, final List<LinkableItem> itemList) {
+    public CategoryItem(final CategoryKey categoryKey, final ItemOperation operation, final Long notificationId, final List<LinkableItem> itemList) {
         this.categoryKey = categoryKey;
         this.operation = operation;
+        this.notificationId = notificationId;
         this.itemList = itemList;
     }
 
@@ -44,6 +46,10 @@ public class CategoryItem {
 
     public ItemOperation getOperation() {
         return operation;
+    }
+
+    public Long getNotificationId() {
+        return notificationId;
     }
 
     public List<LinkableItem> getItemList() {
