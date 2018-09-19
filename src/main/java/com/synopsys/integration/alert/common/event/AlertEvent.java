@@ -26,7 +26,6 @@ package com.synopsys.integration.alert.common.event;
 import java.util.UUID;
 
 public class AlertEvent {
-
     private final String eventId;
     private final String destination;
 
