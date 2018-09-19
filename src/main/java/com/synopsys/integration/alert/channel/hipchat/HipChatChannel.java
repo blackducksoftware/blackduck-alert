@@ -42,7 +42,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.AlertConstants;
 import com.synopsys.integration.alert.channel.ChannelFreemarkerTemplatingService;
-import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.channel.rest.RestDistributionChannel;
@@ -77,7 +76,7 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
 
     @Override
     public String getDistributionType() {
-        return EmailGroupChannel.COMPONENT_NAME;
+        return HipChatChannel.COMPONENT_NAME;
     }
 
     @Override
