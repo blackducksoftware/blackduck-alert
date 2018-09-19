@@ -148,8 +148,7 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
         if (event.getRoomId() == null) {
             throw new IntegrationException("Room ID missing");
         } else {
-            final AggregateMessageContent messageContent = gson.fromJson(event.getContent(), AggregateMessageContent.class);
-            final String htmlMessage = createHtmlMessage(messageContent);
+            final String htmlMessage = createHtmlMessage(event.getContent());
             if (isChunkedMessageNeeded(htmlMessage)) {
                 return createChunkedRequestList(globalConfig, event, htmlMessage);
             } else {
