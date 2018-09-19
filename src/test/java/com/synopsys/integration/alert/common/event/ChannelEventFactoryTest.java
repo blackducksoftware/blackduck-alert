@@ -51,11 +51,13 @@ public class ChannelEventFactoryTest {
         final Long commonDistributionConfigId = 25L;
         final Long distributionConfigId = 33L;
         final String distributionType = EmailGroupChannel.COMPONENT_NAME;
+        final String providerName = "provider";
 
         final CommonDistributionConfig jobConfig = Mockito.mock(CommonDistributionConfig.class);
         Mockito.when(jobConfig.getDistributionType()).thenReturn(distributionType);
-        Mockito.when(jobConfig.getDistributionConfigId()).thenReturn("33L");
-        Mockito.when(jobConfig.getId()).thenReturn("25L");
+        Mockito.when(jobConfig.getDistributionConfigId()).thenReturn("33");
+        Mockito.when(jobConfig.getId()).thenReturn("25");
+        Mockito.when(jobConfig.getProviderName()).thenReturn(providerName);
 
         final Optional optionalDatabaseEntity = Optional.of(new EmailGroupDistributionConfigEntity());
         Mockito.when(emailDistributionRepositoryAccessor.readEntity(ArgumentMatchers.same(distributionConfigId))).thenReturn(optionalDatabaseEntity);
@@ -68,9 +70,9 @@ public class ChannelEventFactoryTest {
             blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor, gson);
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
-        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "Alert Test Message", null, subTopic, Collections.emptyList());
+        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
 
-        final EmailChannelEvent expected = new EmailChannelEvent(RestConstants.formatDate(new Date()), "provider",
+        final EmailChannelEvent expected = new EmailChannelEvent(RestConstants.formatDate(new Date()), providerName,
             gson.toJson(content), commonDistributionConfigId, Collections.emptySet(), null);
 
         final ChannelEvent event = factory.createChannelEvent(jobConfig, content);

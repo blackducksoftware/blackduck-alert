@@ -85,9 +85,9 @@ public abstract class DescriptorTestConfigTest<R extends CommonDistributionConfi
     @Test
     public void testCreateChannelEvent() throws Exception {
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
-        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "Alert Test Message", null, subTopic, Collections.emptyList());
+        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
         final DatabaseEntity distributionEntity = getDistributionEntity();
-        final CommonDistributionConfig jobConfig = new CommonDistributionConfig("1", String.valueOf(distributionEntity.getId()), getDescriptor().getDestinationName(), "Test Job", "provider", FrequencyType.DAILY.name(), "false",
+        final CommonDistributionConfig jobConfig = new CommonDistributionConfig("1", String.valueOf(distributionEntity.getId()), getDescriptor().getDestinationName(), "Test Job", "provider", FrequencyType.DAILY.name(), "true",
             Collections.emptyList(), Collections.emptyList(), FormatType.DIGEST.name());
         final ChannelEvent channelEvent = channelEventFactory.createChannelEvent(jobConfig, content);
 
