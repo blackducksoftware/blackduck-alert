@@ -1,14 +1,13 @@
 package com.synopsys.integration.alert.workflow.filter;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.time.ZonedDateTime;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 
@@ -39,6 +38,7 @@ import com.synopsys.integration.alert.channel.slack.SlackChannel;
 import com.synopsys.integration.alert.channel.slack.mock.MockSlackEntity;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.database.channel.email.EmailDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.database.channel.email.EmailGroupDistributionConfigEntity;
@@ -53,6 +53,8 @@ import com.synopsys.integration.alert.database.entity.repository.CommonDistribut
 import com.synopsys.integration.alert.database.entity.repository.NotificationTypeRepository;
 import com.synopsys.integration.alert.database.relation.DistributionNotificationTypeRelation;
 import com.synopsys.integration.alert.database.relation.repository.DistributionNotificationTypeRepository;
+import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
+import com.synopsys.integration.alert.workflow.processor.MessageContentAggregator;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.test.annotation.DatabaseConnectionTest;
 import com.synopsys.integration.test.annotation.ExternalConnectionTest;
@@ -81,19 +83,21 @@ public class NotificationToChannelEventConverterTest {
     private DistributionNotificationTypeRepository distributionNotificationTypeRepository;
     @Autowired
     private NotificationTypeRepository notificationTypeRepository;
+    @Autowired
+    private MessageContentAggregator messageContentAggregator;
 
     @Before
     public void initializeConfig() {
         cleanUp();
 
-        SlackDistributionConfigEntity slackDistributionConfigEntity = new MockSlackEntity().createEntity();
-        DatabaseEntity slackEntity = slackDistributionRepositoryAccessor.saveEntity(slackDistributionConfigEntity);
+        final SlackDistributionConfigEntity slackDistributionConfigEntity = new MockSlackEntity().createEntity();
+        final DatabaseEntity slackEntity = slackDistributionRepositoryAccessor.saveEntity(slackDistributionConfigEntity);
 
-        HipChatDistributionConfigEntity hipChatDistributionConfigEntity = new MockHipChatEntity().createEntity();
-        DatabaseEntity hipChatEntity = hipChatDistributionRepositoryAccessor.saveEntity(hipChatDistributionConfigEntity);
+        final HipChatDistributionConfigEntity hipChatDistributionConfigEntity = new MockHipChatEntity().createEntity();
+        final DatabaseEntity hipChatEntity = hipChatDistributionRepositoryAccessor.saveEntity(hipChatDistributionConfigEntity);
 
-        EmailGroupDistributionConfigEntity emailGroupDistributionConfigEntity = new MockEmailEntity().createEntity();
-        DatabaseEntity emailEntity = emailDistributionRepositoryAccessor.saveEntity(emailGroupDistributionConfigEntity);
+        final EmailGroupDistributionConfigEntity emailGroupDistributionConfigEntity = new MockEmailEntity().createEntity();
+        final DatabaseEntity emailEntity = emailDistributionRepositoryAccessor.saveEntity(emailGroupDistributionConfigEntity);
 
         CommonDistributionConfigEntity slackCommonDistributionConfig = new CommonDistributionConfigEntity(slackEntity.getId(), SlackChannel.COMPONENT_NAME, "Slack Config", "provider_blackduck", FrequencyType.REAL_TIME, false,
             FormatType.DEFAULT);
@@ -133,8 +137,8 @@ public class NotificationToChannelEventConverterTest {
         final NotificationContent notificationModel = createNotificationModel("Project_1", "1.0.0", NotificationType.RULE_VIOLATION);
         final List<NotificationContent> notificationModels = Arrays.asList(notificationModel);
 
-        final Collection<NotificationContent> filteredNotifications = notificationFilter.extractApplicableNotifications(FrequencyType.DAILY, notificationModels);
-        final List<ChannelEvent> channelEvents = notificationToEventConverter.convertToEvents(filteredNotifications);
+        final Map<CommonDistributionConfig, List<AggregateMessageContent>> jobNotifications = messageContentAggregator.processNotifications(FrequencyType.DAILY, notificationModels);
+        final List<ChannelEvent> channelEvents = notificationToEventConverter.convertToEvents(jobNotifications);
         assertTrue(channelEvents.isEmpty());
     }
 
@@ -147,9 +151,9 @@ public class NotificationToChannelEventConverterTest {
         final NotificationContent notification_3 = createNotificationModel("Project_1", "2.0.0", NotificationType.RULE_VIOLATION);
         final List<NotificationContent> notificationModels = Arrays.asList(notification_1, notification_2, notification_3);
 
-        final Collection<NotificationContent> filteredNotifications = notificationFilter.extractApplicableNotifications(FrequencyType.REAL_TIME, notificationModels);
-        final List<ChannelEvent> channelEvents = notificationToEventConverter.convertToEvents(filteredNotifications);
-        assertEquals(configEntityList.size() * filteredNotifications.size(), channelEvents.size());
+        final Map<CommonDistributionConfig, List<AggregateMessageContent>> jobNotifications = messageContentAggregator.processNotifications(FrequencyType.REAL_TIME, notificationModels);
+        final List<ChannelEvent> channelEvents = notificationToEventConverter.convertToEvents(jobNotifications);
+        //assertEquals(configEntityList.size() * filteredNotifications.size(), channelEvents.size());
 
         channelEvents.forEach(event -> {
             assertNotNull(event.getContent());
