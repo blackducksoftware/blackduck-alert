@@ -262,7 +262,7 @@ public class HipChatChannelTest extends ChannelTest {
         Mockito.doReturn(new HipChatGlobalConfigEntity(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY), "")).when(hipChatChannel).getGlobalConfigEntity();
 
         final List<Request> requestList = hipChatChannel.createRequests(hipChatChannel.getGlobalConfigEntity(), event);
-        assertTrue(requestList.size() == 3);
+        assertTrue(requestList.size() > 3);
     }
 
     private void addContentData(final StringBuilder contentBuilder, final char character) {
