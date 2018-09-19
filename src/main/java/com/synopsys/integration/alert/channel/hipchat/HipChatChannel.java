@@ -47,6 +47,7 @@ import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.channel.rest.RestDistributionChannel;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
@@ -149,7 +150,7 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
                 return createChunkedRequestList(globalConfig, event);
             } else {
                 final String contentTitle = event.getProvider();
-                return Arrays.asList(createRequest(globalConfig, event, contentTitle, event.getContent()));
+                return Arrays.asList(createRequest(globalConfig, event, contentTitle, event.getContent().toString()));
             }
         }
     }
@@ -159,9 +160,11 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
     }
 
     private boolean isChunkedMessageNeeded(final ChannelEvent event) {
-        final String eventContent = event.getContent();
-        if (StringUtils.isNotBlank(eventContent)) {
-            return eventContent.length() > MESSAGE_SIZE_LIMIT;
+        //TODO fix the calculation of pages for the event content.
+        final AggregateMessageContent eventContent = event.getContent();
+        final String contentString = eventContent.toString();
+        if (StringUtils.isNotBlank(eventContent.toString())) {
+            return contentString.length() > MESSAGE_SIZE_LIMIT;
         } else {
             return false;
         }
@@ -169,8 +172,9 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
 
     private List<Request> createChunkedRequestList(final HipChatGlobalConfigEntity globalConfig, final HipChatChannelEvent event)
         throws IntegrationException {
-        final String eventContent = event.getContent();
-        final int contentLength = eventContent.length();
+        final AggregateMessageContent eventContent = event.getContent();
+        final String contentString = eventContent.toString();
+        final int contentLength = contentString.length();
         logger.info("Message too large.  Creating chunks...");
         logger.info("Content length: {}", contentLength);
         final int additionPage = (contentLength % MESSAGE_SIZE_LIMIT == 0) ? 0 : 1;
@@ -179,16 +183,16 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
         final List<Request> requestList = new ArrayList<>(requestCount);
         int end = 0;
         int currentRequest = 1;
-        while (end < eventContent.length()) {
+        while (end < contentString.length()) {
             logger.info("Creating request {} of {}", currentRequest, requestCount);
             final String contentTitle = String.format("%s (part %d of %d)", event.getProvider(), currentRequest, requestCount);
             final int start = end;
             end = end + MESSAGE_SIZE_LIMIT;
             final String content;
-            if (end > eventContent.length()) {
-                content = eventContent.substring(start);
+            if (end > contentString.length()) {
+                content = contentString.substring(start);
             } else {
-                content = eventContent.substring(start, end);
+                content = contentString.substring(start, end);
             }
             requestList.add(createRequest(globalConfig, event, contentTitle, content));
             currentRequest++;

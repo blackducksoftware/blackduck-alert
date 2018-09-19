@@ -40,6 +40,7 @@ import com.synopsys.integration.alert.channel.email.template.EmailTarget;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalConfigEntity;
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalRepository;
@@ -63,11 +64,10 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
 
     @Override
     public void sendMessage(final EmailChannelEvent event) throws IntegrationException {
-        //TODO get the project name from the content
         sendMessage(event.getEmailAddresses(), event.getSubjectLine(), event.getProvider(), event.getContent(), "ProjectName");
     }
 
-    public void sendMessage(final Set<String> emailAddresses, final String subjectLine, final String provider, final String content, final String blackDuckProjectName) throws IntegrationException {
+    public void sendMessage(final Set<String> emailAddresses, final String subjectLine, final String provider, final AggregateMessageContent content, final String blackDuckProjectName) throws IntegrationException {
         final EmailGlobalConfigEntity globalConfigEntity = getGlobalConfigEntity();
         if (!isValidGlobalConfigEntity(globalConfigEntity)) {
             throw new IntegrationException("ERROR: Missing global config.");
@@ -79,7 +79,7 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
             final HashMap<String, Object> model = new HashMap<>();
 
             final String contentTitle = provider;
-            model.put("content", content);
+            model.put("content", content.toString());
             model.put("contentTitle", contentTitle);
             model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), subjectLine);
             final Optional<String> optionalBlackDuckUrl = getBlackDuckProperties().getBlackDuckUrl();

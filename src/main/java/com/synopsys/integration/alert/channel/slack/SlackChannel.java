@@ -81,7 +81,7 @@ public class SlackChannel extends RestDistributionChannel<GlobalChannelConfigEnt
         } else if (StringUtils.isBlank(event.getChannelName())) {
             throw new IntegrationException("Missing channel name");
         } else {
-            if (StringUtils.isBlank(event.getContent())) {
+            if (StringUtils.isBlank(event.getContent().getValue())) {
                 return Collections.emptyList();
             } else {
                 final String slackUrl = event.getWebHook();

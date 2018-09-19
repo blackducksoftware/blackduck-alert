@@ -24,13 +24,14 @@
 package com.synopsys.integration.alert.channel.slack;
 
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 
 public class SlackChannelEvent extends ChannelEvent {
     private final String channelUsername;
     private final String webHook;
     private final String channelName;
 
-    public SlackChannelEvent(final String createdAt, final String provider, final String content, final Long commonConfigId, final String channelUsername, final String webHook,
+    public SlackChannelEvent(final String createdAt, final String provider, final AggregateMessageContent content, final Long commonConfigId, final String channelUsername, final String webHook,
         final String channelName) {
         super(SlackChannel.COMPONENT_NAME, createdAt, provider, content, commonConfigId);
         this.channelUsername = channelUsername;

@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,11 +19,10 @@ import com.synopsys.integration.alert.TestAlertProperties;
 import com.synopsys.integration.alert.TestBlackDuckProperties;
 import com.synopsys.integration.alert.TestPropertyKey;
 import com.synopsys.integration.alert.channel.ChannelTest;
-import com.synopsys.integration.alert.common.digest.model.DigestModel;
-import com.synopsys.integration.alert.common.digest.model.ProjectData;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalConfigEntity;
-import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.synopsys.integration.exception.IntegrationException;
@@ -51,14 +50,13 @@ public class EmailChannelTestIT extends ChannelTest {
         }
 
         EmailGroupChannel emailChannel = new EmailGroupChannel(gson, testAlertProperties, globalProperties, auditEntryRepository, null);
-        final Collection<ProjectData> projectData = createProjectData("Manual test project");
-        final DigestModel digestModel = new DigestModel(projectData);
-        final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
+        final LinkableItem subTopic = new LinkableItem("subTopic", "subTopic", null);
+        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
         final Set<String> emailAddresses = Stream.of(properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM)).collect(Collectors.toSet());
         final String subjectLine = "Integration test subject line";
 
-        final EmailChannelEvent event = new EmailChannelEvent(RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(),
-            notificationContent.getContent(), 1L, emailAddresses, subjectLine);
+        final EmailChannelEvent event = new EmailChannelEvent(RestConstants.formatDate(new Date()), "provider",
+            content, 1L, emailAddresses, subjectLine);
 
         final String smtpHost = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST);
         final String smtpFrom = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM);
@@ -83,10 +81,10 @@ public class EmailChannelTestIT extends ChannelTest {
     public void sendEmailNullGlobalTest() throws Exception {
         try (final OutputLogger outputLogger = new OutputLogger()) {
             final EmailGroupChannel emailChannel = new EmailGroupChannel(gson, null, null, null, null);
-            final DigestModel digestModel = new DigestModel(null);
-            final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
-            final EmailChannelEvent event = new EmailChannelEvent(RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(),
-                notificationContent.getContent(), 1L, null, null);
+            final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
+            final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
+            final EmailChannelEvent event = new EmailChannelEvent(RestConstants.formatDate(new Date()), "provider",
+                content, 1L, null, null);
             emailChannel.sendMessage(event);
             fail();
         } catch (final IntegrationException e) {

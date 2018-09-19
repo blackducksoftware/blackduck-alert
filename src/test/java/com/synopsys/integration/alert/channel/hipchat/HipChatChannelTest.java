@@ -19,7 +19,7 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -34,11 +34,10 @@ import com.synopsys.integration.alert.TestPropertyKey;
 import com.synopsys.integration.alert.channel.ChannelTest;
 import com.synopsys.integration.alert.channel.hipchat.mock.MockHipChatGlobalEntity;
 import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
-import com.synopsys.integration.alert.common.digest.model.DigestModel;
-import com.synopsys.integration.alert.common.digest.model.ProjectData;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
-import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
@@ -63,15 +62,14 @@ public class HipChatChannelTest extends ChannelTest {
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties);
         HipChatChannel hipChatChannel = new HipChatChannel(gson, testAlertProperties, globalProperties, auditEntryRepository, null, channelRestConnectionFactory);
 
-        final Collection<ProjectData> data = createProjectData("Integration test project");
-        final DigestModel digestModel = new DigestModel(data);
-        final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
+        final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
+        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
 
         final int roomId = Integer.parseInt(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_ROOM_ID));
         final boolean notify = false;
         final String color = "random";
-        final HipChatChannelEvent event = new HipChatChannelEvent(RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(),
-            notificationContent.getContent(), null, roomId, notify, color);
+        final HipChatChannelEvent event = new HipChatChannelEvent(RestConstants.formatDate(new Date()), "provider",
+            content, null, roomId, notify, color);
 
         hipChatChannel = Mockito.spy(hipChatChannel);
         Mockito.doReturn(new HipChatGlobalConfigEntity(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY), "")).when(hipChatChannel).getGlobalConfigEntity();
@@ -104,12 +102,11 @@ public class HipChatChannelTest extends ChannelTest {
         final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, null, null, auditEntryRepository, null, null);
 
-        final Collection<ProjectData> data = createProjectData("Integration test project");
-        final DigestModel digestModel = new DigestModel(data);
-        final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
+        final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
+        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
 
-        final HipChatChannelEvent event = new HipChatChannelEvent(RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(),
-            notificationContent.getContent(), null, 12345, Boolean.FALSE, null);
+        final HipChatChannelEvent event = new HipChatChannelEvent(RestConstants.formatDate(new Date()), "provider",
+            content, null, 12345, Boolean.FALSE, null);
 
         final String userDir = System.getProperties().getProperty("user.dir");
         try {
@@ -223,13 +220,14 @@ public class HipChatChannelTest extends ChannelTest {
         final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(mockedGlobalRepository, alertProperties);
         HipChatChannel hipChatChannel = new HipChatChannel(gson, alertProperties, globalProperties, auditEntryRepository, null, null);
 
-        final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", "");
+        final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
+        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
 
         final int roomId = Integer.parseInt(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_ROOM_ID));
         final boolean notify = false;
         final String color = "random";
-        final HipChatChannelEvent event = new HipChatChannelEvent(RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(),
-            notificationContent.getContent(), null, roomId, notify, color);
+        final HipChatChannelEvent event = new HipChatChannelEvent(RestConstants.formatDate(new Date()), "provider",
+            content, null, roomId, notify, color);
 
         hipChatChannel = Mockito.spy(hipChatChannel);
         Mockito.doReturn(new HipChatGlobalConfigEntity(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY), "")).when(hipChatChannel).getGlobalConfigEntity();
@@ -251,19 +249,20 @@ public class HipChatChannelTest extends ChannelTest {
         addContentData(contentBuilder, 'b');
         addContentData(contentBuilder, 'c');
 
-        final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentBuilder.toString());
+        final LinkableItem subTopic = new LinkableItem("subTopic", contentBuilder.toString(), null);
+        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
         final int roomId = Integer.parseInt(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_ROOM_ID));
         final boolean notify = false;
         final String color = "random";
 
-        final HipChatChannelEvent event = new HipChatChannelEvent(RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(),
-            notificationContent.getContent(), null, roomId, notify, color);
+        final HipChatChannelEvent event = new HipChatChannelEvent(RestConstants.formatDate(new Date()), "provider",
+            content, null, roomId, notify, color);
 
         hipChatChannel = Mockito.spy(hipChatChannel);
         Mockito.doReturn(new HipChatGlobalConfigEntity(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY), "")).when(hipChatChannel).getGlobalConfigEntity();
 
         final List<Request> requestList = hipChatChannel.createRequests(hipChatChannel.getGlobalConfigEntity(), event);
-        assertTrue(requestList.size() == 3);
+        assertTrue(requestList.size() > 3);
     }
 
     private void addContentData(final StringBuilder contentBuilder, final char character) {
