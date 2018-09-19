@@ -36,9 +36,12 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.event.AlertEvent;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
+import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
 
 @Transactional
 @Component
@@ -76,10 +79,11 @@ public class ChannelTemplateManager {
             final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);
             channelEvent.setAuditEntryId(savedAuditEntryEntity.getId());
 
-            // TODO Map the notifications to the audit entries.
-            //            final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), channelEvent.getNotificationId());
-            //            auditNotificationRepository.save(auditNotificationRelation);
-
+            final AggregateMessageContent content = channelEvent.getContent();
+            for (final CategoryItem item : content.getCategoryItemList()) {
+                final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), item.getNotificationId());
+                auditNotificationRepository.save(auditNotificationRelation);
+            }
             final String jsonMessage = gson.toJson(channelEvent);
             jmsTemplate.convertAndSend(destination, jsonMessage);
         } else {
