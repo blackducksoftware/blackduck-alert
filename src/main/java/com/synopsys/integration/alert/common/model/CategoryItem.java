@@ -26,8 +26,9 @@ package com.synopsys.integration.alert.common.model;
 import java.util.List;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import com.synopsys.integration.util.Stringable;
 
-public class CategoryItem {
+public class CategoryItem extends Stringable {
     private final CategoryKey categoryKey;
     private final ItemOperation operation;
     private final List<LinkableItem> itemList;
