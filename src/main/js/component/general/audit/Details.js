@@ -65,7 +65,7 @@ class Details extends Component {
                     </div>
                 </div>
                 <div className="tableContainer">
-                    <TextArea inputClass="stackTraceContainer" label="Content" readOnly name="notificationContent" value={jsonPrettyPrintContent}/>
+                    <TextArea inputClass="stackTraceContainer" sizeClass='col-sm-12' label="Content" readOnly name="notificationContent" value={jsonPrettyPrintContent}/>
                 </div>
                 {errorMessage}
                 {errorStackTrace}
