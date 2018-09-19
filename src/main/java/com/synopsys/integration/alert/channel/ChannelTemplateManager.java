@@ -66,7 +66,6 @@ public class ChannelTemplateManager {
         final String destination = event.getDestination();
         if (event instanceof ChannelEvent) {
             final ChannelEvent channelEvent = (ChannelEvent) event;
-            // TODO revist this structure does this audit entry type make sense since we have the raw content.
             AuditEntryEntity auditEntryEntity = new AuditEntryEntity(channelEvent.getCommonDistributionConfigId(), new Date(System.currentTimeMillis()), null, null, null, null);
 
             if (channelEvent.getAuditEntryId() != null) {

@@ -24,12 +24,13 @@
 package com.synopsys.integration.alert.channel.event;
 
 import com.synopsys.integration.alert.common.event.ContentEvent;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 
 public abstract class ChannelEvent extends ContentEvent {
     private final Long commonDistributionConfigId;
     private Long auditEntryId;
 
-    public ChannelEvent(final String destination, final String createdAt, final String provider, final String content, final Long commonDistributionConfigId) {
+    public ChannelEvent(final String destination, final String createdAt, final String provider, final AggregateMessageContent content, final Long commonDistributionConfigId) {
         super(destination, createdAt, provider, content);
         this.commonDistributionConfigId = commonDistributionConfigId;
     }
