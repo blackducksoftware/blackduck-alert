@@ -33,6 +33,9 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -49,6 +52,7 @@ import com.synopsys.integration.alert.workflow.filter.JsonExtractor;
 import com.synopsys.integration.alert.workflow.filter.JsonFieldAccessor;
 
 public abstract class MessageContentCollector {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final JsonExtractor jsonExtractor;
     private final Collection<ProviderContentType> contentTypes;
     private final Map<FormatType, MessageContentProcessor> messageContentProcessorMap;
@@ -68,12 +72,17 @@ public abstract class MessageContentCollector {
     }
 
     public void insert(final NotificationContent notification) {
-        final List<HierarchicalField> notificationFields = getFieldsForNotificationType(notification.getNotificationType());
-        final JsonFieldAccessor jsonFieldAccessor = createJsonAccessor(notificationFields, notification.getContent());
-        final List<AggregateMessageContent> contents = getContentsOrCreateIfDoesNotExist(jsonFieldAccessor, notificationFields);
-        for (final AggregateMessageContent content : contents) {
-            addCategoryItems(content.getCategoryItemList(), jsonFieldAccessor, notificationFields, notification);
-            addContent(content);
+        try {
+            final List<HierarchicalField> notificationFields = getFieldsForNotificationType(notification.getNotificationType());
+            final JsonFieldAccessor jsonFieldAccessor = createJsonAccessor(notificationFields, notification.getContent());
+            final List<AggregateMessageContent> contents = getContentsOrCreateIfDoesNotExist(jsonFieldAccessor, notificationFields);
+            for (final AggregateMessageContent content : contents) {
+                addCategoryItems(content.getCategoryItemList(), jsonFieldAccessor, notificationFields, notification);
+                addContent(content);
+            }
+        } catch (final IllegalArgumentException ex) {
+            final String message = String.format("Error inserting notification into collector: %s", notification);
+            logger.error(message, ex);
         }
     }
 
