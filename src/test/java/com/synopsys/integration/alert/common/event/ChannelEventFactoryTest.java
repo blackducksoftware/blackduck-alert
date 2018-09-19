@@ -73,7 +73,7 @@ public class ChannelEventFactoryTest {
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
 
         final EmailChannelEvent expected = new EmailChannelEvent(RestConstants.formatDate(new Date()), providerName,
-            gson.toJson(content), commonDistributionConfigId, Collections.emptySet(), null);
+            content, commonDistributionConfigId, Collections.emptySet(), null);
 
         final ChannelEvent event = factory.createChannelEvent(jobConfig, content);
         assertEquals(expected.getAuditEntryId(), event.getAuditEntryId());

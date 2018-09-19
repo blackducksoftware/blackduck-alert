@@ -24,13 +24,14 @@
 package com.synopsys.integration.alert.channel.hipchat;
 
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 
 public class HipChatChannelEvent extends ChannelEvent {
     private final Integer roomId;
     private final Boolean notify;
     private final String color;
 
-    public HipChatChannelEvent(final String createdAt, final String provider, final String content, final Long commonConfigId, final Integer roomId, final Boolean notify,
+    public HipChatChannelEvent(final String createdAt, final String provider, final AggregateMessageContent content, final Long commonConfigId, final Integer roomId, final Boolean notify,
         final String color) {
         super(HipChatChannel.COMPONENT_NAME, createdAt, provider, content, commonConfigId);
         this.roomId = roomId;

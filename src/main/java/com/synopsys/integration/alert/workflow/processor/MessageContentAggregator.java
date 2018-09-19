@@ -81,7 +81,7 @@ public class MessageContentAggregator {
 
         return distributionConfigs
                    .parallelStream()
-                   .collect(Collectors.toMap(Function.identity(), jobConfig -> collectTopics(jobConfig, notificationList)));
+                   .collect(Collectors.toConcurrentMap(Function.identity(), jobConfig -> collectTopics(jobConfig, notificationList)));
     }
 
     private List<AggregateMessageContent> collectTopics(final CommonDistributionConfig jobConfiguration, final Collection<NotificationContent> notificationCollection) {
