@@ -88,7 +88,6 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, E
             }
             logger.error("Global Config did not have the expected number of rows: Expected 1, but found {}.", globalConfigs.size());
         }
-
         return null;
     }
 

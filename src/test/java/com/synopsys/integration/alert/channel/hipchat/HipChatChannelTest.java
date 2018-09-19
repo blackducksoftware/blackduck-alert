@@ -36,6 +36,8 @@ import com.synopsys.integration.alert.channel.hipchat.mock.MockHipChatGlobalEnti
 import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.common.digest.model.DigestModel;
 import com.synopsys.integration.alert.common.digest.model.ProjectData;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
@@ -51,7 +53,7 @@ import com.synopsys.integration.rest.request.Request;
 import com.synopsys.integration.test.annotation.ExternalConnectionTest;
 
 public class HipChatChannelTest extends ChannelTest {
-    final MockHipChatGlobalEntity hipChatMockUtil = new MockHipChatGlobalEntity();
+    private final MockHipChatGlobalEntity hipChatMockUtil = new MockHipChatGlobalEntity();
 
     @Test
     @Category(ExternalConnectionTest.class)
@@ -63,15 +65,13 @@ public class HipChatChannelTest extends ChannelTest {
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties);
         HipChatChannel hipChatChannel = new HipChatChannel(gson, testAlertProperties, globalProperties, auditEntryRepository, null, channelRestConnectionFactory);
 
-        final Collection<ProjectData> data = createProjectData("Integration test project");
-        final DigestModel digestModel = new DigestModel(data);
-        final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
+        final AggregateMessageContent messageContent = createMessageContent(getClass().getSimpleName());
 
         final int roomId = Integer.parseInt(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_ROOM_ID));
         final boolean notify = false;
         final String color = "random";
-        final HipChatChannelEvent event = new HipChatChannelEvent(RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(),
-            notificationContent.getContent(), null, roomId, notify, color);
+
+        final HipChatChannelEvent event = new HipChatChannelEvent(RestConstants.formatDate(new Date()), "provider", gson.toJson(messageContent), null, roomId, notify, color);
 
         hipChatChannel = Mockito.spy(hipChatChannel);
         Mockito.doReturn(new HipChatGlobalConfigEntity(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY), "")).when(hipChatChannel).getGlobalConfigEntity();
@@ -90,8 +90,7 @@ public class HipChatChannelTest extends ChannelTest {
         IntegrationException intException = null;
         try {
             final HipChatGlobalConfigEntity hipChatGlobalConfigEntity = new HipChatGlobalConfigEntity("key", null);
-            final HipChatChannelEvent event = new HipChatChannelEvent(null, null, null,
-                null, null, null, null);
+            final HipChatChannelEvent event = new HipChatChannelEvent(null, null, null, null, null, null, null);
             hipChatChannel.createRequests(hipChatGlobalConfigEntity, event);
         } catch (final IntegrationException e) {
             intException = e;
@@ -246,29 +245,27 @@ public class HipChatChannelTest extends ChannelTest {
         final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(mockedGlobalRepository, alertProperties);
         HipChatChannel hipChatChannel = new HipChatChannel(gson, alertProperties, globalProperties, auditEntryRepository, null, null);
 
-        final StringBuilder contentBuilder = new StringBuilder(HipChatChannel.MESSAGE_SIZE_LIMIT * 3);
-        addContentData(contentBuilder, 'a');
-        addContentData(contentBuilder, 'b');
-        addContentData(contentBuilder, 'c');
-
-        final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentBuilder.toString());
+        final String messageContent = createLargeMessageContent();
         final int roomId = Integer.parseInt(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_ROOM_ID));
         final boolean notify = false;
         final String color = "random";
-
-        final HipChatChannelEvent event = new HipChatChannelEvent(RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(),
-            notificationContent.getContent(), null, roomId, notify, color);
+        final HipChatChannelEvent event = new HipChatChannelEvent(RestConstants.formatDate(new Date()), "provider", messageContent, null, roomId, notify, color);
 
         hipChatChannel = Mockito.spy(hipChatChannel);
         Mockito.doReturn(new HipChatGlobalConfigEntity(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY), "")).when(hipChatChannel).getGlobalConfigEntity();
 
         final List<Request> requestList = hipChatChannel.createRequests(hipChatChannel.getGlobalConfigEntity(), event);
-        assertTrue(requestList.size() == 3);
+        assertTrue(requestList.size() >= 2);
     }
 
-    private void addContentData(final StringBuilder contentBuilder, final char character) {
-        for (int index = 0; index < HipChatChannel.MESSAGE_SIZE_LIMIT; index++) {
-            contentBuilder.append(character);
+    private String createLargeMessageContent() {
+        final AggregateMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Chunked Request");
+        int count = 0;
+        while (gson.toJson(messageContent).length() < HipChatChannel.MESSAGE_SIZE_LIMIT * 2) {
+            final LinkableItem newItem = new LinkableItem("Name", "Relatively long value #" + count + " with some trailing text for good measure...", "https://google.com");
+            messageContent.getCategoryItemList().get(0).getItemList().add(newItem);
+            count++;
         }
+        return gson.toJson(messageContent);
     }
 }

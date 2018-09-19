@@ -24,7 +24,6 @@
 package com.synopsys.integration.alert.common.event;
 
 public class ContentEvent extends AlertEvent {
-
     private final String createdAt;
     private final String provider;
     private final String content;
