@@ -370,8 +370,8 @@ public class BlackDuckAccumulatorTest {
     @Test
     public void testWrite() {
         final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, testAlertProperties, testBlackDuckProperties, notificationManager);
-
-        final NotificationContent content = new MockNotificationContent(new Date(), "BlackDuck", "NotificationType", "{content: \"content is here\"}", null).createEntity();
+        final Date creationDate = new Date();
+        final NotificationContent content = new MockNotificationContent(creationDate, "BlackDuck", creationDate, "NotificationType", "{content: \"content is here\"}", null).createEntity();
         final List<NotificationContent> notificationContentList = Arrays.asList(content);
         notificationAccumulator.write(notificationContentList);
 

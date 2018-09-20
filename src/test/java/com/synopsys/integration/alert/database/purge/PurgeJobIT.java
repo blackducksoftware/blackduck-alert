@@ -55,7 +55,7 @@ public class PurgeJobIT {
     }
 
     private NotificationContent createNotificationContent(final Date createdAt) {
-        return new MockNotificationContent(createdAt, "provider", "notificationType", "{content: \"content is here...\"}", null).createEntity();
+        return new MockNotificationContent(createdAt, "provider", createdAt, "notificationType", "{content: \"content is here...\"}", null).createEntity();
     }
 
     @Test

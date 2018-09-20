@@ -99,8 +99,8 @@ public class MessageContentAggregator {
             notificationsForJob.parallelStream()
                 .filter(notificationContent -> collectorMap.containsKey(notificationContent.getNotificationType()))
                 .forEach(notificationContent -> collectorMap.get(notificationContent.getNotificationType()).insert(notificationContent));
-
-            return providerMessageContentCollectors.parallelStream().flatMap(collector -> collector.collect(formatType).stream()).collect(Collectors.toList());
+            final List<AggregateMessageContent> collectedTopics = providerMessageContentCollectors.parallelStream().flatMap(collector -> collector.collect(formatType).stream()).collect(Collectors.toList());
+            return collectedTopics;
         }
         return Collections.emptyList();
     }

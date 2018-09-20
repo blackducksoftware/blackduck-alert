@@ -116,7 +116,7 @@ public class AuditEntryActionsTest {
         final AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
         final CommonDistributionRepository commonDistributionRepository = Mockito.mock(CommonDistributionRepository.class);
 
-        final NotificationContent notificationContent = new MockNotificationContent(new Date(), "provider", "notificationType", "{content: \"content is here...\"}", 1L).createEntity();
+        final NotificationContent notificationContent = new MockNotificationContent(new Date(), "provider", new Date(), "notificationType", "{content: \"content is here...\"}", 1L).createEntity();
         final MockCommonDistributionEntity mockCommonDistributionEntity = new MockCommonDistributionEntity();
         final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
         final NotificationContentConverter notificationContentConverter = new NotificationContentConverter(contentConverter);
@@ -159,7 +159,7 @@ public class AuditEntryActionsTest {
         final MockCommonDistributionEntity mockCommonDistributionEntity = new MockCommonDistributionEntity();
         final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
         final NotificationContentConverter notificationContentConverter = new NotificationContentConverter(contentConverter);
-        final NotificationContent notificationContent = new MockNotificationContent(new Date(), "provider", "notificationType", "{content: \"content is here...\"}", 1L).createEntity();
+        final NotificationContent notificationContent = new MockNotificationContent(new Date(), "provider", new Date(), "notificationType", "{content: \"content is here...\"}", 1L).createEntity();
         Mockito.when(commonDistributionRepository.findAll()).thenReturn(Arrays.asList(mockCommonDistributionEntity.createEntity()));
         Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Arrays.asList(notificationContent));
         final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, vulnerabilityRepository, auditEntryRepository, auditNotificationRepository),
