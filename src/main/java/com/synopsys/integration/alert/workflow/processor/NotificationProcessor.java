@@ -23,6 +23,7 @@
  */
 package com.synopsys.integration.alert.workflow.processor;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -49,6 +50,13 @@ public class NotificationProcessor {
 
     public List<ChannelEvent> processNotifications(final FrequencyType frequencyType, final List<NotificationContent> notificationList) {
         final Map<CommonDistributionConfig, List<AggregateMessageContent>> messageContentList = messageContentAggregator.processNotifications(frequencyType, notificationList);
+
+        final List<ChannelEvent> notificationEvents = notificationToEventConverter.convertToEvents(messageContentList);
+        return notificationEvents;
+    }
+
+    public List<ChannelEvent> processNotifications(final CommonDistributionConfig commonDistributionConfig, final List<NotificationContent> notificationList) {
+        final Map<CommonDistributionConfig, List<AggregateMessageContent>> messageContentList = messageContentAggregator.processNotifications(Arrays.asList(commonDistributionConfig), notificationList);
 
         final List<ChannelEvent> notificationEvents = notificationToEventConverter.convertToEvents(messageContentList);
         return notificationEvents;
