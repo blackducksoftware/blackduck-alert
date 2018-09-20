@@ -24,6 +24,7 @@
 package com.synopsys.integration.alert.web.config.controller.handler;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -67,7 +68,7 @@ public class ConfigControllerHandler extends ControllerHandler {
         }
         if (!descriptorConfigActions.doesConfigExist(restModel.getId(), descriptor)) {
             try {
-                descriptorConfigActions.validateConfig(restModel, descriptor);
+                descriptorConfigActions.validateConfig(restModel, descriptor, new HashMap<>());
                 final DatabaseEntity updatedEntity = descriptorConfigActions.saveConfig(restModel, descriptor);
                 return createResponse(HttpStatus.CREATED, updatedEntity.getId(), "Created");
             } catch (final AlertFieldException e) {
@@ -85,7 +86,7 @@ public class ConfigControllerHandler extends ControllerHandler {
         }
         if (descriptorConfigActions.doesConfigExist(restModel.getId(), descriptor)) {
             try {
-                descriptorConfigActions.validateConfig(restModel, descriptor);
+                descriptorConfigActions.validateConfig(restModel, descriptor, new HashMap<>());
                 try {
                     final DatabaseEntity updatedEntity = descriptorConfigActions.updateConfig(restModel, descriptor);
                     return createResponse(HttpStatus.ACCEPTED, updatedEntity.getId(), "Updated");
@@ -115,7 +116,7 @@ public class ConfigControllerHandler extends ControllerHandler {
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing");
         }
         try {
-            final String responseMessage = descriptorConfigActions.validateConfig(restModel, descriptor);
+            final String responseMessage = descriptorConfigActions.validateConfig(restModel, descriptor, new HashMap<>());
             return createResponse(HttpStatus.OK, restModel.getId(), responseMessage);
         } catch (final AlertFieldException e) {
             final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(getContentConverter().getLongValue(restModel.getId()), e.getMessage());

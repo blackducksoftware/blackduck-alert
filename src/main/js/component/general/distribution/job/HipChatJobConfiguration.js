@@ -18,7 +18,8 @@ class HipChatJobConfiguration extends Component {
         this.state = {
             roomId: props.roomId,
             notify: props.notify,
-            colorOptions: props.colorOptions
+            colorOptions: props.colorOptions,
+            error: {}
         };
     }
 
@@ -71,8 +72,8 @@ class HipChatJobConfiguration extends Component {
 
         const content = (
             <div>
-                <TextInput id="jobHipChatRoomId" label="Room Id" name="roomId" value={this.state.roomId} onChange={this.handleChange} errorName="roomIdError" errorValue={this.props.errors.roomIdError}/>
-                <CheckboxInput id="jobHipChatNotify" label="Notify" name="notify" value={this.state.notify} onChange={this.handleChange} errorName="notifyError" errorValue={this.props.notifyError}/>
+                <TextInput id="jobHipChatRoomId" label="Room Id" name="roomId" value={this.state.roomId} onChange={this.handleChange} errorName="roomIdError" errorValue={this.props.error.roomIdError}/>
+                <CheckboxInput id="jobHipChatNotify" label="Notify" name="notify" value={this.state.notify} onChange={this.handleChange} errorName="notifyError" errorValue={this.props.error.notifyError}/>
                 <div className="form-group">
                     <label className="col-sm-3 control-label">Color</label>
                     <div className="col-sm-8">
@@ -112,7 +113,7 @@ HipChatJobConfiguration.propTypes = {
     notify: PropTypes.bool,
     color: PropTypes.string,
     colorOptions: PropTypes.arrayOf(PropTypes.object),
-    errors: PropTypes.object,
+    error: PropTypes.object,
     handleCancel: PropTypes.func.isRequired,
     handleSaveBtnClick: PropTypes.func.isRequired,
     alertChannelName: PropTypes.string.isRequired
@@ -135,13 +136,13 @@ HipChatJobConfiguration.defaultProps = {
         {label: 'Gray', value: 'gray'},
         {label: 'Random', value: 'random'}
     ],
-    errors: {}
+    error: {}
 };
 
 const mapStateToProps = state => ({
     csrfToken: state.session.csrfToken,
     jobs: state.distributions.jobs,
-    errors: state.distributions.errors
+    error: state.distributions.error
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -24,6 +24,7 @@
 package com.synopsys.integration.alert.web.config.actions;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -45,7 +46,7 @@ public class SingleEntityConfigActions extends DescriptorConfigActions {
     }
 
     @Override
-    public String validateConfig(Config restModel, final RestApi descriptor) throws AlertFieldException {
+    public String validateConfig(Config restModel, final RestApi descriptor, Map<String, String> fieldErrors) throws AlertFieldException {
         final List<? extends DatabaseEntity> globalConfigs = descriptor.readEntities();
         if (globalConfigs.size() == 1) {
             try {
@@ -54,7 +55,7 @@ public class SingleEntityConfigActions extends DescriptorConfigActions {
                 return "Error updating config.";
             }
         }
-        return super.validateConfig(restModel, descriptor);
+        return super.validateConfig(restModel, descriptor, fieldErrors);
     }
 
     @Override

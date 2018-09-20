@@ -109,12 +109,14 @@ class Index extends Component {
     }
 
     cancelRowSelect() {
+        this.startAutoReloadIfConfigured();
         this.setState({
             currentRowSelected: null
         });
     }
 
     saveBtn() {
+        this.startAutoReloadIfConfigured();
         this.cancelRowSelect();
         this.reloadJobs();
     }
@@ -151,6 +153,7 @@ class Index extends Component {
                 handleCancel={this.cancelRowSelect}
                 onModalClose={() => {
                     this.fetchDistributionJobs();
+                    this.startAutoReloadIfConfigured();
                     onModalClose();
                 }}
                 onSave={onSave}
@@ -257,6 +260,7 @@ class Index extends Component {
     }
 
     editButtonClicked(currentRowSelected) {
+        this.cancelAutoReload();
         this.setState({currentRowSelected});
     }
 

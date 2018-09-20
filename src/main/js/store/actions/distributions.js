@@ -1,17 +1,16 @@
 import {
-    DISTRIBUTION_JOB_FETCHING,
-    DISTRIBUTION_JOB_FETCHED,
     DISTRIBUTION_JOB_FETCH_ERROR,
-    DISTRIBUTION_JOB_SAVING,
-    DISTRIBUTION_JOB_SAVED,
+    DISTRIBUTION_JOB_FETCHED,
+    DISTRIBUTION_JOB_FETCHING,
     DISTRIBUTION_JOB_SAVE_ERROR,
-    DISTRIBUTION_JOB_UPDATING,
-    DISTRIBUTION_JOB_UPDATED,
-    DISTRIBUTION_JOB_UPDATE_ERROR,
-    DISTRIBUTION_JOB_TESTING,
+    DISTRIBUTION_JOB_SAVED,
+    DISTRIBUTION_JOB_SAVING,
+    DISTRIBUTION_JOB_TEST_FAILURE,
     DISTRIBUTION_JOB_TEST_SUCCESS,
-    DISTRIBUTION_JOB_TEST_FAILURE
-
+    DISTRIBUTION_JOB_TESTING,
+    DISTRIBUTION_JOB_UPDATE_ERROR,
+    DISTRIBUTION_JOB_UPDATED,
+    DISTRIBUTION_JOB_UPDATING
 } from './types';
 
 import {verifyLoginByStatus} from './session';
@@ -111,9 +110,9 @@ export function getDistributionJob(url, id) {
                     'Content-Type': 'application/json'
                 }
             }).then((response) => {
-                if(response.ok) {
+                if (response.ok) {
                     response.json().then((jsonArray) => {
-                        if(jsonArray && jsonArray.length > 0) {
+                        if (jsonArray && jsonArray.length > 0) {
                             dispatch(jobFetched(jsonArray[0]));
                         } else {
                             dispatch(jobFetchError());
@@ -143,27 +142,28 @@ export function saveDistributionJob(url, config) {
             },
             body: config
         }).then((response) => {
-            if(response.ok) {
-                response.json().then((json) => {
-                    const jsonErrors = json.errors;
-                    if (jsonErrors) {
-                        const errors = {};
-                        for (const key in jsonErrors) {
-                            if (jsonErrors.hasOwnProperty(key)) {
-                                const name = key.concat('Error');
-                                const value = jsonErrors[key];
-                                errors[name] = value;
+                if (!response.ok && response.status == 401) {
+                    dispatch(verifyLoginByStatus(response.status));
+                } else {
+                    response.json().then((json) => {
+                        const jsonErrors = json.errors;
+                        if (jsonErrors) {
+                            const errors = {};
+                            for (const key in jsonErrors) {
+                                if (jsonErrors.hasOwnProperty(key)) {
+                                    const name = key.concat('Error');
+                                    const value = jsonErrors[key];
+                                    errors[name] = value;
+                                }
                             }
+                            dispatch(saveJobFailed(errors, json.message));
+                        } else {
+                            dispatch(saveJobSuccess(json.message));
                         }
-                        dispatch(saveJobFailed(errors, json.message));
-                    } else {
-                        dispatch(saveJobSuccess(json.message));
-                    }
-                });
-            } else {
-                dispatch(verifyLoginByStatus(response.status));
+                    });
+                }
             }
-        }).catch(console.error);
+        ).catch(console.error);
     }
 }
 
@@ -180,7 +180,9 @@ export function updateDistributionJob(url, config) {
             },
             body: config
         }).then((response) => {
-            if(response.ok) {
+            if (!response.ok && response.status == 401) {
+                dispatch(verifyLoginByStatus(response.status));
+            } else {
                 response.json().then((json) => {
                     const jsonErrors = json.errors;
                     if (jsonErrors) {
@@ -197,8 +199,6 @@ export function updateDistributionJob(url, config) {
                         dispatch(updateJobSuccess(json.message));
                     }
                 });
-            } else {
-                dispatch(verifyLoginByStatus(response.status));
             }
         }).catch(console.error);
     }
@@ -217,7 +217,9 @@ export function testDistributionJob(url, config) {
             },
             body: config
         }).then((response) => {
-            if(response.ok) {
+            if (!response.ok && response.status == 401) {
+                dispatch(verifyLoginByStatus(response.status));
+            } else {
                 response.json().then((json) => {
                     const jsonErrors = json.errors;
                     if (jsonErrors) {
@@ -234,8 +236,6 @@ export function testDistributionJob(url, config) {
                         dispatch(testJobSuccess(json.message));
                     }
                 });
-            } else {
-                dispatch(verifyLoginByStatus(response.status));
             }
         }).catch(console.error);
     }

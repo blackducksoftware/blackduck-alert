@@ -23,7 +23,6 @@
  */
 package com.synopsys.integration.alert.web.channel.actions;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -55,7 +54,7 @@ public class ChannelDistributionConfigActions extends DescriptorConfigActions {
 
     @Autowired
     public ChannelDistributionConfigActions(final CommonDistributionRepository commonDistributionRepository, final ContentConverter contentConverter, final AuditEntryRepository auditEntryRepository,
-    final AuditNotificationRepository auditNotificationRepository, final CommonDistributionConfigActions commonDistributionConfigActions) {
+        final AuditNotificationRepository auditNotificationRepository, final CommonDistributionConfigActions commonDistributionConfigActions) {
         super(contentConverter);
         this.commonDistributionRepository = commonDistributionRepository;
         this.auditEntryRepository = auditEntryRepository;
@@ -133,11 +132,10 @@ public class ChannelDistributionConfigActions extends DescriptorConfigActions {
     }
 
     @Override
-    public String validateConfig(final Config config, final RestApi descriptor) throws AlertFieldException {
-        final Map<String, String> fieldErrors = new HashMap<>();
+    public String validateConfig(final Config config, final RestApi descriptor, Map<String, String> fieldErrors) throws AlertFieldException {
         final CommonDistributionConfig commonConfig = (CommonDistributionConfig) config;
         commonDistributionConfigActions.validateCommonConfig(commonConfig, fieldErrors);
-        return super.validateConfig(commonConfig, descriptor);
+        return super.validateConfig(commonConfig, descriptor, fieldErrors);
     }
 
 }
