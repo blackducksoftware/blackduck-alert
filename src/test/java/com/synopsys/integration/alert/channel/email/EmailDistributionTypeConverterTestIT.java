@@ -60,7 +60,7 @@ public class EmailDistributionTypeConverterTestIT {
     public void populateConfigFromEntityTest() {
         final EmailDistributionTypeConverter emailDistributionTypeConverter = new EmailDistributionTypeConverter(contentConverter, commonTypeConverter, commonDistributionRepository);
 
-        final EmailGroupDistributionConfigEntity emailGroupDistributionConfigEntity = new EmailGroupDistributionConfigEntity("special group", "logo", "subject line");
+        final EmailGroupDistributionConfigEntity emailGroupDistributionConfigEntity = new EmailGroupDistributionConfigEntity("logo", "subject line");
         final EmailGroupDistributionConfigEntity savedEmailEntity = emailGroupDistributionRepository.save(emailGroupDistributionConfigEntity);
 
         final CommonDistributionConfigEntity commonDistributionConfigEntity = new CommonDistributionConfigEntity(savedEmailEntity.getId(), EmailGroupChannel.COMPONENT_NAME, "nice name", "some_provider", FrequencyType.REAL_TIME,
@@ -71,7 +71,6 @@ public class EmailDistributionTypeConverterTestIT {
         Assert.assertTrue(EmailDistributionConfig.class.isAssignableFrom(config.getClass()));
         final EmailDistributionConfig emailConfig = (EmailDistributionConfig) config;
 
-        Assert.assertEquals(emailGroupDistributionConfigEntity.getGroupName(), emailConfig.getGroupName());
         Assert.assertEquals(emailGroupDistributionConfigEntity.getEmailSubjectLine(), emailConfig.getEmailSubjectLine());
         Assert.assertEquals(emailGroupDistributionConfigEntity.getEmailTemplateLogoImage(), emailConfig.getEmailTemplateLogoImage());
 

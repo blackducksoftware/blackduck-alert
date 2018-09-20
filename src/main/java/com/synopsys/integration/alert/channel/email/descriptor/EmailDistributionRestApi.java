@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.channel.email.descriptor;
 
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,7 +33,6 @@ import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
 import com.synopsys.integration.alert.channel.event.ChannelEventFactory;
 import com.synopsys.integration.alert.common.descriptor.config.RestApi;
 import com.synopsys.integration.alert.database.channel.email.EmailDistributionRepositoryAccessor;
-import com.synopsys.integration.alert.web.channel.model.EmailDistributionConfig;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -53,10 +51,6 @@ public class EmailDistributionRestApi extends RestApi {
 
     @Override
     public void validateConfig(final Config restModel, final Map<String, String> fieldErrors) {
-        final EmailDistributionConfig emailRestModel = (EmailDistributionConfig) restModel;
-        if (StringUtils.isBlank(emailRestModel.getGroupName())) {
-            fieldErrors.put("groupName", "A group must be specified.");
-        }
     }
 
     @Override
