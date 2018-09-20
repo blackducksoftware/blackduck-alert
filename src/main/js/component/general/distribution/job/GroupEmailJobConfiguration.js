@@ -19,7 +19,8 @@ class GroupEmailJobConfiguration extends Component {
         this.state = {
             emailSubjectLine: '',
             groupName: '',
-            groupOptions: []
+            groupOptions: [],
+            error: {}
         }
     }
 
@@ -145,8 +146,8 @@ class GroupEmailJobConfiguration extends Component {
                             searchable
                         />
 
-                        {this.props.errors.groupNameError && <label className="fieldError" name="groupError">
-                            {this.props.errors.groupNameError}
+                        {this.props.error.groupNameError && <label className="fieldError" name="groupError">
+                            {this.props.error.groupNameError}
                         </label>}
                     </div>
                 </div>
@@ -175,7 +176,7 @@ GroupEmailJobConfiguration.propTypes = {
     getDistributionJob: PropTypes.func.isRequired,
     csrfToken: PropTypes.string,
     groups: PropTypes.arrayOf(PropTypes.object),
-    errors: PropTypes.object,
+    error: PropTypes.object,
     handleCancel: PropTypes.func.isRequired,
     handleSaveBtnClick: PropTypes.func.isRequired,
     alertChannelName: PropTypes.string.isRequired
@@ -191,7 +192,7 @@ GroupEmailJobConfiguration.defaultProps = {
     groupName: '',
     groups: [],
     waitingForGroups: true,
-    errors: {}
+    error: {}
 };
 
 const mapDispatchToProps = dispatch => ({
@@ -202,7 +203,7 @@ const mapDispatchToProps = dispatch => ({
 const mapStateToProps = state => ({
     csrfToken: state.session.csrfToken,
     jobs: state.distributions.jobs,
-    errors: state.distributions.errors,
+    error: state.distributions.error,
     groups: state.emailConfig.groups,
     waitingForGroups: state.emailConfig.fetchingGroups
 });

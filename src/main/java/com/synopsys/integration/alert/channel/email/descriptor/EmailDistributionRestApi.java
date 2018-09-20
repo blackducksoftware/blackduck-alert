@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.channel.email.descriptor;
 
 import java.util.Map;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -57,10 +56,6 @@ public class EmailDistributionRestApi extends RestApi {
         final EmailDistributionConfig emailRestModel = (EmailDistributionConfig) restModel;
         if (StringUtils.isBlank(emailRestModel.getGroupName())) {
             fieldErrors.put("groupName", "A group must be specified.");
-        }
-        //TODO expose this error in the UI
-        if (BooleanUtils.toBoolean(emailRestModel.getFilterByProject()) && null != emailRestModel.getConfiguredProjects() && emailRestModel.getConfiguredProjects().isEmpty()) {
-            fieldErrors.put("configuredProjects", "You must select at least one project.");
         }
     }
 

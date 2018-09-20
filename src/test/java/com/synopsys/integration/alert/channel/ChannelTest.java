@@ -88,10 +88,17 @@ public class ChannelTest {
     public AggregateMessageContent createMessageContent(final String testName) {
         final LinkableItem linkableItem1 = new LinkableItem("First Linkable Item", "Value 1", "https://google.com");
         final LinkableItem linkableItem2 = new LinkableItem("Second Linkable Item", "Value 2", "https://google.com");
+
+        final String nameKey = "Same Key";
+        final LinkableItem linkableItem3 = new LinkableItem(nameKey, "Value", "https://google.com");
+        final LinkableItem linkableItem4 = new LinkableItem(nameKey, "No Link Value");
+        final LinkableItem linkableItem5 = new LinkableItem(nameKey, "Other Value", "https://google.com");
+
         final CategoryItem categoryItem1 = new CategoryItem(CategoryKey.from("TYPE", "data1", "data2"), ItemOperation.ADD, 1L, asList(linkableItem1, linkableItem2));
         final CategoryItem categoryItem2 = new CategoryItem(CategoryKey.from("TYPE", "data1", "data2"), ItemOperation.UPDATE, 2L, asList(linkableItem2));
+        final CategoryItem categoryItem3 = new CategoryItem(CategoryKey.from("TYPE", "data1", "data2"), ItemOperation.DELETE, 1L, asList(linkableItem3, linkableItem4, linkableItem5));
         final LinkableItem subTopic = new LinkableItem("Sub Topic", "Sub Topic Value", "https://google.com");
-        return new AggregateMessageContent("Topic", testName, "https://google.com", subTopic, Arrays.asList(categoryItem1, categoryItem2));
+        return new AggregateMessageContent("Topic", testName, "https://google.com", subTopic, Arrays.asList(categoryItem1, categoryItem2, categoryItem3));
     }
 
     private List<LinkableItem> asList(final LinkableItem... items) {
