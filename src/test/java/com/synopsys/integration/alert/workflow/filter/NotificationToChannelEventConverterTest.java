@@ -163,7 +163,7 @@ public class NotificationToChannelEventConverterTest {
     private NotificationContent createNotificationModel(final String projectName, final String projectVersion, final NotificationType notificationType) {
         final Date createdAt = Date.from(ZonedDateTime.now().toInstant());
 
-        final NotificationContent model = new NotificationContent(createdAt, "provider", notificationType.name(), projectName + projectVersion);
+        final NotificationContent model = new NotificationContent(createdAt, "provider", createdAt, notificationType.name(), projectName + projectVersion);
         return model;
     }
 }

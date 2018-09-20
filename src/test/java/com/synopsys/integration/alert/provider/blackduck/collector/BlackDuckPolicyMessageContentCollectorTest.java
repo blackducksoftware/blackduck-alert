@@ -4,9 +4,9 @@ import static org.junit.Assert.assertFalse;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.sql.Date;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -30,7 +30,6 @@ import com.synopsys.integration.alert.workflow.filter.JsonExtractor;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 public class BlackDuckPolicyMessageContentCollectorTest {
-
     private final Gson gson = new Gson();
     private final JsonExtractor jsonExtractor = new JsonExtractor(gson);
     private final List<MessageContentProcessor> messageContentProcessorList = Arrays.asList(new DefaultMessageContentProcessor(), new DigestMessageContentProcessor());
@@ -105,7 +104,8 @@ public class BlackDuckPolicyMessageContentCollectorTest {
     }
 
     private NotificationContent createNotification(final String notificationContent, final NotificationType type) {
-        return new NotificationContent(Date.from(Instant.now()), BlackDuckProvider.COMPONENT_NAME, type.name(), notificationContent);
+        final Date creationDate = Date.from(Instant.now());
+        return new NotificationContent(creationDate, BlackDuckProvider.COMPONENT_NAME, creationDate, type.name(), notificationContent);
     }
 
     private void test(final BlackDuckPolicyMessageContentCollector collector, final NotificationContent notification) {

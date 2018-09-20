@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.Vector;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -64,7 +65,7 @@ public abstract class MessageContentCollector {
         this.contentTypes = contentTypes;
         this.messageContentProcessorMap = messageContentProcessorList.stream().collect(Collectors.toMap(MessageContentProcessor::getFormat, Function.identity()));
         this.supportedNotificationTypes = contentTypes.stream().map(ProviderContentType::getNotificationType).collect(Collectors.toSet());
-        this.collectedContent = new ArrayList<>();
+        this.collectedContent = new Vector<>();
     }
 
     public Set<String> getSupportedNotificationTypes() {

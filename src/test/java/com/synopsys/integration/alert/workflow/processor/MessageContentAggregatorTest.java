@@ -6,9 +6,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.sql.Date;
-import java.time.Instant;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -195,6 +194,6 @@ public class MessageContentAggregatorTest {
     }
 
     private NotificationContent createNotification(final String providerName, final String notificationContent, final NotificationType type) {
-        return new NotificationContent(Date.from(Instant.now()), providerName, type.name(), notificationContent);
+        return new NotificationContent(new Date(), providerName, new Date(), type.name(), notificationContent);
     }
 }

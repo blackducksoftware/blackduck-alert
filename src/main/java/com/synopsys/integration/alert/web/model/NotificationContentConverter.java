@@ -50,7 +50,8 @@ public class NotificationContentConverter extends TypeConverter {
     public DatabaseEntity populateEntityFromConfig(final Config restModel) {
         final NotificationConfig notificationConfig = (NotificationConfig) restModel;
         final Date createdAt = getContentConverter().getValue(notificationConfig.getCreatedAt(), Date.class);
-        final NotificationContent notificationEntity = new NotificationContent(createdAt, notificationConfig.getProvider(), notificationConfig.getNotificationType(), notificationConfig.getContent());
+        final Date providerCreationTime = getContentConverter().getValue(notificationConfig.getProviderCreationTime(), Date.class);
+        final NotificationContent notificationEntity = new NotificationContent(createdAt, notificationConfig.getProvider(), providerCreationTime, notificationConfig.getNotificationType(), notificationConfig.getContent());
         addIdToEntityPK(notificationConfig.getId(), notificationEntity);
         return notificationEntity;
     }
@@ -60,8 +61,9 @@ public class NotificationContentConverter extends TypeConverter {
         final NotificationContent notificationEntity = (NotificationContent) entity;
         final String id = getContentConverter().getStringValue(notificationEntity.getId());
         final String createdAt = getContentConverter().getStringValue(notificationEntity.getCreatedAt());
-        final NotificationConfig notificationConfig = new NotificationConfig(id, createdAt, notificationEntity.getProvider(), notificationEntity.getNotificationType(),
-                notificationEntity.getContent());
+        final String providerCreationTime = getContentConverter().getStringValue(notificationEntity.getProviderCreationTime());
+        final NotificationConfig notificationConfig = new NotificationConfig(id, createdAt, notificationEntity.getProvider(), providerCreationTime, notificationEntity.getNotificationType(),
+            notificationEntity.getContent());
         return notificationConfig;
     }
 

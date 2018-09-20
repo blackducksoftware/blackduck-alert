@@ -52,10 +52,11 @@ public class NotificationContentRepositoryIT {
 
     private NotificationContent createEntity(final String dateString) throws ParseException {
         final Date createdAt = RestConstants.parseDateString(dateString);
+        final Date providerCreationTime = createdAt;
         final String provider = "provider_1";
         final String notificationType = "type_1";
         final String content = "NOTIFICATION CONTENT HERE";
-        final NotificationContent entity = new MockNotificationContent(createdAt, provider, notificationType, content, null).createEntity();
+        final NotificationContent entity = new MockNotificationContent(createdAt, provider, providerCreationTime, notificationType, content, null).createEntity();
         final NotificationContent savedEntity = repository.save(entity);
         return savedEntity;
     }
@@ -71,6 +72,7 @@ public class NotificationContentRepositoryIT {
         assertEquals(entity.getCreatedAt(), foundEntity.getCreatedAt());
         assertEquals(entity.getNotificationType(), foundEntity.getNotificationType());
         assertEquals(entity.getProvider(), foundEntity.getProvider());
+        assertEquals(entity.getProviderCreationTime(), foundEntity.getProviderCreationTime());
         assertEquals(entity.getContent(), foundEntity.getContent());
     }
 
