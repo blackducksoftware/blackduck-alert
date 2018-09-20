@@ -79,6 +79,13 @@ public class MessageContentAggregator {
             return Collections.emptyMap();
         }
 
+        return processNotifications(distributionConfigs, notificationList);
+    }
+
+    public Map<CommonDistributionConfig, List<AggregateMessageContent>> processNotifications(final List<CommonDistributionConfig> distributionConfigs, final Collection<NotificationContent> notificationList) {
+        if (notificationList.isEmpty()) {
+            return Collections.emptyMap();
+        }
         return distributionConfigs
                    .parallelStream()
                    .collect(Collectors.toConcurrentMap(Function.identity(), jobConfig -> collectTopics(jobConfig, notificationList)));
