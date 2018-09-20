@@ -99,6 +99,7 @@ class BaseJobConfiguration extends Component {
         event.preventDefault();
         const {handleSaveBtnClick, handleCancel} = this.props;
         this.handleSubmit();
+        console.log("Errors: " + this.state.error)
         if (handleCancel && !handleSaveBtnClick) {
             handleCancel();
         }
@@ -109,7 +110,7 @@ class BaseJobConfiguration extends Component {
             success: false,
             configurationMessage: 'Saving...',
             inProgress: true,
-            errors: {}
+            error: {}
         });
         if (event) {
             event.preventDefault();
@@ -126,7 +127,7 @@ class BaseJobConfiguration extends Component {
         this.setState({
             configurationMessage: 'Testing...',
             inProgress: true,
-            errors: {}
+            error: {}
         });
 
         if (event) {
@@ -170,14 +171,6 @@ class BaseJobConfiguration extends Component {
     handleStateValues(name, value) {
         this.setState({
             [name]: value
-        });
-    }
-
-    handleErrorValues(name, value) {
-        const {errors} = this.state;
-        errors[name] = value;
-        this.setState({
-            errors
         });
     }
 
