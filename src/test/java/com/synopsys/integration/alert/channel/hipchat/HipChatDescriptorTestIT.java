@@ -8,6 +8,7 @@ import com.synopsys.integration.alert.channel.DescriptorTestConfigTest;
 import com.synopsys.integration.alert.channel.event.ChannelEventFactory;
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescriptor;
 import com.synopsys.integration.alert.channel.hipchat.mock.MockHipChatEntity;
+import com.synopsys.integration.alert.channel.hipchat.mock.MockHipChatRestModel;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.database.channel.email.EmailDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
@@ -19,6 +20,7 @@ import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelationRepositoryAccessor;
+import com.synopsys.integration.alert.mock.model.MockRestModelUtil;
 import com.synopsys.integration.alert.web.channel.model.HipChatDistributionConfig;
 
 public class HipChatDescriptorTestIT extends DescriptorTestConfigTest<HipChatDistributionConfig, HipChatDistributionConfigEntity, HipChatGlobalConfigEntity> {
@@ -73,17 +75,17 @@ public class HipChatDescriptorTestIT extends DescriptorTestConfigTest<HipChatDis
     }
 
     @Override
-    public MockHipChatEntity getMockEntityUtil() {
-        final MockHipChatEntity entity = new MockHipChatEntity();
-        entity.setRoomId(Integer.parseInt(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_ROOM_ID)));
-        entity.setNotify(false);
-        entity.setColor("random");
-        return entity;
+    public ChannelDescriptor getDescriptor() {
+        return hipChatDescriptor;
     }
 
     @Override
-    public ChannelDescriptor getDescriptor() {
-        return hipChatDescriptor;
+    public MockRestModelUtil<HipChatDistributionConfig> getMockRestModelUtil() {
+        final MockHipChatRestModel restModel = new MockHipChatRestModel();
+        restModel.setRoomId(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_ROOM_ID));
+        restModel.setNotify(false);
+        restModel.setColor("random");
+        return restModel;
     }
 
 }

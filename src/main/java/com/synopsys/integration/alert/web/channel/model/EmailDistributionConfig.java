@@ -28,7 +28,6 @@ import java.util.List;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 
 public class EmailDistributionConfig extends CommonDistributionConfig {
-    private String groupName;
     private String emailTemplateLogoImage;
     private String emailSubjectLine;
 
@@ -36,22 +35,12 @@ public class EmailDistributionConfig extends CommonDistributionConfig {
     }
 
     public EmailDistributionConfig(final String id, final String distributionConfigId, final String distributionType, final String name, final String providerName, final String frequency, final String filterByProject,
-        final String groupName,
         final String emailTemplateLogoImage, final String emailSubjectLine, final List<String> configuredProjects, final List<String> notificationTypes, final String formatType) {
         super(id, distributionConfigId, distributionType, name, providerName, frequency, filterByProject, configuredProjects, notificationTypes, formatType);
-        this.groupName = groupName;
         this.emailTemplateLogoImage = emailTemplateLogoImage;
         this.emailSubjectLine = emailSubjectLine;
     }
-
-    public String getGroupName() {
-        return groupName;
-    }
-
-    public void setGroupName(final String groupName) {
-        this.groupName = groupName;
-    }
-
+    
     public String getEmailTemplateLogoImage() {
         return emailTemplateLogoImage;
     }

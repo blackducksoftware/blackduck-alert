@@ -92,4 +92,7 @@
             <column name="FORMAT_TYPE" type="INT(10)" value="0"/>
         </addColumn>
     </changeSet>
+    <changeSet author="jrichard" id="1533054185-14">
+        <dropColumn tableName="EMAIL_GROUP_DISTRIBUTION_CONFIG" schemaName="ALERT" columnName="GROUP_NAME"/>
+    </changeSet>
 </databaseChangeLog>
