@@ -50,13 +50,11 @@ public class EmailChannelTestIT extends ChannelTest {
         }
 
         EmailGroupChannel emailChannel = new EmailGroupChannel(gson, testAlertProperties, globalProperties, auditEntryRepository, null);
-        final LinkableItem subTopic = new LinkableItem("subTopic", "subTopic", null);
-        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
-        final Set<String> emailAddresses = Stream.of(properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM)).collect(Collectors.toSet());
+        final AggregateMessageContent content = createMessageContent(getClass().getSimpleName());
+        final Set<String> emailAddresses = Stream.of(properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT)).collect(Collectors.toSet());
         final String subjectLine = "Integration test subject line";
 
-        final EmailChannelEvent event = new EmailChannelEvent(RestConstants.formatDate(new Date()), "provider",
-            content, 1L, emailAddresses, subjectLine);
+        final EmailChannelEvent event = new EmailChannelEvent(RestConstants.formatDate(new Date()), "provider", content, 1L, emailAddresses, subjectLine);
 
         final String smtpHost = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST);
         final String smtpFrom = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM);
@@ -67,9 +65,8 @@ public class EmailChannelTestIT extends ChannelTest {
         final Integer smtpPort = Integer.valueOf(properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT));
 
         final EmailGlobalConfigEntity emailGlobalConfigEntity = new EmailGlobalConfigEntity(smtpHost, smtpUser, smtpPassword, smtpPort, null, null, null, smtpFrom, null, null, null, smtpEhlo, smtpAuth, null, null, null, null, null, null,
-            null,
-            null, null, null,
-            null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+            null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+            null, null, null, null, null, null, null, null, null, null);
 
         emailChannel = Mockito.spy(emailChannel);
         Mockito.doReturn(emailGlobalConfigEntity).when(emailChannel).getGlobalConfigEntity();
