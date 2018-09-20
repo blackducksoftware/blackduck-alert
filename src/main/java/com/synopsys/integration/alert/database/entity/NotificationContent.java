@@ -34,12 +34,14 @@ import javax.persistence.TemporalType;
 @Entity
 @Table(schema = "alert", name = "raw_notification_content")
 public class NotificationContent extends DatabaseEntity {
-
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
     private Date createdAt;
     @Column(name = "provider")
     private String provider;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "provider_creation_time")
+    private Date providerCreationTime;
     @Column(name = "notification_type")
     private String notificationType;
     @Column(name = "content")
@@ -49,9 +51,10 @@ public class NotificationContent extends DatabaseEntity {
         // JPA requires default constructor definitions
     }
 
-    public NotificationContent(final Date createdAt, final String provider, final String notificationType, final String content) {
+    public NotificationContent(final Date createdAt, final String provider, final Date providerCreationTime, final String notificationType, final String content) {
         this.createdAt = createdAt;
         this.provider = provider;
+        this.providerCreationTime = providerCreationTime;
         this.notificationType = notificationType;
         this.content = content;
     }
@@ -70,5 +73,9 @@ public class NotificationContent extends DatabaseEntity {
 
     public String getContent() {
         return content;
+    }
+
+    public Date getProviderCreationTime() {
+        return providerCreationTime;
     }
 }
