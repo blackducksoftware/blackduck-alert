@@ -23,7 +23,10 @@
  */
 package com.synopsys.integration.alert.common.model;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.util.Stringable;
@@ -55,5 +58,20 @@ public class CategoryItem extends Stringable {
 
     public List<LinkableItem> getItemList() {
         return itemList;
+    }
+
+    /**
+     * Intended to be used for display purposes (such as freemarker templates).
+     * @return A map from the name of a LinkableItem to all the LinkableItems with that name.
+     */
+    public Map<String, List<LinkableItem>> getItemsOfSameName() {
+        final Map<String, List<LinkableItem>> map = new LinkedHashMap<>();
+        for (final LinkableItem item : itemList) {
+            if (!map.containsKey(item.getName())) {
+                map.put(item.getName(), new ArrayList<>());
+            }
+            map.get(item.getName()).add(item);
+        }
+        return map;
     }
 }
