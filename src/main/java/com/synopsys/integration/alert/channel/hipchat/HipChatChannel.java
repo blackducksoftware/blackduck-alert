@@ -137,8 +137,7 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
     }
 
     @Override
-    public List<Request> createRequests(final HipChatGlobalConfigEntity globalConfig, final HipChatChannelEvent event)
-        throws IntegrationException {
+    public List<Request> createRequests(final HipChatGlobalConfigEntity globalConfig, final HipChatChannelEvent event) throws IntegrationException {
         if (!isValidGlobalConfig(globalConfig)) {
             throw new IntegrationException("ERROR: Missing global config.");
         }
