@@ -32,9 +32,9 @@ import org.springframework.data.jpa.repository.Query;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 
 public interface NotificationContentRepository extends JpaRepository<NotificationContent, Long> {
-    @Query("SELECT entity FROM NotificationContent entity WHERE entity.createdAt BETWEEN ?1 AND ?2 ORDER BY created_at asc")
+    @Query("SELECT entity FROM NotificationContent entity WHERE entity.createdAt BETWEEN ?1 AND ?2 ORDER BY created_at, provider_creation_time asc")
     List<NotificationContent> findByCreatedAtBetween(final Date startDate, final Date endDate);
 
-    @Query("SELECT entity FROM NotificationContent entity WHERE entity.createdAt < ?1 ORDER BY created_at asc")
+    @Query("SELECT entity FROM NotificationContent entity WHERE entity.createdAt < ?1 ORDER BY created_at, provider_creation_time asc")
     List<NotificationContent> findByCreatedAtBefore(final Date date);
 }
