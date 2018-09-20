@@ -34,7 +34,6 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.google.common.collect.Maps;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.annotation.SensitiveFieldFinder;
 import com.synopsys.integration.alert.common.descriptor.config.RestApi;
@@ -111,8 +110,7 @@ public class DescriptorConfigActions {
         return null;
     }
 
-    public String validateConfig(final Config config, final RestApi restApi) throws AlertFieldException {
-        final Map<String, String> fieldErrors = Maps.newHashMap();
+    public String validateConfig(final Config config, final RestApi restApi, Map<String, String> fieldErrors) throws AlertFieldException {
         restApi.validateConfig(config, fieldErrors);
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
