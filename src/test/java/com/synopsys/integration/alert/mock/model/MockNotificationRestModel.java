@@ -9,18 +9,20 @@ import com.synopsys.integration.alert.web.model.NotificationConfig;
 public class MockNotificationRestModel extends MockRestModelUtil<NotificationConfig> {
     private final String createdAt;
     private final String provider;
+    private final String providerCreationTime;
     private final String notificationType;
     private final String content;
     private String id;
 
     @SuppressWarnings("deprecation")
     public MockNotificationRestModel() {
-        this(new Date(400).toLocaleString(), "provider", NotificationCategoryEnum.POLICY_VIOLATION.name(), "{content: \" projectName projectVersion\"", "1");
+        this(new Date(400).toLocaleString(), "provider", new Date(300).toLocaleString(), NotificationCategoryEnum.POLICY_VIOLATION.name(), "{content: \" projectName projectVersion\"", "1");
     }
 
-    private MockNotificationRestModel(final String createdAt, final String provider, final String notificationType, final String content, final String id) {
+    private MockNotificationRestModel(final String createdAt, final String provider, final String providerCreationTime, final String notificationType, final String content, final String id) {
         this.createdAt = createdAt;
         this.provider = provider;
+        this.providerCreationTime = providerCreationTime;
         this.notificationType = notificationType;
         this.content = content;
         this.id = id;
@@ -32,6 +34,10 @@ public class MockNotificationRestModel extends MockRestModelUtil<NotificationCon
 
     public String getProvider() {
         return provider;
+    }
+
+    public String getProviderCreationTime() {
+        return providerCreationTime;
     }
 
     public String getNotificationType() {
@@ -53,7 +59,7 @@ public class MockNotificationRestModel extends MockRestModelUtil<NotificationCon
 
     @Override
     public NotificationConfig createRestModel() {
-        return new NotificationConfig(id, createdAt, provider, notificationType, content);
+        return new NotificationConfig(id, createdAt, provider, providerCreationTime, notificationType, content);
     }
 
     @Override
@@ -66,6 +72,7 @@ public class MockNotificationRestModel extends MockRestModelUtil<NotificationCon
         final JsonObject json = new JsonObject();
         json.addProperty("createdAt", createdAt);
         json.addProperty("provider", provider);
+        json.addProperty("providerCreationTime", providerCreationTime);
         json.addProperty("notificationType", notificationType);
         json.addProperty("content", content);
         json.addProperty("id", id);

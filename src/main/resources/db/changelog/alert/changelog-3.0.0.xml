@@ -7,6 +7,7 @@
             </column>
             <column name="CREATED_AT" type="TIMESTAMP"/>
             <column name="PROVIDER" type="VARCHAR(255)"/>
+            <column name="PROVIDER_CREATION_TIME" type="TIMESTAMP"/>
             <column name="NOTIFICATION_TYPE" type="VARCHAR(255)"/>
             <column name="CONTENT" type="CLOB"/>
         </createTable>

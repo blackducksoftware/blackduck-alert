@@ -49,7 +49,7 @@ public class NotificationManagerTestIT {
     private NotificationManager notificationManager;
 
     private NotificationContent createNotificationContent(final Date createdAt) {
-        final MockNotificationContent mockedNotificationContent = new MockNotificationContent(createdAt, "provider", "notificationType", "{content: \"content is here...\"}", null);
+        final MockNotificationContent mockedNotificationContent = new MockNotificationContent(createdAt, "provider", createdAt, "notificationType", "{content: \"content is here...\"}", null);
         return mockedNotificationContent.createEntity();
     }
 

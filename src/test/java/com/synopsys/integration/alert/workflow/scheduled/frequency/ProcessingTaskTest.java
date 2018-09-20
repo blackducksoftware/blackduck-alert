@@ -36,7 +36,7 @@ public class ProcessingTaskTest {
 
     @Before
     public void initTest() {
-        final NotificationContent model = new MockNotificationContent(new Date(), "BlackDuck", "NotificationType", "{content: \"content is here\"}", null).createEntity();
+        final NotificationContent model = new MockNotificationContent(new Date(), "BlackDuck", new Date(), "NotificationType", "{content: \"content is here\"}", null).createEntity();
         final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic ", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, Collections.emptyList());
         modelList = Arrays.asList(model);
