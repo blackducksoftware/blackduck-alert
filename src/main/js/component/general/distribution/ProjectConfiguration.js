@@ -20,6 +20,9 @@ function assignDataFormat(cell, row) {
 class ProjectConfiguration extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            error: {}
+        };
         this.onRowSelected = this.onRowSelected.bind(this);
         this.onRowSelectedAll = this.onRowSelectedAll.bind(this);
     }
@@ -123,6 +126,7 @@ class ProjectConfiguration extends Component {
                     errorName="includeAllProjectsError"
                     errorValue={this.props.includeAllProjectsError}
                 />
+                {this.props.error.configuredProjectsError && <label className="fieldError" name="projectTableErrors">{this.props.error.configuredProjectsError}</label>}
                 {projectTable}
             </div>
         );
@@ -133,6 +137,7 @@ ProjectConfiguration.defaultProps = {
     projects: [],
     configuredProjects: [],
     errorMsg: null,
+    error: {},
     includeAllProjects: true
 };
 
@@ -142,6 +147,7 @@ ProjectConfiguration.propTypes = {
     projects: PropTypes.arrayOf(PropTypes.any),
     fetching: PropTypes.bool.isRequired,
     errorMsg: PropTypes.string,
+    error: PropTypes.object,
     getProjects: PropTypes.func.isRequired,
     handleChange: PropTypes.func.isRequired,
     handleProjectChanged: PropTypes.func.isRequired
@@ -150,7 +156,8 @@ ProjectConfiguration.propTypes = {
 const mapStateToProps = state => ({
     fetching: state.projects.fetching,
     projects: state.projects.items,
-    errorMsg: state.projects.error.message
+    errorMsg: state.projects.error.message,
+    error: state.distributions.error
 });
 
 const mapDispatchToProps = dispatch => ({
