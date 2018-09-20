@@ -67,7 +67,6 @@ public class EmailChannelDistributionControllerTestIT extends ControllerTest {
     public CommonDistributionConfig getConfig() {
         final MockEmailRestModel mockEmailRestModel = new MockEmailRestModel();
         mockEmailRestModel.setEmailSubjectLine("Controller Test");
-        mockEmailRestModel.setGroupName(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_GROUP));
         return mockEmailRestModel.createRestModel();
     }
 
