@@ -39,7 +39,7 @@ import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.entity.channel.DistributionChannelConfigEntity;
 import com.synopsys.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
-import com.synopsys.integration.alert.mock.entity.MockEntityUtil;
+import com.synopsys.integration.alert.mock.model.MockRestModelUtil;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
@@ -78,7 +78,7 @@ public abstract class DescriptorTestConfigTest<R extends CommonDistributionConfi
 
     public abstract ChannelDescriptor getDescriptor();
 
-    public abstract MockEntityUtil<E> getMockEntityUtil();
+    public abstract MockRestModelUtil<R> getMockRestModelUtil();
 
     public abstract DatabaseEntity getDistributionEntity();
 
@@ -101,7 +101,7 @@ public abstract class DescriptorTestConfigTest<R extends CommonDistributionConfi
         saveGlobalConfiguration();
         final RestApi restApi = getDescriptor().getRestApi(RestApiType.CHANNEL_DISTRIBUTION_CONFIG);
         final RestApi spyDescriptorConfig = Mockito.spy(restApi);
-        final Config restModel = getMockEntityUtil().createConfig();
+        final Config restModel = getMockRestModelUtil().createRestModel();
         try {
             spyDescriptorConfig.testConfig(restModel);
         } catch (final IntegrationException e) {

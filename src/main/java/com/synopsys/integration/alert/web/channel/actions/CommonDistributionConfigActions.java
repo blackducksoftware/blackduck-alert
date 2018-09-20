@@ -73,8 +73,11 @@ public class CommonDistributionConfigActions {
         if (StringUtils.isNotBlank(commonConfig.getFilterByProject()) && !contentConverter.isBoolean(commonConfig.getFilterByProject())) {
             fieldErrors.put("filterByProject", "Not a Boolean.");
         }
-        if (BooleanUtils.toBoolean(commonConfig.getFilterByProject()) && null != commonConfig.getConfiguredProjects() && commonConfig.getConfiguredProjects().isEmpty()) {
+        if (BooleanUtils.toBoolean(commonConfig.getFilterByProject()) && (null == commonConfig.getConfiguredProjects() || commonConfig.getConfiguredProjects().isEmpty())) {
             fieldErrors.put("configuredProjects", "You must select at least one project.");
+        }
+        if (StringUtils.isBlank(commonConfig.getFormatType())) {
+            fieldErrors.put("formatType", "You must choose a format.");
         }
         if (StringUtils.isBlank(commonConfig.getFrequency())) {
             fieldErrors.put("frequency", "Frequency cannot be blank.");
