@@ -19,27 +19,6 @@ public class BlackDuckDataHandlerTest {
     private final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
 
     @Test
-    public void testGetHubGroups() throws Exception {
-
-        final BlackDuckDataActions blackDuckDataActions = Mockito.mock(BlackDuckDataActions.class);
-        Mockito.when(blackDuckDataActions.getBlackDuckGroups()).thenReturn(Collections.emptyList());
-        final BlackDuckDataHandler blackDuckDataHandler = new BlackDuckDataHandler(contentConverter, blackDuckDataActions);
-        final ResponseEntity<String> responseEntity = blackDuckDataHandler.getBlackDuckGroups();
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals("{\"id\":-1,\"message\":\"[]\"}", responseEntity.getBody());
-    }
-
-    @Test
-    public void testGetHubGroupsThrowException() throws Exception {
-        final BlackDuckDataActions blackDuckDataActions = Mockito.mock(BlackDuckDataActions.class);
-        Mockito.when(blackDuckDataActions.getBlackDuckGroups()).thenThrow(new IllegalStateException("ErrorMessage"));
-        final BlackDuckDataHandler blackDuckDataHandler = new BlackDuckDataHandler(contentConverter, blackDuckDataActions);
-        final ResponseEntity<String> responseEntity = blackDuckDataHandler.getBlackDuckGroups();
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
-        assertEquals("{\"id\":-1,\"message\":\"ErrorMessage\"}", responseEntity.getBody());
-    }
-
-    @Test
     public void testGetHubProjects() throws Exception {
         final BlackDuckDataActions blackDuckDataActions = Mockito.mock(BlackDuckDataActions.class);
         Mockito.when(blackDuckDataActions.getBlackDuckProjects()).thenReturn(Collections.emptyList());
