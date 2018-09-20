@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -40,6 +41,9 @@ import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.channel.rest.RestDistributionChannel;
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.model.CategoryItem;
+import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
@@ -52,6 +56,16 @@ import com.synopsys.integration.rest.request.Request;
 public class SlackChannel extends RestDistributionChannel<GlobalChannelConfigEntity, SlackDistributionConfigEntity, SlackChannelEvent> {
     public static final String COMPONENT_NAME = "channel_slack";
     public static final String SLACK_API = "https://hooks.slack.com";
+
+    private static final String SLACK_LINE_SEPARATOR = "\n";
+    private static Map<String, String> SLACK_CHARACTER_ENCODING_MAP;
+
+    static {
+        SLACK_CHARACTER_ENCODING_MAP = new HashMap<>();
+        SLACK_CHARACTER_ENCODING_MAP.put("&", "&amp;");
+        SLACK_CHARACTER_ENCODING_MAP.put("<", "&lt;");
+        SLACK_CHARACTER_ENCODING_MAP.put(">", "&gt;");
+    }
 
     @Autowired
     public SlackChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditEntryRepository auditEntryRepository,
@@ -85,8 +99,8 @@ public class SlackChannel extends RestDistributionChannel<GlobalChannelConfigEnt
                 return Collections.emptyList();
             } else {
                 final String slackUrl = event.getWebHook();
-                final String htmlMessage = createHtmlMessage(event);
-                final String jsonString = getJsonString(htmlMessage, event.getChannelName(), event.getChannelUsername());
+                final String mrkdwnMessage = createMrkdwnMessage(event.getContent());
+                final String jsonString = getJsonString(mrkdwnMessage, event.getChannelName(), event.getChannelUsername());
 
                 final Map<String, String> requestHeaders = new HashMap<>();
                 requestHeaders.put("Content-Type", "application/json");
@@ -95,15 +109,86 @@ public class SlackChannel extends RestDistributionChannel<GlobalChannelConfigEnt
         }
     }
 
-    private String createHtmlMessage(final SlackChannelEvent event) {
-        final StringBuilder messageBuilder = new StringBuilder();
-        messageBuilder.append(System.lineSeparator());
-        messageBuilder.append(event.getProvider());
-        messageBuilder.append(System.lineSeparator());
-        messageBuilder.append("- - - - - - - - - - - - - - - - - - - -");
-        messageBuilder.append(System.lineSeparator());
-        messageBuilder.append(event.getContent());
-        return messageBuilder.toString();
+    private String createMrkdwnMessage(final AggregateMessageContent messageContent) {
+        final StringBuilder mrkdwnBuilder = new StringBuilder();
+
+        mrkdwnBuilder.append(createLinkableItemString(messageContent, true));
+        mrkdwnBuilder.append(SLACK_LINE_SEPARATOR);
+        final Optional<LinkableItem> subTopic = messageContent.getSubTopic();
+        if (subTopic.isPresent()) {
+            mrkdwnBuilder.append(createLinkableItemString(subTopic.get(), true));
+            mrkdwnBuilder.append(SLACK_LINE_SEPARATOR);
+        }
+        mrkdwnBuilder.append("- - - - - - - - - - - - - - - - - - - -");
+        mrkdwnBuilder.append(SLACK_LINE_SEPARATOR);
+
+        final List<CategoryItem> categoryItems = messageContent.getCategoryItemList();
+        for (final CategoryItem categoryItem : categoryItems) {
+            mrkdwnBuilder.append("Type: ");
+            mrkdwnBuilder.append(categoryItem.getOperation());
+            mrkdwnBuilder.append(SLACK_LINE_SEPARATOR);
+
+            final Map<String, List<LinkableItem>> itemsOfSameName = categoryItem.getItemsOfSameName();
+            for (final Map.Entry<String, List<LinkableItem>> namedItems : itemsOfSameName.entrySet()) {
+                final List<LinkableItem> namedItemsList = namedItems.getValue();
+                if (namedItemsList.size() == 1) {
+                    final LinkableItem namedLinkableItem = namedItemsList.get(0);
+                    mrkdwnBuilder.append(createLinkableItemString(namedLinkableItem, false));
+                } else {
+                    final String name = createSlackString(namedItems.getKey());
+                    mrkdwnBuilder.append(name);
+                    mrkdwnBuilder.append(": ");
+                    for (final LinkableItem item : namedItemsList) {
+                        final String value = createSlackString(item.getValue());
+                        final Optional<String> optionalUrl = item.getUrl();
+
+                        mrkdwnBuilder.append('[');
+                        if (optionalUrl.isPresent()) {
+                            final String url = createSlackString(optionalUrl.get());
+                            mrkdwnBuilder.append('<');
+                            mrkdwnBuilder.append(url);
+                            mrkdwnBuilder.append('|');
+                            mrkdwnBuilder.append(value);
+                            mrkdwnBuilder.append('>');
+                        } else {
+                            mrkdwnBuilder.append(value);
+                        }
+                        mrkdwnBuilder.append(']');
+                    }
+                    mrkdwnBuilder.append(SLACK_LINE_SEPARATOR);
+                }
+                mrkdwnBuilder.append(SLACK_LINE_SEPARATOR);
+            }
+            mrkdwnBuilder.append(SLACK_LINE_SEPARATOR);
+        }
+        mrkdwnBuilder.append(SLACK_LINE_SEPARATOR);
+        return mrkdwnBuilder.toString();
+    }
+
+    private String createLinkableItemString(final LinkableItem linkableItem, final boolean bold) {
+        String format = "%s: <%s|%s>";
+        if (bold) {
+            format = String.format("*%s*", format);
+        }
+
+        final String name = createSlackString(linkableItem.getName());
+        final String value = createSlackString(linkableItem.getValue());
+        final Optional<String> optionalUrl = linkableItem.getUrl();
+        if (optionalUrl.isPresent()) {
+            return String.format(format, name, optionalUrl.get(), value);
+        }
+        if (bold) {
+            return String.format("*%s: %s*", name, value);
+        }
+        return String.format("%s: %s", name, value);
+    }
+
+    private String createSlackString(final String unencodedString) {
+        String newString = unencodedString;
+        for (final Map.Entry<String, String> mapping : SLACK_CHARACTER_ENCODING_MAP.entrySet()) {
+            newString = unencodedString.replace(mapping.getKey(), mapping.getValue());
+        }
+        return newString;
     }
 
     private String getJsonString(final String htmlMessage, final String channel, final String username) {
@@ -115,5 +200,4 @@ public class SlackChannel extends RestDistributionChannel<GlobalChannelConfigEnt
 
         return json.toString();
     }
-
 }

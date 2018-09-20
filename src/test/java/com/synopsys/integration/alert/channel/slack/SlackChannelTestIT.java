@@ -60,10 +60,8 @@ public class SlackChannelTestIT extends ChannelTest {
         final String username = properties.getProperty(TestPropertyKey.TEST_SLACK_USERNAME);
         final String webHook = properties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK);
 
-        final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
-        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, Collections.emptyList());
-        final SlackChannelEvent event = new SlackChannelEvent(RestConstants.formatDate(new Date()), "provider",
-            content, new Long(0), username, webHook, roomName);
+        final AggregateMessageContent content = createMessageContent(getClass().getSimpleName());
+        final SlackChannelEvent event = new SlackChannelEvent(RestConstants.formatDate(new Date()), "provider", content, new Long(0), username, webHook, roomName);
 
         slackChannel.sendAuditedMessage(event);
 
@@ -96,7 +94,8 @@ public class SlackChannelTestIT extends ChannelTest {
 
     @Test
     public void testCreateHtmlMessage() throws IntegrationException {
-        final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null);
+        final TestAlertProperties testAlertProperties = new TestAlertProperties();
+        final SlackChannel slackChannel = new SlackChannel(gson, testAlertProperties, null, null, null);
         final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, Collections.emptyList());
 
