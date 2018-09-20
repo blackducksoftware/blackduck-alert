@@ -26,8 +26,6 @@ package com.synopsys.integration.alert.channel.email.descriptor;
 import java.util.Arrays;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,16 +34,13 @@ import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
 import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
-import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckDataActions;
 
 @Component
 public class EmailDistributionUIConfig extends UIConfig {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final BlackDuckDataActions blackDuckDataActions;
 
     @Autowired
-    public EmailDistributionUIConfig(final BlackDuckDataActions blackDuckDataActions) {
-        this.blackDuckDataActions = blackDuckDataActions;
+    public EmailDistributionUIConfig() {
+
     }
 
     @Override
