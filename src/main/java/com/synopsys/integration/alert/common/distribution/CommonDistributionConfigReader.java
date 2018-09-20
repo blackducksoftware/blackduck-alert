@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.common.distribution;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -58,5 +59,19 @@ public class CommonDistributionConfigReader {
             configs.add(newConfig);
         });
         return configs;
+    }
+
+    @Transactional
+    public Optional<CommonDistributionConfig> getPopulatedConfig(final Long configId) {
+        final Optional<CommonDistributionConfigEntity> foundEntity = commonDistributionRepository.findById(configId);
+
+        if (foundEntity.isPresent()) {
+            final CommonDistributionConfigEntity entity = foundEntity.get();
+            final CommonDistributionConfig newConfig = new CommonDistributionConfig();
+            commonTypeConverter.populateCommonFieldsFromEntity(newConfig, entity);
+            return Optional.of(newConfig);
+        } else {
+            return Optional.empty();
+        }
     }
 }
