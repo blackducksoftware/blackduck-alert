@@ -68,13 +68,10 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
     public static final int MESSAGE_SIZE_LIMIT = 8000;
     private final Logger logger = LoggerFactory.getLogger(HipChatChannel.class);
 
-    private final Gson gson;
-
     @Autowired
     public HipChatChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditEntryRepository auditEntryRepository, final HipChatGlobalRepository hipChatGlobalRepository,
         final ChannelRestConnectionFactory channelRestConnectionFactory) {
         super(gson, alertProperties, blackDuckProperties, auditEntryRepository, hipChatGlobalRepository, HipChatChannelEvent.class, channelRestConnectionFactory);
-        this.gson = gson;
     }
 
     @Override
