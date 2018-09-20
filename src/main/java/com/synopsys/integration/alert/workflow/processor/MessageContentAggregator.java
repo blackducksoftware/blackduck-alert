@@ -95,7 +95,7 @@ public class MessageContentAggregator {
             final FormatType formatType = FormatType.valueOf(jobConfiguration.getFormatType());
             final Set<MessageContentCollector> providerMessageContentCollectors = providerDescriptor.get().createTopicCollectors();
             final Map<String, MessageContentCollector> collectorMap = createCollectorMap(providerMessageContentCollectors);
-
+            // cannot insert in a parallel stream because preserving the order matters on insertion to apply the correct operations in order.
             notificationsForJob.stream()
                 .filter(notificationContent -> collectorMap.containsKey(notificationContent.getNotificationType()))
                 .forEach(notificationContent -> collectorMap.get(notificationContent.getNotificationType()).insert(notificationContent));
