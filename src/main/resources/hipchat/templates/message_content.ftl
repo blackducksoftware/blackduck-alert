@@ -11,19 +11,6 @@
     ${linkableItem.name}: <@printLink linkableItem/>
 </#macro>
 
-<#macro printCategoryData categoryItem>
-    <#if categoryItem?? && categoryItem.itemList??>
-        <br/>Type: ${categoryItem.operation}
-    <!-- TODO get the correct number here -->
-        <br/>Number of Changes: ${categoryItem.itemList?size}
-        <br/>
-        <#list categoryItem.itemList as item>
-            <@printLinkableItem item/>
-            <br/>
-        </#list>
-    </#if>
-</#macro>
-
 <#macro printList lhs rhs>
     ${lhs}:
     <#if (rhs?size == 1) >
@@ -36,7 +23,7 @@
     </#if>
 </#macro>
 
-<#macro printCategoryData2 categoryItem>
+<#macro printCategoryData categoryItem>
     <#if categoryItem??>
         <#assign linkableItemsMap = categoryItem.getItemsOfSameName()/>
         <br/>Type: ${categoryItem.operation}
@@ -60,8 +47,7 @@
     <br/>- - - - - - - - - - - - - - - - - - - -
     <#if content.categoryItemList??>
         <#list content.categoryItemList as categoryItem>
-            <!-- @printCategoryData categoryItem/ -->
-            <@printCategoryData2 categoryItem/>
+            <@printCategoryData categoryItem/>
         </#list>
     <#else>
 		    <br/><i>A notification was received, but it was empty.</i>

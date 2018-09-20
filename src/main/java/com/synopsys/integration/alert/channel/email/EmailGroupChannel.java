@@ -79,8 +79,10 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
             final HashMap<String, Object> model = new HashMap<>();
 
             final String contentTitle = provider;
-            model.put("content", content.toString());
+            model.put("content", content);
             model.put("contentTitle", contentTitle);
+            // FIXME pass in the emailCategory from the event
+            model.put("emailCategory", "Aggregate");
             model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), subjectLine);
             final Optional<String> optionalBlackDuckUrl = getBlackDuckProperties().getBlackDuckUrl();
             if (optionalBlackDuckUrl.isPresent()) {
@@ -92,7 +94,7 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
             model.put(EmailPropertyKeys.TEMPLATE_KEY_END_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
 
             for (final String emailAddress : emailAddresses) {
-                final EmailTarget emailTarget = new EmailTarget(emailAddress, "audit.ftl", model);
+                final EmailTarget emailTarget = new EmailTarget(emailAddress, "message_content.ftl", model);
                 emailService.sendEmailMessage(emailTarget);
             }
         } catch (final IOException ex) {
