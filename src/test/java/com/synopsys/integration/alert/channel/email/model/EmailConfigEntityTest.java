@@ -32,12 +32,12 @@ public class EmailConfigEntityTest extends EntityTest<EmailGroupDistributionConf
 
     @Override
     public void assertEntityFieldsNull(final EmailGroupDistributionConfigEntity entity) {
-        assertNull(entity.getGroupName());
+        assertNull(entity.getEmailSubjectLine());
     }
 
     @Override
     public void assertEntityFieldsFull(final EmailGroupDistributionConfigEntity entity) {
-        assertEquals(getMockUtil().getGroupName(), entity.getGroupName());
+        assertEquals(getMockUtil().getEmailSubjectLine(), entity.getEmailSubjectLine());
     }
 
 }

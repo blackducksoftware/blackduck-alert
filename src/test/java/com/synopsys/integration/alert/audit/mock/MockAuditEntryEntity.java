@@ -6,7 +6,6 @@ import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.mock.entity.MockEntityUtil;
-import com.synopsys.integration.alert.web.model.Config;
 
 public class MockAuditEntryEntity extends MockEntityUtil<AuditEntryEntity> {
     private Long commonConfigId;
@@ -87,16 +86,6 @@ public class MockAuditEntryEntity extends MockEntityUtil<AuditEntryEntity> {
 
     public void setId(final Long id) {
         this.id = id;
-    }
-
-    @Override
-    public Config createConfig() {
-        return null;
-    }
-
-    @Override
-    public Config createEmptyConfig() {
-        return null;
     }
 
     @Override

@@ -22,14 +22,13 @@ public class EmailGroupDistributionRestModelTest extends CommonDistributionRestM
 
     @Override
     public void assertRestModelFieldsNull(final EmailDistributionConfig restModel) {
-        assertNull(restModel.getGroupName());
+        assertNull(restModel.getEmailSubjectLine());
     }
 
     @Override
     public void assertRestModelFieldsFull(final EmailDistributionConfig restModel) {
         assertEquals(getMockUtil().getEmailTemplateLogoImage(), restModel.getEmailTemplateLogoImage());
         assertEquals(getMockUtil().getEmailSubjectLine(), restModel.getEmailSubjectLine());
-        assertEquals(getMockUtil().getGroupName(), restModel.getGroupName());
     }
 
     @Override

@@ -41,11 +41,6 @@ public class BlackDuckDataController extends BaseController {
         this.blackDuckDataHandler = blackDuckDataHandler;
     }
 
-    @GetMapping(value = "/groups")
-    public ResponseEntity<String> getGroups() {
-        return blackDuckDataHandler.getBlackDuckGroups();
-    }
-
     @GetMapping(value = "/projects")
     public ResponseEntity<String> getProjects() {
         return blackDuckDataHandler.getBlackDuckProjects();

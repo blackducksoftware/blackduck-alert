@@ -1,15 +1,4 @@
-import {
-    EMAIL_CONFIG_FETCHED,
-    EMAIL_CONFIG_FETCHING,
-    EMAIL_CONFIG_HIDE_ADVANCED,
-    EMAIL_CONFIG_SHOW_ADVANCED,
-    EMAIL_CONFIG_UPDATE_ERROR,
-    EMAIL_CONFIG_UPDATED,
-    EMAIL_CONFIG_UPDATING,
-    EMAIL_GROUPS_FETCH_ERROR,
-    EMAIL_GROUPS_FETCHED,
-    EMAIL_GROUPS_FETCHING
-} from './types';
+import {EMAIL_CONFIG_FETCHED, EMAIL_CONFIG_FETCHING, EMAIL_CONFIG_HIDE_ADVANCED, EMAIL_CONFIG_SHOW_ADVANCED, EMAIL_CONFIG_UPDATE_ERROR, EMAIL_CONFIG_UPDATED, EMAIL_CONFIG_UPDATING} from './types';
 
 import {verifyLoginByStatus} from './session';
 
@@ -192,50 +181,5 @@ export function updateEmailConfig(config) {
                 }
             })
             .catch(console.error);
-    };
-}
-
-// email group functions
-
-function fetchingEmailGroups() {
-    return {
-        type: EMAIL_GROUPS_FETCHING
-    };
-}
-
-function fetchedEmailGroups(groups) {
-    return {
-        type: EMAIL_GROUPS_FETCHED,
-        groups
-    };
-}
-
-function fetchEmailGroupsError(message, errors) {
-    return {
-        type: EMAIL_GROUPS_FETCH_ERROR,
-        message,
-        errors
-    };
-}
-
-export function getEmailGroups() {
-    return (dispatch) => {
-        dispatch(fetchingEmailGroups());
-        fetch('/alert/api/blackduck/groups', {
-            credentials: 'same-origin'
-        }).then((response) => {
-            if (!response.ok) {
-                return response.json().then((json) => {
-                    dispatch(fetchEmailGroupsError(json.message, json.errors));
-                });
-            }
-            return response.json().then((json) => {
-                const jsonArray = JSON.parse(json.message);
-                if (jsonArray != null && jsonArray.length > 0) {
-                    const groups = jsonArray.map(({name, active, url}) => ({name, active, url}));
-                    dispatch(fetchedEmailGroups(groups));
-                }
-            });
-        }).catch(console.error);
     };
 }

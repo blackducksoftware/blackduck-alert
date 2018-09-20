@@ -11,15 +11,9 @@
  */
 package com.synopsys.integration.alert.channel.hipchat.mock;
 
-import java.util.Collections;
-
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
 import com.synopsys.integration.alert.mock.entity.MockEntityUtil;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.alert.web.channel.model.HipChatDistributionConfig;
-import com.synopsys.integration.alert.web.model.Config;
 
 public class MockHipChatEntity extends MockEntityUtil<HipChatDistributionConfigEntity> {
     private final Long id;
@@ -61,17 +55,6 @@ public class MockHipChatEntity extends MockEntityUtil<HipChatDistributionConfigE
     @Override
     public Long getId() {
         return id;
-    }
-
-    @Override
-    public Config createConfig() {
-        return new HipChatDistributionConfig(id.toString(), roomId.toString(), notify, color, "0L", HipChatChannel.COMPONENT_NAME, "HipChatTest", BlackDuckProvider.COMPONENT_NAME, "real_time", "false", Collections.emptyList(),
-            Collections.emptyList(), "DEFAULT");
-    }
-
-    @Override
-    public Config createEmptyConfig() {
-        return new HipChatDistributionConfig();
     }
 
     @Override
