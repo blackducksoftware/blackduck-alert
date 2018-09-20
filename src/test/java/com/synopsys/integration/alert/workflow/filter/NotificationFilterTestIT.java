@@ -205,7 +205,7 @@ public class NotificationFilterTestIT {
         final String content = "{\"content\":{\"affectedProjectVersions\":[{\"projectName\":\""
                                    + projectName
                                    + "\",\"dummyField\":\"dummyValue\"},{\"projectName\":\"Project Name\",\"dummyField\":\"dummyValue\"}],\"dummyField\":\"dummyValue\"},\"dummyField\":\"dummyValue\"}";
-        final NotificationContent notification = new NotificationContent(created, providerName, NotificationType.VULNERABILITY.name(), content);
+        final NotificationContent notification = new NotificationContent(created, providerName, created, NotificationType.VULNERABILITY.name(), content);
         notification.setId(1L);
 
         return notification;
