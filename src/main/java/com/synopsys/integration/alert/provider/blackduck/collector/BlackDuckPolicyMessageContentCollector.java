@@ -49,6 +49,7 @@ import com.synopsys.integration.blackduck.api.generated.enumeration.Notification
 @Component
 @Scope("prototype")
 public class BlackDuckPolicyMessageContentCollector extends MessageContentCollector {
+    public static final String CATEGORY_TYPE = "policy";
 
     @Autowired
     public BlackDuckPolicyMessageContentCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList) {
@@ -65,8 +66,8 @@ public class BlackDuckPolicyMessageContentCollector extends MessageContentCollec
         final ItemOperation operation = getOperationFromNotification(notificationContent);
         for (final LinkableItem policyItem : policyItems) {
             final String policyUrl = policyItem.getUrl().orElse("");
-            addApplicableItems(categoryItems, notificationContent, policyItem, policyUrl, operation, componentItems);
-            addApplicableItems(categoryItems, notificationContent, policyItem, policyUrl, operation, componentVersionItems);
+            addApplicableItems(categoryItems, notificationContent.getId(), policyItem, policyUrl, operation, componentItems);
+            addApplicableItems(categoryItems, notificationContent.getId(), policyItem, policyUrl, operation, componentVersionItems);
         }
     }
 
@@ -82,13 +83,13 @@ public class BlackDuckPolicyMessageContentCollector extends MessageContentCollec
         throw new IllegalArgumentException(String.format("The notification type '%s' is not valid for this collector.", notificationType));
     }
 
-    private void addApplicableItems(final List<CategoryItem> categoryItems, final NotificationContent notificationContent, final LinkableItem policyItem, final String policyUrl, final ItemOperation operation,
+    private void addApplicableItems(final List<CategoryItem> categoryItems, final Long notificationId, final LinkableItem policyItem, final String policyUrl, final ItemOperation operation,
         final List<LinkableItem> applicableItems) {
         for (final LinkableItem item : applicableItems) {
             final Optional<String> itemUrl = item.getUrl();
             if (itemUrl.isPresent()) {
-                final CategoryKey categoryKey = CategoryKey.from(notificationContent.getNotificationType(), policyUrl, itemUrl.get());
-                addItem(categoryItems, new CategoryItem(categoryKey, operation, notificationContent.getId(), createLinkableItemList(policyItem, item)));
+                final CategoryKey categoryKey = CategoryKey.from(CATEGORY_TYPE, policyUrl, itemUrl.get());
+                addItem(categoryItems, new CategoryItem(categoryKey, operation, notificationId, createLinkableItemList(policyItem, item)));
             }
         }
     }
