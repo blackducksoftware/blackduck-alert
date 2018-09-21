@@ -32,9 +32,9 @@ public class EmailChannelEvent extends ChannelEvent {
     private final Set<String> emailAddresses;
     private final String subjectLine;
 
-    public EmailChannelEvent(final String createdAt, final String provider, final AggregateMessageContent content, final Long commonConfigId, final Set<String> emailAddresses,
+    public EmailChannelEvent(final String createdAt, final String provider, final String formatType, final AggregateMessageContent content, final Long commonConfigId, final Set<String> emailAddresses,
         final String subjectLine) {
-        super(EmailGroupChannel.COMPONENT_NAME, createdAt, provider, content, commonConfigId);
+        super(EmailGroupChannel.COMPONENT_NAME, createdAt, provider, formatType, content, commonConfigId);
         this.emailAddresses = emailAddresses;
         this.subjectLine = subjectLine;
     }
@@ -46,5 +46,4 @@ public class EmailChannelEvent extends ChannelEvent {
     public String getSubjectLine() {
         return subjectLine;
     }
-
 }
