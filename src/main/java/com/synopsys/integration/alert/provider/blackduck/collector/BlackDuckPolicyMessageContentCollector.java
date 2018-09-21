@@ -28,6 +28,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -50,6 +52,7 @@ import com.synopsys.integration.blackduck.api.generated.enumeration.Notification
 @Scope("prototype")
 public class BlackDuckPolicyMessageContentCollector extends MessageContentCollector {
     public static final String CATEGORY_TYPE = "policy";
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     public BlackDuckPolicyMessageContentCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList) {
@@ -63,7 +66,13 @@ public class BlackDuckPolicyMessageContentCollector extends MessageContentCollec
         final List<LinkableItem> componentVersionItems = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_COMPONENT_VERSION_NAME);
         final List<LinkableItem> policyItems = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_POLICY_NAME);
 
-        final ItemOperation operation = getOperationFromNotification(notificationContent);
+        ItemOperation operation;
+        try {
+            operation = getOperationFromNotification(notificationContent);
+        } catch (final IllegalArgumentException e) {
+            logger.error("Unrecognized notification type", e);
+            return;
+        }
         for (final LinkableItem policyItem : policyItems) {
             final String policyUrl = policyItem.getUrl().orElse("");
             addApplicableItems(categoryItems, notificationContent.getId(), policyItem, policyUrl, operation, componentItems);
