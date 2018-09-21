@@ -6,7 +6,6 @@ import java.util.HashSet;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.TestPropertyKey;
 import com.synopsys.integration.alert.channel.DescriptorTestConfigTest;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
@@ -47,8 +46,6 @@ public class EmailChannelDescriptorTestIT extends DescriptorTestConfigTest<Email
     private EmailGlobalRepository emailGlobalRepository;
     @Autowired
     private EmailDescriptor emailDescriptor;
-    @Autowired
-    private Gson gson;
 
     @Before
     public void testSetup() {
@@ -78,7 +75,7 @@ public class EmailChannelDescriptorTestIT extends DescriptorTestConfigTest<Email
     @Override
     public ChannelEventFactory createChannelEventFactory() {
         return new ChannelEventFactory(emailDistributionRepositoryAccessor, hipChatDistributionRepositoryAccessor, slackDistributionRepositoryAccessor,
-            blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor, gson);
+            blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
     }
 
     @Override
