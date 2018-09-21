@@ -36,6 +36,8 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.event.AlertEvent;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
@@ -67,7 +69,6 @@ public class ChannelTemplateManager {
         final String destination = event.getDestination();
         if (event instanceof ChannelEvent) {
             final ChannelEvent channelEvent = (ChannelEvent) event;
-            // TODO revist this structure does this audit entry type make sense since we have the raw content.
             AuditEntryEntity auditEntryEntity = new AuditEntryEntity(channelEvent.getCommonDistributionConfigId(), new Date(System.currentTimeMillis()), null, null, null, null);
 
             if (channelEvent.getAuditEntryId() != null) {
@@ -78,9 +79,11 @@ public class ChannelTemplateManager {
             final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);
             channelEvent.setAuditEntryId(savedAuditEntryEntity.getId());
 
-            final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), channelEvent.getNotificationId());
-            auditNotificationRepository.save(auditNotificationRelation);
-
+            final AggregateMessageContent content = channelEvent.getContent();
+            for (final CategoryItem item : content.getCategoryItemList()) {
+                final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), item.getNotificationId());
+                auditNotificationRepository.save(auditNotificationRelation);
+            }
             final String jsonMessage = gson.toJson(channelEvent);
             jmsTemplate.convertAndSend(destination, jsonMessage);
         } else {

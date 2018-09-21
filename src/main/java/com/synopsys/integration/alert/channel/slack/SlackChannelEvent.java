@@ -21,30 +21,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.event;
+package com.synopsys.integration.alert.channel.slack;
 
-import com.synopsys.integration.alert.common.event.ContentEvent;
+import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 
-public abstract class ChannelEvent extends ContentEvent {
-    private final Long commonDistributionConfigId;
-    private Long auditEntryId;
+public class SlackChannelEvent extends ChannelEvent {
+    private final String channelUsername;
+    private final String webHook;
+    private final String channelName;
 
-    public ChannelEvent(final String destination, final String createdAt, final String provider, final AggregateMessageContent content, final Long commonDistributionConfigId) {
-        super(destination, createdAt, provider, content);
-        this.commonDistributionConfigId = commonDistributionConfigId;
+    public SlackChannelEvent(final String createdAt, final String provider, final AggregateMessageContent content, final Long commonConfigId, final String channelUsername, final String webHook,
+        final String channelName) {
+        super(SlackChannel.COMPONENT_NAME, createdAt, provider, content, commonConfigId);
+        this.channelUsername = channelUsername;
+        this.webHook = webHook;
+        this.channelName = channelName;
     }
 
-    public Long getCommonDistributionConfigId() {
-        return commonDistributionConfigId;
+    public String getChannelUsername() {
+        return channelUsername;
     }
 
-    public Long getAuditEntryId() {
-        return auditEntryId;
+    public String getWebHook() {
+        return webHook;
     }
 
-    public void setAuditEntryId(final Long auditEntryId) {
-        this.auditEntryId = auditEntryId;
+    public String getChannelName() {
+        return channelName;
     }
-
 }

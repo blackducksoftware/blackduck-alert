@@ -21,31 +21,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.descriptor;
+package com.synopsys.integration.alert.common.event;
 
-import java.util.Map;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+public class ContentEvent extends AlertEvent {
+    private final String createdAt;
+    private final String provider;
+    private final AggregateMessageContent content;
 
-import com.synopsys.integration.alert.common.descriptor.config.RestApi;
-import com.synopsys.integration.alert.web.model.Config;
-
-@Component
-public class BlackDuckDistributionRestApi extends RestApi {
-
-    @Autowired
-    public BlackDuckDistributionRestApi(final BlackDuckTypeConverter typeConverter, final BlackDuckRepositoryAccessor repositoryAccessor) {
-        super(typeConverter, repositoryAccessor);
+    public ContentEvent(final String destination, final String createdAt, final String provider, final AggregateMessageContent content) {
+        super(destination);
+        this.createdAt = createdAt;
+        this.provider = provider;
+        this.content = content;
     }
 
-    @Override
-    public void validateConfig(final Config restModel, final Map<String, String> fieldErrors) {
-
+    public String getCreatedAt() {
+        return createdAt;
     }
 
-    @Override
-    public void testConfig(final Config restModel) {
+    public String getProvider() {
+        return provider;
+    }
 
+    public AggregateMessageContent getContent() {
+        return content;
     }
 }

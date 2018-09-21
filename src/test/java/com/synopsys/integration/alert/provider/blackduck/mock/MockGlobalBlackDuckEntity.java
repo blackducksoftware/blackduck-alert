@@ -14,6 +14,8 @@ package com.synopsys.integration.alert.provider.blackduck.mock;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.synopsys.integration.alert.mock.MockGlobalEntityUtil;
+import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckConfig;
 
 public class MockGlobalBlackDuckEntity extends MockGlobalEntityUtil<GlobalBlackDuckConfigEntity> {
     private Integer blackDuckTimeout;
@@ -33,37 +35,48 @@ public class MockGlobalBlackDuckEntity extends MockGlobalEntityUtil<GlobalBlackD
         this.id = id;
     }
 
-    public void setBlackDuckTimeout(final Integer blackDuckTimeout) {
-        this.blackDuckTimeout = blackDuckTimeout;
-    }
-
-    public void setBlackDuckApiKey(final String blackDuckApiKey) {
-        this.blackDuckApiKey = blackDuckApiKey;
-    }
-
-    public void setBlackDuckUrl(final String blackDuckUrl) {
-        this.blackDuckUrl = blackDuckUrl;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
     public Integer getBlackDuckTimeout() {
         return blackDuckTimeout;
+    }
+
+    public void setBlackDuckTimeout(final Integer blackDuckTimeout) {
+        this.blackDuckTimeout = blackDuckTimeout;
     }
 
     public String getBlackDuckApiKey() {
         return blackDuckApiKey;
     }
 
+    public void setBlackDuckApiKey(final String blackDuckApiKey) {
+        this.blackDuckApiKey = blackDuckApiKey;
+    }
+
     public String getBlackDuckUrl() {
         return blackDuckUrl;
+    }
+
+    public void setBlackDuckUrl(final String blackDuckUrl) {
+        this.blackDuckUrl = blackDuckUrl;
     }
 
     @Override
     public Long getId() {
         return id;
+    }
+
+    public void setId(final Long id) {
+        this.id = id;
+    }
+
+    @Override
+    public Config createGlobalConfig() {
+        return new BlackDuckConfig(id.toString(), blackDuckUrl, blackDuckTimeout.toString(), blackDuckApiKey, null != blackDuckApiKey, null, null, null,
+            null, false, "true");
+    }
+
+    @Override
+    public Config createEmptyGlobalConfig() {
+        return new BlackDuckConfig();
     }
 
     @Override

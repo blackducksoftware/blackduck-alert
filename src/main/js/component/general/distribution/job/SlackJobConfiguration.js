@@ -15,7 +15,8 @@ class SlackJobConfiguration extends Component {
         this.state = {
             webhook: props.webhook,
             channelUsername: props.channelUsername,
-            channelName: props.channelName
+            channelName: props.channelName,
+            error: {}
         };
     }
 
@@ -58,10 +59,10 @@ class SlackJobConfiguration extends Component {
     render() {
         const content = (
             <div>
-                <TextInput id="jobSlackWebhook" label="Webhook" name="webhook" value={this.state.webhook} onChange={this.handleChange} errorName="webhookError" errorValue={this.props.errors.webhookError}/>
-                <TextInput id="jobSlackChannelName" label="Channel Name" name="channelName" value={this.state.channelName} onChange={this.handleChange} errorName="channelNameError" errorValue={this.props.errors.channelNameError}/>
+                <TextInput id="jobSlackWebhook" label="Webhook" name="webhook" value={this.state.webhook} onChange={this.handleChange} errorName="webhookError" errorValue={this.props.error.webhookError}/>
+                <TextInput id="jobSlackChannelName" label="Channel Name" name="channelName" value={this.state.channelName} onChange={this.handleChange} errorName="channelNameError" errorValue={this.props.error.channelNameError}/>
                 <TextInput id="jobSlackChannelUsername" label="Channel Username" name="channelUsername" value={this.state.channelUsername} onChange={this.handleChange} errorName="channelUsernameError"
-                           errorValue={this.props.channelUsernameError}/>
+                           errorValue={this.props.error.channelUsernameError}/>
             </div>);
         return (<BaseJobConfiguration
             baseUrl={this.props.baseUrl}
@@ -84,7 +85,7 @@ SlackJobConfiguration.propTypes = {
     csrfToken: PropTypes.string,
     webhook: PropTypes.string,
     channelUserName: PropTypes.string,
-    errors: PropTypes.object,
+    error: PropTypes.object,
     handleCancel: PropTypes.func.isRequired,
     handleSaveBtnClick: PropTypes.func.isRequired,
     alertChannelName: PropTypes.string.isRequired
@@ -99,7 +100,7 @@ SlackJobConfiguration.defaultProps = {
     webhook: '',
     channelName: '',
     channelUserName: '',
-    errors: {}
+    error: {}
 };
 
 const mapDispatchToProps = dispatch => ({
@@ -109,7 +110,7 @@ const mapDispatchToProps = dispatch => ({
 const mapStateToProps = state => ({
     csrfToken: state.session.csrfToken,
     jobs: state.distributions.jobs,
-    errors: state.distributions.errors
+    error: state.distributions.error
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SlackJobConfiguration);

@@ -79,9 +79,16 @@ public class MessageContentAggregator {
             return Collections.emptyMap();
         }
 
+        return processNotifications(distributionConfigs, notificationList);
+    }
+
+    public Map<CommonDistributionConfig, List<AggregateMessageContent>> processNotifications(final List<CommonDistributionConfig> distributionConfigs, final Collection<NotificationContent> notificationList) {
+        if (notificationList.isEmpty()) {
+            return Collections.emptyMap();
+        }
         return distributionConfigs
                    .parallelStream()
-                   .collect(Collectors.toMap(Function.identity(), jobConfig -> collectTopics(jobConfig, notificationList)));
+                   .collect(Collectors.toConcurrentMap(Function.identity(), jobConfig -> collectTopics(jobConfig, notificationList)));
     }
 
     private List<AggregateMessageContent> collectTopics(final CommonDistributionConfig jobConfiguration, final Collection<NotificationContent> notificationCollection) {
@@ -95,12 +102,12 @@ public class MessageContentAggregator {
             final FormatType formatType = FormatType.valueOf(jobConfiguration.getFormatType());
             final Set<MessageContentCollector> providerMessageContentCollectors = providerDescriptor.get().createTopicCollectors();
             final Map<String, MessageContentCollector> collectorMap = createCollectorMap(providerMessageContentCollectors);
-
-            notificationsForJob.parallelStream()
+            // cannot insert in a parallel stream because preserving the order matters on insertion to apply the correct operations in order.
+            notificationsForJob.stream()
                 .filter(notificationContent -> collectorMap.containsKey(notificationContent.getNotificationType()))
                 .forEach(notificationContent -> collectorMap.get(notificationContent.getNotificationType()).insert(notificationContent));
-
-            return providerMessageContentCollectors.parallelStream().flatMap(collector -> collector.collect(formatType).stream()).collect(Collectors.toList());
+            final List<AggregateMessageContent> collectedTopics = providerMessageContentCollectors.parallelStream().flatMap(collector -> collector.collect(formatType).stream()).collect(Collectors.toList());
+            return collectedTopics;
         }
         return Collections.emptyList();
     }

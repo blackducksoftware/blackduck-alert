@@ -24,52 +24,48 @@
 package com.synopsys.integration.alert.channel.event;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.distribution.CommonDistributionConfigReader;
-import com.synopsys.integration.alert.database.entity.NotificationContent;
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 
 @Component
 public class NotificationToChannelEventConverter {
     private final Logger logger = LoggerFactory.getLogger(NotificationToChannelEventConverter.class);
     private final ChannelEventFactory channelEventFactory;
-    private final CommonDistributionConfigReader commonDistributionConfigReader;
 
     @Autowired
-    public NotificationToChannelEventConverter(final ChannelEventFactory channelEventFactory, final CommonDistributionConfigReader commonDistributionConfigReader) {
+    public NotificationToChannelEventConverter(final ChannelEventFactory channelEventFactory) {
         this.channelEventFactory = channelEventFactory;
-        this.commonDistributionConfigReader = commonDistributionConfigReader;
     }
 
-    public List<ChannelEvent> convertToEvents(final Collection<NotificationContent> sortedNotifications) {
+    public List<ChannelEvent> convertToEvents(final Map<CommonDistributionConfig, List<AggregateMessageContent>> messageContentMap) {
         final List<ChannelEvent> channelEvents = new ArrayList<>();
-
-        final Collection<CommonDistributionConfig> distributionConfigs = commonDistributionConfigReader.getPopulatedConfigs();
-        distributionConfigs.forEach(config -> {
-            sortedNotifications.forEach(notification -> {
-                if (doesNotificationApplyToConfig(config, notification)) {
-                    final ChannelEvent newEvent = createChannelEvent(config, notification);
-                    channelEvents.add(newEvent);
+        final Set<Map.Entry<CommonDistributionConfig, List<AggregateMessageContent>>> jobMessageContentEntries = messageContentMap.entrySet();
+        for (final Map.Entry<CommonDistributionConfig, List<AggregateMessageContent>> entry : jobMessageContentEntries) {
+            final CommonDistributionConfig jobConfig = entry.getKey();
+            final List<AggregateMessageContent> contentList = entry.getValue();
+            for (final AggregateMessageContent content : contentList) {
+                try {
+                    channelEvents.add(createChannelEvent(jobConfig, content));
+                } catch (final AlertException ex) {
+                    logger.error("error creating event", ex);
                 }
-            });
-        });
+            }
+        }
         logger.debug("Created {} events.", channelEvents.size());
         return channelEvents;
     }
 
-    private boolean doesNotificationApplyToConfig(final CommonDistributionConfig config, final NotificationContent notification) {
-        return config.getNotificationTypes().contains(notification.getNotificationType());
-    }
-
-    private ChannelEvent createChannelEvent(final CommonDistributionConfig config, final NotificationContent notificationContent) {
-        final Long configId = Long.parseLong(config.getId());
-        return channelEventFactory.createChannelEvent(configId, config.getDistributionType(), notificationContent);
+    private ChannelEvent createChannelEvent(final CommonDistributionConfig config, final AggregateMessageContent messageContent) throws AlertException {
+        return channelEventFactory.createChannelEvent(config, messageContent);
     }
 }

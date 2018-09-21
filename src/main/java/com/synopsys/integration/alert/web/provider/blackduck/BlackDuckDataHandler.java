@@ -33,7 +33,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.provider.blackduck.model.BlackDuckGroup;
 import com.synopsys.integration.alert.provider.blackduck.model.BlackDuckProject;
 import com.synopsys.integration.alert.web.controller.handler.ControllerHandler;
 
@@ -46,17 +45,6 @@ public class BlackDuckDataHandler extends ControllerHandler {
     public BlackDuckDataHandler(final ContentConverter contentConverter, final BlackDuckDataActions blackDuckDataActions) {
         super(contentConverter);
         this.blackDuckDataActions = blackDuckDataActions;
-    }
-
-    public ResponseEntity<String> getBlackDuckGroups() {
-        try {
-            final List<BlackDuckGroup> groups = blackDuckDataActions.getBlackDuckGroups();
-            final String usersJson = getContentConverter().getJsonString(groups);
-            return createResponse(HttpStatus.OK, usersJson);
-        } catch (final Exception e) {
-            logger.error(e.getMessage(), e);
-            return createResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
     }
 
     public ResponseEntity<String> getBlackDuckProjects() {

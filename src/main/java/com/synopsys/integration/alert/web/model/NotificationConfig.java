@@ -26,16 +26,18 @@ package com.synopsys.integration.alert.web.model;
 public class NotificationConfig extends Config {
     private String createdAt;
     private String provider;
+    private String providerCreationTime;
     private String notificationType;
     private String content;
 
     public NotificationConfig() {
     }
 
-    public NotificationConfig(final String id, final String createdAt, final String provider, final String notificationType, final String content) {
+    public NotificationConfig(final String id, final String createdAt, final String provider, final String providerCreationTime, final String notificationType, final String content) {
         super(id);
         this.createdAt = createdAt;
         this.provider = provider;
+        this.providerCreationTime = providerCreationTime;
         this.notificationType = notificationType;
         this.content = content;
 
@@ -63,6 +65,14 @@ public class NotificationConfig extends Config {
 
     public void setProvider(final String provider) {
         this.provider = provider;
+    }
+
+    public String getProviderCreationTime() {
+        return providerCreationTime;
+    }
+
+    public void setProviderCreationTime(final String providerCreationTime) {
+        this.providerCreationTime = providerCreationTime;
     }
 
     public String getNotificationType() {

@@ -57,7 +57,7 @@ public class EmailDistributionTypeConverter extends TypeConverter {
     @Override
     public DatabaseEntity populateEntityFromConfig(final Config restModel) {
         final EmailDistributionConfig emailRestModel = (EmailDistributionConfig) restModel;
-        final EmailGroupDistributionConfigEntity emailEntity = new EmailGroupDistributionConfigEntity(emailRestModel.getGroupName(), emailRestModel.getEmailTemplateLogoImage(), emailRestModel.getEmailSubjectLine());
+        final EmailGroupDistributionConfigEntity emailEntity = new EmailGroupDistributionConfigEntity(emailRestModel.getEmailTemplateLogoImage(), emailRestModel.getEmailSubjectLine());
         addIdToEntityPK(emailRestModel.getDistributionConfigId(), emailEntity);
         return emailEntity;
     }
@@ -68,7 +68,6 @@ public class EmailDistributionTypeConverter extends TypeConverter {
         final EmailDistributionConfig emailRestModel = new EmailDistributionConfig();
         final String id = getContentConverter().getStringValue(emailEntity.getId());
         emailRestModel.setDistributionConfigId(id);
-        emailRestModel.setGroupName(emailEntity.getGroupName());
         emailRestModel.setEmailTemplateLogoImage(emailEntity.getEmailTemplateLogoImage());
         emailRestModel.setEmailSubjectLine(emailEntity.getEmailSubjectLine());
         final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.findByDistributionConfigIdAndDistributionType(emailEntity.getId(), EmailGroupChannel.COMPONENT_NAME);

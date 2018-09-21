@@ -25,12 +25,12 @@ package com.synopsys.integration.alert.provider.blackduck.tasks;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -129,7 +129,7 @@ public class ProjectSyncTask extends ScheduledTask {
     }
 
     private Map<Long, Set<String>> getEmailsPerProject(final Map<BlackDuckProject, ProjectView> currentDataMap, final List<BlackDuckProjectEntity> blackDuckProjectEntities, final HubService hubService) {
-        final Map<Long, Set<String>> projectToEmailAddresses = new HashMap<>();
+        final Map<Long, Set<String>> projectToEmailAddresses = new ConcurrentHashMap<>();
         currentDataMap.entrySet()
             .parallelStream()
             .forEach(entry -> {

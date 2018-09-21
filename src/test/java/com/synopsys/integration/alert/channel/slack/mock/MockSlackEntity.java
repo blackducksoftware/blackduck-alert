@@ -12,8 +12,8 @@
 package com.synopsys.integration.alert.channel.slack.mock;
 
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.mock.entity.MockEntityUtil;
 import com.synopsys.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
+import com.synopsys.integration.alert.mock.entity.MockEntityUtil;
 
 public class MockSlackEntity extends MockEntityUtil<SlackDistributionConfigEntity> {
     private String webhook;

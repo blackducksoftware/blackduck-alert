@@ -15,6 +15,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -26,11 +27,11 @@ import com.synopsys.integration.alert.TestAlertProperties;
 import com.synopsys.integration.alert.TestBlackDuckProperties;
 import com.synopsys.integration.alert.channel.ChannelTest;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
-import com.synopsys.integration.alert.channel.slack.SlackChannel;
-import com.synopsys.integration.alert.common.digest.model.DigestModel;
+import com.synopsys.integration.alert.channel.slack.SlackChannelEvent;
+import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
-import com.synopsys.integration.alert.database.entity.NotificationContent;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.entity.channel.DistributionChannelConfigEntity;
 import com.synopsys.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -45,13 +46,16 @@ public class RestDistributionChannelTest extends ChannelTest {
     @Test
     public void sendMessageFailureTest() {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final BlackDuckProperties hubProperties = new TestBlackDuckProperties(testAlertProperties);
+        final BlackDuckProperties blackDuckProperties = new TestBlackDuckProperties(testAlertProperties);
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties);
         final Gson gson = new Gson();
-        final RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity> restChannel = new RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity>(gson, testAlertProperties,
-                hubProperties, null, null,
-                null, null,
-                channelRestConnectionFactory) {
+        final RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity, ChannelEvent> restChannel = new RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity, ChannelEvent>(gson,
+            testAlertProperties, blackDuckProperties, null, null, null, channelRestConnectionFactory) {
+
+            @Override
+            public String getDistributionType() {
+                return null;
+            }
 
             @Override
             public String getApiUrl(final GlobalChannelConfigEntity entity) {
@@ -59,18 +63,22 @@ public class RestDistributionChannelTest extends ChannelTest {
             }
 
             @Override
-            public List<Request> createRequests(final DistributionChannelConfigEntity config, final GlobalChannelConfigEntity globalConfig, final ChannelEvent event) throws AlertException {
+            public String getApiUrl(final String apiUrl) {
+                return null;
+            }
+
+            @Override
+            public List<Request> createRequests(final GlobalChannelConfigEntity globalConfig, final ChannelEvent event) throws IntegrationException {
                 return Arrays.asList(new Request.Builder().uri("http://google.com").build());
             }
         };
-        final DigestModel digestModel = new DigestModel(createProjectData("Rest channel test"));
-        final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
-        final ChannelEvent event = new ChannelEvent(SlackChannel.COMPONENT_NAME, RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
-                notificationContent.getContent(), 1L, 1L);
-        final SlackDistributionConfigEntity config = new SlackDistributionConfigEntity("more garbage", "garbage", "garbage");
+        final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
+        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, Collections.emptyList());
+        final SlackChannelEvent event = new SlackChannelEvent(RestConstants.formatDate(new Date()), "provider",
+            content, 1L, "more garbage", "garbage", "garbage");
         Exception thrownException = null;
         try {
-            restChannel.sendAuditedMessage(event, config);
+            restChannel.sendAuditedMessage(event);
         } catch (final IntegrationException ex) {
             thrownException = ex;
         }
@@ -82,24 +90,11 @@ public class RestDistributionChannelTest extends ChannelTest {
     public void testCreateMessageRequest() {
         final Request request = createRequest();
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final BlackDuckProperties hubProperties = new TestBlackDuckProperties(testAlertProperties);
+        final BlackDuckProperties blackDuckProperties = new TestBlackDuckProperties(testAlertProperties);
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties);
         final Gson gson = new Gson();
-        final RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity> restChannel = new RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity>(gson, testAlertProperties,
-                hubProperties, null, null,
-                null, null,
-                channelRestConnectionFactory) {
-
-            @Override
-            public String getApiUrl(final GlobalChannelConfigEntity entity) {
-                return null;
-            }
-
-            @Override
-            public List<Request> createRequests(final DistributionChannelConfigEntity config, final GlobalChannelConfigEntity globalConfig, final ChannelEvent event) throws AlertException {
-                return Arrays.asList(request);
-            }
-        };
+        final RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity, ChannelEvent> restChannel = createMockRestDistributionChannel(gson, testAlertProperties, blackDuckProperties, channelRestConnectionFactory,
+            request);
         final Request returnedRequest = restChannel.createPostMessageRequest("https://google.com", null, "{}");
 
         assertEquals(request.getUri(), returnedRequest.getUri());
@@ -115,24 +110,11 @@ public class RestDistributionChannelTest extends ChannelTest {
     public void testCreateQueryParametersMessageRequest() {
         final Request request = createRequest();
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final BlackDuckProperties hubProperties = new TestBlackDuckProperties(testAlertProperties);
+        final BlackDuckProperties blackDuckProperties = new TestBlackDuckProperties(testAlertProperties);
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties);
         final Gson gson = new Gson();
-        final RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity> restChannel = new RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity>(gson, testAlertProperties,
-                hubProperties, null, null,
-                null, null,
-                channelRestConnectionFactory) {
-
-            @Override
-            public String getApiUrl(final GlobalChannelConfigEntity entity) {
-                return null;
-            }
-
-            @Override
-            public List<Request> createRequests(final DistributionChannelConfigEntity config, final GlobalChannelConfigEntity globalConfig, final ChannelEvent event) throws AlertException {
-                return Arrays.asList(request);
-            }
-        };
+        final RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity, ChannelEvent> restChannel = createMockRestDistributionChannel(gson, testAlertProperties, blackDuckProperties, channelRestConnectionFactory,
+            request);
         final Request returnedRequest = restChannel.createPostMessageRequest("https://google.com", null, null, "{}");
 
         assertEquals(request.getUri(), returnedRequest.getUri());
@@ -150,24 +132,11 @@ public class RestDistributionChannelTest extends ChannelTest {
         final RestConnection restConnection = Mockito.mock(RestConnection.class);
         Mockito.when(restConnection.executeRequest(request)).thenThrow(new IntegrationException());
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final BlackDuckProperties hubProperties = new TestBlackDuckProperties(testAlertProperties);
+        final BlackDuckProperties blackDuckProperties = new TestBlackDuckProperties(testAlertProperties);
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties);
         final Gson gson = new Gson();
-        final RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity> restChannel = new RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity>(gson, testAlertProperties,
-                hubProperties, null, null,
-                null, null,
-                channelRestConnectionFactory) {
-
-            @Override
-            public String getApiUrl(final GlobalChannelConfigEntity entity) {
-                return null;
-            }
-
-            @Override
-            public List<Request> createRequests(final DistributionChannelConfigEntity config, final GlobalChannelConfigEntity globalConfig, final ChannelEvent event) throws AlertException {
-                return Arrays.asList(request);
-            }
-        };
+        final RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity, ChannelEvent> restChannel = createMockRestDistributionChannel(gson, testAlertProperties, blackDuckProperties, channelRestConnectionFactory,
+            request);
         IntegrationException thrown = null;
         try {
             restChannel.sendGenericRequest(restConnection, request);
@@ -181,5 +150,35 @@ public class RestDistributionChannelTest extends ChannelTest {
         Request.Builder builder = new Request.Builder();
         builder = builder.uri("https://google.com").method(HttpMethod.POST).bodyContent(new StringBodyContent("{}"));
         return builder.build();
+    }
+
+    private RestDistributionChannel createMockRestDistributionChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final ChannelRestConnectionFactory channelRestConnectionFactory,
+        final Request request) {
+        final RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity, ChannelEvent> restChannel = new RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity, ChannelEvent>(gson,
+            alertProperties, blackDuckProperties, null, null,
+            null, channelRestConnectionFactory) {
+
+            @Override
+            public String getDistributionType() {
+                return null;
+            }
+
+            @Override
+            public String getApiUrl(final GlobalChannelConfigEntity entity) {
+                return null;
+            }
+
+            @Override
+            public String getApiUrl(final String apiUrl) {
+                return null;
+            }
+
+            @Override
+            public List<Request> createRequests(final GlobalChannelConfigEntity globalConfig, final ChannelEvent event) throws AlertException {
+                return Arrays.asList(request);
+            }
+        };
+
+        return restChannel;
     }
 }

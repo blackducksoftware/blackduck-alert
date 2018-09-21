@@ -21,20 +21,14 @@ public class AlertEventTest {
 
     @Test
     public void getIdTest() {
-        final AlertEvent event = new AlertEvent(TOPIC, 1L);
+        final AlertEvent event = new AlertEvent(TOPIC);
         assertNotNull(event.getEventId());
     }
 
     @Test
     public void getDestinationTest() {
-        final AlertEvent event = new AlertEvent(TOPIC, 1L);
+        final AlertEvent event = new AlertEvent(TOPIC);
         assertEquals(TOPIC, event.getDestination());
-    }
 
-    @Test
-    public void getNotificationIdTest() {
-        final Long notificationId = new Long(1);
-        final AlertEvent event = new AlertEvent(TOPIC, notificationId);
-        assertEquals(notificationId, event.getNotificationId());
     }
 }

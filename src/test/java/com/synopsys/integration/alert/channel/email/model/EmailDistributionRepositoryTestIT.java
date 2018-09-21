@@ -54,14 +54,12 @@ public class EmailDistributionRepositoryTestIT {
 
     @Test
     public void saveEntityTestIT() {
-        final String groupName = "Hub Group";
         final String emailTemplateLogoImage = "IT Test Logo";
         final String emailSubjectLine = "IT Test Subject Line";
-        final EmailGroupDistributionConfigEntity entity = new EmailGroupDistributionConfigEntity(groupName, emailTemplateLogoImage, emailSubjectLine);
+        final EmailGroupDistributionConfigEntity entity = new EmailGroupDistributionConfigEntity(emailTemplateLogoImage, emailSubjectLine);
         final EmailGroupDistributionConfigEntity savedEntity = emailGroupDistributionRepository.save(entity);
         assertEquals(1, emailGroupDistributionRepository.count());
         assertNotNull(savedEntity.getId());
-        assertEquals(groupName, savedEntity.getGroupName());
         assertEquals(emailTemplateLogoImage, savedEntity.getEmailTemplateLogoImage());
         assertEquals(emailSubjectLine, savedEntity.getEmailSubjectLine());
     }

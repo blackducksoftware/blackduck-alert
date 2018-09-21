@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -205,16 +206,16 @@ public class BlackDuckAccumulator extends ScheduledTask {
 
     protected List<NotificationContent> process(final CommonNotificationViewResults notificationData) {
         logger.info("Processing accumulated notifications");
-        return notificationData.getResults().stream().map(this::createContent).collect(Collectors.toList());
+        return notificationData.getResults().stream().map(this::createContent).sorted(Comparator.comparing(NotificationContent::getProviderCreationTime)).collect(Collectors.toList());
     }
 
     protected NotificationContent createContent(final CommonNotificationView commonNotificationView) {
-
         final Date createdAt = Date.from(ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC).toInstant());
+        final Date providerCreationTime = commonNotificationView.getCreatedAt();
         final String provider = BlackDuckProvider.COMPONENT_NAME;
         final String notificationType = commonNotificationView.getType().name();
         final String jsonContent = commonNotificationView.json;
-        final NotificationContent content = new NotificationContent(createdAt, provider, notificationType, jsonContent);
+        final NotificationContent content = new NotificationContent(createdAt, provider, providerCreationTime, notificationType, jsonContent);
         return content;
     }
 

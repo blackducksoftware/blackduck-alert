@@ -17,7 +17,7 @@ class BaseJobConfiguration extends Component {
         super(props);
         this.state = {
             success: false,
-            errors: {}
+            error: {}
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleStateValues = this.handleStateValues.bind(this);
@@ -45,7 +45,7 @@ class BaseJobConfiguration extends Component {
                 inProgress: nextProps.inProgress,
                 success: nextProps.success,
                 configurationMessage: nextProps.configurationMessage,
-                error: nextProps.error,
+                error: nextProps.error ? nextProps.error : {},
                 providerOptions: providerOptions
             });
 
@@ -99,6 +99,7 @@ class BaseJobConfiguration extends Component {
         event.preventDefault();
         const {handleSaveBtnClick, handleCancel} = this.props;
         this.handleSubmit();
+        console.log("Errors: " + this.state.error)
         if (handleCancel && !handleSaveBtnClick) {
             handleCancel();
         }
@@ -109,7 +110,7 @@ class BaseJobConfiguration extends Component {
             success: false,
             configurationMessage: 'Saving...',
             inProgress: true,
-            errors: {}
+            error: {}
         });
         if (event) {
             event.preventDefault();
@@ -126,7 +127,7 @@ class BaseJobConfiguration extends Component {
         this.setState({
             configurationMessage: 'Testing...',
             inProgress: true,
-            errors: {}
+            error: {}
         });
 
         if (event) {
@@ -170,14 +171,6 @@ class BaseJobConfiguration extends Component {
     handleStateValues(name, value) {
         this.setState({
             [name]: value
-        });
-    }
-
-    handleErrorValues(name, value) {
-        const {errors} = this.state;
-        errors[name] = value;
-        this.setState({
-            errors
         });
     }
 
@@ -298,8 +291,8 @@ class BaseJobConfiguration extends Component {
                                 placeholder="Choose the format for the job"
                                 value={this.state.formatType}
                             />
-                            {this.state.errors.formatTypeError && <label className="fieldError" name="formatTypeError">
-                                {this.state.errors.formatTypeError}
+                            {this.state.error.formatTypeError && <label className="fieldError" name="formatTypeError">
+                                {this.state.error.formatTypeError}
                             </label>}
                         </div>
                     </div>
@@ -317,8 +310,8 @@ class BaseJobConfiguration extends Component {
                                 placeholder="Choose the notification types"
                                 value={this.state.notificationTypes}
                             />
-                            {this.state.errors.notificationTypesError && <label className="fieldError" name="notificationTypesError">
-                                {this.state.errors.notificationTypesError}
+                            {this.state.error.notificationTypesError && <label className="fieldError" name="notificationTypesError">
+                                {this.state.error.notificationTypesError}
                             </label>}
                         </div>
                     </div>
@@ -335,7 +328,7 @@ class BaseJobConfiguration extends Component {
     render() {
         return (
             <form className="form-horizontal" onSubmit={this.onSubmit}>
-                <TextInput id="name" label="Job Name" name="name" value={this.state.name} onChange={this.handleChange} errorName="nameError" errorValue={this.state.errors.nameError}/>
+                <TextInput id="name" label="Job Name" name="name" value={this.state.name} onChange={this.handleChange} errorName="nameError" errorValue={this.state.error.nameError}/>
                 <div className="form-group">
                     <label className="col-sm-3 control-label">Frequency</label>
                     <div className="col-sm-8">
@@ -348,8 +341,8 @@ class BaseJobConfiguration extends Component {
                             placeholder="Choose the frequency"
                             value={this.state.frequency}
                         />
-                        {this.state.errors.frequencyError && <label className="fieldError" name="frequencyError">
-                            {this.state.errors.frequencyError}
+                        {this.state.error.frequencyError && <label className="fieldError" name="frequencyError">
+                            {this.state.error.frequencyError}
                         </label>}
                     </div>
                 </div>
@@ -367,8 +360,8 @@ class BaseJobConfiguration extends Component {
                             value={this.state.providerName}
                             valueRenderer={this.renderOption}
                         />
-                        {this.state.errors.providerNameError && <label className="fieldError" name="providerNameError">
-                            {this.state.errors.providerNameError}
+                        {this.state.error.providerNameError && <label className="fieldError" name="providerNameError">
+                            {this.state.error.providerNameError}
                         </label>}
                     </div>
                 </div>

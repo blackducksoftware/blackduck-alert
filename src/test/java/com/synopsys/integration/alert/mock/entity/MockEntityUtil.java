@@ -18,7 +18,6 @@ import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.mock.MockUtils;
 
 public abstract class MockEntityUtil<E extends DatabaseEntity> implements MockUtils {
-
     public abstract E createEntity();
 
     public abstract E createEmptyEntity();
