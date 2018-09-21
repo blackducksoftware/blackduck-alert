@@ -23,18 +23,24 @@
  */
 package com.synopsys.integration.alert.common.model;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import com.synopsys.integration.util.Stringable;
 
-public class CategoryItem {
+public class CategoryItem extends Stringable {
     private final CategoryKey categoryKey;
     private final ItemOperation operation;
     private final List<LinkableItem> itemList;
+    private final Long notificationId;
 
-    public CategoryItem(final CategoryKey categoryKey, final ItemOperation operation, final List<LinkableItem> itemList) {
+    public CategoryItem(final CategoryKey categoryKey, final ItemOperation operation, final Long notificationId, final List<LinkableItem> itemList) {
         this.categoryKey = categoryKey;
         this.operation = operation;
+        this.notificationId = notificationId;
         this.itemList = itemList;
     }
 
@@ -46,7 +52,26 @@ public class CategoryItem {
         return operation;
     }
 
+    public Long getNotificationId() {
+        return notificationId;
+    }
+
     public List<LinkableItem> getItemList() {
         return itemList;
+    }
+
+    /**
+     * Intended to be used for display purposes (such as freemarker templates).
+     * @return A map from the name of a LinkableItem to all the LinkableItems with that name.
+     */
+    public Map<String, List<LinkableItem>> getItemsOfSameName() {
+        final Map<String, List<LinkableItem>> map = new LinkedHashMap<>();
+        for (final LinkableItem item : itemList) {
+            if (!map.containsKey(item.getName())) {
+                map.put(item.getName(), new ArrayList<>());
+            }
+            map.get(item.getName()).add(item);
+        }
+        return map;
     }
 }

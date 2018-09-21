@@ -26,21 +26,24 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
-import com.synopsys.integration.alert.mock.entity.MockCommonDistributionEntity;
-import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
-import com.synopsys.integration.test.annotation.DatabaseConnectionTest;
 import com.synopsys.integration.alert.Application;
 import com.synopsys.integration.alert.audit.mock.MockAuditEntryEntity;
+import com.synopsys.integration.alert.channel.hipchat.mock.MockHipChatEntity;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
 import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
+import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
+import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionRepository;
 import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.synopsys.integration.alert.database.entity.repository.NotificationContentRepository;
+import com.synopsys.integration.alert.mock.entity.MockCommonDistributionEntity;
+import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.web.controller.BaseController;
+import com.synopsys.integration.test.annotation.DatabaseConnectionTest;
 
 @Category(DatabaseConnectionTest.class)
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -59,6 +62,9 @@ public class AuditEntryControllerTestIT {
     CommonDistributionRepository commonDistributionRepository;
 
     @Autowired
+    HipChatDistributionRepository hipChatDistributionRepository;
+
+    @Autowired
     AuditNotificationRepository auditNotificationRepository;
 
     @Autowired
@@ -68,6 +74,7 @@ public class AuditEntryControllerTestIT {
     private MockMvc mockMvc;
     private MockAuditEntryEntity mockAuditEntity;
     private MockCommonDistributionEntity mockCommonDistributionEntity;
+    private MockHipChatEntity mockHipChatEntity;
 
     @Before
     public void setup() {
@@ -75,17 +82,20 @@ public class AuditEntryControllerTestIT {
 
         auditEntryRepository.deleteAllInBatch();
         commonDistributionRepository.deleteAllInBatch();
+        hipChatDistributionRepository.deleteAllInBatch();
         auditNotificationRepository.deleteAllInBatch();
         notificationRepository.deleteAllInBatch();
 
         mockAuditEntity = new MockAuditEntryEntity();
         mockCommonDistributionEntity = new MockCommonDistributionEntity();
+        mockHipChatEntity = new MockHipChatEntity();
         cleanup();
     }
 
     public void cleanup() {
         auditEntryRepository.deleteAllInBatch();
         commonDistributionRepository.deleteAllInBatch();
+        hipChatDistributionRepository.deleteAllInBatch();
         auditNotificationRepository.deleteAllInBatch();
         notificationRepository.deleteAllInBatch();
     }
@@ -94,8 +104,8 @@ public class AuditEntryControllerTestIT {
     @WithMockUser(roles = "ADMIN")
     public void testGetConfig() throws Exception {
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(auditUrl)
-                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
-                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
+                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -106,14 +116,16 @@ public class AuditEntryControllerTestIT {
         entity = auditEntryRepository.save(entity);
         final String getUrl = auditUrl + "/" + String.valueOf(entity.getId());
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(getUrl)
-                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
-                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
+                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     public void testPostConfig() throws Exception {
+        final HipChatDistributionConfigEntity hipChatDistributionConfigEntity = mockHipChatEntity.createEntity();
+        hipChatDistributionRepository.save(hipChatDistributionConfigEntity);
         CommonDistributionConfigEntity commonEntity = mockCommonDistributionEntity.createEntity();
         final MockNotificationContent mockNotifications = new MockNotificationContent();
         NotificationContent notificationEntity = mockNotifications.createEntity();
@@ -125,8 +137,8 @@ public class AuditEntryControllerTestIT {
         auditNotificationRepository.save(new AuditNotificationRelation(auditEntity.getId(), notificationEntity.getId()));
         final String resendUrl = auditUrl + "/" + String.valueOf(auditEntity.getId()) + "/" + "/resend";
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(resendUrl)
-                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
-                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
+                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 }

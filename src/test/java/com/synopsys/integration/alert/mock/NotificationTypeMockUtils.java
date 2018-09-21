@@ -61,13 +61,13 @@ public class NotificationTypeMockUtils extends MockEntityUtil<NotificationTypeEn
         this.type = type;
     }
 
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
     @Override
     public Long getId() {
         return id;
+    }
+
+    public void setId(final Long id) {
+        this.id = id;
     }
 
     @Override

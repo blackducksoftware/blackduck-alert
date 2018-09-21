@@ -40,7 +40,6 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.entity.channel.DistributionChannelConfigEntity;
 import com.synopsys.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
-import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpMethod;
@@ -51,21 +50,21 @@ import com.synopsys.integration.rest.request.Request;
 import com.synopsys.integration.rest.request.Response;
 
 // TODO this class should not be part of the hierarchy. It should be used as a helper class to help use rest and all channels should extends DistributionChannel
-public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntity, C extends DistributionChannelConfigEntity> extends DistributionChannel<G, C> {
-    private final ChannelRestConnectionFactory channelRestConnectionFactory;
+public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntity, C extends DistributionChannelConfigEntity, E extends ChannelEvent> extends DistributionChannel<G, E> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    private final ChannelRestConnectionFactory channelRestConnectionFactory;
 
     public RestDistributionChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditEntryRepository auditEntryRepository, final JpaRepository<G, Long> globalRepository,
-            final JpaRepository<C, Long> distributionRepository, final CommonDistributionRepository commonDistributionRepository, final ChannelRestConnectionFactory channelRestConnectionFactory) {
-        super(gson, alertProperties, blackDuckProperties, auditEntryRepository, globalRepository, distributionRepository, commonDistributionRepository);
+        final Class eventClass, final ChannelRestConnectionFactory channelRestConnectionFactory) {
+        super(gson, alertProperties, blackDuckProperties, auditEntryRepository, globalRepository, eventClass);
         this.channelRestConnectionFactory = channelRestConnectionFactory;
     }
 
     @Override
-    public void sendMessage(final ChannelEvent event, final C config) throws IntegrationException {
+    public void sendMessage(final E event) throws IntegrationException {
         final G globalConfig = getGlobalConfigEntity();
         try (final RestConnection restConnection = channelRestConnectionFactory.createUnauthenticatedRestConnection(getApiUrl(globalConfig))) {
-            final List<Request> requests = createRequests(config, globalConfig, event);
+            final List<Request> requests = createRequests(globalConfig, event);
             for (final Request request : requests) {
                 sendMessageRequest(restConnection, request, event.getDestination());
             }
@@ -115,6 +114,8 @@ public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntit
 
     public abstract String getApiUrl(G globalConfig);
 
-    public abstract List<Request> createRequests(final C config, G globalConfig, final ChannelEvent event) throws IntegrationException;
+    public abstract String getApiUrl(String apiUrl);
+
+    public abstract List<Request> createRequests(G globalConfig, final E event) throws IntegrationException;
 
 }

@@ -1,10 +1,14 @@
 package com.synopsys.integration.alert.channel.email;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -15,21 +19,13 @@ import com.synopsys.integration.alert.TestAlertProperties;
 import com.synopsys.integration.alert.TestBlackDuckProperties;
 import com.synopsys.integration.alert.TestPropertyKey;
 import com.synopsys.integration.alert.channel.ChannelTest;
-import com.synopsys.integration.alert.channel.email.mock.MockEmailEntity;
-import com.synopsys.integration.alert.channel.event.ChannelEvent;
-import com.synopsys.integration.alert.common.digest.model.DigestModel;
-import com.synopsys.integration.alert.common.digest.model.ProjectData;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalConfigEntity;
-import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
-import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
-import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserRepositoryAccessor;
-import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelationRepositoryAccessor;
-import com.synopsys.integration.alert.provider.blackduck.mock.MockBlackDuckProjectRepositoryAccessor;
-import com.synopsys.integration.alert.provider.blackduck.mock.MockBlackDuckUserRepositoryAccessor;
-import com.synopsys.integration.alert.provider.blackduck.mock.MockUserProjectRelationRepositoryAccessor;
+import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.test.annotation.ExternalConnectionTest;
 
@@ -53,17 +49,12 @@ public class EmailChannelTestIT extends ChannelTest {
             testAlertProperties.setAlertTrustCertificate(Boolean.valueOf(trustCert));
         }
 
-        final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor = new MockBlackDuckUserRepositoryAccessor();
-        final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor = new MockBlackDuckProjectRepositoryAccessor();
-        final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor = new MockUserProjectRelationRepositoryAccessor();
+        EmailGroupChannel emailChannel = new EmailGroupChannel(gson, testAlertProperties, globalProperties, auditEntryRepository, null);
+        final AggregateMessageContent content = createMessageContent(getClass().getSimpleName());
+        final Set<String> emailAddresses = Stream.of(properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT)).collect(Collectors.toSet());
+        final String subjectLine = "Integration test subject line";
 
-        EmailGroupChannel emailChannel = new EmailGroupChannel(gson, testAlertProperties, globalProperties, auditEntryRepository, null, null, null, blackDuckUserRepositoryAccessor, blackDuckProjectRepositoryAccessor,
-            userProjectRelationRepositoryAccessor);
-        final Collection<ProjectData> projectData = createProjectData("Manual test project");
-        final DigestModel digestModel = new DigestModel(projectData);
-        final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
-        final ChannelEvent event = new ChannelEvent(EmailGroupChannel.COMPONENT_NAME, RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
-            notificationContent.getContent(), 1L, 1L);
+        final EmailChannelEvent event = new EmailChannelEvent(RestConstants.formatDate(new Date()), "provider", content, 1L, emailAddresses, subjectLine);
 
         final String smtpHost = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST);
         final String smtpFrom = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM);
@@ -74,28 +65,27 @@ public class EmailChannelTestIT extends ChannelTest {
         final Integer smtpPort = Integer.valueOf(properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT));
 
         final EmailGlobalConfigEntity emailGlobalConfigEntity = new EmailGlobalConfigEntity(smtpHost, smtpUser, smtpPassword, smtpPort, null, null, null, smtpFrom, null, null, null, smtpEhlo, smtpAuth, null, null, null, null, null, null,
-            null,
-            null, null, null,
-            null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+            null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+            null, null, null, null, null, null, null, null, null, null);
 
         emailChannel = Mockito.spy(emailChannel);
         Mockito.doReturn(emailGlobalConfigEntity).when(emailChannel).getGlobalConfigEntity();
 
-        final MockEmailEntity mockEmailEntity = new MockEmailEntity();
-        mockEmailEntity.setGroupName(properties.getProperty(TestPropertyKey.TEST_EMAIL_GROUP));
-        emailChannel.sendAuditedMessage(event, mockEmailEntity.createEntity());
+        emailChannel.sendAuditedMessage(event);
     }
 
     @Test
     public void sendEmailNullGlobalTest() throws Exception {
         try (final OutputLogger outputLogger = new OutputLogger()) {
-            final EmailGroupChannel emailChannel = new EmailGroupChannel(gson, null, null, null, null, null, null, null, null, null);
-            final DigestModel digestModel = new DigestModel(null);
-            final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
-            final ChannelEvent event = new ChannelEvent(EmailGroupChannel.COMPONENT_NAME, RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
-                notificationContent.getContent(), 1L, 1L);
-            emailChannel.sendMessage(event, null);
-            assertTrue(outputLogger.isLineContainingText("No configuration found with id"));
+            final EmailGroupChannel emailChannel = new EmailGroupChannel(gson, null, null, null, null);
+            final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
+            final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
+            final EmailChannelEvent event = new EmailChannelEvent(RestConstants.formatDate(new Date()), "provider",
+                content, 1L, null, null);
+            emailChannel.sendMessage(event);
+            fail();
+        } catch (final IntegrationException e) {
+            assertEquals("ERROR: Missing global config.", e.getMessage());
         }
     }
 

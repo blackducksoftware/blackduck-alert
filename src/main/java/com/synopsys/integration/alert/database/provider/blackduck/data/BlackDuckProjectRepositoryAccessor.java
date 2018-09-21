@@ -55,7 +55,7 @@ public class BlackDuckProjectRepositoryAccessor extends RepositoryAccessor {
     }
 
     public List<BlackDuckProjectEntity> deleteAndSaveAll(final Iterable<BlackDuckProjectEntity> blackDuckProjectEntities) {
-        blackDuckProjectRepository.deleteAll();
+        blackDuckProjectRepository.deleteAllInBatch();
         return blackDuckProjectRepository.saveAll(blackDuckProjectEntities);
     }
 }

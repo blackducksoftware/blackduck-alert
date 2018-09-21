@@ -32,10 +32,6 @@ import com.synopsys.integration.alert.database.entity.channel.DistributionChanne
 @Entity
 @Table(schema = "alert", name = "email_group_distribution_config")
 public class EmailGroupDistributionConfigEntity extends DistributionChannelConfigEntity {
-
-    @Column(name = "group_name")
-    private String groupName;
-
     @Column(name = "email_template_logo_image")
     private String emailTemplateLogoImage;
 
@@ -46,14 +42,9 @@ public class EmailGroupDistributionConfigEntity extends DistributionChannelConfi
         // JPA requires default constructor definitions
     }
 
-    public EmailGroupDistributionConfigEntity(final String groupName, final String emailTemplateLogoImage, final String emailSubjectLine) {
-        this.groupName = groupName;
+    public EmailGroupDistributionConfigEntity(final String emailTemplateLogoImage, final String emailSubjectLine) {
         this.emailTemplateLogoImage = emailTemplateLogoImage;
         this.emailSubjectLine = emailSubjectLine;
-    }
-
-    public String getGroupName() {
-        return groupName;
     }
 
     public String getEmailTemplateLogoImage() {

@@ -3,6 +3,7 @@ package com.synopsys.integration.alert.channel;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 
 import org.junit.Before;
@@ -13,18 +14,15 @@ import org.springframework.jms.core.JmsTemplate;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.audit.mock.MockAuditEntryEntity;
-import com.synopsys.integration.alert.channel.event.ChannelEvent;
-import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
+import com.synopsys.integration.alert.channel.hipchat.HipChatChannelEvent;
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.common.digest.model.DigestModel;
-import com.synopsys.integration.alert.common.digest.model.ProjectData;
-import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.event.AlertEvent;
-import com.synopsys.integration.alert.common.event.RawContentEvent;
+import com.synopsys.integration.alert.common.event.ContentEvent;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
-import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.rest.RestConstants;
 
 public class ChannelTemplateManagerTest {
@@ -47,11 +45,10 @@ public class ChannelTemplateManagerTest {
         Mockito.doNothing().when(jmsTemplate).convertAndSend(Mockito.anyString(), Mockito.any(Object.class));
         final ChannelTemplateManager channelTemplateManager = new ChannelTemplateManager(gson, auditEntryRepository, auditNotificationRepositoryWrapper, jmsTemplate);
 
-        final ProjectData projectData = new ProjectData(FrequencyType.DAILY, "test", "version", Arrays.asList(), null);
-        final DigestModel digestModel = new DigestModel(Arrays.asList(projectData));
-        final NotificationContent notificationContent = new NotificationContent(new Date(), "provider", "notificationType", contentConverter.getJsonString(digestModel));
-        final ChannelEvent hipChatEvent = new ChannelEvent(HipChatChannel.COMPONENT_NAME, RestConstants.formatDate(notificationContent.getCreatedAt()), notificationContent.getProvider(), notificationContent.getNotificationType(),
-            notificationContent.getContent(), 1L, 1L);
+        final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
+        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, Collections.emptyList());
+        final HipChatChannelEvent hipChatEvent = new HipChatChannelEvent(RestConstants.formatDate(new Date()), "provider",
+            content, 1L, 20, false, "red");
         channelTemplateManager.sendEvents(Arrays.asList(hipChatEvent));
     }
 
@@ -64,8 +61,9 @@ public class ChannelTemplateManagerTest {
         final JmsTemplate jmsTemplate = Mockito.mock(JmsTemplate.class);
         Mockito.doNothing().when(jmsTemplate).convertAndSend(Mockito.anyString(), Mockito.any(Object.class));
         final ChannelTemplateManager channelTemplateManager = new ChannelTemplateManager(gson, auditEntryRepositoryWrapper, auditNotificationRepositoryWrapper, jmsTemplate);
-
-        final AlertEvent dbStoreEvent = new RawContentEvent("", RestConstants.formatDate(new Date()), "", "", null, 1L);
+        final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
+        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, Collections.emptyList());
+        final AlertEvent dbStoreEvent = new ContentEvent("", RestConstants.formatDate(new Date()), "", content);
         final boolean isTrue = channelTemplateManager.sendEvent(dbStoreEvent);
         assertTrue(isTrue);
     }

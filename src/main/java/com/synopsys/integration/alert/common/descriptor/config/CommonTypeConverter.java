@@ -51,6 +51,7 @@ public class CommonTypeConverter {
     @Transactional
     public Config populateCommonFieldsFromEntity(final CommonDistributionConfig channelConfig, final CommonDistributionConfigEntity commonEntity) {
         channelConfig.setId(contentConverter.getStringValue(commonEntity.getId()));
+        channelConfig.setDistributionConfigId(contentConverter.getStringValue(commonEntity.getDistributionConfigId()));
         channelConfig.setDistributionType(commonEntity.getDistributionType());
         channelConfig.setFilterByProject(contentConverter.getStringValue(commonEntity.getFilterByProject()));
         channelConfig.setProviderName(commonEntity.getProviderName());

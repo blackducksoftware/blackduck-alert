@@ -32,14 +32,13 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.RestApi;
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.Config;
@@ -61,7 +60,7 @@ public class BlackDuckProviderRestApi extends RestApi {
 
     @Autowired
     public BlackDuckProviderRestApi(final BlackDuckTypeConverter databaseContentConverter, final BlackDuckRepositoryAccessor repositoryAccessor, final BlackDuckProviderStartupComponent startupComponent,
-    final BlackDuckProperties blackDuckProperties) {
+        final BlackDuckProperties blackDuckProperties) {
         super(databaseContentConverter, repositoryAccessor, startupComponent);
         this.blackDuckProperties = blackDuckProperties;
     }
@@ -82,14 +81,14 @@ public class BlackDuckProviderRestApi extends RestApi {
     }
 
     @Override
-    public void testConfig(final DatabaseEntity entity) throws IntegrationException {
+    public void testConfig(final Config restModel) throws IntegrationException {
         final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
 
-        final GlobalBlackDuckConfigEntity blackDuckEntity = (GlobalBlackDuckConfigEntity) entity;
-        final String apiToken = blackDuckEntity.getBlackDuckApiKey();
-        final String url = blackDuckEntity.getBlackDuckUrl();
+        final BlackDuckConfig blackDuckConfig = (BlackDuckConfig) restModel;
+        final String apiToken = blackDuckConfig.getBlackDuckApiKey();
+        final String url = blackDuckConfig.getBlackDuckUrl();
 
-        final HubServerConfigBuilder blackDuckServerConfigBuilder = blackDuckProperties.createServerConfigBuilderWithoutAuthentication(intLogger, blackDuckEntity.getBlackDuckTimeout());
+        final HubServerConfigBuilder blackDuckServerConfigBuilder = blackDuckProperties.createServerConfigBuilderWithoutAuthentication(intLogger, NumberUtils.toInt(blackDuckConfig.getBlackDuckTimeout(), 300));
         blackDuckServerConfigBuilder.setApiToken(apiToken);
         blackDuckServerConfigBuilder.setUrl(url);
 

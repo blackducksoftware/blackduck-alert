@@ -16,9 +16,12 @@ import org.mockito.Mockito;
 import org.springframework.scheduling.TaskScheduler;
 
 import com.synopsys.integration.alert.channel.ChannelTemplateManager;
+import com.synopsys.integration.alert.channel.email.EmailChannelEvent;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.DateRange;
+import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.workflow.NotificationManager;
@@ -33,9 +36,11 @@ public class ProcessingTaskTest {
 
     @Before
     public void initTest() {
-        final NotificationContent model = new MockNotificationContent(new Date(), "BlackDuck", "NotificationType", "{content: \"content is here\"}", null).createEntity();
+        final NotificationContent model = new MockNotificationContent(new Date(), "BlackDuck", new Date(), "NotificationType", "{content: \"content is here\"}", null).createEntity();
+        final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic ", null);
+        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, Collections.emptyList());
         modelList = Arrays.asList(model);
-        eventList = Arrays.asList(new ChannelEvent("destination", RestConstants.formatDate(new Date()), "provider", "notificationType", "content", 1L, null));
+        eventList = Arrays.asList(new EmailChannelEvent(RestConstants.formatDate(new Date()), "provider", content, 1L, null, null));
     }
 
     public ProcessingTask createTask(final TaskScheduler taskScheduler, final NotificationManager notificationManager, final NotificationProcessor notificationProcessor, final ChannelTemplateManager channelTemplateManager) {

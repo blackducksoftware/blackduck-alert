@@ -21,31 +21,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.descriptor;
+package com.synopsys.integration.alert.channel.hipchat;
 
-import java.util.Map;
+import com.synopsys.integration.alert.channel.event.ChannelEvent;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+public class HipChatChannelEvent extends ChannelEvent {
+    private final Integer roomId;
+    private final Boolean notify;
+    private final String color;
 
-import com.synopsys.integration.alert.common.descriptor.config.RestApi;
-import com.synopsys.integration.alert.web.model.Config;
-
-@Component
-public class BlackDuckDistributionRestApi extends RestApi {
-
-    @Autowired
-    public BlackDuckDistributionRestApi(final BlackDuckTypeConverter typeConverter, final BlackDuckRepositoryAccessor repositoryAccessor) {
-        super(typeConverter, repositoryAccessor);
+    public HipChatChannelEvent(final String createdAt, final String provider, final AggregateMessageContent content, final Long commonConfigId, final Integer roomId, final Boolean notify,
+        final String color) {
+        super(HipChatChannel.COMPONENT_NAME, createdAt, provider, content, commonConfigId);
+        this.roomId = roomId;
+        this.notify = notify;
+        this.color = color;
     }
 
-    @Override
-    public void validateConfig(final Config restModel, final Map<String, String> fieldErrors) {
-
+    public Integer getRoomId() {
+        return roomId;
     }
 
-    @Override
-    public void testConfig(final Config restModel) {
+    public Boolean getNotify() {
+        return notify;
+    }
 
+    public String getColor() {
+        return color;
     }
 }

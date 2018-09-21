@@ -18,7 +18,7 @@ public class BlackDuckDataActionsTest {
     public void testGetHubProjectsNoProjects() throws Exception {
         final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor = new MockBlackDuckProjectRepositoryAccessor();
 
-        final BlackDuckDataActions blackDuckDataActions = new BlackDuckDataActions(null, blackDuckProjectRepositoryAccessor);
+        final BlackDuckDataActions blackDuckDataActions = new BlackDuckDataActions(blackDuckProjectRepositoryAccessor);
         final List<BlackDuckProject> blackDuckProjects = blackDuckDataActions.getBlackDuckProjects();
         assertEquals(0, blackDuckProjects.size());
     }
@@ -33,7 +33,7 @@ public class BlackDuckDataActionsTest {
 
         blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity(projectName, description, href));
 
-        final BlackDuckDataActions blackDuckDataActions = new BlackDuckDataActions(null, blackDuckProjectRepositoryAccessor);
+        final BlackDuckDataActions blackDuckDataActions = new BlackDuckDataActions(blackDuckProjectRepositoryAccessor);
         final List<BlackDuckProject> blackDuckProjects = blackDuckDataActions.getBlackDuckProjects();
         assertEquals(1, blackDuckProjects.size());
         final BlackDuckProject blackDuckProject = blackDuckProjects.get(0);

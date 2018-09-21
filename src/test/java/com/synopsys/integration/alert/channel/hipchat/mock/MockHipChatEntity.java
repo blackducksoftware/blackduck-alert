@@ -12,14 +12,14 @@
 package com.synopsys.integration.alert.channel.hipchat.mock;
 
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.mock.entity.MockEntityUtil;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
+import com.synopsys.integration.alert.mock.entity.MockEntityUtil;
 
 public class MockHipChatEntity extends MockEntityUtil<HipChatDistributionConfigEntity> {
+    private final Long id;
     private Integer roomId;
     private Boolean notify;
     private String color;
-    private final Long id;
 
     public MockHipChatEntity() {
         this(11, false, "black", 1L);
@@ -36,12 +36,20 @@ public class MockHipChatEntity extends MockEntityUtil<HipChatDistributionConfigE
         return roomId;
     }
 
+    public void setRoomId(final Integer roomId) {
+        this.roomId = roomId;
+    }
+
     public Boolean isNotify() {
         return notify;
     }
 
     public String getColor() {
         return color;
+    }
+
+    public void setColor(final String color) {
+        this.color = color;
     }
 
     @Override
@@ -73,14 +81,6 @@ public class MockHipChatEntity extends MockEntityUtil<HipChatDistributionConfigE
 
     public void setNotify(final Boolean notify) {
         this.notify = notify;
-    }
-
-    public void setRoomId(final Integer roomId) {
-        this.roomId = roomId;
-    }
-
-    public void setColor(final String color) {
-        this.color = color;
     }
 
 }

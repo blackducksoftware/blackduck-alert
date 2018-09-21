@@ -16,25 +16,19 @@ import com.synopsys.integration.alert.database.channel.email.EmailGroupDistribut
 import com.synopsys.integration.alert.mock.entity.MockEntityUtil;
 
 public class MockEmailEntity extends MockEntityUtil<EmailGroupDistributionConfigEntity> {
-    private String groupName;
-    private Long id;
     private final String emailTemplateLogoImage;
     private final String emailSubjectLine;
+    private Long id;
 
     public MockEmailEntity() {
-        this("groupName", 1L, "emailTemplateLogoImage", "emailSubjectLine");
+        this(1L, "emailTemplateLogoImage", "emailSubjectLine");
     }
 
-    private MockEmailEntity(final String groupName, final Long id, final String emailTemplateLogoImage, final String emailSubjectLine) {
+    private MockEmailEntity(final Long id, final String emailTemplateLogoImage, final String emailSubjectLine) {
         super();
-        this.groupName = groupName;
         this.id = id;
         this.emailTemplateLogoImage = emailTemplateLogoImage;
         this.emailSubjectLine = emailSubjectLine;
-    }
-
-    public String getGroupName() {
-        return groupName;
     }
 
     public String getEmailTemplateLogoImage() {
@@ -45,8 +39,9 @@ public class MockEmailEntity extends MockEntityUtil<EmailGroupDistributionConfig
         return emailSubjectLine;
     }
 
-    public void setGroupName(final String groupName) {
-        this.groupName = groupName;
+    @Override
+    public Long getId() {
+        return id;
     }
 
     public void setId(final Long id) {
@@ -54,13 +49,8 @@ public class MockEmailEntity extends MockEntityUtil<EmailGroupDistributionConfig
     }
 
     @Override
-    public Long getId() {
-        return id;
-    }
-
-    @Override
     public EmailGroupDistributionConfigEntity createEntity() {
-        final EmailGroupDistributionConfigEntity entity = new EmailGroupDistributionConfigEntity(groupName, emailTemplateLogoImage, emailSubjectLine);
+        final EmailGroupDistributionConfigEntity entity = new EmailGroupDistributionConfigEntity(emailTemplateLogoImage, emailSubjectLine);
         entity.setId(id);
         return entity;
     }
@@ -73,7 +63,6 @@ public class MockEmailEntity extends MockEntityUtil<EmailGroupDistributionConfig
     @Override
     public String getEntityJson() {
         final JsonObject json = new JsonObject();
-        json.addProperty("groupName", groupName);
         json.addProperty("id", Long.valueOf(id));
         json.addProperty("emailTemplateLogoImage", emailTemplateLogoImage);
         json.addProperty("emailSubjectLine", emailSubjectLine);

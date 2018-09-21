@@ -21,36 +21,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.event;
+package com.synopsys.integration.alert.channel.email;
 
-public class RawContentEvent extends AlertEvent {
+import java.util.Set;
 
-    private final String createdAt;
-    private final String provider;
-    private final String notificationType;
-    private final String content;
+import com.synopsys.integration.alert.channel.event.ChannelEvent;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 
-    public RawContentEvent(final String destination, final String createdAt, final String provider, final String notificationType, final String content, final Long notificationId) {
-        super(destination, notificationId);
-        this.createdAt = createdAt;
-        this.provider = provider;
-        this.notificationType = notificationType;
-        this.content = content;
+public class EmailChannelEvent extends ChannelEvent {
+    private final Set<String> emailAddresses;
+    private final String subjectLine;
+
+    public EmailChannelEvent(final String createdAt, final String provider, final AggregateMessageContent content, final Long commonConfigId, final Set<String> emailAddresses,
+        final String subjectLine) {
+        super(EmailGroupChannel.COMPONENT_NAME, createdAt, provider, content, commonConfigId);
+        this.emailAddresses = emailAddresses;
+        this.subjectLine = subjectLine;
     }
 
-    public String getCreatedAt() {
-        return createdAt;
+    public Set<String> getEmailAddresses() {
+        return emailAddresses;
     }
 
-    public String getProvider() {
-        return provider;
+    public String getSubjectLine() {
+        return subjectLine;
     }
 
-    public String getNotificationType() {
-        return notificationType;
-    }
-
-    public String getContent() {
-        return content;
-    }
 }

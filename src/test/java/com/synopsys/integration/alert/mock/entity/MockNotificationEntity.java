@@ -36,7 +36,7 @@ public class MockNotificationEntity extends MockEntityUtil<NotificationEntity> {
     }
 
     private MockNotificationEntity(final String eventKey, final Date createdAt, final NotificationCategoryEnum notificationType, final String projectName, final String projectVersion, final String componentName,
-            final String componentVersion, final String policyRuleName, final String policyRuleUser, final String projectUrl, final String projectVersionUrl, final Long id) {
+        final String componentVersion, final String policyRuleName, final String policyRuleUser, final String projectUrl, final String projectVersionUrl, final Long id) {
         super();
         this.eventKey = eventKey;
         this.createdAt = createdAt;

@@ -23,17 +23,6 @@ import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckDataHandle
 public class BlackDuckDataControllerTest {
 
     @Test
-    public void getGroupsTest() {
-        final BlackDuckDataHandler handler = Mockito.mock(BlackDuckDataHandler.class);
-        final BlackDuckDataController controller = new BlackDuckDataController(handler);
-
-        Mockito.when(handler.getBlackDuckGroups()).thenReturn(null);
-
-        final ResponseEntity<String> response = controller.getGroups();
-        assertEquals(null, response);
-    }
-
-    @Test
     public void getProjectsTest() {
         final BlackDuckDataHandler handler = Mockito.mock(BlackDuckDataHandler.class);
         final BlackDuckDataController controller = new BlackDuckDataController(handler);
