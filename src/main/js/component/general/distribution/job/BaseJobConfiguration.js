@@ -99,7 +99,6 @@ class BaseJobConfiguration extends Component {
         event.preventDefault();
         const {handleSaveBtnClick, handleCancel} = this.props;
         this.handleSubmit();
-        console.log("Errors: " + this.state.error)
         if (handleCancel && !handleSaveBtnClick) {
             handleCancel();
         }

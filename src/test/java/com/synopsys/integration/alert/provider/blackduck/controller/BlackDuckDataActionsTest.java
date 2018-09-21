@@ -30,8 +30,9 @@ public class BlackDuckDataActionsTest {
         final String projectName = "projectName";
         final String description = "Description";
         final String href = "href";
+        final String projectOwnerEmail = "projectOwner";
 
-        blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity(projectName, description, href));
+        blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity(projectName, description, href, projectOwnerEmail));
 
         final BlackDuckDataActions blackDuckDataActions = new BlackDuckDataActions(blackDuckProjectRepositoryAccessor);
         final List<BlackDuckProject> blackDuckProjects = blackDuckDataActions.getBlackDuckProjects();
@@ -40,5 +41,6 @@ public class BlackDuckDataActionsTest {
         assertEquals(projectName, blackDuckProject.getName());
         assertEquals(description, blackDuckProject.getDescription());
         assertEquals(href, blackDuckProject.getHref());
+        assertEquals(projectOwnerEmail, blackDuckProject.getProjectOwnerEmail());
     }
 }

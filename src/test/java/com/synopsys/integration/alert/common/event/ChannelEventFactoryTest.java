@@ -73,7 +73,7 @@ public class ChannelEventFactoryTest {
         Mockito.when(jobConfig.getProviderName()).thenReturn(providerName);
 
         String subjectLine = "Alert unit test";
-        EmailGroupDistributionConfigEntity emailEntity = new EmailGroupDistributionConfigEntity(null, subjectLine);
+        EmailGroupDistributionConfigEntity emailEntity = new EmailGroupDistributionConfigEntity(null, subjectLine, false);
 
         final Optional optionalDatabaseEntity = Optional.of(emailEntity);
         Mockito.when(emailDistributionRepositoryAccessor.readEntity(ArgumentMatchers.same(distributionConfigId))).thenReturn(optionalDatabaseEntity);
@@ -118,7 +118,7 @@ public class ChannelEventFactoryTest {
         Mockito.when(jobConfig.getProviderName()).thenReturn(providerName);
 
         String subjectLine = "Alert unit test";
-        EmailGroupDistributionConfigEntity emailEntity = new EmailGroupDistributionConfigEntity(null, subjectLine);
+        EmailGroupDistributionConfigEntity emailEntity = new EmailGroupDistributionConfigEntity(null, subjectLine, false);
 
         final Optional optionalDatabaseEntity = Optional.of(emailEntity);
         Mockito.when(emailDistributionRepositoryAccessor.readEntity(ArgumentMatchers.same(distributionConfigId))).thenReturn(optionalDatabaseEntity);
@@ -127,7 +127,7 @@ public class ChannelEventFactoryTest {
         final MockBlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor = new MockBlackDuckUserRepositoryAccessor();
         final MockUserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor = new MockUserProjectRelationRepositoryAccessor();
 
-        DatabaseEntity projectEntity1 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project one", "", ""));
+        DatabaseEntity projectEntity1 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project one", "", "", ""));
 
         String email1 = "Test Email 1";
         String email2 = "Test Email 2";
@@ -175,7 +175,7 @@ public class ChannelEventFactoryTest {
         Mockito.when(jobConfig.getProviderName()).thenReturn(providerName);
 
         String subjectLine = "Alert unit test";
-        EmailGroupDistributionConfigEntity emailEntity = new EmailGroupDistributionConfigEntity(null, subjectLine);
+        EmailGroupDistributionConfigEntity emailEntity = new EmailGroupDistributionConfigEntity(null, subjectLine, false);
 
         final Optional optionalDatabaseEntity = Optional.of(emailEntity);
         Mockito.when(emailDistributionRepositoryAccessor.readEntity(ArgumentMatchers.same(distributionConfigId))).thenReturn(optionalDatabaseEntity);
@@ -193,7 +193,7 @@ public class ChannelEventFactoryTest {
             testContent, commonDistributionConfigId, Collections.emptySet(), subjectLine);
 
         EmailDistributionConfig emailDistributionConfig = new EmailDistributionConfig("1", "1", distributionType, "Test Email Job", BlackDuckProvider.COMPONENT_NAME, "REAL_TIME", "false",
-            "", subjectLine, Collections.emptyList(), Collections.emptyList(), "DEFAULT");
+            "", subjectLine, false, Collections.emptyList(), Collections.emptyList(), "DEFAULT");
 
         final EmailChannelEvent testEvent = factory.createEmailChannelTestEvent(emailDistributionConfig);
         assertEquals(expectedTest.getAuditEntryId(), testEvent.getAuditEntryId());
@@ -223,7 +223,7 @@ public class ChannelEventFactoryTest {
         Mockito.when(jobConfig.getProviderName()).thenReturn(providerName);
 
         String subjectLine = "Alert unit test";
-        EmailGroupDistributionConfigEntity emailEntity = new EmailGroupDistributionConfigEntity(null, subjectLine);
+        EmailGroupDistributionConfigEntity emailEntity = new EmailGroupDistributionConfigEntity(null, subjectLine, false);
 
         final Optional optionalDatabaseEntity = Optional.of(emailEntity);
         Mockito.when(emailDistributionRepositoryAccessor.readEntity(ArgumentMatchers.same(distributionConfigId))).thenReturn(optionalDatabaseEntity);
@@ -232,10 +232,10 @@ public class ChannelEventFactoryTest {
         final MockBlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor = new MockBlackDuckUserRepositoryAccessor();
         final MockUserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor = new MockUserProjectRelationRepositoryAccessor();
 
-        DatabaseEntity projectEntity1 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project one", "", ""));
-        DatabaseEntity projectEntity2 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project two", "", ""));
-        DatabaseEntity projectEntity3 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project three", "", ""));
-        DatabaseEntity projectEntity4 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project four", "", ""));
+        DatabaseEntity projectEntity1 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project one", "", "", ""));
+        DatabaseEntity projectEntity2 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project two", "", "", ""));
+        DatabaseEntity projectEntity3 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project three", "", "", ""));
+        DatabaseEntity projectEntity4 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project four", "", "", ""));
 
         String email1 = "Test Email 1";
         String email2 = "Test Email 2";
@@ -258,7 +258,7 @@ public class ChannelEventFactoryTest {
             testContent, commonDistributionConfigId, new HashSet<>(Arrays.asList(email1, email2)), subjectLine);
 
         EmailDistributionConfig emailDistributionConfig = new EmailDistributionConfig("1", "1", distributionType, "Test Email Job", BlackDuckProvider.COMPONENT_NAME, "REAL_TIME", "false",
-            "", subjectLine, Collections.emptyList(), Collections.emptyList(), "DEFAULT");
+            "", subjectLine, false, Collections.emptyList(), Collections.emptyList(), "DEFAULT");
 
         final EmailChannelEvent testEvent = factory.createEmailChannelTestEvent(emailDistributionConfig);
         assertEquals(expectedTest.getAuditEntryId(), testEvent.getAuditEntryId());
@@ -288,7 +288,7 @@ public class ChannelEventFactoryTest {
         Mockito.when(jobConfig.getProviderName()).thenReturn(providerName);
 
         String subjectLine = "Alert unit test";
-        EmailGroupDistributionConfigEntity emailEntity = new EmailGroupDistributionConfigEntity(null, subjectLine);
+        EmailGroupDistributionConfigEntity emailEntity = new EmailGroupDistributionConfigEntity(null, subjectLine, false);
 
         final Optional optionalDatabaseEntity = Optional.of(emailEntity);
         Mockito.when(emailDistributionRepositoryAccessor.readEntity(ArgumentMatchers.same(distributionConfigId))).thenReturn(optionalDatabaseEntity);
@@ -299,8 +299,8 @@ public class ChannelEventFactoryTest {
 
         String project1 = "Project one";
         String project2 = "Project two";
-        DatabaseEntity projectEntity1 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity(project1, "", ""));
-        DatabaseEntity projectEntity2 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity(project2, "", ""));
+        DatabaseEntity projectEntity1 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity(project1, "", "", ""));
+        DatabaseEntity projectEntity2 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity(project2, "", "", ""));
 
         String email1 = "Test Email 1";
         String email2 = "Test Email 2";
@@ -327,7 +327,7 @@ public class ChannelEventFactoryTest {
             testContent, commonDistributionConfigId, new HashSet<>(Arrays.asList(email1, email2, email3, email4)), subjectLine);
 
         EmailDistributionConfig emailDistributionConfig = new EmailDistributionConfig("1", "1", distributionType, "Test Email Job", BlackDuckProvider.COMPONENT_NAME, "REAL_TIME", "true",
-            "", subjectLine, Arrays.asList(project1, project2), Collections.emptyList(), "DEFAULT");
+            "", subjectLine, false, Arrays.asList(project1, project2), Collections.emptyList(), "DEFAULT");
 
         final EmailChannelEvent testEvent = factory.createEmailChannelTestEvent(emailDistributionConfig);
         assertEquals(expectedTest.getAuditEntryId(), testEvent.getAuditEntryId());

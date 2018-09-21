@@ -30,17 +30,19 @@ import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 public class EmailDistributionConfig extends CommonDistributionConfig {
     private String emailTemplateLogoImage;
     private String emailSubjectLine;
+    private boolean projectOwnerOnly;
 
     public EmailDistributionConfig() {
     }
 
     public EmailDistributionConfig(final String id, final String distributionConfigId, final String distributionType, final String name, final String providerName, final String frequency, final String filterByProject,
-        final String emailTemplateLogoImage, final String emailSubjectLine, final List<String> configuredProjects, final List<String> notificationTypes, final String formatType) {
+        final String emailTemplateLogoImage, final String emailSubjectLine, boolean projectOwnerOnly, final List<String> configuredProjects, final List<String> notificationTypes, final String formatType) {
         super(id, distributionConfigId, distributionType, name, providerName, frequency, filterByProject, configuredProjects, notificationTypes, formatType);
         this.emailTemplateLogoImage = emailTemplateLogoImage;
         this.emailSubjectLine = emailSubjectLine;
+        this.projectOwnerOnly = projectOwnerOnly;
     }
-    
+
     public String getEmailTemplateLogoImage() {
         return emailTemplateLogoImage;
     }
@@ -57,4 +59,11 @@ public class EmailDistributionConfig extends CommonDistributionConfig {
         this.emailSubjectLine = emailSubjectLine;
     }
 
+    public boolean getProjectOwnerOnly() {
+        return projectOwnerOnly;
+    }
+
+    public void setProjectOwnerOnly(final boolean projectOwnerOnly) {
+        this.projectOwnerOnly = projectOwnerOnly;
+    }
 }

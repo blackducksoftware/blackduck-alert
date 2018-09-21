@@ -41,14 +41,18 @@ public class BlackDuckProjectEntity extends DatabaseEntity {
     @Column(name = "href")
     private String href;
 
+    @Column(name = "project_owner_email")
+    private String projectOwnerEmail;
+
     public BlackDuckProjectEntity() {
         // JPA requires default constructor definitions
     }
 
-    public BlackDuckProjectEntity(final String name, final String description, final String href) {
+    public BlackDuckProjectEntity(final String name, final String description, final String href, String projectOwnerEmail) {
         this.name = name;
         this.description = description;
         this.href = href;
+        this.projectOwnerEmail = projectOwnerEmail;
     }
 
     public String getName() {
@@ -61,5 +65,9 @@ public class BlackDuckProjectEntity extends DatabaseEntity {
 
     public String getHref() {
         return href;
+    }
+
+    public String getProjectOwnerEmail() {
+        return projectOwnerEmail;
     }
 }

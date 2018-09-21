@@ -29,11 +29,13 @@ public class BlackDuckProject extends Stringable {
     private final String name;
     private final String description;
     private final String href;
+    private final String projectOwnerEmail;
 
-    public BlackDuckProject(final String name, final String description, final String href) {
+    public BlackDuckProject(final String name, final String description, final String href, String projectOwnerEmail) {
         this.name = name;
         this.description = description;
         this.href = href;
+        this.projectOwnerEmail = projectOwnerEmail;
     }
 
     public String getName() {
@@ -48,4 +50,7 @@ public class BlackDuckProject extends Stringable {
         return href;
     }
 
+    public String getProjectOwnerEmail() {
+        return projectOwnerEmail;
+    }
 }

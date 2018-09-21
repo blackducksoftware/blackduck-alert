@@ -56,7 +56,8 @@ public class EmailDistributionRepositoryTestIT {
     public void saveEntityTestIT() {
         final String emailTemplateLogoImage = "IT Test Logo";
         final String emailSubjectLine = "IT Test Subject Line";
-        final EmailGroupDistributionConfigEntity entity = new EmailGroupDistributionConfigEntity(emailTemplateLogoImage, emailSubjectLine);
+        final boolean projectOwnerOnly = false;
+        final EmailGroupDistributionConfigEntity entity = new EmailGroupDistributionConfigEntity(emailTemplateLogoImage, emailSubjectLine, projectOwnerOnly);
         final EmailGroupDistributionConfigEntity savedEntity = emailGroupDistributionRepository.save(entity);
         assertEquals(1, emailGroupDistributionRepository.count());
         assertNotNull(savedEntity.getId());

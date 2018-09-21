@@ -22,7 +22,7 @@ public class MockBlackDuckProjectRepositoryAccessor extends BlackDuckProjectRepo
     public DatabaseEntity saveEntity(final DatabaseEntity entity) {
         final BlackDuckProjectEntity blackDuckProjectEntity = (BlackDuckProjectEntity) entity;
 
-        final BlackDuckProjectEntity newEntity = new BlackDuckProjectEntity(blackDuckProjectEntity.getName(), blackDuckProjectEntity.getDescription(), blackDuckProjectEntity.getHref());
+        final BlackDuckProjectEntity newEntity = new BlackDuckProjectEntity(blackDuckProjectEntity.getName(), blackDuckProjectEntity.getDescription(), blackDuckProjectEntity.getHref(), blackDuckProjectEntity.getProjectOwnerEmail());
         if (null == blackDuckProjectEntity.getId()) {
             newEntity.setId(count);
             count++;

@@ -38,13 +38,17 @@ public class EmailGroupDistributionConfigEntity extends DistributionChannelConfi
     @Column(name = "email_subject_line")
     private String emailSubjectLine;
 
+    @Column(name = "project_owner_only")
+    private Boolean projectOwnerOnly;
+
     public EmailGroupDistributionConfigEntity() {
         // JPA requires default constructor definitions
     }
 
-    public EmailGroupDistributionConfigEntity(final String emailTemplateLogoImage, final String emailSubjectLine) {
+    public EmailGroupDistributionConfigEntity(final String emailTemplateLogoImage, final String emailSubjectLine, boolean projectOwnerOnly) {
         this.emailTemplateLogoImage = emailTemplateLogoImage;
         this.emailSubjectLine = emailSubjectLine;
+        this.projectOwnerOnly = projectOwnerOnly;
     }
 
     public String getEmailTemplateLogoImage() {
@@ -55,4 +59,7 @@ public class EmailGroupDistributionConfigEntity extends DistributionChannelConfi
         return emailSubjectLine;
     }
 
+    public Boolean getProjectOwnerOnly() {
+        return projectOwnerOnly;
+    }
 }
