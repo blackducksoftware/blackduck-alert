@@ -61,7 +61,7 @@ public class SlackChannelTestIT extends ChannelTest {
         final String webHook = properties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK);
 
         final AggregateMessageContent content = createMessageContent(getClass().getSimpleName());
-        final SlackChannelEvent event = new SlackChannelEvent(RestConstants.formatDate(new Date()), "provider", content, new Long(0), username, webHook, roomName);
+        final SlackChannelEvent event = new SlackChannelEvent(RestConstants.formatDate(new Date()), "provider", "FORMAT", content, new Long(0), username, webHook, roomName);
 
         slackChannel.sendAuditedMessage(event);
 
@@ -74,7 +74,7 @@ public class SlackChannelTestIT extends ChannelTest {
         final SlackChannel slackChannel = new SlackChannel(gson, null, null, null, null);
         List<Request> request = null;
 
-        SlackChannelEvent event = new SlackChannelEvent(null, null, null, null, "ChannelUsername", "", "");
+        SlackChannelEvent event = new SlackChannelEvent(null, null, null, null, null, "ChannelUsername", "", "");
         try {
             request = slackChannel.createRequests(null, event);
             fail();
@@ -82,7 +82,7 @@ public class SlackChannelTestIT extends ChannelTest {
             assertNull(request);
         }
 
-        event = new SlackChannelEvent(null, null, null,
+        event = new SlackChannelEvent(null, null, null, null,
             null, "ChannelUsername", "Webhook", "");
         try {
             request = slackChannel.createRequests(null, event);
@@ -99,7 +99,7 @@ public class SlackChannelTestIT extends ChannelTest {
         final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, Collections.emptyList());
 
-        final SlackChannelEvent event = new SlackChannelEvent(RestConstants.formatDate(new Date()), "provider",
+        final SlackChannelEvent event = new SlackChannelEvent(RestConstants.formatDate(new Date()), "provider", "FORMAT",
             content, new Long(0), "ChannelUsername", "Webhook", "ChannelName");
 
         final SlackChannel spySlackChannel = Mockito.spy(slackChannel);
@@ -115,7 +115,7 @@ public class SlackChannelTestIT extends ChannelTest {
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
 
-        final SlackChannelEvent event = new SlackChannelEvent(RestConstants.formatDate(new Date()), "provider", content, new Long(0), "ChannelUsername", "Webhook", "ChannelName");
+        final SlackChannelEvent event = new SlackChannelEvent(RestConstants.formatDate(new Date()), "provider", "FORMAT", content, new Long(0), "ChannelUsername", "Webhook", "ChannelName");
 
         final SlackChannel spySlackChannel = Mockito.spy(slackChannel);
         final List<Request> requests = slackChannel.createRequests(null, event);

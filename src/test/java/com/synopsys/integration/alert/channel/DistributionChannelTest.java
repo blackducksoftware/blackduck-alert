@@ -115,7 +115,7 @@ public class DistributionChannelTest extends ChannelTest {
         final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "Distribution Channel Test", null, subTopic, Collections.emptyList());
 
-        final EmailChannelEvent event = new EmailChannelEvent(RestConstants.formatDate(new Date()), "provider",
+        final EmailChannelEvent event = new EmailChannelEvent(RestConstants.formatDate(new Date()), "provider", "FORMAT",
             content, 1L, Collections.emptySet(), "TEST SUBJECT LINE");
 
         channel.handleEvent(event);

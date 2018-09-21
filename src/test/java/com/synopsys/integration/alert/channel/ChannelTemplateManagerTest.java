@@ -47,7 +47,7 @@ public class ChannelTemplateManagerTest {
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, Collections.emptyList());
-        final HipChatChannelEvent hipChatEvent = new HipChatChannelEvent(RestConstants.formatDate(new Date()), "provider",
+        final HipChatChannelEvent hipChatEvent = new HipChatChannelEvent(RestConstants.formatDate(new Date()), "provider", "FORMAT",
             content, 1L, 20, false, "red");
         channelTemplateManager.sendEvents(Arrays.asList(hipChatEvent));
     }
@@ -63,7 +63,7 @@ public class ChannelTemplateManagerTest {
         final ChannelTemplateManager channelTemplateManager = new ChannelTemplateManager(gson, auditEntryRepositoryWrapper, auditNotificationRepositoryWrapper, jmsTemplate);
         final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, Collections.emptyList());
-        final AlertEvent dbStoreEvent = new ContentEvent("", RestConstants.formatDate(new Date()), "", content);
+        final AlertEvent dbStoreEvent = new ContentEvent("", RestConstants.formatDate(new Date()), "", "FORMAT", content);
         final boolean isTrue = channelTemplateManager.sendEvent(dbStoreEvent);
         assertTrue(isTrue);
     }
