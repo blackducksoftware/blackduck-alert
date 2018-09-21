@@ -173,13 +173,21 @@ public abstract class MessageContentCollector {
         final List<AggregateMessageContent> aggregateMessageContentsForNotifications = new ArrayList<>();
 
         final List<LinkableItem> topicItems = getTopicItems(accessor, notificationFields);
+        if (topicItems.isEmpty()) {
+            return Collections.emptyList();
+        }
         final List<LinkableItem> subTopicItems = getSubTopicItems(accessor, notificationFields);
-        // for the number of topics assume there is an equal number of sub topics and the order is the same.
-        // this seems fragile at the moment.
+        // for the number of topics assume there is an equal number of sub topics and the order is the same.this seems fragile at the moment.
         final int count = topicItems.size();
         for (int index = 0; index < count; index++) {
             final LinkableItem topicItem = topicItems.get(index);
-            final LinkableItem subTopic = subTopicItems.get(index);
+
+            LinkableItem subTopic;
+            if (!subTopicItems.isEmpty()) {
+                subTopic = subTopicItems.get(index);
+            } else {
+                subTopic = new LinkableItem(null, null);
+            }
 
             final AggregateMessageContent foundContent = findTopicContent(topicItem.getName(), topicItem.getValue(), subTopic.getName(), subTopic.getValue());
             if (foundContent != null) {
@@ -193,18 +201,21 @@ public abstract class MessageContentCollector {
     }
 
     private List<LinkableItem> getTopicItems(final JsonFieldAccessor accessor, final List<HierarchicalField> fields) {
-        return getLinkableItems(accessor, fields, FieldContentIdentifier.TOPIC, FieldContentIdentifier.TOPIC_URL);
+        return getLinkableItems(accessor, fields, FieldContentIdentifier.TOPIC, FieldContentIdentifier.TOPIC_URL, true);
     }
 
     private List<LinkableItem> getSubTopicItems(final JsonFieldAccessor accessor, final List<HierarchicalField> fields) {
-        // TODO is SubTopic something we should require? If not then we should not use the same method to get it.
-        return getLinkableItems(accessor, fields, FieldContentIdentifier.SUB_TOPIC, FieldContentIdentifier.SUB_TOPIC_URL);
+        return getLinkableItems(accessor, fields, FieldContentIdentifier.SUB_TOPIC, FieldContentIdentifier.SUB_TOPIC_URL, false);
     }
 
-    private List<LinkableItem> getLinkableItems(final JsonFieldAccessor accessor, final List<HierarchicalField> fields, final FieldContentIdentifier fieldContentIdentifier, final FieldContentIdentifier urlFieldContentIdentifier) {
+    private List<LinkableItem> getLinkableItems(final JsonFieldAccessor accessor, final List<HierarchicalField> fields, final FieldContentIdentifier fieldContentIdentifier, final FieldContentIdentifier urlFieldContentIdentifier,
+        final boolean required) {
         final Optional<HierarchicalField> optionalField = getFieldForContentIdentifier(fields, fieldContentIdentifier);
         if (!optionalField.isPresent()) {
-            throw new IllegalStateException(String.format("The list provided did not contain the required field: %s", fieldContentIdentifier));
+            if (required) {
+                throw new IllegalStateException(String.format("The list provided did not contain the required field: %s", fieldContentIdentifier));
+            }
+            return Collections.emptyList();
         }
         final Optional<HierarchicalField> optionalUrlField = getFieldForContentIdentifier(fields, urlFieldContentIdentifier);
 
