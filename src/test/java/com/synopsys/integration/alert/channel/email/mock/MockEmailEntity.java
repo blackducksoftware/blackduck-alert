@@ -18,17 +18,19 @@ import com.synopsys.integration.alert.mock.entity.MockEntityUtil;
 public class MockEmailEntity extends MockEntityUtil<EmailGroupDistributionConfigEntity> {
     private final String emailTemplateLogoImage;
     private final String emailSubjectLine;
+    private final boolean projectOwnerOnly;
     private Long id;
 
     public MockEmailEntity() {
-        this(1L, "emailTemplateLogoImage", "emailSubjectLine");
+        this(1L, "emailTemplateLogoImage", "emailSubjectLine", false);
     }
 
-    private MockEmailEntity(final Long id, final String emailTemplateLogoImage, final String emailSubjectLine) {
+    private MockEmailEntity(final Long id, final String emailTemplateLogoImage, final String emailSubjectLine, boolean projectOwnerOnly) {
         super();
         this.id = id;
         this.emailTemplateLogoImage = emailTemplateLogoImage;
         this.emailSubjectLine = emailSubjectLine;
+        this.projectOwnerOnly = projectOwnerOnly;
     }
 
     public String getEmailTemplateLogoImage() {
@@ -37,6 +39,10 @@ public class MockEmailEntity extends MockEntityUtil<EmailGroupDistributionConfig
 
     public String getEmailSubjectLine() {
         return emailSubjectLine;
+    }
+
+    public boolean isProjectOwnerOnly() {
+        return projectOwnerOnly;
     }
 
     @Override
@@ -50,7 +56,7 @@ public class MockEmailEntity extends MockEntityUtil<EmailGroupDistributionConfig
 
     @Override
     public EmailGroupDistributionConfigEntity createEntity() {
-        final EmailGroupDistributionConfigEntity entity = new EmailGroupDistributionConfigEntity(emailTemplateLogoImage, emailSubjectLine);
+        final EmailGroupDistributionConfigEntity entity = new EmailGroupDistributionConfigEntity(emailTemplateLogoImage, emailSubjectLine, projectOwnerOnly);
         entity.setId(id);
         return entity;
     }
@@ -66,6 +72,7 @@ public class MockEmailEntity extends MockEntityUtil<EmailGroupDistributionConfig
         json.addProperty("id", Long.valueOf(id));
         json.addProperty("emailTemplateLogoImage", emailTemplateLogoImage);
         json.addProperty("emailSubjectLine", emailSubjectLine);
+        json.addProperty("projectOwnerOnly", projectOwnerOnly);
         return json.toString();
     }
 

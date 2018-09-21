@@ -146,7 +146,7 @@ public class ChannelEventFactory {
     public EmailChannelEvent createEmailEvent(final CommonDistributionConfig commonDistributionConfig, final EmailGroupDistributionConfigEntity emailGroupDistributionConfigEntity, final AggregateMessageContent messageContent) {
         final String projectName = messageContent.getValue();
         return new EmailChannelEvent(RestConstants.formatDate(new Date()), commonDistributionConfig.getProviderName(), messageContent,
-            Long.valueOf(commonDistributionConfig.getId()), getEmailAddressesForProject(projectName), emailGroupDistributionConfigEntity.getEmailSubjectLine());
+            Long.valueOf(commonDistributionConfig.getId()), getEmailAddressesForProject(projectName, emailGroupDistributionConfigEntity.getProjectOwnerOnly()), emailGroupDistributionConfigEntity.getEmailSubjectLine());
     }
 
     public EmailChannelEvent createEmailChannelTestEvent(final Config restModel) {
@@ -158,30 +158,36 @@ public class ChannelEventFactory {
         if (BooleanUtils.toBoolean(emailDistributionConfig.getFilterByProject())) {
             emailDistributionConfig.getConfiguredProjects()
                 .stream()
-                .forEach(project -> emailAddresses.addAll(getEmailAddressesForProject(project)));
+                .forEach(project -> emailAddresses.addAll(getEmailAddressesForProject(project, emailDistributionConfig.getProjectOwnerOnly())));
 
         } else if (emailDistributionConfig.getProviderName().equals(BlackDuckProvider.COMPONENT_NAME)) {
-            blackDuckUserRepositoryAccessor.readEntities()
+            blackDuckProjectRepositoryAccessor.readEntities()
                 .stream()
-                .map(databaseEntity -> (BlackDuckUserEntity) databaseEntity)
-                .forEach(blackDuckUserEntity -> emailAddresses.add(blackDuckUserEntity.getEmailAddress()));
+                .map(databaseEntity -> (BlackDuckProjectEntity) databaseEntity)
+                .forEach(blackDuckProjectEntity -> emailAddresses.addAll(getEmailAddressesForProject(blackDuckProjectEntity.getName(), emailDistributionConfig.getProjectOwnerOnly())));
         }
         return new EmailChannelEvent(RestConstants.formatDate(new Date()), emailDistributionConfig.getProviderName(), messageContent,
             null, emailAddresses, emailDistributionConfig.getEmailSubjectLine());
     }
 
-    private Set<String> getEmailAddressesForProject(final String projectName) {
+    private Set<String> getEmailAddressesForProject(final String projectName, boolean projectOwnerOnly) {
         if (StringUtils.isBlank(projectName)) {
             return Collections.emptySet();
         }
         final BlackDuckProjectEntity blackDuckProjectEntity = blackDuckProjectRepositoryAccessor.findByName(projectName);
-        final List<UserProjectRelation> userProjectRelations = userProjectRelationRepositoryAccessor.findByBlackDuckProjectId(blackDuckProjectEntity.getId());
-        final Set<String> emailAddresses = userProjectRelations
-                                               .stream()
-                                               .map(userProjectRelation -> blackDuckUserRepositoryAccessor.readEntity(userProjectRelation.getBlackDuckUserId()))
-                                               .filter(userEntity -> userEntity.isPresent())
-                                               .map(userEntity -> ((BlackDuckUserEntity) userEntity.get()).getEmailAddress())
-                                               .collect(Collectors.toSet());
+        final Set<String> emailAddresses;
+        if (projectOwnerOnly && StringUtils.isNotBlank(blackDuckProjectEntity.getProjectOwnerEmail())) {
+            emailAddresses = new HashSet<>();
+            emailAddresses.add(blackDuckProjectEntity.getProjectOwnerEmail());
+        } else {
+            final List<UserProjectRelation> userProjectRelations = userProjectRelationRepositoryAccessor.findByBlackDuckProjectId(blackDuckProjectEntity.getId());
+            emailAddresses = userProjectRelations
+                                 .stream()
+                                 .map(userProjectRelation -> blackDuckUserRepositoryAccessor.readEntity(userProjectRelation.getBlackDuckUserId()))
+                                 .filter(userEntity -> userEntity.isPresent())
+                                 .map(userEntity -> ((BlackDuckUserEntity) userEntity.get()).getEmailAddress())
+                                 .collect(Collectors.toSet());
+        }
         return emailAddresses;
     }
 
