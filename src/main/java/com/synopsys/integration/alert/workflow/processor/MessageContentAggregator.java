@@ -45,21 +45,18 @@ import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentCollector;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
-import com.synopsys.integration.alert.workflow.filter.FilterApplier;
 import com.synopsys.integration.alert.workflow.filter.NotificationFilter;
 
 @Component
 public class MessageContentAggregator {
     private final CommonDistributionConfigReader commonDistributionConfigReader;
     private final List<ProviderDescriptor> providerDescriptors;
-    private final FilterApplier filterApplier;
     private final NotificationFilter notificationFilter;
 
     @Autowired
-    public MessageContentAggregator(final List<ProviderDescriptor> providerDescriptors, final CommonDistributionConfigReader commonDistributionConfigReader, final FilterApplier filterApplier, final NotificationFilter notificationFilter) {
+    public MessageContentAggregator(final List<ProviderDescriptor> providerDescriptors, final CommonDistributionConfigReader commonDistributionConfigReader, final NotificationFilter notificationFilter) {
         this.providerDescriptors = providerDescriptors;
         this.commonDistributionConfigReader = commonDistributionConfigReader;
-        this.filterApplier = filterApplier;
         this.notificationFilter = notificationFilter;
     }
 
@@ -74,7 +71,7 @@ public class MessageContentAggregator {
         }
 
         final Predicate<CommonDistributionConfig> frequencyFilter = config -> frequency.name().equals(config.getFrequency());
-        final List<CommonDistributionConfig> distributionConfigs = filterApplier.applyFilter(unfilteredDistributionConfigs, frequencyFilter);
+        final List<CommonDistributionConfig> distributionConfigs = applyFilter(unfilteredDistributionConfigs, frequencyFilter);
         if (distributionConfigs.isEmpty()) {
             return Collections.emptyMap();
         }
@@ -106,7 +103,10 @@ public class MessageContentAggregator {
             notificationsForJob.stream()
                 .filter(notificationContent -> collectorMap.containsKey(notificationContent.getNotificationType()))
                 .forEach(notificationContent -> collectorMap.get(notificationContent.getNotificationType()).insert(notificationContent));
-            final List<AggregateMessageContent> collectedTopics = providerMessageContentCollectors.parallelStream().flatMap(collector -> collector.collect(formatType).stream()).collect(Collectors.toList());
+            final List<AggregateMessageContent> collectedTopics = providerMessageContentCollectors
+                                                                      .parallelStream()
+                                                                      .flatMap(collector -> collector.collect(formatType).stream())
+                                                                      .collect(Collectors.toList());
             return collectedTopics;
         }
         return Collections.emptyList();
@@ -120,7 +120,7 @@ public class MessageContentAggregator {
 
     private Collection<NotificationContent> filterNotifications(final ProviderDescriptor providerDescriptor, final CommonDistributionConfig jobConfiguration, final Collection<NotificationContent> notificationCollection) {
         final Predicate<NotificationContent> providerFilter = (notificationContent) -> jobConfiguration.getProviderName().equals(notificationContent.getProvider());
-        final Collection<NotificationContent> providerNotifications = filterApplier.applyFilter(notificationCollection, providerFilter);
+        final Collection<NotificationContent> providerNotifications = applyFilter(notificationCollection, providerFilter);
         final Collection<NotificationContent> filteredNotificationList = notificationFilter.extractApplicableNotifications(providerDescriptor.getProviderContentTypes(), jobConfiguration, providerNotifications);
         return filteredNotificationList;
     }
@@ -135,5 +135,12 @@ public class MessageContentAggregator {
             }
         }
         return collectorMap;
+    }
+
+    private final <T> List<T> applyFilter(final Collection<T> notificationList, final Predicate<T> filter) {
+        return notificationList
+                   .parallelStream()
+                   .filter(filter)
+                   .collect(Collectors.toList());
     }
 }
