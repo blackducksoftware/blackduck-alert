@@ -64,10 +64,10 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
 
     @Override
     public void sendMessage(final EmailChannelEvent event) throws IntegrationException {
-        sendMessage(event.getEmailAddresses(), event.getSubjectLine(), event.getProvider(), event.getContent(), "ProjectName");
+        sendMessage(event.getEmailAddresses(), event.getSubjectLine(), event.getProvider(), event.getFormatType(), event.getContent(), "ProjectName");
     }
 
-    public void sendMessage(final Set<String> emailAddresses, final String subjectLine, final String provider, final AggregateMessageContent content, final String blackDuckProjectName) throws IntegrationException {
+    public void sendMessage(final Set<String> emailAddresses, final String subjectLine, final String provider, final String formatType, final AggregateMessageContent content, final String blackDuckProjectName) throws IntegrationException {
         final EmailGlobalConfigEntity globalConfigEntity = getGlobalConfigEntity();
         if (!isValidGlobalConfigEntity(globalConfigEntity)) {
             throw new IntegrationException("ERROR: Missing global config.");
@@ -81,8 +81,7 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
             final String contentTitle = provider;
             model.put("content", content);
             model.put("contentTitle", contentTitle);
-            // FIXME pass in the emailCategory from the event
-            model.put("emailCategory", "Aggregate");
+            model.put("emailCategory", formatType);
             model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), subjectLine);
             final Optional<String> optionalBlackDuckUrl = getBlackDuckProperties().getBlackDuckUrl();
             if (optionalBlackDuckUrl.isPresent()) {

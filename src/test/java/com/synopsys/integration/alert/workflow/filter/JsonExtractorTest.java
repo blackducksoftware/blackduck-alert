@@ -15,6 +15,8 @@ import com.synopsys.integration.alert.common.field.HierarchicalField;
 import com.synopsys.integration.alert.common.field.ObjectHierarchicalField;
 import com.synopsys.integration.alert.common.field.StringHierarchicalField;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
+import com.synopsys.integration.alert.workflow.filter.field.JsonExtractor;
+import com.synopsys.integration.alert.workflow.filter.field.JsonFieldAccessor;
 
 public class JsonExtractorTest {
     private final Gson gson = new Gson();

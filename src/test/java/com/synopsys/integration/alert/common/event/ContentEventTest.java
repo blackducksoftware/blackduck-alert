@@ -16,13 +16,13 @@ public class ContentEventTest {
 
     @Test
     public void getCreatedAtDateTest() {
-        final ContentEvent event = new ContentEvent(TOPIC, CREATED_AT, PROVIDER, null);
+        final ContentEvent event = new ContentEvent(TOPIC, CREATED_AT, PROVIDER, null, null);
         assertEquals(CREATED_AT, event.getCreatedAt());
     }
 
     @Test
     public void getProviderTest() {
-        final ContentEvent event = new ContentEvent(TOPIC, CREATED_AT, PROVIDER, null);
+        final ContentEvent event = new ContentEvent(TOPIC, CREATED_AT, PROVIDER, null, null);
         assertEquals(PROVIDER, event.getProvider());
     }
 
@@ -30,7 +30,7 @@ public class ContentEventTest {
     public void getContentTest() {
         final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic ", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, Collections.emptyList());
-        final ContentEvent event = new ContentEvent(TOPIC, CREATED_AT, PROVIDER, content);
+        final ContentEvent event = new ContentEvent(TOPIC, CREATED_AT, PROVIDER, null, content);
         assertEquals(content, event.getContent());
     }
 }

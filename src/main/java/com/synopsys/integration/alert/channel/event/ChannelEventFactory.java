@@ -119,34 +119,35 @@ public class ChannelEventFactory {
     }
 
     public SlackChannelEvent createSlackChannelEvent(final CommonDistributionConfig commonDistributionConfig, final SlackDistributionConfigEntity slackDistributionConfigEntity, final AggregateMessageContent messageContent) {
-        return new SlackChannelEvent(RestConstants.formatDate(new Date()), commonDistributionConfig.getProviderName(), messageContent,
-            Long.valueOf(commonDistributionConfig.getId()),
-            slackDistributionConfigEntity.getChannelUsername(), slackDistributionConfigEntity.getWebhook(), slackDistributionConfigEntity.getChannelName());
+        return new SlackChannelEvent(RestConstants.formatDate(new Date()), commonDistributionConfig.getProviderName(), commonDistributionConfig.getFormatType(), messageContent,
+            Long.valueOf(commonDistributionConfig.getId()), slackDistributionConfigEntity.getChannelUsername(), slackDistributionConfigEntity.getWebhook(), slackDistributionConfigEntity.getChannelName());
     }
 
     public SlackChannelEvent createSlackChannelTestEvent(final Config restModel) {
         final AggregateMessageContent messageContent = createTestNotificationContent();
         final SlackDistributionConfig slackDistributionConfig = (SlackDistributionConfig) restModel;
-        return new SlackChannelEvent(RestConstants.formatDate(new Date()), slackDistributionConfig.getProviderName(), messageContent,
+        return new SlackChannelEvent(RestConstants.formatDate(new Date()), slackDistributionConfig.getProviderName(), slackDistributionConfig.getFormatType(), messageContent,
             null, slackDistributionConfig.getChannelUsername(), slackDistributionConfig.getWebhook(), slackDistributionConfig.getChannelName());
     }
 
     public HipChatChannelEvent createHipChatChannelEvent(final CommonDistributionConfig commonDistributionConfig, final HipChatDistributionConfigEntity hipChatDistributionConfigEntity, final AggregateMessageContent messageContent) {
-        return new HipChatChannelEvent(RestConstants.formatDate(new Date()), commonDistributionConfig.getProviderName(), messageContent, Long.valueOf(commonDistributionConfig.getId()),
+        return new HipChatChannelEvent(RestConstants.formatDate(new Date()), commonDistributionConfig.getProviderName(), commonDistributionConfig.getFormatType(), messageContent, Long.valueOf(commonDistributionConfig.getId()),
             hipChatDistributionConfigEntity.getRoomId(), hipChatDistributionConfigEntity.getNotify(), hipChatDistributionConfigEntity.getColor());
     }
 
     public HipChatChannelEvent createHipChatChannelTestEvent(final Config restModel) {
         final AggregateMessageContent messageContent = createTestNotificationContent();
         final HipChatDistributionConfig hipChatDistributionConfig = (HipChatDistributionConfig) restModel;
-        return new HipChatChannelEvent(RestConstants.formatDate(new Date()), hipChatDistributionConfig.getProviderName(), messageContent,
+        return new HipChatChannelEvent(RestConstants.formatDate(new Date()), hipChatDistributionConfig.getProviderName(), hipChatDistributionConfig.getFormatType(), messageContent,
             null, NumberUtils.toInt(hipChatDistributionConfig.getRoomId(), 0), hipChatDistributionConfig.getNotify(), hipChatDistributionConfig.getColor());
     }
 
     public EmailChannelEvent createEmailEvent(final CommonDistributionConfig commonDistributionConfig, final EmailGroupDistributionConfigEntity emailGroupDistributionConfigEntity, final AggregateMessageContent messageContent) {
         final String projectName = messageContent.getValue();
-        return new EmailChannelEvent(RestConstants.formatDate(new Date()), commonDistributionConfig.getProviderName(), messageContent,
+
+        return new EmailChannelEvent(RestConstants.formatDate(new Date()), commonDistributionConfig.getProviderName(), commonDistributionConfig.getFormatType(), messageContent,
             Long.valueOf(commonDistributionConfig.getId()), getEmailAddressesForProject(projectName, emailGroupDistributionConfigEntity.getProjectOwnerOnly()), emailGroupDistributionConfigEntity.getEmailSubjectLine());
+
     }
 
     public EmailChannelEvent createEmailChannelTestEvent(final Config restModel) {
@@ -166,7 +167,7 @@ public class ChannelEventFactory {
                 .map(databaseEntity -> (BlackDuckProjectEntity) databaseEntity)
                 .forEach(blackDuckProjectEntity -> emailAddresses.addAll(getEmailAddressesForProject(blackDuckProjectEntity.getName(), emailDistributionConfig.getProjectOwnerOnly())));
         }
-        return new EmailChannelEvent(RestConstants.formatDate(new Date()), emailDistributionConfig.getProviderName(), messageContent,
+        return new EmailChannelEvent(RestConstants.formatDate(new Date()), emailDistributionConfig.getProviderName(), emailDistributionConfig.getFormatType(), messageContent,
             null, emailAddresses, emailDistributionConfig.getEmailSubjectLine());
     }
 

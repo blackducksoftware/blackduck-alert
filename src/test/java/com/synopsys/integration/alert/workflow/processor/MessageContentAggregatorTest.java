@@ -40,7 +40,6 @@ import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
-import com.synopsys.integration.alert.workflow.filter.FilterApplier;
 import com.synopsys.integration.alert.workflow.filter.NotificationFilter;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.test.annotation.IntegrationTest;
@@ -59,8 +58,6 @@ public class MessageContentAggregatorTest {
     @Autowired
     private CommonDistributionConfigReader commonDistributionConfigReader;
     @Autowired
-    private FilterApplier filterApplier;
-    @Autowired
     private NotificationFilter notificationFilter;
 
     @Test
@@ -73,7 +70,7 @@ public class MessageContentAggregatorTest {
         final NotificationContent vulnerabilityNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, vulnerabilityContent, NotificationType.VULNERABILITY);
 
         final List<NotificationContent> notificationContentList = Arrays.asList(policyNotification, vulnerabilityNotification);
-        final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(providerDescriptors, commonDistributionConfigReader, filterApplier, notificationFilter);
+        final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(providerDescriptors, commonDistributionConfigReader, notificationFilter);
         final Map<CommonDistributionConfig, List<AggregateMessageContent>> topicContentMap = messageContentAggregator.processNotifications(frequencyType, notificationContentList);
 
         assertTrue(topicContentMap.isEmpty());
@@ -97,7 +94,7 @@ public class MessageContentAggregatorTest {
         final CommonDistributionConfigReader spiedReader = Mockito.spy(commonDistributionConfigReader);
         Mockito.when(spiedReader.getPopulatedConfigs()).thenReturn(Arrays.asList(jobConfig));
 
-        final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(providerDescriptors, spiedReader, filterApplier, notificationFilter);
+        final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(providerDescriptors, spiedReader, notificationFilter);
         final Map<CommonDistributionConfig, List<AggregateMessageContent>> topicContentMap = messageContentAggregator.processNotifications(frequencyType, notificationContentList);
 
         assertFalse(topicContentMap.isEmpty());
@@ -124,7 +121,7 @@ public class MessageContentAggregatorTest {
         final CommonDistributionConfigReader spiedReader = Mockito.spy(commonDistributionConfigReader);
         Mockito.when(spiedReader.getPopulatedConfigs()).thenReturn(Arrays.asList(jobConfig));
 
-        final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(providerDescriptors, spiedReader, filterApplier, notificationFilter);
+        final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(providerDescriptors, spiedReader, notificationFilter);
         final Map<CommonDistributionConfig, List<AggregateMessageContent>> topicContentMap = messageContentAggregator.processNotifications(frequencyType, notificationContentList);
 
         assertTrue(topicContentMap.isEmpty());
@@ -149,7 +146,7 @@ public class MessageContentAggregatorTest {
         final CommonDistributionConfigReader spiedReader = Mockito.spy(commonDistributionConfigReader);
         Mockito.when(spiedReader.getPopulatedConfigs()).thenReturn(Arrays.asList(jobConfig));
 
-        final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(providerDescriptors, spiedReader, filterApplier, notificationFilter);
+        final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(providerDescriptors, spiedReader, notificationFilter);
         final Map<CommonDistributionConfig, List<AggregateMessageContent>> topicContentMap = messageContentAggregator.processNotifications(frequencyType, notificationContentList);
 
         assertTrue(topicContentMap.containsKey(jobConfig));
@@ -175,7 +172,7 @@ public class MessageContentAggregatorTest {
         final CommonDistributionConfigReader spiedReader = Mockito.spy(commonDistributionConfigReader);
         Mockito.when(spiedReader.getPopulatedConfigs()).thenReturn(Arrays.asList(jobConfig));
 
-        final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(providerDescriptors, spiedReader, filterApplier, notificationFilter);
+        final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(providerDescriptors, spiedReader, notificationFilter);
         final Map<CommonDistributionConfig, List<AggregateMessageContent>> topicContentMap = messageContentAggregator.processNotifications(frequencyType, notificationContentList);
 
         assertTrue(topicContentMap.containsKey(jobConfig));

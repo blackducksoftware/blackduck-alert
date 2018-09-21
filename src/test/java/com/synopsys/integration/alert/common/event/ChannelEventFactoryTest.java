@@ -65,12 +65,14 @@ public class ChannelEventFactoryTest {
         final Long distributionConfigId = 33L;
         final String distributionType = EmailGroupChannel.COMPONENT_NAME;
         final String providerName = BlackDuckProvider.COMPONENT_NAME;
+        final String formatType = "FORMAT";
 
         final CommonDistributionConfig jobConfig = Mockito.mock(CommonDistributionConfig.class);
         Mockito.when(jobConfig.getDistributionType()).thenReturn(distributionType);
         Mockito.when(jobConfig.getDistributionConfigId()).thenReturn("33");
         Mockito.when(jobConfig.getId()).thenReturn("25");
         Mockito.when(jobConfig.getProviderName()).thenReturn(providerName);
+        Mockito.when(jobConfig.getFormatType()).thenReturn(formatType);
 
         String subjectLine = "Alert unit test";
         EmailGroupDistributionConfigEntity emailEntity = new EmailGroupDistributionConfigEntity(null, subjectLine, false);
@@ -88,13 +90,14 @@ public class ChannelEventFactoryTest {
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
 
-        final EmailChannelEvent expected = new EmailChannelEvent(RestConstants.formatDate(new Date()), providerName,
+        final EmailChannelEvent expected = new EmailChannelEvent(RestConstants.formatDate(new Date()), providerName, formatType,
             content, commonDistributionConfigId, Collections.emptySet(), subjectLine);
 
         final EmailChannelEvent event = (EmailChannelEvent) factory.createChannelEvent(jobConfig, content);
         assertEquals(expected.getAuditEntryId(), event.getAuditEntryId());
         assertEquals(expected.getDestination(), event.getDestination());
         assertEquals(expected.getProvider(), event.getProvider());
+        assertEquals(expected.getFormatType(), event.getFormatType());
         assertEquals(expected.getContent(), event.getContent());
         assertEquals(expected.getSubjectLine(), event.getSubjectLine());
         assertEquals(expected.getEmailAddresses(), event.getEmailAddresses());
@@ -110,6 +113,7 @@ public class ChannelEventFactoryTest {
         final Long distributionConfigId = 33L;
         final String distributionType = EmailGroupChannel.COMPONENT_NAME;
         final String providerName = BlackDuckProvider.COMPONENT_NAME;
+        final String formatType = "FORMAT";
 
         final CommonDistributionConfig jobConfig = Mockito.mock(CommonDistributionConfig.class);
         Mockito.when(jobConfig.getDistributionType()).thenReturn(distributionType);
@@ -145,7 +149,7 @@ public class ChannelEventFactoryTest {
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "Project one", null, subTopic, Collections.emptyList());
 
-        final EmailChannelEvent expected = new EmailChannelEvent(RestConstants.formatDate(new Date()), providerName,
+        final EmailChannelEvent expected = new EmailChannelEvent(RestConstants.formatDate(new Date()), providerName, formatType,
             content, commonDistributionConfigId, new HashSet<>(Arrays.asList(email1, email2)), subjectLine);
 
         final EmailChannelEvent event = (EmailChannelEvent) factory.createChannelEvent(jobConfig, content);
@@ -167,6 +171,7 @@ public class ChannelEventFactoryTest {
         final Long distributionConfigId = 33L;
         final String distributionType = EmailGroupChannel.COMPONENT_NAME;
         final String providerName = BlackDuckProvider.COMPONENT_NAME;
+        final String formatType = "FORMAT";
 
         final CommonDistributionConfig jobConfig = Mockito.mock(CommonDistributionConfig.class);
         Mockito.when(jobConfig.getDistributionType()).thenReturn(distributionType);
@@ -189,7 +194,7 @@ public class ChannelEventFactoryTest {
 
         AggregateMessageContent testContent = createTestNotificationContent();
 
-        final EmailChannelEvent expectedTest = new EmailChannelEvent(RestConstants.formatDate(new Date()), providerName,
+        final EmailChannelEvent expectedTest = new EmailChannelEvent(RestConstants.formatDate(new Date()), providerName, formatType,
             testContent, commonDistributionConfigId, Collections.emptySet(), subjectLine);
 
         EmailDistributionConfig emailDistributionConfig = new EmailDistributionConfig("1", "1", distributionType, "Test Email Job", BlackDuckProvider.COMPONENT_NAME, "REAL_TIME", "false",
@@ -215,6 +220,7 @@ public class ChannelEventFactoryTest {
         final Long distributionConfigId = 33L;
         final String distributionType = EmailGroupChannel.COMPONENT_NAME;
         final String providerName = BlackDuckProvider.COMPONENT_NAME;
+        final String formatType = "FORMAT";
 
         final CommonDistributionConfig jobConfig = Mockito.mock(CommonDistributionConfig.class);
         Mockito.when(jobConfig.getDistributionType()).thenReturn(distributionType);
@@ -254,7 +260,7 @@ public class ChannelEventFactoryTest {
 
         AggregateMessageContent testContent = createTestNotificationContent();
 
-        final EmailChannelEvent expectedTest = new EmailChannelEvent(RestConstants.formatDate(new Date()), providerName,
+        final EmailChannelEvent expectedTest = new EmailChannelEvent(RestConstants.formatDate(new Date()), providerName, formatType,
             testContent, commonDistributionConfigId, new HashSet<>(Arrays.asList(email1, email2)), subjectLine);
 
         EmailDistributionConfig emailDistributionConfig = new EmailDistributionConfig("1", "1", distributionType, "Test Email Job", BlackDuckProvider.COMPONENT_NAME, "REAL_TIME", "false",
@@ -280,6 +286,7 @@ public class ChannelEventFactoryTest {
         final Long distributionConfigId = 33L;
         final String distributionType = EmailGroupChannel.COMPONENT_NAME;
         final String providerName = BlackDuckProvider.COMPONENT_NAME;
+        final String formatType = "FORMAT";
 
         final CommonDistributionConfig jobConfig = Mockito.mock(CommonDistributionConfig.class);
         Mockito.when(jobConfig.getDistributionType()).thenReturn(distributionType);
@@ -323,7 +330,7 @@ public class ChannelEventFactoryTest {
 
         AggregateMessageContent testContent = createTestNotificationContent();
 
-        final EmailChannelEvent expectedTest = new EmailChannelEvent(RestConstants.formatDate(new Date()), providerName,
+        final EmailChannelEvent expectedTest = new EmailChannelEvent(RestConstants.formatDate(new Date()), providerName, formatType,
             testContent, commonDistributionConfigId, new HashSet<>(Arrays.asList(email1, email2, email3, email4)), subjectLine);
 
         EmailDistributionConfig emailDistributionConfig = new EmailDistributionConfig("1", "1", distributionType, "Test Email Job", BlackDuckProvider.COMPONENT_NAME, "REAL_TIME", "true",
@@ -349,12 +356,14 @@ public class ChannelEventFactoryTest {
         final Long distributionConfigId = 33L;
         final String distributionType = HipChatChannel.COMPONENT_NAME;
         final String providerName = BlackDuckProvider.COMPONENT_NAME;
+        final String formatType = "FORMAT";
 
         final CommonDistributionConfig jobConfig = Mockito.mock(CommonDistributionConfig.class);
         Mockito.when(jobConfig.getDistributionType()).thenReturn(distributionType);
         Mockito.when(jobConfig.getDistributionConfigId()).thenReturn("33");
         Mockito.when(jobConfig.getId()).thenReturn("25");
         Mockito.when(jobConfig.getProviderName()).thenReturn(providerName);
+        Mockito.when(jobConfig.getFormatType()).thenReturn(formatType);
 
         Integer roomId = 100484;
         Boolean notify = false;
@@ -374,13 +383,14 @@ public class ChannelEventFactoryTest {
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
 
-        final HipChatChannelEvent expected = new HipChatChannelEvent(RestConstants.formatDate(new Date()), providerName,
+        final HipChatChannelEvent expected = new HipChatChannelEvent(RestConstants.formatDate(new Date()), providerName, formatType,
             content, commonDistributionConfigId, roomId, notify, color);
 
         final HipChatChannelEvent event = (HipChatChannelEvent) factory.createChannelEvent(jobConfig, content);
         assertEquals(expected.getAuditEntryId(), event.getAuditEntryId());
         assertEquals(expected.getDestination(), event.getDestination());
         assertEquals(expected.getProvider(), event.getProvider());
+        assertEquals(expected.getFormatType(), event.getFormatType());
         assertEquals(expected.getContent(), event.getContent());
         assertEquals(expected.getRoomId(), event.getRoomId());
         assertEquals(expected.getNotify(), event.getNotify());
@@ -388,8 +398,7 @@ public class ChannelEventFactoryTest {
 
         AggregateMessageContent testContent = createTestNotificationContent();
 
-        final HipChatChannelEvent expectedTest = new HipChatChannelEvent(RestConstants.formatDate(new Date()), providerName,
-            testContent, commonDistributionConfigId, roomId, notify, color);
+        final HipChatChannelEvent expectedTest = new HipChatChannelEvent(RestConstants.formatDate(new Date()), providerName, formatType, testContent, commonDistributionConfigId, roomId, notify, color);
 
         HipChatDistributionConfig hipChatDistributionConfig = new HipChatDistributionConfig("1", roomId.toString(), notify, color, "1", distributionType, "Test HipChat Job", providerName,
             "REAL_TIME", "FALSE", Collections.emptyList(), Collections.emptyList(), "DEFAULT");
@@ -414,12 +423,14 @@ public class ChannelEventFactoryTest {
         final Long distributionConfigId = 33L;
         final String distributionType = SlackChannel.COMPONENT_NAME;
         final String providerName = BlackDuckProvider.COMPONENT_NAME;
+        final String formatType = "FORMAT";
 
         final CommonDistributionConfig jobConfig = Mockito.mock(CommonDistributionConfig.class);
         Mockito.when(jobConfig.getDistributionType()).thenReturn(distributionType);
         Mockito.when(jobConfig.getDistributionConfigId()).thenReturn("33");
         Mockito.when(jobConfig.getId()).thenReturn("25");
         Mockito.when(jobConfig.getProviderName()).thenReturn(providerName);
+        Mockito.when(jobConfig.getFormatType()).thenReturn(formatType);
 
         String channelUsername = "Slack UserName";
         String webhook = "WebHook";
@@ -439,13 +450,14 @@ public class ChannelEventFactoryTest {
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
 
-        final SlackChannelEvent expected = new SlackChannelEvent(RestConstants.formatDate(new Date()), providerName,
+        final SlackChannelEvent expected = new SlackChannelEvent(RestConstants.formatDate(new Date()), providerName, formatType,
             content, commonDistributionConfigId, channelUsername, webhook, channelName);
 
         final SlackChannelEvent event = (SlackChannelEvent) factory.createChannelEvent(jobConfig, content);
         assertEquals(expected.getAuditEntryId(), event.getAuditEntryId());
         assertEquals(expected.getDestination(), event.getDestination());
         assertEquals(expected.getProvider(), event.getProvider());
+        assertEquals(expected.getFormatType(), event.getFormatType());
         assertEquals(expected.getContent(), event.getContent());
         assertEquals(expected.getChannelUsername(), event.getChannelUsername());
         assertEquals(expected.getWebHook(), event.getWebHook());
@@ -453,7 +465,7 @@ public class ChannelEventFactoryTest {
 
         AggregateMessageContent testContent = createTestNotificationContent();
 
-        final SlackChannelEvent expectedTest = new SlackChannelEvent(RestConstants.formatDate(new Date()), providerName,
+        final SlackChannelEvent expectedTest = new SlackChannelEvent(RestConstants.formatDate(new Date()), providerName, formatType,
             testContent, commonDistributionConfigId, channelUsername, webhook, channelName);
 
         SlackDistributionConfig slackDistributionConfig = new SlackDistributionConfig("1", webhook, channelUsername, channelName, "1", distributionType, "Test HipChat Job", providerName,

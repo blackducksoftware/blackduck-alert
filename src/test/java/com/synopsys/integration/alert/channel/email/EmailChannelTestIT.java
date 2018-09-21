@@ -54,7 +54,7 @@ public class EmailChannelTestIT extends ChannelTest {
         final Set<String> emailAddresses = Stream.of(properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT)).collect(Collectors.toSet());
         final String subjectLine = "Integration test subject line";
 
-        final EmailChannelEvent event = new EmailChannelEvent(RestConstants.formatDate(new Date()), "provider", content, 1L, emailAddresses, subjectLine);
+        final EmailChannelEvent event = new EmailChannelEvent(RestConstants.formatDate(new Date()), "provider", "FORMAT", content, 1L, emailAddresses, subjectLine);
 
         final String smtpHost = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST);
         final String smtpFrom = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM);
@@ -80,7 +80,7 @@ public class EmailChannelTestIT extends ChannelTest {
             final EmailGroupChannel emailChannel = new EmailGroupChannel(gson, null, null, null, null);
             final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
             final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
-            final EmailChannelEvent event = new EmailChannelEvent(RestConstants.formatDate(new Date()), "provider",
+            final EmailChannelEvent event = new EmailChannelEvent(RestConstants.formatDate(new Date()), "provider", "FORMAT",
                 content, 1L, null, null);
             emailChannel.sendMessage(event);
             fail();
