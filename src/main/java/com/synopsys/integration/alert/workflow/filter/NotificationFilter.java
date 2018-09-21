@@ -147,7 +147,7 @@ public class NotificationFilter {
         return notificationsByType;
     }
 
-    // TODO since this is used with the Job Processor we don't need to iterate again can be removed
+    // TODO since this is used with the MessageContentAggregator we don't need to iterate again; this can be removed
     private List<ProviderContentType> getProviderContentTypes() {
         return providerDescriptors
                    .parallelStream()
