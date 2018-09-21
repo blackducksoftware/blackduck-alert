@@ -15,6 +15,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.field.HierarchicalField;
 import com.synopsys.integration.alert.common.field.ObjectHierarchicalField;
 import com.synopsys.integration.alert.common.field.StringHierarchicalField;
+import com.synopsys.integration.alert.workflow.filter.field.JsonFieldAccessor;
 
 public class JsonFieldAccessorTest {
 

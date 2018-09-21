@@ -42,8 +42,8 @@ import com.synopsys.integration.alert.common.workflow.processor.MessageContentCo
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderContentTypes;
-import com.synopsys.integration.alert.workflow.filter.JsonExtractor;
-import com.synopsys.integration.alert.workflow.filter.JsonFieldAccessor;
+import com.synopsys.integration.alert.workflow.filter.field.JsonExtractor;
+import com.synopsys.integration.alert.workflow.filter.field.JsonFieldAccessor;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 @Component

@@ -40,7 +40,7 @@ public class ProcessingTaskTest {
         final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic ", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, Collections.emptyList());
         modelList = Arrays.asList(model);
-        eventList = Arrays.asList(new EmailChannelEvent(RestConstants.formatDate(new Date()), "provider", content, 1L, null, null));
+        eventList = Arrays.asList(new EmailChannelEvent(RestConstants.formatDate(new Date()), "provider", "FORMAT", content, 1L, null, null));
     }
 
     public ProcessingTask createTask(final TaskScheduler taskScheduler, final NotificationManager notificationManager, final NotificationProcessor notificationProcessor, final ChannelTemplateManager channelTemplateManager) {

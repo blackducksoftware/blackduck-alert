@@ -30,8 +30,8 @@ public abstract class ChannelEvent extends ContentEvent {
     private final Long commonDistributionConfigId;
     private Long auditEntryId;
 
-    public ChannelEvent(final String destination, final String createdAt, final String provider, final AggregateMessageContent content, final Long commonDistributionConfigId) {
-        super(destination, createdAt, provider, content);
+    public ChannelEvent(final String destination, final String createdAt, final String provider, final String formatType, final AggregateMessageContent content, final Long commonDistributionConfigId) {
+        super(destination, createdAt, provider, formatType, content);
         this.commonDistributionConfigId = commonDistributionConfigId;
     }
 

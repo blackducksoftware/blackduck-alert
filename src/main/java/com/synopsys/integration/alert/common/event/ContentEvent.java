@@ -28,12 +28,14 @@ import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 public class ContentEvent extends AlertEvent {
     private final String createdAt;
     private final String provider;
+    private final String formatType;
     private final AggregateMessageContent content;
 
-    public ContentEvent(final String destination, final String createdAt, final String provider, final AggregateMessageContent content) {
+    public ContentEvent(final String destination, final String createdAt, final String provider, final String formatType, final AggregateMessageContent content) {
         super(destination);
         this.createdAt = createdAt;
         this.provider = provider;
+        this.formatType = formatType;
         this.content = content;
     }
 
@@ -43,6 +45,10 @@ public class ContentEvent extends AlertEvent {
 
     public String getProvider() {
         return provider;
+    }
+
+    public String getFormatType() {
+        return formatType;
     }
 
     public AggregateMessageContent getContent() {

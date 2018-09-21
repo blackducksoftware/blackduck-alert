@@ -49,6 +49,7 @@ import com.synopsys.integration.alert.workflow.filter.builder.DefaultFilterBuild
 import com.synopsys.integration.alert.workflow.filter.builder.JsonFieldFilterBuilder;
 import com.synopsys.integration.alert.workflow.filter.builder.JsonFilterBuilder;
 import com.synopsys.integration.alert.workflow.filter.builder.OrFieldFilterBuilder;
+import com.synopsys.integration.alert.workflow.filter.field.JsonExtractor;
 
 @Component
 public class NotificationFilter {

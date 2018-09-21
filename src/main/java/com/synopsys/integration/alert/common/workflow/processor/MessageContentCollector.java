@@ -49,8 +49,8 @@ import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.common.model.MessageContentKey;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
-import com.synopsys.integration.alert.workflow.filter.JsonExtractor;
-import com.synopsys.integration.alert.workflow.filter.JsonFieldAccessor;
+import com.synopsys.integration.alert.workflow.filter.field.JsonExtractor;
+import com.synopsys.integration.alert.workflow.filter.field.JsonFieldAccessor;
 
 public abstract class MessageContentCollector {
     private final Logger logger = LoggerFactory.getLogger(getClass());

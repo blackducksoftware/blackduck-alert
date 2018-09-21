@@ -28,7 +28,7 @@ import java.util.function.Predicate;
 
 import com.synopsys.integration.alert.common.field.StringHierarchicalField;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
-import com.synopsys.integration.alert.workflow.filter.JsonExtractor;
+import com.synopsys.integration.alert.workflow.filter.field.JsonExtractor;
 
 public class JsonFieldFilterBuilder implements JsonFilterBuilder {
     private final JsonExtractor jsonExtractor;
