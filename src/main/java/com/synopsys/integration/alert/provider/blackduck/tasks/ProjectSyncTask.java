@@ -24,7 +24,6 @@
 package com.synopsys.integration.alert.provider.blackduck.tasks;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -52,14 +51,11 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.model.BlackDuckProject;
 import com.synopsys.integration.alert.workflow.scheduled.ScheduledTask;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
-import com.synopsys.integration.blackduck.api.generated.response.AssignedUserGroupView;
-import com.synopsys.integration.blackduck.api.generated.view.AssignedUserView;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
-import com.synopsys.integration.blackduck.api.generated.view.UserGroupView;
-import com.synopsys.integration.blackduck.api.generated.view.UserView;
 import com.synopsys.integration.blackduck.rest.BlackduckRestConnection;
 import com.synopsys.integration.blackduck.service.HubService;
 import com.synopsys.integration.blackduck.service.HubServicesFactory;
+import com.synopsys.integration.blackduck.service.ProjectService;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
@@ -89,11 +85,12 @@ public class ProjectSyncTask extends ScheduledTask {
                 try (final BlackduckRestConnection restConnection = optionalConnection.get()) {
                     final HubServicesFactory hubServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(restConnection, new Slf4jIntLogger(logger));
                     final HubService hubService = hubServicesFactory.createHubService();
+                    final ProjectService projectService = hubServicesFactory.createProjectService();
                     final List<ProjectView> hubViews = hubService.getAllResponses(ApiDiscovery.PROJECTS_LINK_RESPONSE);
                     final Map<BlackDuckProject, ProjectView> currentDataMap = getCurrentData(hubViews);
                     final List<BlackDuckProjectEntity> blackDuckProjectEntities = updateProjectDB(currentDataMap.keySet());
 
-                    final Map<Long, Set<String>> projectToEmailAddresses = getEmailsPerProject(currentDataMap, blackDuckProjectEntities, hubService);
+                    final Map<Long, Set<String>> projectToEmailAddresses = getEmailsPerProject(currentDataMap, blackDuckProjectEntities, projectService);
                     final Set<String> emailAddresses = new HashSet<>();
                     projectToEmailAddresses.forEach((projectId, emails) -> emailAddresses.addAll(emails));
 
@@ -128,7 +125,7 @@ public class ProjectSyncTask extends ScheduledTask {
         return blackDuckProjectRepositoryAccessor.deleteAndSaveAll(blackDuckProjectEntities);
     }
 
-    private Map<Long, Set<String>> getEmailsPerProject(final Map<BlackDuckProject, ProjectView> currentDataMap, final List<BlackDuckProjectEntity> blackDuckProjectEntities, final HubService hubService) {
+    private Map<Long, Set<String>> getEmailsPerProject(final Map<BlackDuckProject, ProjectView> currentDataMap, final List<BlackDuckProjectEntity> blackDuckProjectEntities, final ProjectService projectService) {
         final Map<Long, Set<String>> projectToEmailAddresses = new ConcurrentHashMap<>();
         currentDataMap.entrySet()
             .parallelStream()
@@ -143,17 +140,10 @@ public class ProjectSyncTask extends ScheduledTask {
                     if (optionalBlackDuckProjectEntity.isPresent()) {
                         final BlackDuckProjectEntity projectEntity = optionalBlackDuckProjectEntity.get();
 
-                        final List<AssignedUserView> assignedUsersForThisProject = hubService.getAllResponses(projectView, ProjectView.USERS_LINK_RESPONSE);
-                        final List<AssignedUserGroupView> assignedGroupsForThisProject = hubService.getAllResponses(projectView, ProjectView.USERGROUPS_LINK_RESPONSE);
-
-                        final Set<String> projectUserEmailAddresses = new HashSet<>();
-                        assignedGroupsForThisProject
-                            .parallelStream()
-                            .forEach(assignedUserGroupView -> projectUserEmailAddresses.addAll(emailAddressesForGroup(hubService, assignedUserGroupView)));
-                        assignedUsersForThisProject
-                            .stream()
-                            .filter(assignedUserView -> assignedUserView.active)
-                            .forEach(assignedUserView -> projectUserEmailAddresses.add(assignedUserView.email));
+                        final Set<String> projectUserEmailAddresses = projectService.getAllActiveUsersForProject(projectView)
+                                                                          .stream()
+                                                                          .map(userView -> userView.email)
+                                                                          .collect(Collectors.toSet());
 
                         projectToEmailAddresses.put(projectEntity.getId(), projectUserEmailAddresses);
                     }
@@ -163,31 +153,6 @@ public class ProjectSyncTask extends ScheduledTask {
                 }
             });
         return projectToEmailAddresses;
-    }
-
-    private List<String> emailAddressesForGroup(final HubService hubService, final AssignedUserGroupView assignedUserGroupView) {
-        UserGroupView userGroupView = null;
-        try {
-            userGroupView = hubService.getResponse(assignedUserGroupView.group, UserGroupView.class);
-        } catch (final IntegrationException e) {
-            logger.error("Could not get the UserGroupView for group " + assignedUserGroupView.name + ": " + e.getMessage(), e);
-
-        }
-        if (null != userGroupView) {
-            try {
-                final List<UserView> userViews = hubService.getAllResponses(userGroupView, UserGroupView.USERS_LINK_RESPONSE);
-                return userViews
-                           .parallelStream()
-                           .filter(userView -> StringUtils.isNotBlank(userView.email))
-                           .filter(userView -> userView.active)
-                           .map(userView -> userView.email)
-                           .collect(Collectors.toList());
-            } catch (final IntegrationException e) {
-                logger.error("Could not get the users for group " + userGroupView.name + ": " + e.getMessage(), e);
-
-            }
-        }
-        return Collections.emptyList();
     }
 
     private void updateUserDB(final Set<String> userEmailAddresses) {
