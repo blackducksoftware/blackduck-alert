@@ -19,11 +19,14 @@ notifications:
     - gkillough@blackducksoftware.com
 
 script:
- - "./gradlew clean build sonarqube"
+- "./gradlew clean build sonarqube"
+
+env:
+- DETECT_GRADLE_INCLUDED_CONFIGURATIONS=compile
 
 after_success:
- - "./gradlew test jacocoTestReport coveralls"
- - bash <(curl -s https://copilot.blackducksoftware.com/ci/travis/scripts/upload)
+- "./gradlew test jacocoTestReport coveralls"
+- bash <(curl -s https://copilot.blackducksoftware.com/ci/travis/scripts/upload)
 
 cache:
   directories:
