@@ -37,7 +37,6 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.email.EmailChannelEvent;
 import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
@@ -77,12 +76,11 @@ public class ChannelEventFactory {
     private final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
     private final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor;
     private final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor;
-    private final Gson gson;
 
     @Autowired
     public ChannelEventFactory(final EmailDistributionRepositoryAccessor emailDistributionRepositoryAccessor, final HipChatDistributionRepositoryAccessor hipChatDistributionRepositoryAccessor,
         final SlackDistributionRepositoryAccessor slackDistributionRepositoryAccessor, final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor,
-        final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor, final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor, final Gson gson) {
+        final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor, final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor) {
         this.emailDistributionRepositoryAccessor = emailDistributionRepositoryAccessor;
         this.hipChatDistributionRepositoryAccessor = hipChatDistributionRepositoryAccessor;
         this.slackDistributionRepositoryAccessor = slackDistributionRepositoryAccessor;
@@ -90,7 +88,6 @@ public class ChannelEventFactory {
         this.blackDuckProjectRepositoryAccessor = blackDuckProjectRepositoryAccessor;
         this.blackDuckUserRepositoryAccessor = blackDuckUserRepositoryAccessor;
         this.userProjectRelationRepositoryAccessor = userProjectRelationRepositoryAccessor;
-        this.gson = gson;
     }
 
     public ChannelEvent createChannelEvent(final CommonDistributionConfig config, final AggregateMessageContent messageContent) throws AlertException {

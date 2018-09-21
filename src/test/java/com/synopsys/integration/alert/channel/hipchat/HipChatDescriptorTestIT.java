@@ -2,7 +2,6 @@ package com.synopsys.integration.alert.channel.hipchat;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.TestPropertyKey;
 import com.synopsys.integration.alert.channel.DescriptorTestConfigTest;
 import com.synopsys.integration.alert.channel.event.ChannelEventFactory;
@@ -40,8 +39,6 @@ public class HipChatDescriptorTestIT extends DescriptorTestConfigTest<HipChatDis
     private HipChatGlobalRepository hipChatRepository;
     @Autowired
     private HipChatDescriptor hipChatDescriptor;
-    @Autowired
-    private Gson gson;
 
     @Override
     public DatabaseEntity getDistributionEntity() {
@@ -53,7 +50,7 @@ public class HipChatDescriptorTestIT extends DescriptorTestConfigTest<HipChatDis
     @Override
     public ChannelEventFactory createChannelEventFactory() {
         return new ChannelEventFactory(emailDistributionRepositoryAccessor, hipChatDistributionRepositoryAccessor, slackDistributionRepositoryAccessor,
-            blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor, gson);
+            blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
     }
 
     @Override
