@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelation;
 import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelationRepositoryAccessor;
@@ -18,6 +19,14 @@ public class MockUserProjectRelationRepositoryAccessor extends UserProjectRelati
     @Override
     public List<UserProjectRelation> readEntities() {
         return new ArrayList<>(userProjectRelations);
+    }
+
+    public List<UserProjectRelation> findByBlackDuckProjectId(final Long blackDuckProjectId) {
+        return userProjectRelations.stream().filter(userProjectRelation -> userProjectRelation.getBlackDuckProjectId().equals(blackDuckProjectId)).collect(Collectors.toList());
+    }
+
+    public List<UserProjectRelation> findByBlackDuckUserId(final Long blackDuckUserId) {
+        return userProjectRelations.stream().filter(userProjectRelation -> userProjectRelation.getBlackDuckUserId().equals(blackDuckUserId)).collect(Collectors.toList());
     }
 
     @Override

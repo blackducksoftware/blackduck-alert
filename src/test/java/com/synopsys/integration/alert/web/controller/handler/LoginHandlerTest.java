@@ -109,7 +109,7 @@ public class LoginHandlerTest {
         final LoginHandler loginHandler = new LoginHandler(contentConverter, loginActions, csrfTokenRepository);
 
         final HttpStatus responseCode = HttpStatus.BAD_GATEWAY;
-        Mockito.when(loginActions.authenticateUser(Mockito.any(), Mockito.any())).thenThrow(new IntegrationRestException(responseCode.value(), "", ""));
+        Mockito.when(loginActions.authenticateUser(Mockito.any(), Mockito.any())).thenThrow(new IntegrationRestException(responseCode.value(), "", "", ""));
 
         final ResponseEntity<String> response = loginHandler.authenticateUser(null, null, null);
         assertEquals(responseCode, response.getStatusCode());
