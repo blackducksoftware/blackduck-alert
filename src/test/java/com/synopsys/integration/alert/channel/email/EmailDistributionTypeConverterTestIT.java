@@ -73,7 +73,7 @@ public class EmailDistributionTypeConverterTestIT {
 
         Assert.assertEquals(emailGroupDistributionConfigEntity.getEmailSubjectLine(), emailConfig.getEmailSubjectLine());
         Assert.assertEquals(emailGroupDistributionConfigEntity.getEmailTemplateLogoImage(), emailConfig.getEmailTemplateLogoImage());
-        Assert.assertEquals(emailGroupDistributionConfigEntity.isProjectOwnerOnly(), emailConfig.isProjectOwnerOnly());
+        Assert.assertEquals(emailGroupDistributionConfigEntity.getProjectOwnerOnly(), emailConfig.getProjectOwnerOnly());
 
         Assert.assertEquals(savedCommonEntity.getDistributionConfigId().toString(), emailConfig.getDistributionConfigId());
         Assert.assertEquals(savedCommonEntity.getDistributionType(), emailConfig.getDistributionType());
