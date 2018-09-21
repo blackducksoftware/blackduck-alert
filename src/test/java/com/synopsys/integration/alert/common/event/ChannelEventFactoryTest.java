@@ -58,12 +58,14 @@ public class ChannelEventFactoryTest {
         final Long distributionConfigId = 33L;
         final String distributionType = EmailGroupChannel.COMPONENT_NAME;
         final String providerName = "provider";
+        final String formatType = "FORMAT";
 
         final CommonDistributionConfig jobConfig = Mockito.mock(CommonDistributionConfig.class);
         Mockito.when(jobConfig.getDistributionType()).thenReturn(distributionType);
         Mockito.when(jobConfig.getDistributionConfigId()).thenReturn("33");
         Mockito.when(jobConfig.getId()).thenReturn("25");
         Mockito.when(jobConfig.getProviderName()).thenReturn(providerName);
+        Mockito.when(jobConfig.getFormatType()).thenReturn(formatType);
 
         String subjectLine = "Alert unit test";
         EmailGroupDistributionConfigEntity emailEntity = new EmailGroupDistributionConfigEntity(null, subjectLine);
@@ -81,13 +83,14 @@ public class ChannelEventFactoryTest {
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
 
-        final EmailChannelEvent expected = new EmailChannelEvent(RestConstants.formatDate(new Date()), providerName,
+        final EmailChannelEvent expected = new EmailChannelEvent(RestConstants.formatDate(new Date()), providerName, formatType,
             content, commonDistributionConfigId, Collections.emptySet(), subjectLine);
 
         final EmailChannelEvent event = (EmailChannelEvent) factory.createChannelEvent(jobConfig, content);
         assertEquals(expected.getAuditEntryId(), event.getAuditEntryId());
         assertEquals(expected.getDestination(), event.getDestination());
         assertEquals(expected.getProvider(), event.getProvider());
+        assertEquals(expected.getFormatType(), event.getFormatType());
         assertEquals(expected.getContent(), event.getContent());
         assertEquals(expected.getSubjectLine(), event.getSubjectLine());
     }
@@ -103,12 +106,14 @@ public class ChannelEventFactoryTest {
         final Long distributionConfigId = 33L;
         final String distributionType = HipChatChannel.COMPONENT_NAME;
         final String providerName = "provider";
+        final String formatType = "FORMAT";
 
         final CommonDistributionConfig jobConfig = Mockito.mock(CommonDistributionConfig.class);
         Mockito.when(jobConfig.getDistributionType()).thenReturn(distributionType);
         Mockito.when(jobConfig.getDistributionConfigId()).thenReturn("33");
         Mockito.when(jobConfig.getId()).thenReturn("25");
         Mockito.when(jobConfig.getProviderName()).thenReturn(providerName);
+        Mockito.when(jobConfig.getFormatType()).thenReturn(formatType);
 
         Integer roomId = 100484;
         Boolean notify = false;
@@ -128,13 +133,14 @@ public class ChannelEventFactoryTest {
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
 
-        final HipChatChannelEvent expected = new HipChatChannelEvent(RestConstants.formatDate(new Date()), providerName,
+        final HipChatChannelEvent expected = new HipChatChannelEvent(RestConstants.formatDate(new Date()), providerName, formatType,
             content, commonDistributionConfigId, roomId, notify, color);
 
         final HipChatChannelEvent event = (HipChatChannelEvent) factory.createChannelEvent(jobConfig, content);
         assertEquals(expected.getAuditEntryId(), event.getAuditEntryId());
         assertEquals(expected.getDestination(), event.getDestination());
         assertEquals(expected.getProvider(), event.getProvider());
+        assertEquals(expected.getFormatType(), event.getFormatType());
         assertEquals(expected.getContent(), event.getContent());
         assertSame(expected.getRoomId(), event.getRoomId());
         assertEquals(expected.getNotify(), event.getNotify());
@@ -152,12 +158,14 @@ public class ChannelEventFactoryTest {
         final Long distributionConfigId = 33L;
         final String distributionType = SlackChannel.COMPONENT_NAME;
         final String providerName = "provider";
+        final String formatType = "FORMAT";
 
         final CommonDistributionConfig jobConfig = Mockito.mock(CommonDistributionConfig.class);
         Mockito.when(jobConfig.getDistributionType()).thenReturn(distributionType);
         Mockito.when(jobConfig.getDistributionConfigId()).thenReturn("33");
         Mockito.when(jobConfig.getId()).thenReturn("25");
         Mockito.when(jobConfig.getProviderName()).thenReturn(providerName);
+        Mockito.when(jobConfig.getFormatType()).thenReturn(formatType);
 
         String channelUsername = "Slack UserName";
         String webhook = "WebHook";
@@ -177,13 +185,14 @@ public class ChannelEventFactoryTest {
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
 
-        final SlackChannelEvent expected = new SlackChannelEvent(RestConstants.formatDate(new Date()), providerName,
+        final SlackChannelEvent expected = new SlackChannelEvent(RestConstants.formatDate(new Date()), providerName, formatType,
             content, commonDistributionConfigId, channelUsername, webhook, channelName);
 
         final SlackChannelEvent event = (SlackChannelEvent) factory.createChannelEvent(jobConfig, content);
         assertEquals(expected.getAuditEntryId(), event.getAuditEntryId());
         assertEquals(expected.getDestination(), event.getDestination());
         assertEquals(expected.getProvider(), event.getProvider());
+        assertEquals(expected.getFormatType(), event.getFormatType());
         assertEquals(expected.getContent(), event.getContent());
         assertEquals(expected.getChannelUsername(), event.getChannelUsername());
         assertEquals(expected.getWebHook(), event.getWebHook());

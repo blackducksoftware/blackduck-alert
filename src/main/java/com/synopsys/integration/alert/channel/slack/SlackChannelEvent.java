@@ -31,9 +31,9 @@ public class SlackChannelEvent extends ChannelEvent {
     private final String webHook;
     private final String channelName;
 
-    public SlackChannelEvent(final String createdAt, final String provider, final AggregateMessageContent content, final Long commonConfigId, final String channelUsername, final String webHook,
+    public SlackChannelEvent(final String createdAt, final String provider, final String formatType, final AggregateMessageContent content, final Long commonConfigId, final String channelUsername, final String webHook,
         final String channelName) {
-        super(SlackChannel.COMPONENT_NAME, createdAt, provider, content, commonConfigId);
+        super(SlackChannel.COMPONENT_NAME, createdAt, provider, formatType, content, commonConfigId);
         this.channelUsername = channelUsername;
         this.webHook = webHook;
         this.channelName = channelName;

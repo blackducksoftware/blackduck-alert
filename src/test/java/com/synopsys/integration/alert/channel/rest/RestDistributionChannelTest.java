@@ -74,7 +74,7 @@ public class RestDistributionChannelTest extends ChannelTest {
         };
         final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, Collections.emptyList());
-        final SlackChannelEvent event = new SlackChannelEvent(RestConstants.formatDate(new Date()), "provider",
+        final SlackChannelEvent event = new SlackChannelEvent(RestConstants.formatDate(new Date()), "provider", "FORMAT",
             content, 1L, "more garbage", "garbage", "garbage");
         Exception thrownException = null;
         try {
