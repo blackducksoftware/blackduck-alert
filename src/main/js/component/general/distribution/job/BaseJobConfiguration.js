@@ -39,58 +39,66 @@ class BaseJobConfiguration extends Component {
 
     componentWillReceiveProps(nextProps) {
         if (!nextProps.fetching && !nextProps.inProgress) {
-            const providerOptions = this.createProviderOptions();
-            const stateValues = Object.assign({}, this.state, {
-                fetching: nextProps.fetching,
-                inProgress: nextProps.inProgress,
-                success: nextProps.success,
-                configurationMessage: nextProps.configurationMessage,
-                error: nextProps.error ? nextProps.error : {},
-                providerOptions: providerOptions
-            });
-
-            const callHandleSaveBtnClick = this.state.configurationMessage === 'Saving...' && nextProps.success;
-
-            if (nextProps.distributionConfigId) {
-                const jobConfig = nextProps.jobs[nextProps.distributionConfigId];
-                if (jobConfig) {
-                    const readDescriptorDistribution = !this.state.providerName && jobConfig.providerName
-                    if (readDescriptorDistribution) {
-                        nextProps.getDistributionDescriptor(jobConfig.providerName, nextProps.alertChannelName);
-                    }
-                }
-                const newState = Object.assign({}, stateValues, {
-                    id: jobConfig.id,
-                    distributionConfigId: nextProps.distributionConfigId,
-                    name: jobConfig.name,
-                    providerName: jobConfig.providerName,
-                    distributionType: jobConfig.distributionType,
-                    frequency: jobConfig.frequency,
-                    formatType: jobConfig.formatType,
-                    includeAllProjects: jobConfig.filterByProject == 'false',
-                    filterByProject: jobConfig.filterByProject,
-                    notificationTypes: jobConfig.notificationTypes,
-                    configuredProjects: jobConfig.configuredProjects
+            if (nextProps.error && nextProps.error.message) {
+                // If there are errors, we only want to update the error messaging. We do not want to clear out the User's changes
+                this.setState({
+                    error: nextProps.error,
+                    configurationMessage: nextProps.configurationMessage
                 });
-                this.setState(newState);
             } else {
-                if (null == this.state.includeAllProjects || undefined == this.state.includeAllProjects) {
-                    this.setState({
-                        includeAllProjects: true
-                    });
-                }
-                if (!this.state.providerName && providerOptions.length == 1) {
-                    const providerSelection = providerOptions[0].value;
-                    nextProps.getDistributionDescriptor(providerSelection, nextProps.alertChannelName);
-                    this.setState({
-                        providerName: providerSelection
-                    });
-                }
-                this.setState(stateValues);
-            }
+                const providerOptions = this.createProviderOptions();
+                const stateValues = Object.assign({}, this.state, {
+                    fetching: nextProps.fetching,
+                    inProgress: nextProps.inProgress,
+                    success: nextProps.success,
+                    configurationMessage: nextProps.configurationMessage,
+                    error: nextProps.error ? nextProps.error : {},
+                    providerOptions: providerOptions
+                });
 
-            if (callHandleSaveBtnClick && nextProps.handleSaveBtnClick) {
-                nextProps.handleSaveBtnClick(this.state);
+                const callHandleSaveBtnClick = this.state.configurationMessage === 'Saving...' && nextProps.success;
+
+                if (nextProps.distributionConfigId) {
+                    const jobConfig = nextProps.jobs[nextProps.distributionConfigId];
+                    if (jobConfig) {
+                        const readDescriptorDistribution = !this.state.providerName && jobConfig.providerName
+                        if (readDescriptorDistribution) {
+                            nextProps.getDistributionDescriptor(jobConfig.providerName, nextProps.alertChannelName);
+                        }
+                    }
+                    const newState = Object.assign({}, stateValues, {
+                        id: jobConfig.id,
+                        distributionConfigId: nextProps.distributionConfigId,
+                        name: jobConfig.name,
+                        providerName: jobConfig.providerName,
+                        distributionType: jobConfig.distributionType,
+                        frequency: jobConfig.frequency,
+                        formatType: jobConfig.formatType,
+                        includeAllProjects: jobConfig.filterByProject == 'false',
+                        filterByProject: jobConfig.filterByProject,
+                        notificationTypes: jobConfig.notificationTypes,
+                        configuredProjects: jobConfig.configuredProjects
+                    });
+                    this.setState(newState);
+                } else {
+                    if (null == this.state.includeAllProjects || undefined == this.state.includeAllProjects) {
+                        this.setState({
+                            includeAllProjects: true
+                        });
+                    }
+                    if (!this.state.providerName && providerOptions.length == 1) {
+                        const providerSelection = providerOptions[0].value;
+                        nextProps.getDistributionDescriptor(providerSelection, nextProps.alertChannelName);
+                        this.setState({
+                            providerName: providerSelection
+                        });
+                    }
+                    this.setState(stateValues);
+                }
+
+                if (callHandleSaveBtnClick && nextProps.handleSaveBtnClick) {
+                    nextProps.handleSaveBtnClick(this.state);
+                }
             }
         }
     }
