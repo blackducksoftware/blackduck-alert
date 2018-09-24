@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import TextInput from '../../../../field/input/TextInput';
 import BaseJobConfiguration from './BaseJobConfiguration';
 import {getDistributionJob} from '../../../../store/actions/distributions';
+import CheckboxInput from "../../../../field/input/CheckboxInput";
 
 
 class GroupEmailJobConfiguration extends Component {
@@ -14,7 +15,8 @@ class GroupEmailJobConfiguration extends Component {
         this.getConfiguration = this.getConfiguration.bind(this);
 
         this.state = {
-            emailSubjectLine: '',
+            emailSubjectLine: props.emailSubjectLine,
+            projectOwnerOnly: props.projectOwnerOnly,
             error: {}
         }
     }
@@ -29,11 +31,8 @@ class GroupEmailJobConfiguration extends Component {
             const jobConfig = nextProps.jobs[nextProps.distributionConfigId];
             if (jobConfig) {
                 this.setState({
-                    emailSubjectLine: jobConfig.emailSubjectLine
-                });
-            } else {
-                this.setState({
-                    emailSubjectLine: ''
+                    emailSubjectLine: jobConfig.emailSubjectLine,
+                    projectOwnerOnly: jobConfig.projectOwnerOnly
                 });
             }
         }
@@ -62,6 +61,8 @@ class GroupEmailJobConfiguration extends Component {
             <div>
                 <TextInput id="jobEmailSubject" label="Subject Line" name="emailSubjectLine" value={this.state.emailSubjectLine} onChange={this.handleChange} errorName="emailSubjectLineError"
                            errorValue={this.props.emailSubjectLineError}/>
+                <CheckboxInput id="projectOwnerOnly" label="Project Owner Only" name="projectOwnerOnly" value={this.state.projectOwnerOnly} onChange={this.handleChange} errorName="projectOwnerOnlyError"
+                               errorValue={this.props.error.projectOwnerOnlyError}/>
             </div>);
         return (<BaseJobConfiguration
             baseUrl={this.props.baseUrl}
@@ -97,6 +98,7 @@ GroupEmailJobConfiguration.defaultProps = {
     testUrl: '/alert/api/configuration/channel/distribution/channel_email/test',
     distributionType: 'channel_email',
     emailSubjectLine: '',
+    projectOwnerOnly: false,
     error: {}
 };
 

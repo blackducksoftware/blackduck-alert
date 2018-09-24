@@ -32,6 +32,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
 import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
 import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 
@@ -50,6 +51,7 @@ public class EmailDistributionUIConfig extends UIConfig {
 
     public List<ConfigField> setupFields() {
         final ConfigField subjectLine = new TextInputConfigField("emailSubjectLine", "Subject Line", false, false);
-        return Arrays.asList(subjectLine);
+        final ConfigField projectOwnerOnly = new CheckboxConfigField("projectOwnerOnly", "Project Owner Only", false, false);
+        return Arrays.asList(subjectLine, projectOwnerOnly);
     }
 }

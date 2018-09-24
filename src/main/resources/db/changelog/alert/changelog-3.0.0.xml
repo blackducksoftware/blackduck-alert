@@ -70,6 +70,7 @@
             <column name="NAME" type="VARCHAR(255)"/>
             <column name="DESCRIPTION" type="VARCHAR(255)"/>
             <column name="HREF" type="VARCHAR(255)"/>
+            <column name="PROJECT_OWNER_EMAIL" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
     <changeSet author="jrichard" id="1533054185-11">
@@ -94,5 +95,10 @@
     </changeSet>
     <changeSet author="jrichard" id="1533054185-14">
         <dropColumn tableName="EMAIL_GROUP_DISTRIBUTION_CONFIG" schemaName="ALERT" columnName="GROUP_NAME"/>
+    </changeSet>
+    <changeSet author="jrichard" id="1533054185-15">
+        <addColumn tableName="EMAIL_GROUP_DISTRIBUTION_CONFIG" schemaName="ALERT">
+            <column name="PROJECT_OWNER_ONLY" type="BOOLEAN(1)"/>
+        </addColumn>
     </changeSet>
 </databaseChangeLog>

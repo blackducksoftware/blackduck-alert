@@ -22,15 +22,17 @@ public class MockEmailRestModel extends MockRestModelUtil<EmailDistributionConfi
     private String id;
     private String emailTemplateLogoImage;
     private String emailSubjectLine;
+    private boolean projectOwnerOnly;
 
     public MockEmailRestModel() {
-        this("1", "emailTemplateLogoImage", "emailSubjectLine");
+        this("1", "emailTemplateLogoImage", "emailSubjectLine", false);
     }
 
-    private MockEmailRestModel(final String id, final String emailTemplateLogoImage, final String emailSubjectLine) {
+    private MockEmailRestModel(final String id, final String emailTemplateLogoImage, final String emailSubjectLine, boolean projectOwnerOnly) {
         this.id = id;
         this.emailTemplateLogoImage = emailTemplateLogoImage;
         this.emailSubjectLine = emailSubjectLine;
+        this.projectOwnerOnly = projectOwnerOnly;
     }
 
     public void setId(final String id) {
@@ -43,6 +45,10 @@ public class MockEmailRestModel extends MockRestModelUtil<EmailDistributionConfi
 
     public void setEmailSubjectLine(final String emailSubjectLine) {
         this.emailSubjectLine = emailSubjectLine;
+    }
+
+    public boolean isProjectOwnerOnly() {
+        return projectOwnerOnly;
     }
 
     @Override
@@ -61,7 +67,7 @@ public class MockEmailRestModel extends MockRestModelUtil<EmailDistributionConfi
     @Override
     public EmailDistributionConfig createRestModel() {
         final EmailDistributionConfig restModel = new EmailDistributionConfig(String.valueOf(distributionMockUtil.getId()), distributionMockUtil.getDistributionConfigId(), distributionMockUtil.getDistributionType(),
-            distributionMockUtil.getName(), distributionMockUtil.getProviderName(), distributionMockUtil.getFrequency(), distributionMockUtil.getFilterByProject(), emailTemplateLogoImage, emailSubjectLine,
+            distributionMockUtil.getName(), distributionMockUtil.getProviderName(), distributionMockUtil.getFrequency(), distributionMockUtil.getFilterByProject(), emailTemplateLogoImage, emailSubjectLine, projectOwnerOnly,
             distributionMockUtil.getProjects(),
             distributionMockUtil.getNotificationsAsStrings(), distributionMockUtil.getFormatType());
         return restModel;
@@ -73,11 +79,18 @@ public class MockEmailRestModel extends MockRestModelUtil<EmailDistributionConfi
     }
 
     @Override
+    public String getEmptyRestModelJson() {
+        final JsonObject json = new JsonObject();
+        json.addProperty("projectOwnerOnly", false);
+        return json.toString();
+    }
+
+    @Override
     public String getRestModelJson() {
         final JsonObject json = new JsonObject();
         json.addProperty("emailTemplateLogoImage", emailTemplateLogoImage);
         json.addProperty("emailSubjectLine", emailSubjectLine);
-
+        json.addProperty("projectOwnerOnly", projectOwnerOnly);
         return distributionMockUtil.combineWithRestModelJson(json);
     }
 
