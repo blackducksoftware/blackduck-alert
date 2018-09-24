@@ -25,8 +25,10 @@ package com.synopsys.integration.alert.channel.event;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -34,6 +36,8 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -63,12 +67,14 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.web.channel.model.EmailDistributionConfig;
 import com.synopsys.integration.alert.web.channel.model.HipChatDistributionConfig;
 import com.synopsys.integration.alert.web.channel.model.SlackDistributionConfig;
+import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.rest.RestConstants;
 
 @Component
 public class ChannelEventFactory {
+    private final Logger logger = LoggerFactory.getLogger(ChannelEventFactory.class);
     private final EmailDistributionRepositoryAccessor emailDistributionRepositoryAccessor;
     private final HipChatDistributionRepositoryAccessor hipChatDistributionRepositoryAccessor;
     private final SlackDistributionRepositoryAccessor slackDistributionRepositoryAccessor;
@@ -144,49 +150,82 @@ public class ChannelEventFactory {
 
     public EmailChannelEvent createEmailEvent(final CommonDistributionConfig commonDistributionConfig, final EmailGroupDistributionConfigEntity emailGroupDistributionConfigEntity, final AggregateMessageContent messageContent) {
         final String projectName = messageContent.getValue();
-
+        BlackDuckProjectEntity projectEntity = blackDuckProjectRepositoryAccessor.findByName(projectName);
+        final Set<String> emailAddresses = getEmailAddressesForProject(projectEntity, emailGroupDistributionConfigEntity.getProjectOwnerOnly());
+        if (emailAddresses.isEmpty()) {
+            logger.error("Could not find any email addresses for project: {}. Job: {}", projectName, commonDistributionConfig.getName());
+        }
         return new EmailChannelEvent(RestConstants.formatDate(new Date()), commonDistributionConfig.getProviderName(), commonDistributionConfig.getFormatType(), messageContent,
-            Long.valueOf(commonDistributionConfig.getId()), getEmailAddressesForProject(projectName, emailGroupDistributionConfigEntity.getProjectOwnerOnly()), emailGroupDistributionConfigEntity.getEmailSubjectLine());
+            Long.valueOf(commonDistributionConfig.getId()), getEmailAddressesForProject(projectEntity, emailGroupDistributionConfigEntity.getProjectOwnerOnly()), emailGroupDistributionConfigEntity.getEmailSubjectLine());
 
     }
 
-    public EmailChannelEvent createEmailChannelTestEvent(final Config restModel) {
+    public EmailChannelEvent createEmailChannelTestEvent(final Config restModel) throws AlertFieldException {
         final AggregateMessageContent messageContent = createTestNotificationContent();
 
         final EmailDistributionConfig emailDistributionConfig = (EmailDistributionConfig) restModel;
 
         final Set<String> emailAddresses = new HashSet<>();
+        Set<BlackDuckProjectEntity> blackDuckProjectEntities = null;
         if (BooleanUtils.toBoolean(emailDistributionConfig.getFilterByProject())) {
-            emailDistributionConfig.getConfiguredProjects()
-                .stream()
-                .forEach(project -> emailAddresses.addAll(getEmailAddressesForProject(project, emailDistributionConfig.getProjectOwnerOnly())));
-
+            blackDuckProjectEntities = emailDistributionConfig.getConfiguredProjects()
+                                           .stream()
+                                           .map(project -> blackDuckProjectRepositoryAccessor.findByName(project))
+                                           .collect(Collectors.toSet());
         } else if (emailDistributionConfig.getProviderName().equals(BlackDuckProvider.COMPONENT_NAME)) {
-            blackDuckProjectRepositoryAccessor.readEntities()
+            blackDuckProjectEntities = blackDuckProjectRepositoryAccessor.readEntities()
+                                           .stream()
+                                           .map(databaseEntity -> (BlackDuckProjectEntity) databaseEntity)
+                                           .collect(Collectors.toSet());
+
+        }
+        if (null != blackDuckProjectEntities) {
+            Set<String> projectsWithoutEmails = new HashSet<>();
+            blackDuckProjectEntities
                 .stream()
-                .map(databaseEntity -> (BlackDuckProjectEntity) databaseEntity)
-                .forEach(blackDuckProjectEntity -> emailAddresses.addAll(getEmailAddressesForProject(blackDuckProjectEntity.getName(), emailDistributionConfig.getProjectOwnerOnly())));
+                .forEach(project -> {
+                    Set<String> emailsForProject = getEmailAddressesForProject(project, emailDistributionConfig.getProjectOwnerOnly());
+                    if (emailsForProject.isEmpty()) {
+                        projectsWithoutEmails.add(project.getName());
+                    }
+                    emailAddresses.addAll(emailsForProject);
+                });
+            if (!projectsWithoutEmails.isEmpty()) {
+                String projects = StringUtils.join(projectsWithoutEmails, ", ");
+                Map<String, String> fieldErrors = new HashMap<>();
+                String errorMessage = "";
+                if (emailDistributionConfig.getProjectOwnerOnly()) {
+                    errorMessage = String.format("Could not find Project owners for the projects: %s", projects);
+                } else {
+                    errorMessage = String.format("Could not find any email addresses for the projects: %s", projects);
+                }
+                fieldErrors.put("configuredProjects", errorMessage);
+                throw new AlertFieldException(fieldErrors);
+            }
         }
         return new EmailChannelEvent(RestConstants.formatDate(new Date()), emailDistributionConfig.getProviderName(), emailDistributionConfig.getFormatType(), messageContent,
             null, emailAddresses, emailDistributionConfig.getEmailSubjectLine());
     }
 
-    private Set<String> getEmailAddressesForProject(final String projectName, boolean projectOwnerOnly) {
-        if (StringUtils.isBlank(projectName)) {
+    private Set<String> getEmailAddressesForProject(final BlackDuckProjectEntity blackDuckProjectEntity, boolean projectOwnerOnly) {
+        if (null == blackDuckProjectEntity) {
             return Collections.emptySet();
         }
-        final BlackDuckProjectEntity blackDuckProjectEntity = blackDuckProjectRepositoryAccessor.findByName(projectName);
         final Set<String> emailAddresses;
-        if (projectOwnerOnly && StringUtils.isNotBlank(blackDuckProjectEntity.getProjectOwnerEmail())) {
+        if (projectOwnerOnly) {
             emailAddresses = new HashSet<>();
-            emailAddresses.add(blackDuckProjectEntity.getProjectOwnerEmail());
+            if (StringUtils.isNotBlank(blackDuckProjectEntity.getProjectOwnerEmail())) {
+                emailAddresses.add(blackDuckProjectEntity.getProjectOwnerEmail());
+            }
         } else {
             final List<UserProjectRelation> userProjectRelations = userProjectRelationRepositoryAccessor.findByBlackDuckProjectId(blackDuckProjectEntity.getId());
             emailAddresses = userProjectRelations
                                  .stream()
                                  .map(userProjectRelation -> blackDuckUserRepositoryAccessor.readEntity(userProjectRelation.getBlackDuckUserId()))
                                  .filter(userEntity -> userEntity.isPresent())
-                                 .map(userEntity -> ((BlackDuckUserEntity) userEntity.get()).getEmailAddress())
+                                 .map(databaseEntity -> (BlackDuckUserEntity) databaseEntity.get())
+                                 .filter(userEntity -> StringUtils.isNotBlank(userEntity.getEmailAddress()))
+                                 .map(userEntity -> userEntity.getEmailAddress())
                                  .collect(Collectors.toSet());
         }
         return emailAddresses;
