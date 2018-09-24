@@ -51,7 +51,7 @@ public class BlackDuckDataActions {
         if (!blackDuckProjectEntities.isEmpty()) {
             final List<BlackDuckProject> projects = new ArrayList<>();
             for (final BlackDuckProjectEntity blackDuckProjectEntity : blackDuckProjectEntities) {
-                final BlackDuckProject project = new BlackDuckProject(blackDuckProjectEntity.getName(), blackDuckProjectEntity.getDescription(), blackDuckProjectEntity.getHref());
+                final BlackDuckProject project = new BlackDuckProject(blackDuckProjectEntity.getName(), blackDuckProjectEntity.getDescription(), blackDuckProjectEntity.getHref(), blackDuckProjectEntity.getProjectOwnerEmail());
                 projects.add(project);
             }
             return projects;
