@@ -17,7 +17,8 @@ class BaseJobConfiguration extends Component {
         super(props);
         this.state = {
             success: false,
-            error: {}
+            error: {},
+            testingConfig: false
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleStateValues = this.handleStateValues.bind(this);
@@ -39,7 +40,7 @@ class BaseJobConfiguration extends Component {
 
     componentWillReceiveProps(nextProps) {
         if (!nextProps.fetching && !nextProps.inProgress) {
-            if (nextProps.error && nextProps.error.message) {
+            if ((nextProps.error && nextProps.error.message) || this.state.testingConfig) {
                 // If there are errors, we only want to update the error messaging. We do not want to clear out the User's changes
                 this.setState({
                     error: nextProps.error,
@@ -100,6 +101,11 @@ class BaseJobConfiguration extends Component {
                     nextProps.handleSaveBtnClick(this.state);
                 }
             }
+            if (this.state.testingConfig) {
+                this.setState({
+                    testingConfig: false
+                });
+            }
         }
     }
 
@@ -134,7 +140,8 @@ class BaseJobConfiguration extends Component {
         this.setState({
             configurationMessage: 'Testing...',
             inProgress: true,
-            error: {}
+            error: {},
+            testingConfig: true
         });
 
         if (event) {
