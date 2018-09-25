@@ -27,12 +27,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import javax.transaction.Transactional;
-
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
@@ -48,7 +47,6 @@ import com.synopsys.integration.alert.workflow.MessageReceiver;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
-@Transactional
 public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, E extends ChannelEvent> extends MessageReceiver<E> {
     private static final Logger logger = LoggerFactory.getLogger(DistributionChannel.class);
 
@@ -68,10 +66,6 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, E
 
     public abstract String getDistributionType();
 
-    public AuditEntryRepository getAuditEntryRepository() {
-        return auditEntryRepository;
-    }
-
     public AlertProperties getAlertProperties() {
         return alertProperties;
     }
@@ -80,6 +74,7 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, E
         return blackDuckProperties;
     }
 
+    @Transactional
     public G getGlobalConfigEntity() {
         if (globalRepository != null) {
             final List<G> globalConfigs = globalRepository.findAll();
@@ -130,17 +125,18 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, E
         return "The provided config was null.";
     }
 
+    @Transactional
     public void setAuditEntrySuccess(final Long auditEntryId) {
         if (auditEntryId != null) {
             try {
-                final Optional<AuditEntryEntity> auditEntryEntityOptional = getAuditEntryRepository().findById(auditEntryId);
+                final Optional<AuditEntryEntity> auditEntryEntityOptional = auditEntryRepository.findById(auditEntryId);
                 if (auditEntryEntityOptional.isPresent()) {
                     final AuditEntryEntity auditEntryEntity = auditEntryEntityOptional.get();
                     auditEntryEntity.setStatus(AuditEntryStatus.SUCCESS);
                     auditEntryEntity.setErrorMessage(null);
                     auditEntryEntity.setErrorStackTrace(null);
                     auditEntryEntity.setTimeLastSent(new Date(System.currentTimeMillis()));
-                    getAuditEntryRepository().save(auditEntryEntity);
+                    auditEntryRepository.save(auditEntryEntity);
                 }
             } catch (final Exception e) {
                 logger.error(e.getMessage(), e);
@@ -148,10 +144,11 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, E
         }
     }
 
+    @Transactional
     public void setAuditEntryFailure(final Long auditEntryId, final String errorMessage, final Throwable t) {
         if (auditEntryId != null) {
             try {
-                final Optional<AuditEntryEntity> auditEntryEntityOptional = getAuditEntryRepository().findById(auditEntryId);
+                final Optional<AuditEntryEntity> auditEntryEntityOptional = auditEntryRepository.findById(auditEntryId);
                 if (auditEntryEntityOptional.isPresent()) {
                     final AuditEntryEntity auditEntryEntity = auditEntryEntityOptional.get();
                     auditEntryEntity.setStatus(AuditEntryStatus.FAILURE);
@@ -169,7 +166,7 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, E
                     auditEntryEntity.setErrorStackTrace(exceptionStackTrace);
 
                     auditEntryEntity.setTimeLastSent(new Date(System.currentTimeMillis()));
-                    getAuditEntryRepository().save(auditEntryEntity);
+                    auditEntryRepository.save(auditEntryEntity);
                 }
             } catch (final Exception e) {
                 logger.error(e.getMessage(), e);

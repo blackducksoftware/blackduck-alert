@@ -29,6 +29,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
@@ -40,6 +41,7 @@ import com.synopsys.integration.alert.web.actions.NotificationTypesActions;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 
 @Component
+@Transactional
 public class CommonDistributionConfigActions {
     private final ConfiguredProjectsActions configuredProjectsActions;
     private final NotificationTypesActions notificationTypesActions;
@@ -87,12 +89,14 @@ public class CommonDistributionConfigActions {
         }
     }
 
+    @Transactional
     public void deleteCommonEntity(final long id) {
         commonDistributionRepository.deleteById(id);
         configuredProjectsActions.cleanUpConfiguredProjects();
         notificationTypesActions.removeOldNotificationTypes(id);
     }
 
+    @Transactional
     public void saveCommonEntity(final CommonDistributionConfig commonChannelConfig, final long distributionId) {
         if (commonChannelConfig != null) {
             CommonDistributionConfigEntity commonChannelEntity = createCommonEntity(commonChannelConfig);

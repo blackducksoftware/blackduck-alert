@@ -27,12 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.transaction.Transactional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.ConfiguredProjectEntity;
@@ -40,7 +39,6 @@ import com.synopsys.integration.alert.database.entity.repository.ConfiguredProje
 import com.synopsys.integration.alert.database.relation.DistributionProjectRelation;
 import com.synopsys.integration.alert.database.relation.repository.DistributionProjectRepository;
 
-@Transactional
 @Component
 public class ConfiguredProjectsActions {
     private static final Logger logger = LoggerFactory.getLogger(ConfiguredProjectsActions.class);
@@ -62,6 +60,7 @@ public class ConfiguredProjectsActions {
         return distributionProjectRepository;
     }
 
+    @Transactional
     public List<String> getConfiguredProjects(final CommonDistributionConfigEntity commonEntity) {
         final List<DistributionProjectRelation> distributionProjects = distributionProjectRepository.findByCommonDistributionConfigId(commonEntity.getId());
         final List<String> configuredProjects = new ArrayList<>(distributionProjects.size());
@@ -82,6 +81,7 @@ public class ConfiguredProjectsActions {
         }
     }
 
+    @Transactional
     public void cleanUpConfiguredProjects() {
         final List<ConfiguredProjectEntity> configuredProjects = configuredProjectsRepository.findAll();
         configuredProjects.forEach(configuredProject -> {
@@ -92,12 +92,14 @@ public class ConfiguredProjectsActions {
         });
     }
 
-    private void removeOldDistributionProjectRelations(final Long commonDistributionConfigId) {
+    @Transactional
+    void removeOldDistributionProjectRelations(final Long commonDistributionConfigId) {
         final List<DistributionProjectRelation> distributionProjects = distributionProjectRepository.findByCommonDistributionConfigId(commonDistributionConfigId);
         distributionProjectRepository.deleteAll(distributionProjects);
     }
 
-    private void addNewDistributionProjectRelations(final Long commonDistributionConfigId, final List<String> configuredProjectsFromRestModel) {
+    @Transactional
+    void addNewDistributionProjectRelations(final Long commonDistributionConfigId, final List<String> configuredProjectsFromRestModel) {
         for (final String projectName : configuredProjectsFromRestModel) {
             final Long projectId;
             final ConfiguredProjectEntity foundEntity = configuredProjectsRepository.findByProjectName(projectName);
@@ -110,5 +112,4 @@ public class ConfiguredProjectsActions {
             distributionProjectRepository.save(new DistributionProjectRelation(commonDistributionConfigId, projectId));
         }
     }
-
 }
