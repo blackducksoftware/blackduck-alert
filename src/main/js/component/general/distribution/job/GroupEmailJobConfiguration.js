@@ -17,22 +17,31 @@ class GroupEmailJobConfiguration extends Component {
         this.state = {
             emailSubjectLine: props.emailSubjectLine,
             projectOwnerOnly: props.projectOwnerOnly,
-            error: {}
+            error: {},
+            loading: false
         }
     }
 
     componentDidMount() {
         const {baseUrl, distributionConfigId} = this.props;
         this.props.getDistributionJob(baseUrl, distributionConfigId);
+        this.setState({
+            loading: true
+        });
     }
 
     componentWillReceiveProps(nextProps) {
         if (!nextProps.fetching && !nextProps.inProgress) {
-            const jobConfig = nextProps.jobs[nextProps.distributionConfigId];
-            if (jobConfig) {
+            if (this.state.loading) {
+                const jobConfig = nextProps.jobs[nextProps.distributionConfigId];
+                if (jobConfig) {
+                    this.setState({
+                        emailSubjectLine: jobConfig.emailSubjectLine,
+                        projectOwnerOnly: jobConfig.projectOwnerOnly
+                    });
+                }
                 this.setState({
-                    emailSubjectLine: jobConfig.emailSubjectLine,
-                    projectOwnerOnly: jobConfig.projectOwnerOnly
+                    loading: false
                 });
             }
         }
@@ -72,7 +81,8 @@ class GroupEmailJobConfiguration extends Component {
             handleCancel={this.props.handleCancel}
             handleSaveBtnClick={this.props.handleSaveBtnClick}
             getParentConfiguration={this.getConfiguration}
-            childContent={content}/>);
+            childContent={content}
+            loading={this.state.loading}/>);
     }
 }
 
@@ -88,7 +98,10 @@ GroupEmailJobConfiguration.propTypes = {
     error: PropTypes.object,
     handleCancel: PropTypes.func.isRequired,
     handleSaveBtnClick: PropTypes.func.isRequired,
-    alertChannelName: PropTypes.string.isRequired
+    alertChannelName: PropTypes.string.isRequired,
+    fetching: PropTypes.bool,
+    inProgress: PropTypes.bool,
+    testingConfig: PropTypes.bool
 };
 
 GroupEmailJobConfiguration.defaultProps = {
@@ -99,7 +112,10 @@ GroupEmailJobConfiguration.defaultProps = {
     distributionType: 'channel_email',
     emailSubjectLine: '',
     projectOwnerOnly: false,
-    error: {}
+    error: {},
+    fetching: false,
+    inProgress: false,
+    testingConfig: false,
 };
 
 const mapDispatchToProps = dispatch => ({
@@ -109,7 +125,10 @@ const mapDispatchToProps = dispatch => ({
 const mapStateToProps = state => ({
     csrfToken: state.session.csrfToken,
     jobs: state.distributions.jobs,
-    error: state.distributions.error
+    error: state.distributions.error,
+    fetching: state.distributions.fetching,
+    inProgress: state.distributions.inProgress,
+    testingConfig: state.distributions.testingConfig,
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(GroupEmailJobConfiguration);

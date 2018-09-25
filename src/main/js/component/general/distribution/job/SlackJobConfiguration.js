@@ -16,23 +16,32 @@ class SlackJobConfiguration extends Component {
             webhook: props.webhook,
             channelUsername: props.channelUsername,
             channelName: props.channelName,
-            error: {}
+            error: {},
+            loading: false
         };
     }
 
     componentDidMount() {
         const {baseUrl, distributionConfigId} = this.props;
         this.props.getDistributionJob(baseUrl, distributionConfigId);
+        this.setState({
+            loading: true
+        });
     }
 
     componentWillReceiveProps(nextProps) {
         if (!nextProps.fetching && !nextProps.inProgress) {
-            const jobConfig = nextProps.jobs[nextProps.distributionConfigId];
-            if (jobConfig) {
+            if (this.state.loading) {
+                const jobConfig = nextProps.jobs[nextProps.distributionConfigId];
+                if (jobConfig) {
+                    this.setState({
+                        webhook: jobConfig.webhook,
+                        channelUsername: jobConfig.channelUsername,
+                        channelName: jobConfig.channelName
+                    });
+                }
                 this.setState({
-                    webhook: jobConfig.webhook,
-                    channelUsername: jobConfig.channelUsername,
-                    channelName: jobConfig.channelName
+                    loading: false
                 });
             }
         }
@@ -72,7 +81,8 @@ class SlackJobConfiguration extends Component {
             handleCancel={this.props.handleCancel}
             handleSaveBtnClick={this.props.handleSaveBtnClick}
             getParentConfiguration={this.getConfiguration}
-            childContent={content}/>);
+            childContent={content}
+            loading={this.state.loading}/>);
     }
 }
 
@@ -88,7 +98,10 @@ SlackJobConfiguration.propTypes = {
     error: PropTypes.object,
     handleCancel: PropTypes.func.isRequired,
     handleSaveBtnClick: PropTypes.func.isRequired,
-    alertChannelName: PropTypes.string.isRequired
+    alertChannelName: PropTypes.string.isRequired,
+    fetching: PropTypes.bool,
+    inProgress: PropTypes.bool,
+    testingConfig: PropTypes.bool
 };
 
 SlackJobConfiguration.defaultProps = {
@@ -100,7 +113,10 @@ SlackJobConfiguration.defaultProps = {
     webhook: '',
     channelName: '',
     channelUserName: '',
-    error: {}
+    error: {},
+    fetching: false,
+    inProgress: false,
+    testingConfig: false,
 };
 
 const mapDispatchToProps = dispatch => ({
@@ -110,7 +126,10 @@ const mapDispatchToProps = dispatch => ({
 const mapStateToProps = state => ({
     csrfToken: state.session.csrfToken,
     jobs: state.distributions.jobs,
-    error: state.distributions.error
+    error: state.distributions.error,
+    fetching: state.distributions.fetching,
+    inProgress: state.distributions.inProgress,
+    testingConfig: state.distributions.testingConfig,
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SlackJobConfiguration);

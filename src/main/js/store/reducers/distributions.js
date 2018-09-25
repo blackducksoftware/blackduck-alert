@@ -18,6 +18,7 @@ const initialState = {
     fetching: false,
     inProgress: false,
     success: false,
+    testingConfig: false,
     error: {
         message: ''
     },
@@ -31,6 +32,7 @@ const config = (state = initialState, action) => {
                 fetching: true,
                 inProgress: true,
                 success: false,
+                testingConfig: false,
                 configurationMessage: '',
                 error: {
                     message: ''
@@ -42,6 +44,7 @@ const config = (state = initialState, action) => {
                 fetching: false,
                 inProgress: false,
                 success: false,
+                testingConfig: false,
                 configurationMessage: action.configurationMessage,
                 error: {
                     message: ''
@@ -57,6 +60,7 @@ const config = (state = initialState, action) => {
                 fetching: false,
                 inProgress: false,
                 success: false,
+                testingConfig: false,
                 configurationMessage: action.configurationMessage,
                 error: {
                     ...action.errors,
@@ -70,7 +74,8 @@ const config = (state = initialState, action) => {
                 fetching: false,
                 inProgress: true,
                 success: false,
-                configurationMessage: '',
+                testingConfig: false,
+                configurationMessage: 'Saving...',
                 error: {
                     message: ''
                 },
@@ -86,6 +91,7 @@ const config = (state = initialState, action) => {
                 fetching: false,
                 inProgress: false,
                 success: true,
+                testingConfig: false,
                 configurationMessage: action.configurationMessage,
                 error: {
                     message: ''
@@ -99,6 +105,7 @@ const config = (state = initialState, action) => {
                 fetching: false,
                 inProgress: false,
                 success: false,
+                testingConfig: false,
                 configurationMessage: action.configurationMessage,
                 error: {
                     ...action.errors,
@@ -111,7 +118,8 @@ const config = (state = initialState, action) => {
                 fetching: false,
                 inProgress: true,
                 success: false,
-                configurationMessage: action.configurationMessage,
+                testingConfig: true,
+                configurationMessage: 'Testing...',
                 error: {
                     message: ''
                 }
@@ -122,6 +130,7 @@ const config = (state = initialState, action) => {
                 fetching: false,
                 inProgress: false,
                 success: true,
+                testingConfig: true,
                 configurationMessage: action.configurationMessage,
                 error: {
                     message: ''
@@ -133,6 +142,7 @@ const config = (state = initialState, action) => {
                 fetching: false,
                 inProgress: false,
                 success: false,
+                testingConfig: true,
                 configurationMessage: action.configurationMessage,
                 error: {
                     ...action.errors,
