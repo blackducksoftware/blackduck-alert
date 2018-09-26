@@ -23,11 +23,7 @@
  */
 package com.synopsys.integration.alert.database.channel.hipchat;
 
-import javax.transaction.Transactional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
-@Transactional
 public interface HipChatDistributionRepository extends JpaRepository<HipChatDistributionConfigEntity, Long> {
-
 }

@@ -23,13 +23,10 @@
  */
 package com.synopsys.integration.alert.database.entity.repository;
 
-import javax.transaction.Transactional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.synopsys.integration.alert.database.entity.ConfiguredProjectEntity;
 
-@Transactional
 public interface ConfiguredProjectsRepository extends JpaRepository<ConfiguredProjectEntity, Long> {
-    public ConfiguredProjectEntity findByProjectName(final String projectName);
+    ConfiguredProjectEntity findByProjectName(final String projectName);
 }
