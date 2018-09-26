@@ -7,8 +7,6 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.transaction.Transactional;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -32,6 +30,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
@@ -98,8 +97,8 @@ public class DescriptorControllerTest {
         final List<UIComponent> componentList = gson.fromJson(body, componentListType.getType());
         assertNotNull(componentList);
         final List<UIComponent> expected = descriptorMap.getDescriptor("channel_email").getAllUIConfigs()
-                                           .stream()
-                                           .map(uiConfig -> uiConfig.generateUIComponent()).collect(Collectors.toList());
+                                               .stream()
+                                               .map(uiConfig -> uiConfig.generateUIComponent()).collect(Collectors.toList());
         assertEquals(expected.size(), componentList.size());
     }
 
