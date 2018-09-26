@@ -41,7 +41,6 @@ import com.synopsys.integration.alert.web.actions.NotificationTypesActions;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 
 @Component
-@Transactional
 public class CommonDistributionConfigActions {
     private final ConfiguredProjectsActions configuredProjectsActions;
     private final NotificationTypesActions notificationTypesActions;
@@ -57,6 +56,7 @@ public class CommonDistributionConfigActions {
         this.contentConverter = contentConverter;
     }
 
+    @Transactional
     public void validateCommonConfig(final CommonDistributionConfig commonConfig, final Map<String, String> fieldErrors) {
         if (StringUtils.isNotBlank(commonConfig.getName())) {
             final CommonDistributionConfigEntity entity = commonDistributionRepository.findByName(commonConfig.getName());
@@ -116,8 +116,8 @@ public class CommonDistributionConfigActions {
         final FrequencyType frequencyType = Enum.valueOf(FrequencyType.class, commonConfig.getFrequency());
         final Boolean filterByProject = contentConverter.getBooleanValue(commonConfig.getFilterByProject());
         final FormatType formatType = Enum.valueOf(FormatType.class, commonConfig.getFormatType());
-        final CommonDistributionConfigEntity commonEntity = new CommonDistributionConfigEntity(distributionConfigId, commonConfig.getDistributionType(), commonConfig.getName(), commonConfig.getProviderName(), frequencyType,
-            filterByProject, formatType);
+        final CommonDistributionConfigEntity commonEntity =
+            new CommonDistributionConfigEntity(distributionConfigId, commonConfig.getDistributionType(), commonConfig.getName(), commonConfig.getProviderName(), frequencyType, filterByProject, formatType);
         final Long longId = contentConverter.getLongValue(commonConfig.getId());
         commonEntity.setId(longId);
         return commonEntity;

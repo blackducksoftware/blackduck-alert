@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
@@ -42,7 +43,6 @@ import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.entity.repository.NotificationContentRepository;
 
 @Component
-@Transactional
 public class NotificationManager {
     private final NotificationContentRepository notificationContentRepository;
     private final AuditEntryRepository auditEntryRepository;
@@ -55,18 +55,22 @@ public class NotificationManager {
         this.auditNotificationRepository = auditNotificationRepository;
     }
 
+    @Transactional
     public NotificationContent saveNotification(final NotificationContent notification) {
         return notificationContentRepository.save(notification);
     }
 
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<NotificationContent> findByIds(final List<Long> notificationIds) {
         return notificationContentRepository.findAllById(notificationIds);
     }
 
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<NotificationContent> findByCreatedAtBetween(final Date startDate, final Date endDate) {
         return notificationContentRepository.findByCreatedAtBetween(startDate, endDate);
     }
 
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<NotificationContent> findByCreatedAtBefore(final Date date) {
         return notificationContentRepository.findByCreatedAtBefore(date);
     }
@@ -84,6 +88,7 @@ public class NotificationManager {
         notifications.forEach(this::deleteNotification);
     }
 
+    @Transactional
     public void deleteNotification(final NotificationContent notification) {
         notificationContentRepository.delete(notification);
         deleteAuditEntries(notification.getId());

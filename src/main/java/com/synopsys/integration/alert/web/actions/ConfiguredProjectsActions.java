@@ -71,6 +71,8 @@ public class ConfiguredProjectsActions {
         return configuredProjects;
     }
 
+    @Transactional
+    // TODO investigate the impact of private methods on transactions; the transaction is not complete until after all of the private methods have executed
     public void saveConfiguredProjects(final long entityId, final List<String> configuredProjects) {
         if (configuredProjects != null) {
             removeOldDistributionProjectRelations(entityId);
@@ -92,14 +94,12 @@ public class ConfiguredProjectsActions {
         });
     }
 
-    @Transactional
-    void removeOldDistributionProjectRelations(final Long commonDistributionConfigId) {
+    private void removeOldDistributionProjectRelations(final Long commonDistributionConfigId) {
         final List<DistributionProjectRelation> distributionProjects = distributionProjectRepository.findByCommonDistributionConfigId(commonDistributionConfigId);
         distributionProjectRepository.deleteAll(distributionProjects);
     }
 
-    @Transactional
-    void addNewDistributionProjectRelations(final Long commonDistributionConfigId, final List<String> configuredProjectsFromRestModel) {
+    private void addNewDistributionProjectRelations(final Long commonDistributionConfigId, final List<String> configuredProjectsFromRestModel) {
         for (final String projectName : configuredProjectsFromRestModel) {
             final Long projectId;
             final ConfiguredProjectEntity foundEntity = configuredProjectsRepository.findByProjectName(projectName);

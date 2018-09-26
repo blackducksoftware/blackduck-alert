@@ -240,7 +240,7 @@ public class StartupManager {
     }
 
     @Transactional
-    private Boolean purgeOldData() {
+    public Boolean purgeOldData() {
         try {
             logger.info("Begin startup purge of old data");
             final List<SchedulingConfigEntity> globalSchedulingConfigs = schedulingRepository.findAll();
