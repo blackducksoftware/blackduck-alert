@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.database.RepositoryAccessor;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 
 @Component
+@Transactional
 public class BlackDuckProjectRepositoryAccessor extends RepositoryAccessor {
     private final BlackDuckProjectRepository blackDuckProjectRepository;
 

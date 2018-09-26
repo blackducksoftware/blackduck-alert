@@ -30,10 +30,10 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
@@ -41,37 +41,36 @@ import com.synopsys.integration.alert.database.audit.AuditNotificationRepository
 import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.entity.repository.NotificationContentRepository;
-import com.synopsys.integration.alert.database.entity.repository.VulnerabilityRepository;
 
 @Component
-@Transactional
 public class NotificationManager {
     private final NotificationContentRepository notificationContentRepository;
-    private final VulnerabilityRepository vulnerabilityRepository;
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
 
     @Autowired
-    public NotificationManager(final NotificationContentRepository notificationContentRepository, final VulnerabilityRepository vulnerabilityRepository, final AuditEntryRepository auditEntryRepository,
-            final AuditNotificationRepository auditNotificationRepository) {
+    public NotificationManager(final NotificationContentRepository notificationContentRepository, final AuditEntryRepository auditEntryRepository, final AuditNotificationRepository auditNotificationRepository) {
         this.notificationContentRepository = notificationContentRepository;
-        this.vulnerabilityRepository = vulnerabilityRepository;
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;
     }
 
+    @Transactional
     public NotificationContent saveNotification(final NotificationContent notification) {
         return notificationContentRepository.save(notification);
     }
 
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<NotificationContent> findByIds(final List<Long> notificationIds) {
         return notificationContentRepository.findAllById(notificationIds);
     }
 
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<NotificationContent> findByCreatedAtBetween(final Date startDate, final Date endDate) {
         return notificationContentRepository.findByCreatedAtBetween(startDate, endDate);
     }
 
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<NotificationContent> findByCreatedAtBefore(final Date date) {
         return notificationContentRepository.findByCreatedAtBefore(date);
     }
@@ -89,6 +88,7 @@ public class NotificationManager {
         notifications.forEach(this::deleteNotification);
     }
 
+    @Transactional
     public void deleteNotification(final NotificationContent notification) {
         notificationContentRepository.delete(notification);
         deleteAuditEntries(notification.getId());
@@ -103,5 +103,4 @@ public class NotificationManager {
         auditEntryRepository.deleteAll(auditEntryList);
 
     }
-
 }

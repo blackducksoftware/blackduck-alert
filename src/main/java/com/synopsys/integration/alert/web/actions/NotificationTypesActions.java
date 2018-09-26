@@ -26,19 +26,18 @@ package com.synopsys.integration.alert.web.actions;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.transaction.Transactional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.repository.NotificationTypeRepository;
 import com.synopsys.integration.alert.database.relation.DistributionNotificationTypeRelation;
 import com.synopsys.integration.alert.database.relation.repository.DistributionNotificationTypeRepository;
 
-@Transactional
 @Component
 public class NotificationTypesActions {
     private static final Logger logger = LoggerFactory.getLogger(NotificationTypesActions.class);
@@ -60,6 +59,7 @@ public class NotificationTypesActions {
         return distributionNotificationTypeRepository;
     }
 
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<String> getNotificationTypes(final CommonDistributionConfigEntity commonEntity) {
         final List<DistributionNotificationTypeRelation> foundRelations = distributionNotificationTypeRepository.findByCommonDistributionConfigId(commonEntity.getId());
         return foundRelations.stream().map(DistributionNotificationTypeRelation::getNotificationType).collect(Collectors.toList());
@@ -75,13 +75,14 @@ public class NotificationTypesActions {
         }
     }
 
+    @Transactional
     public void removeOldNotificationTypes(final Long commonDistributionConfigId) {
         final List<DistributionNotificationTypeRelation> distributionProjects = distributionNotificationTypeRepository.findByCommonDistributionConfigId(commonDistributionConfigId);
         distributionNotificationTypeRepository.deleteAll(distributionProjects);
     }
 
-    private void addNewDistributionNotificationTypes(final Long commonDistributionConfigId, final List<String> notificationTypesFromRestModel) {
+    @Transactional
+    public void addNewDistributionNotificationTypes(final Long commonDistributionConfigId, final List<String> notificationTypesFromRestModel) {
         notificationTypesFromRestModel.forEach(notificationType -> distributionNotificationTypeRepository.save(new DistributionNotificationTypeRelation(commonDistributionConfigId, notificationType)));
     }
-
 }

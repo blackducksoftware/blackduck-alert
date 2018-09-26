@@ -25,8 +25,6 @@ package com.synopsys.integration.alert.database.purge;
 
 import java.util.List;
 
-import javax.transaction.Transactional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.item.ItemWriter;
@@ -34,7 +32,6 @@ import org.springframework.batch.item.ItemWriter;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.workflow.NotificationManager;
 
-@Transactional
 public class PurgeWriter implements ItemWriter<List<NotificationContent>> {
     private final static Logger logger = LoggerFactory.getLogger(PurgeWriter.class);
     private final NotificationManager notificationManager;
