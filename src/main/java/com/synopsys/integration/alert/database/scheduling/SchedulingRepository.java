@@ -23,11 +23,7 @@
  */
 package com.synopsys.integration.alert.database.scheduling;
 
-import javax.transaction.Transactional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
-@Transactional
 public interface SchedulingRepository extends JpaRepository<SchedulingConfigEntity, Long> {
-
 }

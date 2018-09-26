@@ -26,7 +26,6 @@ package com.synopsys.integration.alert.workflow;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
-import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,9 +33,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.event.AlertEvent;
 
-@Transactional
 public abstract class MessageReceiver<E extends AlertEvent> implements MessageListener {
-
     private final Logger logger = LoggerFactory.getLogger(MessageReceiver.class);
     private final Class<E> clazz;
     private final Gson gson;

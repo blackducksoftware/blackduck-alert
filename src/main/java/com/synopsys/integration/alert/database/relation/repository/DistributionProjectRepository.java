@@ -25,16 +25,13 @@ package com.synopsys.integration.alert.database.relation.repository;
 
 import java.util.List;
 
-import javax.transaction.Transactional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.synopsys.integration.alert.database.relation.key.DistributionProjectRelationPK;
 import com.synopsys.integration.alert.database.relation.DistributionProjectRelation;
+import com.synopsys.integration.alert.database.relation.key.DistributionProjectRelationPK;
 
-@Transactional
 public interface DistributionProjectRepository extends JpaRepository<DistributionProjectRelation, DistributionProjectRelationPK> {
-    public List<DistributionProjectRelation> findByCommonDistributionConfigId(final Long commonDistributionConfigId);
+    List<DistributionProjectRelation> findByCommonDistributionConfigId(final Long commonDistributionConfigId);
 
-    public List<DistributionProjectRelation> findByProjectId(final Long projectId);
+    List<DistributionProjectRelation> findByProjectId(final Long projectId);
 }
