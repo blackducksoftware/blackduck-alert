@@ -19,24 +19,33 @@ class HipChatJobConfiguration extends Component {
             roomId: props.roomId,
             notify: props.notify,
             colorOptions: props.colorOptions,
-            error: {}
+            error: {},
+            loading: false
         };
     }
 
     componentDidMount() {
         const {baseUrl, distributionConfigId} = this.props;
         this.props.getDistributionJob(baseUrl, distributionConfigId);
+        this.setState({
+            loading: true
+        });
     }
 
     componentWillReceiveProps(nextProps) {
         if (!nextProps.fetching && !nextProps.inProgress) {
-            const jobConfig = nextProps.jobs[nextProps.distributionConfigId];
-            if (jobConfig) {
+            if (this.state.loading) {
+                const jobConfig = nextProps.jobs[nextProps.distributionConfigId];
+                if (jobConfig) {
+                    this.setState({
+                        roomId: jobConfig.roomId,
+                        notify: jobConfig.notify,
+                        color: jobConfig.color,
+                        colorOptions: nextProps.colorOptions
+                    });
+                }
                 this.setState({
-                    roomId: jobConfig.roomId,
-                    notify: jobConfig.notify,
-                    color: jobConfig.color,
-                    colorOptions: nextProps.colorOptions
+                    loading: false
                 });
             }
         }
@@ -98,7 +107,8 @@ class HipChatJobConfiguration extends Component {
             handleCancel={this.props.handleCancel}
             handleSaveBtnClick={this.props.handleSaveBtnClick}
             getParentConfiguration={this.getConfiguration}
-            childContent={content}/>);
+            childContent={content}
+            loading={this.state.loading}/>);
     }
 }
 
@@ -116,7 +126,10 @@ HipChatJobConfiguration.propTypes = {
     error: PropTypes.object,
     handleCancel: PropTypes.func.isRequired,
     handleSaveBtnClick: PropTypes.func.isRequired,
-    alertChannelName: PropTypes.string.isRequired
+    alertChannelName: PropTypes.string.isRequired,
+    fetching: PropTypes.bool,
+    inProgress: PropTypes.bool,
+    testingConfig: PropTypes.bool
 };
 
 HipChatJobConfiguration.defaultProps = {
@@ -136,13 +149,19 @@ HipChatJobConfiguration.defaultProps = {
         {label: 'Gray', value: 'gray'},
         {label: 'Random', value: 'random'}
     ],
-    error: {}
+    error: {},
+    fetching: false,
+    inProgress: false,
+    testingConfig: false,
 };
 
 const mapStateToProps = state => ({
     csrfToken: state.session.csrfToken,
     jobs: state.distributions.jobs,
-    error: state.distributions.error
+    error: state.distributions.error,
+    fetching: state.distributions.fetching,
+    inProgress: state.distributions.inProgress,
+    testingConfig: state.distributions.testingConfig,
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -16,9 +16,9 @@ class BaseJobConfiguration extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            saving: false,
             success: false,
-            error: {},
-            testingConfig: false
+            error: {}
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleStateValues = this.handleStateValues.bind(this);
@@ -39,14 +39,23 @@ class BaseJobConfiguration extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        if (this.state.saving) {
+            this.setState({
+                saving: false
+            });
+            if (nextProps.success && nextProps.handleSaveBtnClick) {
+                nextProps.handleSaveBtnClick(this.state);
+                return;
+            }
+        }
         if (!nextProps.fetching && !nextProps.inProgress) {
-            if ((nextProps.error && nextProps.error.message) || this.state.testingConfig) {
+            if (nextProps.error.message || nextProps.testingConfig) {
                 // If there are errors, we only want to update the error messaging. We do not want to clear out the User's changes
                 this.setState({
                     error: nextProps.error,
                     configurationMessage: nextProps.configurationMessage
                 });
-            } else {
+            } else if (this.props.loading) {
                 const providerOptions = this.createProviderOptions();
                 const stateValues = Object.assign({}, this.state, {
                     fetching: nextProps.fetching,
@@ -56,8 +65,6 @@ class BaseJobConfiguration extends Component {
                     error: nextProps.error ? nextProps.error : {},
                     providerOptions: providerOptions
                 });
-
-                const callHandleSaveBtnClick = this.state.configurationMessage === 'Saving...' && nextProps.success;
 
                 if (nextProps.distributionConfigId) {
                     const jobConfig = nextProps.jobs[nextProps.distributionConfigId];
@@ -96,15 +103,6 @@ class BaseJobConfiguration extends Component {
                     }
                     this.setState(stateValues);
                 }
-
-                if (callHandleSaveBtnClick && nextProps.handleSaveBtnClick) {
-                    nextProps.handleSaveBtnClick(this.state);
-                }
-            }
-            if (this.state.testingConfig) {
-                this.setState({
-                    testingConfig: false
-                });
             }
         }
     }
@@ -120,9 +118,7 @@ class BaseJobConfiguration extends Component {
 
     handleSubmit(event) {
         this.setState({
-            success: false,
-            configurationMessage: 'Saving...',
-            inProgress: true,
+            saving: true,
             error: {}
         });
         if (event) {
@@ -138,10 +134,7 @@ class BaseJobConfiguration extends Component {
 
     handleTestSubmit(event) {
         this.setState({
-            configurationMessage: 'Testing...',
-            inProgress: true,
-            error: {},
-            testingConfig: true
+            error: {}
         });
 
         if (event) {
@@ -394,6 +387,7 @@ BaseJobConfiguration.propTypes = {
     fetching: PropTypes.bool,
     inProgress: PropTypes.bool,
     success: PropTypes.bool,
+    testingConfig: PropTypes.bool,
     configurationMessage: PropTypes.string,
     error: PropTypes.object,
     distributionConfigId: PropTypes.string,
@@ -402,7 +396,8 @@ BaseJobConfiguration.propTypes = {
     getParentConfiguration: PropTypes.func.isRequired,
     childContent: PropTypes.object.isRequired,
     alertChannelName: PropTypes.string.isRequired,
-    currentDistributionComponents: PropTypes.object
+    currentDistributionComponents: PropTypes.object,
+    loading: PropTypes.bool.isRequired
 };
 
 BaseJobConfiguration.defaultProps = {
@@ -414,10 +409,12 @@ BaseJobConfiguration.defaultProps = {
     fetching: false,
     inProgress: false,
     success: false,
+    testingConfig: false,
     configurationMessage: '',
     error: {},
     distributionConfigId: null,
-    currentDistributionComponents: null
+    currentDistributionComponents: null,
+    loading: false
 };
 
 const mapDispatchToProps = dispatch => ({
@@ -435,6 +432,7 @@ const mapStateToProps = state => ({
     fetching: state.distributions.fetching,
     inProgress: state.distributions.inProgress,
     success: state.distributions.success,
+    testingConfig: state.distributions.testingConfig,
     configurationMessage: state.distributions.configurationMessage,
     error: state.distributions.error,
     currentDistributionComponents: state.descriptors.currentDistributionComponents
