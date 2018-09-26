@@ -25,14 +25,10 @@ package com.synopsys.integration.alert.database.audit;
 
 import java.util.List;
 
-import javax.transaction.Transactional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
-@Transactional
 public interface AuditEntryRepository extends JpaRepository<AuditEntryEntity, Long> {
-    public AuditEntryEntity findFirstByCommonConfigIdOrderByTimeLastSentDesc(final Long commonConfigId);
+    AuditEntryEntity findFirstByCommonConfigIdOrderByTimeLastSentDesc(final Long commonConfigId);
 
-    public List<AuditEntryEntity> findByCommonConfigId(final Long commonConfigId);
-
+    List<AuditEntryEntity> findByCommonConfigId(final Long commonConfigId);
 }
