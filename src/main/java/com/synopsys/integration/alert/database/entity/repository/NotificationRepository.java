@@ -26,14 +26,11 @@ package com.synopsys.integration.alert.database.entity.repository;
 import java.util.Date;
 import java.util.List;
 
-import javax.transaction.Transactional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.synopsys.integration.alert.database.entity.NotificationEntity;
 
-@Transactional
 public interface NotificationRepository extends JpaRepository<NotificationEntity, Long> {
     @Query("SELECT entity FROM NotificationEntity entity WHERE entity.createdAt BETWEEN ?1 AND ?2 ORDER BY created_at asc")
     List<NotificationEntity> findByCreatedAtBetween(final Date startDate, final Date endDate);

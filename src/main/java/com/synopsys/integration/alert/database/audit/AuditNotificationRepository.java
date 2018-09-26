@@ -25,17 +25,13 @@ package com.synopsys.integration.alert.database.audit;
 
 import java.util.List;
 
-import javax.transaction.Transactional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelationPK;
 
-@Transactional
 public interface AuditNotificationRepository extends JpaRepository<AuditNotificationRelation, AuditNotificationRelationPK> {
-    public List<AuditNotificationRelation> findByAuditEntryId(final Long auditEntryId);
+    List<AuditNotificationRelation> findByAuditEntryId(final Long auditEntryId);
 
-    public List<AuditNotificationRelation> findByNotificationId(final Long notificationId);
-
+    List<AuditNotificationRelation> findByNotificationId(final Long notificationId);
 }

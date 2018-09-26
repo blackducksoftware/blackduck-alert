@@ -23,8 +23,6 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config;
 
-import javax.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -48,7 +46,6 @@ public class CommonTypeConverter {
         this.contentConverter = contentConverter;
     }
 
-    @Transactional
     public Config populateCommonFieldsFromEntity(final CommonDistributionConfig channelConfig, final CommonDistributionConfigEntity commonEntity) {
         channelConfig.setId(contentConverter.getStringValue(commonEntity.getId()));
         channelConfig.setDistributionConfigId(contentConverter.getStringValue(commonEntity.getDistributionConfigId()));

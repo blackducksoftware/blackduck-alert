@@ -23,15 +23,12 @@
  */
 package com.synopsys.integration.alert.database.entity.repository;
 
-import javax.transaction.Transactional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 
-@Transactional
 public interface CommonDistributionRepository extends JpaRepository<CommonDistributionConfigEntity, Long> {
-    public CommonDistributionConfigEntity findByDistributionConfigIdAndDistributionType(final Long distributionConfigId, final String distributionType);
+    CommonDistributionConfigEntity findByDistributionConfigIdAndDistributionType(final Long distributionConfigId, final String distributionType);
 
-    public CommonDistributionConfigEntity findByName(String name);
+    CommonDistributionConfigEntity findByName(String name);
 }
