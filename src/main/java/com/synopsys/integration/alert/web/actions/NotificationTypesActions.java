@@ -82,7 +82,7 @@ public class NotificationTypesActions {
     }
 
     @Transactional
-    void addNewDistributionNotificationTypes(final Long commonDistributionConfigId, final List<String> notificationTypesFromRestModel) {
+    public void addNewDistributionNotificationTypes(final Long commonDistributionConfigId, final List<String> notificationTypesFromRestModel) {
         notificationTypesFromRestModel.forEach(notificationType -> distributionNotificationTypeRepository.save(new DistributionNotificationTypeRelation(commonDistributionConfigId, notificationType)));
     }
 }
