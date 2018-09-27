@@ -20,6 +20,7 @@ class BaseJobConfiguration extends Component {
             success: false,
             error: {}
         };
+        this.loading = false;
         this.handleChange = this.handleChange.bind(this);
         this.handleStateValues = this.handleStateValues.bind(this);
         this.handleSetState = this.handleSetState.bind(this);
@@ -36,6 +37,10 @@ class BaseJobConfiguration extends Component {
         this.createFormatTypeOptions = this.createFormatTypeOptions.bind(this);
         this.buildJsonBody = this.buildJsonBody.bind(this);
         this.renderDistributionForm = this.renderDistributionForm.bind(this);
+    }
+
+    componentDidMount() {
+        this.loading = true;
     }
 
     componentWillReceiveProps(nextProps) {
@@ -55,7 +60,8 @@ class BaseJobConfiguration extends Component {
                     error: nextProps.error,
                     configurationMessage: nextProps.configurationMessage
                 });
-            } else if (nextProps.loading) {
+            } else if (this.loading) {
+                this.loading = false;
                 const providerOptions = this.createProviderOptions();
                 const stateValues = Object.assign({}, this.state, {
                     fetching: nextProps.fetching,
@@ -396,8 +402,7 @@ BaseJobConfiguration.propTypes = {
     getParentConfiguration: PropTypes.func.isRequired,
     childContent: PropTypes.object.isRequired,
     alertChannelName: PropTypes.string.isRequired,
-    currentDistributionComponents: PropTypes.object,
-    loading: PropTypes.bool.isRequired
+    currentDistributionComponents: PropTypes.object
 };
 
 BaseJobConfiguration.defaultProps = {
@@ -413,8 +418,7 @@ BaseJobConfiguration.defaultProps = {
     configurationMessage: '',
     error: {},
     distributionConfigId: null,
-    currentDistributionComponents: null,
-    loading: false
+    currentDistributionComponents: null
 };
 
 const mapDispatchToProps = dispatch => ({
