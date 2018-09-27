@@ -116,6 +116,7 @@ public class StartupManager {
         this.providerDescriptorList = providerDescriptorList;
     }
 
+    @Transactional
     public void startup() {
         logger.info("Alert Starting...");
         initializeChannelPropertyManagers();

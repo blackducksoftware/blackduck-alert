@@ -60,6 +60,7 @@ import com.synopsys.integration.alert.workflow.processor.NotificationProcessor;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
+@Transactional
 public class AuditEntryActions {
     private final Logger logger = LoggerFactory.getLogger(AuditEntryActions.class);
 
@@ -90,7 +91,6 @@ public class AuditEntryActions {
         return get(null, null, null, null, null);
     }
 
-    @Transactional
     public AlertPagedModel<AuditEntryConfig> get(final Integer pageNumber, final Integer pageSize, final String searchTerm, final String sortField, final String sortOrder) {
         List<AuditEntryConfig> auditEntries = new ArrayList<>();
 
@@ -123,7 +123,6 @@ public class AuditEntryActions {
         return pagedRestModel;
     }
 
-    @Transactional
     public AuditEntryConfig get(final Long id) {
         if (id != null) {
             final Optional<AuditEntryEntity> auditEntryEntity = auditEntryRepository.findById(id);
@@ -134,7 +133,6 @@ public class AuditEntryActions {
         return null;
     }
 
-    @Transactional
     public AlertPagedModel<AuditEntryConfig> resendNotification(final Long id) throws IntegrationException {
         final Optional<AuditEntryEntity> auditEntryEntityOptional = auditEntryRepository.findById(id);
         if (!auditEntryEntityOptional.isPresent()) {
