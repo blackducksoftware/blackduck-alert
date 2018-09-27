@@ -54,7 +54,9 @@ class Details extends Component {
         if (this.state.values.errorStackTrace) {
             errorStackTrace = <TextArea inputClass="stackTraceContainer" label="Stack Trace" readOnly name="errorStackTrace" value={this.state.values.errorStackTrace}/>;
         }
-        const jsonPrettyPrintContent = JSON.stringify(JSON.parse(this.state.values.content), null, 2);
+        const defaultContent = Object.assign({}, {'warning': 'Content in an Unknown Format'});
+        const jsonContent = this.state.values.content || JSON.stringify(defaultContent);
+        const jsonPrettyPrintContent = JSON.stringify(JSON.parse(jsonContent), null, 2);
         return (
             <div className="expandableContainer">
                 <div className="container-fluid">
