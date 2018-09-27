@@ -252,7 +252,12 @@ class Index extends Component {
     }
 
     resendButton(cell, row) {
-        return <RefreshTableCellFormatter handleButtonClicked={this.onResendClick} currentRowSelected={row} buttonText="Re-send"/>;
+        console.log("Current row", row);
+        if (row.content) {
+            return <RefreshTableCellFormatter handleButtonClicked={this.onResendClick} currentRowSelected={row} buttonText="Re-send"/>;
+        } else {
+            return <div className="editJobButtonDisabled"><span className="fa fa-refresh"/></div>
+        }
     }
 
     createCustomButtonGroup(buttons) {
