@@ -32,7 +32,6 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-@Transactional
 public class UserProjectRelationRepositoryAccessor {
     private final UserProjectRelationRepository userProjectRelationRepository;
 
@@ -56,9 +55,9 @@ public class UserProjectRelationRepositoryAccessor {
         return userProjectRelationRepository.findByBlackDuckUserId(blackDuckUserId);
     }
 
+    @Transactional
     public List<UserProjectRelation> deleteAndSaveAll(final Set<UserProjectRelation> userProjectRelations) {
         userProjectRelationRepository.deleteAllInBatch();
         return userProjectRelationRepository.saveAll(userProjectRelations);
     }
-
 }

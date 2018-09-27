@@ -26,11 +26,10 @@ package com.synopsys.integration.alert.channel;
 import java.util.Date;
 import java.util.List;
 
-import javax.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
@@ -43,7 +42,6 @@ import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
 import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
 
-@Transactional
 @Component
 public class ChannelTemplateManager {
     private final Gson gson;
@@ -65,6 +63,7 @@ public class ChannelTemplateManager {
         }
     }
 
+    @Transactional
     public boolean sendEvent(final AlertEvent event) {
         final String destination = event.getDestination();
         if (event instanceof ChannelEvent) {

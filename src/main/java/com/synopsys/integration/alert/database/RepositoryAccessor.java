@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 
 @Transactional
+// TODO we should strongly consider only allowing reads from a repository accessor; deletes should not necessarily be atomic transactions
 public abstract class RepositoryAccessor {
     private final JpaRepository<? extends DatabaseEntity, Long> repository;
 

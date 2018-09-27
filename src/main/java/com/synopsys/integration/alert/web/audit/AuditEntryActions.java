@@ -30,8 +30,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.transaction.Transactional;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +38,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.channel.ChannelTemplateManager;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
@@ -60,8 +59,8 @@ import com.synopsys.integration.alert.workflow.NotificationManager;
 import com.synopsys.integration.alert.workflow.processor.NotificationProcessor;
 import com.synopsys.integration.exception.IntegrationException;
 
-@Transactional
 @Component
+@Transactional
 public class AuditEntryActions {
     private final Logger logger = LoggerFactory.getLogger(AuditEntryActions.class);
 
@@ -134,6 +133,33 @@ public class AuditEntryActions {
         return null;
     }
 
+    public AlertPagedModel<AuditEntryConfig> resendNotification(final Long id) throws IntegrationException {
+        final Optional<AuditEntryEntity> auditEntryEntityOptional = auditEntryRepository.findById(id);
+        if (!auditEntryEntityOptional.isPresent()) {
+            throw new AlertException("No audit entry with the provided id exists.");
+        }
+
+        final AuditEntryEntity auditEntryEntity = auditEntryEntityOptional.get();
+        final List<AuditNotificationRelation> relations = auditNotificationRepository.findByAuditEntryId(auditEntryEntity.getId());
+        final List<Long> notificationIds = relations.stream().map(AuditNotificationRelation::getNotificationId).collect(Collectors.toList());
+        final List<NotificationContent> notifications = notificationManager.findByIds(notificationIds);
+        final Long commonConfigId = auditEntryEntity.getCommonConfigId();
+        final Optional<CommonDistributionConfig> optionalCommonConfig = commonDistributionConfigReader.getPopulatedConfig(commonConfigId);
+        if (notifications == null || notifications.isEmpty()) {
+            throw new AlertNotificationPurgedException("The notification for this entry was purged. To edit the purge schedule, please see the Scheduling Configuration.");
+        }
+        if (!optionalCommonConfig.isPresent()) {
+            throw new AlertException("The job for this entry was deleted, can not re-send this entry.");
+        }
+        final CommonDistributionConfig commonConfig = optionalCommonConfig.get();
+        final List<ChannelEvent> channelEvents = notificationProcessor.processNotifications(commonConfig, notifications);
+        channelEvents.forEach(event -> {
+            event.setAuditEntryId(auditEntryEntity.getId());
+            channelTemplateManager.sendEvent(event);
+        });
+        return get();
+    }
+
     private void addMatchingModels(final List<AuditEntryConfig> listToAddTo, final List<AuditEntryConfig> modelsToCheck, final String searchTerm) {
         if (StringUtils.isBlank(searchTerm)) {
             listToAddTo.addAll(modelsToCheck);
@@ -166,33 +192,6 @@ public class AuditEntryActions {
         final PageRequest pageRequest = PageRequest.of(0, Integer.MAX_VALUE, new Sort(sortingOrder, sortingField));
         final Page<AuditEntryEntity> auditPage = auditEntryRepository.findAll(pageRequest);
         return auditPage;
-    }
-
-    public AlertPagedModel<AuditEntryConfig> resendNotification(final Long id) throws IntegrationException {
-        final Optional<AuditEntryEntity> auditEntryEntityOptional = auditEntryRepository.findById(id);
-        if (!auditEntryEntityOptional.isPresent()) {
-            throw new AlertException("No audit entry with the provided id exists.");
-        }
-
-        final AuditEntryEntity auditEntryEntity = auditEntryEntityOptional.get();
-        final List<AuditNotificationRelation> relations = auditNotificationRepository.findByAuditEntryId(auditEntryEntity.getId());
-        final List<Long> notificationIds = relations.stream().map(AuditNotificationRelation::getNotificationId).collect(Collectors.toList());
-        final List<NotificationContent> notifications = notificationManager.findByIds(notificationIds);
-        final Long commonConfigId = auditEntryEntity.getCommonConfigId();
-        final Optional<CommonDistributionConfig> optionalCommonConfig = commonDistributionConfigReader.getPopulatedConfig(commonConfigId);
-        if (notifications == null || notifications.isEmpty()) {
-            throw new AlertNotificationPurgedException("The notification for this entry was purged. To edit the purge schedule, please see the Scheduling Configuration.");
-        }
-        if (!optionalCommonConfig.isPresent()) {
-            throw new AlertException("The job for this entry was deleted, can not re-send this entry.");
-        }
-        final CommonDistributionConfig commonConfig = optionalCommonConfig.get();
-        final List<ChannelEvent> channelEvents = notificationProcessor.processNotifications(commonConfig, notifications);
-        channelEvents.forEach(event -> {
-            event.setAuditEntryId(auditEntryEntity.getId());
-            channelTemplateManager.sendEvent(event);
-        });
-        return get();
     }
 
     private List<AuditEntryConfig> sortRestModels(final List<AuditEntryConfig> auditEntryConfigs, final String sortField, final String sortOrder) {
@@ -259,5 +258,4 @@ public class AuditEntryActions {
 
         return new AuditEntryConfig(id, distributionConfigName, eventType, timeCreated, timeLastSent, status, errorMessage, errorStackTrace, notificationConfig);
     }
-
 }
