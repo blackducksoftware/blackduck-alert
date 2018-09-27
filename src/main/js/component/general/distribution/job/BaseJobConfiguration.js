@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import Select from 'react-select-2';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
 import TextInput from '../../../../field/input/TextInput';
 import ProjectConfiguration from '../ProjectConfiguration';
 import ConfigButtons from '../../../common/ConfigButtons';
@@ -55,387 +54,420 @@ class BaseJobConfiguration extends Component {
                     error: nextProps.error,
                     configurationMessage: nextProps.configurationMessage
                 });
-            } else if (this.props.loading) {
-                const providerOptions = this.createProviderOptions();
-                const stateValues = Object.assign({}, this.state, {
-                    fetching: nextProps.fetching,
-                    inProgress: nextProps.inProgress,
-                    success: nextProps.success,
-                    configurationMessage: nextProps.configurationMessage,
-                    error: nextProps.error ? nextProps.error : {},
-                    providerOptions: providerOptions
-                });
-
-                if (nextProps.distributionConfigId) {
-                    const jobConfig = nextProps.jobs[nextProps.distributionConfigId];
-                    if (jobConfig) {
-                        const readDescriptorDistribution = !this.state.providerName && jobConfig.providerName
-                        if (readDescriptorDistribution) {
-                            nextProps.getDistributionDescriptor(jobConfig.providerName, nextProps.alertChannelName);
-                        }
-                    }
-                    const newState = Object.assign({}, stateValues, {
-                        id: jobConfig.id,
-                        distributionConfigId: nextProps.distributionConfigId,
-                        name: jobConfig.name,
-                        providerName: jobConfig.providerName,
-                        distributionType: jobConfig.distributionType,
-                        frequency: jobConfig.frequency,
-                        formatType: jobConfig.formatType,
-                        includeAllProjects: jobConfig.filterByProject == 'false',
-                        filterByProject: jobConfig.filterByProject,
-                        notificationTypes: jobConfig.notificationTypes,
-                        configuredProjects: jobConfig.configuredProjects
+            } else if (nextProps.loading) {
+                {
+                    const providerOptions = this.createProviderOptions();
+                    const stateValues = Object.assign({}, this.state, {
+                        fetching: nextProps.fetching,
+                        inProgress: nextProps.inProgress,
+                        success: nextProps.success,
+                        configurationMessage: nextProps.configurationMessage,
+                        error: nextProps.error ? nextProps.error : {},
+                        providerOptions: providerOptions
                     });
-                    this.setState(newState);
-                } else {
-                    if (null == this.state.includeAllProjects || undefined == this.state.includeAllProjects) {
-                        this.setState({
-                            includeAllProjects: true
+
+                    if (nextProps.distributionConfigId) {
+                        const jobConfig = nextProps.jobs[nextProps.distributionConfigId];
+                        if (jobConfig) {
+                            const readDescriptorDistribution = !this.state.providerName && jobConfig.providerName
+                            if (readDescriptorDistribution) {
+                                nextProps.getDistributionDescriptor(jobConfig.providerName, nextProps.alertChannelName);
+                            }
+                        }
+                        const newState = Object.assign({}, stateValues, {
+                            id: jobConfig.id,
+                            distributionConfigId: nextProps.distributionConfigId,
+                            name: jobConfig.name,
+                            providerName: jobConfig.providerName,
+                            distributionType: jobConfig.distributionType,
+                            frequency: jobConfig.frequency,
+                            formatType: jobConfig.formatType,
+                            includeAllProjects: jobConfig.filterByProject == 'false',
+                            filterByProject: jobConfig.filterByProject,
+                            notificationTypes: jobConfig.notificationTypes,
+                            configuredProjects: jobConfig.configuredProjects
                         });
+                        this.setState(newState);
+                    } else {
+                        if (null == this.state.includeAllProjects || undefined == this.state.includeAllProjects) {
+                            this.setState({
+                                includeAllProjects: true
+                            });
+                        }
+                        if (!this.state.providerName && providerOptions.length == 1) {
+                            const providerSelection = providerOptions[0].value;
+                            nextProps.getDistributionDescriptor(providerSelection, nextProps.alertChannelName);
+                            this.setState({
+                                providerName: providerSelection
+                            });
+                        }
+                        this.setState(stateValues);
                     }
-                    if (!this.state.providerName && providerOptions.length == 1) {
-                        const providerSelection = providerOptions[0].value;
-                        nextProps.getDistributionDescriptor(providerSelection, nextProps.alertChannelName);
-                        this.setState({
-                            providerName: providerSelection
-                        });
-                    }
-                    this.setState(stateValues);
                 }
             }
         }
-    }
 
-    onSubmit(event) {
-        event.preventDefault();
-        const {handleSaveBtnClick, handleCancel} = this.props;
-        this.handleSubmit();
-        if (handleCancel && !handleSaveBtnClick) {
-            handleCancel();
-        }
-    }
-
-    handleSubmit(event) {
-        this.setState({
-            saving: true,
-            error: {}
-        });
-        if (event) {
+        onSubmit(event)
+        {
             event.preventDefault();
-        }
-        const jsonBody = this.buildJsonBody();
-        if (this.state.id) {
-            this.props.updateDistributionJob(this.props.baseUrl, jsonBody);
-        } else {
-            this.props.saveDistributionJob(this.props.baseUrl, jsonBody);
-        }
-    }
-
-    handleTestSubmit(event) {
-        this.setState({
-            error: {}
-        });
-
-        if (event) {
-            event.preventDefault();
-        }
-
-        const jsonBody = this.buildJsonBody();
-        this.props.testDistributionJob(this.props.testUrl, jsonBody);
-    }
-
-    buildJsonBody() {
-        const configuration = Object.assign({}, {
-            id: this.state.id,
-            distributionConfigId: this.state.distributionConfigId,
-            name: this.state.name,
-            providerName: this.state.providerName,
-            distributionType: this.state.distributionType,
-            frequency: this.state.frequency,
-            formatType: this.state.formatType,
-            filterByProject: !this.state.includeAllProjects,
-            notificationTypes: this.state.notificationTypes,
-            configuredProjects: this.state.configuredProjects
-        }, this.props.getParentConfiguration());
-        configuration.includeAllProjects = !configuration.filterByProject;
-        if (configuration.notificationTypes && configuration.notificationTypes.length > 0) {
-            configuration.notificationTypes = configuration.notificationTypes;
-        } else {
-            configuration.notificationTypes = null;
-        }
-
-        const jsonBody = JSON.stringify(configuration);
-        return jsonBody;
-    }
-
-    handleChange({target}) {
-        const value = target.type === 'checkbox' ? target.checked : target.value;
-        const {name} = target;
-        this.handleStateValues(name, value);
-    }
-
-    handleStateValues(name, value) {
-        this.setState({
-            [name]: value
-        });
-    }
-
-    handleSetState(name, value) {
-        this.setState({
-            [name]: value
-        });
-    }
-
-    handleProviderChanged(option) {
-        if (option) {
-            if (this.state.providerName != option.value) {
-                this.handleStateValues('providerName', option.value);
-                this.props.getDistributionDescriptor(option.value, this.props.alertChannelName);
-            }
-        } else {
-            if (this.state.providerOptions.length > 1) {
-                this.handleStateValues('providerName', option);
-                this.props.getDistributionDescriptor('', this.props.alertChannelName);
+            const {handleSaveBtnClick, handleCancel} = this.props;
+            this.handleSubmit();
+            if (handleCancel && !handleSaveBtnClick) {
+                handleCancel();
             }
         }
-    }
 
-    handleFrequencyChanged(option) {
-        if (option) {
-            this.handleStateValues('frequency', option.value);
-        } else {
-            this.handleStateValues('frequency', option);
-        }
-    }
-
-    handleNotificationChanged(selectedValues) {
-        if (selectedValues && selectedValues.length > 0) {
-            const selected = selectedValues.map(item => item.value);
-            this.handleStateValues('notificationTypes', selected);
-        } else {
-            this.handleStateValues('notificationTypes', []);
-        }
-    }
-
-    handleProjectChanged(selectedValues) {
-        if (selectedValues && selectedValues.length > 0) {
-            this.handleStateValues('configuredProjects', selectedValues);
-        } else {
-            this.handleStateValues('configuredProjects', []);
-        }
-    }
-
-    handleFormatChanged(option) {
-        if (option) {
-            this.handleStateValues('formatType', option.value);
-        } else {
-            this.handleStateValues('formatType', option);
-        }
-    }
-
-    createProviderOptions() {
-        const providers = this.props.descriptors.items['PROVIDER_CONFIG'];
-        if (providers) {
-            const optionList = providers.map(descriptor => {
-                return {
-                    label: descriptor.label,
-                    value: descriptor.descriptorName,
-                    icon: descriptor.fontAwesomeIcon
-                }
+        handleSubmit(event)
+        {
+            this.setState({
+                saving: true,
+                error: {}
             });
-            return optionList;
-        } else {
-            return [];
+            if (event) {
+                event.preventDefault();
+            }
+            const jsonBody = this.buildJsonBody();
+            if (this.state.id) {
+                this.props.updateDistributionJob(this.props.baseUrl, jsonBody);
+            } else {
+                this.props.saveDistributionJob(this.props.baseUrl, jsonBody);
+            }
         }
-    }
 
-    createNotificationTypeOptions() {
-        const {fields} = this.props.currentDistributionComponents;
-        if (fields) {
-            const notificationTypeField = fields.filter(field => field.key === 'notificationTypes');
-            const {options} = notificationTypeField[0];
+        handleTestSubmit(event)
+        {
+            this.setState({
+                error: {}
+            });
 
-            const optionList = options.map(option => Object.assign({}, {label: option, value: option}));
-            return optionList;
-        } else {
-            return [];
+            if (event) {
+                event.preventDefault();
+            }
+
+            const jsonBody = this.buildJsonBody();
+            this.props.testDistributionJob(this.props.testUrl, jsonBody);
         }
-    }
 
-    createFormatTypeOptions() {
-        const {fields} = this.props.currentDistributionComponents;
-        if (fields) {
-            const formatTypeField = fields.filter(field => field.key === 'formatType');
-            const {options} = formatTypeField[0];
+        buildJsonBody()
+        {
+            const configuration = Object.assign({}, {
+                id: this.state.id,
+                distributionConfigId: this.state.distributionConfigId,
+                name: this.state.name,
+                providerName: this.state.providerName,
+                distributionType: this.state.distributionType,
+                frequency: this.state.frequency,
+                formatType: this.state.formatType,
+                filterByProject: !this.state.includeAllProjects,
+                notificationTypes: this.state.notificationTypes,
+                configuredProjects: this.state.configuredProjects
+            }, this.props.getParentConfiguration());
+            configuration.includeAllProjects = !configuration.filterByProject;
+            if (configuration.notificationTypes && configuration.notificationTypes.length > 0) {
+                configuration.notificationTypes = configuration.notificationTypes;
+            } else {
+                configuration.notificationTypes = null;
+            }
 
-            const optionList = options.map(option => Object.assign({}, {label: option, value: option}));
-            return optionList;
-        } else {
-            return [];
+            const jsonBody = JSON.stringify(configuration);
+            return jsonBody;
         }
-    }
 
-    renderOption(option) {
-        return (<DescriptorOption icon={option.icon} label={option.label} value={option.value}/>);
-    }
+        handleChange({target})
+        {
+            const value = target.type === 'checkbox' ? target.checked : target.value;
+            const {name} = target;
+            this.handleStateValues(name, value);
+        }
 
-    renderDistributionForm() {
-        if (!this.props.currentDistributionComponents) {
-            return null;
-        } else {
+        handleStateValues(name, value)
+        {
+            this.setState({
+                [name]: value
+            });
+        }
+
+        handleSetState(name, value)
+        {
+            this.setState({
+                [name]: value
+            });
+        }
+
+        handleProviderChanged(option)
+        {
+            if (option) {
+                if (this.state.providerName != option.value) {
+                    this.handleStateValues('providerName', option.value);
+                    this.props.getDistributionDescriptor(option.value, this.props.alertChannelName);
+                }
+            } else {
+                if (this.state.providerOptions.length > 1) {
+                    this.handleStateValues('providerName', option);
+                    this.props.getDistributionDescriptor('', this.props.alertChannelName);
+                }
+            }
+        }
+
+        handleFrequencyChanged(option)
+        {
+            if (option) {
+                this.handleStateValues('frequency', option.value);
+            } else {
+                this.handleStateValues('frequency', option);
+            }
+        }
+
+        handleNotificationChanged(selectedValues)
+        {
+            if (selectedValues && selectedValues.length > 0) {
+                const selected = selectedValues.map(item => item.value);
+                this.handleStateValues('notificationTypes', selected);
+            } else {
+                this.handleStateValues('notificationTypes', []);
+            }
+        }
+
+        handleProjectChanged(selectedValues)
+        {
+            if (selectedValues && selectedValues.length > 0) {
+                this.handleStateValues('configuredProjects', selectedValues);
+            } else {
+                this.handleStateValues('configuredProjects', []);
+            }
+        }
+
+        handleFormatChanged(option)
+        {
+            if (option) {
+                this.handleStateValues('formatType', option.value);
+            } else {
+                this.handleStateValues('formatType', option);
+            }
+        }
+
+        createProviderOptions()
+        {
+            const providers = this.props.descriptors.items['PROVIDER_CONFIG'];
+            if (providers) {
+                const optionList = providers.map(descriptor => {
+                    return {
+                        label: descriptor.label,
+                        value: descriptor.descriptorName,
+                        icon: descriptor.fontAwesomeIcon
+                    }
+                });
+                return optionList;
+            } else {
+                return [];
+            }
+        }
+
+        createNotificationTypeOptions()
+        {
+            const {fields} = this.props.currentDistributionComponents;
+            if (fields) {
+                const notificationTypeField = fields.filter(field => field.key === 'notificationTypes');
+                const {options} = notificationTypeField[0];
+
+                const optionList = options.map(option => Object.assign({}, {label: option, value: option}));
+                return optionList;
+            } else {
+                return [];
+            }
+        }
+
+        createFormatTypeOptions()
+        {
+            const {fields} = this.props.currentDistributionComponents;
+            if (fields) {
+                const formatTypeField = fields.filter(field => field.key === 'formatType');
+                const {options} = formatTypeField[0];
+
+                const optionList = options.map(option => Object.assign({}, {label: option, value: option}));
+                return optionList;
+            } else {
+                return [];
+            }
+        }
+
+        renderOption(option)
+        {
+            return (<DescriptorOption icon={option.icon} label={option.label} value={option.value}/>);
+        }
+
+        renderDistributionForm()
+        {
+            if (!this.props.currentDistributionComponents) {
+                return null;
+            } else {
+                return (
+                    <div>
+                        <div className="form-group">
+                            <label className="col-sm-3 control-label">Format</label>
+                            <div className="col-sm-8">
+                                <Select
+                                    id="formatType"
+                                    className="typeAheadField"
+                                    onChange={this.handleFormatChanged}
+                                    removeSelected
+                                    options={this.createFormatTypeOptions()}
+                                    placeholder="Choose the format for the job"
+                                    value={this.state.formatType}
+                                />
+                                {this.state.error.formatTypeError && <label className="fieldError" name="formatTypeError">
+                                    {this.state.error.formatTypeError}
+                                </label>}
+                            </div>
+                        </div>
+                        <div className="form-group">
+                            <label className="col-sm-3 control-label">Notification Types</label>
+                            <div className="col-sm-8">
+                                <Select
+                                    id="jobType"
+                                    className="typeAheadField"
+                                    onChange={this.handleNotificationChanged}
+                                    searchable
+                                    multi
+                                    removeSelected
+                                    options={this.createNotificationTypeOptions()}
+                                    placeholder="Choose the notification types"
+                                    value={this.state.notificationTypes}
+                                />
+                                {this.state.error.notificationTypesError && <label className="fieldError" name="notificationTypesError">
+                                    {this.state.error.notificationTypesError}
+                                </label>}
+                            </div>
+                        </div>
+                        {this.props.childContent}
+                        <ProjectConfiguration includeAllProjects={this.state.includeAllProjects} handleChange={this.handleChange} handleProjectChanged={this.handleProjectChanged} projects={this.props.projects}
+                                              configuredProjects={this.state.configuredProjects}/>
+                        <ConfigButtons cancelId="job-cancel" submitId="job-submit" includeTest includeCancel onTestClick={this.handleTestSubmit} onCancelClick={this.props.handleCancel}/>
+                        <p name="configurationMessage">{this.state.configurationMessage}</p>
+                    </div>
+                );
+            }
+        }
+
+        render()
+        {
             return (
-                <div>
+                <form className="form-horizontal" onSubmit={this.onSubmit}>
+                    <TextInput id="name" label="Job Name" name="name" value={this.state.name} onChange={this.handleChange} errorName="nameError" errorValue={this.state.error.nameError}/>
                     <div className="form-group">
-                        <label className="col-sm-3 control-label">Format</label>
+                        <label className="col-sm-3 control-label">Frequency</label>
                         <div className="col-sm-8">
                             <Select
-                                id="formatType"
+                                id="jobFrequency"
                                 className="typeAheadField"
-                                onChange={this.handleFormatChanged}
-                                removeSelected
-                                options={this.createFormatTypeOptions()}
-                                placeholder="Choose the format for the job"
-                                value={this.state.formatType}
-                            />
-                            {this.state.error.formatTypeError && <label className="fieldError" name="formatTypeError">
-                                {this.state.error.formatTypeError}
-                            </label>}
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        <label className="col-sm-3 control-label">Notification Types</label>
-                        <div className="col-sm-8">
-                            <Select
-                                id="jobType"
-                                className="typeAheadField"
-                                onChange={this.handleNotificationChanged}
+                                onChange={this.handleFrequencyChanged}
                                 searchable
-                                multi
-                                removeSelected
-                                options={this.createNotificationTypeOptions()}
-                                placeholder="Choose the notification types"
-                                value={this.state.notificationTypes}
+                                options={frequencyOptions}
+                                placeholder="Choose the frequency"
+                                value={this.state.frequency}
                             />
-                            {this.state.error.notificationTypesError && <label className="fieldError" name="notificationTypesError">
-                                {this.state.error.notificationTypesError}
+                            {this.state.error.frequencyError && <label className="fieldError" name="frequencyError">
+                                {this.state.error.frequencyError}
                             </label>}
                         </div>
                     </div>
-                    {this.props.childContent}
-                    <ProjectConfiguration includeAllProjects={this.state.includeAllProjects} handleChange={this.handleChange} handleProjectChanged={this.handleProjectChanged} projects={this.props.projects}
-                                          configuredProjects={this.state.configuredProjects}/>
-                    <ConfigButtons cancelId="job-cancel" submitId="job-submit" includeTest includeCancel onTestClick={this.handleTestSubmit} onCancelClick={this.props.handleCancel}/>
-                    <p name="configurationMessage">{this.state.configurationMessage}</p>
-                </div>
+                    <div className="form-group">
+                        <label className="col-sm-3 control-label">Provider</label>
+                        <div className="col-sm-8">
+                            <Select
+                                id="providerName"
+                                className="typeAheadField"
+                                onChange={this.handleProviderChanged}
+                                searchable
+                                options={this.state.providerOptions}
+                                optionRenderer={this.renderOption}
+                                placeholder="Choose the provider"
+                                value={this.state.providerName}
+                                valueRenderer={this.renderOption}
+                            />
+                            {this.state.error.providerNameError && <label className="fieldError" name="providerNameError">
+                                {this.state.error.providerNameError}
+                            </label>}
+                        </div>
+                    </div>
+                    {this.renderDistributionForm()}
+                </form>
             );
         }
     }
 
-    render() {
-        return (
-            <form className="form-horizontal" onSubmit={this.onSubmit}>
-                <TextInput id="name" label="Job Name" name="name" value={this.state.name} onChange={this.handleChange} errorName="nameError" errorValue={this.state.error.nameError}/>
-                <div className="form-group">
-                    <label className="col-sm-3 control-label">Frequency</label>
-                    <div className="col-sm-8">
-                        <Select
-                            id="jobFrequency"
-                            className="typeAheadField"
-                            onChange={this.handleFrequencyChanged}
-                            searchable
-                            options={frequencyOptions}
-                            placeholder="Choose the frequency"
-                            value={this.state.frequency}
-                        />
-                        {this.state.error.frequencyError && <label className="fieldError" name="frequencyError">
-                            {this.state.error.frequencyError}
-                        </label>}
-                    </div>
-                </div>
-                <div className="form-group">
-                    <label className="col-sm-3 control-label">Provider</label>
-                    <div className="col-sm-8">
-                        <Select
-                            id="providerName"
-                            className="typeAheadField"
-                            onChange={this.handleProviderChanged}
-                            searchable
-                            options={this.state.providerOptions}
-                            optionRenderer={this.renderOption}
-                            placeholder="Choose the provider"
-                            value={this.state.providerName}
-                            valueRenderer={this.renderOption}
-                        />
-                        {this.state.error.providerNameError && <label className="fieldError" name="providerNameError">
-                            {this.state.error.providerNameError}
-                        </label>}
-                    </div>
-                </div>
-                {this.renderDistributionForm()}
-            </form>
-        );
-    }
-}
+    BaseJobConfiguration
+.
+    propTypes = {
+        csrfToken: PropTypes.string,
+        descriptors: PropTypes.object,
+        jobs: PropTypes.object,
+        baseUrl: PropTypes.string.isRequired,
+        testUrl: PropTypes.string.isRequired,
+        fetching: PropTypes.bool,
+        inProgress: PropTypes.bool,
+        success: PropTypes.bool,
+        testingConfig: PropTypes.bool,
+        configurationMessage: PropTypes.string,
+        error: PropTypes.object,
+        distributionConfigId: PropTypes.string,
+        handleCancel: PropTypes.func.isRequired,
+        handleSaveBtnClick: PropTypes.func.isRequired,
+        getParentConfiguration: PropTypes.func.isRequired,
+        childContent: PropTypes.object.isRequired,
+        alertChannelName: PropTypes.string.isRequired,
+        currentDistributionComponents: PropTypes.object,
+        loading: PropTypes.bool.isRequired
+    };
 
-BaseJobConfiguration.propTypes = {
-    csrfToken: PropTypes.string,
-    descriptors: PropTypes.object,
-    jobs: PropTypes.object,
-    baseUrl: PropTypes.string.isRequired,
-    testUrl: PropTypes.string.isRequired,
-    fetching: PropTypes.bool,
-    inProgress: PropTypes.bool,
-    success: PropTypes.bool,
-    testingConfig: PropTypes.bool,
-    configurationMessage: PropTypes.string,
-    error: PropTypes.object,
-    distributionConfigId: PropTypes.string,
-    handleCancel: PropTypes.func.isRequired,
-    handleSaveBtnClick: PropTypes.func.isRequired,
-    getParentConfiguration: PropTypes.func.isRequired,
-    childContent: PropTypes.object.isRequired,
-    alertChannelName: PropTypes.string.isRequired,
-    currentDistributionComponents: PropTypes.object,
-    loading: PropTypes.bool.isRequired
-};
+    BaseJobConfiguration
+.
+    defaultProps = {
+        csrfToken: null,
+        descriptors: {},
+        jobs: {},
+        baseUrl: '',
+        testUrl: '',
+        fetching: false,
+        inProgress: false,
+        success: false,
+        testingConfig: false,
+        configurationMessage: '',
+        error: {},
+        distributionConfigId: null,
+        currentDistributionComponents: null,
+        loading: false
+    };
 
-BaseJobConfiguration.defaultProps = {
-    csrfToken: null,
-    descriptors: {},
-    jobs: {},
-    baseUrl: '',
-    testUrl: '',
-    fetching: false,
-    inProgress: false,
-    success: false,
-    testingConfig: false,
-    configurationMessage: '',
-    error: {},
-    distributionConfigId: null,
-    currentDistributionComponents: null,
-    loading: false
-};
+    const
+    mapDispatchToProps = dispatch => ({
+        getDistributionJob: (url, id) => dispatch(getDistributionJob(url, id)),
+        saveDistributionJob: (url, config) => dispatch(saveDistributionJob(url, config)),
+        updateDistributionJob: (url, config) => dispatch(updateDistributionJob(url, config)),
+        testDistributionJob: (url, config) => dispatch(testDistributionJob(url, config)),
+        getDistributionDescriptor: (provider, channel) => dispatch(getDistributionDescriptor(provider, channel))
+    });
 
-const mapDispatchToProps = dispatch => ({
-    getDistributionJob: (url, id) => dispatch(getDistributionJob(url, id)),
-    saveDistributionJob: (url, config) => dispatch(saveDistributionJob(url, config)),
-    updateDistributionJob: (url, config) => dispatch(updateDistributionJob(url, config)),
-    testDistributionJob: (url, config) => dispatch(testDistributionJob(url, config)),
-    getDistributionDescriptor: (provider, channel) => dispatch(getDistributionDescriptor(provider, channel))
-});
+    const
+    mapStateToProps = state => ({
+        csrfToken: state.session.csrfToken,
+        descriptors: state.descriptors,
+        jobs: state.distributions.jobs,
+        fetching: state.distributions.fetching,
+        inProgress: state.distributions.inProgress,
+        success: state.distributions.success,
+        testingConfig: state.distributions.testingConfig,
+        configurationMessage: state.distributions.configurationMessage,
+        error: state.distributions.error,
+        currentDistributionComponents: state.descriptors.currentDistributionComponents
+    });
 
-const mapStateToProps = state => ({
-    csrfToken: state.session.csrfToken,
-    descriptors: state.descriptors,
-    jobs: state.distributions.jobs,
-    fetching: state.distributions.fetching,
-    inProgress: state.distributions.inProgress,
-    success: state.distributions.success,
-    testingConfig: state.distributions.testingConfig,
-    configurationMessage: state.distributions.configurationMessage,
-    error: state.distributions.error,
-    currentDistributionComponents: state.descriptors.currentDistributionComponents
-});
+    export
+    default
 
-export default connect(mapStateToProps, mapDispatchToProps)(BaseJobConfiguration);
+    connect(mapStateToProps, mapDispatchToProps)
+
+(
+    BaseJobConfiguration
+)
+    ;
