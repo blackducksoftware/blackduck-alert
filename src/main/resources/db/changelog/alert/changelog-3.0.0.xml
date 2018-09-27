@@ -98,7 +98,7 @@
     </changeSet>
     <changeSet author="jrichard" id="1533054185-15">
         <addColumn tableName="EMAIL_GROUP_DISTRIBUTION_CONFIG" schemaName="ALERT">
-            <column name="PROJECT_OWNER_ONLY" type="BOOLEAN(1)"/>
+            <column name="PROJECT_OWNER_ONLY" type="BOOLEAN(1)" value="FALSE"/>
         </addColumn>
     </changeSet>
 </databaseChangeLog>
