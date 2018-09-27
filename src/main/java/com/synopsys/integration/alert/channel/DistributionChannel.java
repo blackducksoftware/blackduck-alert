@@ -87,6 +87,7 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, E
     }
 
     @Override
+    @Transactional
     public void handleEvent(final E event) {
         if (event.getDestination().equals(getDistributionType())) {
             try {
@@ -100,6 +101,7 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, E
 
     }
 
+    @Transactional
     public void sendAuditedMessage(final E event) throws IntegrationException {
         try {
             sendMessage(event);

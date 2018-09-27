@@ -66,6 +66,7 @@ public class NotificationTypesActions {
 
     }
 
+    @Transactional
     public void saveNotificationTypes(final long entityId, final List<String> configuredNotificationTypes) {
         if (configuredNotificationTypes != null) {
             removeOldNotificationTypes(entityId);
@@ -81,8 +82,7 @@ public class NotificationTypesActions {
         distributionNotificationTypeRepository.deleteAll(distributionProjects);
     }
 
-    @Transactional
-    public void addNewDistributionNotificationTypes(final Long commonDistributionConfigId, final List<String> notificationTypesFromRestModel) {
+    private void addNewDistributionNotificationTypes(final Long commonDistributionConfigId, final List<String> notificationTypesFromRestModel) {
         notificationTypesFromRestModel.forEach(notificationType -> distributionNotificationTypeRepository.save(new DistributionNotificationTypeRelation(commonDistributionConfigId, notificationType)));
     }
 }

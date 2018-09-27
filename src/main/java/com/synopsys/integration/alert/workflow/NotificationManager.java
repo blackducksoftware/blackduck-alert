@@ -43,6 +43,7 @@ import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.entity.repository.NotificationContentRepository;
 
 @Component
+@Transactional
 public class NotificationManager {
     private final NotificationContentRepository notificationContentRepository;
     private final AuditEntryRepository auditEntryRepository;
@@ -55,7 +56,6 @@ public class NotificationManager {
         this.auditNotificationRepository = auditNotificationRepository;
     }
 
-    @Transactional
     public NotificationContent saveNotification(final NotificationContent notification) {
         return notificationContentRepository.save(notification);
     }
@@ -88,7 +88,6 @@ public class NotificationManager {
         notifications.forEach(this::deleteNotification);
     }
 
-    @Transactional
     public void deleteNotification(final NotificationContent notification) {
         notificationContentRepository.delete(notification);
         deleteAuditEntries(notification.getId());
