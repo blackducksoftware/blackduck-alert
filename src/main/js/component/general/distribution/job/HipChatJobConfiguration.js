@@ -19,22 +19,21 @@ class HipChatJobConfiguration extends Component {
             roomId: props.roomId,
             notify: props.notify,
             colorOptions: props.colorOptions,
-            error: {},
-            loading: false
+            error: {}
         };
+        this.loading = false;
     }
 
     componentDidMount() {
         const {baseUrl, distributionConfigId} = this.props;
         this.props.getDistributionJob(baseUrl, distributionConfigId);
-        this.setState({
-            loading: true
-        });
+        this.loading = true;
     }
 
     componentWillReceiveProps(nextProps) {
         if (!nextProps.fetching && !nextProps.inProgress) {
-            if (this.state.loading) {
+            if (this.loading) {
+                this.loading = false;
                 const jobConfig = nextProps.jobs[nextProps.distributionConfigId];
                 if (jobConfig) {
                     this.setState({
@@ -44,9 +43,6 @@ class HipChatJobConfiguration extends Component {
                         colorOptions: nextProps.colorOptions
                     });
                 }
-                this.setState({
-                    loading: false
-                });
             }
         }
     }
@@ -107,8 +103,7 @@ class HipChatJobConfiguration extends Component {
             handleCancel={this.props.handleCancel}
             handleSaveBtnClick={this.props.handleSaveBtnClick}
             getParentConfiguration={this.getConfiguration}
-            childContent={content}
-            loading={this.state.loading}/>);
+            childContent={content}/>);
     }
 }
 

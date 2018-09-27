@@ -13,26 +13,24 @@ class GroupEmailJobConfiguration extends Component {
         this.handleChange = this.handleChange.bind(this);
         this.handleStateValues = this.handleStateValues.bind(this);
         this.getConfiguration = this.getConfiguration.bind(this);
-
         this.state = {
             emailSubjectLine: props.emailSubjectLine,
             projectOwnerOnly: props.projectOwnerOnly,
-            error: {},
-            loading: false
+            error: {}
         }
+        this.loading = false;
     }
 
     componentDidMount() {
         const {baseUrl, distributionConfigId} = this.props;
         this.props.getDistributionJob(baseUrl, distributionConfigId);
-        this.setState({
-            loading: true
-        });
+        this.loading = true;
     }
 
     componentWillReceiveProps(nextProps) {
         if (!nextProps.fetching && !nextProps.inProgress) {
-            if (this.state.loading) {
+            if (this.loading) {
+                this.loading = false;
                 const jobConfig = nextProps.jobs[nextProps.distributionConfigId];
                 if (jobConfig) {
                     this.setState({
@@ -40,9 +38,6 @@ class GroupEmailJobConfiguration extends Component {
                         projectOwnerOnly: jobConfig.projectOwnerOnly
                     });
                 }
-                this.setState({
-                    loading: false
-                });
             }
         }
     }
@@ -81,8 +76,7 @@ class GroupEmailJobConfiguration extends Component {
             handleCancel={this.props.handleCancel}
             handleSaveBtnClick={this.props.handleSaveBtnClick}
             getParentConfiguration={this.getConfiguration}
-            childContent={content}
-            loading={this.state.loading}/>);
+            childContent={content}/>);
     }
 }
 
