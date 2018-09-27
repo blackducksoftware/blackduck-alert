@@ -30,8 +30,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-import javax.transaction.Transactional;
-
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -39,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
@@ -61,7 +60,6 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.rest.proxy.ProxyInfoBuilder;
 
 @Component
-@Transactional
 public class StartupManager {
     private final Logger logger = LoggerFactory.getLogger(StartupManager.class);
 
@@ -105,8 +103,8 @@ public class StartupManager {
 
     @Autowired
     public StartupManager(final SchedulingRepository schedulingRepository, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
-    final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer,
-    final List<ProviderDescriptor> providerDescriptorList) {
+        final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer,
+        final List<ProviderDescriptor> providerDescriptorList) {
         this.schedulingRepository = schedulingRepository;
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
@@ -118,6 +116,7 @@ public class StartupManager {
         this.providerDescriptorList = providerDescriptorList;
     }
 
+    @Transactional
     public void startup() {
         logger.info("Alert Starting...");
         initializeChannelPropertyManagers();
@@ -206,6 +205,7 @@ public class StartupManager {
         }
     }
 
+    @Transactional
     public void initializeCronJobs() {
         final List<SchedulingConfigEntity> globalSchedulingConfigs = schedulingRepository.findAll();
         String dailyDigestHourOfDay = null;
@@ -240,7 +240,8 @@ public class StartupManager {
         logger.debug("Phone home next run:       {}", phoneHomeTask.getFormatedNextRunTime());
     }
 
-    private Boolean purgeOldData() {
+    @Transactional
+    public Boolean purgeOldData() {
         try {
             logger.info("Begin startup purge of old data");
             final List<SchedulingConfigEntity> globalSchedulingConfigs = schedulingRepository.findAll();

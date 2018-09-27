@@ -29,6 +29,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
@@ -55,6 +56,7 @@ public class CommonDistributionConfigActions {
         this.contentConverter = contentConverter;
     }
 
+    @Transactional
     public void validateCommonConfig(final CommonDistributionConfig commonConfig, final Map<String, String> fieldErrors) {
         if (StringUtils.isNotBlank(commonConfig.getName())) {
             final CommonDistributionConfigEntity entity = commonDistributionRepository.findByName(commonConfig.getName());
@@ -87,12 +89,14 @@ public class CommonDistributionConfigActions {
         }
     }
 
+    @Transactional
     public void deleteCommonEntity(final long id) {
         commonDistributionRepository.deleteById(id);
         configuredProjectsActions.cleanUpConfiguredProjects();
         notificationTypesActions.removeOldNotificationTypes(id);
     }
 
+    @Transactional
     public void saveCommonEntity(final CommonDistributionConfig commonChannelConfig, final long distributionId) {
         if (commonChannelConfig != null) {
             CommonDistributionConfigEntity commonChannelEntity = createCommonEntity(commonChannelConfig);
@@ -112,8 +116,8 @@ public class CommonDistributionConfigActions {
         final FrequencyType frequencyType = Enum.valueOf(FrequencyType.class, commonConfig.getFrequency());
         final Boolean filterByProject = contentConverter.getBooleanValue(commonConfig.getFilterByProject());
         final FormatType formatType = Enum.valueOf(FormatType.class, commonConfig.getFormatType());
-        final CommonDistributionConfigEntity commonEntity = new CommonDistributionConfigEntity(distributionConfigId, commonConfig.getDistributionType(), commonConfig.getName(), commonConfig.getProviderName(), frequencyType,
-            filterByProject, formatType);
+        final CommonDistributionConfigEntity commonEntity =
+            new CommonDistributionConfigEntity(distributionConfigId, commonConfig.getDistributionType(), commonConfig.getName(), commonConfig.getProviderName(), frequencyType, filterByProject, formatType);
         final Long longId = contentConverter.getLongValue(commonConfig.getId());
         commonEntity.setId(longId);
         return commonEntity;

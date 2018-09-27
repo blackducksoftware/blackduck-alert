@@ -30,7 +30,6 @@ import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.entity.repository.NotificationContentRepository;
-import com.synopsys.integration.alert.database.entity.repository.VulnerabilityRepository;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.mock.model.MockCommonDistributionRestModel;
 import com.synopsys.integration.alert.web.audit.AuditEntryActions;
@@ -67,7 +66,6 @@ public class AuditEntryActionsTest {
     public void testResendNotificationException() {
         final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         final NotificationContentRepository notificationRepository = Mockito.mock(NotificationContentRepository.class);
-        final VulnerabilityRepository vulnerabilityRepository = Mockito.mock(VulnerabilityRepository.class);
         final AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
         final CommonDistributionConfigReader commonDistributionConfigReader = Mockito.mock(CommonDistributionConfigReader.class);
         final MockAuditEntryEntity mockAuditEntryEntity = new MockAuditEntryEntity();
@@ -75,7 +73,7 @@ public class AuditEntryActionsTest {
         Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(mockAuditEntryEntity.createEmptyEntity()));
         Mockito.when(commonDistributionConfigReader.getPopulatedConfig(Mockito.anyLong())).thenReturn(null);
         Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Arrays.asList(mockNotificationEntity.createEntity()));
-        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, vulnerabilityRepository, auditEntryRepository, auditNotificationRepository),
+        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, auditEntryRepository, auditNotificationRepository),
             auditNotificationRepository, commonDistributionConfigReader, null, null, null, null);
 
         AlertPagedModel<AuditEntryConfig> restModel = null;
@@ -112,7 +110,6 @@ public class AuditEntryActionsTest {
         Mockito.when(auditEntryRepository.findAll(Mockito.any(PageRequest.class))).thenReturn(pageResponse);
 
         final NotificationContentRepository notificationRepository = Mockito.mock(NotificationContentRepository.class);
-        final VulnerabilityRepository vulnerabilityRepository = Mockito.mock(VulnerabilityRepository.class);
         final AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
         final CommonDistributionConfigReader commonDistributionConfigReader = Mockito.mock(CommonDistributionConfigReader.class);
 
@@ -122,7 +119,7 @@ public class AuditEntryActionsTest {
         final NotificationContentConverter notificationContentConverter = new NotificationContentConverter(contentConverter);
         Mockito.when(commonDistributionConfigReader.getPopulatedConfig(Mockito.anyLong())).thenReturn(Optional.of(mockCommonDistributionRestModel.createRestModel()));
         Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Arrays.asList(notificationContent));
-        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, vulnerabilityRepository, auditEntryRepository, auditNotificationRepository),
+        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, auditEntryRepository, auditNotificationRepository),
             auditNotificationRepository, commonDistributionConfigReader, notificationContentConverter, null, null, null);
 
         final AlertPagedModel<AuditEntryConfig> restModel = auditEntryActions.get(currentPage, pageSize, null, null, null);
@@ -153,7 +150,6 @@ public class AuditEntryActionsTest {
         Mockito.when(auditEntryRepository.findAll(Mockito.any(PageRequest.class))).thenReturn(pageResponse);
 
         final NotificationContentRepository notificationRepository = Mockito.mock(NotificationContentRepository.class);
-        final VulnerabilityRepository vulnerabilityRepository = Mockito.mock(VulnerabilityRepository.class);
         final AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
         final CommonDistributionConfigReader commonDistributionConfigReader = Mockito.mock(CommonDistributionConfigReader.class);
         final MockCommonDistributionRestModel mockCommonDistributionRestModel = new MockCommonDistributionRestModel();
@@ -162,7 +158,7 @@ public class AuditEntryActionsTest {
         final NotificationContent notificationContent = new MockNotificationContent(new Date(), "provider", new Date(), "notificationType", "{content: \"content is here...\"}", 1L).createEntity();
         Mockito.when(commonDistributionConfigReader.getPopulatedConfig(Mockito.anyLong())).thenReturn(Optional.of(mockCommonDistributionRestModel.createRestModel()));
         Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Arrays.asList(notificationContent));
-        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, vulnerabilityRepository, auditEntryRepository, auditNotificationRepository),
+        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, auditEntryRepository, auditNotificationRepository),
             auditNotificationRepository, commonDistributionConfigReader, notificationContentConverter, null, null, null);
 
         final AlertPagedModel<AuditEntryConfig> restModel = auditEntryActions.get(currentPage, pageSize, null, null, null);

@@ -23,14 +23,11 @@
  */
 package com.synopsys.integration.alert.database.entity.repository;
 
-import javax.transaction.Transactional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.synopsys.integration.alert.database.entity.NotificationTypeEntity;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
-@Transactional
 public interface NotificationTypeRepository extends JpaRepository<NotificationTypeEntity, Long> {
-    public NotificationTypeEntity findByType(final NotificationType type);
+    NotificationTypeEntity findByType(final NotificationType type);
 }

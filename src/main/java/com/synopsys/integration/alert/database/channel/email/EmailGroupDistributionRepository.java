@@ -23,11 +23,7 @@
  */
 package com.synopsys.integration.alert.database.channel.email;
 
-import javax.transaction.Transactional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
-@Transactional
 public interface EmailGroupDistributionRepository extends JpaRepository<EmailGroupDistributionConfigEntity, Long> {
-
 }
