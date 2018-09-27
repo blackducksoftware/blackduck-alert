@@ -101,4 +101,7 @@
             <column name="PROJECT_OWNER_ONLY" type="BOOLEAN(1)" value="FALSE"/>
         </addColumn>
     </changeSet>
+    <changeSet author="psantos" id="1533054185-16">
+        <dropTable schemaName="ALERT" tableName="NOTIFICATION_EVENTS" cascadeConstraints="true"/>
+    </changeSet>
 </databaseChangeLog>
