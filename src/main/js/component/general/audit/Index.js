@@ -252,7 +252,6 @@ class Index extends Component {
     }
 
     resendButton(cell, row) {
-        console.log("Current row", row);
         if (row.content) {
             return <RefreshTableCellFormatter handleButtonClicked={this.onResendClick} currentRowSelected={row} buttonText="Re-send"/>;
         } else {
