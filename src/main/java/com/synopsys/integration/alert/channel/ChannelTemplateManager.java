@@ -57,6 +57,7 @@ public class ChannelTemplateManager {
         this.jmsTemplate = jmsTemplate;
     }
 
+    @Transactional
     public void sendEvents(final List<? extends AlertEvent> eventList) {
         if (!eventList.isEmpty()) {
             eventList.forEach(this::sendEvent);
