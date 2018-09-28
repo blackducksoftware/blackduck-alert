@@ -31,9 +31,6 @@ import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.workflow.NotificationManager;
-import com.synopsys.integration.alert.workflow.processor.NotificationTypeProcessor;
-import com.synopsys.integration.alert.workflow.processor.policy.PolicyNotificationTypeProcessor;
-import com.synopsys.integration.alert.workflow.processor.vulnerability.VulnerabilityNotificationTypeProcessor;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.generated.view.NotificationView;
 import com.synopsys.integration.blackduck.notification.CommonNotificationView;
@@ -75,10 +72,10 @@ public class BlackDuckAccumulatorTest {
     }
 
     private BlackDuckAccumulator createNonProcessingAccumulator(final BlackDuckProperties blackDuckProperties) {
-        return createAccumulator(blackDuckProperties, Collections.emptyList());
+        return createAccumulator(blackDuckProperties);
     }
 
-    private BlackDuckAccumulator createAccumulator(final BlackDuckProperties blackDuckProperties, final List<NotificationTypeProcessor> processorList) {
+    private BlackDuckAccumulator createAccumulator(final BlackDuckProperties blackDuckProperties) {
         return new BlackDuckAccumulator(taskScheduler, testAlertProperties, blackDuckProperties, notificationManager);
     }
 
@@ -339,10 +336,7 @@ public class BlackDuckAccumulatorTest {
     @Test
     public void testProcess() throws Exception {
         final BlackDuckProperties mockedBlackDuckProperties = Mockito.mock(BlackDuckProperties.class);
-        final PolicyNotificationTypeProcessor policyNotificationTypeProcessor = new PolicyNotificationTypeProcessor();
-        final VulnerabilityNotificationTypeProcessor vulnerabilityNotificationTypeProcessor = new VulnerabilityNotificationTypeProcessor();
-        final List<NotificationTypeProcessor> processorList = Arrays.asList(policyNotificationTypeProcessor, vulnerabilityNotificationTypeProcessor);
-        final BlackDuckAccumulator notificationAccumulator = createAccumulator(mockedBlackDuckProperties, processorList);
+        final BlackDuckAccumulator notificationAccumulator = createAccumulator(mockedBlackDuckProperties);
         final NotificationView notificationView = new NotificationView();
         notificationView.createdAt = new Date();
         notificationView.contentType = "content_type";
@@ -358,10 +352,7 @@ public class BlackDuckAccumulatorTest {
     @Test
     public void testProcessEmptyList() {
         final BlackDuckProperties mockedBlackDuckProperties = Mockito.mock(BlackDuckProperties.class);
-        final PolicyNotificationTypeProcessor policyNotificationTypeProcessor = new PolicyNotificationTypeProcessor();
-        final VulnerabilityNotificationTypeProcessor vulnerabilityNotificationTypeProcessor = new VulnerabilityNotificationTypeProcessor();
-        final List<NotificationTypeProcessor> processorList = Arrays.asList(policyNotificationTypeProcessor, vulnerabilityNotificationTypeProcessor);
-        final BlackDuckAccumulator notificationAccumulator = createAccumulator(mockedBlackDuckProperties, processorList);
+        final BlackDuckAccumulator notificationAccumulator = createAccumulator(mockedBlackDuckProperties);
         final CommonNotificationViewResults viewList = new CommonNotificationViewResults(Collections.emptyList(), Optional.empty(), Optional.empty());
         final List<NotificationContent> contentList = notificationAccumulator.process(viewList);
         assertTrue(contentList.isEmpty());
