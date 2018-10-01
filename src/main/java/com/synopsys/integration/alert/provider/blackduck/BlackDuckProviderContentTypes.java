@@ -48,6 +48,7 @@ public class BlackDuckProviderContentTypes {
     public static final String LABEL_VULNERABILITY_NEW = "New Vulnerabilities";
     public static final String LABEL_VULNERABILITY_UPDATED = "Updated Vulnerabilities";
     public static final String LABEL_VULNERABILITY_DELETED = "Deleted Vulnerabilities";
+    public static final String LABEL_VULNERABILITY_SEVERITY = "Severity";
 
     public static final List<ProviderContentType> ALL = new ArrayList();
     public static final ProviderContentType BOM_EDIT = new ProviderContentType(
