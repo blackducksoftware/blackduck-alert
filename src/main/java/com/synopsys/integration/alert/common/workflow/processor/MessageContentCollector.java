@@ -148,9 +148,11 @@ public abstract class MessageContentCollector {
 
     protected final List<LinkableItem> createLinkableItemList(final LinkableItem... items) {
         final List<LinkableItem> list = new ArrayList<>();
-        if (items != null) {
+        if (null != items) {
             for (final LinkableItem item : items) {
-                list.add(item);
+                if (null != item) {
+                    list.add(item);
+                }
             }
         }
         return list;
@@ -182,7 +184,7 @@ public abstract class MessageContentCollector {
         for (int index = 0; index < count; index++) {
             final LinkableItem topicItem = topicItems.get(index);
 
-            LinkableItem subTopic;
+            final LinkableItem subTopic;
             if (!subTopicItems.isEmpty()) {
                 subTopic = subTopicItems.get(index);
             } else {
