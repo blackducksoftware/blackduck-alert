@@ -44,6 +44,8 @@ public class BlackDuckProviderContentTypes {
     public static final String LABEL_POLICY_NAME = "Policy";
     public static final String LABEL_PROJECT_NAME = "Project";
     public static final String LABEL_PROJECT_VERSION_NAME = "Project Version";
+    public static final String LABEL_POLICY_OVERRIDE_FIRST_NAME = "firstName";
+    public static final String LABEL_POLICY_OVERRIDE_LAST_NAME = "lastName";
 
     public static final String LABEL_VULNERABILITY_NEW = "New Vulnerabilities";
     public static final String LABEL_VULNERABILITY_UPDATED = "Updated Vulnerabilities";
@@ -69,6 +71,8 @@ public class BlackDuckProviderContentTypes {
             new StringHierarchicalField(Arrays.asList("content"), "component", FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_NAME + HierarchicalField.LABEL_URL_SUFFIX),
             new StringHierarchicalField(Arrays.asList("content"), "componentVersionName", FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_VERSION_NAME),
             new StringHierarchicalField(Arrays.asList("content"), "componentVersion", FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_VERSION_NAME + HierarchicalField.LABEL_URL_SUFFIX),
+            new StringHierarchicalField(Arrays.asList("content"), "firstName", FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_OVERRIDE_FIRST_NAME),
+            new StringHierarchicalField(Arrays.asList("content"), "lastName", FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_OVERRIDE_LAST_NAME),
             new StringHierarchicalField(Arrays.asList("content", "policyInfos"), "policyName", FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_NAME),
             new StringHierarchicalField(Arrays.asList("content", "policyInfos"), "policy", FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_NAME + HierarchicalField.LABEL_URL_SUFFIX)
         )
