@@ -75,8 +75,9 @@ public class BlackDuckPolicyMessageContentCollector extends MessageContentCollec
         LinkableItem combinedNameItem = null;
         if (firstName.isPresent() && lastName.isPresent()) {
             final String value = String.format("%s %s", firstName.get().getValue(), lastName.get().getValue());
-            combinedNameItem = new LinkableItem("Policy Overridden by", value);
+            combinedNameItem = new LinkableItem(BlackDuckProviderContentTypes.LABEL_POLICY_OVERRIDE_BY, value);
         }
+        
         final ItemOperation operation;
         try {
             operation = getOperationFromNotification(notificationContent);

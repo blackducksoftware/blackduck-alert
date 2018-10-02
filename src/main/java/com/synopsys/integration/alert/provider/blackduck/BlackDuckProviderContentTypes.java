@@ -46,6 +46,7 @@ public class BlackDuckProviderContentTypes {
     public static final String LABEL_PROJECT_VERSION_NAME = "Project Version";
     public static final String LABEL_POLICY_OVERRIDE_FIRST_NAME = "firstName";
     public static final String LABEL_POLICY_OVERRIDE_LAST_NAME = "lastName";
+    public static final String LABEL_POLICY_OVERRIDE_BY = "Policy Overridden by";
 
     public static final String LABEL_VULNERABILITY_NEW = "New Vulnerabilities";
     public static final String LABEL_VULNERABILITY_UPDATED = "Updated Vulnerabilities";
