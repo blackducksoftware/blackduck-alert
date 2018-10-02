@@ -150,9 +150,7 @@ public abstract class MessageContentCollector {
         final List<LinkableItem> list = new ArrayList<>();
         if (null != items) {
             for (final LinkableItem item : items) {
-                if (null != item) {
-                    list.add(item);
-                }
+                list.add(item);
             }
         }
         return list;

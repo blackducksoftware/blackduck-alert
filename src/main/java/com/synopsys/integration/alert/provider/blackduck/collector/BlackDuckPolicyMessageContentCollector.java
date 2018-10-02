@@ -72,12 +72,12 @@ public class BlackDuckPolicyMessageContentCollector extends MessageContentCollec
         applicableItems.addAll(componentItems);
         applicableItems.addAll(componentVersionItems);
 
-        LinkableItem combinedNameItem = null;
+        Optional<LinkableItem> combinedNameItem = Optional.empty();
         if (firstName.isPresent() && lastName.isPresent()) {
             final String value = String.format("%s %s", firstName.get().getValue(), lastName.get().getValue());
-            combinedNameItem = new LinkableItem(BlackDuckProviderContentTypes.LABEL_POLICY_OVERRIDE_BY, value);
+            combinedNameItem = Optional.of(new LinkableItem(BlackDuckProviderContentTypes.LABEL_POLICY_OVERRIDE_BY, value));
         }
-        
+
         final ItemOperation operation;
         try {
             operation = getOperationFromNotification(notificationContent);
@@ -104,12 +104,18 @@ public class BlackDuckPolicyMessageContentCollector extends MessageContentCollec
     }
 
     private void addApplicableItems(final List<CategoryItem> categoryItems, final Long notificationId, final LinkableItem policyItem, final String policyUrl, final ItemOperation operation,
-        final LinkableItem nameItem, final List<LinkableItem> applicableItems) {
+        final Optional<LinkableItem> nameItem, final List<LinkableItem> applicableItems) {
         for (final LinkableItem item : applicableItems) {
             final Optional<String> itemUrl = item.getUrl();
             if (itemUrl.isPresent()) {
                 final CategoryKey categoryKey = CategoryKey.from(CATEGORY_TYPE, policyUrl, itemUrl.get());
-                addItem(categoryItems, new CategoryItem(categoryKey, operation, notificationId, createLinkableItemList(policyItem, item, nameItem)));
+                final List<LinkableItem> linkableItemList;
+                if (nameItem.isPresent()) {
+                    linkableItemList = createLinkableItemList(policyItem, item, nameItem.get());
+                } else {
+                    linkableItemList = createLinkableItemList(policyItem, item);
+                }
+                addItem(categoryItems, new CategoryItem(categoryKey, operation, notificationId, linkableItemList));
             }
         }
     }
