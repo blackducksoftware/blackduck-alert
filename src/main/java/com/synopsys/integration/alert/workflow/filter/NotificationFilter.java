@@ -38,10 +38,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.distribution.CommonDistributionConfigReader;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.field.StringHierarchicalField;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
+import com.synopsys.integration.alert.database.channel.JobConfigReader;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.workflow.filter.builder.AndFieldFilterBuilder;
@@ -53,15 +53,15 @@ import com.synopsys.integration.alert.workflow.filter.field.JsonExtractor;
 
 @Component
 public class NotificationFilter {
-    private final CommonDistributionConfigReader commonDistributionConfigReader;
+    private final JobConfigReader jobConfigReader;
     private final JsonExtractor jsonExtractor;
     private final List<ProviderDescriptor> providerDescriptors;
 
     @Autowired
-    public NotificationFilter(final JsonExtractor jsonExtractor, final List<ProviderDescriptor> providerDescriptors, final CommonDistributionConfigReader commonDistributionConfigReader) {
+    public NotificationFilter(final JsonExtractor jsonExtractor, final List<ProviderDescriptor> providerDescriptors, final JobConfigReader jobConfigReader) {
         this.jsonExtractor = jsonExtractor;
         this.providerDescriptors = providerDescriptors;
-        this.commonDistributionConfigReader = commonDistributionConfigReader;
+        this.jobConfigReader = jobConfigReader;
     }
 
     /**
@@ -69,13 +69,16 @@ public class NotificationFilter {
      * @return A java.util.List of sorted (by createdAt) NotificationContent objects.
      */
     public Collection<NotificationContent> extractApplicableNotifications(final FrequencyType frequency, final Collection<NotificationContent> notificationList) {
-        final List<CommonDistributionConfig> unfilteredDistributionConfigs = commonDistributionConfigReader.getPopulatedConfigs();
+        final List<? extends CommonDistributionConfig> unfilteredDistributionConfigs = jobConfigReader.getPopulatedConfigs();
         if (unfilteredDistributionConfigs.isEmpty()) {
             return Collections.emptyList();
         }
 
-        final Predicate<CommonDistributionConfig> frequencyFilter = config -> frequency.name().equals(config.getFrequency());
-        final List<CommonDistributionConfig> distributionConfigs = applyFilter(unfilteredDistributionConfigs, frequencyFilter);
+        final List<? extends CommonDistributionConfig> distributionConfigs = unfilteredDistributionConfigs
+                                                                                 .parallelStream()
+                                                                                 .filter(config -> frequency.name().equals(config.getFrequency()))
+                                                                                 .collect(Collectors.toList());
+
         if (distributionConfigs.isEmpty()) {
             return Collections.emptyList();
         }
@@ -128,7 +131,7 @@ public class NotificationFilter {
                    .collect(Collectors.toList());
     }
 
-    private Set<String> getConfiguredNotificationTypes(final List<CommonDistributionConfig> distributionConfigs) {
+    private Set<String> getConfiguredNotificationTypes(final List<? extends CommonDistributionConfig> distributionConfigs) {
         return distributionConfigs
                    .parallelStream()
                    .flatMap(config -> config.getNotificationTypes().stream())
@@ -163,7 +166,7 @@ public class NotificationFilter {
                    .collect(Collectors.toSet());
     }
 
-    private Predicate<NotificationContent> createFilter(final Collection<StringHierarchicalField> filterableFields, final Collection<CommonDistributionConfig> distributionConfigs) {
+    private Predicate<NotificationContent> createFilter(final Collection<StringHierarchicalField> filterableFields, final Collection<? extends CommonDistributionConfig> distributionConfigs) {
         Predicate<NotificationContent> orPredicate = DefaultFilterBuilders.ALWAYS_FALSE.buildPredicate();
         for (final CommonDistributionConfig config : distributionConfigs) {
             orPredicate = orPredicate.or(createJobFilter(filterableFields, config));

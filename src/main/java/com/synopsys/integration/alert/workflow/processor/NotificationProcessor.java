@@ -43,21 +43,19 @@ public class NotificationProcessor {
     private final NotificationToChannelEventConverter notificationToEventConverter;
 
     @Autowired
-    public NotificationProcessor(final NotificationToChannelEventConverter notificationToEventConverter, final MessageContentAggregator messageContentAggregator) {
-        this.notificationToEventConverter = notificationToEventConverter;
+    public NotificationProcessor(final MessageContentAggregator messageContentAggregator, final NotificationToChannelEventConverter notificationToEventConverter) {
         this.messageContentAggregator = messageContentAggregator;
+        this.notificationToEventConverter = notificationToEventConverter;
     }
 
     public List<ChannelEvent> processNotifications(final FrequencyType frequencyType, final List<NotificationContent> notificationList) {
-        final Map<CommonDistributionConfig, List<AggregateMessageContent>> messageContentList = messageContentAggregator.processNotifications(frequencyType, notificationList);
-
+        final Map<? extends CommonDistributionConfig, List<AggregateMessageContent>> messageContentList = messageContentAggregator.processNotifications(frequencyType, notificationList);
         final List<ChannelEvent> notificationEvents = notificationToEventConverter.convertToEvents(messageContentList);
         return notificationEvents;
     }
 
     public List<ChannelEvent> processNotifications(final CommonDistributionConfig commonDistributionConfig, final List<NotificationContent> notificationList) {
-        final Map<CommonDistributionConfig, List<AggregateMessageContent>> messageContentList = messageContentAggregator.processNotifications(Arrays.asList(commonDistributionConfig), notificationList);
-
+        final Map<? extends CommonDistributionConfig, List<AggregateMessageContent>> messageContentList = messageContentAggregator.processNotifications(Arrays.asList(commonDistributionConfig), notificationList);
         final List<ChannelEvent> notificationEvents = notificationToEventConverter.convertToEvents(messageContentList);
         return notificationEvents;
     }

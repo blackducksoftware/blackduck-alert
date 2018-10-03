@@ -17,11 +17,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Optional;
 
 import org.junit.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.channel.email.EmailChannelEvent;
 import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
@@ -32,12 +29,6 @@ import com.synopsys.integration.alert.channel.slack.SlackChannel;
 import com.synopsys.integration.alert.channel.slack.SlackChannelEvent;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.LinkableItem;
-import com.synopsys.integration.alert.database.channel.email.EmailDistributionRepositoryAccessor;
-import com.synopsys.integration.alert.database.channel.email.EmailGroupDistributionConfigEntity;
-import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
-import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionRepositoryAccessor;
-import com.synopsys.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
-import com.synopsys.integration.alert.database.channel.slack.SlackDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserEntity;
@@ -49,7 +40,6 @@ import com.synopsys.integration.alert.provider.blackduck.mock.MockUserProjectRel
 import com.synopsys.integration.alert.web.channel.model.EmailDistributionConfig;
 import com.synopsys.integration.alert.web.channel.model.HipChatDistributionConfig;
 import com.synopsys.integration.alert.web.channel.model.SlackDistributionConfig;
-import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.rest.RestConstants;
 
 public class ChannelEventFactoryTest {
@@ -57,35 +47,21 @@ public class ChannelEventFactoryTest {
 
     @Test
     public void createEmailEvent() throws Exception {
-        final EmailDistributionRepositoryAccessor emailDistributionRepositoryAccessor = Mockito.mock(EmailDistributionRepositoryAccessor.class);
-        final HipChatDistributionRepositoryAccessor hipChatDistributionRepositoryAccessor = Mockito.mock(HipChatDistributionRepositoryAccessor.class);
-        final SlackDistributionRepositoryAccessor slackDistributionRepositoryAccessor = Mockito.mock(SlackDistributionRepositoryAccessor.class);
-
         final Long commonDistributionConfigId = 25L;
         final Long distributionConfigId = 33L;
         final String distributionType = EmailGroupChannel.COMPONENT_NAME;
         final String providerName = BlackDuckProvider.COMPONENT_NAME;
         final String formatType = "FORMAT";
+        final String subjectLine = "Alert unit test";
 
-        final CommonDistributionConfig jobConfig = Mockito.mock(CommonDistributionConfig.class);
-        Mockito.when(jobConfig.getDistributionType()).thenReturn(distributionType);
-        Mockito.when(jobConfig.getDistributionConfigId()).thenReturn("33");
-        Mockito.when(jobConfig.getId()).thenReturn("25");
-        Mockito.when(jobConfig.getProviderName()).thenReturn(providerName);
-        Mockito.when(jobConfig.getFormatType()).thenReturn(formatType);
-
-        String subjectLine = "Alert unit test";
-        EmailGroupDistributionConfigEntity emailEntity = new EmailGroupDistributionConfigEntity(null, subjectLine, false);
-
-        final Optional optionalDatabaseEntity = Optional.of(emailEntity);
-        Mockito.when(emailDistributionRepositoryAccessor.readEntity(ArgumentMatchers.same(distributionConfigId))).thenReturn(optionalDatabaseEntity);
+        final EmailDistributionConfig emailDistributionConfig = new EmailDistributionConfig(commonDistributionConfigId.toString(), distributionConfigId.toString(), distributionType, "Job Name",
+            providerName, "REAL_TIME", "FALSE", null, subjectLine, false, Collections.emptyList(), Collections.emptyList(), formatType);
 
         final MockBlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor = new MockBlackDuckProjectRepositoryAccessor();
         final MockBlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor = new MockBlackDuckUserRepositoryAccessor();
         final MockUserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor = new MockUserProjectRelationRepositoryAccessor();
 
-        final ChannelEventFactory factory = new ChannelEventFactory(emailDistributionRepositoryAccessor, hipChatDistributionRepositoryAccessor, slackDistributionRepositoryAccessor,
-            blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
+        final ChannelEventFactory factory = new ChannelEventFactory(blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
@@ -93,7 +69,7 @@ public class ChannelEventFactoryTest {
         final EmailChannelEvent expected = new EmailChannelEvent(RestConstants.formatDate(new Date()), providerName, formatType,
             content, commonDistributionConfigId, Collections.emptySet(), subjectLine);
 
-        final EmailChannelEvent event = (EmailChannelEvent) factory.createChannelEvent(jobConfig, content);
+        final EmailChannelEvent event = (EmailChannelEvent) factory.createChannelEvent(emailDistributionConfig, content);
         assertEquals(expected.getAuditEntryId(), event.getAuditEntryId());
         assertEquals(expected.getDestination(), event.getDestination());
         assertEquals(expected.getProvider(), event.getProvider());
@@ -105,46 +81,33 @@ public class ChannelEventFactoryTest {
 
     @Test
     public void createEmailEventWithEmailAddresses() throws Exception {
-        final EmailDistributionRepositoryAccessor emailDistributionRepositoryAccessor = Mockito.mock(EmailDistributionRepositoryAccessor.class);
-        final HipChatDistributionRepositoryAccessor hipChatDistributionRepositoryAccessor = Mockito.mock(HipChatDistributionRepositoryAccessor.class);
-        final SlackDistributionRepositoryAccessor slackDistributionRepositoryAccessor = Mockito.mock(SlackDistributionRepositoryAccessor.class);
-
         final Long commonDistributionConfigId = 25L;
         final Long distributionConfigId = 33L;
         final String distributionType = EmailGroupChannel.COMPONENT_NAME;
         final String providerName = BlackDuckProvider.COMPONENT_NAME;
         final String formatType = "FORMAT";
+        final String subjectLine = "Alert unit test";
 
-        final CommonDistributionConfig jobConfig = Mockito.mock(CommonDistributionConfig.class);
-        Mockito.when(jobConfig.getDistributionType()).thenReturn(distributionType);
-        Mockito.when(jobConfig.getDistributionConfigId()).thenReturn("33");
-        Mockito.when(jobConfig.getId()).thenReturn("25");
-        Mockito.when(jobConfig.getProviderName()).thenReturn(providerName);
-
-        String subjectLine = "Alert unit test";
-        EmailGroupDistributionConfigEntity emailEntity = new EmailGroupDistributionConfigEntity(null, subjectLine, false);
-
-        final Optional optionalDatabaseEntity = Optional.of(emailEntity);
-        Mockito.when(emailDistributionRepositoryAccessor.readEntity(ArgumentMatchers.same(distributionConfigId))).thenReturn(optionalDatabaseEntity);
+        final EmailDistributionConfig emailDistributionConfig = new EmailDistributionConfig(commonDistributionConfigId.toString(), distributionConfigId.toString(), distributionType, "Job Name",
+            providerName, "REAL_TIME", "FALSE", null, subjectLine, false, Collections.emptyList(), Collections.emptyList(), formatType);
 
         final MockBlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor = new MockBlackDuckProjectRepositoryAccessor();
         final MockBlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor = new MockBlackDuckUserRepositoryAccessor();
         final MockUserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor = new MockUserProjectRelationRepositoryAccessor();
 
-        DatabaseEntity projectEntity1 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project one", "", "", ""));
+        final DatabaseEntity projectEntity1 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project one", "", "", ""));
 
-        String email1 = "Test Email 1";
-        String email2 = "Test Email 2";
-        DatabaseEntity userEntity1 = blackDuckUserRepositoryAccessor.saveEntity(new BlackDuckUserEntity(email1, false));
-        DatabaseEntity userEntity2 = blackDuckUserRepositoryAccessor.saveEntity(new BlackDuckUserEntity(email2, false));
+        final String email1 = "Test Email 1";
+        final String email2 = "Test Email 2";
+        final DatabaseEntity userEntity1 = blackDuckUserRepositoryAccessor.saveEntity(new BlackDuckUserEntity(email1, false));
+        final DatabaseEntity userEntity2 = blackDuckUserRepositoryAccessor.saveEntity(new BlackDuckUserEntity(email2, false));
 
-        UserProjectRelation userProjectRelation1 = new UserProjectRelation(userEntity1.getId(), projectEntity1.getId());
-        UserProjectRelation userProjectRelation2 = new UserProjectRelation(userEntity2.getId(), projectEntity1.getId());
+        final UserProjectRelation userProjectRelation1 = new UserProjectRelation(userEntity1.getId(), projectEntity1.getId());
+        final UserProjectRelation userProjectRelation2 = new UserProjectRelation(userEntity2.getId(), projectEntity1.getId());
 
         userProjectRelationRepositoryAccessor.deleteAndSaveAll(new HashSet<>(Arrays.asList(userProjectRelation1, userProjectRelation2)));
 
-        final ChannelEventFactory factory = new ChannelEventFactory(emailDistributionRepositoryAccessor, hipChatDistributionRepositoryAccessor, slackDistributionRepositoryAccessor,
-            blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
+        final ChannelEventFactory factory = new ChannelEventFactory(blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "Project one", null, subTopic, Collections.emptyList());
@@ -152,7 +115,7 @@ public class ChannelEventFactoryTest {
         final EmailChannelEvent expected = new EmailChannelEvent(RestConstants.formatDate(new Date()), providerName, formatType,
             content, commonDistributionConfigId, new HashSet<>(Arrays.asList(email1, email2)), subjectLine);
 
-        final EmailChannelEvent event = (EmailChannelEvent) factory.createChannelEvent(jobConfig, content);
+        final EmailChannelEvent event = (EmailChannelEvent) factory.createChannelEvent(emailDistributionConfig, content);
         assertEquals(expected.getAuditEntryId(), event.getAuditEntryId());
         assertEquals(expected.getDestination(), event.getDestination());
         assertEquals(expected.getProvider(), event.getProvider());
@@ -163,41 +126,26 @@ public class ChannelEventFactoryTest {
 
     @Test
     public void createTestEmailEvent() throws Exception {
-        final EmailDistributionRepositoryAccessor emailDistributionRepositoryAccessor = Mockito.mock(EmailDistributionRepositoryAccessor.class);
-        final HipChatDistributionRepositoryAccessor hipChatDistributionRepositoryAccessor = Mockito.mock(HipChatDistributionRepositoryAccessor.class);
-        final SlackDistributionRepositoryAccessor slackDistributionRepositoryAccessor = Mockito.mock(SlackDistributionRepositoryAccessor.class);
-
         final Long commonDistributionConfigId = 25L;
         final Long distributionConfigId = 33L;
         final String distributionType = EmailGroupChannel.COMPONENT_NAME;
         final String providerName = BlackDuckProvider.COMPONENT_NAME;
         final String formatType = "FORMAT";
-
-        final CommonDistributionConfig jobConfig = Mockito.mock(CommonDistributionConfig.class);
-        Mockito.when(jobConfig.getDistributionType()).thenReturn(distributionType);
-        Mockito.when(jobConfig.getDistributionConfigId()).thenReturn("33");
-        Mockito.when(jobConfig.getId()).thenReturn("25");
-        Mockito.when(jobConfig.getProviderName()).thenReturn(providerName);
-
-        String subjectLine = "Alert unit test";
-        EmailGroupDistributionConfigEntity emailEntity = new EmailGroupDistributionConfigEntity(null, subjectLine, false);
-
-        final Optional optionalDatabaseEntity = Optional.of(emailEntity);
-        Mockito.when(emailDistributionRepositoryAccessor.readEntity(ArgumentMatchers.same(distributionConfigId))).thenReturn(optionalDatabaseEntity);
+        final String subjectLine = "Alert unit test";
 
         final MockBlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor = new MockBlackDuckProjectRepositoryAccessor();
         final MockBlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor = new MockBlackDuckUserRepositoryAccessor();
         final MockUserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor = new MockUserProjectRelationRepositoryAccessor();
 
-        final ChannelEventFactory factory = new ChannelEventFactory(emailDistributionRepositoryAccessor, hipChatDistributionRepositoryAccessor, slackDistributionRepositoryAccessor,
-            blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
+        final ChannelEventFactory factory = new ChannelEventFactory(blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
 
-        AggregateMessageContent testContent = createTestNotificationContent();
+        final AggregateMessageContent testContent = createTestNotificationContent();
 
         final EmailChannelEvent expectedTest = new EmailChannelEvent(RestConstants.formatDate(new Date()), providerName, formatType,
             testContent, commonDistributionConfigId, Collections.emptySet(), subjectLine);
 
-        EmailDistributionConfig emailDistributionConfig = new EmailDistributionConfig("1", "1", distributionType, "Test Email Job", BlackDuckProvider.COMPONENT_NAME, "REAL_TIME", "false",
+        final EmailDistributionConfig emailDistributionConfig = new EmailDistributionConfig(commonDistributionConfigId.toString(), distributionConfigId.toString(), distributionType, "Test Email Job", BlackDuckProvider.COMPONENT_NAME,
+            "REAL_TIME", "false",
             "", subjectLine, false, Collections.emptyList(), Collections.emptyList(), "DEFAULT");
 
         final EmailChannelEvent testEvent = factory.createEmailChannelTestEvent(emailDistributionConfig);
@@ -212,59 +160,43 @@ public class ChannelEventFactoryTest {
 
     @Test
     public void createTestEmailEventWithEmailAddressesIncludeAllProjects() throws Exception {
-        final EmailDistributionRepositoryAccessor emailDistributionRepositoryAccessor = Mockito.mock(EmailDistributionRepositoryAccessor.class);
-        final HipChatDistributionRepositoryAccessor hipChatDistributionRepositoryAccessor = Mockito.mock(HipChatDistributionRepositoryAccessor.class);
-        final SlackDistributionRepositoryAccessor slackDistributionRepositoryAccessor = Mockito.mock(SlackDistributionRepositoryAccessor.class);
-
         final Long commonDistributionConfigId = 25L;
         final Long distributionConfigId = 33L;
         final String distributionType = EmailGroupChannel.COMPONENT_NAME;
         final String providerName = BlackDuckProvider.COMPONENT_NAME;
         final String formatType = "FORMAT";
-
-        final CommonDistributionConfig jobConfig = Mockito.mock(CommonDistributionConfig.class);
-        Mockito.when(jobConfig.getDistributionType()).thenReturn(distributionType);
-        Mockito.when(jobConfig.getDistributionConfigId()).thenReturn("33");
-        Mockito.when(jobConfig.getId()).thenReturn("25");
-        Mockito.when(jobConfig.getProviderName()).thenReturn(providerName);
-
-        String subjectLine = "Alert unit test";
-        EmailGroupDistributionConfigEntity emailEntity = new EmailGroupDistributionConfigEntity(null, subjectLine, false);
-
-        final Optional optionalDatabaseEntity = Optional.of(emailEntity);
-        Mockito.when(emailDistributionRepositoryAccessor.readEntity(ArgumentMatchers.same(distributionConfigId))).thenReturn(optionalDatabaseEntity);
+        final String subjectLine = "Alert unit test";
 
         final MockBlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor = new MockBlackDuckProjectRepositoryAccessor();
         final MockBlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor = new MockBlackDuckUserRepositoryAccessor();
         final MockUserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor = new MockUserProjectRelationRepositoryAccessor();
 
-        DatabaseEntity projectEntity1 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project one", "", "", ""));
-        DatabaseEntity projectEntity2 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project two", "", "", ""));
-        DatabaseEntity projectEntity3 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project three", "", "", ""));
-        DatabaseEntity projectEntity4 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project four", "", "", ""));
+        final DatabaseEntity projectEntity1 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project one", "", "", ""));
+        final DatabaseEntity projectEntity2 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project two", "", "", ""));
+        final DatabaseEntity projectEntity3 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project three", "", "", ""));
+        final DatabaseEntity projectEntity4 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project four", "", "", ""));
 
-        String email1 = "Test Email 1";
-        String email2 = "Test Email 2";
-        DatabaseEntity userEntity1 = blackDuckUserRepositoryAccessor.saveEntity(new BlackDuckUserEntity(email1, false));
-        DatabaseEntity userEntity2 = blackDuckUserRepositoryAccessor.saveEntity(new BlackDuckUserEntity(email2, false));
+        final String email1 = "Test Email 1";
+        final String email2 = "Test Email 2";
+        final DatabaseEntity userEntity1 = blackDuckUserRepositoryAccessor.saveEntity(new BlackDuckUserEntity(email1, false));
+        final DatabaseEntity userEntity2 = blackDuckUserRepositoryAccessor.saveEntity(new BlackDuckUserEntity(email2, false));
 
-        UserProjectRelation userProjectRelation1 = new UserProjectRelation(userEntity1.getId(), projectEntity1.getId());
-        UserProjectRelation userProjectRelation2 = new UserProjectRelation(userEntity1.getId(), projectEntity2.getId());
-        UserProjectRelation userProjectRelation3 = new UserProjectRelation(userEntity2.getId(), projectEntity3.getId());
-        UserProjectRelation userProjectRelation4 = new UserProjectRelation(userEntity2.getId(), projectEntity4.getId());
+        final UserProjectRelation userProjectRelation1 = new UserProjectRelation(userEntity1.getId(), projectEntity1.getId());
+        final UserProjectRelation userProjectRelation2 = new UserProjectRelation(userEntity1.getId(), projectEntity2.getId());
+        final UserProjectRelation userProjectRelation3 = new UserProjectRelation(userEntity2.getId(), projectEntity3.getId());
+        final UserProjectRelation userProjectRelation4 = new UserProjectRelation(userEntity2.getId(), projectEntity4.getId());
 
         userProjectRelationRepositoryAccessor.deleteAndSaveAll(new HashSet<>(Arrays.asList(userProjectRelation1, userProjectRelation2, userProjectRelation3, userProjectRelation4)));
 
-        final ChannelEventFactory factory = new ChannelEventFactory(emailDistributionRepositoryAccessor, hipChatDistributionRepositoryAccessor, slackDistributionRepositoryAccessor,
-            blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
+        final ChannelEventFactory factory = new ChannelEventFactory(blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
 
-        AggregateMessageContent testContent = createTestNotificationContent();
+        final AggregateMessageContent testContent = createTestNotificationContent();
 
         final EmailChannelEvent expectedTest = new EmailChannelEvent(RestConstants.formatDate(new Date()), providerName, formatType,
             testContent, commonDistributionConfigId, new HashSet<>(Arrays.asList(email1, email2)), subjectLine);
 
-        EmailDistributionConfig emailDistributionConfig = new EmailDistributionConfig("1", "1", distributionType, "Test Email Job", BlackDuckProvider.COMPONENT_NAME, "REAL_TIME", "false",
-            "", subjectLine, false, Collections.emptyList(), Collections.emptyList(), "DEFAULT");
+        final EmailDistributionConfig emailDistributionConfig = new EmailDistributionConfig(commonDistributionConfigId.toString(), distributionConfigId.toString(), distributionType, "Test Email Job", BlackDuckProvider.COMPONENT_NAME,
+            "REAL_TIME", "false", "", subjectLine, false, Collections.emptyList(), Collections.emptyList(), "DEFAULT");
 
         final EmailChannelEvent testEvent = factory.createEmailChannelTestEvent(emailDistributionConfig);
         assertEquals(expectedTest.getAuditEntryId(), testEvent.getAuditEntryId());
@@ -278,63 +210,47 @@ public class ChannelEventFactoryTest {
 
     @Test
     public void createTestEmailEventWithEmailAddresses() throws Exception {
-        final EmailDistributionRepositoryAccessor emailDistributionRepositoryAccessor = Mockito.mock(EmailDistributionRepositoryAccessor.class);
-        final HipChatDistributionRepositoryAccessor hipChatDistributionRepositoryAccessor = Mockito.mock(HipChatDistributionRepositoryAccessor.class);
-        final SlackDistributionRepositoryAccessor slackDistributionRepositoryAccessor = Mockito.mock(SlackDistributionRepositoryAccessor.class);
-
         final Long commonDistributionConfigId = 25L;
         final Long distributionConfigId = 33L;
         final String distributionType = EmailGroupChannel.COMPONENT_NAME;
         final String providerName = BlackDuckProvider.COMPONENT_NAME;
         final String formatType = "FORMAT";
-
-        final CommonDistributionConfig jobConfig = Mockito.mock(CommonDistributionConfig.class);
-        Mockito.when(jobConfig.getDistributionType()).thenReturn(distributionType);
-        Mockito.when(jobConfig.getDistributionConfigId()).thenReturn("33");
-        Mockito.when(jobConfig.getId()).thenReturn("25");
-        Mockito.when(jobConfig.getProviderName()).thenReturn(providerName);
-
-        String subjectLine = "Alert unit test";
-        EmailGroupDistributionConfigEntity emailEntity = new EmailGroupDistributionConfigEntity(null, subjectLine, false);
-
-        final Optional optionalDatabaseEntity = Optional.of(emailEntity);
-        Mockito.when(emailDistributionRepositoryAccessor.readEntity(ArgumentMatchers.same(distributionConfigId))).thenReturn(optionalDatabaseEntity);
+        final String subjectLine = "Alert unit test";
 
         final MockBlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor = new MockBlackDuckProjectRepositoryAccessor();
         final MockBlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor = new MockBlackDuckUserRepositoryAccessor();
         final MockUserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor = new MockUserProjectRelationRepositoryAccessor();
 
-        String project1 = "Project one";
-        String project2 = "Project two";
-        DatabaseEntity projectEntity1 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity(project1, "", "", ""));
-        DatabaseEntity projectEntity2 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity(project2, "", "", ""));
+        final String project1 = "Project one";
+        final String project2 = "Project two";
+        final DatabaseEntity projectEntity1 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity(project1, "", "", ""));
+        final DatabaseEntity projectEntity2 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity(project2, "", "", ""));
 
-        String email1 = "Test Email 1";
-        String email2 = "Test Email 2";
-        String email3 = "Test Email 3";
-        String email4 = "Test Email 4";
-        DatabaseEntity userEntity1 = blackDuckUserRepositoryAccessor.saveEntity(new BlackDuckUserEntity(email1, false));
-        DatabaseEntity userEntity2 = blackDuckUserRepositoryAccessor.saveEntity(new BlackDuckUserEntity(email2, false));
-        DatabaseEntity userEntity3 = blackDuckUserRepositoryAccessor.saveEntity(new BlackDuckUserEntity(email3, false));
-        DatabaseEntity userEntity4 = blackDuckUserRepositoryAccessor.saveEntity(new BlackDuckUserEntity(email4, false));
+        final String email1 = "Test Email 1";
+        final String email2 = "Test Email 2";
+        final String email3 = "Test Email 3";
+        final String email4 = "Test Email 4";
+        final DatabaseEntity userEntity1 = blackDuckUserRepositoryAccessor.saveEntity(new BlackDuckUserEntity(email1, false));
+        final DatabaseEntity userEntity2 = blackDuckUserRepositoryAccessor.saveEntity(new BlackDuckUserEntity(email2, false));
+        final DatabaseEntity userEntity3 = blackDuckUserRepositoryAccessor.saveEntity(new BlackDuckUserEntity(email3, false));
+        final DatabaseEntity userEntity4 = blackDuckUserRepositoryAccessor.saveEntity(new BlackDuckUserEntity(email4, false));
 
-        UserProjectRelation userProjectRelation1 = new UserProjectRelation(userEntity1.getId(), projectEntity1.getId());
-        UserProjectRelation userProjectRelation2 = new UserProjectRelation(userEntity2.getId(), projectEntity2.getId());
-        UserProjectRelation userProjectRelation3 = new UserProjectRelation(userEntity3.getId(), projectEntity2.getId());
-        UserProjectRelation userProjectRelation4 = new UserProjectRelation(userEntity4.getId(), projectEntity2.getId());
+        final UserProjectRelation userProjectRelation1 = new UserProjectRelation(userEntity1.getId(), projectEntity1.getId());
+        final UserProjectRelation userProjectRelation2 = new UserProjectRelation(userEntity2.getId(), projectEntity2.getId());
+        final UserProjectRelation userProjectRelation3 = new UserProjectRelation(userEntity3.getId(), projectEntity2.getId());
+        final UserProjectRelation userProjectRelation4 = new UserProjectRelation(userEntity4.getId(), projectEntity2.getId());
 
         userProjectRelationRepositoryAccessor.deleteAndSaveAll(new HashSet<>(Arrays.asList(userProjectRelation1, userProjectRelation2, userProjectRelation3, userProjectRelation4)));
 
-        final ChannelEventFactory factory = new ChannelEventFactory(emailDistributionRepositoryAccessor, hipChatDistributionRepositoryAccessor, slackDistributionRepositoryAccessor,
-            blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
+        final ChannelEventFactory factory = new ChannelEventFactory(blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
 
-        AggregateMessageContent testContent = createTestNotificationContent();
+        final AggregateMessageContent testContent = createTestNotificationContent();
 
         final EmailChannelEvent expectedTest = new EmailChannelEvent(RestConstants.formatDate(new Date()), providerName, formatType,
             testContent, commonDistributionConfigId, new HashSet<>(Arrays.asList(email1, email2, email3, email4)), subjectLine);
 
-        EmailDistributionConfig emailDistributionConfig = new EmailDistributionConfig("1", "1", distributionType, "Test Email Job", BlackDuckProvider.COMPONENT_NAME, "REAL_TIME", "true",
-            "", subjectLine, false, Arrays.asList(project1, project2), Collections.emptyList(), "DEFAULT");
+        final EmailDistributionConfig emailDistributionConfig = new EmailDistributionConfig(commonDistributionConfigId.toString(), distributionConfigId.toString(), distributionType, "Test Email Job", BlackDuckProvider.COMPONENT_NAME,
+            "REAL_TIME", "true", "", subjectLine, false, Arrays.asList(project1, project2), Collections.emptyList(), "DEFAULT");
 
         final EmailChannelEvent testEvent = factory.createEmailChannelTestEvent(emailDistributionConfig);
         assertEquals(expectedTest.getAuditEntryId(), testEvent.getAuditEntryId());
@@ -348,37 +264,21 @@ public class ChannelEventFactoryTest {
 
     @Test
     public void createHipChatEvent() throws Exception {
-        final EmailDistributionRepositoryAccessor emailDistributionRepositoryAccessor = Mockito.mock(EmailDistributionRepositoryAccessor.class);
-        final HipChatDistributionRepositoryAccessor hipChatDistributionRepositoryAccessor = Mockito.mock(HipChatDistributionRepositoryAccessor.class);
-        final SlackDistributionRepositoryAccessor slackDistributionRepositoryAccessor = Mockito.mock(SlackDistributionRepositoryAccessor.class);
-
         final Long commonDistributionConfigId = 25L;
         final Long distributionConfigId = 33L;
         final String distributionType = HipChatChannel.COMPONENT_NAME;
         final String providerName = BlackDuckProvider.COMPONENT_NAME;
         final String formatType = "FORMAT";
 
-        final CommonDistributionConfig jobConfig = Mockito.mock(CommonDistributionConfig.class);
-        Mockito.when(jobConfig.getDistributionType()).thenReturn(distributionType);
-        Mockito.when(jobConfig.getDistributionConfigId()).thenReturn("33");
-        Mockito.when(jobConfig.getId()).thenReturn("25");
-        Mockito.when(jobConfig.getProviderName()).thenReturn(providerName);
-        Mockito.when(jobConfig.getFormatType()).thenReturn(formatType);
-
-        Integer roomId = 100484;
-        Boolean notify = false;
-        String color = "red";
-        HipChatDistributionConfigEntity hipChatEntity = new HipChatDistributionConfigEntity(roomId, notify, color);
-
-        final Optional optionalDatabaseEntity = Optional.of(hipChatEntity);
-        Mockito.when(hipChatDistributionRepositoryAccessor.readEntity(ArgumentMatchers.same(distributionConfigId))).thenReturn(optionalDatabaseEntity);
+        final Integer roomId = 100484;
+        final Boolean notify = false;
+        final String color = "red";
 
         final MockBlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor = new MockBlackDuckProjectRepositoryAccessor();
         final MockBlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor = new MockBlackDuckUserRepositoryAccessor();
         final MockUserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor = new MockUserProjectRelationRepositoryAccessor();
 
-        final ChannelEventFactory factory = new ChannelEventFactory(emailDistributionRepositoryAccessor, hipChatDistributionRepositoryAccessor, slackDistributionRepositoryAccessor,
-            blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
+        final ChannelEventFactory factory = new ChannelEventFactory(blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
@@ -386,7 +286,10 @@ public class ChannelEventFactoryTest {
         final HipChatChannelEvent expected = new HipChatChannelEvent(RestConstants.formatDate(new Date()), providerName, formatType,
             content, commonDistributionConfigId, roomId, notify, color);
 
-        final HipChatChannelEvent event = (HipChatChannelEvent) factory.createChannelEvent(jobConfig, content);
+        HipChatDistributionConfig hipChatDistributionConfig = new HipChatDistributionConfig(commonDistributionConfigId.toString(), roomId.toString(), notify, color, distributionConfigId.toString(),
+            distributionType, "Test HipChat Job", providerName, "REAL_TIME", "FALSE", Collections.emptyList(), Collections.emptyList(), formatType);
+
+        final HipChatChannelEvent event = (HipChatChannelEvent) factory.createChannelEvent(hipChatDistributionConfig, content);
         assertEquals(expected.getAuditEntryId(), event.getAuditEntryId());
         assertEquals(expected.getDestination(), event.getDestination());
         assertEquals(expected.getProvider(), event.getProvider());
@@ -396,12 +299,12 @@ public class ChannelEventFactoryTest {
         assertEquals(expected.getNotify(), event.getNotify());
         assertEquals(expected.getColor(), event.getColor());
 
-        AggregateMessageContent testContent = createTestNotificationContent();
+        final AggregateMessageContent testContent = createTestNotificationContent();
 
         final HipChatChannelEvent expectedTest = new HipChatChannelEvent(RestConstants.formatDate(new Date()), providerName, formatType, testContent, commonDistributionConfigId, roomId, notify, color);
 
-        HipChatDistributionConfig hipChatDistributionConfig = new HipChatDistributionConfig("1", roomId.toString(), notify, color, "1", distributionType, "Test HipChat Job", providerName,
-            "REAL_TIME", "FALSE", Collections.emptyList(), Collections.emptyList(), "DEFAULT");
+        hipChatDistributionConfig = new HipChatDistributionConfig(commonDistributionConfigId.toString(), roomId.toString(), notify, color, distributionConfigId.toString(),
+            distributionType, "Test HipChat Job", providerName, "REAL_TIME", "FALSE", Collections.emptyList(), Collections.emptyList(), "DEFAULT");
 
         final HipChatChannelEvent testEvent = factory.createHipChatChannelTestEvent(hipChatDistributionConfig);
         assertEquals(expectedTest.getAuditEntryId(), testEvent.getAuditEntryId());
@@ -415,9 +318,6 @@ public class ChannelEventFactoryTest {
 
     @Test
     public void createSlackEvent() throws Exception {
-        final EmailDistributionRepositoryAccessor emailDistributionRepositoryAccessor = Mockito.mock(EmailDistributionRepositoryAccessor.class);
-        final HipChatDistributionRepositoryAccessor hipChatDistributionRepositoryAccessor = Mockito.mock(HipChatDistributionRepositoryAccessor.class);
-        final SlackDistributionRepositoryAccessor slackDistributionRepositoryAccessor = Mockito.mock(SlackDistributionRepositoryAccessor.class);
 
         final Long commonDistributionConfigId = 25L;
         final Long distributionConfigId = 33L;
@@ -425,27 +325,15 @@ public class ChannelEventFactoryTest {
         final String providerName = BlackDuckProvider.COMPONENT_NAME;
         final String formatType = "FORMAT";
 
-        final CommonDistributionConfig jobConfig = Mockito.mock(CommonDistributionConfig.class);
-        Mockito.when(jobConfig.getDistributionType()).thenReturn(distributionType);
-        Mockito.when(jobConfig.getDistributionConfigId()).thenReturn("33");
-        Mockito.when(jobConfig.getId()).thenReturn("25");
-        Mockito.when(jobConfig.getProviderName()).thenReturn(providerName);
-        Mockito.when(jobConfig.getFormatType()).thenReturn(formatType);
-
-        String channelUsername = "Slack UserName";
-        String webhook = "WebHook";
-        String channelName = "Alert Channel";
-        SlackDistributionConfigEntity slackEntity = new SlackDistributionConfigEntity(webhook, channelUsername, channelName);
-
-        final Optional optionalDatabaseEntity = Optional.of(slackEntity);
-        Mockito.when(slackDistributionRepositoryAccessor.readEntity(ArgumentMatchers.same(distributionConfigId))).thenReturn(optionalDatabaseEntity);
+        final String channelUsername = "Slack UserName";
+        final String webhook = "WebHook";
+        final String channelName = "Alert Channel";
 
         final MockBlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor = new MockBlackDuckProjectRepositoryAccessor();
         final MockBlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor = new MockBlackDuckUserRepositoryAccessor();
         final MockUserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor = new MockUserProjectRelationRepositoryAccessor();
 
-        final ChannelEventFactory factory = new ChannelEventFactory(emailDistributionRepositoryAccessor, hipChatDistributionRepositoryAccessor, slackDistributionRepositoryAccessor,
-            blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
+        final ChannelEventFactory factory = new ChannelEventFactory(blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
@@ -453,7 +341,10 @@ public class ChannelEventFactoryTest {
         final SlackChannelEvent expected = new SlackChannelEvent(RestConstants.formatDate(new Date()), providerName, formatType,
             content, commonDistributionConfigId, channelUsername, webhook, channelName);
 
-        final SlackChannelEvent event = (SlackChannelEvent) factory.createChannelEvent(jobConfig, content);
+        SlackDistributionConfig slackDistributionConfig = new SlackDistributionConfig(commonDistributionConfigId.toString(), webhook, channelUsername, channelName, distributionConfigId.toString(), distributionType, "Test HipChat Job",
+            providerName, "REAL_TIME", "FALSE", Collections.emptyList(), Collections.emptyList(), formatType);
+
+        final SlackChannelEvent event = (SlackChannelEvent) factory.createChannelEvent(slackDistributionConfig, content);
         assertEquals(expected.getAuditEntryId(), event.getAuditEntryId());
         assertEquals(expected.getDestination(), event.getDestination());
         assertEquals(expected.getProvider(), event.getProvider());
@@ -463,12 +354,12 @@ public class ChannelEventFactoryTest {
         assertEquals(expected.getWebHook(), event.getWebHook());
         assertEquals(expected.getChannelName(), event.getChannelName());
 
-        AggregateMessageContent testContent = createTestNotificationContent();
+        final AggregateMessageContent testContent = createTestNotificationContent();
 
         final SlackChannelEvent expectedTest = new SlackChannelEvent(RestConstants.formatDate(new Date()), providerName, formatType,
             testContent, commonDistributionConfigId, channelUsername, webhook, channelName);
 
-        SlackDistributionConfig slackDistributionConfig = new SlackDistributionConfig("1", webhook, channelUsername, channelName, "1", distributionType, "Test HipChat Job", providerName,
+        slackDistributionConfig = new SlackDistributionConfig("1", webhook, channelUsername, channelName, "1", distributionType, "Test HipChat Job", providerName,
             "REAL_TIME", "FALSE", Collections.emptyList(), Collections.emptyList(), "DEFAULT");
 
         final SlackChannelEvent testEvent = factory.createSlackChannelTestEvent(slackDistributionConfig);
