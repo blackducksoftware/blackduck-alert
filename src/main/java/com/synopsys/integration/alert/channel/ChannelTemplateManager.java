@@ -23,7 +23,6 @@
  */
 package com.synopsys.integration.alert.channel;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,27 +32,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
-import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.event.AlertEvent;
-import com.synopsys.integration.alert.common.model.AggregateMessageContent;
-import com.synopsys.integration.alert.common.model.CategoryItem;
-import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
-import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
-import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
-import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
+import com.synopsys.integration.alert.database.api.AuditUtility;
 
 @Component
 public class ChannelTemplateManager {
     private final Gson gson;
     private final JmsTemplate jmsTemplate;
-    private final AuditEntryRepository auditEntryRepository;
-    private final AuditNotificationRepository auditNotificationRepository;
+    private final AuditUtility auditUtility;
 
     @Autowired
-    public ChannelTemplateManager(final Gson gson, final AuditEntryRepository auditEntryRepository, final AuditNotificationRepository auditNotificationRepository, final JmsTemplate jmsTemplate) {
+    public ChannelTemplateManager(final Gson gson, final AuditUtility auditUtility, final JmsTemplate jmsTemplate) {
         this.gson = gson;
-        this.auditEntryRepository = auditEntryRepository;
-        this.auditNotificationRepository = auditNotificationRepository;
+        this.auditUtility = auditUtility;
         this.jmsTemplate = jmsTemplate;
     }
 
@@ -69,21 +60,8 @@ public class ChannelTemplateManager {
         final String destination = event.getDestination();
         if (event instanceof ChannelEvent) {
             final ChannelEvent channelEvent = (ChannelEvent) event;
-            AuditEntryEntity auditEntryEntity = new AuditEntryEntity(channelEvent.getCommonDistributionConfigId(), new Date(System.currentTimeMillis()), null, null, null, null);
-
-            if (channelEvent.getAuditEntryId() != null) {
-                auditEntryEntity = auditEntryRepository.findById(channelEvent.getAuditEntryId()).orElse(auditEntryEntity);
-            }
-
-            auditEntryEntity.setStatus(AuditEntryStatus.PENDING);
-            final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);
-            channelEvent.setAuditEntryId(savedAuditEntryEntity.getId());
-
-            final AggregateMessageContent content = channelEvent.getContent();
-            for (final CategoryItem item : content.getCategoryItemList()) {
-                final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), item.getNotificationId());
-                auditNotificationRepository.save(auditNotificationRelation);
-            }
+            final Long auditEntryId = auditUtility.createAuditEntry(channelEvent.getAuditEntryId(), channelEvent.getCommonDistributionConfigId(), channelEvent.getContent());
+            channelEvent.setAuditEntryId(auditEntryId);
             final String jsonMessage = gson.toJson(channelEvent);
             jmsTemplate.convertAndSend(destination, jsonMessage);
         } else {
