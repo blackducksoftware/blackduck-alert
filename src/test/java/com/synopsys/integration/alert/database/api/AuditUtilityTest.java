@@ -59,20 +59,6 @@ public class AuditUtilityTest {
         Mockito.verify(auditNotificationRepository, Mockito.times(content.getCategoryItemList().size())).save(Mockito.any(AuditNotificationRelation.class));
     }
 
-    private void mockAuditRepositorySave(final AuditEntryRepository auditEntryRepository, final AuditEntryEntity savedAuditEntryEntity) {
-        Mockito.when(auditEntryRepository.save(Mockito.any(AuditEntryEntity.class))).then(invocation -> {
-            final AuditEntryEntity originalEntity = invocation.getArgument(0);
-            if (null != originalEntity.getId()) {
-                savedAuditEntryEntity.setId(originalEntity.getId());
-            }
-            savedAuditEntryEntity.setStatus(originalEntity.getStatus());
-            savedAuditEntryEntity.setErrorMessage(originalEntity.getErrorMessage());
-            savedAuditEntryEntity.setErrorStackTrace(originalEntity.getErrorStackTrace());
-            savedAuditEntryEntity.setTimeLastSent(originalEntity.getTimeLastSent());
-            return savedAuditEntryEntity;
-        });
-    }
-
     @Test
     public void setAuditEntrySuccessCatchExceptionTest() {
         final AuditUtility auditUtility = new AuditUtility(null, null);
@@ -91,6 +77,7 @@ public class AuditUtilityTest {
 
         auditUtility.setAuditEntrySuccess(null);
         auditUtility.setAuditEntrySuccess(entity.getId());
+        assertEquals(AuditEntryStatus.SUCCESS, entity.getStatus());
     }
 
     @Test
@@ -110,6 +97,8 @@ public class AuditUtilityTest {
 
         auditUtility.setAuditEntryFailure(null, null, null);
         auditUtility.setAuditEntryFailure(entity.getId(), "error", new Exception());
+        assertEquals(AuditEntryStatus.FAILURE, entity.getStatus());
+        assertEquals("error", entity.getErrorMessage());
     }
 
     public AggregateMessageContent createMessageContent() {
@@ -126,5 +115,19 @@ public class AuditUtilityTest {
         final CategoryItem categoryItem3 = new CategoryItem(CategoryKey.from("TYPE", "data1", "data2"), ItemOperation.DELETE, 1L, Arrays.asList(linkableItem3, linkableItem4, linkableItem5));
         final LinkableItem subTopic = new LinkableItem("Sub Topic", "Sub Topic Value", "https://google.com");
         return new AggregateMessageContent("Topic", "audit utility test", "https://google.com", subTopic, Arrays.asList(categoryItem1, categoryItem2, categoryItem3));
+    }
+
+    private void mockAuditRepositorySave(final AuditEntryRepository auditEntryRepository, final AuditEntryEntity savedAuditEntryEntity) {
+        Mockito.when(auditEntryRepository.save(Mockito.any(AuditEntryEntity.class))).then(invocation -> {
+            final AuditEntryEntity originalEntity = invocation.getArgument(0);
+            if (null != originalEntity.getId()) {
+                savedAuditEntryEntity.setId(originalEntity.getId());
+            }
+            savedAuditEntryEntity.setStatus(originalEntity.getStatus());
+            savedAuditEntryEntity.setErrorMessage(originalEntity.getErrorMessage());
+            savedAuditEntryEntity.setErrorStackTrace(originalEntity.getErrorStackTrace());
+            savedAuditEntryEntity.setTimeLastSent(originalEntity.getTimeLastSent());
+            return savedAuditEntryEntity;
+        });
     }
 }
