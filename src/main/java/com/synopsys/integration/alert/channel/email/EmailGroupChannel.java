@@ -41,7 +41,7 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
-import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
+import com.synopsys.integration.alert.database.api.AuditUtility;
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalConfigEntity;
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalRepository;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -53,8 +53,8 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
     private final static Logger logger = LoggerFactory.getLogger(EmailGroupChannel.class);
 
     @Autowired
-    public EmailGroupChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditEntryRepository auditEntryRepository, final EmailGlobalRepository emailRepository) {
-        super(gson, alertProperties, blackDuckProperties, auditEntryRepository, emailRepository, EmailChannelEvent.class);
+    public EmailGroupChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditUtility auditUtility, final EmailGlobalRepository emailRepository) {
+        super(gson, alertProperties, blackDuckProperties, auditUtility, emailRepository, EmailChannelEvent.class);
     }
 
     @Override

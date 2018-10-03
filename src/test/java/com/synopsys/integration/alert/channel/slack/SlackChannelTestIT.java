@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.channel.ChannelTest;
 import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.LinkableItem;
-import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
+import com.synopsys.integration.alert.database.api.AuditUtility;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
@@ -44,12 +44,12 @@ public class SlackChannelTestIT extends ChannelTest {
     @Test
     @Category(ExternalConnectionTest.class)
     public void sendMessageTestIT() throws IOException, IntegrationException {
-        final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
+        final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final GlobalBlackDuckRepository mockedGlobalRepository = Mockito.mock(GlobalBlackDuckRepository.class);
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(mockedGlobalRepository, testAlertProperties, null);
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties);
-        final SlackChannel slackChannel = new SlackChannel(gson, testAlertProperties, globalProperties, auditEntryRepository, channelRestConnectionFactory);
+        final SlackChannel slackChannel = new SlackChannel(gson, testAlertProperties, globalProperties, auditUtility, channelRestConnectionFactory);
         final String roomName = properties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME);
         final String username = properties.getProperty(TestPropertyKey.TEST_SLACK_USERNAME);
         final String webHook = properties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK);

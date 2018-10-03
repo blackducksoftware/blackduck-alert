@@ -32,6 +32,7 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.LinkableItem;
+import com.synopsys.integration.alert.database.api.AuditUtility;
 import com.synopsys.integration.alert.database.entity.channel.DistributionChannelConfigEntity;
 import com.synopsys.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -48,9 +49,10 @@ public class RestDistributionChannelTest extends ChannelTest {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final BlackDuckProperties blackDuckProperties = new TestBlackDuckProperties(testAlertProperties);
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties);
+        final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final Gson gson = new Gson();
         final RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity, ChannelEvent> restChannel = new RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity, ChannelEvent>(gson,
-            testAlertProperties, blackDuckProperties, null, null, null, channelRestConnectionFactory) {
+            testAlertProperties, blackDuckProperties, auditUtility, null, null, channelRestConnectionFactory) {
 
             @Override
             public String getDistributionType() {

@@ -186,7 +186,7 @@ public class BlackDuckAccumulator extends ScheduledTask {
                     final NotificationService notificationService = hubServicesFactory.createNotificationService();
                     final NotificationContentDetailFactory notificationContentDetailFactory = new NotificationContentDetailFactory(hubServicesFactory.getGson(), HubServicesFactory.createDefaultJsonParser());
                     final CommonNotificationService commonNotificationService = hubServicesFactory.createCommonNotificationService(notificationContentDetailFactory, true);
-                    // TODO change this code to only use the notification service and return a different type.  No longer
+                    // TODO change this code to only use the notification api and return a different type.  No longer
                     final List<NotificationView> notificationViewList = notificationService.getAllNotifications(startDate, endDate);
                     final List<CommonNotificationView> commonNotificationViews = commonNotificationService.getCommonNotifications(notificationViewList);
                     final CommonNotificationViewResults notificationResults = commonNotificationService.getCommonNotificationViewResults(commonNotificationViews);
