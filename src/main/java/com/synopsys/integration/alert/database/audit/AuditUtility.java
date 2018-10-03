@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.api;
+package com.synopsys.integration.alert.database.audit;
 
 import java.util.Date;
 import java.util.Optional;
@@ -36,9 +36,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.CategoryItem;
-import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
-import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
-import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
 import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
 
 @Component

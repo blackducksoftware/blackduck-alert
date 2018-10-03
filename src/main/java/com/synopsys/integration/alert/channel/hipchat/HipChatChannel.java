@@ -47,7 +47,7 @@ import com.synopsys.integration.alert.channel.rest.RestDistributionChannel;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
-import com.synopsys.integration.alert.database.api.AuditUtility;
+import com.synopsys.integration.alert.database.audit.AuditUtility;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalRepository;

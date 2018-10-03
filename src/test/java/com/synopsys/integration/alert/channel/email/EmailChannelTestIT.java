@@ -21,7 +21,7 @@ import com.synopsys.integration.alert.TestPropertyKey;
 import com.synopsys.integration.alert.channel.ChannelTest;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.LinkableItem;
-import com.synopsys.integration.alert.database.api.AuditUtility;
+import com.synopsys.integration.alert.database.audit.AuditUtility;
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalConfigEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;

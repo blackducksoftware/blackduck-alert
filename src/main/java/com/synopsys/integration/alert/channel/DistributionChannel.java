@@ -34,7 +34,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.database.api.AuditUtility;
+import com.synopsys.integration.alert.database.audit.AuditUtility;
 import com.synopsys.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.web.model.Config;

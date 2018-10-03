@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.channel.ChannelTest;
 import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.LinkableItem;
-import com.synopsys.integration.alert.database.api.AuditUtility;
+import com.synopsys.integration.alert.database.audit.AuditUtility;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;

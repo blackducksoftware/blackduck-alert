@@ -33,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.common.event.AlertEvent;
-import com.synopsys.integration.alert.database.api.AuditUtility;
+import com.synopsys.integration.alert.database.audit.AuditUtility;
 
 @Component
 public class ChannelTemplateManager {
