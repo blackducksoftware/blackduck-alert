@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -47,16 +46,8 @@ import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannelEvent;
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
 import com.synopsys.integration.alert.channel.slack.SlackChannelEvent;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.LinkableItem;
-import com.synopsys.integration.alert.database.channel.email.EmailDistributionRepositoryAccessor;
-import com.synopsys.integration.alert.database.channel.email.EmailGroupDistributionConfigEntity;
-import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
-import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionRepositoryAccessor;
-import com.synopsys.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
-import com.synopsys.integration.alert.database.channel.slack.SlackDistributionRepositoryAccessor;
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserEntity;
@@ -75,58 +66,38 @@ import com.synopsys.integration.rest.RestConstants;
 @Component
 public class ChannelEventFactory {
     private final Logger logger = LoggerFactory.getLogger(ChannelEventFactory.class);
-    private final EmailDistributionRepositoryAccessor emailDistributionRepositoryAccessor;
-    private final HipChatDistributionRepositoryAccessor hipChatDistributionRepositoryAccessor;
-    private final SlackDistributionRepositoryAccessor slackDistributionRepositoryAccessor;
 
     private final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
     private final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor;
     private final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor;
 
     @Autowired
-    public ChannelEventFactory(final EmailDistributionRepositoryAccessor emailDistributionRepositoryAccessor, final HipChatDistributionRepositoryAccessor hipChatDistributionRepositoryAccessor,
-        final SlackDistributionRepositoryAccessor slackDistributionRepositoryAccessor, final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor,
+    public ChannelEventFactory(final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor,
         final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor, final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor) {
-        this.emailDistributionRepositoryAccessor = emailDistributionRepositoryAccessor;
-        this.hipChatDistributionRepositoryAccessor = hipChatDistributionRepositoryAccessor;
-        this.slackDistributionRepositoryAccessor = slackDistributionRepositoryAccessor;
 
         this.blackDuckProjectRepositoryAccessor = blackDuckProjectRepositoryAccessor;
         this.blackDuckUserRepositoryAccessor = blackDuckUserRepositoryAccessor;
         this.userProjectRelationRepositoryAccessor = userProjectRelationRepositoryAccessor;
     }
 
-    public ChannelEvent createChannelEvent(final CommonDistributionConfig config, final AggregateMessageContent messageContent) throws AlertException {
-        final Long distributionConfigId = Long.valueOf(config.getDistributionConfigId());
-        final String destination = config.getDistributionType();
-        if (destination.equals(EmailGroupChannel.COMPONENT_NAME)) {
-            final Optional<? extends DatabaseEntity> optionalDatabaseEntity = emailDistributionRepositoryAccessor.readEntity(distributionConfigId);
-            if (!optionalDatabaseEntity.isPresent()) {
-                throw new AlertException("Could not find the email configuration with Id " + distributionConfigId);
-            }
-            final EmailGroupDistributionConfigEntity emailGroupDistributionConfigEntity = (EmailGroupDistributionConfigEntity) optionalDatabaseEntity.get();
-            return createEmailEvent(config, emailGroupDistributionConfigEntity, messageContent);
-        } else if (destination.equals(HipChatChannel.COMPONENT_NAME)) {
-            final Optional<? extends DatabaseEntity> optionalDatabaseEntity = hipChatDistributionRepositoryAccessor.readEntity(distributionConfigId);
-            if (!optionalDatabaseEntity.isPresent()) {
-                throw new AlertException("Could not find the hipchat configuration with Id " + distributionConfigId);
-            }
-            final HipChatDistributionConfigEntity hipChatDistributionConfigEntity = (HipChatDistributionConfigEntity) optionalDatabaseEntity.get();
-            return createHipChatChannelEvent(config, hipChatDistributionConfigEntity, messageContent);
-        } else if (destination.equals(SlackChannel.COMPONENT_NAME)) {
-            final Optional<? extends DatabaseEntity> optionalDatabaseEntity = slackDistributionRepositoryAccessor.readEntity(distributionConfigId);
-            if (!optionalDatabaseEntity.isPresent()) {
-                throw new AlertException("Could not find the slack configuration with Id " + distributionConfigId);
-            }
-            final SlackDistributionConfigEntity slackDistributionConfigEntity = (SlackDistributionConfigEntity) optionalDatabaseEntity.get();
-            return createSlackChannelEvent(config, slackDistributionConfigEntity, messageContent);
+    public ChannelEvent createChannelEvent(final CommonDistributionConfig config, final AggregateMessageContent messageContent) {
+        final String distributionType = config.getDistributionType();
+        if (distributionType.equals(EmailGroupChannel.COMPONENT_NAME)) {
+            final EmailDistributionConfig emailDistributionConfig = (EmailDistributionConfig) config;
+            return createEmailEvent(emailDistributionConfig, messageContent);
+        } else if (distributionType.equals(HipChatChannel.COMPONENT_NAME)) {
+            final HipChatDistributionConfig hipChatDistributionConfig = (HipChatDistributionConfig) config;
+            return createHipChatChannelEvent(hipChatDistributionConfig, messageContent);
+        } else if (distributionType.equals(SlackChannel.COMPONENT_NAME)) {
+            final SlackDistributionConfig slackDistributionConfig = (SlackDistributionConfig) config;
+            return createSlackChannelEvent(slackDistributionConfig, messageContent);
         }
         return null;
     }
 
-    public SlackChannelEvent createSlackChannelEvent(final CommonDistributionConfig commonDistributionConfig, final SlackDistributionConfigEntity slackDistributionConfigEntity, final AggregateMessageContent messageContent) {
-        return new SlackChannelEvent(RestConstants.formatDate(new Date()), commonDistributionConfig.getProviderName(), commonDistributionConfig.getFormatType(), messageContent,
-            Long.valueOf(commonDistributionConfig.getId()), slackDistributionConfigEntity.getChannelUsername(), slackDistributionConfigEntity.getWebhook(), slackDistributionConfigEntity.getChannelName());
+    public SlackChannelEvent createSlackChannelEvent(final SlackDistributionConfig slackDistributionConfig, final AggregateMessageContent messageContent) {
+        return new SlackChannelEvent(RestConstants.formatDate(new Date()), slackDistributionConfig.getProviderName(), slackDistributionConfig.getFormatType(), messageContent,
+            Long.valueOf(slackDistributionConfig.getId()), slackDistributionConfig.getChannelUsername(), slackDistributionConfig.getWebhook(), slackDistributionConfig.getChannelName());
     }
 
     public SlackChannelEvent createSlackChannelTestEvent(final Config restModel) {
@@ -136,9 +107,9 @@ public class ChannelEventFactory {
             null, slackDistributionConfig.getChannelUsername(), slackDistributionConfig.getWebhook(), slackDistributionConfig.getChannelName());
     }
 
-    public HipChatChannelEvent createHipChatChannelEvent(final CommonDistributionConfig commonDistributionConfig, final HipChatDistributionConfigEntity hipChatDistributionConfigEntity, final AggregateMessageContent messageContent) {
-        return new HipChatChannelEvent(RestConstants.formatDate(new Date()), commonDistributionConfig.getProviderName(), commonDistributionConfig.getFormatType(), messageContent, Long.valueOf(commonDistributionConfig.getId()),
-            hipChatDistributionConfigEntity.getRoomId(), hipChatDistributionConfigEntity.getNotify(), hipChatDistributionConfigEntity.getColor());
+    public HipChatChannelEvent createHipChatChannelEvent(final HipChatDistributionConfig hipChatDistributionConfig, final AggregateMessageContent messageContent) {
+        return new HipChatChannelEvent(RestConstants.formatDate(new Date()), hipChatDistributionConfig.getProviderName(), hipChatDistributionConfig.getFormatType(), messageContent, Long.valueOf(hipChatDistributionConfig.getId()),
+            NumberUtils.toInt(hipChatDistributionConfig.getRoomId()), hipChatDistributionConfig.getNotify(), hipChatDistributionConfig.getColor());
     }
 
     public HipChatChannelEvent createHipChatChannelTestEvent(final Config restModel) {
@@ -148,15 +119,15 @@ public class ChannelEventFactory {
             null, NumberUtils.toInt(hipChatDistributionConfig.getRoomId(), 0), hipChatDistributionConfig.getNotify(), hipChatDistributionConfig.getColor());
     }
 
-    public EmailChannelEvent createEmailEvent(final CommonDistributionConfig commonDistributionConfig, final EmailGroupDistributionConfigEntity emailGroupDistributionConfigEntity, final AggregateMessageContent messageContent) {
+    public EmailChannelEvent createEmailEvent(final EmailDistributionConfig emailGroupDistributionConfig, final AggregateMessageContent messageContent) {
         final String projectName = messageContent.getValue();
-        BlackDuckProjectEntity projectEntity = blackDuckProjectRepositoryAccessor.findByName(projectName);
-        final Set<String> emailAddresses = getEmailAddressesForProject(projectEntity, emailGroupDistributionConfigEntity.getProjectOwnerOnly());
+        final BlackDuckProjectEntity projectEntity = blackDuckProjectRepositoryAccessor.findByName(projectName);
+        final Set<String> emailAddresses = getEmailAddressesForProject(projectEntity, emailGroupDistributionConfig.getProjectOwnerOnly());
         if (emailAddresses.isEmpty()) {
-            logger.error("Could not find any email addresses for project: {}. Job: {}", projectName, commonDistributionConfig.getName());
+            logger.error("Could not find any email addresses for project: {}. Job: {}", projectName, emailGroupDistributionConfig.getName());
         }
-        return new EmailChannelEvent(RestConstants.formatDate(new Date()), commonDistributionConfig.getProviderName(), commonDistributionConfig.getFormatType(), messageContent,
-            Long.valueOf(commonDistributionConfig.getId()), getEmailAddressesForProject(projectEntity, emailGroupDistributionConfigEntity.getProjectOwnerOnly()), emailGroupDistributionConfigEntity.getEmailSubjectLine());
+        return new EmailChannelEvent(RestConstants.formatDate(new Date()), emailGroupDistributionConfig.getProviderName(), emailGroupDistributionConfig.getFormatType(), messageContent,
+            Long.valueOf(emailGroupDistributionConfig.getId()), getEmailAddressesForProject(projectEntity, emailGroupDistributionConfig.getProjectOwnerOnly()), emailGroupDistributionConfig.getEmailSubjectLine());
 
     }
 
@@ -180,19 +151,19 @@ public class ChannelEventFactory {
 
         }
         if (null != blackDuckProjectEntities) {
-            Set<String> projectsWithoutEmails = new HashSet<>();
+            final Set<String> projectsWithoutEmails = new HashSet<>();
             blackDuckProjectEntities
                 .stream()
                 .forEach(project -> {
-                    Set<String> emailsForProject = getEmailAddressesForProject(project, emailDistributionConfig.getProjectOwnerOnly());
+                    final Set<String> emailsForProject = getEmailAddressesForProject(project, emailDistributionConfig.getProjectOwnerOnly());
                     if (emailsForProject.isEmpty()) {
                         projectsWithoutEmails.add(project.getName());
                     }
                     emailAddresses.addAll(emailsForProject);
                 });
             if (!projectsWithoutEmails.isEmpty()) {
-                String projects = StringUtils.join(projectsWithoutEmails, ", ");
-                Map<String, String> fieldErrors = new HashMap<>();
+                final String projects = StringUtils.join(projectsWithoutEmails, ", ");
+                final Map<String, String> fieldErrors = new HashMap<>();
                 String errorMessage = "";
                 if (emailDistributionConfig.getProjectOwnerOnly()) {
                     errorMessage = String.format("Could not find Project owners for the projects: %s", projects);
@@ -207,7 +178,7 @@ public class ChannelEventFactory {
             null, emailAddresses, emailDistributionConfig.getEmailSubjectLine());
     }
 
-    private Set<String> getEmailAddressesForProject(final BlackDuckProjectEntity blackDuckProjectEntity, boolean projectOwnerOnly) {
+    private Set<String> getEmailAddressesForProject(final BlackDuckProjectEntity blackDuckProjectEntity, final boolean projectOwnerOnly) {
         if (null == blackDuckProjectEntity) {
             return Collections.emptySet();
         }

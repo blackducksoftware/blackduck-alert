@@ -1,5 +1,12 @@
 package com.synopsys.integration.alert.channel.hipchat;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Collections;
+
+import org.apache.commons.lang3.math.NumberUtils;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.TestPropertyKey;
@@ -9,12 +16,14 @@ import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescript
 import com.synopsys.integration.alert.channel.hipchat.mock.MockHipChatEntity;
 import com.synopsys.integration.alert.channel.hipchat.mock.MockHipChatRestModel;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-import com.synopsys.integration.alert.database.channel.email.EmailDistributionRepositoryAccessor;
+import com.synopsys.integration.alert.common.enumeration.FormatType;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalRepository;
-import com.synopsys.integration.alert.database.channel.slack.SlackDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserRepositoryAccessor;
@@ -24,11 +33,7 @@ import com.synopsys.integration.alert.web.channel.model.HipChatDistributionConfi
 
 public class HipChatDescriptorTestIT extends DescriptorTestConfigTest<HipChatDistributionConfig, HipChatDistributionConfigEntity, HipChatGlobalConfigEntity> {
     @Autowired
-    private EmailDistributionRepositoryAccessor emailDistributionRepositoryAccessor;
-    @Autowired
     private HipChatDistributionRepositoryAccessor hipChatDistributionRepositoryAccessor;
-    @Autowired
-    private SlackDistributionRepositoryAccessor slackDistributionRepositoryAccessor;
     @Autowired
     private BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
     @Autowired
@@ -41,6 +46,29 @@ public class HipChatDescriptorTestIT extends DescriptorTestConfigTest<HipChatDis
     private HipChatDescriptor hipChatDescriptor;
 
     @Override
+    @Test
+    public void testCreateChannelEvent() throws Exception {
+        final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
+        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
+        final DatabaseEntity distributionEntity = getDistributionEntity();
+        final String roomId = "12345";
+        final Boolean notify = false;
+        final String color = "purple";
+        final HipChatDistributionConfig jobConfig = new HipChatDistributionConfig("1", roomId, notify, color, String.valueOf(distributionEntity.getId()), getDescriptor().getDestinationName(), "Test Job", "provider",
+            FrequencyType.DAILY.name(), "true",
+            Collections.emptyList(), Collections.emptyList(), FormatType.DIGEST.name());
+
+        final HipChatChannelEvent channelEvent = (HipChatChannelEvent) channelEventFactory.createChannelEvent(jobConfig, content);
+
+        assertEquals(Long.valueOf(1L), channelEvent.getCommonDistributionConfigId());
+        assertEquals(36, channelEvent.getEventId().length());
+        assertEquals(getDescriptor().getDestinationName(), channelEvent.getDestination());
+        assertTrue(NumberUtils.toInt(roomId) == channelEvent.getRoomId());
+        assertEquals(notify, channelEvent.getNotify());
+        assertEquals(color, channelEvent.getColor());
+    }
+
+    @Override
     public DatabaseEntity getDistributionEntity() {
         final MockHipChatEntity mockHipChatEntity = new MockHipChatEntity();
         final HipChatDistributionConfigEntity hipChatDistributionConfigEntity = mockHipChatEntity.createEntity();
@@ -49,8 +77,7 @@ public class HipChatDescriptorTestIT extends DescriptorTestConfigTest<HipChatDis
 
     @Override
     public ChannelEventFactory createChannelEventFactory() {
-        return new ChannelEventFactory(emailDistributionRepositoryAccessor, hipChatDistributionRepositoryAccessor, slackDistributionRepositoryAccessor,
-            blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
+        return new ChannelEventFactory(blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
     }
 
     @Override
@@ -60,9 +87,7 @@ public class HipChatDescriptorTestIT extends DescriptorTestConfigTest<HipChatDis
 
     @Override
     public void cleanDistributionRepositories() {
-        emailDistributionRepositoryAccessor.deleteAll();
         hipChatDistributionRepositoryAccessor.deleteAll();
-        slackDistributionRepositoryAccessor.deleteAll();
     }
 
     @Override

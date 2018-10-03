@@ -1,9 +1,5 @@
 package com.synopsys.integration.alert.channel;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.Collections;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,16 +21,11 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.Application;
 import com.synopsys.integration.alert.TestProperties;
-import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.channel.event.ChannelEventFactory;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.RestApi;
-import com.synopsys.integration.alert.common.enumeration.FormatType;
-import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.enumeration.RestApiType;
-import com.synopsys.integration.alert.common.model.AggregateMessageContent;
-import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.entity.channel.DistributionChannelConfigEntity;
@@ -82,19 +73,7 @@ public abstract class DescriptorTestConfigTest<R extends CommonDistributionConfi
 
     public abstract DatabaseEntity getDistributionEntity();
 
-    @Test
-    public void testCreateChannelEvent() throws Exception {
-        final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
-        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
-        final DatabaseEntity distributionEntity = getDistributionEntity();
-        final CommonDistributionConfig jobConfig = new CommonDistributionConfig("1", String.valueOf(distributionEntity.getId()), getDescriptor().getDestinationName(), "Test Job", "provider", FrequencyType.DAILY.name(), "true",
-            Collections.emptyList(), Collections.emptyList(), FormatType.DIGEST.name());
-        final ChannelEvent channelEvent = channelEventFactory.createChannelEvent(jobConfig, content);
-
-        assertEquals(Long.valueOf(1L), channelEvent.getCommonDistributionConfigId());
-        assertEquals(36, channelEvent.getEventId().length());
-        assertEquals(getDescriptor().getDestinationName(), channelEvent.getDestination());
-    }
+    public abstract void testCreateChannelEvent() throws Exception;
 
     @Test
     public void testSendTestMessage() throws Exception {

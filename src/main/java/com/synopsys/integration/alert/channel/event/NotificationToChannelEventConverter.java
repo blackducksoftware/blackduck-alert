@@ -47,10 +47,10 @@ public class NotificationToChannelEventConverter {
         this.channelEventFactory = channelEventFactory;
     }
 
-    public List<ChannelEvent> convertToEvents(final Map<CommonDistributionConfig, List<AggregateMessageContent>> messageContentMap) {
+    public List<ChannelEvent> convertToEvents(final Map<? extends CommonDistributionConfig, List<AggregateMessageContent>> messageContentMap) {
         final List<ChannelEvent> channelEvents = new ArrayList<>();
-        final Set<Map.Entry<CommonDistributionConfig, List<AggregateMessageContent>>> jobMessageContentEntries = messageContentMap.entrySet();
-        for (final Map.Entry<CommonDistributionConfig, List<AggregateMessageContent>> entry : jobMessageContentEntries) {
+        final Set<? extends Map.Entry<? extends CommonDistributionConfig, List<AggregateMessageContent>>> jobMessageContentEntries = messageContentMap.entrySet();
+        for (final Map.Entry<? extends CommonDistributionConfig, List<AggregateMessageContent>> entry : jobMessageContentEntries) {
             final CommonDistributionConfig jobConfig = entry.getKey();
             final List<AggregateMessageContent> contentList = entry.getValue();
             for (final AggregateMessageContent content : contentList) {

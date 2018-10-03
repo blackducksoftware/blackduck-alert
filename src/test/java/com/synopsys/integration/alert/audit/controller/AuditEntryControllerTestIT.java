@@ -123,9 +123,12 @@ public class AuditEntryControllerTestIT {
     @Test
     @WithMockUser(roles = "ADMIN")
     public void testPostConfig() throws Exception {
-        final HipChatDistributionConfigEntity hipChatDistributionConfigEntity = mockHipChatEntity.createEntity();
-        hipChatDistributionRepository.save(hipChatDistributionConfigEntity);
+        HipChatDistributionConfigEntity hipChatDistributionConfigEntity = mockHipChatEntity.createEntity();
+        hipChatDistributionConfigEntity = hipChatDistributionRepository.save(hipChatDistributionConfigEntity);
+
         CommonDistributionConfigEntity commonEntity = mockCommonDistributionEntity.createEntity();
+        commonEntity.setDistributionConfigId(hipChatDistributionConfigEntity.getId());
+        
         final MockNotificationContent mockNotifications = new MockNotificationContent();
         NotificationContent notificationEntity = mockNotifications.createEntity();
         notificationEntity = notificationRepository.save(notificationEntity);
