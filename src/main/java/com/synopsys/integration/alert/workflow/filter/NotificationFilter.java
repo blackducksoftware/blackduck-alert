@@ -127,7 +127,7 @@ public class NotificationFilter {
         });
         return filteredNotifications
                    .parallelStream()
-                   .sorted(Comparator.comparing(NotificationContent::getCreatedAt))
+                   .sorted(Comparator.comparing(NotificationContent::getProviderCreationTime))
                    .collect(Collectors.toList());
     }
 

@@ -12,7 +12,6 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.springframework.core.io.ClassPathResource;
 
 import com.google.gson.Gson;
@@ -24,8 +23,6 @@ import com.synopsys.integration.alert.common.workflow.processor.DigestMessageCon
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
-import com.synopsys.integration.alert.provider.blackduck.tasks.ProjectSyncTask;
 import com.synopsys.integration.alert.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
@@ -66,7 +63,8 @@ public class BlackDuckPolicyMessageContentCollectorTest {
         final BlackDuckPolicyMessageContentCollector collector = createCollector();
 
         int categoryCount = numberOfPoliciesOverriden;
-        int linkableItemsCount = numberOfPoliciesOverriden * numberOfPolicyOverrideComponents * 2;
+        // add 1 item for the policy override name linkable items
+        int linkableItemsCount = numberOfPoliciesOverriden * numberOfPolicyOverrideComponents * 3;
         insertAndAssertCountsOnTopic(collector, n0, topicName, categoryCount, linkableItemsCount);
 
         categoryCount += numberOfRulesCleared;
@@ -74,11 +72,11 @@ public class BlackDuckPolicyMessageContentCollectorTest {
         insertAndAssertCountsOnTopic(collector, n1, topicName, categoryCount, linkableItemsCount);
 
         categoryCount += numberOfPoliciesOverriden - policyOverlap;
-        linkableItemsCount += numberOfPoliciesOverriden * numberOfPolicyOverrideComponents * 2;
+        linkableItemsCount += numberOfPoliciesOverriden * numberOfPolicyOverrideComponents * 3;
         insertAndAssertCountsOnTopic(collector, n2, topicName, categoryCount, linkableItemsCount);
 
         categoryCount += numberOfPoliciesOverriden - policyOverlap;
-        linkableItemsCount += numberOfPoliciesOverriden * numberOfPolicyOverrideComponents * 2;
+        linkableItemsCount += numberOfPoliciesOverriden * numberOfPolicyOverrideComponents * 3;
         insertAndAssertCountsOnTopic(collector, n3, topicName, categoryCount, linkableItemsCount);
 
         Assert.assertEquals(1, collector.collect(FormatType.DEFAULT).size());
@@ -91,9 +89,6 @@ public class BlackDuckPolicyMessageContentCollectorTest {
     }
 
     private BlackDuckPolicyMessageContentCollector createCollector() {
-        final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
-        final ProjectSyncTask projectSyncTask = Mockito.mock(ProjectSyncTask.class);
-        final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask);
         return new BlackDuckPolicyMessageContentCollector(jsonExtractor, messageContentProcessorList);
     }
 
