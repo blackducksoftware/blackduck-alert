@@ -42,13 +42,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.channel.ChannelTemplateManager;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
-import com.synopsys.integration.alert.channel.event.ChannelEventFactory;
-import com.synopsys.integration.alert.common.distribution.CommonDistributionConfigReader;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
 import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
+import com.synopsys.integration.alert.database.channel.JobConfigReader;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.web.exception.AlertNotificationPurgedException;
 import com.synopsys.integration.alert.web.model.AlertPagedModel;
@@ -67,22 +66,19 @@ public class AuditEntryActions {
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
     private final NotificationManager notificationManager;
-    private final CommonDistributionConfigReader commonDistributionConfigReader;
+    private final JobConfigReader jobConfigReader;
     private final NotificationContentConverter notificationContentConverter;
-    private final ChannelEventFactory channelEventFactory;
     private final ChannelTemplateManager channelTemplateManager;
     private final NotificationProcessor notificationProcessor;
 
     @Autowired
     public AuditEntryActions(final AuditEntryRepository auditEntryRepository, final NotificationManager notificationManager, final AuditNotificationRepository auditNotificationRepository,
-        final CommonDistributionConfigReader commonDistributionConfigReader, final NotificationContentConverter notificationContentConverter,
-        final ChannelEventFactory channelEventFactory, final ChannelTemplateManager channelTemplateManager, final NotificationProcessor notificationProcessor) {
+        final JobConfigReader jobConfigReader, final NotificationContentConverter notificationContentConverter, final ChannelTemplateManager channelTemplateManager, final NotificationProcessor notificationProcessor) {
         this.auditEntryRepository = auditEntryRepository;
         this.notificationManager = notificationManager;
         this.auditNotificationRepository = auditNotificationRepository;
-        this.commonDistributionConfigReader = commonDistributionConfigReader;
+        this.jobConfigReader = jobConfigReader;
         this.notificationContentConverter = notificationContentConverter;
-        this.channelEventFactory = channelEventFactory;
         this.channelTemplateManager = channelTemplateManager;
         this.notificationProcessor = notificationProcessor;
     }
@@ -144,7 +140,7 @@ public class AuditEntryActions {
         final List<Long> notificationIds = relations.stream().map(AuditNotificationRelation::getNotificationId).collect(Collectors.toList());
         final List<NotificationContent> notifications = notificationManager.findByIds(notificationIds);
         final Long commonConfigId = auditEntryEntity.getCommonConfigId();
-        final Optional<CommonDistributionConfig> optionalCommonConfig = commonDistributionConfigReader.getPopulatedConfig(commonConfigId);
+        final Optional<? extends CommonDistributionConfig> optionalCommonConfig = jobConfigReader.getPopulatedConfig(commonConfigId);
         if (notifications == null || notifications.isEmpty()) {
             throw new AlertNotificationPurgedException("The notification for this entry was purged. To edit the purge schedule, please see the Scheduling Configuration.");
         }
@@ -230,7 +226,7 @@ public class AuditEntryActions {
         final List<Long> notificationIds = relations.stream().map(AuditNotificationRelation::getNotificationId).collect(Collectors.toList());
         final List<NotificationContent> notifications = notificationManager.findByIds(notificationIds);
 
-        final Optional<CommonDistributionConfig> commonConfig = commonDistributionConfigReader.getPopulatedConfig(commonConfigId);
+        final Optional<? extends CommonDistributionConfig> commonConfig = jobConfigReader.getPopulatedConfig(commonConfigId);
 
         final String id = notificationContentConverter.getContentConverter().getStringValue(auditEntryEntity.getId());
         final String timeCreated = notificationContentConverter.getContentConverter().getStringValue(auditEntryEntity.getTimeCreated());

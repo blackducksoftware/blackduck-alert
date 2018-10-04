@@ -136,7 +136,7 @@ public class NotificationToChannelEventConverterTest {
         final NotificationContent notificationModel = createNotificationModel("Project_1", "1.0.0", NotificationType.RULE_VIOLATION);
         final List<NotificationContent> notificationModels = Arrays.asList(notificationModel);
 
-        final Map<CommonDistributionConfig, List<AggregateMessageContent>> jobNotifications = messageContentAggregator.processNotifications(FrequencyType.DAILY, notificationModels);
+        final Map<? extends CommonDistributionConfig, List<AggregateMessageContent>> jobNotifications = messageContentAggregator.processNotifications(FrequencyType.DAILY, notificationModels);
         final List<ChannelEvent> channelEvents = notificationToEventConverter.convertToEvents(jobNotifications);
         assertTrue(channelEvents.isEmpty());
     }
@@ -150,7 +150,7 @@ public class NotificationToChannelEventConverterTest {
         final NotificationContent notification_3 = createNotificationModel("Project_1", "2.0.0", NotificationType.RULE_VIOLATION);
         final List<NotificationContent> notificationModels = Arrays.asList(notification_1, notification_2, notification_3);
 
-        final Map<CommonDistributionConfig, List<AggregateMessageContent>> jobNotifications = messageContentAggregator.processNotifications(FrequencyType.REAL_TIME, notificationModels);
+        final Map<? extends CommonDistributionConfig, List<AggregateMessageContent>> jobNotifications = messageContentAggregator.processNotifications(FrequencyType.REAL_TIME, notificationModels);
         final List<ChannelEvent> channelEvents = notificationToEventConverter.convertToEvents(jobNotifications);
         //assertEquals(configEntityList.size() * filteredNotifications.size(), channelEvents.size());
 
