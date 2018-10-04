@@ -62,7 +62,7 @@ public class AlertProperties {
     @Value("${alert.proxy.password:}")
     private String alertProxyPassword;
 
-    @Value("${alert.encryption.password:testPassword123456}")
+    @Value("${alert.encryption.password:}")
     private String alertEncryptionPassword;
 
     public String getAlertConfigHome() {

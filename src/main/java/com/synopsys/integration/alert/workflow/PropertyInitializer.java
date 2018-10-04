@@ -42,7 +42,6 @@ public class PropertyInitializer {
     }
 
     public void save(final DatabaseEntity entity, final RepositoryAccessor repositoryAccessor) {
-        logger.info("Saving global properties {}", entity);
         final List<? extends DatabaseEntity> savedEntityList = repositoryAccessor.readEntities();
         if (savedEntityList == null || savedEntityList.isEmpty()) {
             logger.debug("No global entities found, saving new values.");
