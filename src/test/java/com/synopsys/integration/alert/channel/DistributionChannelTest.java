@@ -16,7 +16,6 @@ import static org.junit.Assert.assertEquals;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Optional;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -27,12 +26,10 @@ import com.synopsys.integration.alert.channel.email.EmailChannelEvent;
 import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
 import com.synopsys.integration.alert.channel.email.mock.MockEmailGlobalEntity;
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
-import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.LinkableItem;
-import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
-import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
+import com.synopsys.integration.alert.database.audit.AuditUtility;
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalConfigEntity;
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalRepository;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -41,53 +38,6 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
 
 public class DistributionChannelTest extends ChannelTest {
-    @Test
-    public void setAuditEntrySuccessCatchExceptionTest() {
-        final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final BlackDuckProperties hubProperties = new TestBlackDuckProperties(testAlertProperties);
-
-        final EmailGroupChannel channel = new EmailGroupChannel(gson, testAlertProperties, hubProperties, null, null);
-        channel.setAuditEntrySuccess(1L);
-    }
-
-    @Test
-    public void setAuditEntrySuccessTest() {
-        final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
-        final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final BlackDuckProperties hubProperties = new TestBlackDuckProperties(testAlertProperties);
-        final EmailGroupChannel channel = new EmailGroupChannel(gson, testAlertProperties, hubProperties, auditEntryRepository, null);
-
-        final AuditEntryEntity entity = new AuditEntryEntity(1L, new Date(System.currentTimeMillis() - 1000), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS, null, null);
-        entity.setId(1L);
-        Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(entity));
-        Mockito.when(auditEntryRepository.save(entity)).thenReturn(entity);
-
-        channel.setAuditEntrySuccess(null);
-        channel.setAuditEntrySuccess(entity.getId());
-    }
-
-    @Test
-    public void setAuditEntryFailureCatchExceptionTest() {
-        final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final BlackDuckProperties hubProperties = new TestBlackDuckProperties(testAlertProperties);
-        final EmailGroupChannel channel = new EmailGroupChannel(gson, testAlertProperties, hubProperties, null, null);
-        channel.setAuditEntryFailure(1L, null, null);
-    }
-
-    @Test
-    public void setAuditEntryFailureTest() {
-        final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final BlackDuckProperties hubProperties = new TestBlackDuckProperties(testAlertProperties);
-        final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
-        final EmailGroupChannel channel = new EmailGroupChannel(gson, testAlertProperties, hubProperties, auditEntryRepository, null);
-        final AuditEntryEntity entity = new AuditEntryEntity(1L, new Date(System.currentTimeMillis() - 1000), new Date(System.currentTimeMillis()), AuditEntryStatus.FAILURE, null, null);
-        entity.setId(1L);
-        Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(entity));
-        Mockito.when(auditEntryRepository.save(entity)).thenReturn(entity);
-
-        channel.setAuditEntryFailure(null, null, null);
-        channel.setAuditEntryFailure(entity.getId(), "error", new Exception());
-    }
 
     @Test
     public void getGlobalConfigEntityTest() {
@@ -108,10 +58,10 @@ public class DistributionChannelTest extends ChannelTest {
     public void receiveMessageTest() {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final BlackDuckProperties hubProperties = new TestBlackDuckProperties(testAlertProperties);
-        final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
+        final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final EmailGlobalRepository emailGlobalRepository = Mockito.mock(EmailGlobalRepository.class);
 
-        final EmailGroupChannel channel = new EmailGroupChannel(gson, testAlertProperties, hubProperties, auditEntryRepository, emailGlobalRepository);
+        final EmailGroupChannel channel = new EmailGroupChannel(gson, testAlertProperties, hubProperties, auditUtility, emailGlobalRepository);
         final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "Distribution Channel Test", null, subTopic, Collections.emptyList());
 
