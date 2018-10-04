@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.rest.RestConstants;
 
 @Component
-public class SlackEventProducer extends ChannelEventProducer<SlackChannelEvent> {
+public class SlackEventProducer extends ChannelEventProducer {
 
     @Override
     public SlackChannelEvent createChannelEvent(final CommonDistributionConfig commonDistributionConfig, final AggregateMessageContent messageContent) {
