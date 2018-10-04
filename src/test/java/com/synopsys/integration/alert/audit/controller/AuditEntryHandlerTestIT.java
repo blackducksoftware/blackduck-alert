@@ -42,6 +42,7 @@ import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
 import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
+import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionRepository;
 import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
@@ -88,9 +89,16 @@ public class AuditEntryHandlerTestIT {
     @Test
     public void getTestIT() {
         final MockNotificationContent mockNotification = new MockNotificationContent();
-        final MockCommonDistributionEntity mockDistributionConfig = new MockCommonDistributionEntity();
         final NotificationContent savedNotificationEntity = notificationContentRepository.save(mockNotification.createEntity());
-        final CommonDistributionConfigEntity savedConfigEntity = commonDistributionRepository.save(mockDistributionConfig.createEntity());
+
+        final MockCommonDistributionEntity mockDistributionConfig = new MockCommonDistributionEntity();
+        final CommonDistributionConfigEntity commonDistributionConfigEntity = mockDistributionConfig.createEntity();
+
+        final MockHipChatEntity mockHipChatEntity = new MockHipChatEntity();
+        final HipChatDistributionConfigEntity hipChatDistributionConfigEntity = hipChatDistributionRepository.save(mockHipChatEntity.createEntity());
+        commonDistributionConfigEntity.setDistributionConfigId(hipChatDistributionConfigEntity.getId());
+
+        final CommonDistributionConfigEntity savedConfigEntity = commonDistributionRepository.save(commonDistributionConfigEntity);
         final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository
                                                            .save(new AuditEntryEntity(savedConfigEntity.getId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS, null, null));
 
@@ -116,11 +124,17 @@ public class AuditEntryHandlerTestIT {
     @Test
     public void resendNotificationTestIt() {
         final MockNotificationContent mockNotification = new MockNotificationContent();
+
         final MockCommonDistributionEntity mockDistributionConfig = new MockCommonDistributionEntity();
+        final CommonDistributionConfigEntity commonDistributionConfigEntity = mockDistributionConfig.createEntity();
+
         final MockHipChatEntity mockHipChatEntity = new MockHipChatEntity();
-        hipChatDistributionRepository.save(mockHipChatEntity.createEntity());
+        final HipChatDistributionConfigEntity hipChatDistributionConfigEntity = hipChatDistributionRepository.save(mockHipChatEntity.createEntity());
+        commonDistributionConfigEntity.setDistributionConfigId(hipChatDistributionConfigEntity.getId());
+
+        final CommonDistributionConfigEntity savedConfigEntity = commonDistributionRepository.save(commonDistributionConfigEntity);
+
         final NotificationContent savedNotificationEntity = notificationContentRepository.save(mockNotification.createEntity());
-        final CommonDistributionConfigEntity savedConfigEntity = commonDistributionRepository.save(mockDistributionConfig.createEntity());
         final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository
                                                            .save(new AuditEntryEntity(savedConfigEntity.getId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS, null, null));
 

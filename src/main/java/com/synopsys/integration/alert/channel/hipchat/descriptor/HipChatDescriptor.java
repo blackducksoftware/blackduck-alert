@@ -27,15 +27,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
+import com.synopsys.integration.alert.channel.hipchat.HipChatEventProducer;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
+import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionRepositoryAccessor;
 
 @Component
 public class HipChatDescriptor extends ChannelDescriptor {
 
     @Autowired
     public HipChatDescriptor(final HipChatChannel channelListener, final HipChatDistributionRestApi distributionRestApi, final HipChatDistributionUIConfig hipChatDistributionUIConfig,
-            final HipChatGlobalRestApi hipChatGlobalRestApi, final HipChatGlobalUIConfig hipChatGlobalUIConfig) {
-        super(HipChatChannel.COMPONENT_NAME, HipChatChannel.COMPONENT_NAME, channelListener, distributionRestApi, hipChatDistributionUIConfig, hipChatGlobalRestApi, hipChatGlobalUIConfig);
+        final HipChatGlobalRestApi hipChatGlobalRestApi, final HipChatGlobalUIConfig hipChatGlobalUIConfig, final HipChatDistributionRepositoryAccessor hipChatDistributionRepositoryAccessor,
+        final HipChatEventProducer hipChatEventProducer) {
+        super(HipChatChannel.COMPONENT_NAME, HipChatChannel.COMPONENT_NAME, channelListener, distributionRestApi, hipChatDistributionUIConfig, hipChatGlobalRestApi, hipChatGlobalUIConfig, hipChatDistributionRepositoryAccessor,
+            hipChatEventProducer);
     }
 
 }

@@ -31,13 +31,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.synopsys.integration.alert.Application;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.distribution.CommonDistributionConfigReader;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
+import com.synopsys.integration.alert.database.channel.JobConfigReader;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.web.channel.model.EmailDistributionConfig;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.workflow.filter.NotificationFilter;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
@@ -55,7 +56,7 @@ public class MessageContentAggregatorTest {
     @Autowired
     private List<ProviderDescriptor> providerDescriptors;
     @Autowired
-    private CommonDistributionConfigReader commonDistributionConfigReader;
+    private JobConfigReader jobConfigReader;
     @Autowired
     private NotificationFilter notificationFilter;
 
@@ -69,8 +70,8 @@ public class MessageContentAggregatorTest {
         final NotificationContent vulnerabilityNotification = createNotification(BlackDuckProvider.COMPONENT_NAME, vulnerabilityContent, NotificationType.VULNERABILITY);
 
         final List<NotificationContent> notificationContentList = Arrays.asList(policyNotification, vulnerabilityNotification);
-        final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(providerDescriptors, commonDistributionConfigReader, notificationFilter);
-        final Map<CommonDistributionConfig, List<AggregateMessageContent>> topicContentMap = messageContentAggregator.processNotifications(frequencyType, notificationContentList);
+        final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(jobConfigReader, providerDescriptors, notificationFilter);
+        final Map<? extends CommonDistributionConfig, List<AggregateMessageContent>> topicContentMap = messageContentAggregator.processNotifications(frequencyType, notificationContentList);
 
         assertTrue(topicContentMap.isEmpty());
     }
@@ -88,13 +89,13 @@ public class MessageContentAggregatorTest {
 
         final List<String> projectList = Arrays.asList("example", "alert-test-project", "alert-test-project-2");
         final List<String> notificationTypesLIst = Arrays.asList(NotificationType.RULE_VIOLATION_CLEARED.name(), NotificationType.VULNERABILITY.name());
-        final CommonDistributionConfig jobConfig = createCommonDistributionJob("channel_email", BlackDuckProvider.COMPONENT_NAME, frequencyType.name(), projectList, notificationTypesLIst, FormatType.DEFAULT);
+        final EmailDistributionConfig jobConfig = createEmailDistributionJob("channel_email", BlackDuckProvider.COMPONENT_NAME, frequencyType.name(), projectList, notificationTypesLIst, FormatType.DEFAULT);
 
-        final CommonDistributionConfigReader spiedReader = Mockito.spy(commonDistributionConfigReader);
-        Mockito.when(spiedReader.getPopulatedConfigs()).thenReturn(Arrays.asList(jobConfig));
+        final JobConfigReader spiedReader = Mockito.spy(jobConfigReader);
+        Mockito.doReturn(Arrays.asList(jobConfig)).when(spiedReader).getPopulatedConfigs();
 
-        final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(providerDescriptors, spiedReader, notificationFilter);
-        final Map<CommonDistributionConfig, List<AggregateMessageContent>> topicContentMap = messageContentAggregator.processNotifications(frequencyType, notificationContentList);
+        final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(spiedReader, providerDescriptors, notificationFilter);
+        final Map<? extends CommonDistributionConfig, List<AggregateMessageContent>> topicContentMap = messageContentAggregator.processNotifications(frequencyType, notificationContentList);
 
         assertFalse(topicContentMap.isEmpty());
         assertEquals(1, topicContentMap.size());
@@ -115,13 +116,13 @@ public class MessageContentAggregatorTest {
 
         final List<String> projectList = Arrays.asList("example", "alert-test-project", "alert-test-project-2");
         final List<String> notificationTypesLIst = Arrays.asList(NotificationType.RULE_VIOLATION_CLEARED.name(), NotificationType.VULNERABILITY.name());
-        final CommonDistributionConfig jobConfig = createCommonDistributionJob("channel_email", BlackDuckProvider.COMPONENT_NAME, FrequencyType.DAILY.name(), projectList, notificationTypesLIst, FormatType.DEFAULT);
+        final EmailDistributionConfig jobConfig = createEmailDistributionJob("channel_email", BlackDuckProvider.COMPONENT_NAME, FrequencyType.DAILY.name(), projectList, notificationTypesLIst, FormatType.DEFAULT);
 
-        final CommonDistributionConfigReader spiedReader = Mockito.spy(commonDistributionConfigReader);
-        Mockito.when(spiedReader.getPopulatedConfigs()).thenReturn(Arrays.asList(jobConfig));
+        final JobConfigReader spiedReader = Mockito.spy(jobConfigReader);
+        Mockito.doReturn(Arrays.asList(jobConfig)).when(spiedReader).getPopulatedConfigs();
 
-        final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(providerDescriptors, spiedReader, notificationFilter);
-        final Map<CommonDistributionConfig, List<AggregateMessageContent>> topicContentMap = messageContentAggregator.processNotifications(frequencyType, notificationContentList);
+        final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(spiedReader, providerDescriptors, notificationFilter);
+        final Map<? extends CommonDistributionConfig, List<AggregateMessageContent>> topicContentMap = messageContentAggregator.processNotifications(frequencyType, notificationContentList);
 
         assertTrue(topicContentMap.isEmpty());
     }
@@ -140,13 +141,13 @@ public class MessageContentAggregatorTest {
 
         final List<String> projectList = Arrays.asList("bad-project");
         final List<String> notificationTypesLIst = Arrays.asList(NotificationType.RULE_VIOLATION_CLEARED.name(), NotificationType.VULNERABILITY.name());
-        final CommonDistributionConfig jobConfig = createCommonDistributionJob("channel_email", unknownProvider, frequencyType.name(), projectList, notificationTypesLIst, FormatType.DEFAULT);
+        final EmailDistributionConfig jobConfig = createEmailDistributionJob("channel_email", unknownProvider, frequencyType.name(), projectList, notificationTypesLIst, FormatType.DEFAULT);
 
-        final CommonDistributionConfigReader spiedReader = Mockito.spy(commonDistributionConfigReader);
-        Mockito.when(spiedReader.getPopulatedConfigs()).thenReturn(Arrays.asList(jobConfig));
+        final JobConfigReader spiedReader = Mockito.spy(jobConfigReader);
+        Mockito.doReturn(Arrays.asList(jobConfig)).when(spiedReader).getPopulatedConfigs();
 
-        final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(providerDescriptors, spiedReader, notificationFilter);
-        final Map<CommonDistributionConfig, List<AggregateMessageContent>> topicContentMap = messageContentAggregator.processNotifications(frequencyType, notificationContentList);
+        final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(spiedReader, providerDescriptors, notificationFilter);
+        final Map<? extends CommonDistributionConfig, List<AggregateMessageContent>> topicContentMap = messageContentAggregator.processNotifications(frequencyType, notificationContentList);
 
         assertTrue(topicContentMap.containsKey(jobConfig));
         assertTrue(topicContentMap.get(jobConfig).isEmpty());
@@ -166,21 +167,21 @@ public class MessageContentAggregatorTest {
 
         final List<String> projectList = Arrays.asList("bad-project");
         final List<String> notificationTypesLIst = Arrays.asList(NotificationType.RULE_VIOLATION_CLEARED.name(), NotificationType.VULNERABILITY.name());
-        final CommonDistributionConfig jobConfig = createCommonDistributionJob("channel_email", BlackDuckProvider.COMPONENT_NAME, frequencyType.name(), projectList, notificationTypesLIst, FormatType.DEFAULT);
+        final EmailDistributionConfig jobConfig = createEmailDistributionJob("channel_email", BlackDuckProvider.COMPONENT_NAME, frequencyType.name(), projectList, notificationTypesLIst, FormatType.DEFAULT);
 
-        final CommonDistributionConfigReader spiedReader = Mockito.spy(commonDistributionConfigReader);
-        Mockito.when(spiedReader.getPopulatedConfigs()).thenReturn(Arrays.asList(jobConfig));
+        final JobConfigReader spiedReader = Mockito.spy(jobConfigReader);
+        Mockito.doReturn(Arrays.asList(jobConfig)).when(spiedReader).getPopulatedConfigs();
 
-        final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(providerDescriptors, spiedReader, notificationFilter);
-        final Map<CommonDistributionConfig, List<AggregateMessageContent>> topicContentMap = messageContentAggregator.processNotifications(frequencyType, notificationContentList);
+        final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(spiedReader, providerDescriptors, notificationFilter);
+        final Map<? extends CommonDistributionConfig, List<AggregateMessageContent>> topicContentMap = messageContentAggregator.processNotifications(frequencyType, notificationContentList);
 
         assertTrue(topicContentMap.containsKey(jobConfig));
         assertTrue(topicContentMap.get(jobConfig).isEmpty());
     }
 
-    private CommonDistributionConfig createCommonDistributionJob(final String distributionType, final String providerName, final String frequency,
+    private EmailDistributionConfig createEmailDistributionJob(final String distributionType, final String providerName, final String frequency,
         final List<String> configuredProjects, final List<String> notificationTypes, final FormatType formatType) {
-        return new CommonDistributionConfig("1L", "1L", distributionType, "Test Distribution Job", providerName, frequency, "true", configuredProjects, notificationTypes, formatType.name());
+        return new EmailDistributionConfig("1L", "1L", distributionType, "Test Distribution Job", providerName, frequency, "true", null, "TestEmailSubject", true, configuredProjects, notificationTypes, formatType.name());
     }
 
     private String getNotificationContentFromFile(final String notificationJsonFileName) throws Exception {
