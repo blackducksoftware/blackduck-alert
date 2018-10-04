@@ -4,12 +4,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Optional;
 
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -23,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.synopsys.integration.alert.Application;
+import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.database.security.repository.SaltMappingRepository;
 import com.synopsys.integration.test.annotation.DatabaseConnectionTest;
@@ -35,13 +38,15 @@ import com.synopsys.integration.test.annotation.DatabaseConnectionTest;
 @WebAppConfiguration
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public class EncryptionUtilityTestIT {
-
+    private static final String TEST_PASSWORD = "testPassword";
     @Autowired
     public SaltMappingRepository repository;
 
     @Test
     public void testEncryption() {
-        final EncryptionUtility encryptionUtility = new EncryptionUtility(repository);
+        final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
+        Mockito.when(alertProperties.getAlertEncryptionPassword()).thenReturn(Optional.of(TEST_PASSWORD));
+        final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, repository);
 
         final String propertyKey = "propertyKey";
         final String sensitiveValue = "sensitiveDataText";
@@ -52,7 +57,9 @@ public class EncryptionUtilityTestIT {
 
     @Test
     public void testDecryption() {
-        final EncryptionUtility encryptionUtility = new EncryptionUtility(repository);
+        final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
+        Mockito.when(alertProperties.getAlertEncryptionPassword()).thenReturn(Optional.of(TEST_PASSWORD));
+        final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, repository);
 
         final String propertyKey = "propertyKey";
         final String sensitiveValue = "sensitiveDataText";
@@ -65,7 +72,9 @@ public class EncryptionUtilityTestIT {
 
     @Test
     public void testUnknownPropertyDecryption() {
-        final EncryptionUtility encryptionUtility = new EncryptionUtility(repository);
+        final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
+        Mockito.when(alertProperties.getAlertEncryptionPassword()).thenReturn(Optional.of(TEST_PASSWORD));
+        final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, repository);
 
         final String propertyKey = "propertyKey";
         final String sensitiveValue = "sensitiveDataText";
@@ -73,5 +82,29 @@ public class EncryptionUtilityTestIT {
         final String encryptedValue = encryptionUtility.encrypt(propertyKey, sensitiveValue);
         final Optional<String> decryptedValue = encryptionUtility.decrypt(unknownPropertyKey, encryptedValue);
         assertFalse(decryptedValue.isPresent());
+    }
+
+    @Test
+    public void testNullPasswordEncryption() {
+        try {
+            final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
+            Mockito.when(alertProperties.getAlertEncryptionPassword()).thenReturn(Optional.empty());
+            final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, repository);
+            encryptionUtility.encrypt("propertyKey", "sensitiveValue");
+            fail();
+        } catch (final NullPointerException ex) {
+        }
+    }
+
+    @Test
+    public void testNullPasswordDecryption() {
+        try {
+            final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
+            Mockito.when(alertProperties.getAlertEncryptionPassword()).thenReturn(Optional.empty());
+            final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, repository);
+            encryptionUtility.decrypt("propertyKey", "sensitiveValue");
+            fail();
+        } catch (final NullPointerException ex) {
+        }
     }
 }

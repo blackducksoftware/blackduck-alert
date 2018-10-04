@@ -34,20 +34,23 @@ import org.springframework.security.crypto.keygen.StringKeyGenerator;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.database.security.repository.SaltMappingRepository;
 
 @Component
 public class EncryptionUtility {
-    private final String password = "testPassword";
+    private final String password;
     private final SaltMappingRepository saltMappingRepository;
 
     @Autowired
-    public EncryptionUtility(final SaltMappingRepository saltMappingRepository) {
+    public EncryptionUtility(final AlertProperties alertProperties, final SaltMappingRepository saltMappingRepository) {
         this.saltMappingRepository = saltMappingRepository;
+        this.password = alertProperties.getAlertEncryptionPassword().orElse(null);
     }
 
     @Transactional
     public String encrypt(final String propertyKey, final String propertyValue) {
+        Objects.requireNonNull(password);
         Objects.requireNonNull(propertyKey);
         Objects.requireNonNull(propertyValue);
         final String salt = generateSalt();
@@ -59,6 +62,7 @@ public class EncryptionUtility {
 
     @Transactional
     public Optional<String> decrypt(final String propertyKey, final String encryptedValue) {
+        Objects.requireNonNull(password);
         Objects.requireNonNull(propertyKey);
         Objects.requireNonNull(encryptedValue);
         final Optional<String> salt = getSalt(propertyKey);
