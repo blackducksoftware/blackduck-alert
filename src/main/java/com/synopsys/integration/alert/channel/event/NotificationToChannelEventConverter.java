@@ -31,7 +31,6 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
@@ -44,8 +43,7 @@ public class NotificationToChannelEventConverter {
     private final DescriptorMap descriptorMap;
 
     @Autowired
-    // TODO investigate, DescriptorMap is lazy because of a circular injection
-    public NotificationToChannelEventConverter(@Lazy final DescriptorMap descriptorMap) {
+    public NotificationToChannelEventConverter(final DescriptorMap descriptorMap) {
         this.descriptorMap = descriptorMap;
     }
 

@@ -28,7 +28,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,8 +42,7 @@ public class JobConfigReader {
     private final DescriptorMap descriptorMap;
 
     @Autowired
-    // TODO investigate, DescriptorMap is lazy because of a circular injection
-    public JobConfigReader(final CommonDistributionRepository commonDistributionRepository, @Lazy final DescriptorMap descriptorMap) {
+    public JobConfigReader(final CommonDistributionRepository commonDistributionRepository, final DescriptorMap descriptorMap) {
         this.commonDistributionRepository = commonDistributionRepository;
         this.descriptorMap = descriptorMap;
     }
