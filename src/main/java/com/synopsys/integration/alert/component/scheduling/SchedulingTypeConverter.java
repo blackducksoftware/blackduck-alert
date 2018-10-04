@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ContentConverter;
@@ -46,7 +47,8 @@ public class SchedulingTypeConverter extends TypeConverter {
     private final OnDemandTask onDemandTask;
 
     @Autowired
-    public SchedulingTypeConverter(final ContentConverter contentConverter, final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask) {
+    //TODO DailyTask and OnDemandTask create circular dependency injections, so we have to make them lazy
+    public SchedulingTypeConverter(final ContentConverter contentConverter, @Lazy final DailyTask dailyTask, @Lazy final OnDemandTask onDemandTask, final PurgeTask purgeTask) {
         super(contentConverter);
         this.purgeTask = purgeTask;
         this.dailyTask = dailyTask;
