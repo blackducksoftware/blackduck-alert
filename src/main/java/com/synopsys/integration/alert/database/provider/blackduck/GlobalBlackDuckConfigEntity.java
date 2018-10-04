@@ -24,13 +24,11 @@
 package com.synopsys.integration.alert.database.provider.blackduck;
 
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
 import com.synopsys.integration.alert.common.annotation.SensitiveField;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
-import com.synopsys.integration.alert.web.security.StringEncryptionConverter;
 
 @Entity
 @Table(schema = "alert", name = "global_blackduck_config")
@@ -41,7 +39,6 @@ public class GlobalBlackDuckConfigEntity extends DatabaseEntity {
     // @EncryptedStringField
     @Column(name = "blackduck_api_key")
     @SensitiveField
-    @Convert(converter = StringEncryptionConverter.class)
     private String blackDuckApiKey;
     @Column(name = "blackduck_url")
     private String blackDuckUrl;

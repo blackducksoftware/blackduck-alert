@@ -24,13 +24,11 @@
 package com.synopsys.integration.alert.database.channel.hipchat;
 
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
 import com.synopsys.integration.alert.common.annotation.SensitiveField;
 import com.synopsys.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
-import com.synopsys.integration.alert.web.security.StringEncryptionConverter;
 
 @Entity
 @Table(schema = "alert", name = "global_hipchat_config")
@@ -39,7 +37,6 @@ public class HipChatGlobalConfigEntity extends GlobalChannelConfigEntity {
     // @EncryptedStringField
     @Column(name = "api_key")
     @SensitiveField
-    @Convert(converter = StringEncryptionConverter.class)
     private String apiKey;
 
     @Column(name = "host_server")

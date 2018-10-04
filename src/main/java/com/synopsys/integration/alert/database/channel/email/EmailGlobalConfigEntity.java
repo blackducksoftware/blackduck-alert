@@ -24,13 +24,11 @@
 package com.synopsys.integration.alert.database.channel.email;
 
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
 import com.synopsys.integration.alert.common.annotation.SensitiveField;
 import com.synopsys.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
-import com.synopsys.integration.alert.web.security.StringEncryptionConverter;
 
 @Entity
 @Table(schema = "alert", name = "global_email_config")
@@ -49,7 +47,6 @@ public class EmailGlobalConfigEntity extends GlobalChannelConfigEntity {
     // @EncryptedStringField
     @Column(name = "mail_smtp_password")
     @SensitiveField
-    @Convert(converter = StringEncryptionConverter.class)
     private String mailSmtpPassword;
 
     @Column(name = "mail_smtp_port")
@@ -188,13 +185,13 @@ public class EmailGlobalConfigEntity extends GlobalChannelConfigEntity {
     }
 
     public EmailGlobalConfigEntity(final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final Integer mailSmtpPort, final Integer mailSmtpConnectionTimeout, final Integer mailSmtpTimeout,
-            final Integer mailSmtpWriteTimeout, final String mailSmtpFrom, final String mailSmtpLocalhost, final String mailSmtpLocalAddress, final Integer mailSmtpLocalPort, final Boolean mailSmtpEhlo, final Boolean mailSmtpAuth,
-            final String mailSmtpAuthMechanisms, final Boolean mailSmtpAuthLoginDisable, final Boolean mailSmtpAuthPlainDisable, final Boolean mailSmtpAuthDigestMd5Disable, final Boolean mailSmtpAuthNtlmDisable,
-            final String mailSmtpAuthNtlmDomain, final Integer mailSmtpAuthNtlmFlags, final Boolean mailSmtpAuthXoauth2Disable, final String mailSmtpSubmitter, final String mailSmtpDnsNotify, final String mailSmtpDnsRet,
-            final Boolean mailSmtpAllow8bitmime, final Boolean mailSmtpSendPartial, final Boolean mailSmtpSaslEnable, final String mailSmtpSaslMechanisms, final String mailSmtpSaslAuthorizationId, final String mailSmtpSaslRealm,
-            final Boolean mailSmtpSaslUseCanonicalHostname, final Boolean mailSmtpQuitwait, final Boolean mailSmtpReportSuccess, final Boolean mailSmtpSslEnable, final Boolean mailSmtpSslCheckServerIdentity, final String mailSmtpSslTrust,
-            final String mailSmtpSslProtocols, final String mailSmtpSslCipherSuites, final Boolean mailSmtpStartTlsEnable, final Boolean mailSmtpStartTlsRequired, final String mailSmtpProxyHost, final Integer mailSmtpProxyPort,
-            final String mailSmtpSocksHost, final Integer mailSmtpSocksPort, final String mailSmtpMailExtension, final Boolean mailSmtpUserSet, final Boolean mailSmtpNoopStrict) {
+        final Integer mailSmtpWriteTimeout, final String mailSmtpFrom, final String mailSmtpLocalhost, final String mailSmtpLocalAddress, final Integer mailSmtpLocalPort, final Boolean mailSmtpEhlo, final Boolean mailSmtpAuth,
+        final String mailSmtpAuthMechanisms, final Boolean mailSmtpAuthLoginDisable, final Boolean mailSmtpAuthPlainDisable, final Boolean mailSmtpAuthDigestMd5Disable, final Boolean mailSmtpAuthNtlmDisable,
+        final String mailSmtpAuthNtlmDomain, final Integer mailSmtpAuthNtlmFlags, final Boolean mailSmtpAuthXoauth2Disable, final String mailSmtpSubmitter, final String mailSmtpDnsNotify, final String mailSmtpDnsRet,
+        final Boolean mailSmtpAllow8bitmime, final Boolean mailSmtpSendPartial, final Boolean mailSmtpSaslEnable, final String mailSmtpSaslMechanisms, final String mailSmtpSaslAuthorizationId, final String mailSmtpSaslRealm,
+        final Boolean mailSmtpSaslUseCanonicalHostname, final Boolean mailSmtpQuitwait, final Boolean mailSmtpReportSuccess, final Boolean mailSmtpSslEnable, final Boolean mailSmtpSslCheckServerIdentity, final String mailSmtpSslTrust,
+        final String mailSmtpSslProtocols, final String mailSmtpSslCipherSuites, final Boolean mailSmtpStartTlsEnable, final Boolean mailSmtpStartTlsRequired, final String mailSmtpProxyHost, final Integer mailSmtpProxyPort,
+        final String mailSmtpSocksHost, final Integer mailSmtpSocksPort, final String mailSmtpMailExtension, final Boolean mailSmtpUserSet, final Boolean mailSmtpNoopStrict) {
         this.mailSmtpHost = mailSmtpHost;
         this.mailSmtpUser = mailSmtpUser;
         this.mailSmtpPassword = mailSmtpPassword;

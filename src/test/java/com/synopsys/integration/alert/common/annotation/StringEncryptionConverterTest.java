@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.web.security;
+package com.synopsys.integration.alert.common.annotation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;

@@ -21,22 +21,39 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.annotation;
+package com.synopsys.integration.alert.database.security;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-import javax.persistence.Convert;
+import com.synopsys.integration.alert.database.entity.BaseEntity;
 
-import com.synopsys.integration.alert.common.annotation.SensitiveField;
-import com.synopsys.integration.alert.common.annotation.StringEncryptionConverter;
+@Entity
+@Table(schema = "alert", name = "salt_mapping")
+public class SaltMappingEntity extends BaseEntity {
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-@SensitiveField
-@Convert(converter = StringEncryptionConverter.class)
-public @interface EncryptedStringField {
+    @Id
+    @Column(name = "property_key")
+    private String propertyKey;
+    @Column(name = "property_salt")
+    private String salt;
 
+    public SaltMappingEntity() {
+        // JPA requires default constructor definitions
+    }
+
+    public SaltMappingEntity(final String propertyKey, final String salt) {
+        this.propertyKey = propertyKey;
+        this.salt = salt;
+    }
+
+    public String getPropertyKey() {
+        return propertyKey;
+    }
+
+    public String getSalt() {
+        return salt;
+    }
 }

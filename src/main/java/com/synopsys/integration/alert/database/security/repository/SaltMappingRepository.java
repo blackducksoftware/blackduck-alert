@@ -21,22 +21,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.annotation;
+package com.synopsys.integration.alert.database.security.repository;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import javax.persistence.Convert;
+import com.synopsys.integration.alert.database.security.SaltMappingEntity;
 
-import com.synopsys.integration.alert.common.annotation.SensitiveField;
-import com.synopsys.integration.alert.common.annotation.StringEncryptionConverter;
-
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-@SensitiveField
-@Convert(converter = StringEncryptionConverter.class)
-public @interface EncryptedStringField {
+public interface SaltMappingRepository extends JpaRepository<SaltMappingEntity, String> {
 
 }

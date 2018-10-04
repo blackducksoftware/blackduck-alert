@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.security;
+package com.synopsys.integration.alert.common.annotation;
 
 import javax.persistence.AttributeConverter;
 
@@ -42,8 +42,8 @@ public class StringEncryptionConverter implements AttributeConverter<String, Str
         if (StringUtils.isNotBlank(attribute)) {
             try {
                 encryptedAttribute = PasswordEncrypter.encrypt(attribute);
-            } catch (final EncryptionException e) {
-                logger.error("Error encrypting attribute", e);
+            } catch (final EncryptionException ex) {
+                logger.debug("Error encrypting field", ex);
             }
         }
 
@@ -56,8 +56,8 @@ public class StringEncryptionConverter implements AttributeConverter<String, Str
         if (StringUtils.isNotBlank(dbData)) {
             try {
                 decryptedColumm = PasswordDecrypter.decrypt(dbData);
-            } catch (final EncryptionException e) {
-                logger.error("Error decrypting column", e);
+            } catch (final EncryptionException ex) {
+                logger.debug("Error decrypting field", ex);
             }
         }
 
