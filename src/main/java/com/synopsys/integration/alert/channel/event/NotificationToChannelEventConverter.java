@@ -31,8 +31,10 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
@@ -40,11 +42,16 @@ import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 @Component
 public class NotificationToChannelEventConverter {
     private final Logger logger = LoggerFactory.getLogger(NotificationToChannelEventConverter.class);
-    private final ChannelEventFactory channelEventFactory;
+    private final DescriptorMap descriptorMap;
 
     @Autowired
-    public NotificationToChannelEventConverter(final ChannelEventFactory channelEventFactory) {
-        this.channelEventFactory = channelEventFactory;
+    // TODO investigate, DescriptorMap is lazy because of a circular injection
+    public NotificationToChannelEventConverter(@Lazy final DescriptorMap descriptorMap) {
+        this.descriptorMap = descriptorMap;
+    }
+
+    public DescriptorMap getDescriptorMap() {
+        return descriptorMap;
     }
 
     public List<ChannelEvent> convertToEvents(final Map<? extends CommonDistributionConfig, List<AggregateMessageContent>> messageContentMap) {
@@ -66,6 +73,6 @@ public class NotificationToChannelEventConverter {
     }
 
     private ChannelEvent createChannelEvent(final CommonDistributionConfig config, final AggregateMessageContent messageContent) throws AlertException {
-        return channelEventFactory.createChannelEvent(config, messageContent);
+        return descriptorMap.getChannelDescriptor(config.getDistributionType()).getChannelEventProducer().createChannelEvent(config, messageContent);
     }
 }
