@@ -36,7 +36,7 @@ import com.synopsys.integration.alert.channel.hipchat.mock.MockHipChatGlobalEnti
 import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.LinkableItem;
-import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
+import com.synopsys.integration.alert.database.audit.AuditUtility;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.synopsys.integration.alert.web.model.Config;
@@ -55,12 +55,12 @@ public class HipChatChannelTest extends ChannelTest {
     @Test
     @Category(ExternalConnectionTest.class)
     public void sendMessageTestIT() throws IOException, IntegrationException {
-        final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
+        final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final GlobalBlackDuckRepository mockedGlobalRepository = Mockito.mock(GlobalBlackDuckRepository.class);
         final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(mockedGlobalRepository, new TestAlertProperties());
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties);
-        HipChatChannel hipChatChannel = new HipChatChannel(gson, testAlertProperties, globalProperties, auditEntryRepository, null, channelRestConnectionFactory);
+        HipChatChannel hipChatChannel = new HipChatChannel(gson, testAlertProperties, globalProperties, auditUtility, null, channelRestConnectionFactory);
 
         final AggregateMessageContent messageContent = createMessageContent(getClass().getSimpleName());
         final int roomId = Integer.parseInt(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_ROOM_ID));
@@ -95,8 +95,8 @@ public class HipChatChannelTest extends ChannelTest {
 
     @Test
     public void createRequestThrowsExceptionTest() throws Exception {
-        final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
-        final HipChatChannel hipChatChannel = new HipChatChannel(gson, null, null, auditEntryRepository, null, null);
+        final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
+        final HipChatChannel hipChatChannel = new HipChatChannel(gson, null, null, auditUtility, null, null);
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
@@ -210,11 +210,11 @@ public class HipChatChannelTest extends ChannelTest {
 
     @Test
     public void testEmptyContent() throws Exception {
-        final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
+        final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final TestAlertProperties alertProperties = new TestAlertProperties();
         final GlobalBlackDuckRepository mockedGlobalRepository = Mockito.mock(GlobalBlackDuckRepository.class);
         final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(mockedGlobalRepository, alertProperties);
-        HipChatChannel hipChatChannel = new HipChatChannel(gson, alertProperties, globalProperties, auditEntryRepository, null, null);
+        HipChatChannel hipChatChannel = new HipChatChannel(gson, alertProperties, globalProperties, auditUtility, null, null);
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
@@ -234,11 +234,11 @@ public class HipChatChannelTest extends ChannelTest {
 
     @Test
     public void testChunkedRequestList() throws Exception {
-        final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
+        final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final TestAlertProperties alertProperties = new TestAlertProperties();
         final GlobalBlackDuckRepository mockedGlobalRepository = Mockito.mock(GlobalBlackDuckRepository.class);
         final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(mockedGlobalRepository, alertProperties);
-        HipChatChannel hipChatChannel = new HipChatChannel(gson, alertProperties, globalProperties, auditEntryRepository, null, null);
+        HipChatChannel hipChatChannel = new HipChatChannel(gson, alertProperties, globalProperties, auditUtility, null, null);
 
         final AggregateMessageContent messageContent = createLargeMessageContent();
         final int roomId = Integer.parseInt(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_ROOM_ID));

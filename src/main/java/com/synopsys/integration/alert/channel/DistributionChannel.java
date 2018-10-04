@@ -23,11 +23,8 @@
  */
 package com.synopsys.integration.alert.channel;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -36,10 +33,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
-import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
+import com.synopsys.integration.alert.database.audit.AuditUtility;
 import com.synopsys.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.web.model.Config;
@@ -51,16 +46,16 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, E
     private static final Logger logger = LoggerFactory.getLogger(DistributionChannel.class);
 
     private final JpaRepository<G, Long> globalRepository;
-    private final AuditEntryRepository auditEntryRepository;
+    private final AuditUtility auditUtility;
     private final AlertProperties alertProperties;
     private final BlackDuckProperties blackDuckProperties;
 
-    public DistributionChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditEntryRepository auditEntryRepository, final JpaRepository<G, Long> globalRepository,
+    public DistributionChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditUtility auditUtility, final JpaRepository<G, Long> globalRepository,
         final Class eventClass) {
         super(gson, eventClass);
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
-        this.auditEntryRepository = auditEntryRepository;
+        this.auditUtility = auditUtility;
         this.globalRepository = globalRepository;
     }
 
@@ -87,7 +82,6 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, E
     }
 
     @Override
-    @Transactional
     public void handleEvent(final E event) {
         if (event.getDestination().equals(getDistributionType())) {
             try {
@@ -101,18 +95,17 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, E
 
     }
 
-    @Transactional
     public void sendAuditedMessage(final E event) throws IntegrationException {
         try {
             sendMessage(event);
-            setAuditEntrySuccess(event.getAuditEntryId());
+            auditUtility.setAuditEntrySuccess(event.getAuditEntryId());
         } catch (final IntegrationRestException irex) {
-            setAuditEntryFailure(event.getAuditEntryId(), irex.getMessage(), irex);
+            auditUtility.setAuditEntryFailure(event.getAuditEntryId(), irex.getMessage(), irex);
             logger.error("{} : {}", irex.getHttpStatusCode(), irex.getHttpStatusMessage());
             logger.error(irex.getMessage(), irex);
             throw new AlertException(irex.getMessage());
         } catch (final Exception e) {
-            setAuditEntryFailure(event.getAuditEntryId(), e.getMessage(), e);
+            auditUtility.setAuditEntryFailure(event.getAuditEntryId(), e.getMessage(), e);
             logger.error(e.getMessage(), e);
             throw new AlertException(e.getMessage());
         }
@@ -125,54 +118,5 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, E
             throw new AlertException("Test method not implemented.");
         }
         return "The provided config was null.";
-    }
-
-    @Transactional
-    public void setAuditEntrySuccess(final Long auditEntryId) {
-        if (auditEntryId != null) {
-            try {
-                final Optional<AuditEntryEntity> auditEntryEntityOptional = auditEntryRepository.findById(auditEntryId);
-                if (auditEntryEntityOptional.isPresent()) {
-                    final AuditEntryEntity auditEntryEntity = auditEntryEntityOptional.get();
-                    auditEntryEntity.setStatus(AuditEntryStatus.SUCCESS);
-                    auditEntryEntity.setErrorMessage(null);
-                    auditEntryEntity.setErrorStackTrace(null);
-                    auditEntryEntity.setTimeLastSent(new Date(System.currentTimeMillis()));
-                    auditEntryRepository.save(auditEntryEntity);
-                }
-            } catch (final Exception e) {
-                logger.error(e.getMessage(), e);
-            }
-        }
-    }
-
-    @Transactional
-    public void setAuditEntryFailure(final Long auditEntryId, final String errorMessage, final Throwable t) {
-        if (auditEntryId != null) {
-            try {
-                final Optional<AuditEntryEntity> auditEntryEntityOptional = auditEntryRepository.findById(auditEntryId);
-                if (auditEntryEntityOptional.isPresent()) {
-                    final AuditEntryEntity auditEntryEntity = auditEntryEntityOptional.get();
-                    auditEntryEntity.setStatus(AuditEntryStatus.FAILURE);
-                    auditEntryEntity.setErrorMessage(errorMessage);
-                    final String[] rootCause = ExceptionUtils.getRootCauseStackTrace(t);
-                    String exceptionStackTrace = "";
-                    for (final String line : rootCause) {
-                        if (exceptionStackTrace.length() + line.length() < AuditEntryEntity.STACK_TRACE_CHAR_LIMIT) {
-                            exceptionStackTrace = String.format("%s%s%s", exceptionStackTrace, line, System.lineSeparator());
-                        } else {
-                            break;
-                        }
-                    }
-
-                    auditEntryEntity.setErrorStackTrace(exceptionStackTrace);
-
-                    auditEntryEntity.setTimeLastSent(new Date(System.currentTimeMillis()));
-                    auditEntryRepository.save(auditEntryEntity);
-                }
-            } catch (final Exception e) {
-                logger.error(e.getMessage(), e);
-            }
-        }
     }
 }

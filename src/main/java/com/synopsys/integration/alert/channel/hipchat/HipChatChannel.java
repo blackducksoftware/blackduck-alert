@@ -47,7 +47,7 @@ import com.synopsys.integration.alert.channel.rest.RestDistributionChannel;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
-import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
+import com.synopsys.integration.alert.database.audit.AuditUtility;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalRepository;
@@ -69,9 +69,9 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
     private final Logger logger = LoggerFactory.getLogger(HipChatChannel.class);
 
     @Autowired
-    public HipChatChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditEntryRepository auditEntryRepository, final HipChatGlobalRepository hipChatGlobalRepository,
+    public HipChatChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditUtility auditUtility, final HipChatGlobalRepository hipChatGlobalRepository,
         final ChannelRestConnectionFactory channelRestConnectionFactory) {
-        super(gson, alertProperties, blackDuckProperties, auditEntryRepository, hipChatGlobalRepository, HipChatChannelEvent.class, channelRestConnectionFactory);
+        super(gson, alertProperties, blackDuckProperties, auditUtility, hipChatGlobalRepository, HipChatChannelEvent.class, channelRestConnectionFactory);
     }
 
     @Override

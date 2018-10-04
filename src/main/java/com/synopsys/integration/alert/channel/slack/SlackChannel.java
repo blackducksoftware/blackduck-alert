@@ -42,7 +42,7 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.common.model.LinkableItem;
-import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
+import com.synopsys.integration.alert.database.audit.AuditUtility;
 import com.synopsys.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -55,7 +55,7 @@ public class SlackChannel extends RestDistributionChannel<GlobalChannelConfigEnt
     public static final String SLACK_API = "https://hooks.slack.com";
 
     private static final String SLACK_LINE_SEPARATOR = "\n";
-    private static Map<String, String> SLACK_CHARACTER_ENCODING_MAP;
+    private static final Map<String, String> SLACK_CHARACTER_ENCODING_MAP;
 
     static {
         SLACK_CHARACTER_ENCODING_MAP = new HashMap<>();
@@ -65,9 +65,9 @@ public class SlackChannel extends RestDistributionChannel<GlobalChannelConfigEnt
     }
 
     @Autowired
-    public SlackChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditEntryRepository auditEntryRepository,
+    public SlackChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditUtility auditUtility,
         final ChannelRestConnectionFactory channelRestConnectionFactory) {
-        super(gson, alertProperties, blackDuckProperties, auditEntryRepository, null, SlackChannelEvent.class, channelRestConnectionFactory);
+        super(gson, alertProperties, blackDuckProperties, auditUtility, null, SlackChannelEvent.class, channelRestConnectionFactory);
     }
 
     @Override
