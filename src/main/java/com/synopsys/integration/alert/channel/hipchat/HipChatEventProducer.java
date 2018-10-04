@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.rest.RestConstants;
 
 @Component
-public class HipChatEventProducer extends ChannelEventProducer<HipChatChannelEvent> {
+public class HipChatEventProducer extends ChannelEventProducer {
 
     @Override
     public HipChatChannelEvent createChannelEvent(final CommonDistributionConfig commonDistributionConfig, final AggregateMessageContent messageContent) {

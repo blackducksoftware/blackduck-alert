@@ -54,7 +54,7 @@ import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.rest.RestConstants;
 
 @Component
-public class EmailEventProducer extends ChannelEventProducer<EmailChannelEvent> {
+public class EmailEventProducer extends ChannelEventProducer {
     private final Logger logger = LoggerFactory.getLogger(EmailEventProducer.class);
 
     private final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
