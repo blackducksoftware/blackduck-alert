@@ -35,7 +35,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 
@@ -57,18 +56,14 @@ public class NotificationToChannelEventConverter {
             final CommonDistributionConfig jobConfig = entry.getKey();
             final List<AggregateMessageContent> contentList = entry.getValue();
             for (final AggregateMessageContent content : contentList) {
-                try {
-                    channelEvents.add(createChannelEvent(jobConfig, content));
-                } catch (final AlertException ex) {
-                    logger.error("error creating event", ex);
-                }
+                channelEvents.add(createChannelEvent(jobConfig, content));
             }
         }
         logger.debug("Created {} events.", channelEvents.size());
         return channelEvents;
     }
 
-    private ChannelEvent createChannelEvent(final CommonDistributionConfig config, final AggregateMessageContent messageContent) throws AlertException {
+    private ChannelEvent createChannelEvent(final CommonDistributionConfig config, final AggregateMessageContent messageContent) {
         return descriptorMap.getChannelDescriptor(config.getDistributionType()).getChannelEventProducer().createChannelEvent(config, messageContent);
     }
 }
