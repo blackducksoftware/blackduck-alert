@@ -23,28 +23,43 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
-import com.synopsys.integration.alert.database.RepositoryAccessor;
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+import com.synopsys.integration.alert.database.security.EncryptedRepositoryAccessor;
+import com.synopsys.integration.alert.database.security.EncryptionUtility;
 
 @Component
-public class BlackDuckRepositoryAccessor extends RepositoryAccessor {
+public class BlackDuckRepositoryAccessor extends EncryptedRepositoryAccessor {
+    private final String API_TOKEN_FIELD_PROPERTY_KEY = "blackduck_api_key";
     private final GlobalBlackDuckRepository repository;
 
     @Autowired
-    public BlackDuckRepositoryAccessor(final GlobalBlackDuckRepository repository) {
-        super(repository);
+    public BlackDuckRepositoryAccessor(final GlobalBlackDuckRepository repository, final EncryptionUtility encryptionUtility) {
+        super(repository, encryptionUtility);
         this.repository = repository;
     }
 
     @Override
     public DatabaseEntity saveEntity(final DatabaseEntity entity) {
         final GlobalBlackDuckConfigEntity blackDuckEntity = (GlobalBlackDuckConfigEntity) entity;
-        return repository.save(blackDuckEntity);
+        final GlobalBlackDuckConfigEntity newEntity = new GlobalBlackDuckConfigEntity(blackDuckEntity.getBlackDuckTimeout(), encryptValue(API_TOKEN_FIELD_PROPERTY_KEY, blackDuckEntity.getBlackDuckApiKey()),
+            blackDuckEntity.getBlackDuckUrl());
+        newEntity.setId(blackDuckEntity.getId());
+        return repository.save(newEntity);
     }
 
+    @Override
+    public DatabaseEntity decryptEntity(final DatabaseEntity entity) {
+        final GlobalBlackDuckConfigEntity blackDuckEntity = (GlobalBlackDuckConfigEntity) entity;
+        final Optional<String> decryptedValue = decryptValue(API_TOKEN_FIELD_PROPERTY_KEY, blackDuckEntity.getBlackDuckApiKey());
+        final GlobalBlackDuckConfigEntity newEntity = new GlobalBlackDuckConfigEntity(blackDuckEntity.getBlackDuckTimeout(), decryptedValue.orElse(null), blackDuckEntity.getBlackDuckUrl());
+        newEntity.setId(blackDuckEntity.getId());
+        return newEntity;
+    }
 }

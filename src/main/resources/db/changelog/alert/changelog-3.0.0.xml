@@ -112,4 +112,7 @@
             <column name="PROPERTY_SALT" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
+    <changeSet author="psantos" id="1533054185-18">
+        <modifyDataType tableName="GLOBAL_BLACKDUCK_CONFIG" schemaName="ALERT" columnName="BLACKDUCK_API_KEY" newDataType="VARCHAR(500)"/>
+    </changeSet>
 </databaseChangeLog>

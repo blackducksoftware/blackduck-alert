@@ -26,6 +26,7 @@ package com.synopsys.integration.alert.database.security;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
@@ -62,9 +63,12 @@ public class EncryptionUtility {
 
     @Transactional
     public Optional<String> decrypt(final String propertyKey, final String encryptedValue) {
+        if (StringUtils.isBlank(encryptedValue)) {
+            return Optional.ofNullable(encryptedValue);
+        }
         Objects.requireNonNull(password);
         Objects.requireNonNull(propertyKey);
-        Objects.requireNonNull(encryptedValue);
+
         final Optional<String> salt = getSalt(propertyKey);
         final Optional<String> decryptedValue;
         if (salt.isPresent()) {

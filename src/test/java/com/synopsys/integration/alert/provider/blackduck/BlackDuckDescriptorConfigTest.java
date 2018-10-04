@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
+import com.synopsys.integration.alert.database.security.EncryptionUtility;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckProviderRestApi;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.mock.MockGlobalBlackDuckEntity;
@@ -30,13 +31,15 @@ public class BlackDuckDescriptorConfigTest {
     @Test
     public void testRepositoryCalls() {
         final GlobalBlackDuckConfigEntity entity = mockBlackDuckEntity.createGlobalEntity();
-
+        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        Mockito.when(encryptionUtility.encrypt(Mockito.anyString(), Mockito.anyString())).then(invocation -> invocation.getArgument(1));
+        Mockito.when(encryptionUtility.decrypt(Mockito.anyString(), Mockito.anyString())).then(invocation -> Optional.of(invocation.getArgument(1)));
         final GlobalBlackDuckRepository globalBlackDuckRepository = Mockito.mock(GlobalBlackDuckRepository.class);
         Mockito.when(globalBlackDuckRepository.findAll()).thenReturn(Arrays.asList(entity));
         Mockito.when(globalBlackDuckRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(entity));
         Mockito.when(globalBlackDuckRepository.save(Mockito.any())).thenReturn(entity);
         Mockito.doNothing().when(globalBlackDuckRepository).deleteById(Mockito.anyLong());
-        final BlackDuckRepositoryAccessor hubRepositoryAccessor = new BlackDuckRepositoryAccessor(globalBlackDuckRepository);
+        final BlackDuckRepositoryAccessor hubRepositoryAccessor = new BlackDuckRepositoryAccessor(globalBlackDuckRepository, encryptionUtility);
 
         final BlackDuckProviderRestApi hubDescriptorConfig = new BlackDuckProviderRestApi(null, hubRepositoryAccessor, null, null);
 

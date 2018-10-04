@@ -107,4 +107,25 @@ public class EncryptionUtilityTestIT {
         } catch (final NullPointerException ex) {
         }
     }
+
+    @Test
+    public void testDecryptionNullValue() {
+        final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
+        Mockito.when(alertProperties.getAlertEncryptionPassword()).thenReturn(Optional.of(TEST_PASSWORD));
+        final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, repository);
+        final Optional<String> decryptedValue = encryptionUtility.decrypt("propertyKey", null);
+        assertFalse(decryptedValue.isPresent());
+    }
+
+    @Test
+    public void testDecryptionEmptyStringValue() {
+        final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
+        Mockito.when(alertProperties.getAlertEncryptionPassword()).thenReturn(Optional.of(TEST_PASSWORD));
+        final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, repository);
+        final String propertyKey = "propertyKey";
+        final String emptyValue = "";
+        final Optional<String> decryptedValue = encryptionUtility.decrypt(propertyKey, emptyValue);
+        assertTrue(decryptedValue.isPresent());
+        assertEquals(emptyValue, decryptedValue.get());
+    }
 }
