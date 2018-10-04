@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.synopsys.integration.alert.Application;
+import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
@@ -90,6 +91,7 @@ public class NotificationFilterTestIT {
         distributionConfigId = savedHipChatEntity.getId();
 
         final CommonDistributionConfigEntity configEntity = createCommonConfigEntity();
+        configEntity.setDistributionConfigId(distributionConfigId);
         final CommonDistributionConfigEntity savedCommonEntity = commonDistributionRepository.save(configEntity);
         commonDistributionId = savedCommonEntity.getId();
 
@@ -190,7 +192,7 @@ public class NotificationFilterTestIT {
     }
 
     private CommonDistributionConfigEntity createCommonConfigEntity() {
-        final String distributionType = "hipchat_channel";
+        final String distributionType = HipChatChannel.COMPONENT_NAME;
         final String providerName = BlackDuckProvider.COMPONENT_NAME;
         final String name = "name";
         final FrequencyType frequency = FrequencyType.REAL_TIME;

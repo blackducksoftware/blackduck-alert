@@ -38,40 +38,41 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.distribution.CommonDistributionConfigReader;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentCollector;
+import com.synopsys.integration.alert.database.channel.JobConfigReader;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.workflow.filter.NotificationFilter;
 
 @Component
 public class MessageContentAggregator {
-    private final CommonDistributionConfigReader commonDistributionConfigReader;
+    private final JobConfigReader jobConfigReader;
     private final List<ProviderDescriptor> providerDescriptors;
     private final NotificationFilter notificationFilter;
 
     @Autowired
-    public MessageContentAggregator(final List<ProviderDescriptor> providerDescriptors, final CommonDistributionConfigReader commonDistributionConfigReader, final NotificationFilter notificationFilter) {
+    public MessageContentAggregator(final JobConfigReader jobConfigReader, final List<ProviderDescriptor> providerDescriptors, final NotificationFilter notificationFilter) {
+        this.jobConfigReader = jobConfigReader;
         this.providerDescriptors = providerDescriptors;
-        this.commonDistributionConfigReader = commonDistributionConfigReader;
         this.notificationFilter = notificationFilter;
     }
 
-    public Map<CommonDistributionConfig, List<AggregateMessageContent>> processNotifications(final FrequencyType frequency, final Collection<NotificationContent> notificationList) {
+    public Map<? extends CommonDistributionConfig, List<AggregateMessageContent>> processNotifications(final FrequencyType frequency, final Collection<NotificationContent> notificationList) {
         if (notificationList.isEmpty()) {
             return Collections.emptyMap();
         }
 
-        final List<CommonDistributionConfig> unfilteredDistributionConfigs = commonDistributionConfigReader.getPopulatedConfigs();
+        final List<? extends CommonDistributionConfig> unfilteredDistributionConfigs = jobConfigReader.getPopulatedConfigs();
         if (unfilteredDistributionConfigs.isEmpty()) {
             return Collections.emptyMap();
         }
-
-        final Predicate<CommonDistributionConfig> frequencyFilter = config -> frequency.name().equals(config.getFrequency());
-        final List<CommonDistributionConfig> distributionConfigs = applyFilter(unfilteredDistributionConfigs, frequencyFilter);
+        final List<? extends CommonDistributionConfig> distributionConfigs = unfilteredDistributionConfigs
+                                                                                 .parallelStream()
+                                                                                 .filter(config -> frequency.name().equals(config.getFrequency()))
+                                                                                 .collect(Collectors.toList());
         if (distributionConfigs.isEmpty()) {
             return Collections.emptyMap();
         }
@@ -79,7 +80,7 @@ public class MessageContentAggregator {
         return processNotifications(distributionConfigs, notificationList);
     }
 
-    public Map<CommonDistributionConfig, List<AggregateMessageContent>> processNotifications(final List<CommonDistributionConfig> distributionConfigs, final Collection<NotificationContent> notificationList) {
+    public Map<? extends CommonDistributionConfig, List<AggregateMessageContent>> processNotifications(final List<? extends CommonDistributionConfig> distributionConfigs, final Collection<NotificationContent> notificationList) {
         if (notificationList.isEmpty()) {
             return Collections.emptyMap();
         }

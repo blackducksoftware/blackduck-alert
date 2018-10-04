@@ -29,25 +29,26 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.event.ChannelEventFactory;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannelEvent;
+import com.synopsys.integration.alert.channel.hipchat.HipChatEventProducer;
 import com.synopsys.integration.alert.common.descriptor.config.RestApi;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.web.channel.model.HipChatDistributionConfig;
+import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class HipChatDistributionRestApi extends RestApi {
-    private final ChannelEventFactory channelEventFactory;
     private final HipChatChannel hipChatChannel;
+    private final HipChatEventProducer hipChatEventProducer;
 
     @Autowired
     public HipChatDistributionRestApi(final HipChatDistributionTypeConverter databaseContentConverter, final HipChatDistributionRepositoryAccessor repositoryAccessor,
-        final ChannelEventFactory channelEventFactory, final HipChatChannel hipChatChannel) {
+        final HipChatChannel hipChatChannel, final HipChatEventProducer hipChatEventProducer) {
         super(databaseContentConverter, repositoryAccessor);
-        this.channelEventFactory = channelEventFactory;
+        this.hipChatEventProducer = hipChatEventProducer;
         this.hipChatChannel = hipChatChannel;
     }
 
@@ -63,7 +64,7 @@ public class HipChatDistributionRestApi extends RestApi {
 
     @Override
     public void testConfig(final Config restModel) throws IntegrationException {
-        final HipChatChannelEvent event = channelEventFactory.createHipChatChannelTestEvent(restModel);
+        final HipChatChannelEvent event = hipChatEventProducer.createChannelTestEvent((CommonDistributionConfig) restModel);
         hipChatChannel.sendAuditedMessage(event);
     }
 
