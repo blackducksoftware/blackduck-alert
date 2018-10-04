@@ -15,7 +15,6 @@ import com.synopsys.integration.alert.channel.DescriptorTestConfigTest;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.email.mock.MockEmailEntity;
 import com.synopsys.integration.alert.channel.email.mock.MockEmailRestModel;
-import com.synopsys.integration.alert.channel.event.ChannelEventFactory;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
@@ -35,7 +34,7 @@ import com.synopsys.integration.alert.database.provider.blackduck.data.relation.
 import com.synopsys.integration.alert.mock.model.MockRestModelUtil;
 import com.synopsys.integration.alert.web.channel.model.EmailDistributionConfig;
 
-public class EmailChannelDescriptorTestIT extends DescriptorTestConfigTest<EmailDistributionConfig, EmailGroupDistributionConfigEntity, EmailGlobalConfigEntity> {
+public class EmailChannelDescriptorTestIT extends DescriptorTestConfigTest<EmailDistributionConfig, EmailGroupDistributionConfigEntity, EmailGlobalConfigEntity, EmailEventProducer> {
     @Autowired
     private EmailDistributionRepositoryAccessor emailDistributionRepositoryAccessor;
     @Autowired
@@ -78,7 +77,7 @@ public class EmailChannelDescriptorTestIT extends DescriptorTestConfigTest<Email
             "", subjectLine, true,
             Collections.emptyList(), Collections.emptyList(), FormatType.DIGEST.name());
 
-        final EmailChannelEvent channelEvent = (EmailChannelEvent) channelEventFactory.createChannelEvent(jobConfig, content);
+        final EmailChannelEvent channelEvent = channelEventProducer.createChannelEvent(jobConfig, content);
 
         assertEquals(Long.valueOf(1L), channelEvent.getCommonDistributionConfigId());
         assertEquals(36, channelEvent.getEventId().length());
@@ -94,8 +93,8 @@ public class EmailChannelDescriptorTestIT extends DescriptorTestConfigTest<Email
     }
 
     @Override
-    public ChannelEventFactory createChannelEventFactory() {
-        return new ChannelEventFactory(blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
+    public EmailEventProducer createChannelEventProducer() {
+        return new EmailEventProducer(blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
     }
 
     @Override

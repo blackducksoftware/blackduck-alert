@@ -23,16 +23,22 @@
  */
 package com.synopsys.integration.alert.channel.slack.descriptor;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
+import com.synopsys.integration.alert.channel.slack.SlackEventProducer;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
+import com.synopsys.integration.alert.database.channel.slack.SlackDistributionRepositoryAccessor;
 
 @Component
 public class SlackDescriptor extends ChannelDescriptor {
 
-    public SlackDescriptor(final SlackChannel channelListener, final SlackDistributionRestApi distributionRestApi, final SlackUIConfig slackUIConfig) {
-        super(SlackChannel.COMPONENT_NAME, SlackChannel.COMPONENT_NAME, channelListener, distributionRestApi, slackUIConfig);
+    @Autowired
+    public SlackDescriptor(final SlackChannel channelListener, final SlackDistributionRestApi distributionRestApi,
+        final SlackDistributionRepositoryAccessor slackDistributionRepositoryAccessor, final SlackEventProducer slackEventProducer,
+        final SlackUIConfig slackUIConfig) {
+        super(SlackChannel.COMPONENT_NAME, SlackChannel.COMPONENT_NAME, channelListener, distributionRestApi, slackDistributionRepositoryAccessor, slackEventProducer, slackUIConfig);
     }
 
 }

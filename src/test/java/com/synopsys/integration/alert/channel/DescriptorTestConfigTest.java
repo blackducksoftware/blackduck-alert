@@ -21,7 +21,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.Application;
 import com.synopsys.integration.alert.TestProperties;
-import com.synopsys.integration.alert.channel.event.ChannelEventFactory;
+import com.synopsys.integration.alert.channel.event.ChannelEventProducer;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.RestApi;
@@ -43,20 +43,20 @@ import com.synopsys.integration.test.annotation.DatabaseConnectionTest;
 @Transactional
 @WebAppConfiguration
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
-public abstract class DescriptorTestConfigTest<R extends CommonDistributionConfig, E extends DistributionChannelConfigEntity, GE extends GlobalChannelConfigEntity> {
+public abstract class DescriptorTestConfigTest<R extends CommonDistributionConfig, E extends DistributionChannelConfigEntity, GE extends GlobalChannelConfigEntity, EP extends ChannelEventProducer> {
     protected Gson gson;
+    protected EP channelEventProducer;
     protected ContentConverter contentConverter;
-    protected ChannelEventFactory channelEventFactory;
     protected TestProperties properties;
 
-    public abstract ChannelEventFactory createChannelEventFactory();
+    public abstract EP createChannelEventProducer();
 
     @Before
     public void init() {
         gson = new Gson();
         contentConverter = new ContentConverter(gson, new DefaultConversionService());
         properties = new TestProperties();
-        channelEventFactory = createChannelEventFactory();
+        channelEventProducer = createChannelEventProducer();
         cleanGlobalRepository();
         cleanDistributionRepositories();
     }

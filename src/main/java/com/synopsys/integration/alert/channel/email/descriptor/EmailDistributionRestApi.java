@@ -29,24 +29,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.EmailChannelEvent;
+import com.synopsys.integration.alert.channel.email.EmailEventProducer;
 import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
-import com.synopsys.integration.alert.channel.event.ChannelEventFactory;
 import com.synopsys.integration.alert.common.descriptor.config.RestApi;
 import com.synopsys.integration.alert.database.channel.email.EmailDistributionRepositoryAccessor;
+import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class EmailDistributionRestApi extends RestApi {
     private final EmailGroupChannel emailGroupChannel;
-    private final ChannelEventFactory channelEventFactory;
+    private final EmailEventProducer emailEventProducer;
 
     @Autowired
     public EmailDistributionRestApi(final EmailDistributionTypeConverter databaseContentConverter, final EmailDistributionRepositoryAccessor repositoryAccessor, final EmailGroupChannel emailGroupChannel,
-        final ChannelEventFactory channelEventFactory) {
+        final EmailEventProducer emailEventProducer) {
         super(databaseContentConverter, repositoryAccessor);
         this.emailGroupChannel = emailGroupChannel;
-        this.channelEventFactory = channelEventFactory;
+        this.emailEventProducer = emailEventProducer;
     }
 
     @Override
@@ -55,7 +56,7 @@ public class EmailDistributionRestApi extends RestApi {
 
     @Override
     public void testConfig(final Config restModel) throws IntegrationException {
-        final EmailChannelEvent event = channelEventFactory.createEmailChannelTestEvent(restModel);
+        final EmailChannelEvent event = emailEventProducer.createChannelTestEvent((CommonDistributionConfig) restModel);
         emailGroupChannel.sendAuditedMessage(event);
     }
 }

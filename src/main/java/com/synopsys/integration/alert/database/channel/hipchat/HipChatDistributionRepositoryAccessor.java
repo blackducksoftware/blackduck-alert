@@ -23,20 +23,27 @@
  */
 package com.synopsys.integration.alert.database.channel.hipchat;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.database.RepositoryAccessor;
+import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDistributionTypeConverter;
+import com.synopsys.integration.alert.database.ChannelDistributionRespositoryAccessor;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+import com.synopsys.integration.alert.web.channel.model.HipChatDistributionConfig;
+import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 
 @Component
-public class HipChatDistributionRepositoryAccessor extends RepositoryAccessor {
+public class HipChatDistributionRepositoryAccessor extends ChannelDistributionRespositoryAccessor {
     private final HipChatDistributionRepository repository;
+    private final HipChatDistributionTypeConverter hipChatDistributionTypeConverter;
 
     @Autowired
-    public HipChatDistributionRepositoryAccessor(final HipChatDistributionRepository repository) {
+    public HipChatDistributionRepositoryAccessor(final HipChatDistributionRepository repository, final HipChatDistributionTypeConverter hipChatDistributionTypeConverter) {
         super(repository);
         this.repository = repository;
+        this.hipChatDistributionTypeConverter = hipChatDistributionTypeConverter;
     }
 
     @Override
@@ -45,4 +52,15 @@ public class HipChatDistributionRepositoryAccessor extends RepositoryAccessor {
         return repository.save(hipChatEntity);
     }
 
+    @Override
+    public Optional<? extends CommonDistributionConfig> getJobConfig(final Long distributionConfigId) {
+        Optional<? extends CommonDistributionConfig> optionalConfig = Optional.empty();
+        final Optional<? extends DatabaseEntity> optionalDatabaseEntity = readEntity(distributionConfigId);
+        if (optionalDatabaseEntity.isPresent()) {
+            final HipChatDistributionConfigEntity hipChatDistributionConfigEntity = (HipChatDistributionConfigEntity) optionalDatabaseEntity.get();
+            final HipChatDistributionConfig hipChatDistributionConfig = (HipChatDistributionConfig) hipChatDistributionTypeConverter.populateConfigFromEntity(hipChatDistributionConfigEntity);
+            optionalConfig = Optional.of(hipChatDistributionConfig);
+        }
+        return optionalConfig;
+    }
 }

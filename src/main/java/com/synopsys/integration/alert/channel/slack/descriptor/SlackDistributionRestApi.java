@@ -29,32 +29,32 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.event.ChannelEventFactory;
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
 import com.synopsys.integration.alert.channel.slack.SlackChannelEvent;
+import com.synopsys.integration.alert.channel.slack.SlackEventProducer;
 import com.synopsys.integration.alert.common.descriptor.config.RestApi;
 import com.synopsys.integration.alert.database.channel.slack.SlackDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.web.channel.model.SlackDistributionConfig;
+import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class SlackDistributionRestApi extends RestApi {
-    private final ChannelEventFactory channelEventFactory;
     private final SlackChannel slackChannel;
+    private final SlackEventProducer slackEventProducer;
 
     @Autowired
-    public SlackDistributionRestApi(final SlackDistributionTypeConverter databaseContentConverter, final SlackDistributionRepositoryAccessor repositoryAccessor, final ChannelEventFactory channelEventFactory,
-        final SlackChannel slackChannel) {
+    public SlackDistributionRestApi(final SlackDistributionTypeConverter databaseContentConverter, final SlackDistributionRepositoryAccessor repositoryAccessor,
+        final SlackChannel slackChannel, final SlackEventProducer slackEventProducer) {
         super(databaseContentConverter, repositoryAccessor);
-        this.channelEventFactory = channelEventFactory;
+        this.slackEventProducer = slackEventProducer;
         this.slackChannel = slackChannel;
     }
 
     @Override
     public void validateConfig(final Config restModel, final Map<String, String> fieldErrors) {
         final SlackDistributionConfig slackRestModel = (SlackDistributionConfig) restModel;
-
         if (StringUtils.isBlank(slackRestModel.getWebhook())) {
             fieldErrors.put("webhook", "A webhook is required.");
         }
@@ -65,7 +65,7 @@ public class SlackDistributionRestApi extends RestApi {
 
     @Override
     public void testConfig(final Config restModel) throws IntegrationException {
-        final SlackChannelEvent event = channelEventFactory.createSlackChannelTestEvent(restModel);
+        final SlackChannelEvent event = slackEventProducer.createChannelTestEvent((CommonDistributionConfig) restModel);
         slackChannel.sendAuditedMessage(event);
     }
 

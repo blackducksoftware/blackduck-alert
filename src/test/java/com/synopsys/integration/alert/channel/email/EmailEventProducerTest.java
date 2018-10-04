@@ -1,15 +1,4 @@
-/*
- * Copyright (C) 2018 Black Duck Software Inc.
- * http://www.blackducksoftware.com/
- * All rights reserved.
- *
- * This software is the confidential and proprietary information of
- * Black Duck Software ("Confidential Information"). You shall not
- * disclose such Confidential Information and shall use it only in
- * accordance with the terms of the license agreement you entered into
- * with Black Duck Software.
- */
-package com.synopsys.integration.alert.common.event;
+package com.synopsys.integration.alert.channel.email;
 
 import static org.junit.Assert.assertEquals;
 
@@ -20,13 +9,6 @@ import java.util.HashSet;
 
 import org.junit.Test;
 
-import com.synopsys.integration.alert.channel.email.EmailChannelEvent;
-import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
-import com.synopsys.integration.alert.channel.event.ChannelEventFactory;
-import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
-import com.synopsys.integration.alert.channel.hipchat.HipChatChannelEvent;
-import com.synopsys.integration.alert.channel.slack.SlackChannel;
-import com.synopsys.integration.alert.channel.slack.SlackChannelEvent;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
@@ -38,12 +20,9 @@ import com.synopsys.integration.alert.provider.blackduck.mock.MockBlackDuckProje
 import com.synopsys.integration.alert.provider.blackduck.mock.MockBlackDuckUserRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.mock.MockUserProjectRelationRepositoryAccessor;
 import com.synopsys.integration.alert.web.channel.model.EmailDistributionConfig;
-import com.synopsys.integration.alert.web.channel.model.HipChatDistributionConfig;
-import com.synopsys.integration.alert.web.channel.model.SlackDistributionConfig;
 import com.synopsys.integration.rest.RestConstants;
 
-public class ChannelEventFactoryTest {
-    //TODO add more tests for the events
+public class EmailEventProducerTest {
 
     @Test
     public void createEmailEvent() throws Exception {
@@ -61,7 +40,7 @@ public class ChannelEventFactoryTest {
         final MockBlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor = new MockBlackDuckUserRepositoryAccessor();
         final MockUserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor = new MockUserProjectRelationRepositoryAccessor();
 
-        final ChannelEventFactory factory = new ChannelEventFactory(blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
+        final EmailEventProducer emailEventProducer = new EmailEventProducer(blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
@@ -69,7 +48,7 @@ public class ChannelEventFactoryTest {
         final EmailChannelEvent expected = new EmailChannelEvent(RestConstants.formatDate(new Date()), providerName, formatType,
             content, commonDistributionConfigId, Collections.emptySet(), subjectLine);
 
-        final EmailChannelEvent event = (EmailChannelEvent) factory.createChannelEvent(emailDistributionConfig, content);
+        final EmailChannelEvent event = emailEventProducer.createChannelEvent(emailDistributionConfig, content);
         assertEquals(expected.getAuditEntryId(), event.getAuditEntryId());
         assertEquals(expected.getDestination(), event.getDestination());
         assertEquals(expected.getProvider(), event.getProvider());
@@ -107,7 +86,7 @@ public class ChannelEventFactoryTest {
 
         userProjectRelationRepositoryAccessor.deleteAndSaveAll(new HashSet<>(Arrays.asList(userProjectRelation1, userProjectRelation2)));
 
-        final ChannelEventFactory factory = new ChannelEventFactory(blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
+        final EmailEventProducer emailEventProducer = new EmailEventProducer(blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "Project one", null, subTopic, Collections.emptyList());
@@ -115,7 +94,7 @@ public class ChannelEventFactoryTest {
         final EmailChannelEvent expected = new EmailChannelEvent(RestConstants.formatDate(new Date()), providerName, formatType,
             content, commonDistributionConfigId, new HashSet<>(Arrays.asList(email1, email2)), subjectLine);
 
-        final EmailChannelEvent event = (EmailChannelEvent) factory.createChannelEvent(emailDistributionConfig, content);
+        final EmailChannelEvent event = emailEventProducer.createChannelEvent(emailDistributionConfig, content);
         assertEquals(expected.getAuditEntryId(), event.getAuditEntryId());
         assertEquals(expected.getDestination(), event.getDestination());
         assertEquals(expected.getProvider(), event.getProvider());
@@ -137,9 +116,9 @@ public class ChannelEventFactoryTest {
         final MockBlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor = new MockBlackDuckUserRepositoryAccessor();
         final MockUserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor = new MockUserProjectRelationRepositoryAccessor();
 
-        final ChannelEventFactory factory = new ChannelEventFactory(blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
+        final EmailEventProducer emailEventProducer = new EmailEventProducer(blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
 
-        final AggregateMessageContent testContent = createTestNotificationContent();
+        final AggregateMessageContent testContent = emailEventProducer.createTestNotificationContent();
 
         final EmailChannelEvent expectedTest = new EmailChannelEvent(RestConstants.formatDate(new Date()), providerName, formatType,
             testContent, commonDistributionConfigId, Collections.emptySet(), subjectLine);
@@ -148,7 +127,7 @@ public class ChannelEventFactoryTest {
             "REAL_TIME", "false",
             "", subjectLine, false, Collections.emptyList(), Collections.emptyList(), "DEFAULT");
 
-        final EmailChannelEvent testEvent = factory.createEmailChannelTestEvent(emailDistributionConfig);
+        final EmailChannelEvent testEvent = emailEventProducer.createChannelTestEvent(emailDistributionConfig);
         assertEquals(expectedTest.getAuditEntryId(), testEvent.getAuditEntryId());
         assertEquals(expectedTest.getDestination(), testEvent.getDestination());
         assertEquals(expectedTest.getProvider(), testEvent.getProvider());
@@ -188,9 +167,9 @@ public class ChannelEventFactoryTest {
 
         userProjectRelationRepositoryAccessor.deleteAndSaveAll(new HashSet<>(Arrays.asList(userProjectRelation1, userProjectRelation2, userProjectRelation3, userProjectRelation4)));
 
-        final ChannelEventFactory factory = new ChannelEventFactory(blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
+        final EmailEventProducer emailEventProducer = new EmailEventProducer(blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
 
-        final AggregateMessageContent testContent = createTestNotificationContent();
+        final AggregateMessageContent testContent = emailEventProducer.createTestNotificationContent();
 
         final EmailChannelEvent expectedTest = new EmailChannelEvent(RestConstants.formatDate(new Date()), providerName, formatType,
             testContent, commonDistributionConfigId, new HashSet<>(Arrays.asList(email1, email2)), subjectLine);
@@ -198,7 +177,7 @@ public class ChannelEventFactoryTest {
         final EmailDistributionConfig emailDistributionConfig = new EmailDistributionConfig(commonDistributionConfigId.toString(), distributionConfigId.toString(), distributionType, "Test Email Job", BlackDuckProvider.COMPONENT_NAME,
             "REAL_TIME", "false", "", subjectLine, false, Collections.emptyList(), Collections.emptyList(), "DEFAULT");
 
-        final EmailChannelEvent testEvent = factory.createEmailChannelTestEvent(emailDistributionConfig);
+        final EmailChannelEvent testEvent = emailEventProducer.createChannelTestEvent(emailDistributionConfig);
         assertEquals(expectedTest.getAuditEntryId(), testEvent.getAuditEntryId());
         assertEquals(expectedTest.getDestination(), testEvent.getDestination());
         assertEquals(expectedTest.getProvider(), testEvent.getProvider());
@@ -242,9 +221,9 @@ public class ChannelEventFactoryTest {
 
         userProjectRelationRepositoryAccessor.deleteAndSaveAll(new HashSet<>(Arrays.asList(userProjectRelation1, userProjectRelation2, userProjectRelation3, userProjectRelation4)));
 
-        final ChannelEventFactory factory = new ChannelEventFactory(blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
+        final EmailEventProducer emailEventProducer = new EmailEventProducer(blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
 
-        final AggregateMessageContent testContent = createTestNotificationContent();
+        final AggregateMessageContent testContent = emailEventProducer.createTestNotificationContent();
 
         final EmailChannelEvent expectedTest = new EmailChannelEvent(RestConstants.formatDate(new Date()), providerName, formatType,
             testContent, commonDistributionConfigId, new HashSet<>(Arrays.asList(email1, email2, email3, email4)), subjectLine);
@@ -252,129 +231,13 @@ public class ChannelEventFactoryTest {
         final EmailDistributionConfig emailDistributionConfig = new EmailDistributionConfig(commonDistributionConfigId.toString(), distributionConfigId.toString(), distributionType, "Test Email Job", BlackDuckProvider.COMPONENT_NAME,
             "REAL_TIME", "true", "", subjectLine, false, Arrays.asList(project1, project2), Collections.emptyList(), "DEFAULT");
 
-        final EmailChannelEvent testEvent = factory.createEmailChannelTestEvent(emailDistributionConfig);
+        final EmailChannelEvent testEvent = emailEventProducer.createChannelTestEvent(emailDistributionConfig);
         assertEquals(expectedTest.getAuditEntryId(), testEvent.getAuditEntryId());
         assertEquals(expectedTest.getDestination(), testEvent.getDestination());
         assertEquals(expectedTest.getProvider(), testEvent.getProvider());
         assertEquals(expectedTest.getContent(), testEvent.getContent());
         assertEquals(expectedTest.getSubjectLine(), testEvent.getSubjectLine());
         assertEquals(expectedTest.getEmailAddresses(), testEvent.getEmailAddresses());
-
-    }
-
-    @Test
-    public void createHipChatEvent() throws Exception {
-        final Long commonDistributionConfigId = 25L;
-        final Long distributionConfigId = 33L;
-        final String distributionType = HipChatChannel.COMPONENT_NAME;
-        final String providerName = BlackDuckProvider.COMPONENT_NAME;
-        final String formatType = "FORMAT";
-
-        final Integer roomId = 100484;
-        final Boolean notify = false;
-        final String color = "red";
-
-        final MockBlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor = new MockBlackDuckProjectRepositoryAccessor();
-        final MockBlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor = new MockBlackDuckUserRepositoryAccessor();
-        final MockUserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor = new MockUserProjectRelationRepositoryAccessor();
-
-        final ChannelEventFactory factory = new ChannelEventFactory(blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
-
-        final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
-        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
-
-        final HipChatChannelEvent expected = new HipChatChannelEvent(RestConstants.formatDate(new Date()), providerName, formatType,
-            content, commonDistributionConfigId, roomId, notify, color);
-
-        HipChatDistributionConfig hipChatDistributionConfig = new HipChatDistributionConfig(commonDistributionConfigId.toString(), roomId.toString(), notify, color, distributionConfigId.toString(),
-            distributionType, "Test HipChat Job", providerName, "REAL_TIME", "FALSE", Collections.emptyList(), Collections.emptyList(), formatType);
-
-        final HipChatChannelEvent event = (HipChatChannelEvent) factory.createChannelEvent(hipChatDistributionConfig, content);
-        assertEquals(expected.getAuditEntryId(), event.getAuditEntryId());
-        assertEquals(expected.getDestination(), event.getDestination());
-        assertEquals(expected.getProvider(), event.getProvider());
-        assertEquals(expected.getFormatType(), event.getFormatType());
-        assertEquals(expected.getContent(), event.getContent());
-        assertEquals(expected.getRoomId(), event.getRoomId());
-        assertEquals(expected.getNotify(), event.getNotify());
-        assertEquals(expected.getColor(), event.getColor());
-
-        final AggregateMessageContent testContent = createTestNotificationContent();
-
-        final HipChatChannelEvent expectedTest = new HipChatChannelEvent(RestConstants.formatDate(new Date()), providerName, formatType, testContent, commonDistributionConfigId, roomId, notify, color);
-
-        hipChatDistributionConfig = new HipChatDistributionConfig(commonDistributionConfigId.toString(), roomId.toString(), notify, color, distributionConfigId.toString(),
-            distributionType, "Test HipChat Job", providerName, "REAL_TIME", "FALSE", Collections.emptyList(), Collections.emptyList(), "DEFAULT");
-
-        final HipChatChannelEvent testEvent = factory.createHipChatChannelTestEvent(hipChatDistributionConfig);
-        assertEquals(expectedTest.getAuditEntryId(), testEvent.getAuditEntryId());
-        assertEquals(expectedTest.getDestination(), testEvent.getDestination());
-        assertEquals(expectedTest.getProvider(), testEvent.getProvider());
-        assertEquals(expectedTest.getContent(), testEvent.getContent());
-        assertEquals(expectedTest.getRoomId(), testEvent.getRoomId());
-        assertEquals(expectedTest.getNotify(), testEvent.getNotify());
-        assertEquals(expectedTest.getColor(), testEvent.getColor());
-    }
-
-    @Test
-    public void createSlackEvent() throws Exception {
-
-        final Long commonDistributionConfigId = 25L;
-        final Long distributionConfigId = 33L;
-        final String distributionType = SlackChannel.COMPONENT_NAME;
-        final String providerName = BlackDuckProvider.COMPONENT_NAME;
-        final String formatType = "FORMAT";
-
-        final String channelUsername = "Slack UserName";
-        final String webhook = "WebHook";
-        final String channelName = "Alert Channel";
-
-        final MockBlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor = new MockBlackDuckProjectRepositoryAccessor();
-        final MockBlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor = new MockBlackDuckUserRepositoryAccessor();
-        final MockUserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor = new MockUserProjectRelationRepositoryAccessor();
-
-        final ChannelEventFactory factory = new ChannelEventFactory(blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
-
-        final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
-        final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
-
-        final SlackChannelEvent expected = new SlackChannelEvent(RestConstants.formatDate(new Date()), providerName, formatType,
-            content, commonDistributionConfigId, channelUsername, webhook, channelName);
-
-        SlackDistributionConfig slackDistributionConfig = new SlackDistributionConfig(commonDistributionConfigId.toString(), webhook, channelUsername, channelName, distributionConfigId.toString(), distributionType, "Test HipChat Job",
-            providerName, "REAL_TIME", "FALSE", Collections.emptyList(), Collections.emptyList(), formatType);
-
-        final SlackChannelEvent event = (SlackChannelEvent) factory.createChannelEvent(slackDistributionConfig, content);
-        assertEquals(expected.getAuditEntryId(), event.getAuditEntryId());
-        assertEquals(expected.getDestination(), event.getDestination());
-        assertEquals(expected.getProvider(), event.getProvider());
-        assertEquals(expected.getFormatType(), event.getFormatType());
-        assertEquals(expected.getContent(), event.getContent());
-        assertEquals(expected.getChannelUsername(), event.getChannelUsername());
-        assertEquals(expected.getWebHook(), event.getWebHook());
-        assertEquals(expected.getChannelName(), event.getChannelName());
-
-        final AggregateMessageContent testContent = createTestNotificationContent();
-
-        final SlackChannelEvent expectedTest = new SlackChannelEvent(RestConstants.formatDate(new Date()), providerName, formatType,
-            testContent, commonDistributionConfigId, channelUsername, webhook, channelName);
-
-        slackDistributionConfig = new SlackDistributionConfig("1", webhook, channelUsername, channelName, "1", distributionType, "Test HipChat Job", providerName,
-            "REAL_TIME", "FALSE", Collections.emptyList(), Collections.emptyList(), "DEFAULT");
-
-        final SlackChannelEvent testEvent = factory.createSlackChannelTestEvent(slackDistributionConfig);
-        assertEquals(expectedTest.getAuditEntryId(), testEvent.getAuditEntryId());
-        assertEquals(expectedTest.getDestination(), testEvent.getDestination());
-        assertEquals(expectedTest.getProvider(), testEvent.getProvider());
-        assertEquals(expectedTest.getContent(), testEvent.getContent());
-        assertEquals(expectedTest.getChannelUsername(), testEvent.getChannelUsername());
-        assertEquals(expectedTest.getWebHook(), testEvent.getWebHook());
-        assertEquals(expectedTest.getChannelName(), testEvent.getChannelName());
-    }
-
-    private AggregateMessageContent createTestNotificationContent() {
-        final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
-        return new AggregateMessageContent("testTopic", "Alert Test Message", null, subTopic, Collections.emptyList());
 
     }
 }

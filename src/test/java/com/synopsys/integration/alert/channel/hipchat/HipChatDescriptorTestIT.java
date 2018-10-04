@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.TestPropertyKey;
 import com.synopsys.integration.alert.channel.DescriptorTestConfigTest;
-import com.synopsys.integration.alert.channel.event.ChannelEventFactory;
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescriptor;
 import com.synopsys.integration.alert.channel.hipchat.mock.MockHipChatEntity;
 import com.synopsys.integration.alert.channel.hipchat.mock.MockHipChatRestModel;
@@ -25,21 +24,12 @@ import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributi
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalRepository;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
-import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserRepositoryAccessor;
-import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelationRepositoryAccessor;
 import com.synopsys.integration.alert.mock.model.MockRestModelUtil;
 import com.synopsys.integration.alert.web.channel.model.HipChatDistributionConfig;
 
-public class HipChatDescriptorTestIT extends DescriptorTestConfigTest<HipChatDistributionConfig, HipChatDistributionConfigEntity, HipChatGlobalConfigEntity> {
+public class HipChatDescriptorTestIT extends DescriptorTestConfigTest<HipChatDistributionConfig, HipChatDistributionConfigEntity, HipChatGlobalConfigEntity, HipChatEventProducer> {
     @Autowired
     private HipChatDistributionRepositoryAccessor hipChatDistributionRepositoryAccessor;
-    @Autowired
-    private BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
-    @Autowired
-    private BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor;
-    @Autowired
-    private UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor;
     @Autowired
     private HipChatGlobalRepository hipChatRepository;
     @Autowired
@@ -58,7 +48,7 @@ public class HipChatDescriptorTestIT extends DescriptorTestConfigTest<HipChatDis
             FrequencyType.DAILY.name(), "true",
             Collections.emptyList(), Collections.emptyList(), FormatType.DIGEST.name());
 
-        final HipChatChannelEvent channelEvent = (HipChatChannelEvent) channelEventFactory.createChannelEvent(jobConfig, content);
+        final HipChatChannelEvent channelEvent = channelEventProducer.createChannelEvent(jobConfig, content);
 
         assertEquals(Long.valueOf(1L), channelEvent.getCommonDistributionConfigId());
         assertEquals(36, channelEvent.getEventId().length());
@@ -76,8 +66,8 @@ public class HipChatDescriptorTestIT extends DescriptorTestConfigTest<HipChatDis
     }
 
     @Override
-    public ChannelEventFactory createChannelEventFactory() {
-        return new ChannelEventFactory(blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
+    public HipChatEventProducer createChannelEventProducer() {
+        return new HipChatEventProducer();
     }
 
     @Override

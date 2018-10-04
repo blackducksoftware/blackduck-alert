@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.TestPropertyKey;
 import com.synopsys.integration.alert.channel.DescriptorTestConfigTest;
-import com.synopsys.integration.alert.channel.event.ChannelEventFactory;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.channel.slack.mock.MockSlackEntity;
 import com.synopsys.integration.alert.channel.slack.mock.MockSlackRestModel;
@@ -22,21 +21,12 @@ import com.synopsys.integration.alert.database.channel.slack.SlackDistributionCo
 import com.synopsys.integration.alert.database.channel.slack.SlackDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
-import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserRepositoryAccessor;
-import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelationRepositoryAccessor;
 import com.synopsys.integration.alert.mock.model.MockRestModelUtil;
 import com.synopsys.integration.alert.web.channel.model.SlackDistributionConfig;
 
-public class SlackChannelDescriptorTestIT extends DescriptorTestConfigTest<SlackDistributionConfig, SlackDistributionConfigEntity, GlobalChannelConfigEntity> {
+public class SlackChannelDescriptorTestIT extends DescriptorTestConfigTest<SlackDistributionConfig, SlackDistributionConfigEntity, GlobalChannelConfigEntity, SlackEventProducer> {
     @Autowired
     private SlackDistributionRepositoryAccessor slackDistributionRepositoryAccessor;
-    @Autowired
-    private BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
-    @Autowired
-    private BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor;
-    @Autowired
-    private UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor;
     @Autowired
     private SlackDescriptor slackDescriptor;
 
@@ -53,7 +43,7 @@ public class SlackChannelDescriptorTestIT extends DescriptorTestConfigTest<Slack
             String.valueOf(distributionEntity.getId()), getDescriptor().getDestinationName(), "Test Job", "provider", FrequencyType.DAILY.name(), "true",
             Collections.emptyList(), Collections.emptyList(), FormatType.DIGEST.name());
 
-        final SlackChannelEvent channelEvent = (SlackChannelEvent) channelEventFactory.createChannelEvent(slackDistributionConfig, content);
+        final SlackChannelEvent channelEvent = channelEventProducer.createChannelEvent(slackDistributionConfig, content);
 
         assertEquals(Long.valueOf(1L), channelEvent.getCommonDistributionConfigId());
         assertEquals(36, channelEvent.getEventId().length());
@@ -71,8 +61,8 @@ public class SlackChannelDescriptorTestIT extends DescriptorTestConfigTest<Slack
     }
 
     @Override
-    public ChannelEventFactory createChannelEventFactory() {
-        return new ChannelEventFactory(blackDuckProjectRepositoryAccessor, blackDuckUserRepositoryAccessor, userProjectRelationRepositoryAccessor);
+    public SlackEventProducer createChannelEventProducer() {
+        return new SlackEventProducer();
     }
 
     @Override
