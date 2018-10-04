@@ -50,10 +50,6 @@ public class NotificationToChannelEventConverter {
         this.descriptorMap = descriptorMap;
     }
 
-    public DescriptorMap getDescriptorMap() {
-        return descriptorMap;
-    }
-
     public List<ChannelEvent> convertToEvents(final Map<? extends CommonDistributionConfig, List<AggregateMessageContent>> messageContentMap) {
         final List<ChannelEvent> channelEvents = new ArrayList<>();
         final Set<? extends Map.Entry<? extends CommonDistributionConfig, List<AggregateMessageContent>>> jobMessageContentEntries = messageContentMap.entrySet();
