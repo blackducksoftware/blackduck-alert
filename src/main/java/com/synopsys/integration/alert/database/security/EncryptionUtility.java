@@ -51,9 +51,11 @@ public class EncryptionUtility {
 
     @Transactional
     public String encrypt(final String propertyKey, final String propertyValue) {
+        if (StringUtils.isBlank(propertyValue)) {
+            return propertyValue;
+        }
         Objects.requireNonNull(password);
         Objects.requireNonNull(propertyKey);
-        Objects.requireNonNull(propertyValue);
         final String salt = generateSalt();
         final SaltMappingEntity saltMappingEntity = new SaltMappingEntity(propertyKey, salt);
         saltMappingRepository.save(saltMappingEntity);

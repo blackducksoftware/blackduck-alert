@@ -3,6 +3,7 @@ package com.synopsys.integration.alert.database.security;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -106,6 +107,26 @@ public class EncryptionUtilityTestIT {
             fail();
         } catch (final NullPointerException ex) {
         }
+    }
+
+    @Test
+    public void testEncryptionNullValue() {
+        final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
+        Mockito.when(alertProperties.getAlertEncryptionPassword()).thenReturn(Optional.of(TEST_PASSWORD));
+        final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, repository);
+        final String encryptedValue = encryptionUtility.encrypt("propertyKey", null);
+        assertNull(encryptedValue);
+    }
+
+    @Test
+    public void testEncryptionEmptyStringValue() {
+        final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
+        Mockito.when(alertProperties.getAlertEncryptionPassword()).thenReturn(Optional.of(TEST_PASSWORD));
+        final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties, repository);
+        final String propertyKey = "propertyKey";
+        final String emptyValue = "";
+        final String encryptedValue = encryptionUtility.encrypt(propertyKey, emptyValue);
+        assertEquals(emptyValue, encryptedValue);
     }
 
     @Test
