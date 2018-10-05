@@ -114,5 +114,7 @@
     </changeSet>
     <changeSet author="psantos" id="1533054185-18">
         <modifyDataType tableName="GLOBAL_BLACKDUCK_CONFIG" schemaName="ALERT" columnName="BLACKDUCK_API_KEY" newDataType="VARCHAR(500)"/>
+        <modifyDataType tableName="GLOBAL_EMAIL_CONFIG" schemaName="ALERT" columnName="MAIL_SMTP_PASSWORD" newDataType="VARCHAR(500)"/>
+        <modifyDataType tableName="GLOBAL_HIPCHAT_CONFIG" schemaName="ALERT" columnName="API_KEY" newDataType="VARCHAR(500)"/>
     </changeSet>
 </databaseChangeLog>

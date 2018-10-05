@@ -34,8 +34,9 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckRepositoryAccessor;
 import com.synopsys.integration.blackduck.configuration.HubServerConfig;
 import com.synopsys.integration.blackduck.configuration.HubServerConfigBuilder;
 import com.synopsys.integration.blackduck.rest.BlackduckRestConnection;
@@ -47,7 +48,7 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 @Component
 public class BlackDuckProperties {
     public static final int DEFAULT_TIMEOUT = 300;
-    private final GlobalBlackDuckRepository globalBlackDuckRepository;
+    private final BlackDuckRepositoryAccessor blackDuckRepositoryAccessor;
     private final AlertProperties alertProperties;
 
     // the blackduck product hasn't renamed their environment variables from hub to blackduck
@@ -59,8 +60,8 @@ public class BlackDuckProperties {
     private String publicBlackDuckWebserverPort;
 
     @Autowired
-    public BlackDuckProperties(final GlobalBlackDuckRepository globalBlackDuckRepository, final AlertProperties alertProperties) {
-        this.globalBlackDuckRepository = globalBlackDuckRepository;
+    public BlackDuckProperties(final BlackDuckRepositoryAccessor blackDuckRepositoryAccessor, final AlertProperties alertProperties) {
+        this.blackDuckRepositoryAccessor = blackDuckRepositoryAccessor;
         this.alertProperties = alertProperties;
     }
 
@@ -106,9 +107,11 @@ public class BlackDuckProperties {
     }
 
     public Optional<GlobalBlackDuckConfigEntity> getBlackDuckConfig() {
-        final List<GlobalBlackDuckConfigEntity> configs = globalBlackDuckRepository.findAll();
+
+        final List<? extends DatabaseEntity> configs = blackDuckRepositoryAccessor.readEntities();
         if (configs != null && !configs.isEmpty()) {
-            return Optional.of(configs.get(0));
+            final GlobalBlackDuckConfigEntity globalBlackDuckConfigEntity = (GlobalBlackDuckConfigEntity) configs.get(0);
+            return Optional.of(globalBlackDuckConfigEntity);
         }
         return Optional.empty();
     }

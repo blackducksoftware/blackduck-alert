@@ -17,8 +17,8 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckRepositoryAccessor;
 import com.synopsys.integration.blackduck.configuration.HubServerConfig;
 import com.synopsys.integration.blackduck.rest.BlackduckRestConnection;
 import com.synopsys.integration.blackduck.service.HubServicesFactory;
@@ -32,15 +32,15 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
     private boolean urlSet;
 
     public TestBlackDuckProperties(final TestAlertProperties alertProperties) {
-        this(Mockito.mock(GlobalBlackDuckRepository.class), alertProperties);
+        this(Mockito.mock(BlackDuckRepositoryAccessor.class), alertProperties);
     }
 
-    public TestBlackDuckProperties(final GlobalBlackDuckRepository globalHubRepository, final TestAlertProperties alertProperties) {
-        this(globalHubRepository, alertProperties, 400);
+    public TestBlackDuckProperties(final BlackDuckRepositoryAccessor blackDuckRepositoryAccessor, final TestAlertProperties alertProperties) {
+        this(blackDuckRepositoryAccessor, alertProperties, 400);
     }
 
-    public TestBlackDuckProperties(final GlobalBlackDuckRepository globalHubRepository, final TestAlertProperties alertProperties, final Integer blackDuckTimeout) {
-        super(globalHubRepository, alertProperties);
+    public TestBlackDuckProperties(final BlackDuckRepositoryAccessor blackDuckRepositoryAccessor, final TestAlertProperties alertProperties, final Integer blackDuckTimeout) {
+        super(blackDuckRepositoryAccessor, alertProperties);
         this.blackDuckTimeout = blackDuckTimeout;
         this.testAlertProperties = alertProperties;
         testProperties = new TestProperties();

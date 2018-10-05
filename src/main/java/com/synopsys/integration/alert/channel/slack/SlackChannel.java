@@ -43,14 +43,12 @@ import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.audit.AuditUtility;
-import com.synopsys.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
-import com.synopsys.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.request.Request;
 
 @Component(value = SlackChannel.COMPONENT_NAME)
-public class SlackChannel extends RestDistributionChannel<GlobalChannelConfigEntity, SlackDistributionConfigEntity, SlackChannelEvent> {
+public class SlackChannel extends RestDistributionChannel<SlackChannelEvent> {
     public static final String COMPONENT_NAME = "channel_slack";
     public static final String SLACK_API = "https://hooks.slack.com";
 
@@ -67,7 +65,7 @@ public class SlackChannel extends RestDistributionChannel<GlobalChannelConfigEnt
     @Autowired
     public SlackChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditUtility auditUtility,
         final ChannelRestConnectionFactory channelRestConnectionFactory) {
-        super(gson, alertProperties, blackDuckProperties, auditUtility, null, SlackChannelEvent.class, channelRestConnectionFactory);
+        super(gson, alertProperties, blackDuckProperties, auditUtility, SlackChannelEvent.class, channelRestConnectionFactory);
     }
 
     @Override
@@ -76,7 +74,7 @@ public class SlackChannel extends RestDistributionChannel<GlobalChannelConfigEnt
     }
 
     @Override
-    public String getApiUrl(final GlobalChannelConfigEntity globalConfig) {
+    public String getApiUrl() {
         return SLACK_API;
     }
 
@@ -86,7 +84,7 @@ public class SlackChannel extends RestDistributionChannel<GlobalChannelConfigEnt
     }
 
     @Override
-    public List<Request> createRequests(final GlobalChannelConfigEntity globalConfig, final SlackChannelEvent event) throws IntegrationException {
+    public List<Request> createRequests(final SlackChannelEvent event) throws IntegrationException {
         if (StringUtils.isBlank(event.getWebHook())) {
             throw new IntegrationException("Missing Webhook URL");
         } else if (StringUtils.isBlank(event.getChannelName())) {

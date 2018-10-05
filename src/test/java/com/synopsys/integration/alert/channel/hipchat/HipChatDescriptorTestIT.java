@@ -1,11 +1,10 @@
 package com.synopsys.integration.alert.channel.hipchat;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 import java.util.Collections;
 
-import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -22,29 +21,28 @@ import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
-import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalRepository;
+import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalRepositoryAccessor;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.mock.model.MockRestModelUtil;
 import com.synopsys.integration.alert.web.channel.model.HipChatDistributionConfig;
 
-public class HipChatDescriptorTestIT extends DescriptorTestConfigTest<HipChatDistributionConfig, HipChatDistributionConfigEntity, HipChatGlobalConfigEntity, HipChatEventProducer> {
+public class HipChatDescriptorTestIT extends DescriptorTestConfigTest<HipChatDistributionConfig, HipChatEventProducer> {
     @Autowired
     private HipChatDistributionRepositoryAccessor hipChatDistributionRepositoryAccessor;
     @Autowired
-    private HipChatGlobalRepository hipChatRepository;
+    private HipChatGlobalRepositoryAccessor hipChatRepository;
     @Autowired
     private HipChatDescriptor hipChatDescriptor;
 
     @Override
     @Test
-    public void testCreateChannelEvent() throws Exception {
+    public void testCreateChannelEvent() {
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
         final DatabaseEntity distributionEntity = getDistributionEntity();
         final String roomId = "12345";
-        final Boolean notify = false;
         final String color = "purple";
-        final HipChatDistributionConfig jobConfig = new HipChatDistributionConfig("1", roomId, notify, color, String.valueOf(distributionEntity.getId()), getDescriptor().getDestinationName(), "Test Job", "provider",
+        final HipChatDistributionConfig jobConfig = new HipChatDistributionConfig("1", roomId, false, color, String.valueOf(distributionEntity.getId()), getDescriptor().getDestinationName(), "Test Job", "provider",
             FrequencyType.DAILY.name(), "true",
             Collections.emptyList(), Collections.emptyList(), FormatType.DIGEST.name());
 
@@ -53,8 +51,8 @@ public class HipChatDescriptorTestIT extends DescriptorTestConfigTest<HipChatDis
         assertEquals(Long.valueOf(1L), channelEvent.getCommonDistributionConfigId());
         assertEquals(36, channelEvent.getEventId().length());
         assertEquals(getDescriptor().getDestinationName(), channelEvent.getDestination());
-        assertTrue(NumberUtils.toInt(roomId) == channelEvent.getRoomId());
-        assertEquals(notify, channelEvent.getNotify());
+        assertEquals(roomId, String.valueOf(channelEvent.getRoomId()));
+        assertFalse(channelEvent.getNotify());
         assertEquals(color, channelEvent.getColor());
     }
 
@@ -83,7 +81,7 @@ public class HipChatDescriptorTestIT extends DescriptorTestConfigTest<HipChatDis
     @Override
     public void saveGlobalConfiguration() {
         final HipChatGlobalConfigEntity globalEntity = new HipChatGlobalConfigEntity(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY), "");
-        hipChatRepository.save(globalEntity);
+        hipChatRepository.saveEntity(globalEntity);
     }
 
     @Override

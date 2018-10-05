@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.database.provider.blackduck.data.relation.
 import com.synopsys.integration.alert.mock.model.MockRestModelUtil;
 import com.synopsys.integration.alert.web.channel.model.EmailDistributionConfig;
 
-public class EmailChannelDescriptorTestIT extends DescriptorTestConfigTest<EmailDistributionConfig, EmailGroupDistributionConfigEntity, EmailGlobalConfigEntity, EmailEventProducer> {
+public class EmailChannelDescriptorTestIT extends DescriptorTestConfigTest<EmailDistributionConfig, EmailEventProducer> {
     @Autowired
     private EmailDistributionRepositoryAccessor emailDistributionRepositoryAccessor;
     @Autowired
@@ -68,7 +68,7 @@ public class EmailChannelDescriptorTestIT extends DescriptorTestConfigTest<Email
 
     @Override
     @Test
-    public void testCreateChannelEvent() throws Exception {
+    public void testCreateChannelEvent() {
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
         final DatabaseEntity distributionEntity = getDistributionEntity();
