@@ -32,7 +32,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
 import com.synopsys.integration.alert.channel.slack.SlackChannelEvent;
 import com.synopsys.integration.alert.channel.slack.SlackEventProducer;
-import com.synopsys.integration.alert.common.descriptor.config.RestApi;
+import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
 import com.synopsys.integration.alert.database.channel.slack.SlackDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.web.channel.model.SlackDistributionConfig;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
@@ -40,12 +40,12 @@ import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class SlackDistributionRestApi extends RestApi {
+public class SlackDistributionDescriptorActionApi extends DescriptorActionApi {
     private final SlackChannel slackChannel;
     private final SlackEventProducer slackEventProducer;
 
     @Autowired
-    public SlackDistributionRestApi(final SlackDistributionTypeConverter databaseContentConverter, final SlackDistributionRepositoryAccessor repositoryAccessor,
+    public SlackDistributionDescriptorActionApi(final SlackDistributionTypeConverter databaseContentConverter, final SlackDistributionRepositoryAccessor repositoryAccessor,
         final SlackChannel slackChannel, final SlackEventProducer slackEventProducer) {
         super(databaseContentConverter, repositoryAccessor);
         this.slackEventProducer = slackEventProducer;

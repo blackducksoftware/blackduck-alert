@@ -32,9 +32,9 @@ import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 
 public abstract class ChannelEventProducer {
 
-    public abstract ChannelEvent createChannelEvent(final CommonDistributionConfig commmonDistributionConfig, final AggregateMessageContent messageContent);
+    public abstract DistributionEvent createChannelEvent(final CommonDistributionConfig commmonDistributionConfig, final AggregateMessageContent messageContent);
 
-    public abstract ChannelEvent createChannelTestEvent(final CommonDistributionConfig commmonDistributionConfig) throws AlertFieldException;
+    public abstract DistributionEvent createChannelTestEvent(final CommonDistributionConfig commmonDistributionConfig) throws AlertFieldException;
 
     public AggregateMessageContent createTestNotificationContent() {
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);

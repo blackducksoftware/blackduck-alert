@@ -24,8 +24,8 @@ import com.synopsys.integration.alert.TestProperties;
 import com.synopsys.integration.alert.channel.event.ChannelEventProducer;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.RestApi;
-import com.synopsys.integration.alert.common.enumeration.RestApiType;
+import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
+import com.synopsys.integration.alert.common.enumeration.ActionApiType;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.entity.channel.DistributionChannelConfigEntity;
@@ -78,8 +78,8 @@ public abstract class DescriptorTestConfigTest<R extends CommonDistributionConfi
     @Test
     public void testSendTestMessage() throws Exception {
         saveGlobalConfiguration();
-        final RestApi restApi = getDescriptor().getRestApi(RestApiType.CHANNEL_DISTRIBUTION_CONFIG);
-        final RestApi spyDescriptorConfig = Mockito.spy(restApi);
+        final DescriptorActionApi descriptorActionApi = getDescriptor().getRestApi(ActionApiType.CHANNEL_DISTRIBUTION_CONFIG);
+        final DescriptorActionApi spyDescriptorConfig = Mockito.spy(descriptorActionApi);
         final Config restModel = getMockRestModelUtil().createRestModel();
         try {
             spyDescriptorConfig.testConfig(restModel);

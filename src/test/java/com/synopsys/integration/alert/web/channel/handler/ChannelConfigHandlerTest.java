@@ -15,7 +15,7 @@ import org.springframework.http.ResponseEntity;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.common.descriptor.config.RestApi;
+import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.mock.model.MockCommonDistributionRestModel;
@@ -36,7 +36,7 @@ public class ChannelConfigHandlerTest {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
         final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
-        final RestApi descriptor = Mockito.mock(RestApi.class);
+        final DescriptorActionApi descriptor = Mockito.mock(DescriptorActionApi.class);
         final List<CommonDistributionConfig> restModel = Arrays.asList(mockCommonDistributionRestModel.createEmptyRestModel());
         Mockito.doReturn(restModel).when(configActions).getConfig(Mockito.anyLong(), Mockito.any());
 
@@ -49,7 +49,7 @@ public class ChannelConfigHandlerTest {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
         final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
-        final RestApi descriptor = Mockito.mock(RestApi.class);
+        final DescriptorActionApi descriptor = Mockito.mock(DescriptorActionApi.class);
         Mockito.when(configActions.getConfig(Mockito.anyLong(), Mockito.any())).thenThrow(new AlertException());
 
         Exception thrownException = null;
@@ -68,7 +68,7 @@ public class ChannelConfigHandlerTest {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
         final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
-        final RestApi descriptor = Mockito.mock(RestApi.class);
+        final DescriptorActionApi descriptor = Mockito.mock(DescriptorActionApi.class);
         Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(false);
         Mockito.when(configActions.saveConfig(Mockito.any(), Mockito.any())).thenReturn(new CommonDistributionConfigEntity());
 
@@ -81,7 +81,7 @@ public class ChannelConfigHandlerTest {
     public void postNullConfigTest() {
         final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, null);
 
-        final RestApi descriptor = Mockito.mock(RestApi.class);
+        final DescriptorActionApi descriptor = Mockito.mock(DescriptorActionApi.class);
         final ResponseEntity<String> response = handler.postConfig(null, descriptor);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
@@ -91,7 +91,7 @@ public class ChannelConfigHandlerTest {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
         final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
-        final RestApi descriptor = Mockito.mock(RestApi.class);
+        final DescriptorActionApi descriptor = Mockito.mock(DescriptorActionApi.class);
         Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(true);
 
         final CommonDistributionConfig restModel = mockCommonDistributionRestModel.createRestModel();
@@ -104,7 +104,7 @@ public class ChannelConfigHandlerTest {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
         final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
-        final RestApi descriptor = Mockito.mock(RestApi.class);
+        final DescriptorActionApi descriptor = Mockito.mock(DescriptorActionApi.class);
         Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(false);
         Mockito.when(configActions.validateConfig(Mockito.any(), Mockito.any(), Mockito.any())).thenThrow(new AlertFieldException(Collections.emptyMap()));
         Mockito.when(configActions.getContentConverter()).thenReturn(contentConverter);
@@ -119,7 +119,7 @@ public class ChannelConfigHandlerTest {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
         final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
-        final RestApi descriptor = Mockito.mock(RestApi.class);
+        final DescriptorActionApi descriptor = Mockito.mock(DescriptorActionApi.class);
         Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(true);
         Mockito.when(configActions.validateConfig(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn("");
         Mockito.when(configActions.updateConfig(Mockito.any(), Mockito.any())).thenReturn(new CommonDistributionConfigEntity());
@@ -133,7 +133,7 @@ public class ChannelConfigHandlerTest {
     public void putNullConfigTest() {
         final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, null);
 
-        final RestApi descriptor = Mockito.mock(RestApi.class);
+        final DescriptorActionApi descriptor = Mockito.mock(DescriptorActionApi.class);
         final ResponseEntity<String> response = handler.putConfig(null, descriptor);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
@@ -143,7 +143,7 @@ public class ChannelConfigHandlerTest {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
         final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
-        final RestApi descriptor = Mockito.mock(RestApi.class);
+        final DescriptorActionApi descriptor = Mockito.mock(DescriptorActionApi.class);
         Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(false);
 
         final CommonDistributionConfig restModel = mockCommonDistributionRestModel.createRestModel();
@@ -156,7 +156,7 @@ public class ChannelConfigHandlerTest {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
         final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
-        final RestApi descriptor = Mockito.mock(RestApi.class);
+        final DescriptorActionApi descriptor = Mockito.mock(DescriptorActionApi.class);
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(true);
         Mockito.when(configActions.validateConfig(Mockito.any(), Mockito.any(), Mockito.any())).thenThrow(new AlertFieldException(Collections.emptyMap()));
@@ -172,7 +172,7 @@ public class ChannelConfigHandlerTest {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
         final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
-        final RestApi descriptor = Mockito.mock(RestApi.class);
+        final DescriptorActionApi descriptor = Mockito.mock(DescriptorActionApi.class);
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(true);
         Mockito.when(configActions.updateConfig(Mockito.any(), Mockito.any())).thenThrow(new AlertException());
@@ -187,7 +187,7 @@ public class ChannelConfigHandlerTest {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
         final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
-        final RestApi descriptor = Mockito.mock(RestApi.class);
+        final DescriptorActionApi descriptor = Mockito.mock(DescriptorActionApi.class);
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyLong(), Mockito.any())).thenReturn(true);
         Mockito.doNothing().when(configActions).deleteConfig(Mockito.anyLong(), Mockito.any());
@@ -201,7 +201,7 @@ public class ChannelConfigHandlerTest {
     public void deleteNullConfigTest() {
         final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, null);
 
-        final RestApi descriptor = Mockito.mock(RestApi.class);
+        final DescriptorActionApi descriptor = Mockito.mock(DescriptorActionApi.class);
         final ResponseEntity<String> response = handler.deleteConfig(null, descriptor);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
@@ -211,7 +211,7 @@ public class ChannelConfigHandlerTest {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
         final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
-        final RestApi descriptor = Mockito.mock(RestApi.class);
+        final DescriptorActionApi descriptor = Mockito.mock(DescriptorActionApi.class);
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(false);
 
@@ -225,7 +225,7 @@ public class ChannelConfigHandlerTest {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
         final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
-        final RestApi descriptor = Mockito.mock(RestApi.class);
+        final DescriptorActionApi descriptor = Mockito.mock(DescriptorActionApi.class);
 
         final CommonDistributionConfig restModel = mockCommonDistributionRestModel.createRestModel();
         final ResponseEntity<String> response = handler.validateConfig(restModel, descriptor);
@@ -236,7 +236,7 @@ public class ChannelConfigHandlerTest {
     public void validateConfigNullTest() {
         final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, null);
 
-        final RestApi descriptor = Mockito.mock(RestApi.class);
+        final DescriptorActionApi descriptor = Mockito.mock(DescriptorActionApi.class);
         final ResponseEntity<String> response = handler.validateConfig(null, descriptor);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
@@ -246,7 +246,7 @@ public class ChannelConfigHandlerTest {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
         final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
-        final RestApi descriptor = Mockito.mock(RestApi.class);
+        final DescriptorActionApi descriptor = Mockito.mock(DescriptorActionApi.class);
 
         Mockito.when(configActions.validateConfig(Mockito.any(), Mockito.any(), Mockito.any())).thenThrow(new AlertFieldException(Collections.emptyMap()));
         Mockito.when(configActions.getContentConverter()).thenReturn(contentConverter);
@@ -261,7 +261,7 @@ public class ChannelConfigHandlerTest {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
         final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
-        final RestApi descriptor = Mockito.mock(RestApi.class);
+        final DescriptorActionApi descriptor = Mockito.mock(DescriptorActionApi.class);
 
         final CommonDistributionConfig restModel = mockCommonDistributionRestModel.createRestModel();
         final ResponseEntity<String> response = handler.testConfig(restModel, descriptor);
@@ -272,7 +272,7 @@ public class ChannelConfigHandlerTest {
     public void testNullConfigTest() {
         final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, null);
 
-        final RestApi descriptor = Mockito.mock(RestApi.class);
+        final DescriptorActionApi descriptor = Mockito.mock(DescriptorActionApi.class);
         final ResponseEntity<String> response = handler.testConfig(null, descriptor);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
@@ -281,7 +281,7 @@ public class ChannelConfigHandlerTest {
     public void testConfigWithRestExceptionTest() throws Exception {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
         final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
-        final RestApi descriptor = Mockito.mock(RestApi.class);
+        final DescriptorActionApi descriptor = Mockito.mock(DescriptorActionApi.class);
         final int responseCode = HttpStatus.BAD_GATEWAY.value();
         Mockito.when(configActions.testConfig(Mockito.any(), Mockito.any())).thenThrow(new IntegrationRestException(responseCode, "", "", ""));
         Mockito.when(configActions.getContentConverter()).thenReturn(contentConverter);
@@ -296,7 +296,7 @@ public class ChannelConfigHandlerTest {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
         final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
-        final RestApi descriptor = Mockito.mock(RestApi.class);
+        final DescriptorActionApi descriptor = Mockito.mock(DescriptorActionApi.class);
 
         Mockito.when(configActions.testConfig(Mockito.any(), Mockito.any())).thenThrow(new AlertFieldException(Collections.emptyMap()));
         Mockito.when(configActions.getContentConverter()).thenReturn(contentConverter);
@@ -311,7 +311,7 @@ public class ChannelConfigHandlerTest {
         final ChannelDistributionConfigActions configActions = Mockito.mock(ChannelDistributionConfigActions.class);
         final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
-        final RestApi descriptor = Mockito.mock(RestApi.class);
+        final DescriptorActionApi descriptor = Mockito.mock(DescriptorActionApi.class);
 
         Mockito.when(configActions.testConfig(Mockito.any(), Mockito.any())).thenThrow(new NullPointerException());
         Mockito.when(configActions.getContentConverter()).thenReturn(contentConverter);

@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.event.ChannelEvent;
+import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.event.AlertEvent;
 import com.synopsys.integration.alert.database.audit.AuditUtility;
 
@@ -58,11 +58,11 @@ public class ChannelTemplateManager {
     @Transactional
     public boolean sendEvent(final AlertEvent event) {
         final String destination = event.getDestination();
-        if (event instanceof ChannelEvent) {
-            final ChannelEvent channelEvent = (ChannelEvent) event;
-            final Long auditEntryId = auditUtility.createAuditEntry(channelEvent.getAuditEntryId(), channelEvent.getCommonDistributionConfigId(), channelEvent.getContent());
-            channelEvent.setAuditEntryId(auditEntryId);
-            final String jsonMessage = gson.toJson(channelEvent);
+        if (event instanceof DistributionEvent) {
+            final DistributionEvent distributionEvent = (DistributionEvent) event;
+            final Long auditEntryId = auditUtility.createAuditEntry(distributionEvent.getAuditEntryId(), distributionEvent.getCommonDistributionConfigId(), distributionEvent.getContent());
+            distributionEvent.setAuditEntryId(auditEntryId);
+            final String jsonMessage = gson.toJson(distributionEvent);
             jmsTemplate.convertAndSend(destination, jsonMessage);
         } else {
             final String jsonMessage = gson.toJson(event);

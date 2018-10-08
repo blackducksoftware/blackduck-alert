@@ -21,20 +21,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.enumeration;
+package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
-public enum RestApiType {
-    CHANNEL_GLOBAL_CONFIG,
-    CHANNEL_DISTRIBUTION_CONFIG,
-    PROVIDER_CONFIG,
-    PROVIDER_DISTRIBUTION_CONFIG,
-    COMPONENT_CONFIG;
+import java.util.Map;
 
-    public static final RestApiType getRestApiType(final String restApiTypeName) {
-        try {
-            return valueOf(restApiTypeName);
-        } catch (final IllegalArgumentException ex) {
-            return null;
-        }
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
+import com.synopsys.integration.alert.web.model.Config;
+
+@Component
+public class BlackDuckDistributionDescriptorActionApi extends DescriptorActionApi {
+
+    @Autowired
+    public BlackDuckDistributionDescriptorActionApi(final BlackDuckTypeConverter typeConverter, final BlackDuckRepositoryAccessor repositoryAccessor) {
+        super(typeConverter, repositoryAccessor);
+    }
+
+    @Override
+    public void validateConfig(final Config restModel, final Map<String, String> fieldErrors) {
+
+    }
+
+    @Override
+    public void testConfig(final Config restModel) {
+
     }
 }

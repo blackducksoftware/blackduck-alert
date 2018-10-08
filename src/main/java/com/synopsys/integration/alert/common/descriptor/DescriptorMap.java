@@ -32,9 +32,9 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.config.RestApi;
+import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
 import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
-import com.synopsys.integration.alert.common.enumeration.RestApiType;
+import com.synopsys.integration.alert.common.enumeration.ActionApiType;
 import com.synopsys.integration.alert.common.exception.AlertException;
 
 @Component
@@ -43,10 +43,10 @@ public class DescriptorMap {
     private final Map<String, ChannelDescriptor> channelDescriptorMap;
     private final Map<String, ProviderDescriptor> providerDescriptorMap;
     private final Map<String, ComponentDescriptor> componentDescriptorMap;
-    private final List<RestApi> restApis;
+    private final List<DescriptorActionApi> restApis;
 
     @Autowired
-    public DescriptorMap(final List<ChannelDescriptor> channelDescriptors, final List<ProviderDescriptor> providerDescriptors, final List<ComponentDescriptor> componentDescriptors, final List<RestApi> restApis)
+    public DescriptorMap(final List<ChannelDescriptor> channelDescriptors, final List<ProviderDescriptor> providerDescriptors, final List<ComponentDescriptor> componentDescriptors, final List<DescriptorActionApi> restApis)
         throws AlertException {
         this.restApis = restApis;
         descriptorMap = new HashMap<>(channelDescriptors.size() + providerDescriptors.size());
@@ -68,30 +68,30 @@ public class DescriptorMap {
         return descriptorMapping;
     }
 
-    public List<RestApi> getStartupRestApis() {
+    public List<DescriptorActionApi> getStartupRestApis() {
         return restApis
                    .stream()
-                   .filter(RestApi::hasStartupProperties)
+                   .filter(DescriptorActionApi::hasStartupProperties)
                    .collect(Collectors.toList());
     }
 
     public List<UIComponent> getDistributionUIConfigs() {
-        return getUIComponents(RestApiType.CHANNEL_DISTRIBUTION_CONFIG);
+        return getUIComponents(ActionApiType.CHANNEL_DISTRIBUTION_CONFIG);
     }
 
     public List<UIComponent> getGlobalUIConfigs() {
-        return getUIComponents(RestApiType.CHANNEL_GLOBAL_CONFIG);
+        return getUIComponents(ActionApiType.CHANNEL_GLOBAL_CONFIG);
     }
 
     public List<UIComponent> getProviderUIConfigs() {
-        return getUIComponents(RestApiType.PROVIDER_CONFIG);
+        return getUIComponents(ActionApiType.PROVIDER_CONFIG);
     }
 
     public List<UIComponent> getComponentUIConfigs() {
-        return getUIComponents(RestApiType.COMPONENT_CONFIG);
+        return getUIComponents(ActionApiType.COMPONENT_CONFIG);
     }
 
-    public List<UIComponent> getUIComponents(final RestApiType configType) {
+    public List<UIComponent> getUIComponents(final ActionApiType configType) {
         return descriptorMap.values()
                    .stream()
                    .filter(descriptor -> descriptor.hasUIConfigForType(configType))
@@ -100,12 +100,12 @@ public class DescriptorMap {
     }
 
     public List<UIComponent> getAllUIComponents() {
-        return Arrays.stream(RestApiType.values())
+        return Arrays.stream(ActionApiType.values())
                    .flatMap(type -> getUIComponents(type).stream())
                    .collect(Collectors.toList());
     }
 
-    public List<RestApi> getAllDescriptorConfigs() {
+    public List<DescriptorActionApi> getAllDescriptorConfigs() {
         return restApis;
     }
 

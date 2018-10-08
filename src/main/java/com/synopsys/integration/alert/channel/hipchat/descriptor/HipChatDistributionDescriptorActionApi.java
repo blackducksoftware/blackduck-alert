@@ -30,34 +30,42 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
-import com.synopsys.integration.alert.common.descriptor.config.RestApi;
-import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalRepositoryAccessor;
-import com.synopsys.integration.alert.web.channel.model.HipChatGlobalConfig;
+import com.synopsys.integration.alert.channel.hipchat.HipChatChannelEvent;
+import com.synopsys.integration.alert.channel.hipchat.HipChatEventProducer;
+import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
+import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionRepositoryAccessor;
+import com.synopsys.integration.alert.web.channel.model.HipChatDistributionConfig;
+import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class HipChatGlobalRestApi extends RestApi {
+public class HipChatDistributionDescriptorActionApi extends DescriptorActionApi {
     private final HipChatChannel hipChatChannel;
+    private final HipChatEventProducer hipChatEventProducer;
 
     @Autowired
-    public HipChatGlobalRestApi(final HipChatGlobalTypeConverter databaseContentConverter, final HipChatGlobalRepositoryAccessor repositoryAccessor, final HipChatChannel hipChatChannel,
-        final HipChatStartupComponent hipChatStartupComponent) {
-        super(databaseContentConverter, repositoryAccessor, hipChatStartupComponent);
+    public HipChatDistributionDescriptorActionApi(final HipChatDistributionTypeConverter databaseContentConverter, final HipChatDistributionRepositoryAccessor repositoryAccessor,
+        final HipChatChannel hipChatChannel, final HipChatEventProducer hipChatEventProducer) {
+        super(databaseContentConverter, repositoryAccessor);
+        this.hipChatEventProducer = hipChatEventProducer;
         this.hipChatChannel = hipChatChannel;
     }
 
     @Override
     public void validateConfig(final Config restModel, final Map<String, String> fieldErrors) {
-        final HipChatGlobalConfig hipChatRestModel = (HipChatGlobalConfig) restModel;
-        if (StringUtils.isBlank(hipChatRestModel.getApiKey())) {
-            fieldErrors.put("apiKey", "ApiKey can't be blank");
+        final HipChatDistributionConfig hipChatRestModel = (HipChatDistributionConfig) restModel;
+        if (StringUtils.isBlank(hipChatRestModel.getRoomId())) {
+            fieldErrors.put("roomId", "A Room Id is required.");
+        } else if (!StringUtils.isNumeric(hipChatRestModel.getRoomId())) {
+            fieldErrors.put("roomId", "Room Id must be an integer value");
         }
     }
 
     @Override
     public void testConfig(final Config restModel) throws IntegrationException {
-        hipChatChannel.testGlobalConfig(restModel);
+        final HipChatChannelEvent event = hipChatEventProducer.createChannelTestEvent((CommonDistributionConfig) restModel);
+        hipChatChannel.sendAuditedMessage(event);
     }
 
 }
