@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const CheckboxInput = (props) => {
-    const { errorName, errorValue } = props;
+    const {errorName, errorValue} = props;
     const {
         name, value, label, onChange, readOnly, id
     } = props;
@@ -10,13 +10,13 @@ const CheckboxInput = (props) => {
     const isChecked = value === 'true' || value;
     return (
         <div className="form-group">
-            <div className="col-sm-offset-3 col-sm-8">
-                <div className="checkbox">
+            <div className="offset-sm-3 col-sm-8">
+                <div className="form-check">
                     <label>
                         <input
                             id={id}
                             type="checkbox"
-                            className="checkboxInput"
+                            className="form-check-input"
                             readOnly={readOnly}
                             disabled={readOnly}
                             name={name}
@@ -24,14 +24,14 @@ const CheckboxInput = (props) => {
                             value={label}
                             onChange={onChange}
                         />
-                        { label }
+                        {label}
                     </label>
                 </div>
             </div>
-            { errorName && errorValue &&
-                <div className="col-sm-offset-3 col-sm-8">
-                    <p className="fieldError" name={errorName}>{errorValue}</p>;
-                </div>
+            {errorName && errorValue &&
+            <div className="offset-sm-3 col-sm-8">
+                <p className="fieldError" name={errorName}>{errorValue}</p>;
+            </div>
             }
         </div>
     );

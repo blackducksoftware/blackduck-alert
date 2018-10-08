@@ -110,8 +110,8 @@ class SchedulingConfiguration extends React.Component {
 
                 <form className="form-horizontal" onSubmit={this.handleSubmit}>
                     <div className="form-group">
-                        <label className="col-sm-3 control-label">Collecting Black Duck notifications in</label>
-                        <div className="col-sm-9">
+                        <label className="col-sm-4 col-form-label text-right">Collecting Black Duck notifications in</label>
+                        <div className="d-inline-flex p-2 col-sm-8">
                             <p className="form-control-static accumulator-countdown">
                                 {this.state.accumulatorNextRun} seconds &nbsp;&nbsp;
                             </p>
@@ -119,8 +119,8 @@ class SchedulingConfiguration extends React.Component {
                     </div>
 
                     <div className="form-group">
-                        <label className="col-sm-3 control-label">Daily Digest Run Time</label>
-                        <div className="col-sm-8">
+                        <label className="col-sm-4 col-form-label text-right">Daily Digest Run Time</label>
+                        <div className="d-inline-flex p-2 col-sm-8">
                             <Select
                                 id="schedulingConfigurationHour"
                                 className="accumulatorTypeAheadField"
@@ -132,21 +132,21 @@ class SchedulingConfiguration extends React.Component {
                             />
                         </div>
                         {errorFields && errorFields.dailyDigestHourOfDay &&
-                        <div className="col-sm-offset-3 col-sm-8">
+                        <div className="offset-sm-3 col-sm-8">
                             <p className="fieldError">{errorFields.dailyDigestHourOfDay}</p>
                         </div>}
                     </div>
 
                     <div className="form-group">
-                        <label className="col-sm-3 control-label">Daily Digest Cron Next Run</label>
-                        <div className="col-sm-8">
+                        <label className="col-sm-4 col-form-label text-right">Daily Digest Cron Next Run</label>
+                        <div className="d-inline-flex p-2 col-sm-8">
                             <p className="form-control-static">{this.props.dailyDigestNextRun}</p>
                         </div>
                     </div>
 
                     <div className="form-group">
-                        <label className="col-sm-3 control-label">Notification Purge Frequency</label>
-                        <div className="col-sm-8">
+                        <label className="col-sm-4 col-form-label text-right">Notification Purge Frequency</label>
+                        <div className="d-inline-flex p-2 col-sm-8">
                             <Select
                                 id="schedulingConfigurationFrequency"
                                 className="accumulatorTypeAheadField"
@@ -158,14 +158,14 @@ class SchedulingConfiguration extends React.Component {
                             />
                         </div>
                         {errorFields && errorFields.purgeDataFrequencyDays &&
-                        <div className="col-sm-offset-3 col-sm-8">
+                        <div className="offset-sm-3 col-sm-8">
                             <p className="fieldError">{errorFields.purgeDataFrequencyDays}</p>
                         </div>}
                     </div>
 
                     <div className="form-group">
-                        <label className="col-sm-3 control-label">Purge Cron Next Run</label>
-                        <div className="col-sm-8">
+                        <label className="col-sm-4 col-form-label text-right">Purge Cron Next Run</label>
+                        <div className="d-inline-flex p-2 col-sm-8">
                             <p className="form-control-static">{this.props.purgeDataNextRun}</p>
                         </div>
                     </div>

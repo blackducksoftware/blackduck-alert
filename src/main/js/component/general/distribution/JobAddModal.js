@@ -124,7 +124,7 @@ class JobAddModal extends Component {
                 <Modal.Body>
                     <form className="form-horizontal">
                         <div className="form-group">
-                            <label className="col-sm-3 control-label">Type</label>
+                            <label className="col-sm-3 col-form-label text-right">Type</label>
                             <div className="col-sm-8">
                                 <Select
                                     id="jobAddType"

@@ -102,8 +102,19 @@ class ProjectConfiguration extends Component {
         let projectTable = null;
         if (!this.props.includeAllProjects) {
             projectTable = (<div>
-                <BootstrapTable data={projectData} containerClass="table" hover condensed selectRow={projectsSelectRowProp} search options={projectTableOptions} trClassName={assignClassName} headerContainerClass="scrollable"
-                                bodyContainerClass="projectTableScrollableBody">
+                <BootstrapTable
+                    data={projectData}
+                    containerClass="table"
+                    hover
+                    condensed
+                    selectRow={projectsSelectRowProp}
+                    search
+                    options={projectTableOptions}
+                    trClassName={assignClassName}
+                    headerContainerClass="scrollable"
+                    bodyContainerClass="projectTableScrollableBody"
+                    version='4'
+                >
                     <TableHeaderColumn dataField="name" isKey dataSort columnClassName="tableCell" dataFormat={assignDataFormat}>Project</TableHeaderColumn>
                     <TableHeaderColumn dataField="description" dataSort columnClassName="tableCell" dataFormat={assignDataFormat}>Description</TableHeaderColumn>
                     <TableHeaderColumn dataField="missing" dataFormat={assignDataFormat} hidden>Missing Project</TableHeaderColumn>

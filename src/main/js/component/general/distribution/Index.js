@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import {BootstrapTable, DeleteButton, InsertButton, ReactBsTable, TableHeaderColumn} from 'react-bootstrap-table';
+import {BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn} from 'react-bootstrap-table';
 
 import AutoRefresh from '../../common/AutoRefresh';
 import DescriptorLabel from '../../common/DescriptorLabel';
@@ -270,7 +270,7 @@ class Index extends Component {
 
 
     createCustomButtonGroup(buttons) {
-        const classes = 'btn btn-sm btn-info react-bs-table-add-btn tableButton';
+        const classes = 'btn btn-md btn-info react-bs-table-add-btn tableButton';
         const fontAwesomeIcon = 'fa fa-refresh fa-fw';
         const insertOnClick = buttons.insertBtn.props.onClick;
         const deleteOnClick = buttons.deleteBtn.props.onClick;
@@ -285,11 +285,11 @@ class Index extends Component {
         }
         return (
             <div>
-                <InsertButton className="addJobButton btn-sm" onClick={insertOnClick}>
+                <InsertButton className="addJobButton btn-md" onClick={insertOnClick}>
                     <span className="fa fa-plus"/>
                     New
                 </InsertButton>
-                <DeleteButton className="deleteJobButton btn-sm" onClick={deleteOnClick}>
+                <DeleteButton className="deleteJobButton btn-md" onClick={deleteOnClick}>
                     <span className="fa fa-trash"/>
                     Delete
                 </DeleteButton>
@@ -371,6 +371,7 @@ class Index extends Component {
                     trClassName="tableRow"
                     headerContainerClass="scrollable"
                     bodyContainerClass="tableScrollableBody"
+                    version='4'
                 >
                     <TableHeaderColumn dataField="id" isKey hidden>
                         Job Id
