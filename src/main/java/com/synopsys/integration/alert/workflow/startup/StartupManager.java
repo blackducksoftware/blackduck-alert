@@ -283,36 +283,4 @@ public class StartupManager {
     public String getLoggingLevel() {
         return loggingLevel;
     }
-
-    public String getServerPort() {
-        return serverPort;
-    }
-
-    public String getKeyStoreFile() {
-        return keyStoreFile;
-    }
-
-    public String getKeyStorePass() {
-        return keyStorePass;
-    }
-
-    public String getKeyStoreType() {
-        return keyStoreType;
-    }
-
-    public String getKeyAlias() {
-        return keyAlias;
-    }
-
-    public String getTrustStoreFile() {
-        return trustStoreFile;
-    }
-
-    public String getTrustStorePass() {
-        return trustStorePass;
-    }
-
-    public String getTrustStoreType() {
-        return trustStoreType;
-    }
 }
