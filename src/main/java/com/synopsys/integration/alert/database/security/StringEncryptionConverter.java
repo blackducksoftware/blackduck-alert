@@ -21,32 +21,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.security;
+package com.synopsys.integration.alert.database.security;
 
 import javax.persistence.AttributeConverter;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.encryption.PasswordDecrypter;
-import com.synopsys.integration.encryption.PasswordEncrypter;
-import com.synopsys.integration.exception.EncryptionException;
+import com.synopsys.integration.alert.common.security.EncryptionUtility;
 
+@Component
 public class StringEncryptionConverter implements AttributeConverter<String, String> {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+    private static EncryptionUtility encryptionUtility;
+
+    @Autowired
+    public void setEncryptionUtility(final EncryptionUtility encryptionUtility) {
+        StringEncryptionConverter.encryptionUtility = encryptionUtility;
+    }
 
     @Override
     public String convertToDatabaseColumn(final String attribute) {
         String encryptedAttribute = "";
         if (StringUtils.isNotBlank(attribute)) {
-            try {
-                encryptedAttribute = PasswordEncrypter.encrypt(attribute);
-            } catch (final EncryptionException e) {
-                logger.error("Error encrypting attribute", e);
-            }
+            encryptedAttribute = StringEncryptionConverter.encryptionUtility.encrypt(attribute);
         }
-
         return encryptedAttribute;
     }
 
@@ -54,13 +53,8 @@ public class StringEncryptionConverter implements AttributeConverter<String, Str
     public String convertToEntityAttribute(final String dbData) {
         String decryptedColumm = "";
         if (StringUtils.isNotBlank(dbData)) {
-            try {
-                decryptedColumm = PasswordDecrypter.decrypt(dbData);
-            } catch (final EncryptionException e) {
-                logger.error("Error decrypting column", e);
-            }
+            decryptedColumm = StringEncryptionConverter.encryptionUtility.decrypt(dbData);
         }
-
         return decryptedColumm;
     }
 
