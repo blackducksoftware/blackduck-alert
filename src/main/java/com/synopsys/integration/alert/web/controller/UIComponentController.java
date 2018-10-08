@@ -47,7 +47,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.enumeration.RestApiType;
+import com.synopsys.integration.alert.common.enumeration.DescriptorActionApi;
 
 @RestController
 @RequestMapping(UIComponentController.DESCRIPTOR_PATH)
@@ -68,7 +68,7 @@ public class UIComponentController extends BaseController {
             if (descriptor != null) {
                 // filter by type also
                 if (StringUtils.isNotBlank(descriptorConfigType)) {
-                    final RestApiType descriptorType = RestApiType.getRestApiType(descriptorConfigType);
+                    final DescriptorActionApi descriptorType = DescriptorActionApi.getRestApiType(descriptorConfigType);
                     final UIConfig uiConfig = descriptor.getUIConfig(descriptorType);
                     if (uiConfig != null) {
                         return Arrays.asList(uiConfig.generateUIComponent());
@@ -83,7 +83,7 @@ public class UIComponentController extends BaseController {
                 return Collections.emptyList();
             }
         } else if (StringUtils.isNotBlank(descriptorConfigType)) {
-            final RestApiType descriptorConfigTypeEnum = RestApiType.getRestApiType(descriptorConfigType);
+            final DescriptorActionApi descriptorConfigTypeEnum = DescriptorActionApi.getRestApiType(descriptorConfigType);
             return descriptorMap.getUIComponents(descriptorConfigTypeEnum);
         } else {
             return descriptorMap.getAllUIComponents();
@@ -97,8 +97,8 @@ public class UIComponentController extends BaseController {
         } else {
             final ProviderDescriptor providerDescriptor = descriptorMap.getProviderDescriptor(providerName);
             final ChannelDescriptor channelDescriptor = descriptorMap.getChannelDescriptor(channelName);
-            final UIConfig channelUIConfig = channelDescriptor.getUIConfig(RestApiType.CHANNEL_DISTRIBUTION_CONFIG);
-            final UIConfig providerUIConfig = providerDescriptor.getUIConfig(RestApiType.PROVIDER_DISTRIBUTION_CONFIG);
+            final UIConfig channelUIConfig = channelDescriptor.getUIConfig(DescriptorActionApi.CHANNEL_DISTRIBUTION_CONFIG);
+            final UIConfig providerUIConfig = providerDescriptor.getUIConfig(DescriptorActionApi.PROVIDER_DISTRIBUTION_CONFIG);
             final UIComponent channelUIComponent = channelUIConfig.generateUIComponent();
             final UIComponent providerUIComponent = providerUIConfig.generateUIComponent();
             final List<ConfigField> combinedFields = new ArrayList<>();

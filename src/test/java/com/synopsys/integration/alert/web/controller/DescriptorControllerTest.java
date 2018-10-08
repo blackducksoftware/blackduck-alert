@@ -39,7 +39,7 @@ import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.alert.Application;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
-import com.synopsys.integration.alert.common.enumeration.RestApiType;
+import com.synopsys.integration.alert.common.enumeration.DescriptorActionApi;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.test.annotation.DatabaseConnectionTest;
 import com.synopsys.integration.test.annotation.ExternalConnectionTest;
@@ -159,7 +159,7 @@ public class DescriptorControllerTest {
 
         final List<UIComponent> componentList = gson.fromJson(body, componentListType.getType());
         assertNotNull(componentList);
-        final List<UIComponent> expected = descriptorMap.getUIComponents(RestApiType.CHANNEL_GLOBAL_CONFIG);
+        final List<UIComponent> expected = descriptorMap.getUIComponents(DescriptorActionApi.CHANNEL_GLOBAL_CONFIG);
         assertEquals(expected.size(), componentList.size());
     }
 
