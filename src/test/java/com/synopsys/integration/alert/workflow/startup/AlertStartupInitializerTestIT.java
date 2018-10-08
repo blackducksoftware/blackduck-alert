@@ -16,13 +16,13 @@ import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.Environment;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.email.descriptor.EmailGlobalRestApi;
+import com.synopsys.integration.alert.channel.email.descriptor.EmailGlobalDescriptorActionApi;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailGlobalStartupComponent;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailGlobalTypeConverter;
 import com.synopsys.integration.alert.channel.email.mock.MockEmailGlobalEntity;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
-import com.synopsys.integration.alert.common.descriptor.config.RestApi;
+import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalRepository;
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalRepositoryAccessor;
 import com.synopsys.integration.alert.database.entity.EntityPropertyMapper;
@@ -41,8 +41,8 @@ public class AlertStartupInitializerTestIT {
         final EmailGlobalTypeConverter emailGlobalContentConverter = new EmailGlobalTypeConverter(contentConverter);
         final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = new EmailGlobalRepositoryAccessor(emailGlobalRepository);
         final EntityPropertyMapper entityPropertyMapper = new EntityPropertyMapper();
-        final EmailGlobalRestApi descriptorConfig = new EmailGlobalRestApi(emailGlobalContentConverter, emailGlobalRepositoryAccessor, new EmailGlobalStartupComponent(entityPropertyMapper), null);
-        final List<RestApi> restApis = Arrays.asList(descriptorConfig);
+        final EmailGlobalDescriptorActionApi descriptorConfig = new EmailGlobalDescriptorActionApi(emailGlobalContentConverter, emailGlobalRepositoryAccessor, new EmailGlobalStartupComponent(entityPropertyMapper), null);
+        final List<DescriptorActionApi> restApis = Arrays.asList(descriptorConfig);
         final DescriptorMap descriptorMap = new DescriptorMap(Arrays.asList(), Arrays.asList(), Arrays.asList(), restApis);
         final AlertStartupInitializer initializer = new AlertStartupInitializer(propertyInitializer, descriptorMap, environment, conversionService);
         initializer.initializeConfigs();
@@ -55,7 +55,7 @@ public class AlertStartupInitializerTestIT {
         final Environment environment = Mockito.mock(Environment.class);
         final ConversionService conversionService = new DefaultConversionService();
         final PropertyInitializer propertyInitializer = new PropertyInitializer();
-        final List<RestApi> restApis = Arrays.asList();
+        final List<DescriptorActionApi> restApis = Arrays.asList();
         final DescriptorMap descriptorMap = new DescriptorMap(Arrays.asList(), Arrays.asList(), Arrays.asList(), restApis);
         final AlertStartupInitializer initializer = new AlertStartupInitializer(propertyInitializer, descriptorMap, environment, conversionService);
         initializer.initializeConfigs();
@@ -73,8 +73,8 @@ public class AlertStartupInitializerTestIT {
         final EmailGlobalTypeConverter emailGlobalContentConverter = new EmailGlobalTypeConverter(contentConverter);
         final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = new EmailGlobalRepositoryAccessor(emailGlobalRepository);
         final EntityPropertyMapper entityPropertyMapper = new EntityPropertyMapper();
-        final EmailGlobalRestApi descriptorConfig = new EmailGlobalRestApi(emailGlobalContentConverter, emailGlobalRepositoryAccessor, new EmailGlobalStartupComponent(entityPropertyMapper), null);
-        final List<RestApi> restApis = Arrays.asList(descriptorConfig);
+        final EmailGlobalDescriptorActionApi descriptorConfig = new EmailGlobalDescriptorActionApi(emailGlobalContentConverter, emailGlobalRepositoryAccessor, new EmailGlobalStartupComponent(entityPropertyMapper), null);
+        final List<DescriptorActionApi> restApis = Arrays.asList(descriptorConfig);
         final DescriptorMap descriptorMap = new DescriptorMap(Arrays.asList(), Arrays.asList(), Arrays.asList(), restApis);
         final AlertStartupInitializer initializer = new AlertStartupInitializer(propertyInitializer, descriptorMap, environment, conversionService);
         initializer.initializeConfigs();
@@ -103,8 +103,8 @@ public class AlertStartupInitializerTestIT {
         final EmailGlobalTypeConverter emailGlobalContentConverter = new EmailGlobalTypeConverter(contentConverter);
         final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = new EmailGlobalRepositoryAccessor(emailGlobalRepository);
         final EntityPropertyMapper entityPropertyMapper = new EntityPropertyMapper();
-        final EmailGlobalRestApi descriptorConfig = new EmailGlobalRestApi(emailGlobalContentConverter, emailGlobalRepositoryAccessor, new EmailGlobalStartupComponent(entityPropertyMapper), null);
-        final List<RestApi> restApis = Arrays.asList(descriptorConfig);
+        final EmailGlobalDescriptorActionApi descriptorConfig = new EmailGlobalDescriptorActionApi(emailGlobalContentConverter, emailGlobalRepositoryAccessor, new EmailGlobalStartupComponent(entityPropertyMapper), null);
+        final List<DescriptorActionApi> restApis = Arrays.asList(descriptorConfig);
         final DescriptorMap descriptorMap = new DescriptorMap(Arrays.asList(), Arrays.asList(), Arrays.asList(), restApis);
         final AlertStartupInitializer initializer = new AlertStartupInitializer(propertyInitializer, descriptorMap, environment, conversionService);
         initializer.initializeConfigs();
@@ -133,8 +133,8 @@ public class AlertStartupInitializerTestIT {
         final EmailGlobalTypeConverter emailGlobalContentConverter = new EmailGlobalTypeConverter(contentConverter);
         final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = new EmailGlobalRepositoryAccessor(emailGlobalRepository);
         final EntityPropertyMapper entityPropertyMapper = new EntityPropertyMapper();
-        final EmailGlobalRestApi descriptorConfig = new EmailGlobalRestApi(emailGlobalContentConverter, emailGlobalRepositoryAccessor, new EmailGlobalStartupComponent(entityPropertyMapper), null);
-        final List<RestApi> restApis = Arrays.asList(descriptorConfig);
+        final EmailGlobalDescriptorActionApi descriptorConfig = new EmailGlobalDescriptorActionApi(emailGlobalContentConverter, emailGlobalRepositoryAccessor, new EmailGlobalStartupComponent(entityPropertyMapper), null);
+        final List<DescriptorActionApi> restApis = Arrays.asList(descriptorConfig);
         final DescriptorMap descriptorMap = new DescriptorMap(Arrays.asList(), Arrays.asList(), Arrays.asList(), restApis);
         final AlertStartupInitializer initializer = new AlertStartupInitializer(propertyInitializer, descriptorMap, environment, conversionService);
         initializer.initializeConfigs();
@@ -164,8 +164,8 @@ public class AlertStartupInitializerTestIT {
         final EmailGlobalTypeConverter emailGlobalContentConverter = new EmailGlobalTypeConverter(contentConverter);
         final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = new EmailGlobalRepositoryAccessor(emailGlobalRepository);
         final EntityPropertyMapper entityPropertyMapper = new EntityPropertyMapper();
-        final EmailGlobalRestApi descriptorConfig = new EmailGlobalRestApi(emailGlobalContentConverter, emailGlobalRepositoryAccessor, new EmailGlobalStartupComponent(entityPropertyMapper), null);
-        final List<RestApi> restApis = Arrays.asList(descriptorConfig);
+        final EmailGlobalDescriptorActionApi descriptorConfig = new EmailGlobalDescriptorActionApi(emailGlobalContentConverter, emailGlobalRepositoryAccessor, new EmailGlobalStartupComponent(entityPropertyMapper), null);
+        final List<DescriptorActionApi> restApis = Arrays.asList(descriptorConfig);
         final DescriptorMap descriptorMap = new DescriptorMap(Arrays.asList(), Arrays.asList(), Arrays.asList(), restApis);
         final AlertStartupInitializer initializer = new AlertStartupInitializer(propertyInitializer, descriptorMap, environment, conversionService);
 
@@ -187,8 +187,8 @@ public class AlertStartupInitializerTestIT {
         final EmailGlobalTypeConverter emailGlobalContentConverter = new EmailGlobalTypeConverter(contentConverter);
         final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = new EmailGlobalRepositoryAccessor(emailGlobalRepository);
         final EntityPropertyMapper entityPropertyMapper = new EntityPropertyMapper();
-        final EmailGlobalRestApi descriptorConfig = new EmailGlobalRestApi(emailGlobalContentConverter, emailGlobalRepositoryAccessor, new EmailGlobalStartupComponent(entityPropertyMapper), null);
-        final List<RestApi> restApis = Arrays.asList(descriptorConfig);
+        final EmailGlobalDescriptorActionApi descriptorConfig = new EmailGlobalDescriptorActionApi(emailGlobalContentConverter, emailGlobalRepositoryAccessor, new EmailGlobalStartupComponent(entityPropertyMapper), null);
+        final List<DescriptorActionApi> restApis = Arrays.asList(descriptorConfig);
         final DescriptorMap descriptorMap = new DescriptorMap(Arrays.asList(), Arrays.asList(), Arrays.asList(), restApis);
         final AlertStartupInitializer initializer = new AlertStartupInitializer(propertyInitializer, descriptorMap, environment, conversionService);
         initializer.initializeConfigs();
@@ -205,8 +205,8 @@ public class AlertStartupInitializerTestIT {
         final EmailGlobalTypeConverter emailGlobalContentConverter = new EmailGlobalTypeConverter(contentConverter);
         final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = new EmailGlobalRepositoryAccessor(emailGlobalRepository);
         final EntityPropertyMapper entityPropertyMapper = new EntityPropertyMapper();
-        final EmailGlobalRestApi descriptorConfig = new EmailGlobalRestApi(emailGlobalContentConverter, emailGlobalRepositoryAccessor, new EmailGlobalStartupComponent(entityPropertyMapper), null);
-        final List<RestApi> restApis = Arrays.asList(descriptorConfig);
+        final EmailGlobalDescriptorActionApi descriptorConfig = new EmailGlobalDescriptorActionApi(emailGlobalContentConverter, emailGlobalRepositoryAccessor, new EmailGlobalStartupComponent(entityPropertyMapper), null);
+        final List<DescriptorActionApi> restApis = Arrays.asList(descriptorConfig);
         final DescriptorMap descriptorMap = new DescriptorMap(Arrays.asList(), Arrays.asList(), Arrays.asList(), restApis);
         final AlertStartupInitializer initializer = new AlertStartupInitializer(propertyInitializer, descriptorMap, environment, conversionService);
         initializer.initializeConfigs();
@@ -236,8 +236,8 @@ public class AlertStartupInitializerTestIT {
         final EmailGlobalTypeConverter emailGlobalContentConverter = new EmailGlobalTypeConverter(contentConverter);
         final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = new EmailGlobalRepositoryAccessor(emailGlobalRepository);
         final EntityPropertyMapper entityPropertyMapper = new EntityPropertyMapper();
-        final EmailGlobalRestApi descriptorConfig = new EmailGlobalRestApi(emailGlobalContentConverter, emailGlobalRepositoryAccessor, new EmailGlobalStartupComponent(entityPropertyMapper), null);
-        final List<RestApi> restApis = Arrays.asList(descriptorConfig);
+        final EmailGlobalDescriptorActionApi descriptorConfig = new EmailGlobalDescriptorActionApi(emailGlobalContentConverter, emailGlobalRepositoryAccessor, new EmailGlobalStartupComponent(entityPropertyMapper), null);
+        final List<DescriptorActionApi> restApis = Arrays.asList(descriptorConfig);
         final DescriptorMap descriptorMap = new DescriptorMap(Arrays.asList(), Arrays.asList(), Arrays.asList(), restApis);
         final AlertStartupInitializer initializer = new AlertStartupInitializer(propertyInitializer, descriptorMap, environment, conversionService);
         initializer.initializeConfigs();

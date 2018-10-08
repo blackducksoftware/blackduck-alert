@@ -21,42 +21,43 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.email.descriptor;
+package com.synopsys.integration.alert.channel.hipchat.descriptor;
 
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.email.EmailChannelEvent;
-import com.synopsys.integration.alert.channel.email.EmailEventProducer;
-import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
-import com.synopsys.integration.alert.common.descriptor.config.RestApi;
-import com.synopsys.integration.alert.database.channel.email.EmailDistributionRepositoryAccessor;
-import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
+import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
+import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
+import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalRepositoryAccessor;
+import com.synopsys.integration.alert.web.channel.model.HipChatGlobalConfig;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class EmailDistributionRestApi extends RestApi {
-    private final EmailGroupChannel emailGroupChannel;
-    private final EmailEventProducer emailEventProducer;
+public class HipChatGlobalDescriptorActionApi extends DescriptorActionApi {
+    private final HipChatChannel hipChatChannel;
 
     @Autowired
-    public EmailDistributionRestApi(final EmailDistributionTypeConverter databaseContentConverter, final EmailDistributionRepositoryAccessor repositoryAccessor, final EmailGroupChannel emailGroupChannel,
-        final EmailEventProducer emailEventProducer) {
-        super(databaseContentConverter, repositoryAccessor);
-        this.emailGroupChannel = emailGroupChannel;
-        this.emailEventProducer = emailEventProducer;
+    public HipChatGlobalDescriptorActionApi(final HipChatGlobalTypeConverter databaseContentConverter, final HipChatGlobalRepositoryAccessor repositoryAccessor, final HipChatChannel hipChatChannel,
+        final HipChatStartupComponent hipChatStartupComponent) {
+        super(databaseContentConverter, repositoryAccessor, hipChatStartupComponent);
+        this.hipChatChannel = hipChatChannel;
     }
 
     @Override
     public void validateConfig(final Config restModel, final Map<String, String> fieldErrors) {
+        final HipChatGlobalConfig hipChatRestModel = (HipChatGlobalConfig) restModel;
+        if (StringUtils.isBlank(hipChatRestModel.getApiKey())) {
+            fieldErrors.put("apiKey", "ApiKey can't be blank");
+        }
     }
 
     @Override
     public void testConfig(final Config restModel) throws IntegrationException {
-        final EmailChannelEvent event = emailEventProducer.createChannelTestEvent((CommonDistributionConfig) restModel);
-        emailGroupChannel.sendAuditedMessage(event);
+        hipChatChannel.testGlobalConfig(restModel);
     }
+
 }
