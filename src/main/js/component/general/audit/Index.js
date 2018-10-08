@@ -345,6 +345,7 @@ class Index extends Component {
                 </h1>
                 <div>
                     <BootstrapTable
+                        version='4'
                         trClassName={this.trClassFormat}
                         condensed
                         data={this.state.entries}
@@ -358,7 +359,6 @@ class Index extends Component {
                         remote
                         pagination
                         search
-                        version='4'
                     >
                         <TableHeaderColumn dataField="name" dataSort columnTitle columnClassName="tableCell">Job Name</TableHeaderColumn>
                         <TableHeaderColumn dataField="notificationProviderName" dataSort columnTitle columnClassName="tableCell" dataFormat={this.providerColumnDataFormat}>Provider Name</TableHeaderColumn>

@@ -359,6 +359,7 @@ class Index extends Component {
         let content = (
             <div>
                 <BootstrapTable
+                    version='4'
                     hover
                     condensed
                     data={this.state.jobs}
@@ -371,7 +372,6 @@ class Index extends Component {
                     trClassName="tableRow"
                     headerContainerClass="scrollable"
                     bodyContainerClass="tableScrollableBody"
-                    version='4'
                 >
                     <TableHeaderColumn dataField="id" isKey hidden>
                         Job Id
