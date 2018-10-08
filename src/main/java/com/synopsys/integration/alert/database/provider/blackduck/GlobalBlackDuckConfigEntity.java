@@ -30,7 +30,7 @@ import javax.persistence.Table;
 
 import com.synopsys.integration.alert.common.annotation.SensitiveField;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
-import com.synopsys.integration.alert.web.security.StringEncryptionConverter;
+import com.synopsys.integration.alert.database.security.StringEncryptionConverter;
 
 @Entity
 @Table(schema = "alert", name = "global_blackduck_config")
