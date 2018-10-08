@@ -62,6 +62,12 @@ public class AlertProperties {
     @Value("${alert.proxy.password:}")
     private String alertProxyPassword;
 
+    @Value("${alert.encryption.password:}")
+    private String alertEncryptionPassword;
+
+    @Value("${alert.encryption.static.salt:}")
+    private String alertEncryptionStaticSalt;
+
     public String getAlertConfigHome() {
         return StringUtils.trimToNull(alertConfigHome);
     }
@@ -92,6 +98,14 @@ public class AlertProperties {
 
     public Optional<String> getAlertProxyPassword() {
         return getOptionalString(alertProxyPassword);
+    }
+
+    public Optional<String> getAlertEncryptionPassword() {
+        return getOptionalString(alertEncryptionPassword);
+    }
+
+    public Optional<String> getAlertEncryptionStaticSalt() {
+        return getOptionalString(alertEncryptionStaticSalt);
     }
 
     private Optional<String> getOptionalString(final String value) {

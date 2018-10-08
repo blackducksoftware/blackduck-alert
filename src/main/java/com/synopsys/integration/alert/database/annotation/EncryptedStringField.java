@@ -31,7 +31,7 @@ import java.lang.annotation.Target;
 import javax.persistence.Convert;
 
 import com.synopsys.integration.alert.common.annotation.SensitiveField;
-import com.synopsys.integration.alert.web.security.StringEncryptionConverter;
+import com.synopsys.integration.alert.database.security.StringEncryptionConverter;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
