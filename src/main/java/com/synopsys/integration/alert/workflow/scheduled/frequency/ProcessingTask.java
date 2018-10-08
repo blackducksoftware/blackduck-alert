@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
 
 import com.synopsys.integration.alert.channel.ChannelTemplateManager;
-import com.synopsys.integration.alert.channel.event.ChannelEvent;
+import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.model.DateRange;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
@@ -78,7 +78,7 @@ public abstract class ProcessingTask extends ScheduledTask {
         logger.info("{} Task Started...", taskName);
         final DateRange dateRange = getDateRange();
         final List<NotificationContent> modelList = read(dateRange);
-        final List<ChannelEvent> eventList = process(modelList);
+        final List<DistributionEvent> eventList = process(modelList);
         channelTemplateManager.sendEvents(eventList);
         lastRunTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
         logger.info("{} Task Finished", taskName);
@@ -104,7 +104,7 @@ public abstract class ProcessingTask extends ScheduledTask {
         return Collections.emptyList();
     }
 
-    public List<ChannelEvent> process(final List<NotificationContent> notificationList) {
+    public List<DistributionEvent> process(final List<NotificationContent> notificationList) {
         logger.info("Notifications to Process: {}", notificationList.size());
         if (notificationList.isEmpty()) {
             return Collections.emptyList();

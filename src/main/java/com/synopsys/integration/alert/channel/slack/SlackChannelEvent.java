@@ -23,10 +23,10 @@
  */
 package com.synopsys.integration.alert.channel.slack;
 
-import com.synopsys.integration.alert.channel.event.ChannelEvent;
+import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 
-public class SlackChannelEvent extends ChannelEvent {
+public class SlackChannelEvent extends DistributionEvent {
     private final String channelUsername;
     private final String webHook;
     private final String channelName;

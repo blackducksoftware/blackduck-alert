@@ -23,10 +23,10 @@
  */
 package com.synopsys.integration.alert.channel.hipchat;
 
-import com.synopsys.integration.alert.channel.event.ChannelEvent;
+import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 
-public class HipChatChannelEvent extends ChannelEvent {
+public class HipChatChannelEvent extends DistributionEvent {
     private final Integer roomId;
     private final Boolean notify;
     private final String color;

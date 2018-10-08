@@ -29,7 +29,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.synopsys.integration.alert.Application;
 import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
 import com.synopsys.integration.alert.channel.email.mock.MockEmailEntity;
-import com.synopsys.integration.alert.channel.event.ChannelEvent;
+import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.channel.event.NotificationToChannelEventConverter;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.channel.hipchat.mock.MockHipChatEntity;
@@ -137,8 +137,8 @@ public class NotificationToChannelEventConverterTest {
         final List<NotificationContent> notificationModels = Arrays.asList(notificationModel);
 
         final Map<? extends CommonDistributionConfig, List<AggregateMessageContent>> jobNotifications = messageContentAggregator.processNotifications(FrequencyType.DAILY, notificationModels);
-        final List<ChannelEvent> channelEvents = notificationToEventConverter.convertToEvents(jobNotifications);
-        assertTrue(channelEvents.isEmpty());
+        final List<DistributionEvent> distributionEvents = notificationToEventConverter.convertToEvents(jobNotifications);
+        assertTrue(distributionEvents.isEmpty());
     }
 
     @Test
@@ -151,10 +151,10 @@ public class NotificationToChannelEventConverterTest {
         final List<NotificationContent> notificationModels = Arrays.asList(notification_1, notification_2, notification_3);
 
         final Map<? extends CommonDistributionConfig, List<AggregateMessageContent>> jobNotifications = messageContentAggregator.processNotifications(FrequencyType.REAL_TIME, notificationModels);
-        final List<ChannelEvent> channelEvents = notificationToEventConverter.convertToEvents(jobNotifications);
-        //assertEquals(configEntityList.size() * filteredNotifications.size(), channelEvents.size());
+        final List<DistributionEvent> distributionEvents = notificationToEventConverter.convertToEvents(jobNotifications);
+        //assertEquals(configEntityList.size() * filteredNotifications.size(), distributionEvents.size());
 
-        channelEvents.forEach(event -> {
+        distributionEvents.forEach(event -> {
             assertNotNull(event.getContent());
         });
     }
