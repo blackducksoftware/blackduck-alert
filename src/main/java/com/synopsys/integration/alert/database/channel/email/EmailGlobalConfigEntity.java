@@ -24,6 +24,7 @@
 package com.synopsys.integration.alert.database.channel.email;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -47,6 +48,7 @@ public class EmailGlobalConfigEntity extends GlobalChannelConfigEntity {
     // @EncryptedStringField
     @Column(name = "mail_smtp_password")
     @SensitiveField
+    @Convert(converter = EmailSmtpPasswordConverter.class)
     private String mailSmtpPassword;
 
     @Column(name = "mail_smtp_port")

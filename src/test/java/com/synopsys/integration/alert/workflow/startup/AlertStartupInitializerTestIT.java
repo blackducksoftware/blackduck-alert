@@ -44,7 +44,7 @@ public class AlertStartupInitializerTestIT {
         final PropertyInitializer propertyInitializer = new PropertyInitializer();
         final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
         final EmailGlobalTypeConverter emailGlobalContentConverter = new EmailGlobalTypeConverter(contentConverter);
-        final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = new EmailGlobalRepositoryAccessor(emailGlobalRepository, encryptionUtility);
+        final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = new EmailGlobalRepositoryAccessor(emailGlobalRepository);
         final EntityPropertyMapper entityPropertyMapper = new EntityPropertyMapper();
         final EmailGlobalRestApi descriptorConfig = new EmailGlobalRestApi(emailGlobalContentConverter, emailGlobalRepositoryAccessor, new EmailGlobalStartupComponent(entityPropertyMapper), null);
         final List<RestApi> restApis = Arrays.asList(descriptorConfig);
@@ -79,7 +79,7 @@ public class AlertStartupInitializerTestIT {
         final PropertyInitializer propertyInitializer = new PropertyInitializer();
         final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
         final EmailGlobalTypeConverter emailGlobalContentConverter = new EmailGlobalTypeConverter(contentConverter);
-        final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = new EmailGlobalRepositoryAccessor(emailGlobalRepository, encryptionUtility);
+        final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = new EmailGlobalRepositoryAccessor(emailGlobalRepository);
         final EntityPropertyMapper entityPropertyMapper = new EntityPropertyMapper();
         final EmailGlobalRestApi descriptorConfig = new EmailGlobalRestApi(emailGlobalContentConverter, emailGlobalRepositoryAccessor, new EmailGlobalStartupComponent(entityPropertyMapper), null);
         final List<RestApi> restApis = Arrays.asList(descriptorConfig);
@@ -112,7 +112,7 @@ public class AlertStartupInitializerTestIT {
         final PropertyInitializer propertyInitializer = new PropertyInitializer();
         final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
         final EmailGlobalTypeConverter emailGlobalContentConverter = new EmailGlobalTypeConverter(contentConverter);
-        final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = new EmailGlobalRepositoryAccessor(emailGlobalRepository, encryptionUtility);
+        final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = new EmailGlobalRepositoryAccessor(emailGlobalRepository);
         final EntityPropertyMapper entityPropertyMapper = new EntityPropertyMapper();
         final EmailGlobalRestApi descriptorConfig = new EmailGlobalRestApi(emailGlobalContentConverter, emailGlobalRepositoryAccessor, new EmailGlobalStartupComponent(entityPropertyMapper), null);
         final List<RestApi> restApis = Arrays.asList(descriptorConfig);
@@ -145,7 +145,7 @@ public class AlertStartupInitializerTestIT {
         final PropertyInitializer propertyInitializer = new PropertyInitializer();
         final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
         final EmailGlobalTypeConverter emailGlobalContentConverter = new EmailGlobalTypeConverter(contentConverter);
-        final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = new EmailGlobalRepositoryAccessor(emailGlobalRepository, encryptionUtility);
+        final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = new EmailGlobalRepositoryAccessor(emailGlobalRepository);
         final EntityPropertyMapper entityPropertyMapper = new EntityPropertyMapper();
         final EmailGlobalRestApi descriptorConfig = new EmailGlobalRestApi(emailGlobalContentConverter, emailGlobalRepositoryAccessor, new EmailGlobalStartupComponent(entityPropertyMapper), null);
         final List<RestApi> restApis = Arrays.asList(descriptorConfig);
@@ -179,7 +179,7 @@ public class AlertStartupInitializerTestIT {
         final PropertyInitializer propertyInitializer = new PropertyInitializer();
         final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
         final EmailGlobalTypeConverter emailGlobalContentConverter = new EmailGlobalTypeConverter(contentConverter);
-        final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = new EmailGlobalRepositoryAccessor(emailGlobalRepository, encryptionUtility);
+        final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = new EmailGlobalRepositoryAccessor(emailGlobalRepository);
         final EntityPropertyMapper entityPropertyMapper = new EntityPropertyMapper();
         final EmailGlobalRestApi descriptorConfig = new EmailGlobalRestApi(emailGlobalContentConverter, emailGlobalRepositoryAccessor, new EmailGlobalStartupComponent(entityPropertyMapper), null);
         final List<RestApi> restApis = Arrays.asList(descriptorConfig);
@@ -205,7 +205,7 @@ public class AlertStartupInitializerTestIT {
         final PropertyInitializer propertyInitializer = new PropertyInitializer();
         final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
         final EmailGlobalTypeConverter emailGlobalContentConverter = new EmailGlobalTypeConverter(contentConverter);
-        final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = new EmailGlobalRepositoryAccessor(emailGlobalRepository, encryptionUtility);
+        final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = new EmailGlobalRepositoryAccessor(emailGlobalRepository);
         final EntityPropertyMapper entityPropertyMapper = new EntityPropertyMapper();
         final EmailGlobalRestApi descriptorConfig = new EmailGlobalRestApi(emailGlobalContentConverter, emailGlobalRepositoryAccessor, new EmailGlobalStartupComponent(entityPropertyMapper), null);
         final List<RestApi> restApis = Arrays.asList(descriptorConfig);
@@ -226,7 +226,7 @@ public class AlertStartupInitializerTestIT {
         final PropertyInitializer propertyInitializer = new PropertyInitializer();
         final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
         final EmailGlobalTypeConverter emailGlobalContentConverter = new EmailGlobalTypeConverter(contentConverter);
-        final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = new EmailGlobalRepositoryAccessor(emailGlobalRepository, encryptionUtility);
+        final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = new EmailGlobalRepositoryAccessor(emailGlobalRepository);
         final EntityPropertyMapper entityPropertyMapper = new EntityPropertyMapper();
         final EmailGlobalRestApi descriptorConfig = new EmailGlobalRestApi(emailGlobalContentConverter, emailGlobalRepositoryAccessor, new EmailGlobalStartupComponent(entityPropertyMapper), null);
         final List<RestApi> restApis = Arrays.asList(descriptorConfig);
@@ -260,7 +260,7 @@ public class AlertStartupInitializerTestIT {
         final PropertyInitializer propertyInitializer = new PropertyInitializer();
         final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
         final EmailGlobalTypeConverter emailGlobalContentConverter = new EmailGlobalTypeConverter(contentConverter);
-        final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = new EmailGlobalRepositoryAccessor(emailGlobalRepository, encryptionUtility);
+        final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = new EmailGlobalRepositoryAccessor(emailGlobalRepository);
         final EntityPropertyMapper entityPropertyMapper = new EntityPropertyMapper();
         final EmailGlobalRestApi descriptorConfig = new EmailGlobalRestApi(emailGlobalContentConverter, emailGlobalRepositoryAccessor, new EmailGlobalStartupComponent(entityPropertyMapper), null);
         final List<RestApi> restApis = Arrays.asList(descriptorConfig);

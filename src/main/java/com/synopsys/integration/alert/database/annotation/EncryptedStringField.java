@@ -31,12 +31,12 @@ import java.lang.annotation.Target;
 import javax.persistence.Convert;
 
 import com.synopsys.integration.alert.common.annotation.SensitiveField;
-import com.synopsys.integration.alert.common.annotation.StringEncryptionConverter;
+import com.synopsys.integration.alert.database.security.StringEncryptionConverter;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 @SensitiveField
 @Convert(converter = StringEncryptionConverter.class)
 public @interface EncryptedStringField {
-
+    String fieldKey() default "";
 }
