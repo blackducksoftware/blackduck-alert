@@ -29,11 +29,11 @@ class AboutInfo extends React.Component {
         return (
             <div className="form-group">
                 <BootstrapTable
+                    version='4'
                     data={tableData}
                     options={tableOptions}
                     headerContainerClass="scrollable"
                     bodyContainerClass="scrollable"
-                    version='4'
                 >
                     <TableHeaderColumn dataField="fontAwesomeIcon" className="iconTableRow" columnClassName="iconTableRow" dataFormat={this.iconColumnRenderer}>
                     </TableHeaderColumn>

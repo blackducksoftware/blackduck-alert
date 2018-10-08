@@ -103,6 +103,7 @@ class ProjectConfiguration extends Component {
         if (!this.props.includeAllProjects) {
             projectTable = (<div>
                 <BootstrapTable
+                    version='4'
                     data={projectData}
                     containerClass="table"
                     hover
@@ -113,7 +114,6 @@ class ProjectConfiguration extends Component {
                     trClassName={assignClassName}
                     headerContainerClass="scrollable"
                     bodyContainerClass="projectTableScrollableBody"
-                    version='4'
                 >
                     <TableHeaderColumn dataField="name" isKey dataSort columnClassName="tableCell" dataFormat={assignDataFormat}>Project</TableHeaderColumn>
                     <TableHeaderColumn dataField="description" dataSort columnClassName="tableCell" dataFormat={assignDataFormat}>Description</TableHeaderColumn>
