@@ -33,7 +33,7 @@ public class SchedulingDescriptor extends ComponentDescriptor {
     public static final String SCHEDULING_COMPONENT = "component_scheduling";
 
     @Autowired
-    public SchedulingDescriptor(final SchedulingRestApi componentRestApi, final SchedulingUIConfig schedulingUIConfig) {
+    public SchedulingDescriptor(final SchedulingDescriptorActionApi componentRestApi, final SchedulingUIConfig schedulingUIConfig) {
         super(SCHEDULING_COMPONENT, componentRestApi, schedulingUIConfig);
     }
 

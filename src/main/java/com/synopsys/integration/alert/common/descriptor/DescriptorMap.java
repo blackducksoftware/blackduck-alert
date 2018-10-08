@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.config.RestApi;
+import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
 import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
 import com.synopsys.integration.alert.common.enumeration.ActionApiType;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -43,10 +43,10 @@ public class DescriptorMap {
     private final Map<String, ChannelDescriptor> channelDescriptorMap;
     private final Map<String, ProviderDescriptor> providerDescriptorMap;
     private final Map<String, ComponentDescriptor> componentDescriptorMap;
-    private final List<RestApi> restApis;
+    private final List<DescriptorActionApi> restApis;
 
     @Autowired
-    public DescriptorMap(final List<ChannelDescriptor> channelDescriptors, final List<ProviderDescriptor> providerDescriptors, final List<ComponentDescriptor> componentDescriptors, final List<RestApi> restApis)
+    public DescriptorMap(final List<ChannelDescriptor> channelDescriptors, final List<ProviderDescriptor> providerDescriptors, final List<ComponentDescriptor> componentDescriptors, final List<DescriptorActionApi> restApis)
         throws AlertException {
         this.restApis = restApis;
         descriptorMap = new HashMap<>(channelDescriptors.size() + providerDescriptors.size());
@@ -68,10 +68,10 @@ public class DescriptorMap {
         return descriptorMapping;
     }
 
-    public List<RestApi> getStartupRestApis() {
+    public List<DescriptorActionApi> getStartupRestApis() {
         return restApis
                    .stream()
-                   .filter(RestApi::hasStartupProperties)
+                   .filter(DescriptorActionApi::hasStartupProperties)
                    .collect(Collectors.toList());
     }
 
@@ -105,7 +105,7 @@ public class DescriptorMap {
                    .collect(Collectors.toList());
     }
 
-    public List<RestApi> getAllDescriptorConfigs() {
+    public List<DescriptorActionApi> getAllDescriptorConfigs() {
         return restApis;
     }
 
