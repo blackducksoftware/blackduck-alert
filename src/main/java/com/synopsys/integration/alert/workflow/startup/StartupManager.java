@@ -119,7 +119,7 @@ public class StartupManager {
     @Transactional
     public void startup() {
         logger.info("Alert Starting...");
-        checkEncryptionPassword();
+        checkEncryptionProperties();
         initializeChannelPropertyManagers();
         logConfiguration();
         listProperties();
@@ -128,8 +128,9 @@ public class StartupManager {
         initializeProviders();
     }
 
-    public void checkEncryptionPassword() {
+    public void checkEncryptionProperties() {
         alertProperties.getAlertEncryptionPassword().orElseThrow(() -> new IllegalArgumentException("Encryption password not configured"));
+        alertProperties.getAlertEncryptionStaticSalt().orElseThrow(() -> new IllegalArgumentException("Encryption salt not configured"));
     }
 
     public void initializeChannelPropertyManagers() {
