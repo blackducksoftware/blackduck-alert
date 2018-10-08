@@ -21,43 +21,39 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.channel.hipchat;
+package com.synopsys.integration.alert.database.security;
 
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.synopsys.integration.alert.common.annotation.SensitiveField;
-import com.synopsys.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
+import com.synopsys.integration.alert.database.entity.BaseEntity;
 
 @Entity
-@Table(schema = "alert", name = "global_hipchat_config")
-public class HipChatGlobalConfigEntity extends GlobalChannelConfigEntity {
+@Table(schema = "alert", name = "salt_mapping")
+public class SaltMappingEntity extends BaseEntity {
 
-    // @EncryptedStringField
-    @Column(name = "api_key")
-    @SensitiveField
-    @Convert(converter = HipChatApiTokenConverter.class)
-    private String apiKey;
+    @Id
+    @Column(name = "property_key")
+    private String propertyKey;
+    @Column(name = "property_salt")
+    private String salt;
 
-    @Column(name = "host_server")
-    private String hostServer;
-
-    public HipChatGlobalConfigEntity() {
+    public SaltMappingEntity() {
+        // JPA requires default constructor definitions
     }
 
-    public HipChatGlobalConfigEntity(final String apiKey, final String hostServer) {
-        this.apiKey = apiKey;
-        this.hostServer = hostServer;
+    public SaltMappingEntity(final String propertyKey, final String salt) {
+        this.propertyKey = propertyKey;
+        this.salt = salt;
     }
 
-    public String getApiKey() {
-        return apiKey;
+    public String getPropertyKey() {
+        return propertyKey;
     }
 
-    public String getHostServer() {
-        return hostServer;
+    public String getSalt() {
+        return salt;
     }
-
 }

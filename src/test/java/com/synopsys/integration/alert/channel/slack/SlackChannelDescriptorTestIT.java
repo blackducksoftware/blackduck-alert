@@ -20,11 +20,10 @@ import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
 import com.synopsys.integration.alert.database.channel.slack.SlackDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
-import com.synopsys.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
 import com.synopsys.integration.alert.mock.model.MockRestModelUtil;
 import com.synopsys.integration.alert.web.channel.model.SlackDistributionConfig;
 
-public class SlackChannelDescriptorTestIT extends DescriptorTestConfigTest<SlackDistributionConfig, SlackDistributionConfigEntity, GlobalChannelConfigEntity, SlackEventProducer> {
+public class SlackChannelDescriptorTestIT extends DescriptorTestConfigTest<SlackDistributionConfig, SlackEventProducer> {
     @Autowired
     private SlackDistributionRepositoryAccessor slackDistributionRepositoryAccessor;
     @Autowired

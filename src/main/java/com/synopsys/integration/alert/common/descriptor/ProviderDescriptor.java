@@ -23,9 +23,8 @@
  */
 package com.synopsys.integration.alert.common.descriptor;
 
+import java.util.Objects;
 import java.util.Set;
-
-import javax.validation.constraints.NotNull;
 
 import com.synopsys.integration.alert.common.descriptor.config.RestApi;
 import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
@@ -38,8 +37,9 @@ import com.synopsys.integration.alert.common.workflow.processor.MessageContentCo
 public abstract class ProviderDescriptor extends Descriptor {
     private final Provider provider;
 
-    public ProviderDescriptor(final RestApi providerRestApi, final UIConfig providerUiConfig, final RestApi distributionRestApi, final ProviderUIConfig distributionUIConfig, @NotNull final Provider provider) {
+    public ProviderDescriptor(final RestApi providerRestApi, final UIConfig providerUiConfig, final RestApi distributionRestApi, final ProviderUIConfig distributionUIConfig, final Provider provider) {
         super(provider.getName(), DescriptorType.PROVIDER);
+        Objects.requireNonNull(provider);
         this.provider = provider;
         addProviderUiConfigs(providerRestApi, providerUiConfig);
         addProviderDistributionUiConfigs(distributionRestApi, distributionUIConfig);

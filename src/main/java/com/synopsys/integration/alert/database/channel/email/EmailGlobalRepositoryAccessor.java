@@ -44,5 +44,4 @@ public class EmailGlobalRepositoryAccessor extends RepositoryAccessor {
         final EmailGlobalConfigEntity emailEntity = (EmailGlobalConfigEntity) entity;
         return repository.save(emailEntity);
     }
-
 }

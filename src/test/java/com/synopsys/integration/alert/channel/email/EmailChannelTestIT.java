@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -14,7 +15,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.OutputLogger;
 import com.synopsys.integration.alert.TestAlertProperties;
 import com.synopsys.integration.alert.TestBlackDuckProperties;
 import com.synopsys.integration.alert.TestPropertyKey;
@@ -23,8 +23,10 @@ import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.audit.AuditUtility;
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalConfigEntity;
+import com.synopsys.integration.alert.database.channel.email.EmailGlobalRepositoryAccessor;
+import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckRepositoryAccessor;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.test.annotation.ExternalConnectionTest;
@@ -35,13 +37,14 @@ public class EmailChannelTestIT extends ChannelTest {
     @Category(ExternalConnectionTest.class)
     public void sendEmailTest() throws Exception {
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
-        final GlobalBlackDuckRepository globalRepository = Mockito.mock(GlobalBlackDuckRepository.class);
+        final BlackDuckRepositoryAccessor blackDuckRepositoryAccessor = Mockito.mock(BlackDuckRepositoryAccessor.class);
 
         final GlobalBlackDuckConfigEntity globalConfig = new GlobalBlackDuckConfigEntity(300, properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY), properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
-        Mockito.when(globalRepository.findAll()).thenReturn(Arrays.asList(globalConfig));
+        final List<DatabaseEntity> globalConfigList = Arrays.asList(globalConfig);
+        Mockito.when(blackDuckRepositoryAccessor.readEntities()).thenAnswer(invocation -> globalConfigList);
 
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(globalRepository, testAlertProperties);
+        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(blackDuckRepositoryAccessor, testAlertProperties);
         globalProperties.setBlackDuckUrl(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
 
         final String trustCert = properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TRUST_HTTPS_CERT);
@@ -75,9 +78,11 @@ public class EmailChannelTestIT extends ChannelTest {
     }
 
     @Test
-    public void sendEmailNullGlobalTest() throws Exception {
-        try (final OutputLogger outputLogger = new OutputLogger()) {
-            final EmailGroupChannel emailChannel = new EmailGroupChannel(gson, null, null, null, null);
+    public void sendEmailNullGlobalTest() {
+        try {
+            final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = Mockito.mock(EmailGlobalRepositoryAccessor.class);
+            Mockito.when(emailGlobalRepositoryAccessor.readEntities()).thenAnswer(invocation -> Collections.emptyList());
+            final EmailGroupChannel emailChannel = new EmailGroupChannel(gson, null, null, null, emailGlobalRepositoryAccessor);
             final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
             final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
             final EmailChannelEvent event = new EmailChannelEvent(RestConstants.formatDate(new Date()), "provider", "FORMAT",

@@ -13,9 +13,9 @@ package com.synopsys.integration.alert.channel;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -31,7 +31,7 @@ import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.audit.AuditUtility;
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalConfigEntity;
-import com.synopsys.integration.alert.database.channel.email.EmailGlobalRepository;
+import com.synopsys.integration.alert.database.channel.email.EmailGlobalRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
@@ -43,12 +43,13 @@ public class DistributionChannelTest extends ChannelTest {
     public void getGlobalConfigEntityTest() {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final BlackDuckProperties hubProperties = new TestBlackDuckProperties(testAlertProperties);
-        final EmailGlobalRepository emailGlobalRepository = Mockito.mock(EmailGlobalRepository.class);
+        final EmailGlobalRepositoryAccessor emailGlobalRepository = Mockito.mock(EmailGlobalRepositoryAccessor.class);
         final EmailGroupChannel channel = new EmailGroupChannel(gson, testAlertProperties, hubProperties, null, emailGlobalRepository);
 
         final MockEmailGlobalEntity mockEntity = new MockEmailGlobalEntity();
         final EmailGlobalConfigEntity entity = mockEntity.createGlobalEntity();
-        Mockito.when(emailGlobalRepository.findAll()).thenReturn(Arrays.asList(entity));
+        final List<EmailGlobalConfigEntity> entityList = Collections.singletonList(entity);
+        Mockito.when(emailGlobalRepository.readEntities()).thenAnswer(invocation -> entityList);
 
         final EmailGlobalConfigEntity globalEntity = channel.getGlobalConfigEntity();
         assertEquals(entity, globalEntity);
@@ -59,9 +60,9 @@ public class DistributionChannelTest extends ChannelTest {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final BlackDuckProperties hubProperties = new TestBlackDuckProperties(testAlertProperties);
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
-        final EmailGlobalRepository emailGlobalRepository = Mockito.mock(EmailGlobalRepository.class);
+        final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor = Mockito.mock(EmailGlobalRepositoryAccessor.class);
 
-        final EmailGroupChannel channel = new EmailGroupChannel(gson, testAlertProperties, hubProperties, auditUtility, emailGlobalRepository);
+        final EmailGroupChannel channel = new EmailGroupChannel(gson, testAlertProperties, hubProperties, auditUtility, emailGlobalRepositoryAccessor);
         final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "Distribution Channel Test", null, subTopic, Collections.emptyList());
 

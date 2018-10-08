@@ -17,7 +17,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.Date;
@@ -38,7 +37,8 @@ import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.audit.AuditUtility;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
+import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalRepositoryAccessor;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckRepositoryAccessor;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.LogLevel;
@@ -56,8 +56,8 @@ public class HipChatChannelTest extends ChannelTest {
     @Category(ExternalConnectionTest.class)
     public void sendMessageTestIT() throws IOException, IntegrationException {
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
-        final GlobalBlackDuckRepository mockedGlobalRepository = Mockito.mock(GlobalBlackDuckRepository.class);
-        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(mockedGlobalRepository, new TestAlertProperties());
+        final BlackDuckRepositoryAccessor mockedBlackDuckRepositoryAccessor = Mockito.mock(BlackDuckRepositoryAccessor.class);
+        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(mockedBlackDuckRepositoryAccessor, new TestAlertProperties());
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties);
         HipChatChannel hipChatChannel = new HipChatChannel(gson, testAlertProperties, globalProperties, auditUtility, null, channelRestConnectionFactory);
@@ -80,13 +80,14 @@ public class HipChatChannelTest extends ChannelTest {
 
     @Test
     public void createRequestThrowsExceptionWhenRoomIdIsNullTest() {
-        final HipChatChannel hipChatChannel = new HipChatChannel(gson, null, null, null, null, null);
+        final HipChatGlobalRepositoryAccessor hipChatGlobalRepositoryAccessor = Mockito.mock(HipChatGlobalRepositoryAccessor.class);
+        Mockito.when(hipChatGlobalRepositoryAccessor.readEntities()).thenAnswer(invocation -> Collections.singletonList(hipChatMockUtil.createGlobalEntity()));
+        final HipChatChannel hipChatChannel = new HipChatChannel(gson, null, null, null, hipChatGlobalRepositoryAccessor, null);
 
         IntegrationException intException = null;
         try {
-            final HipChatGlobalConfigEntity hipChatGlobalConfigEntity = new HipChatGlobalConfigEntity("key", null);
             final HipChatChannelEvent event = new HipChatChannelEvent(null, null, null, null, null, null, null, null);
-            hipChatChannel.createRequests(hipChatGlobalConfigEntity, event);
+            hipChatChannel.createRequests(event);
         } catch (final IntegrationException e) {
             intException = e;
         }
@@ -109,7 +110,7 @@ public class HipChatChannelTest extends ChannelTest {
             System.getProperties().setProperty("user.dir", "garbage");
             RuntimeException thrownException = null;
             try {
-                hipChatChannel.createRequests(hipChatMockUtil.createGlobalEntity(), event);
+                hipChatChannel.createRequests(event);
             } catch (final RuntimeException e) {
                 thrownException = e;
             }
@@ -185,11 +186,11 @@ public class HipChatChannelTest extends ChannelTest {
     }
 
     @Test
-    public void testGlobalConfigThrowsExceptionTest() throws IntegrationException, MalformedURLException {
+    public void testGlobalConfigThrowsExceptionTest() throws IntegrationException {
         final ChannelRestConnectionFactory restFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, null, null, null, null, restFactory);
 
-        try (final RestConnection restConnection = new UnauthenticatedRestConnection(new PrintStreamIntLogger(System.out, LogLevel.INFO), new URL("http://google.com"), 100, null);) {
+        try (final RestConnection restConnection = new UnauthenticatedRestConnection(new PrintStreamIntLogger(System.out, LogLevel.INFO), new URL("http://google.com"), 100, null)) {
             final RestConnection mockRestConnection = Mockito.spy(restConnection);
             Mockito.doThrow(new IntegrationException("Mock exception")).when(mockRestConnection).connect();
             Mockito.when(restFactory.createUnauthenticatedRestConnection(Mockito.anyString())).thenReturn(mockRestConnection);
@@ -212,8 +213,8 @@ public class HipChatChannelTest extends ChannelTest {
     public void testEmptyContent() throws Exception {
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final TestAlertProperties alertProperties = new TestAlertProperties();
-        final GlobalBlackDuckRepository mockedGlobalRepository = Mockito.mock(GlobalBlackDuckRepository.class);
-        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(mockedGlobalRepository, alertProperties);
+        final BlackDuckRepositoryAccessor mockedBlackDuckRepositoryAccessor = Mockito.mock(BlackDuckRepositoryAccessor.class);
+        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(mockedBlackDuckRepositoryAccessor, alertProperties);
         HipChatChannel hipChatChannel = new HipChatChannel(gson, alertProperties, globalProperties, auditUtility, null, null);
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
@@ -228,16 +229,16 @@ public class HipChatChannelTest extends ChannelTest {
         hipChatChannel = Mockito.spy(hipChatChannel);
         Mockito.doReturn(new HipChatGlobalConfigEntity(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY), "")).when(hipChatChannel).getGlobalConfigEntity();
 
-        final List<Request> requestList = hipChatChannel.createRequests(hipChatChannel.getGlobalConfigEntity(), event);
-        assertTrue(requestList.size() == 1);
+        final List<Request> requestList = hipChatChannel.createRequests(event);
+        assertEquals(1, requestList.size());
     }
 
     @Test
     public void testChunkedRequestList() throws Exception {
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final TestAlertProperties alertProperties = new TestAlertProperties();
-        final GlobalBlackDuckRepository mockedGlobalRepository = Mockito.mock(GlobalBlackDuckRepository.class);
-        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(mockedGlobalRepository, alertProperties);
+        final BlackDuckRepositoryAccessor mockedBlackDuckRepositoryAccessor = Mockito.mock(BlackDuckRepositoryAccessor.class);
+        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(mockedBlackDuckRepositoryAccessor, alertProperties);
         HipChatChannel hipChatChannel = new HipChatChannel(gson, alertProperties, globalProperties, auditUtility, null, null);
 
         final AggregateMessageContent messageContent = createLargeMessageContent();
@@ -249,7 +250,7 @@ public class HipChatChannelTest extends ChannelTest {
         hipChatChannel = Mockito.spy(hipChatChannel);
         Mockito.doReturn(new HipChatGlobalConfigEntity(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY), "")).when(hipChatChannel).getGlobalConfigEntity();
 
-        final List<Request> requestList = hipChatChannel.createRequests(hipChatChannel.getGlobalConfigEntity(), event);
+        final List<Request> requestList = hipChatChannel.createRequests(event);
         assertTrue(requestList.size() >= 3);
     }
 

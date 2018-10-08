@@ -28,8 +28,6 @@ import com.synopsys.integration.alert.common.descriptor.config.RestApi;
 import com.synopsys.integration.alert.common.enumeration.RestApiType;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
-import com.synopsys.integration.alert.database.entity.channel.DistributionChannelConfigEntity;
-import com.synopsys.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
 import com.synopsys.integration.alert.mock.model.MockRestModelUtil;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.web.model.Config;
@@ -43,13 +41,13 @@ import com.synopsys.integration.test.annotation.DatabaseConnectionTest;
 @Transactional
 @WebAppConfiguration
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
-public abstract class DescriptorTestConfigTest<R extends CommonDistributionConfig, E extends DistributionChannelConfigEntity, GE extends GlobalChannelConfigEntity, EP extends ChannelEventProducer> {
+public abstract class DescriptorTestConfigTest<R extends CommonDistributionConfig, P extends ChannelEventProducer> {
     protected Gson gson;
-    protected EP channelEventProducer;
+    protected P channelEventProducer;
     protected ContentConverter contentConverter;
     protected TestProperties properties;
 
-    public abstract EP createChannelEventProducer();
+    public abstract P createChannelEventProducer();
 
     @Before
     public void init() {

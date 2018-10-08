@@ -30,7 +30,6 @@ public class BlackDuckDescriptorConfigTest {
     @Test
     public void testRepositoryCalls() {
         final GlobalBlackDuckConfigEntity entity = mockBlackDuckEntity.createGlobalEntity();
-
         final GlobalBlackDuckRepository globalBlackDuckRepository = Mockito.mock(GlobalBlackDuckRepository.class);
         Mockito.when(globalBlackDuckRepository.findAll()).thenReturn(Arrays.asList(entity));
         Mockito.when(globalBlackDuckRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(entity));

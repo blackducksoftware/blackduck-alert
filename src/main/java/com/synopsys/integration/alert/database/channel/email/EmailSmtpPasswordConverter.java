@@ -21,29 +21,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.descriptor;
+package com.synopsys.integration.alert.database.channel.email;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.database.RepositoryAccessor;
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
+import com.synopsys.integration.alert.database.security.StringEncryptionConverter;
 
 @Component
-public class BlackDuckRepositoryAccessor extends RepositoryAccessor {
-    private final GlobalBlackDuckRepository repository;
-
-    @Autowired
-    public BlackDuckRepositoryAccessor(final GlobalBlackDuckRepository repository) {
-        super(repository);
-        this.repository = repository;
-    }
-
+public class EmailSmtpPasswordConverter extends StringEncryptionConverter {
     @Override
-    public DatabaseEntity saveEntity(final DatabaseEntity entity) {
-        final GlobalBlackDuckConfigEntity blackDuckEntity = (GlobalBlackDuckConfigEntity) entity;
-        return repository.save(blackDuckEntity);
+    public String getPropertyKey() {
+        return "email_channel_smtp_password";
     }
 }

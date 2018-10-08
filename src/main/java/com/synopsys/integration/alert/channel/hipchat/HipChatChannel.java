@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -48,9 +49,9 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.database.audit.AuditUtility;
-import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
-import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalRepository;
+import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalRepositoryAccessor;
+import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.web.channel.model.HipChatGlobalConfig;
 import com.synopsys.integration.alert.web.model.Config;
@@ -62,16 +63,28 @@ import com.synopsys.integration.rest.request.Response;
 import freemarker.template.TemplateException;
 
 @Component(value = HipChatChannel.COMPONENT_NAME)
-public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigEntity, HipChatDistributionConfigEntity, HipChatChannelEvent> {
+public class HipChatChannel extends RestDistributionChannel<HipChatChannelEvent> {
     public static final String COMPONENT_NAME = "channel_hipchat";
     public static final String HIP_CHAT_API = "https://api.hipchat.com";
     public static final int MESSAGE_SIZE_LIMIT = 8000;
     private final Logger logger = LoggerFactory.getLogger(HipChatChannel.class);
+    private final HipChatGlobalRepositoryAccessor hipChatGlobalRepositoryAccessor;
 
     @Autowired
-    public HipChatChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditUtility auditUtility, final HipChatGlobalRepository hipChatGlobalRepository,
+    public HipChatChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditUtility auditUtility, final HipChatGlobalRepositoryAccessor hipChatGlobalRepositoryAccessor,
         final ChannelRestConnectionFactory channelRestConnectionFactory) {
-        super(gson, alertProperties, blackDuckProperties, auditUtility, hipChatGlobalRepository, HipChatChannelEvent.class, channelRestConnectionFactory);
+        super(gson, alertProperties, blackDuckProperties, auditUtility, HipChatChannelEvent.class, channelRestConnectionFactory);
+        this.hipChatGlobalRepositoryAccessor = hipChatGlobalRepositoryAccessor;
+    }
+
+    @Transactional
+    public HipChatGlobalConfigEntity getGlobalConfigEntity() {
+        final List<? extends DatabaseEntity> globalConfigs = hipChatGlobalRepositoryAccessor.readEntities();
+        if (globalConfigs.size() == 1) {
+            return (HipChatGlobalConfigEntity) globalConfigs.get(0);
+        }
+        logger.error("Global Config did not have the expected number of rows: Expected 1, but found {}.", globalConfigs.size());
+        return null;
     }
 
     @Override
@@ -80,7 +93,8 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
     }
 
     @Override
-    public String getApiUrl(final HipChatGlobalConfigEntity globalConfig) {
+    public String getApiUrl() {
+        final HipChatGlobalConfigEntity globalConfig = getGlobalConfigEntity();
         return getApiUrl(globalConfig.getHostServer());
     }
 
@@ -137,7 +151,8 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
     }
 
     @Override
-    public List<Request> createRequests(final HipChatGlobalConfigEntity globalConfig, final HipChatChannelEvent event) throws IntegrationException {
+    public List<Request> createRequests(final HipChatChannelEvent event) throws IntegrationException {
+        final HipChatGlobalConfigEntity globalConfig = getGlobalConfigEntity();
         if (!isValidGlobalConfig(globalConfig)) {
             throw new IntegrationException("ERROR: Missing global config.");
         }

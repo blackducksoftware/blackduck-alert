@@ -21,27 +21,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.channel.hipchat;
+package com.synopsys.integration.alert.database.security.repository;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.synopsys.integration.alert.database.RepositoryAccessor;
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+import com.synopsys.integration.alert.database.security.SaltMappingEntity;
 
-@Component
-public class HipChatGlobalRepositoryAccessor extends RepositoryAccessor {
-    private final HipChatGlobalRepository repository;
+public interface SaltMappingRepository extends JpaRepository<SaltMappingEntity, String> {
 
-    @Autowired
-    public HipChatGlobalRepositoryAccessor(final HipChatGlobalRepository repository) {
-        super(repository);
-        this.repository = repository;
-    }
-
-    @Override
-    public DatabaseEntity saveEntity(final DatabaseEntity entity) {
-        final HipChatGlobalConfigEntity hipChatEntity = (HipChatGlobalConfigEntity) entity;
-        return repository.save(hipChatEntity);
-    }
 }

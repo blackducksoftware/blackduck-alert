@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -26,6 +27,7 @@ import com.synopsys.integration.alert.common.descriptor.config.RestApi;
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalRepository;
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalRepositoryAccessor;
 import com.synopsys.integration.alert.database.entity.EntityPropertyMapper;
+import com.synopsys.integration.alert.database.security.EncryptionUtility;
 import com.synopsys.integration.alert.web.channel.model.EmailGlobalConfig;
 import com.synopsys.integration.alert.workflow.PropertyInitializer;
 
@@ -34,6 +36,9 @@ public class AlertStartupInitializerTestIT {
     @Test
     public void testInitializeConfigs() throws Exception {
         final Environment environment = Mockito.mock(Environment.class);
+        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        Mockito.when(encryptionUtility.encrypt(Mockito.anyString(), Mockito.anyString())).then(invocation -> invocation.getArgument(1));
+        Mockito.when(encryptionUtility.decrypt(Mockito.anyString(), Mockito.anyString())).then(invocation -> Optional.of(invocation.getArgument(1)));
         final ConversionService conversionService = new DefaultConversionService();
         final EmailGlobalRepository emailGlobalRepository = Mockito.mock(EmailGlobalRepository.class);
         final PropertyInitializer propertyInitializer = new PropertyInitializer();
@@ -66,6 +71,9 @@ public class AlertStartupInitializerTestIT {
     @Test
     public void testSetRestModelValue() throws Exception {
         final Environment environment = Mockito.mock(Environment.class);
+        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        Mockito.when(encryptionUtility.encrypt(Mockito.anyString(), Mockito.anyString())).then(invocation -> invocation.getArgument(1));
+        Mockito.when(encryptionUtility.decrypt(Mockito.anyString(), Mockito.anyString())).then(invocation -> Optional.of(invocation.getArgument(1)));
         final ConversionService conversionService = new DefaultConversionService();
         final EmailGlobalRepository emailGlobalRepository = Mockito.mock(EmailGlobalRepository.class);
         final PropertyInitializer propertyInitializer = new PropertyInitializer();
@@ -96,6 +104,9 @@ public class AlertStartupInitializerTestIT {
     @Test
     public void testSetRestModelValueEmtpyValue() throws Exception {
         final Environment environment = Mockito.mock(Environment.class);
+        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        Mockito.when(encryptionUtility.encrypt(Mockito.anyString(), Mockito.anyString())).then(invocation -> invocation.getArgument(1));
+        Mockito.when(encryptionUtility.decrypt(Mockito.anyString(), Mockito.anyString())).then(invocation -> Optional.of(invocation.getArgument(1)));
         final ConversionService conversionService = new DefaultConversionService();
         final EmailGlobalRepository emailGlobalRepository = Mockito.mock(EmailGlobalRepository.class);
         final PropertyInitializer propertyInitializer = new PropertyInitializer();
@@ -125,6 +136,9 @@ public class AlertStartupInitializerTestIT {
     @Test
     public void testCanConvertFalse() throws Exception {
         final Environment environment = Mockito.mock(Environment.class);
+        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        Mockito.when(encryptionUtility.encrypt(Mockito.anyString(), Mockito.anyString())).then(invocation -> invocation.getArgument(1));
+        Mockito.when(encryptionUtility.decrypt(Mockito.anyString(), Mockito.anyString())).then(invocation -> Optional.of(invocation.getArgument(1)));
         final ConversionService conversionService = Mockito.mock(ConversionService.class);
         Mockito.when(conversionService.canConvert(Mockito.any(Class.class), Mockito.any(Class.class))).thenReturn(false);
         final EmailGlobalRepository emailGlobalRepository = Mockito.mock(EmailGlobalRepository.class);
@@ -154,6 +168,9 @@ public class AlertStartupInitializerTestIT {
     @Test
     public void testSystemPropertyExists() throws Exception {
         final Environment environment = Mockito.mock(Environment.class);
+        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        Mockito.when(encryptionUtility.encrypt(Mockito.anyString(), Mockito.anyString())).then(invocation -> invocation.getArgument(1));
+        Mockito.when(encryptionUtility.decrypt(Mockito.anyString(), Mockito.anyString())).then(invocation -> Optional.of(invocation.getArgument(1)));
         final ConversionService conversionService = Mockito.mock(ConversionService.class);
         Mockito.when(conversionService.canConvert(Mockito.any(Class.class), Mockito.any(Class.class))).thenReturn(true);
         final EmailGlobalRepository emailGlobalRepository = Mockito.mock(EmailGlobalRepository.class);
@@ -179,6 +196,9 @@ public class AlertStartupInitializerTestIT {
     @Test
     public void testSetRestModelSecurityException() throws Exception {
         final Environment environment = Mockito.mock(Environment.class);
+        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        Mockito.when(encryptionUtility.encrypt(Mockito.anyString(), Mockito.anyString())).then(invocation -> invocation.getArgument(1));
+        Mockito.when(encryptionUtility.decrypt(Mockito.anyString(), Mockito.anyString())).then(invocation -> Optional.of(invocation.getArgument(1)));
         final ConversionService conversionService = Mockito.mock(ConversionService.class);
         final EmailGlobalRepository emailGlobalRepository = Mockito.mock(EmailGlobalRepository.class);
         Mockito.when(conversionService.canConvert(Mockito.any(Class.class), Mockito.any(Class.class))).thenThrow(new SecurityException());
@@ -197,6 +217,9 @@ public class AlertStartupInitializerTestIT {
     @Test
     public void testSetRestModelIllegalArgumentException() throws Exception {
         final Environment environment = Mockito.mock(Environment.class);
+        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        Mockito.when(encryptionUtility.encrypt(Mockito.anyString(), Mockito.anyString())).then(invocation -> invocation.getArgument(1));
+        Mockito.when(encryptionUtility.decrypt(Mockito.anyString(), Mockito.anyString())).then(invocation -> Optional.of(invocation.getArgument(1)));
         final ConversionService conversionService = Mockito.mock(ConversionService.class);
         final EmailGlobalRepository emailGlobalRepository = Mockito.mock(EmailGlobalRepository.class);
         Mockito.when(conversionService.canConvert(Mockito.any(Class.class), Mockito.any(Class.class))).thenThrow(new IllegalArgumentException());
@@ -231,6 +254,9 @@ public class AlertStartupInitializerTestIT {
     }
 
     private void throwExceptionTest(final Environment environment, final ConversionService conversionService, final EmailGlobalRepository emailGlobalRepository) throws Exception {
+        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        Mockito.when(encryptionUtility.encrypt(Mockito.anyString(), Mockito.anyString())).then(invocation -> invocation.getArgument(1));
+        Mockito.when(encryptionUtility.decrypt(Mockito.anyString(), Mockito.anyString())).then(invocation -> Optional.of(invocation.getArgument(1)));
         final PropertyInitializer propertyInitializer = new PropertyInitializer();
         final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
         final EmailGlobalTypeConverter emailGlobalContentConverter = new EmailGlobalTypeConverter(contentConverter);

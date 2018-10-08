@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.channel.email;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -33,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.DistributionChannel;
@@ -43,18 +45,31 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.database.audit.AuditUtility;
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalConfigEntity;
-import com.synopsys.integration.alert.database.channel.email.EmailGlobalRepository;
+import com.synopsys.integration.alert.database.channel.email.EmailGlobalRepositoryAccessor;
+import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component(value = EmailGroupChannel.COMPONENT_NAME)
-public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEntity, EmailChannelEvent> {
+public class EmailGroupChannel extends DistributionChannel<EmailChannelEvent> {
     public final static String COMPONENT_NAME = "channel_email";
     private final static Logger logger = LoggerFactory.getLogger(EmailGroupChannel.class);
+    private final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor;
 
     @Autowired
-    public EmailGroupChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditUtility auditUtility, final EmailGlobalRepository emailRepository) {
-        super(gson, alertProperties, blackDuckProperties, auditUtility, emailRepository, EmailChannelEvent.class);
+    public EmailGroupChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditUtility auditUtility, final EmailGlobalRepositoryAccessor emailGlobalRepositoryAccessor) {
+        super(gson, alertProperties, blackDuckProperties, auditUtility, EmailChannelEvent.class);
+        this.emailGlobalRepositoryAccessor = emailGlobalRepositoryAccessor;
+    }
+
+    @Transactional
+    public EmailGlobalConfigEntity getGlobalConfigEntity() {
+        final List<? extends DatabaseEntity> globalConfigs = emailGlobalRepositoryAccessor.readEntities();
+        if (globalConfigs.size() == 1) {
+            return (EmailGlobalConfigEntity) globalConfigs.get(0);
+        }
+        logger.error("Global Config did not have the expected number of rows: Expected 1, but found {}.", globalConfigs.size());
+        return null;
     }
 
     @Override

@@ -23,40 +23,33 @@
  */
 package com.synopsys.integration.alert.channel;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.event.ChannelEvent;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.audit.AuditUtility;
-import com.synopsys.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.alert.workflow.MessageReceiver;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
-public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, E extends ChannelEvent> extends MessageReceiver<E> {
+public abstract class DistributionChannel<E extends ChannelEvent> extends MessageReceiver<E> {
     private static final Logger logger = LoggerFactory.getLogger(DistributionChannel.class);
 
-    private final JpaRepository<G, Long> globalRepository;
     private final AuditUtility auditUtility;
     private final AlertProperties alertProperties;
     private final BlackDuckProperties blackDuckProperties;
 
-    public DistributionChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditUtility auditUtility, final JpaRepository<G, Long> globalRepository,
+    public DistributionChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditUtility auditUtility,
         final Class eventClass) {
         super(gson, eventClass);
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
         this.auditUtility = auditUtility;
-        this.globalRepository = globalRepository;
     }
 
     public abstract String getDistributionType();
@@ -67,18 +60,6 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, E
 
     public BlackDuckProperties getBlackDuckProperties() {
         return blackDuckProperties;
-    }
-
-    @Transactional
-    public G getGlobalConfigEntity() {
-        if (globalRepository != null) {
-            final List<G> globalConfigs = globalRepository.findAll();
-            if (globalConfigs.size() == 1) {
-                return globalConfigs.get(0);
-            }
-            logger.error("Global Config did not have the expected number of rows: Expected 1, but found {}.", globalConfigs.size());
-        }
-        return null;
     }
 
     @Override
