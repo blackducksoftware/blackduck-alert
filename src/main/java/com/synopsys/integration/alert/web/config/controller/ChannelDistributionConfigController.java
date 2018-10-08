@@ -41,7 +41,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.RestApi;
-import com.synopsys.integration.alert.common.enumeration.RestApiType;
+import com.synopsys.integration.alert.common.enumeration.DescriptorActionApi;
 import com.synopsys.integration.alert.web.channel.actions.ChannelDistributionConfigActions;
 import com.synopsys.integration.alert.web.config.controller.handler.ConfigControllerHandler;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
@@ -72,14 +72,14 @@ public class ChannelDistributionConfigController extends ConfigController {
     @Override
     @GetMapping("/{descriptorName}")
     public List<? extends Config> getConfig(final Long id, @PathVariable final String descriptorName) {
-        final RestApi descriptor = descriptorMap.getChannelDescriptor(descriptorName).getRestApi(RestApiType.CHANNEL_DISTRIBUTION_CONFIG);
+        final RestApi descriptor = descriptorMap.getChannelDescriptor(descriptorName).getRestApi(DescriptorActionApi.CHANNEL_DISTRIBUTION_CONFIG);
         return controllerHandler.getConfig(id, descriptor);
     }
 
     @Override
     @PostMapping("/{descriptorName}")
     public ResponseEntity<String> postConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
-        final RestApi descriptor = descriptorMap.getChannelDescriptor(descriptorName).getRestApi(RestApiType.CHANNEL_DISTRIBUTION_CONFIG);
+        final RestApi descriptor = descriptorMap.getChannelDescriptor(descriptorName).getRestApi(DescriptorActionApi.CHANNEL_DISTRIBUTION_CONFIG);
         final CommonDistributionConfig parsedRestModel = (CommonDistributionConfig) descriptor.getConfigFromJson(restModel);
         return controllerHandler.postConfig(parsedRestModel, descriptor);
     }
@@ -87,7 +87,7 @@ public class ChannelDistributionConfigController extends ConfigController {
     @Override
     @PutMapping("/{descriptorName}")
     public ResponseEntity<String> putConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
-        final RestApi descriptor = descriptorMap.getChannelDescriptor(descriptorName).getRestApi(RestApiType.CHANNEL_DISTRIBUTION_CONFIG);
+        final RestApi descriptor = descriptorMap.getChannelDescriptor(descriptorName).getRestApi(DescriptorActionApi.CHANNEL_DISTRIBUTION_CONFIG);
         final CommonDistributionConfig parsedRestModel = (CommonDistributionConfig) descriptor.getConfigFromJson(restModel);
         return controllerHandler.putConfig(parsedRestModel, descriptor);
     }
@@ -95,7 +95,7 @@ public class ChannelDistributionConfigController extends ConfigController {
     @Override
     @PostMapping("/{descriptorName}/validate")
     public ResponseEntity<String> validateConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
-        final RestApi descriptor = descriptorMap.getChannelDescriptor(descriptorName).getRestApi(RestApiType.CHANNEL_DISTRIBUTION_CONFIG);
+        final RestApi descriptor = descriptorMap.getChannelDescriptor(descriptorName).getRestApi(DescriptorActionApi.CHANNEL_DISTRIBUTION_CONFIG);
         final CommonDistributionConfig parsedRestModel = (CommonDistributionConfig) descriptor.getConfigFromJson(restModel);
         return controllerHandler.validateConfig(parsedRestModel, descriptor);
     }
@@ -103,14 +103,14 @@ public class ChannelDistributionConfigController extends ConfigController {
     @Override
     @DeleteMapping("/{descriptorName}")
     public ResponseEntity<String> deleteConfig(final Long id, @PathVariable final String descriptorName) {
-        final RestApi descriptor = descriptorMap.getChannelDescriptor(descriptorName).getRestApi(RestApiType.CHANNEL_DISTRIBUTION_CONFIG);
+        final RestApi descriptor = descriptorMap.getChannelDescriptor(descriptorName).getRestApi(DescriptorActionApi.CHANNEL_DISTRIBUTION_CONFIG);
         return controllerHandler.deleteConfig(id, descriptor);
     }
 
     @Override
     @PostMapping("/{descriptorName}/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
-        final RestApi descriptor = descriptorMap.getChannelDescriptor(descriptorName).getRestApi(RestApiType.CHANNEL_DISTRIBUTION_CONFIG);
+        final RestApi descriptor = descriptorMap.getChannelDescriptor(descriptorName).getRestApi(DescriptorActionApi.CHANNEL_DISTRIBUTION_CONFIG);
         final CommonDistributionConfig parsedRestModel = (CommonDistributionConfig) descriptor.getConfigFromJson(restModel);
         return controllerHandler.testConfig(parsedRestModel, descriptor);
     }

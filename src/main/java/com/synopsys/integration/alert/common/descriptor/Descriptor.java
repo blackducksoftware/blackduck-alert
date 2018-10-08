@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 import com.synopsys.integration.alert.common.descriptor.config.RestApi;
 import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.common.enumeration.RestApiType;
+import com.synopsys.integration.alert.common.enumeration.DescriptorActionApi;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
@@ -41,8 +41,8 @@ import com.synopsys.integration.exception.IntegrationException;
 public abstract class Descriptor {
     private final String name;
     private final DescriptorType type;
-    private final Map<RestApiType, RestApi> restApis;
-    private final Map<RestApiType, UIConfig> uiConfigs;
+    private final Map<DescriptorActionApi, RestApi> restApis;
+    private final Map<DescriptorActionApi, UIConfig> uiConfigs;
 
     public Descriptor(final String name, final DescriptorType type) {
         this.name = name;
@@ -60,56 +60,56 @@ public abstract class Descriptor {
     }
 
     public void addProviderRestApi(final RestApi restApi) {
-        restApis.put(RestApiType.PROVIDER_CONFIG, restApi);
+        restApis.put(DescriptorActionApi.PROVIDER_CONFIG, restApi);
     }
 
     public void addGlobalRestApi(final RestApi restApi) {
-        restApis.put(RestApiType.CHANNEL_GLOBAL_CONFIG, restApi);
+        restApis.put(DescriptorActionApi.CHANNEL_GLOBAL_CONFIG, restApi);
     }
 
     public void addChannelDistributionRestApi(final RestApi restApi) {
-        restApis.put(RestApiType.CHANNEL_DISTRIBUTION_CONFIG, restApi);
+        restApis.put(DescriptorActionApi.CHANNEL_DISTRIBUTION_CONFIG, restApi);
     }
 
     public void addProviderDistributionRestApi(final RestApi restApi) {
-        restApis.put(RestApiType.PROVIDER_DISTRIBUTION_CONFIG, restApi);
+        restApis.put(DescriptorActionApi.PROVIDER_DISTRIBUTION_CONFIG, restApi);
     }
 
     public void addComponentRestApi(final RestApi restApi) {
-        restApis.put(RestApiType.COMPONENT_CONFIG, restApi);
+        restApis.put(DescriptorActionApi.COMPONENT_CONFIG, restApi);
     }
 
     public void addProviderUiConfigs(final RestApi restApi, final UIConfig uiConfig) {
-        uiConfigs.put(RestApiType.PROVIDER_CONFIG, uiConfig);
+        uiConfigs.put(DescriptorActionApi.PROVIDER_CONFIG, uiConfig);
         addProviderRestApi(restApi);
     }
 
     public void addGlobalUiConfigs(final RestApi restApi, final UIConfig uiConfig) {
-        uiConfigs.put(RestApiType.CHANNEL_GLOBAL_CONFIG, uiConfig);
+        uiConfigs.put(DescriptorActionApi.CHANNEL_GLOBAL_CONFIG, uiConfig);
         addGlobalRestApi(restApi);
     }
 
     public void addChannelDistributionUiConfigs(final RestApi restApi, final UIConfig uiConfig) {
-        uiConfigs.put(RestApiType.CHANNEL_DISTRIBUTION_CONFIG, uiConfig);
+        uiConfigs.put(DescriptorActionApi.CHANNEL_DISTRIBUTION_CONFIG, uiConfig);
         addChannelDistributionRestApi(restApi);
     }
 
     public void addProviderDistributionUiConfigs(final RestApi restApi, final UIConfig uiConfig) {
-        uiConfigs.put(RestApiType.PROVIDER_DISTRIBUTION_CONFIG, uiConfig);
+        uiConfigs.put(DescriptorActionApi.PROVIDER_DISTRIBUTION_CONFIG, uiConfig);
         addProviderDistributionRestApi(restApi);
     }
 
     public void addComponentUiConfigs(final RestApi restApi, final UIConfig uiConfig) {
-        uiConfigs.put(RestApiType.COMPONENT_CONFIG, uiConfig);
+        uiConfigs.put(DescriptorActionApi.COMPONENT_CONFIG, uiConfig);
         addComponentRestApi(restApi);
     }
 
-    public RestApi getRestApi(final RestApiType restApiType) {
-        return restApis.get(restApiType);
+    public RestApi getRestApi(final DescriptorActionApi descriptorActionApi) {
+        return restApis.get(descriptorActionApi);
     }
 
-    public UIConfig getUIConfig(final RestApiType restApiType) {
-        return uiConfigs.get(restApiType);
+    public UIConfig getUIConfig(final DescriptorActionApi descriptorActionApi) {
+        return uiConfigs.get(descriptorActionApi);
     }
 
     public List<UIConfig> getAllUIConfigs() {
@@ -124,44 +124,44 @@ public abstract class Descriptor {
         return uiConfigs.size() > 0;
     }
 
-    public boolean hasUIConfigForType(final RestApiType restApiType) {
-        return uiConfigs.containsKey(restApiType);
+    public boolean hasUIConfigForType(final DescriptorActionApi descriptorActionApi) {
+        return uiConfigs.containsKey(descriptorActionApi);
     }
 
-    public Optional<? extends DatabaseEntity> readEntity(final RestApiType restApiType, final long id) {
-        return getRestApi(restApiType).readEntity(id);
+    public Optional<? extends DatabaseEntity> readEntity(final DescriptorActionApi descriptorActionApi, final long id) {
+        return getRestApi(descriptorActionApi).readEntity(id);
     }
 
-    public List<? extends DatabaseEntity> readEntities(final RestApiType restApiType) {
-        return getRestApi(restApiType).readEntities();
+    public List<? extends DatabaseEntity> readEntities(final DescriptorActionApi descriptorActionApi) {
+        return getRestApi(descriptorActionApi).readEntities();
     }
 
-    public DatabaseEntity saveEntity(final RestApiType restApiType, final DatabaseEntity entity) {
-        return getRestApi(restApiType).saveEntity(entity);
+    public DatabaseEntity saveEntity(final DescriptorActionApi descriptorActionApi, final DatabaseEntity entity) {
+        return getRestApi(descriptorActionApi).saveEntity(entity);
     }
 
-    public void deleteEntity(final RestApiType restApiType, final long id) {
-        getRestApi(restApiType).deleteEntity(id);
+    public void deleteEntity(final DescriptorActionApi descriptorActionApi, final long id) {
+        getRestApi(descriptorActionApi).deleteEntity(id);
     }
 
-    public DatabaseEntity populateEntityFromConfig(final RestApiType restApiType, final Config config) {
-        return getRestApi(restApiType).populateEntityFromConfig(config);
+    public DatabaseEntity populateEntityFromConfig(final DescriptorActionApi descriptorActionApi, final Config config) {
+        return getRestApi(descriptorActionApi).populateEntityFromConfig(config);
     }
 
-    public Config populateConfigFromEntity(final RestApiType restApiType, final DatabaseEntity entity) {
-        return getRestApi(restApiType).populateConfigFromEntity(entity);
+    public Config populateConfigFromEntity(final DescriptorActionApi descriptorActionApi, final DatabaseEntity entity) {
+        return getRestApi(descriptorActionApi).populateConfigFromEntity(entity);
     }
 
-    public Config getConfigFromJson(final RestApiType restApiType, final String json) {
-        return getRestApi(restApiType).getConfigFromJson(json);
+    public Config getConfigFromJson(final DescriptorActionApi descriptorActionApi, final String json) {
+        return getRestApi(descriptorActionApi).getConfigFromJson(json);
     }
 
-    public void validateConfig(final RestApiType restApiType, final Config config, final Map<String, String> fieldErrors) {
-        getRestApi(restApiType).validateConfig(config, fieldErrors);
+    public void validateConfig(final DescriptorActionApi descriptorActionApi, final Config config, final Map<String, String> fieldErrors) {
+        getRestApi(descriptorActionApi).validateConfig(config, fieldErrors);
     }
 
-    public void testConfig(final RestApiType restApiType, final Config config) throws IntegrationException {
-        getRestApi(restApiType).testConfig(config);
+    public void testConfig(final DescriptorActionApi descriptorActionApi, final Config config) throws IntegrationException {
+        getRestApi(descriptorActionApi).testConfig(config);
     }
 
 }

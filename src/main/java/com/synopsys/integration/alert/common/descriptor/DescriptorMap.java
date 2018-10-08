@@ -34,7 +34,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.RestApi;
 import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
-import com.synopsys.integration.alert.common.enumeration.RestApiType;
+import com.synopsys.integration.alert.common.enumeration.DescriptorActionApi;
 import com.synopsys.integration.alert.common.exception.AlertException;
 
 @Component
@@ -76,22 +76,22 @@ public class DescriptorMap {
     }
 
     public List<UIComponent> getDistributionUIConfigs() {
-        return getUIComponents(RestApiType.CHANNEL_DISTRIBUTION_CONFIG);
+        return getUIComponents(DescriptorActionApi.CHANNEL_DISTRIBUTION_CONFIG);
     }
 
     public List<UIComponent> getGlobalUIConfigs() {
-        return getUIComponents(RestApiType.CHANNEL_GLOBAL_CONFIG);
+        return getUIComponents(DescriptorActionApi.CHANNEL_GLOBAL_CONFIG);
     }
 
     public List<UIComponent> getProviderUIConfigs() {
-        return getUIComponents(RestApiType.PROVIDER_CONFIG);
+        return getUIComponents(DescriptorActionApi.PROVIDER_CONFIG);
     }
 
     public List<UIComponent> getComponentUIConfigs() {
-        return getUIComponents(RestApiType.COMPONENT_CONFIG);
+        return getUIComponents(DescriptorActionApi.COMPONENT_CONFIG);
     }
 
-    public List<UIComponent> getUIComponents(final RestApiType configType) {
+    public List<UIComponent> getUIComponents(final DescriptorActionApi configType) {
         return descriptorMap.values()
                    .stream()
                    .filter(descriptor -> descriptor.hasUIConfigForType(configType))
@@ -100,7 +100,7 @@ public class DescriptorMap {
     }
 
     public List<UIComponent> getAllUIComponents() {
-        return Arrays.stream(RestApiType.values())
+        return Arrays.stream(DescriptorActionApi.values())
                    .flatMap(type -> getUIComponents(type).stream())
                    .collect(Collectors.toList());
     }
