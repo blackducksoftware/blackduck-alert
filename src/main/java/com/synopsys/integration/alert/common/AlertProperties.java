@@ -65,7 +65,7 @@ public class AlertProperties {
     @Value("${alert.encryption.password:}")
     private String alertEncryptionPassword;
 
-    @Value("${alert.encryption.static.salt}")
+    @Value("${alert.encryption.static.salt:}")
     private String alertEncryptionStaticSalt;
 
     public String getAlertConfigHome() {
