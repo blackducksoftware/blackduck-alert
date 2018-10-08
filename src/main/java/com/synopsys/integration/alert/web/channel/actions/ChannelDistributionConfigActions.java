@@ -132,7 +132,7 @@ public class ChannelDistributionConfigActions extends DescriptorConfigActions {
     }
 
     @Override
-    public String validateConfig(final Config config, final DescriptorActionApi descriptor, Map<String, String> fieldErrors) throws AlertFieldException {
+    public String validateConfig(final Config config, final DescriptorActionApi descriptor, final Map<String, String> fieldErrors) throws AlertFieldException {
         final CommonDistributionConfig commonConfig = (CommonDistributionConfig) config;
         commonDistributionConfigActions.validateCommonConfig(commonConfig, fieldErrors);
         return super.validateConfig(commonConfig, descriptor, fieldErrors);

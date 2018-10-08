@@ -110,7 +110,7 @@ public class DescriptorConfigActions {
         return null;
     }
 
-    public String validateConfig(final Config config, final DescriptorActionApi descriptorActionApi, Map<String, String> fieldErrors) throws AlertFieldException {
+    public String validateConfig(final Config config, final DescriptorActionApi descriptorActionApi, final Map<String, String> fieldErrors) throws AlertFieldException {
         descriptorActionApi.validateConfig(config, fieldErrors);
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);

@@ -46,7 +46,7 @@ public class SingleEntityConfigActions extends DescriptorConfigActions {
     }
 
     @Override
-    public String validateConfig(Config restModel, final DescriptorActionApi descriptor, Map<String, String> fieldErrors) throws AlertFieldException {
+    public String validateConfig(Config restModel, final DescriptorActionApi descriptor, final Map<String, String> fieldErrors) throws AlertFieldException {
         final List<? extends DatabaseEntity> globalConfigs = descriptor.readEntities();
         if (globalConfigs.size() == 1) {
             try {

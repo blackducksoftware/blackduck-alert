@@ -38,7 +38,8 @@ import com.synopsys.integration.alert.common.workflow.processor.MessageContentCo
 public abstract class ProviderDescriptor extends Descriptor {
     private final Provider provider;
 
-    public ProviderDescriptor(final DescriptorActionApi providerDescriptorActionApi, final UIConfig providerUiConfig, final DescriptorActionApi distributionDescriptorActionApi, final ProviderUIConfig distributionUIConfig, @NotNull final Provider provider) {
+    public ProviderDescriptor(final DescriptorActionApi providerDescriptorActionApi, final UIConfig providerUiConfig, final DescriptorActionApi distributionDescriptorActionApi, final ProviderUIConfig distributionUIConfig,
+        @NotNull final Provider provider) {
         super(provider.getName(), DescriptorType.PROVIDER);
         this.provider = provider;
         addProviderUiConfigs(providerDescriptorActionApi, providerUiConfig);
