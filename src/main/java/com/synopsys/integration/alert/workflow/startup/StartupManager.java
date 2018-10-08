@@ -119,12 +119,25 @@ public class StartupManager {
     @Transactional
     public void startup() {
         logger.info("Alert Starting...");
+        checkEncryptionPassword();
         initializeChannelPropertyManagers();
         logConfiguration();
         listProperties();
         validateProviders();
         initializeCronJobs();
         initializeProviders();
+    }
+
+    public void checkEncryptionPassword() {
+        alertProperties.getAlertEncryptionPassword().orElseThrow(() -> new IllegalArgumentException("Encryption password not configured"));
+    }
+
+    public void initializeChannelPropertyManagers() {
+        try {
+            alertStartupInitializer.initializeConfigs();
+        } catch (final Exception e) {
+            logger.error("Error inserting startup values", e);
+        }
     }
 
     public void logConfiguration() {
@@ -147,14 +160,6 @@ public class StartupManager {
             logger.info("Black Duck Timeout:             {}", globalBlackDuckConfigEntity.getBlackDuckTimeout());
         }
         logger.info("----------------------------------------");
-    }
-
-    public void initializeChannelPropertyManagers() {
-        try {
-            alertStartupInitializer.initializeConfigs();
-        } catch (final Exception e) {
-            logger.error("Error inserting startup values", e);
-        }
     }
 
     public void listProperties() {
