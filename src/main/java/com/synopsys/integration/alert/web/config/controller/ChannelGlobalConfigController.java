@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.RestApi;
-import com.synopsys.integration.alert.common.enumeration.DescriptorActionApi;
+import com.synopsys.integration.alert.common.enumeration.ActionApiType;
 import com.synopsys.integration.alert.web.config.actions.SingleEntityConfigActions;
 import com.synopsys.integration.alert.web.config.controller.handler.ConfigControllerHandler;
 import com.synopsys.integration.alert.web.model.Config;
@@ -54,37 +54,37 @@ public class ChannelGlobalConfigController extends ConfigController {
 
     @Override
     public List<? extends Config> getConfig(final Long id, @PathVariable final String descriptorName) {
-        final RestApi descriptor = descriptorMap.getChannelDescriptor(descriptorName).getRestApi(DescriptorActionApi.CHANNEL_GLOBAL_CONFIG);
+        final RestApi descriptor = descriptorMap.getChannelDescriptor(descriptorName).getRestApi(ActionApiType.CHANNEL_GLOBAL_CONFIG);
         return controllerHandler.getConfig(id, descriptor);
     }
 
     @Override
     public ResponseEntity<String> postConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
-        final RestApi descriptor = descriptorMap.getChannelDescriptor(descriptorName).getRestApi(DescriptorActionApi.CHANNEL_GLOBAL_CONFIG);
+        final RestApi descriptor = descriptorMap.getChannelDescriptor(descriptorName).getRestApi(ActionApiType.CHANNEL_GLOBAL_CONFIG);
         return controllerHandler.postConfig(descriptor.getConfigFromJson(restModel), descriptor);
     }
 
     @Override
     public ResponseEntity<String> putConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
-        final RestApi descriptor = descriptorMap.getChannelDescriptor(descriptorName).getRestApi(DescriptorActionApi.CHANNEL_GLOBAL_CONFIG);
+        final RestApi descriptor = descriptorMap.getChannelDescriptor(descriptorName).getRestApi(ActionApiType.CHANNEL_GLOBAL_CONFIG);
         return controllerHandler.putConfig(descriptor.getConfigFromJson(restModel), descriptor);
     }
 
     @Override
     public ResponseEntity<String> validateConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
-        final RestApi descriptor = descriptorMap.getChannelDescriptor(descriptorName).getRestApi(DescriptorActionApi.CHANNEL_GLOBAL_CONFIG);
+        final RestApi descriptor = descriptorMap.getChannelDescriptor(descriptorName).getRestApi(ActionApiType.CHANNEL_GLOBAL_CONFIG);
         return controllerHandler.validateConfig(descriptor.getConfigFromJson(restModel), descriptor);
     }
 
     @Override
     public ResponseEntity<String> deleteConfig(final Long id, @PathVariable final String descriptorName) {
-        final RestApi descriptor = descriptorMap.getChannelDescriptor(descriptorName).getRestApi(DescriptorActionApi.CHANNEL_GLOBAL_CONFIG);
+        final RestApi descriptor = descriptorMap.getChannelDescriptor(descriptorName).getRestApi(ActionApiType.CHANNEL_GLOBAL_CONFIG);
         return controllerHandler.deleteConfig(id, descriptor);
     }
 
     @Override
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
-        final RestApi descriptor = descriptorMap.getChannelDescriptor(descriptorName).getRestApi(DescriptorActionApi.CHANNEL_GLOBAL_CONFIG);
+        final RestApi descriptor = descriptorMap.getChannelDescriptor(descriptorName).getRestApi(ActionApiType.CHANNEL_GLOBAL_CONFIG);
         return controllerHandler.testConfig(descriptor.getConfigFromJson(restModel), descriptor);
     }
 
