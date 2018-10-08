@@ -34,8 +34,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
-import com.synopsys.integration.alert.common.descriptor.config.RestApi;
-import com.synopsys.integration.alert.common.enumeration.RestApiType;
+import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
+import com.synopsys.integration.alert.common.enumeration.ActionApiType;
 import com.synopsys.integration.alert.web.config.actions.SingleEntityConfigActions;
 import com.synopsys.integration.alert.web.config.controller.handler.ConfigControllerHandler;
 import com.synopsys.integration.alert.web.model.Config;
@@ -54,31 +54,31 @@ public class ComponentConfigController extends ConfigController {
 
     @Override
     public List<? extends Config> getConfig(final Long id, @PathVariable final String descriptorName) {
-        final RestApi descriptor = descriptorMap.getComponentDescriptor(descriptorName).getRestApi(RestApiType.COMPONENT_CONFIG);
+        final DescriptorActionApi descriptor = descriptorMap.getComponentDescriptor(descriptorName).getRestApi(ActionApiType.COMPONENT_CONFIG);
         return controllerHandler.getConfig(id, descriptor);
     }
 
     @Override
     public ResponseEntity<String> postConfig(@RequestBody(required = false) final String config, @PathVariable final String descriptorName) {
-        final RestApi descriptor = descriptorMap.getComponentDescriptor(descriptorName).getRestApi(RestApiType.COMPONENT_CONFIG);
+        final DescriptorActionApi descriptor = descriptorMap.getComponentDescriptor(descriptorName).getRestApi(ActionApiType.COMPONENT_CONFIG);
         return controllerHandler.postConfig(descriptor.getConfigFromJson(config), descriptor);
     }
 
     @Override
     public ResponseEntity<String> putConfig(@RequestBody(required = false) final String config, @PathVariable final String descriptorName) {
-        final RestApi descriptor = descriptorMap.getComponentDescriptor(descriptorName).getRestApi(RestApiType.COMPONENT_CONFIG);
+        final DescriptorActionApi descriptor = descriptorMap.getComponentDescriptor(descriptorName).getRestApi(ActionApiType.COMPONENT_CONFIG);
         return controllerHandler.putConfig(descriptor.getConfigFromJson(config), descriptor);
     }
 
     @Override
     public ResponseEntity<String> validateConfig(@RequestBody(required = false) final String config, @PathVariable final String descriptorName) {
-        final RestApi descriptor = descriptorMap.getComponentDescriptor(descriptorName).getRestApi(RestApiType.COMPONENT_CONFIG);
+        final DescriptorActionApi descriptor = descriptorMap.getComponentDescriptor(descriptorName).getRestApi(ActionApiType.COMPONENT_CONFIG);
         return controllerHandler.validateConfig(descriptor.getConfigFromJson(config), descriptor);
     }
 
     @Override
     public ResponseEntity<String> deleteConfig(final Long id, final @PathVariable String descriptorName) {
-        final RestApi descriptor = descriptorMap.getComponentDescriptor(descriptorName).getRestApi(RestApiType.COMPONENT_CONFIG);
+        final DescriptorActionApi descriptor = descriptorMap.getComponentDescriptor(descriptorName).getRestApi(ActionApiType.COMPONENT_CONFIG);
         return controllerHandler.deleteConfig(id, descriptor);
     }
 

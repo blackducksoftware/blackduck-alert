@@ -31,7 +31,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.event.ChannelEvent;
+import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.audit.AuditUtility;
@@ -42,7 +42,7 @@ import com.synopsys.integration.alert.workflow.MessageReceiver;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
-public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, E extends ChannelEvent> extends MessageReceiver<E> {
+public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, E extends DistributionEvent> extends MessageReceiver<E> {
     private static final Logger logger = LoggerFactory.getLogger(DistributionChannel.class);
 
     private final JpaRepository<G, Long> globalRepository;

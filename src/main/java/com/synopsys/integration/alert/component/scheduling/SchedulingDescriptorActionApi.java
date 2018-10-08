@@ -29,17 +29,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.config.RestApi;
+import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
 import com.synopsys.integration.alert.database.scheduling.SchedulingRepositoryAccessor;
 import com.synopsys.integration.alert.web.component.scheduling.SchedulingConfig;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class SchedulingRestApi extends RestApi {
+public class SchedulingDescriptorActionApi extends DescriptorActionApi {
 
     @Autowired
-    public SchedulingRestApi(final SchedulingTypeConverter typeConverter, final SchedulingRepositoryAccessor repositoryAccessor, final SchedulingStartupComponent schedulingStartupComponent) {
+    public SchedulingDescriptorActionApi(final SchedulingTypeConverter typeConverter, final SchedulingRepositoryAccessor repositoryAccessor, final SchedulingStartupComponent schedulingStartupComponent) {
         super(typeConverter, repositoryAccessor, schedulingStartupComponent);
     }
 

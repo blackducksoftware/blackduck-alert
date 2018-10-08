@@ -17,7 +17,7 @@ import org.springframework.scheduling.TaskScheduler;
 
 import com.synopsys.integration.alert.channel.ChannelTemplateManager;
 import com.synopsys.integration.alert.channel.email.EmailChannelEvent;
-import com.synopsys.integration.alert.channel.event.ChannelEvent;
+import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.DateRange;
@@ -32,7 +32,7 @@ public class ProcessingTaskTest {
 
     private final String taskName = "processing-test-task";
     private List<NotificationContent> modelList;
-    private List<ChannelEvent> eventList;
+    private List<DistributionEvent> eventList;
 
     @Before
     public void initTest() {
@@ -161,7 +161,7 @@ public class ProcessingTaskTest {
         final DateRange dateRange = task.getDateRange();
         Mockito.when(notificationManager.findByCreatedAtBetween(dateRange.getStart(), dateRange.getEnd())).thenReturn(modelList);
         final ProcessingTask processingTask = Mockito.spy(task);
-        final List<ChannelEvent> actualEventList = processingTask.process(modelList);
+        final List<DistributionEvent> actualEventList = processingTask.process(modelList);
         assertEquals(eventList, actualEventList);
     }
 
@@ -172,7 +172,7 @@ public class ProcessingTaskTest {
         final NotificationProcessor notificationProcessor = Mockito.mock(NotificationProcessor.class);
         final ChannelTemplateManager channelTemplateManager = Mockito.mock(ChannelTemplateManager.class);
         final ProcessingTask processingTask = Mockito.spy(createTask(taskScheduler, notificationManager, notificationProcessor, channelTemplateManager));
-        final List<ChannelEvent> actualEventList = processingTask.process(Collections.emptyList());
+        final List<DistributionEvent> actualEventList = processingTask.process(Collections.emptyList());
         assertEquals(Collections.emptyList(), actualEventList);
 
     }
