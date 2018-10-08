@@ -119,12 +119,26 @@ public class StartupManager {
     @Transactional
     public void startup() {
         logger.info("Alert Starting...");
+        checkEncryptionProperties();
         initializeChannelPropertyManagers();
         logConfiguration();
         listProperties();
         validateProviders();
         initializeCronJobs();
         initializeProviders();
+    }
+
+    public void checkEncryptionProperties() {
+        alertProperties.getAlertEncryptionPassword().orElseThrow(() -> new IllegalArgumentException("Encryption password not configured"));
+        alertProperties.getAlertEncryptionStaticSalt().orElseThrow(() -> new IllegalArgumentException("Encryption salt not configured"));
+    }
+
+    public void initializeChannelPropertyManagers() {
+        try {
+            alertStartupInitializer.initializeConfigs();
+        } catch (final Exception e) {
+            logger.error("Error inserting startup values", e);
+        }
     }
 
     public void logConfiguration() {
@@ -147,14 +161,6 @@ public class StartupManager {
             logger.info("Black Duck Timeout:             {}", globalBlackDuckConfigEntity.getBlackDuckTimeout());
         }
         logger.info("----------------------------------------");
-    }
-
-    public void initializeChannelPropertyManagers() {
-        try {
-            alertStartupInitializer.initializeConfigs();
-        } catch (final Exception e) {
-            logger.error("Error inserting startup values", e);
-        }
     }
 
     public void listProperties() {
@@ -276,37 +282,5 @@ public class StartupManager {
 
     public String getLoggingLevel() {
         return loggingLevel;
-    }
-
-    public String getServerPort() {
-        return serverPort;
-    }
-
-    public String getKeyStoreFile() {
-        return keyStoreFile;
-    }
-
-    public String getKeyStorePass() {
-        return keyStorePass;
-    }
-
-    public String getKeyStoreType() {
-        return keyStoreType;
-    }
-
-    public String getKeyAlias() {
-        return keyAlias;
-    }
-
-    public String getTrustStoreFile() {
-        return trustStoreFile;
-    }
-
-    public String getTrustStorePass() {
-        return trustStorePass;
-    }
-
-    public String getTrustStoreType() {
-        return trustStoreType;
     }
 }
