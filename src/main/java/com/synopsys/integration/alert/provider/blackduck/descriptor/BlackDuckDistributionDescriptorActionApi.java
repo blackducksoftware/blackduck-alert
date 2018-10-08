@@ -28,14 +28,14 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.config.RestApi;
+import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
 import com.synopsys.integration.alert.web.model.Config;
 
 @Component
-public class BlackDuckDistributionRestApi extends RestApi {
+public class BlackDuckDistributionDescriptorActionApi extends DescriptorActionApi {
 
     @Autowired
-    public BlackDuckDistributionRestApi(final BlackDuckTypeConverter typeConverter, final BlackDuckRepositoryAccessor repositoryAccessor) {
+    public BlackDuckDistributionDescriptorActionApi(final BlackDuckTypeConverter typeConverter, final BlackDuckRepositoryAccessor repositoryAccessor) {
         super(typeConverter, repositoryAccessor);
     }
 

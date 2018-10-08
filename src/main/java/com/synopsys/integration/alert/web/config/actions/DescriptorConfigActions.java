@@ -36,7 +36,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.annotation.SensitiveFieldFinder;
-import com.synopsys.integration.alert.common.descriptor.config.RestApi;
+import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
 import com.synopsys.integration.alert.common.descriptor.config.TypeConverter;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.RepositoryAccessor;
@@ -52,29 +52,29 @@ public class DescriptorConfigActions {
         this.contentConverter = contentConverter;
     }
 
-    public boolean doesConfigExist(final String id, final RestApi restApi) {
-        return doesConfigExist(contentConverter.getLongValue(id), restApi);
+    public boolean doesConfigExist(final String id, final DescriptorActionApi descriptorActionApi) {
+        return doesConfigExist(contentConverter.getLongValue(id), descriptorActionApi);
     }
 
-    public boolean doesConfigExist(final Long id, final RestApi restApi) {
-        return id != null && restApi.readEntity(id).isPresent();
+    public boolean doesConfigExist(final Long id, final DescriptorActionApi descriptorActionApi) {
+        return id != null && descriptorActionApi.readEntity(id).isPresent();
     }
 
-    public List<? extends Config> getConfig(final Long id, final RestApi restApi) throws AlertException {
+    public List<? extends Config> getConfig(final Long id, final DescriptorActionApi descriptorActionApi) throws AlertException {
         if (id != null) {
-            final Config config = getConfigById(id, restApi);
+            final Config config = getConfigById(id, descriptorActionApi);
             if (config != null) {
                 return Arrays.asList(config);
             }
             return Collections.emptyList();
         }
-        return getConfigs(restApi);
+        return getConfigs(descriptorActionApi);
     }
 
-    public Config getConfigById(final Long id, final RestApi restApi) throws AlertException {
-        final Optional<? extends DatabaseEntity> foundEntity = restApi.readEntity(id);
+    public Config getConfigById(final Long id, final DescriptorActionApi descriptorActionApi) throws AlertException {
+        final Optional<? extends DatabaseEntity> foundEntity = descriptorActionApi.readEntity(id);
         if (foundEntity.isPresent()) {
-            final Config restModel = restApi.populateConfigFromEntity(foundEntity.get());
+            final Config restModel = descriptorActionApi.populateConfigFromEntity(foundEntity.get());
             if (restModel != null) {
                 final Config maskedRestModel = maskRestModel(restModel);
                 return maskedRestModel;
@@ -83,54 +83,54 @@ public class DescriptorConfigActions {
         return null;
     }
 
-    public List<? extends Config> getConfigs(final RestApi restApi) throws AlertException {
-        final List<? extends DatabaseEntity> databaseEntities = restApi.readEntities();
-        final List<Config> restModels = getConvertedRestModels(databaseEntities, restApi.getTypeConverter());
+    public List<? extends Config> getConfigs(final DescriptorActionApi descriptorActionApi) throws AlertException {
+        final List<? extends DatabaseEntity> databaseEntities = descriptorActionApi.readEntities();
+        final List<Config> restModels = getConvertedRestModels(databaseEntities, descriptorActionApi.getTypeConverter());
         return maskRestModels(restModels);
     }
 
-    public void deleteConfig(final String id, final RestApi restApi) {
-        deleteConfig(contentConverter.getLongValue(id), restApi);
+    public void deleteConfig(final String id, final DescriptorActionApi descriptorActionApi) {
+        deleteConfig(contentConverter.getLongValue(id), descriptorActionApi);
     }
 
-    public void deleteConfig(final Long id, final RestApi restApi) {
+    public void deleteConfig(final Long id, final DescriptorActionApi descriptorActionApi) {
         if (id != null) {
-            restApi.deleteEntity(id);
+            descriptorActionApi.deleteEntity(id);
         }
     }
 
-    public DatabaseEntity saveConfig(final Config config, final RestApi restApi) {
+    public DatabaseEntity saveConfig(final Config config, final DescriptorActionApi descriptorActionApi) {
         if (config != null) {
-            final DatabaseEntity createdEntity = restApi.populateEntityFromConfig(config);
+            final DatabaseEntity createdEntity = descriptorActionApi.populateEntityFromConfig(config);
             if (createdEntity != null) {
-                final DatabaseEntity savedEntity = restApi.saveEntity(createdEntity);
+                final DatabaseEntity savedEntity = descriptorActionApi.saveEntity(createdEntity);
                 return savedEntity;
             }
         }
         return null;
     }
 
-    public String validateConfig(final Config config, final RestApi restApi, Map<String, String> fieldErrors) throws AlertFieldException {
-        restApi.validateConfig(config, fieldErrors);
+    public String validateConfig(final Config config, final DescriptorActionApi descriptorActionApi, Map<String, String> fieldErrors) throws AlertFieldException {
+        descriptorActionApi.validateConfig(config, fieldErrors);
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }
         return "Valid";
     }
 
-    public String testConfig(final Config config, final RestApi restApi) throws IntegrationException {
-        restApi.testConfig(config);
+    public String testConfig(final Config config, final DescriptorActionApi descriptorActionApi) throws IntegrationException {
+        descriptorActionApi.testConfig(config);
         return "Succesfully sent test message.";
     }
 
-    public DatabaseEntity updateConfig(final Config config, final RestApi restApi) throws AlertException {
+    public DatabaseEntity updateConfig(final Config config, final DescriptorActionApi descriptorActionApi) throws AlertException {
         if (config != null && StringUtils.isNotBlank(config.getId())) {
             try {
-                DatabaseEntity createdEntity = restApi.populateEntityFromConfig(config);
-                final DatabaseEntity savedEntity = getSavedEntity(config.getId(), restApi.getRepositoryAccessor());
+                DatabaseEntity createdEntity = descriptorActionApi.populateEntityFromConfig(config);
+                final DatabaseEntity savedEntity = getSavedEntity(config.getId(), descriptorActionApi.getRepositoryAccessor());
                 createdEntity = updateEntityWithSavedEntity(createdEntity, savedEntity);
                 if (createdEntity != null) {
-                    final DatabaseEntity updatedEntity = restApi.saveEntity(createdEntity);
+                    final DatabaseEntity updatedEntity = descriptorActionApi.saveEntity(createdEntity);
                     return updatedEntity;
                 }
             } catch (final Exception e) {

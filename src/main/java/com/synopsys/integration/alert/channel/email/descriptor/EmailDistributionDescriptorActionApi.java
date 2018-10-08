@@ -23,21 +23,40 @@
  */
 package com.synopsys.integration.alert.channel.email.descriptor;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.channel.email.EmailChannelEvent;
 import com.synopsys.integration.alert.channel.email.EmailEventProducer;
 import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
-import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
+import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
 import com.synopsys.integration.alert.database.channel.email.EmailDistributionRepositoryAccessor;
+import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
+import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class EmailDescriptor extends ChannelDescriptor {
+public class EmailDistributionDescriptorActionApi extends DescriptorActionApi {
+    private final EmailGroupChannel emailGroupChannel;
+    private final EmailEventProducer emailEventProducer;
 
     @Autowired
-    public EmailDescriptor(final EmailGroupChannel channelListener, final EmailGlobalDescriptorActionApi globalRestApi, final EmailGlobalUIConfig emailGlobalUIConfig,
-        final EmailDistributionDescriptorActionApi distributionRestApi, final EmailDistributionUIConfig emailDistributionUIConfig, final EmailDistributionRepositoryAccessor emailDistributionRepositoryAccessor,
+    public EmailDistributionDescriptorActionApi(final EmailDistributionTypeConverter databaseContentConverter, final EmailDistributionRepositoryAccessor repositoryAccessor, final EmailGroupChannel emailGroupChannel,
         final EmailEventProducer emailEventProducer) {
-        super(EmailGroupChannel.COMPONENT_NAME, EmailGroupChannel.COMPONENT_NAME, channelListener, distributionRestApi, emailDistributionUIConfig, globalRestApi, emailGlobalUIConfig, emailDistributionRepositoryAccessor, emailEventProducer);
+        super(databaseContentConverter, repositoryAccessor);
+        this.emailGroupChannel = emailGroupChannel;
+        this.emailEventProducer = emailEventProducer;
+    }
+
+    @Override
+    public void validateConfig(final Config restModel, final Map<String, String> fieldErrors) {
+    }
+
+    @Override
+    public void testConfig(final Config restModel) throws IntegrationException {
+        final EmailChannelEvent event = emailEventProducer.createChannelTestEvent((CommonDistributionConfig) restModel);
+        emailGroupChannel.sendAuditedMessage(event);
     }
 }

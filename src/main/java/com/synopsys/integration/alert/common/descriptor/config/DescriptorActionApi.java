@@ -32,16 +32,16 @@ import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
 
-public abstract class RestApi {
+public abstract class DescriptorActionApi {
     private final TypeConverter typeConverter;
     private final RepositoryAccessor repositoryAccessor;
     private final StartupComponent startupComponent;
 
-    public RestApi(final TypeConverter typeConverter, final RepositoryAccessor repositoryAccessor) {
+    public DescriptorActionApi(final TypeConverter typeConverter, final RepositoryAccessor repositoryAccessor) {
         this(typeConverter, repositoryAccessor, null);
     }
 
-    public RestApi(final TypeConverter typeConverter, final RepositoryAccessor repositoryAccessor, final StartupComponent startupComponent) {
+    public DescriptorActionApi(final TypeConverter typeConverter, final RepositoryAccessor repositoryAccessor, final StartupComponent startupComponent) {
         this.typeConverter = typeConverter;
         this.repositoryAccessor = repositoryAccessor;
         this.startupComponent = startupComponent;

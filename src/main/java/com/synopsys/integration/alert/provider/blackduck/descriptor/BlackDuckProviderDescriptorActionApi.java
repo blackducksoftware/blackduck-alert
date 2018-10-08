@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.config.RestApi;
+import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.Config;
@@ -54,12 +54,12 @@ import com.synopsys.integration.validator.ValidationResult;
 import com.synopsys.integration.validator.ValidationResults;
 
 @Component
-public class BlackDuckProviderRestApi extends RestApi {
+public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final BlackDuckProperties blackDuckProperties;
 
     @Autowired
-    public BlackDuckProviderRestApi(final BlackDuckTypeConverter databaseContentConverter, final BlackDuckRepositoryAccessor repositoryAccessor, final BlackDuckProviderStartupComponent startupComponent,
+    public BlackDuckProviderDescriptorActionApi(final BlackDuckTypeConverter databaseContentConverter, final BlackDuckRepositoryAccessor repositoryAccessor, final BlackDuckProviderStartupComponent startupComponent,
         final BlackDuckProperties blackDuckProperties) {
         super(databaseContentConverter, repositoryAccessor, startupComponent);
         this.blackDuckProperties = blackDuckProperties;

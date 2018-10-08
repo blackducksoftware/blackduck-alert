@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.synopsys.integration.alert.common.descriptor.config.RestApi;
+import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
 import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ActionApiType;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
@@ -41,7 +41,7 @@ import com.synopsys.integration.exception.IntegrationException;
 public abstract class Descriptor {
     private final String name;
     private final DescriptorType type;
-    private final Map<ActionApiType, RestApi> restApis;
+    private final Map<ActionApiType, DescriptorActionApi> restApis;
     private final Map<ActionApiType, UIConfig> uiConfigs;
 
     public Descriptor(final String name, final DescriptorType type) {
@@ -59,52 +59,52 @@ public abstract class Descriptor {
         return type;
     }
 
-    public void addProviderRestApi(final RestApi restApi) {
-        restApis.put(ActionApiType.PROVIDER_CONFIG, restApi);
+    public void addProviderRestApi(final DescriptorActionApi descriptorActionApi) {
+        restApis.put(ActionApiType.PROVIDER_CONFIG, descriptorActionApi);
     }
 
-    public void addGlobalRestApi(final RestApi restApi) {
-        restApis.put(ActionApiType.CHANNEL_GLOBAL_CONFIG, restApi);
+    public void addGlobalRestApi(final DescriptorActionApi descriptorActionApi) {
+        restApis.put(ActionApiType.CHANNEL_GLOBAL_CONFIG, descriptorActionApi);
     }
 
-    public void addChannelDistributionRestApi(final RestApi restApi) {
-        restApis.put(ActionApiType.CHANNEL_DISTRIBUTION_CONFIG, restApi);
+    public void addChannelDistributionRestApi(final DescriptorActionApi descriptorActionApi) {
+        restApis.put(ActionApiType.CHANNEL_DISTRIBUTION_CONFIG, descriptorActionApi);
     }
 
-    public void addProviderDistributionRestApi(final RestApi restApi) {
-        restApis.put(ActionApiType.PROVIDER_DISTRIBUTION_CONFIG, restApi);
+    public void addProviderDistributionRestApi(final DescriptorActionApi descriptorActionApi) {
+        restApis.put(ActionApiType.PROVIDER_DISTRIBUTION_CONFIG, descriptorActionApi);
     }
 
-    public void addComponentRestApi(final RestApi restApi) {
-        restApis.put(ActionApiType.COMPONENT_CONFIG, restApi);
+    public void addComponentRestApi(final DescriptorActionApi descriptorActionApi) {
+        restApis.put(ActionApiType.COMPONENT_CONFIG, descriptorActionApi);
     }
 
-    public void addProviderUiConfigs(final RestApi restApi, final UIConfig uiConfig) {
+    public void addProviderUiConfigs(final DescriptorActionApi descriptorActionApi, final UIConfig uiConfig) {
         uiConfigs.put(ActionApiType.PROVIDER_CONFIG, uiConfig);
-        addProviderRestApi(restApi);
+        addProviderRestApi(descriptorActionApi);
     }
 
-    public void addGlobalUiConfigs(final RestApi restApi, final UIConfig uiConfig) {
+    public void addGlobalUiConfigs(final DescriptorActionApi descriptorActionApi, final UIConfig uiConfig) {
         uiConfigs.put(ActionApiType.CHANNEL_GLOBAL_CONFIG, uiConfig);
-        addGlobalRestApi(restApi);
+        addGlobalRestApi(descriptorActionApi);
     }
 
-    public void addChannelDistributionUiConfigs(final RestApi restApi, final UIConfig uiConfig) {
+    public void addChannelDistributionUiConfigs(final DescriptorActionApi descriptorActionApi, final UIConfig uiConfig) {
         uiConfigs.put(ActionApiType.CHANNEL_DISTRIBUTION_CONFIG, uiConfig);
-        addChannelDistributionRestApi(restApi);
+        addChannelDistributionRestApi(descriptorActionApi);
     }
 
-    public void addProviderDistributionUiConfigs(final RestApi restApi, final UIConfig uiConfig) {
+    public void addProviderDistributionUiConfigs(final DescriptorActionApi descriptorActionApi, final UIConfig uiConfig) {
         uiConfigs.put(ActionApiType.PROVIDER_DISTRIBUTION_CONFIG, uiConfig);
-        addProviderDistributionRestApi(restApi);
+        addProviderDistributionRestApi(descriptorActionApi);
     }
 
-    public void addComponentUiConfigs(final RestApi restApi, final UIConfig uiConfig) {
+    public void addComponentUiConfigs(final DescriptorActionApi descriptorActionApi, final UIConfig uiConfig) {
         uiConfigs.put(ActionApiType.COMPONENT_CONFIG, uiConfig);
-        addComponentRestApi(restApi);
+        addComponentRestApi(descriptorActionApi);
     }
 
-    public RestApi getRestApi(final ActionApiType actionApiType) {
+    public DescriptorActionApi getRestApi(final ActionApiType actionApiType) {
         return restApis.get(actionApiType);
     }
 
