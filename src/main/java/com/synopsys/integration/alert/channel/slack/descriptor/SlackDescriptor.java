@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.database.channel.slack.SlackDistributionRe
 public class SlackDescriptor extends ChannelDescriptor {
 
     @Autowired
-    public SlackDescriptor(final SlackChannel channelListener, final SlackDistributionRestApi distributionRestApi,
+    public SlackDescriptor(final SlackChannel channelListener, final SlackDistributionDescriptorActionApi distributionRestApi,
         final SlackDistributionRepositoryAccessor slackDistributionRepositoryAccessor, final SlackEventProducer slackEventProducer,
         final SlackUIConfig slackUIConfig) {
         super(SlackChannel.COMPONENT_NAME, SlackChannel.COMPONENT_NAME, channelListener, distributionRestApi, slackDistributionRepositoryAccessor, slackEventProducer, slackUIConfig);

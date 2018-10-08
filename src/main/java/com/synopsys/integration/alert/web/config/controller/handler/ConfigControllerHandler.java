@@ -33,7 +33,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.common.descriptor.config.RestApi;
+import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.web.config.actions.DescriptorConfigActions;
@@ -53,7 +53,7 @@ public class ConfigControllerHandler extends ControllerHandler {
         this.descriptorConfigActions = descriptorConfigActions;
     }
 
-    public List<? extends Config> getConfig(final Long id, final RestApi descriptor) {
+    public List<? extends Config> getConfig(final Long id, final DescriptorActionApi descriptor) {
         try {
             return descriptorConfigActions.getConfig(id, descriptor);
         } catch (final AlertException e) {
@@ -62,7 +62,7 @@ public class ConfigControllerHandler extends ControllerHandler {
         return Collections.emptyList();
     }
 
-    public ResponseEntity<String> postConfig(final Config restModel, final RestApi descriptor) {
+    public ResponseEntity<String> postConfig(final Config restModel, final DescriptorActionApi descriptor) {
         if (restModel == null) {
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing");
         }
@@ -80,7 +80,7 @@ public class ConfigControllerHandler extends ControllerHandler {
         return createResponse(HttpStatus.CONFLICT, restModel.getId(), "Provided id must not be in use. To update an existing configuration, use PUT.");
     }
 
-    public ResponseEntity<String> putConfig(final Config restModel, final RestApi descriptor) {
+    public ResponseEntity<String> putConfig(final Config restModel, final DescriptorActionApi descriptor) {
         if (restModel == null) {
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing");
         }
@@ -103,7 +103,7 @@ public class ConfigControllerHandler extends ControllerHandler {
         return createResponse(HttpStatus.BAD_REQUEST, restModel.getId(), "No configuration with the specified id.");
     }
 
-    public ResponseEntity<String> deleteConfig(final Long id, final RestApi descriptor) {
+    public ResponseEntity<String> deleteConfig(final Long id, final DescriptorActionApi descriptor) {
         if (id != null && descriptorConfigActions.doesConfigExist(id, descriptor)) {
             descriptorConfigActions.deleteConfig(id, descriptor);
             return createResponse(HttpStatus.ACCEPTED, id, "Deleted");
@@ -111,7 +111,7 @@ public class ConfigControllerHandler extends ControllerHandler {
         return createResponse(HttpStatus.BAD_REQUEST, id, "No configuration with the specified id.");
     }
 
-    public ResponseEntity<String> validateConfig(final Config restModel, final RestApi descriptor) {
+    public ResponseEntity<String> validateConfig(final Config restModel, final DescriptorActionApi descriptor) {
         if (restModel == null) {
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing");
         }
@@ -126,7 +126,7 @@ public class ConfigControllerHandler extends ControllerHandler {
         }
     }
 
-    public ResponseEntity<String> testConfig(final Config restModel, final RestApi descriptor) {
+    public ResponseEntity<String> testConfig(final Config restModel, final DescriptorActionApi descriptor) {
         if (restModel == null) {
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing");
         }
