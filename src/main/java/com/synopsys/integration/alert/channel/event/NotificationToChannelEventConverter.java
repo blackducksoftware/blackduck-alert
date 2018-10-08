@@ -47,21 +47,21 @@ public class NotificationToChannelEventConverter {
         this.descriptorMap = descriptorMap;
     }
 
-    public List<ChannelEvent> convertToEvents(final Map<? extends CommonDistributionConfig, List<AggregateMessageContent>> messageContentMap) {
-        final List<ChannelEvent> channelEvents = new ArrayList<>();
+    public List<DistributionEvent> convertToEvents(final Map<? extends CommonDistributionConfig, List<AggregateMessageContent>> messageContentMap) {
+        final List<DistributionEvent> distributionEvents = new ArrayList<>();
         final Set<? extends Map.Entry<? extends CommonDistributionConfig, List<AggregateMessageContent>>> jobMessageContentEntries = messageContentMap.entrySet();
         for (final Map.Entry<? extends CommonDistributionConfig, List<AggregateMessageContent>> entry : jobMessageContentEntries) {
             final CommonDistributionConfig jobConfig = entry.getKey();
             final List<AggregateMessageContent> contentList = entry.getValue();
             for (final AggregateMessageContent content : contentList) {
-                channelEvents.add(createChannelEvent(jobConfig, content));
+                distributionEvents.add(createChannelEvent(jobConfig, content));
             }
         }
-        logger.debug("Created {} events.", channelEvents.size());
-        return channelEvents;
+        logger.debug("Created {} events.", distributionEvents.size());
+        return distributionEvents;
     }
 
-    private ChannelEvent createChannelEvent(final CommonDistributionConfig config, final AggregateMessageContent messageContent) {
+    private DistributionEvent createChannelEvent(final CommonDistributionConfig config, final AggregateMessageContent messageContent) {
         return descriptorMap.getChannelDescriptor(config.getDistributionType()).getChannelEventProducer().createChannelEvent(config, messageContent);
     }
 }

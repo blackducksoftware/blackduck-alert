@@ -30,7 +30,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.event.ChannelEvent;
+import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.channel.event.NotificationToChannelEventConverter;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
@@ -48,15 +48,15 @@ public class NotificationProcessor {
         this.notificationToEventConverter = notificationToEventConverter;
     }
 
-    public List<ChannelEvent> processNotifications(final FrequencyType frequencyType, final List<NotificationContent> notificationList) {
+    public List<DistributionEvent> processNotifications(final FrequencyType frequencyType, final List<NotificationContent> notificationList) {
         final Map<? extends CommonDistributionConfig, List<AggregateMessageContent>> messageContentList = messageContentAggregator.processNotifications(frequencyType, notificationList);
-        final List<ChannelEvent> notificationEvents = notificationToEventConverter.convertToEvents(messageContentList);
+        final List<DistributionEvent> notificationEvents = notificationToEventConverter.convertToEvents(messageContentList);
         return notificationEvents;
     }
 
-    public List<ChannelEvent> processNotifications(final CommonDistributionConfig commonDistributionConfig, final List<NotificationContent> notificationList) {
+    public List<DistributionEvent> processNotifications(final CommonDistributionConfig commonDistributionConfig, final List<NotificationContent> notificationList) {
         final Map<? extends CommonDistributionConfig, List<AggregateMessageContent>> messageContentList = messageContentAggregator.processNotifications(Arrays.asList(commonDistributionConfig), notificationList);
-        final List<ChannelEvent> notificationEvents = notificationToEventConverter.convertToEvents(messageContentList);
+        final List<DistributionEvent> notificationEvents = notificationToEventConverter.convertToEvents(messageContentList);
         return notificationEvents;
     }
 }

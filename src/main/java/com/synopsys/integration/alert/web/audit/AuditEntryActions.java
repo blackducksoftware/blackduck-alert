@@ -41,7 +41,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.channel.ChannelTemplateManager;
-import com.synopsys.integration.alert.channel.event.ChannelEvent;
+import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
@@ -148,8 +148,8 @@ public class AuditEntryActions {
             throw new AlertException("The job for this entry was deleted, can not re-send this entry.");
         }
         final CommonDistributionConfig commonConfig = optionalCommonConfig.get();
-        final List<ChannelEvent> channelEvents = notificationProcessor.processNotifications(commonConfig, notifications);
-        channelEvents.forEach(event -> {
+        final List<DistributionEvent> distributionEvents = notificationProcessor.processNotifications(commonConfig, notifications);
+        distributionEvents.forEach(event -> {
             event.setAuditEntryId(auditEntryEntity.getId());
             channelTemplateManager.sendEvent(event);
         });

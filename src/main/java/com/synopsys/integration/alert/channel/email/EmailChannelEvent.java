@@ -25,10 +25,10 @@ package com.synopsys.integration.alert.channel.email;
 
 import java.util.Set;
 
-import com.synopsys.integration.alert.channel.event.ChannelEvent;
+import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 
-public class EmailChannelEvent extends ChannelEvent {
+public class EmailChannelEvent extends DistributionEvent {
     private final Set<String> emailAddresses;
     private final String subjectLine;
 
