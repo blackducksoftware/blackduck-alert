@@ -80,8 +80,8 @@ class HipChatJobConfiguration extends Component {
                 <TextInput id="jobHipChatRoomId" label="Room Id" name="roomId" value={this.state.roomId} onChange={this.handleChange} errorName="roomIdError" errorValue={this.props.error.roomIdError}/>
                 <CheckboxInput id="jobHipChatNotify" label="Notify" name="notify" value={this.state.notify} onChange={this.handleChange} errorName="notifyError" errorValue={this.props.error.notifyError}/>
                 <div className="form-group">
-                    <label className="col-sm-3 control-label">Color</label>
-                    <div className="col-sm-8">
+                    <label className="col-sm-3 col-form-label text-right">Color</label>
+                    <div className="d-inline-flex p-2 col-sm-8">
                         <Select
                             id="jobHipChatColor"
                             className="typeAheadField"

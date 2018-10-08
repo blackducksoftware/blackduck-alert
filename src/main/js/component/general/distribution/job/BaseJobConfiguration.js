@@ -293,8 +293,8 @@ class BaseJobConfiguration extends Component {
             return (
                 <div>
                     <div className="form-group">
-                        <label className="col-sm-3 control-label">Format</label>
-                        <div className="col-sm-8">
+                        <label className="col-sm-3 col-form-label text-right">Format</label>
+                        <div className="d-inline-flex p-2 col-sm-8">
                             <Select
                                 id="formatType"
                                 className="typeAheadField"
@@ -310,8 +310,8 @@ class BaseJobConfiguration extends Component {
                         </div>
                     </div>
                     <div className="form-group">
-                        <label className="col-sm-3 control-label">Notification Types</label>
-                        <div className="col-sm-8">
+                        <label className="col-sm-3 col-form-label text-right">Notification Types</label>
+                        <div className="d-inline-flex p-2 col-sm-8">
                             <Select
                                 id="jobType"
                                 className="typeAheadField"
@@ -343,8 +343,8 @@ class BaseJobConfiguration extends Component {
             <form className="form-horizontal" onSubmit={this.onSubmit}>
                 <TextInput id="name" label="Job Name" name="name" value={this.state.name} onChange={this.handleChange} errorName="nameError" errorValue={this.state.error.nameError}/>
                 <div className="form-group">
-                    <label className="col-sm-3 control-label">Frequency</label>
-                    <div className="col-sm-8">
+                    <label className="col-sm-3 col-form-label text-right">Frequency</label>
+                    <div className="d-inline-flex p-2 col-sm-8">
                         <Select
                             id="jobFrequency"
                             className="typeAheadField"
@@ -360,8 +360,8 @@ class BaseJobConfiguration extends Component {
                     </div>
                 </div>
                 <div className="form-group">
-                    <label className="col-sm-3 control-label">Provider</label>
-                    <div className="col-sm-8">
+                    <label className="col-sm-3 col-form-label text-right">Provider</label>
+                    <div className="d-inline-flex p-2 col-sm-8">
                         <Select
                             id="providerName"
                             className="typeAheadField"

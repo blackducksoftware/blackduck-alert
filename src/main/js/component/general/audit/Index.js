@@ -358,6 +358,7 @@ class Index extends Component {
                         remote
                         pagination
                         search
+                        version='4'
                     >
                         <TableHeaderColumn dataField="name" dataSort columnTitle columnClassName="tableCell">Job Name</TableHeaderColumn>
                         <TableHeaderColumn dataField="notificationProviderName" dataSort columnTitle columnClassName="tableCell" dataFormat={this.providerColumnDataFormat}>Provider Name</TableHeaderColumn>
