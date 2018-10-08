@@ -23,14 +23,14 @@
  */
 package com.synopsys.integration.alert.common.enumeration;
 
-public enum DescriptorActionApi {
+public enum ActionApiType {
     CHANNEL_GLOBAL_CONFIG,
     CHANNEL_DISTRIBUTION_CONFIG,
     PROVIDER_CONFIG,
     PROVIDER_DISTRIBUTION_CONFIG,
     COMPONENT_CONFIG;
 
-    public static final DescriptorActionApi getRestApiType(final String restApiTypeName) {
+    public static final ActionApiType getRestApiType(final String restApiTypeName) {
         try {
             return valueOf(restApiTypeName);
         } catch (final IllegalArgumentException ex) {
