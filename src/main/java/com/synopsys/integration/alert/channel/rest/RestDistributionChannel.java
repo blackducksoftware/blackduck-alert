@@ -34,7 +34,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.DistributionChannel;
-import com.synopsys.integration.alert.channel.event.ChannelEvent;
+import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.audit.AuditUtility;
@@ -50,7 +50,7 @@ import com.synopsys.integration.rest.request.Request;
 import com.synopsys.integration.rest.request.Response;
 
 // TODO this class should not be part of the hierarchy. It should be used as a helper class to help use rest and all channels should extends DistributionChannel
-public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntity, C extends DistributionChannelConfigEntity, E extends ChannelEvent> extends DistributionChannel<G, E> {
+public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntity, C extends DistributionChannelConfigEntity, E extends DistributionEvent> extends DistributionChannel<G, E> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final ChannelRestConnectionFactory channelRestConnectionFactory;
 
