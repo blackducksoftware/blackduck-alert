@@ -103,7 +103,7 @@ class ProjectConfiguration extends Component {
         if (!this.props.includeAllProjects) {
             projectTable = (<div>
                 <BootstrapTable
-                    version='4'
+                    version="4"
                     data={projectData}
                     containerClass="table"
                     hover

@@ -345,7 +345,7 @@ class Index extends Component {
                 </h1>
                 <div>
                     <BootstrapTable
-                        version='4'
+                        version="4"
                         trClassName={this.trClassFormat}
                         condensed
                         data={this.state.entries}
