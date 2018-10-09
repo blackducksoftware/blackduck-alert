@@ -24,16 +24,25 @@
 package com.synopsys.integration.alert.database.security;
 
 import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 
 @Component
+@Converter
+@Configurable(preConstruction = true, autowire = Autowire.BY_TYPE)
 public class StringEncryptionConverter implements AttributeConverter<String, String> {
     private static EncryptionUtility encryptionUtility;
+
+    public boolean isInitialized() {
+        return StringEncryptionConverter.encryptionUtility != null;
+    }
 
     @Autowired
     public void setEncryptionUtility(final EncryptionUtility encryptionUtility) {
