@@ -359,7 +359,43 @@ class Index extends Component {
         let content = (
             <div>
                 <BootstrapTable
-                    version='4'
+                    version="4"
+                    hover
+                    condensed
+                    data={this.state.jobs}
+                    containerClass="table"
+                    insertRow
+                    deleteRow
+                    trClassName="tableRow"
+                    headerContainerClass="scrollable"
+                    bodyContainerClass="tableScrollableBody"
+                >
+                    <TableHeaderColumn dataField="id" isKey hidden>
+                        Job Id
+                    </TableHeaderColumn>
+                    <TableHeaderColumn dataField="distributionConfigId" hidden>
+                        Distribution Id
+                    </TableHeaderColumn>
+                    <TableHeaderColumn dataField="name" dataSort columnTitle columnClassName="tableCell">
+                        Distribution Job
+                    </TableHeaderColumn>
+                    <TableHeaderColumn dataField="distributionType" dataSort columnClassName="tableCell" dataFormat={this.typeColumnDataFormat}>
+                        Type
+                    </TableHeaderColumn>
+                    <TableHeaderColumn dataField="providerName" dataSort columnClassName="tableCell" dataFormat={this.providerColumnDataFormat}> Provider </TableHeaderColumn>
+                    <TableHeaderColumn dataField="frequency" dataSort columnClassName="tableCell" dataFormat={frequencyColumnDataFormat}>
+                        Frequency Type
+                    </TableHeaderColumn>
+                    <TableHeaderColumn dataField="lastRan" dataSort columnTitle columnClassName="tableCell">
+                        Last Run
+                    </TableHeaderColumn>
+                    <TableHeaderColumn dataField="status" dataSort columnTitle columnClassName={statusColumnClassNameFormat}>
+                        Status
+                    </TableHeaderColumn>
+                    <TableHeaderColumn dataField="" width="48" columnClassName="tableCell" dataFormat={this.editButtonClick}/>
+                </BootstrapTable>
+                <BootstrapTable
+                    version="4"
                     hover
                     condensed
                     data={this.state.jobs}

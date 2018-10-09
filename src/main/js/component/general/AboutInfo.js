@@ -29,7 +29,7 @@ class AboutInfo extends React.Component {
         return (
             <div className="form-group">
                 <BootstrapTable
-                    version='4'
+                    version="4"
                     data={tableData}
                     options={tableOptions}
                     headerContainerClass="scrollable"
