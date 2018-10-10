@@ -40,14 +40,12 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.StartupComponent;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.alert.workflow.PropertyInitializer;
 
 @Component
 public class AlertStartupInitializer {
-    public static final String ALERT_PROPERTY_PREFIX = "BLACKDUCK_ALERT_";
     private final Logger logger = LoggerFactory.getLogger(AlertStartupInitializer.class);
     private final ConversionService conversionService;
     private final Environment environment;
@@ -57,7 +55,7 @@ public class AlertStartupInitializer {
 
     @Autowired
     public AlertStartupInitializer(final PropertyInitializer propertyInitializer, final DescriptorMap descriptorMap, final Environment environment,
-            final ConversionService conversionService) {
+        final ConversionService conversionService) {
         this.propertyInitializer = propertyInitializer;
         this.descriptorMap = descriptorMap;
         this.environment = environment;
@@ -66,7 +64,7 @@ public class AlertStartupInitializer {
     }
 
     // TODO try and move this functionality to startup component and eliminate this class
-    public void initializeConfigs() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException, AlertException {
+    public void initializeConfigs() throws IllegalArgumentException, SecurityException {
         descriptorMap.getStartupRestApis().forEach(descriptor -> {
             final StartupComponent startupComponent = descriptor.getStartupComponent();
             final Set<AlertStartupProperty> startupProperties = startupComponent.getGlobalEntityPropertyMapping();
@@ -107,7 +105,7 @@ public class AlertStartupInitializer {
     }
 
     public boolean setRestModelValue(final String value, final Config globalRestModel, final AlertStartupProperty property)
-            throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+        throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         if (StringUtils.isNotBlank(value)) {
             logger.debug("Found the value: {}", value);
             final Field declaredField = globalRestModel.getClass().getDeclaredField(property.getFieldName());
