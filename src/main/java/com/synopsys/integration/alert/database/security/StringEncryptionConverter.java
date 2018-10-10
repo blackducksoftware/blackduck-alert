@@ -35,6 +35,10 @@ import com.synopsys.integration.alert.common.security.EncryptionUtility;
 public class StringEncryptionConverter implements AttributeConverter<String, String> {
     private static EncryptionUtility encryptionUtility;
 
+    public boolean isInitialized() {
+        return StringEncryptionConverter.encryptionUtility != null;
+    }
+
     @Autowired
     public void setEncryptionUtility(final EncryptionUtility encryptionUtility) {
         StringEncryptionConverter.encryptionUtility = encryptionUtility;
