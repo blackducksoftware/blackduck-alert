@@ -1,7 +1,7 @@
 version: '2.1'
 services:
   cfssl:
-    image: blackducksoftware/hub-cfssl:4.6.2
+    image: blackducksoftware/hub-cfssl:4.7.0
     volumes: ['cert-volume:/etc/cfssl']
     healthcheck:
       test: [CMD, /usr/local/bin/docker-healthcheck.sh, 'http://localhost:8888/api/v1/cfssl/scaninfo']
