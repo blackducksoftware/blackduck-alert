@@ -40,7 +40,7 @@ public class EncryptionUtility {
     @Autowired
     public EncryptionUtility(final AlertProperties alertProperties) {
         this.password = alertProperties.getAlertEncryptionPassword().orElse(null);
-        this.salt = alertProperties.getAlertEncryptionStaticSalt().orElse(null);
+        this.salt = alertProperties.getAlertEncryptionGlobalSalt().orElse(null);
     }
 
     public String encrypt(final String value) {

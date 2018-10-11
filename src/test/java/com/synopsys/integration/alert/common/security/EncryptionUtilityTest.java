@@ -18,7 +18,7 @@ public class EncryptionUtilityTest {
     public void testEncryption() {
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
         Mockito.when(alertProperties.getAlertEncryptionPassword()).thenReturn(Optional.of(TEST_PASSWORD));
-        Mockito.when(alertProperties.getAlertEncryptionStaticSalt()).thenReturn(Optional.of(TEST_SALT));
+        Mockito.when(alertProperties.getAlertEncryptionGlobalSalt()).thenReturn(Optional.of(TEST_SALT));
         final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties);
 
         final String sensitiveValue = "sensitiveDataText";
@@ -31,7 +31,7 @@ public class EncryptionUtilityTest {
     public void testDecryption() {
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
         Mockito.when(alertProperties.getAlertEncryptionPassword()).thenReturn(Optional.of(TEST_PASSWORD));
-        Mockito.when(alertProperties.getAlertEncryptionStaticSalt()).thenReturn(Optional.of(TEST_SALT));
+        Mockito.when(alertProperties.getAlertEncryptionGlobalSalt()).thenReturn(Optional.of(TEST_SALT));
         final EncryptionUtility encryptionUtility = new EncryptionUtility(alertProperties);
         final String sensitiveValue = "sensitiveDataText";
 

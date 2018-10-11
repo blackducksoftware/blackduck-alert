@@ -134,7 +134,7 @@ public class StartupManager {
 
     public void checkEncryptionProperties() {
         alertProperties.getAlertEncryptionPassword().orElseThrow(() -> new IllegalArgumentException("Encryption password not configured"));
-        alertProperties.getAlertEncryptionStaticSalt().orElseThrow(() -> new IllegalArgumentException("Encryption salt not configured"));
+        alertProperties.getAlertEncryptionGlobalSalt().orElseThrow(() -> new IllegalArgumentException("Encryption salt not configured"));
         if (stringEncryptionConverter.isInitialized()) {
             logger.info("Encryption utilities: Initialized");
         } else {
