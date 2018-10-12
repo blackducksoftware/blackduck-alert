@@ -27,7 +27,7 @@ class SchedulingConfiguration extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         this.cancelAutoTick();
-        if (nextProps.accumulatorNextRun && nextProps.accumulatorNextRun !== '-1') {
+        if (nextProps.accumulatorNextRun) {
             this.setState({
                 accumulatorNextRun: parseInt(nextProps.accumulatorNextRun, 10)
             });
