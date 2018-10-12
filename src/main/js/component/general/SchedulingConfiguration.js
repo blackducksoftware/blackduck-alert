@@ -54,15 +54,15 @@ class SchedulingConfiguration extends React.Component {
 
 
     decreaseAccumulatorTime() {
-        if (this.state.accumulatorNextRun > 0) {
-            this.setState({
-                accumulatorNextRun: this.state.accumulatorNextRun - 1
-            });
-        } else {
+        if (this.state.accumulatorNextRun <= 0) {
             this.setState({
                 accumulatorNextRun: 60
             });
             this.props.getConfig();
+        } else {
+            this.setState({
+                accumulatorNextRun: this.state.accumulatorNextRun - 1
+            });
         }
     }
 
