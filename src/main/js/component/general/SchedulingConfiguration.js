@@ -64,7 +64,6 @@ class SchedulingConfiguration extends React.Component {
 
     decreaseAccumulatorTime() {
         if (this.state.accumulatorNextRun <= 0) {
-            this.cancelAutoTick();
             this.props.getConfig();
         } else {
             this.setState({
