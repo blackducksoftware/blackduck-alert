@@ -27,12 +27,21 @@ class SchedulingConfiguration extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         this.cancelAutoTick();
-        if (nextProps.accumulatorNextRun) {
-            this.setState({
-                accumulatorNextRun: parseInt(nextProps.accumulatorNextRun, 10)
-            });
-            this.startAutoTick();
+
+        var nextRun = nextProps.accumulatorNextRun;
+        if (!nextRun) {
+            nextRun = 60;
+        } else {
+            nextRun = parseInt(nextRun, 10);
+            if (nextRun <= 0) {
+                nextRun = 60;
+            }
         }
+        this.setState({
+            accumulatorNextRun: nextRun
+        });
+        this.startAutoTick();
+
         const {dailyDigestHourOfDay, purgeDataFrequencyDays} = this.state;
         this.setState({dailyDigestHourOfDay: dailyDigestHourOfDay || nextProps.dailyDigestHourOfDay || null});
         this.setState({purgeDataFrequencyDays: purgeDataFrequencyDays || nextProps.purgeDataFrequencyDays || null});
@@ -55,9 +64,7 @@ class SchedulingConfiguration extends React.Component {
 
     decreaseAccumulatorTime() {
         if (this.state.accumulatorNextRun <= 0) {
-            this.setState({
-                accumulatorNextRun: 60
-            });
+            this.cancelAutoTick();
             this.props.getConfig();
         } else {
             this.setState({
