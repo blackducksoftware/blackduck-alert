@@ -25,6 +25,8 @@ package com.synopsys.integration.alert.common.security;
 
 import org.apache.commons.codec.Charsets;
 import org.apache.commons.codec.binary.Hex;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.security.crypto.encrypt.TextEncryptor;
@@ -34,6 +36,7 @@ import com.synopsys.integration.alert.common.AlertProperties;
 
 @Component
 public class EncryptionUtility {
+    private static final Logger logger = LoggerFactory.getLogger(EncryptionUtility.class);
     private final String password;
     private final String salt;
 
@@ -44,13 +47,26 @@ public class EncryptionUtility {
     }
 
     public String encrypt(final String value) {
-        final TextEncryptor encryptor = Encryptors.delux(password, getSalt());
-        return encryptor.encrypt(value);
+        String encryptedValue = "";
+        try {
+            final TextEncryptor encryptor = Encryptors.delux(password, getSalt());
+            encryptedValue = encryptor.encrypt(value);
+        } catch (final IllegalArgumentException ex) {
+            logger.error("Error encrypting value", ex);
+        }
+        return encryptedValue;
     }
 
     public String decrypt(final String encryptedValue) {
-        final TextEncryptor decryptor = Encryptors.delux(password, getSalt());
-        return decryptor.decrypt(encryptedValue);
+        String decryptedValue = "";
+        try {
+            final TextEncryptor decryptor = Encryptors.delux(password, getSalt());
+            decryptedValue = decryptor.decrypt(encryptedValue);
+        } catch (final IllegalArgumentException ex) {
+            logger.error("Error decrypting value", ex);
+        }
+
+        return decryptedValue;
     }
 
     private String getSalt() {
