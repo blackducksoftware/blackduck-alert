@@ -2,6 +2,23 @@
 
 ## Requirements
 
+The 3-alert.yml file contains a volume specification.  Currently it is configured as an emptyDir, which is not persistent storage.
+Before installing or upgrading Alert edit this file to specify the desired persistent storage. 
+
+### Upgrading Alert
+The steps in the upgrade procedure are the same as the installation procedure.  
+The difference is that the kubectl apply command is used in place of the kubectl create command.
+
+```
+kubectl create
+```
+changes to:
+```
+kubectl apply
+``` 
+
+Please review the installation instructions below.
+
 ### Installing Alert
 
 ### Standalone Installation

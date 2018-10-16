@@ -19,6 +19,7 @@ items:
           tier: alert
       spec:
         volumes:
+        # NOTE: replace the emptyDir volume with a persistent volume or all the data will be lost when the pod is destroyed.
         - emptyDir: {}
           name: dir-alert
         containers:
