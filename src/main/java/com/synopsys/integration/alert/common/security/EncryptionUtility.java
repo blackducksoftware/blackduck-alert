@@ -47,14 +47,8 @@ public class EncryptionUtility {
     }
 
     public String encrypt(final String value) {
-        String encryptedValue = "";
-        try {
-            final TextEncryptor encryptor = Encryptors.delux(password, getSalt());
-            encryptedValue = encryptor.encrypt(value);
-        } catch (final IllegalArgumentException ex) {
-            logger.error("Error encrypting value", ex);
-        }
-        return encryptedValue;
+        final TextEncryptor encryptor = Encryptors.delux(password, getSalt());
+        return encryptor.encrypt(value);
     }
 
     public String decrypt(final String encryptedValue) {
