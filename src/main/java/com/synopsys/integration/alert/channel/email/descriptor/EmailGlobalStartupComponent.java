@@ -23,17 +23,17 @@
  */
 package com.synopsys.integration.alert.channel.email.descriptor;
 
-import java.util.Set;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
-import com.synopsys.integration.alert.workflow.startup.AlertStartupProperty;
 import com.synopsys.integration.alert.common.descriptor.config.StartupComponent;
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalConfigEntity;
 import com.synopsys.integration.alert.database.entity.EntityPropertyMapper;
 import com.synopsys.integration.alert.web.channel.model.EmailGlobalConfig;
+import com.synopsys.integration.alert.workflow.startup.AlertStartupProperty;
 
 @Component
 public class EmailGlobalStartupComponent extends StartupComponent {
@@ -46,7 +46,7 @@ public class EmailGlobalStartupComponent extends StartupComponent {
     }
 
     @Override
-    public Set<AlertStartupProperty> getGlobalEntityPropertyMapping() {
+    public Map<String, AlertStartupProperty> getGlobalEntityPropertyMapping() {
         return entityPropertyMapper.mapEntityToProperties(EmailGroupChannel.COMPONENT_NAME, EmailGlobalConfigEntity.class);
     }
 
