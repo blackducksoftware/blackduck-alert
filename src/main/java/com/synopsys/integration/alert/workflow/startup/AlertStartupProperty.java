@@ -28,10 +28,16 @@ import com.synopsys.integration.util.Stringable;
 public class AlertStartupProperty extends Stringable {
     private final String propertyKey;
     private final String fieldName;
+    private final boolean alwaysOverride;
 
     public AlertStartupProperty(final String propertyKey, final String fieldName) {
+        this(propertyKey, fieldName, false);
+    }
+
+    public AlertStartupProperty(final String propertyKey, final String fieldName, final boolean alwaysOverride) {
         this.propertyKey = propertyKey;
         this.fieldName = fieldName;
+        this.alwaysOverride = alwaysOverride;
     }
 
     public String getPropertyKey() {
@@ -40,5 +46,9 @@ public class AlertStartupProperty extends Stringable {
 
     public String getFieldName() {
         return fieldName;
+    }
+
+    public boolean isAlwaysOverride() {
+        return alwaysOverride;
     }
 }
