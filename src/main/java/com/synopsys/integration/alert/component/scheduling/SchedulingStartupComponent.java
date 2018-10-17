@@ -23,7 +23,7 @@
  */
 package com.synopsys.integration.alert.component.scheduling;
 
-import java.util.Set;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -45,7 +45,7 @@ public class SchedulingStartupComponent extends StartupComponent {
     }
 
     @Override
-    public Set<AlertStartupProperty> getGlobalEntityPropertyMapping() {
+    public Map<String, AlertStartupProperty> getGlobalEntityPropertyMapping() {
         return entityPropertyMapper.mapEntityToProperties(SchedulingDescriptor.SCHEDULING_COMPONENT, SchedulingConfigEntity.class);
     }
 

@@ -23,7 +23,7 @@
  */
 package com.synopsys.integration.alert.channel.hipchat.descriptor;
 
-import java.util.Set;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -46,7 +46,7 @@ public class HipChatStartupComponent extends StartupComponent {
     }
 
     @Override
-    public Set<AlertStartupProperty> getGlobalEntityPropertyMapping() {
+    public Map<String, AlertStartupProperty> getGlobalEntityPropertyMapping() {
         return entityPropertyMapper.mapEntityToProperties(HipChatChannel.COMPONENT_NAME, HipChatGlobalConfigEntity.class);
     }
 
