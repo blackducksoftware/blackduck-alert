@@ -2,8 +2,8 @@ package com.synopsys.integration.alert.provider.blackduck;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,7 +44,11 @@ public class BlackDuckProviderTest {
         final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
         final ProjectSyncTask projectSyncTask = Mockito.mock(ProjectSyncTask.class);
         final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask);
-        final Set<String> expectedNotificationTypes = Arrays.stream(NotificationType.values()).map(NotificationType::name).collect(Collectors.toSet());
+        final Set<String> expectedNotificationTypes = new LinkedHashSet<>();
+        expectedNotificationTypes.add(NotificationType.POLICY_OVERRIDE.name());
+        expectedNotificationTypes.add(NotificationType.RULE_VIOLATION.name());
+        expectedNotificationTypes.add(NotificationType.RULE_VIOLATION_CLEARED.name());
+        expectedNotificationTypes.add(NotificationType.VULNERABILITY.name());
         final Set<String> providerNotificationTypes = provider.getProviderContentTypes().stream().map(contentType -> contentType.getNotificationType()).collect(Collectors.toSet());
         assertEquals(expectedNotificationTypes, providerNotificationTypes);
     }

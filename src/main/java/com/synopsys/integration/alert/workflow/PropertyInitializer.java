@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.workflow;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.database.RepositoryAccessor;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+import com.synopsys.integration.alert.workflow.startup.AlertStartupProperty;
 
 @Component
 public class PropertyInitializer {
@@ -41,8 +43,8 @@ public class PropertyInitializer {
         logger = LoggerFactory.getLogger(getClass());
     }
 
-    public void save(final DatabaseEntity entity, final RepositoryAccessor repositoryAccessor) {
-        logger.info("Saving global properties {}", entity);
+    public void save(final DatabaseEntity entity, final RepositoryAccessor repositoryAccessor, final Map<String, AlertStartupProperty> startupProperties) {
+        logger.debug("Saving global properties {}", entity);
         final List<? extends DatabaseEntity> savedEntityList = repositoryAccessor.readEntities();
         if (savedEntityList == null || savedEntityList.isEmpty()) {
             logger.debug("No global entities found, saving new values.");
@@ -50,14 +52,14 @@ public class PropertyInitializer {
         } else {
             logger.debug("Found existing properties, inserting new data.");
             savedEntityList.forEach(savedEntity -> {
-                updateEntityWithDefaults(savedEntity, entity);
+                updateEntityWithDefaults(savedEntity, entity, startupProperties);
                 repositoryAccessor.saveEntity(savedEntity);
             });
 
         }
     }
 
-    private void updateEntityWithDefaults(final DatabaseEntity savedEntity, final DatabaseEntity defaultValuesEntity) {
+    private void updateEntityWithDefaults(final DatabaseEntity savedEntity, final DatabaseEntity defaultValuesEntity, final Map<String, AlertStartupProperty> startupProperties) {
         final Class<? extends DatabaseEntity> entityClass = savedEntity.getClass();
         final Field[] declaredFields = entityClass.getDeclaredFields();
         logger.debug("Inserting {} into {}", defaultValuesEntity, savedEntity);
@@ -69,6 +71,14 @@ public class PropertyInitializer {
                 final Object defaultValue = declaredField.get(defaultValuesEntity);
                 if (savedValue == null && defaultValue != null) {
                     declaredField.set(savedEntity, defaultValue);
+                } else {
+                    if (startupProperties.containsKey(declaredField.getName())) {
+                        final AlertStartupProperty property = startupProperties.get(declaredField.getName());
+                        if (property.isAlwaysOverride()) {
+                            logger.debug("Startup Property Override Applied for {}", property.getPropertyKey());
+                            declaredField.set(savedEntity, defaultValue);
+                        }
+                    }
                 }
                 declaredField.setAccessible(accessible);
             } catch (final IllegalAccessException ex) {
