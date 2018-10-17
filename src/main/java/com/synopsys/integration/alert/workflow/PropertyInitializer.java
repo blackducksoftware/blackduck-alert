@@ -75,7 +75,7 @@ public class PropertyInitializer {
                     if (startupProperties.containsKey(declaredField.getName())) {
                         final AlertStartupProperty property = startupProperties.get(declaredField.getName());
                         if (property.isAlwaysOverride()) {
-                            logger.info("Startup Property Override Applied for {}", property.getPropertyKey());
+                            logger.debug("Startup Property Override Applied for {}", property.getPropertyKey());
                             declaredField.set(savedEntity, defaultValue);
                         }
                     }
