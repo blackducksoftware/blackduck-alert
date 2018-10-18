@@ -38,12 +38,6 @@ COPY --chown=alert:root docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 COPY --chown=alert:root --from=docker-common healthcheck.sh /usr/local/bin/docker-healthcheck.sh
 COPY --chown=alert:root --from=docker-common certificate-manager.sh "$CERTIFICATE_MANAGER_DIR/certificate-manager.sh"
 
-USER alert:root
-WORKDIR $ALERT_HOME
-
-RUN set -e \
-    && mkdir -p $SECURITY_DIR && mkdir -p $ALERT_DB_DIR \
-    && chmod 775 $SECURITY_DIR && chmod 775 $ALERT_DB_DIR
 
 EXPOSE 8080
 
