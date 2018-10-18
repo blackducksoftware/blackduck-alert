@@ -21,7 +21,8 @@ targetWebAppHost="${HUB_WEBAPP_HOST:-alert}"
 echo "Alert max heap size: $ALERT_MAX_HEAP_SIZE"
 echo "Certificate authority host: $targetCAHost"
 echo "Certificate authority port: $targetCAPort"
-
+me=`whoami`
+echo "Who am I? $me"
 manageRootCertificate() {
     $certificateManagerDir/certificate-manager.sh root \
         --ca $targetCAHost:$targetCAPort \
