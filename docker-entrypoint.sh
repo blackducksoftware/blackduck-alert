@@ -164,13 +164,12 @@ importWebServerCertificate(){
     fi
 }
 
-bootstrapVolume() {
-  me=`whoami`
-  echo "Who am I? $me"
+bootstrapVolumeDirectories() {
   if [ -d $securityDir ];
   then
     echo "$securityDir exists"
   else
+    echo "creating $securityDir"
     mkdir -p $securityDir
   fi
 
@@ -178,6 +177,7 @@ bootstrapVolume() {
   then
     echo "$dataDir exists"
   else
+    echo "creating $dataDir"
     mkdir -p $dataDir
   fi
 }
@@ -187,7 +187,7 @@ then
   echo "ERROR: certificate management script is not present."
   exit 1;
 else
-  bootstrapVolume
+  bootstrapVolumeDirectories
     if [ -f $secretsMountPath/WEBSERVER_CUSTOM_CERT_FILE ] && [ -f $secretsMountPath/WEBSERVER_CUSTOM_KEY_FILE ];
     then
     	echo "Custom webserver cert and key found"
