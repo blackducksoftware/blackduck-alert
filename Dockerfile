@@ -41,12 +41,9 @@ COPY --chown=alert:alert --from=docker-common certificate-manager.sh "$CERTIFICA
 USER alert:alert
 WORKDIR $ALERT_HOME
 
-RUN mkdir -p $CERTIFICATE_MANAGER_DIR
-RUN mkdir -p $ALERT_CONFIG_HOME
-RUN mkdir -p $SECURITY_DIR
-RUN mkdir -p $ALERT_DB_DIR
-
-VOLUME [ "$SECURITY_DIR", "$ALERT_DATA_DIR" ]
+RUN set -e \
+    && mkdir -p $SECURITY_DIR && mkdir -p $ALERT_DB_DIR \
+    && chmod 775 $SECURITY_DIR && chmod 775 $ALERT_DB_DIR
 
 EXPOSE 8080
 
