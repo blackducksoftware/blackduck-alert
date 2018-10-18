@@ -3,6 +3,7 @@ set -e
 
 certificateManagerDir=/opt/blackduck/alert/bin
 securityDir=/opt/blackduck/alert/alert-config/security
+dataDir=/opt/blackduck/alert/alert-config/data
 
 serverCertName=$APPLICATION_NAME-server
 
@@ -21,8 +22,7 @@ targetWebAppHost="${HUB_WEBAPP_HOST:-alert}"
 echo "Alert max heap size: $ALERT_MAX_HEAP_SIZE"
 echo "Certificate authority host: $targetCAHost"
 echo "Certificate authority port: $targetCAPort"
-me=`whoami`
-echo "Who am I? $me"
+
 manageRootCertificate() {
     $certificateManagerDir/certificate-manager.sh root \
         --ca $targetCAHost:$targetCAPort \
@@ -164,11 +164,30 @@ importWebServerCertificate(){
     fi
 }
 
+bootstrapVolume() {
+  me=`whoami`
+  echo "Who am I? $me"
+  if [ -d $securityDir ];
+  then
+    echo "$securityDir exists"
+  else
+    mkdir -p $securityDir
+  fi
+
+  if [ -d $dataDir ];
+  then
+    echo "$dataDir exists"
+  else
+    mkdir -p $dataDir
+  fi
+}
+
 if [ ! -f "$certificateManagerDir/certificate-manager.sh" ];
 then
   echo "ERROR: certificate management script is not present."
   exit 1;
 else
+  bootstrapVolume
     if [ -f $secretsMountPath/WEBSERVER_CUSTOM_CERT_FILE ] && [ -f $secretsMountPath/WEBSERVER_CUSTOM_KEY_FILE ];
     then
     	echo "Custom webserver cert and key found"
