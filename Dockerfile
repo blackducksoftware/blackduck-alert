@@ -32,13 +32,13 @@ RUN set -e \
     && addgroup -S alert \
     && adduser -h "$ALERT_HOME" -g alert -s /sbin/nologin -G alert -S -D alert
 
-COPY --chown=alert:alert blackduck-alert-boot-$VERSION $ALERT_HOME/alert-tar
+COPY --chown=alert:root blackduck-alert-boot-$VERSION $ALERT_HOME/alert-tar
 
-COPY --chown=alert:alert docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-COPY --chown=alert:alert --from=docker-common healthcheck.sh /usr/local/bin/docker-healthcheck.sh
-COPY --chown=alert:alert --from=docker-common certificate-manager.sh "$CERTIFICATE_MANAGER_DIR/certificate-manager.sh"
+COPY --chown=alert:root docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+COPY --chown=alert:root --from=docker-common healthcheck.sh /usr/local/bin/docker-healthcheck.sh
+COPY --chown=alert:root --from=docker-common certificate-manager.sh "$CERTIFICATE_MANAGER_DIR/certificate-manager.sh"
 
-USER alert:alert
+USER alert:root
 WORKDIR $ALERT_HOME
 
 RUN set -e \
