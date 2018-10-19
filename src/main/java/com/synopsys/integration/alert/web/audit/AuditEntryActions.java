@@ -26,6 +26,7 @@ package com.synopsys.integration.alert.web.audit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -160,10 +161,15 @@ public class AuditEntryActions {
         if (StringUtils.isBlank(searchTerm)) {
             listToAddTo.addAll(modelsToCheck);
         } else {
+            final String lowerSearchTerm = searchTerm.toLowerCase(Locale.ENGLISH);
             for (final AuditEntryConfig restModel : modelsToCheck) {
-                if (restModel.getName().contains(searchTerm) || restModel.getStatus().contains(searchTerm) || restModel.getTimeCreated().contains(searchTerm) || restModel.getTimeLastSent().contains(searchTerm)) {
+                if (restModel.getName().toLowerCase(Locale.ENGLISH).contains(lowerSearchTerm) ||
+                        restModel.getStatus().toLowerCase(Locale.ENGLISH).contains(lowerSearchTerm) ||
+                        restModel.getTimeCreated().toLowerCase(Locale.ENGLISH).contains(lowerSearchTerm) ||
+                        restModel.getTimeLastSent().toLowerCase(Locale.ENGLISH).contains(lowerSearchTerm)) {
                     listToAddTo.add(restModel);
-                } else if (null != restModel.getNotification() && restModel.getNotification().getContent().contains(searchTerm)) {
+                } else if (null != restModel.getNotification() &&
+                               restModel.getNotification().getContent().toLowerCase(Locale.ENGLISH).contains(lowerSearchTerm)) {
                     listToAddTo.add(restModel);
                 }
             }
