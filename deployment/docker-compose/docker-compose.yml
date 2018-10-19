@@ -24,4 +24,4 @@ services:
       retries: 5
     volumes: ['alert-db-volume:/opt/blackduck/alert/alert-config/data']
     mem_limit: 512M
-volumes: {cert-volume: null, alert-db-volume: null, alert-volume: null }
+volumes: {cert-volume: null, alert-db-volume: null }
