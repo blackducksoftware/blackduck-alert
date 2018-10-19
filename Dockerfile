@@ -41,7 +41,7 @@ COPY --chown=alert:root --from=docker-common certificate-manager.sh "$CERTIFICAT
 USER alert:root
 WORKDIR $ALERT_HOME
 
-RUN mkdir -p $ALERT_CONFIG_HOME
+RUN mkdir -p $ALERT_DB_DIR
 
 EXPOSE 8080
 
