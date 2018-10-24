@@ -120,7 +120,7 @@ public class DescriptorConfigActions {
 
     public String testConfig(final Config config, final DescriptorActionApi descriptorActionApi) throws IntegrationException {
         descriptorActionApi.testConfig(config);
-        return "Succesfully sent test message.";
+        return "Successfully sent test message.";
     }
 
     public DatabaseEntity updateConfig(final Config config, final DescriptorActionApi descriptorActionApi) throws AlertException {

@@ -74,14 +74,15 @@ public class AuditUtility {
         if (auditEntryId != null) {
             try {
                 final Optional<AuditEntryEntity> auditEntryEntityOptional = auditEntryRepository.findById(auditEntryId);
-                if (auditEntryEntityOptional.isPresent()) {
-                    final AuditEntryEntity auditEntryEntity = auditEntryEntityOptional.get();
-                    auditEntryEntity.setStatus(AuditEntryStatus.SUCCESS);
-                    auditEntryEntity.setErrorMessage(null);
-                    auditEntryEntity.setErrorStackTrace(null);
-                    auditEntryEntity.setTimeLastSent(new Date(System.currentTimeMillis()));
-                    auditEntryRepository.save(auditEntryEntity);
+                if (!auditEntryEntityOptional.isPresent()) {
+                    logger.error("Could not find the audit entry {} to set the success status.", auditEntryId);
                 }
+                final AuditEntryEntity auditEntryEntity = auditEntryEntityOptional.orElse(new AuditEntryEntity());
+                auditEntryEntity.setStatus(AuditEntryStatus.SUCCESS);
+                auditEntryEntity.setErrorMessage(null);
+                auditEntryEntity.setErrorStackTrace(null);
+                auditEntryEntity.setTimeLastSent(new Date(System.currentTimeMillis()));
+                auditEntryRepository.save(auditEntryEntity);
             } catch (final Exception e) {
                 logger.error(e.getMessage(), e);
             }
@@ -93,25 +94,25 @@ public class AuditUtility {
         if (auditEntryId != null) {
             try {
                 final Optional<AuditEntryEntity> auditEntryEntityOptional = auditEntryRepository.findById(auditEntryId);
-                if (auditEntryEntityOptional.isPresent()) {
-                    final AuditEntryEntity auditEntryEntity = auditEntryEntityOptional.get();
-                    auditEntryEntity.setStatus(AuditEntryStatus.FAILURE);
-                    auditEntryEntity.setErrorMessage(errorMessage);
-                    final String[] rootCause = ExceptionUtils.getRootCauseStackTrace(t);
-                    String exceptionStackTrace = "";
-                    for (final String line : rootCause) {
-                        if (exceptionStackTrace.length() + line.length() < AuditEntryEntity.STACK_TRACE_CHAR_LIMIT) {
-                            exceptionStackTrace = String.format("%s%s%s", exceptionStackTrace, line, System.lineSeparator());
-                        } else {
-                            break;
-                        }
-                    }
-
-                    auditEntryEntity.setErrorStackTrace(exceptionStackTrace);
-
-                    auditEntryEntity.setTimeLastSent(new Date(System.currentTimeMillis()));
-                    auditEntryRepository.save(auditEntryEntity);
+                if (!auditEntryEntityOptional.isPresent()) {
+                    logger.error("Could not find the audit entry {} to set the failure status. Error: {}", auditEntryId, errorMessage);
                 }
+                final AuditEntryEntity auditEntryEntity = auditEntryEntityOptional.orElse(new AuditEntryEntity());
+                auditEntryEntity.setId(auditEntryId);
+                auditEntryEntity.setStatus(AuditEntryStatus.FAILURE);
+                auditEntryEntity.setErrorMessage(errorMessage);
+                final String[] rootCause = ExceptionUtils.getRootCauseStackTrace(t);
+                String exceptionStackTrace = "";
+                for (final String line : rootCause) {
+                    if (exceptionStackTrace.length() + line.length() < AuditEntryEntity.STACK_TRACE_CHAR_LIMIT) {
+                        exceptionStackTrace = String.format("%s%s%s", exceptionStackTrace, line, System.lineSeparator());
+                    } else {
+                        break;
+                    }
+                }
+                auditEntryEntity.setErrorStackTrace(exceptionStackTrace);
+                auditEntryEntity.setTimeLastSent(new Date(System.currentTimeMillis()));
+                auditEntryRepository.save(auditEntryEntity);
             } catch (final Exception e) {
                 logger.error(e.getMessage(), e);
             }
