@@ -163,14 +163,18 @@ public class AuditEntryActions {
         } else {
             final String lowerSearchTerm = searchTerm.toLowerCase(Locale.ENGLISH);
             for (final AuditEntryConfig restModel : modelsToCheck) {
-                if (restModel.getName().toLowerCase(Locale.ENGLISH).contains(lowerSearchTerm) ||
-                        restModel.getStatus().toLowerCase(Locale.ENGLISH).contains(lowerSearchTerm) ||
-                        restModel.getTimeCreated().toLowerCase(Locale.ENGLISH).contains(lowerSearchTerm) ||
-                        restModel.getTimeLastSent().toLowerCase(Locale.ENGLISH).contains(lowerSearchTerm)) {
-                    listToAddTo.add(restModel);
-                } else if (null != restModel.getNotification() &&
-                               restModel.getNotification().getContent().toLowerCase(Locale.ENGLISH).contains(lowerSearchTerm)) {
-                    listToAddTo.add(restModel);
+                if (null != restModel) {
+                    if (StringUtils.isNotBlank(restModel.getName()) && restModel.getName().toLowerCase(Locale.ENGLISH).contains(lowerSearchTerm)) {
+                        listToAddTo.add(restModel);
+                    } else if (StringUtils.isNotBlank(restModel.getStatus()) && restModel.getStatus().toLowerCase(Locale.ENGLISH).contains(lowerSearchTerm)) {
+                        listToAddTo.add(restModel);
+                    } else if (StringUtils.isNotBlank(restModel.getTimeCreated()) && restModel.getTimeCreated().toLowerCase(Locale.ENGLISH).contains(lowerSearchTerm)) {
+                        listToAddTo.add(restModel);
+                    } else if (StringUtils.isNotBlank(restModel.getTimeLastSent()) && restModel.getTimeLastSent().toLowerCase(Locale.ENGLISH).contains(lowerSearchTerm)) {
+                        listToAddTo.add(restModel);
+                    } else if (null != restModel.getNotification() && StringUtils.isNotBlank(restModel.getNotification().getContent()) && restModel.getNotification().getContent().toLowerCase(Locale.ENGLISH).contains(lowerSearchTerm)) {
+                        listToAddTo.add(restModel);
+                    }
                 }
             }
         }

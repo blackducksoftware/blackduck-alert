@@ -3,6 +3,7 @@ set -e
 
 certificateManagerDir=/opt/blackduck/alert/bin
 securityDir=/opt/blackduck/alert/alert-config/security
+dataDir=/opt/blackduck/alert/alert-config/data
 
 serverCertName=$APPLICATION_NAME-server
 
@@ -163,11 +164,30 @@ importWebServerCertificate(){
     fi
 }
 
+bootstrapVolumeDirectories() {
+  if [ -d $securityDir ];
+  then
+    echo "$securityDir exists"
+  else
+    echo "creating $securityDir"
+    mkdir -p $securityDir
+  fi
+
+  if [ -d $dataDir ];
+  then
+    echo "$dataDir exists"
+  else
+    echo "creating $dataDir"
+    mkdir -p $dataDir
+  fi
+}
+
 if [ ! -f "$certificateManagerDir/certificate-manager.sh" ];
 then
   echo "ERROR: certificate management script is not present."
   exit 1;
 else
+  bootstrapVolumeDirectories
     if [ -f $secretsMountPath/WEBSERVER_CUSTOM_CERT_FILE ] && [ -f $secretsMountPath/WEBSERVER_CUSTOM_KEY_FILE ];
     then
     	echo "Custom webserver cert and key found"
