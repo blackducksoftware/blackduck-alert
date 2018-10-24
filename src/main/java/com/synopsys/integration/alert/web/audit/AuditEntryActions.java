@@ -161,10 +161,18 @@ public class AuditEntryActions {
             listToAddTo.addAll(modelsToCheck);
         } else {
             for (final AuditEntryConfig restModel : modelsToCheck) {
-                if (restModel.getName().contains(searchTerm) || restModel.getStatus().contains(searchTerm) || restModel.getTimeCreated().contains(searchTerm) || restModel.getTimeLastSent().contains(searchTerm)) {
-                    listToAddTo.add(restModel);
-                } else if (null != restModel.getNotification() && restModel.getNotification().getContent().contains(searchTerm)) {
-                    listToAddTo.add(restModel);
+                if (null != restModel) {
+                    if (StringUtils.isNotBlank(restModel.getName()) && restModel.getName().contains(searchTerm)) {
+                        listToAddTo.add(restModel);
+                    } else if (StringUtils.isNotBlank(restModel.getStatus()) && restModel.getStatus().contains(searchTerm)) {
+                        listToAddTo.add(restModel);
+                    } else if (StringUtils.isNotBlank(restModel.getTimeCreated()) && restModel.getTimeCreated().contains(searchTerm)) {
+                        listToAddTo.add(restModel);
+                    } else if (StringUtils.isNotBlank(restModel.getTimeLastSent()) && restModel.getTimeLastSent().contains(searchTerm)) {
+                        listToAddTo.add(restModel);
+                    } else if (null != restModel.getNotification() && StringUtils.isNotBlank(restModel.getNotification().getContent()) && restModel.getNotification().getContent().contains(searchTerm)) {
+                        listToAddTo.add(restModel);
+                    }
                 }
             }
         }
