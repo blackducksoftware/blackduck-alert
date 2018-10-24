@@ -102,11 +102,9 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, E
         } catch (final IntegrationRestException irex) {
             auditUtility.setAuditEntryFailure(event.getAuditEntryId(), irex.getMessage(), irex);
             logger.error("{} : {}", irex.getHttpStatusCode(), irex.getHttpStatusMessage());
-            logger.error(irex.getMessage(), irex);
             throw new AlertException(irex.getMessage());
         } catch (final Exception e) {
             auditUtility.setAuditEntryFailure(event.getAuditEntryId(), e.getMessage(), e);
-            logger.error(e.getMessage(), e);
             throw new AlertException(e.getMessage());
         }
     }
