@@ -72,6 +72,9 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
         if (!isValidGlobalConfigEntity(globalConfigEntity)) {
             throw new IntegrationException("ERROR: Missing global config.");
         }
+        if (null == emailAddresses || emailAddresses.isEmpty()) {
+            throw new IntegrationException("ERROR: Could not determine what email addresses to send this content to.");
+        }
         final EmailProperties emailProperties = new EmailProperties(getGlobalConfigEntity());
         try {
             final EmailMessagingService emailService = new EmailMessagingService(getAlertProperties(), emailProperties);
