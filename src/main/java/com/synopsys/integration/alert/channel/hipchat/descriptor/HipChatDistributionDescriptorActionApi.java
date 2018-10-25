@@ -65,7 +65,7 @@ public class HipChatDistributionDescriptorActionApi extends DescriptorActionApi 
     @Override
     public void testConfig(final Config restModel) throws IntegrationException {
         final HipChatChannelEvent event = hipChatEventProducer.createChannelTestEvent((CommonDistributionConfig) restModel);
-        hipChatChannel.sendAuditedMessage(event);
+        hipChatChannel.sendMessage(event);
     }
 
 }

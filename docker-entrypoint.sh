@@ -1,9 +1,8 @@
 #!/bin/sh
-set -e
 
 certificateManagerDir=/opt/blackduck/alert/bin
-securityDir=/opt/blackduck/alert/alert-config/security
-dataDir=/opt/blackduck/alert/alert-config/data
+securityDir=/opt/blackduck/alert/security
+alertConfigHome=/opt/blackduck/alert/alert-config
 
 serverCertName=$APPLICATION_NAME-server
 
@@ -22,6 +21,16 @@ targetWebAppHost="${HUB_WEBAPP_HOST:-alert}"
 echo "Alert max heap size: $ALERT_MAX_HEAP_SIZE"
 echo "Certificate authority host: $targetCAHost"
 echo "Certificate authority port: $targetCAPort"
+
+createCertificateStoreDirectory() {
+  echo "Checking certificate store directory"
+  if [ -d $securityDir ];
+  then
+    echo "Certificate store directory $securityDir exists"
+  else
+    mkdir -p -v $securityDir
+  fi
+}
 
 manageRootCertificate() {
     $certificateManagerDir/certificate-manager.sh root \
@@ -164,30 +173,45 @@ importWebServerCertificate(){
     fi
 }
 
-bootstrapVolumeDirectories() {
-  if [ -d $securityDir ];
+checkVolumeDirectories() {
+  echo "Checking volume directory: $alertConfigHome"
+  if [ -d $alertConfigHome ];
   then
-    echo "$securityDir exists"
-  else
-    echo "creating $securityDir"
-    mkdir -p $securityDir
-  fi
+    echo "$alertConfigHome exists"
+    echo "Validating write access..."
 
-  if [ -d $dataDir ];
-  then
-    echo "$dataDir exists"
-  else
-    echo "creating $dataDir"
-    mkdir -p $dataDir
+    if [ -d $alertConfigHome/data ];
+    then
+      echo "$alertConfigHome/data exists"
+    else
+      mkdir $alertConfigHome/data
+    fi
+
+    testFile=$alertConfigHome/data/volumeAccessTest.txt
+    touch $testFile
+
+    if [ -f $testFile ];
+    then
+      echo "Validated write access to directory: $alertConfigHome"
+      rm $testFile
+    else
+      echo "Cannot write to volume directory: $alertConfigHome"
+      echo "Cannot continue; stopping in 10 seconds..."
+      sleep 10
+      exit 1;
+    fi
   fi
 }
+
+checkVolumeDirectories
 
 if [ ! -f "$certificateManagerDir/certificate-manager.sh" ];
 then
   echo "ERROR: certificate management script is not present."
+  sleep 10
   exit 1;
 else
-  bootstrapVolumeDirectories
+    createCertificateStoreDirectory
     if [ -f $secretsMountPath/WEBSERVER_CUSTOM_CERT_FILE ] && [ -f $secretsMountPath/WEBSERVER_CUSTOM_KEY_FILE ];
     then
     	echo "Custom webserver cert and key found"
