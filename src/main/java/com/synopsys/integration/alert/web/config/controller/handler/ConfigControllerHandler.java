@@ -141,6 +141,10 @@ public class ConfigControllerHandler extends ControllerHandler {
             responseBodyBuilder.putErrors(e.getFieldErrors());
             final String responseBody = responseBodyBuilder.build();
             return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
+        } catch (final AlertException e) {
+            final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(getContentConverter().getLongValue(restModel.getId()), e.getMessage());
+            final String responseBody = responseBodyBuilder.build();
+            return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
         } catch (final IntegrationException e) {
             logger.error(e.getMessage(), e);
             return createResponse(HttpStatus.METHOD_NOT_ALLOWED, restModel.getId(), e.getMessage());
