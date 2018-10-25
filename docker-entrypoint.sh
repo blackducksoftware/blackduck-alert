@@ -179,6 +179,14 @@ checkVolumeDirectories() {
   then
     echo "$alertConfigHome exists"
     echo "Validating write access..."
+
+    if [ -d $alertConfigHome/data ];
+    then
+      echo "$alertConfigHome/data exists"
+    else
+      mkdir $alertConfigHome/data
+    fi
+
     testFile=$alertConfigHome/data/volumeAccessTest.txt
     touch $testFile
 
