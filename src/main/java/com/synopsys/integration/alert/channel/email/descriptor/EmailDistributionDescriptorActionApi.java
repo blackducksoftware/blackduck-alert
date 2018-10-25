@@ -57,6 +57,6 @@ public class EmailDistributionDescriptorActionApi extends DescriptorActionApi {
     @Override
     public void testConfig(final Config restModel) throws IntegrationException {
         final EmailChannelEvent event = emailEventProducer.createChannelTestEvent((CommonDistributionConfig) restModel);
-        emailGroupChannel.sendAuditedMessage(event);
+        emailGroupChannel.sendMessage(event);
     }
 }

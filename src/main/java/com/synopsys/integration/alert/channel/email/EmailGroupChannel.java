@@ -101,8 +101,6 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
             }
         } catch (final IOException ex) {
             throw new AlertException(ex);
-        } catch (final AlertException ex) {
-            logger.error("Error sending email project data from event", ex);
         }
     }
 
