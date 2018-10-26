@@ -29,8 +29,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -50,7 +48,6 @@ import com.synopsys.integration.exception.IntegrationException;
 @Component(value = EmailGroupChannel.COMPONENT_NAME)
 public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEntity, EmailChannelEvent> {
     public final static String COMPONENT_NAME = "channel_email";
-    private final static Logger logger = LoggerFactory.getLogger(EmailGroupChannel.class);
 
     @Autowired
     public EmailGroupChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditUtility auditUtility, final EmailGlobalRepository emailRepository) {
