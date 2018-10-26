@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.provider.blackduck.collector;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -12,6 +13,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.core.io.ClassPathResource;
 
 import com.google.gson.Gson;
@@ -24,6 +26,7 @@ import com.synopsys.integration.alert.common.workflow.processor.MessageContentPr
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.workflow.filter.field.JsonExtractor;
+import com.synopsys.integration.alert.workflow.filter.field.JsonFieldAccessor;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 public class BlackDuckPolicyMessageContentCollectorTest {
@@ -80,6 +83,27 @@ public class BlackDuckPolicyMessageContentCollectorTest {
         insertAndAssertCountsOnTopic(collector, n3, topicName, categoryCount, linkableItemsCount);
 
         Assert.assertEquals(1, collector.collect(FormatType.DEFAULT).size());
+    }
+
+    @Test
+    public void insertionExceptionTest() throws Exception {
+        final BlackDuckPolicyMessageContentCollector collector = createCollector();
+        final BlackDuckPolicyMessageContentCollector spiedCollector = Mockito.spy(collector);
+        final String overrideContent = getNotificationContentFromFile("json/policyOverrideNotification.json");
+        final NotificationContent n0 = createNotification(overrideContent, NotificationType.POLICY_OVERRIDE);
+        Mockito.doThrow(new IllegalArgumentException("Insertion Error Exception Test")).when(spiedCollector)
+            .addCategoryItems(Mockito.anyList(), Mockito.any(JsonFieldAccessor.class), Mockito.anyList(), Mockito.any(NotificationContent.class));
+        spiedCollector.insert(n0);
+        final List<AggregateMessageContent> contentList = spiedCollector.collect(FormatType.DEFAULT);
+        assertTrue(contentList.isEmpty());
+    }
+
+    @Test
+    public void collectEmptyMapTest() {
+        final BlackDuckPolicyMessageContentCollector collector = createCollector();
+        final BlackDuckPolicyMessageContentCollector spiedCollector = Mockito.spy(collector);
+        final List<AggregateMessageContent> contentList = spiedCollector.collect(FormatType.DEFAULT);
+        assertTrue(contentList.isEmpty());
     }
 
     private void runSingleTest(final BlackDuckPolicyMessageContentCollector collector, final String notificationJsonFileName, final NotificationType notificationType) throws Exception {
