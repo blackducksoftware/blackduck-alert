@@ -69,10 +69,16 @@ public class MockEmailGlobalEntity extends MockGlobalEntityUtil<EmailGlobalConfi
     private Long id;
 
     public MockEmailGlobalEntity() {
-        this("MailSmtpHost", "MailSmtpUser", "MailSmtpPassword", false, 99, 400, 500, 600, "MailSmtpFrom", "MailSmtpLocalhost", "MailSmtpLocalAddress", 700, true, false, "MailSmtpAuthMechanisms", true, false, true,
-            false, "MailSmtpAuthNtlmDomain", 22, false, "MailSmtpSubmitter", "MailSmtpDnsNotify", "MailSmtpDnsRet", true, false, true, "MailSmtpSaslMechanisms", "MailSmtpSaslAuthorizationId", "MailSmtpSaslRealm",
-            true, false, true, false, true, "MailSmtpSslTrust", "MailSmtpSslProtocols", "MailSmtpSslCipherSuites", true, false, "MailSmtpProxyHost", 800, "MailSmtpSocksHost", 900, "MailSmtpMailExtension",
-            true, false, 1L);
+        this(null, null, null, false,
+            0, 0, 0, 0,
+            null, null, null, 0,
+            true, false, null, false, false,
+            false, false, null, 0, false,
+            null, null, null, false, false, false,
+            null, null, null, false, false,
+            false, false, false, null, null,
+            null, false, false, null, 0, null,
+            0, null, false, false, 1L);
     }
 
     private MockEmailGlobalEntity(final String mailSmtpHost, final String mailSmtpUser, final String mailSmtpPassword, final boolean mailSmtpPasswordIsSet, final Integer mailSmtpPort, final Integer mailSmtpConnectionTimeout,
