@@ -37,19 +37,19 @@ public class EmailChannelDistributionControllerTestIT extends ControllerTest {
 
     @Before
     public void testSetup() {
-        DatabaseEntity project1 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project one", "", "", ""));
-        DatabaseEntity project2 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project two", "", "", ""));
-        DatabaseEntity project3 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project three", "", "", ""));
-        DatabaseEntity project4 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project four", "", "", ""));
+        final DatabaseEntity project1 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project one", "", "", ""));
+        final DatabaseEntity project2 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project two", "", "", ""));
+        final DatabaseEntity project3 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project three", "", "", ""));
+        final DatabaseEntity project4 = blackDuckProjectRepositoryAccessor.saveEntity(new BlackDuckProjectEntity("Project four", "", "", ""));
 
-        DatabaseEntity user1 = blackDuckUserRepositoryAccessor.saveEntity(new BlackDuckUserEntity("email1", false));
-        DatabaseEntity user2 = blackDuckUserRepositoryAccessor.saveEntity(new BlackDuckUserEntity("email2", false));
-        DatabaseEntity user3 = blackDuckUserRepositoryAccessor.saveEntity(new BlackDuckUserEntity("email3", false));
+        final DatabaseEntity user1 = blackDuckUserRepositoryAccessor.saveEntity(new BlackDuckUserEntity("noreply@blackducksoftware.com", false));
+        final DatabaseEntity user2 = blackDuckUserRepositoryAccessor.saveEntity(new BlackDuckUserEntity("noreply@blackducksoftware.com", false));
+        final DatabaseEntity user3 = blackDuckUserRepositoryAccessor.saveEntity(new BlackDuckUserEntity("noreply@blackducksoftware.com", false));
 
-        UserProjectRelation userProjectRelation1 = new UserProjectRelation(user1.getId(), project1.getId());
-        UserProjectRelation userProjectRelation2 = new UserProjectRelation(user1.getId(), project2.getId());
-        UserProjectRelation userProjectRelation3 = new UserProjectRelation(user2.getId(), project3.getId());
-        UserProjectRelation userProjectRelation4 = new UserProjectRelation(user3.getId(), project4.getId());
+        final UserProjectRelation userProjectRelation1 = new UserProjectRelation(user1.getId(), project1.getId());
+        final UserProjectRelation userProjectRelation2 = new UserProjectRelation(user1.getId(), project2.getId());
+        final UserProjectRelation userProjectRelation3 = new UserProjectRelation(user2.getId(), project3.getId());
+        final UserProjectRelation userProjectRelation4 = new UserProjectRelation(user3.getId(), project4.getId());
         userProjectRelationRepositoryAccessor.deleteAndSaveAll(new HashSet<>(Arrays.asList(userProjectRelation1, userProjectRelation2, userProjectRelation3, userProjectRelation4)));
     }
 
@@ -80,6 +80,11 @@ public class EmailChannelDistributionControllerTestIT extends ControllerTest {
         final MockEmailGlobalEntity mockEmailGlobalEntity = new MockEmailGlobalEntity();
         mockEmailGlobalEntity.setMailSmtpHost(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST));
         mockEmailGlobalEntity.setMailSmtpFrom(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM));
+        mockEmailGlobalEntity.setMailSmtpUser(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_USER));
+        mockEmailGlobalEntity.setMailSmtpPassword(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PASSWORD));
+        mockEmailGlobalEntity.setMailSmtpEhlo(Boolean.valueOf(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_EHLO)));
+        mockEmailGlobalEntity.setMailSmtpAuth(Boolean.valueOf(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_AUTH)));
+        mockEmailGlobalEntity.setMailSmtpPort(Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT)));
         final DatabaseEntity savedEntity = emailGlobalRepositoryAccessor.saveEntity(mockEmailGlobalEntity.createGlobalEntity());
         return savedEntity.getId();
     }
