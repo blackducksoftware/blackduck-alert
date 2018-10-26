@@ -3,8 +3,8 @@ package com.synopsys.integration.alert.mock.model;
 import java.util.Date;
 
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.database.entity.NotificationCategoryEnum;
 import com.synopsys.integration.alert.web.model.NotificationConfig;
+import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 public class MockNotificationRestModel extends MockRestModelUtil<NotificationConfig> {
     private final String createdAt;
@@ -16,7 +16,7 @@ public class MockNotificationRestModel extends MockRestModelUtil<NotificationCon
 
     @SuppressWarnings("deprecation")
     public MockNotificationRestModel() {
-        this(new Date(400).toLocaleString(), "provider", new Date(300).toLocaleString(), NotificationCategoryEnum.POLICY_VIOLATION.name(), "{content: \" projectName projectVersion\"", "1");
+        this(new Date(400).toLocaleString(), "provider", new Date(300).toLocaleString(), NotificationType.RULE_VIOLATION.name(), "{content: \" projectName projectVersion\"", "1");
     }
 
     private MockNotificationRestModel(final String createdAt, final String provider, final String providerCreationTime, final String notificationType, final String content, final String id) {
