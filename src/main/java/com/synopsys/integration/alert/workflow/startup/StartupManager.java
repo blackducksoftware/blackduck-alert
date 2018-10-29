@@ -32,6 +32,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -194,7 +195,7 @@ public class StartupManager {
         logger.info("Validating Black Duck Provider...");
         try {
             final HubServerVerifier verifier = new HubServerVerifier();
-            final ProxyInfoBuilder proxyBuilder = alertProperties.createProxyInfoBuilder();
+            final ProxyInfoBuilder proxyBuilder = createProxyInfoBuilder();
             final ProxyInfo proxyInfo = proxyBuilder.build();
             final Optional<String> blackDuckUrlOptional = blackDuckProperties.getBlackDuckUrl();
             if (!blackDuckUrlOptional.isPresent()) {
@@ -219,6 +220,27 @@ public class StartupManager {
             logger.error("  -> Black Duck Provider Invalid; cause: {}", ex.getMessage());
             logger.debug("  -> Black Duck Provider Stack Trace: ", ex);
         }
+    }
+
+    private ProxyInfoBuilder createProxyInfoBuilder() {
+        final ProxyInfoBuilder proxyBuilder = new ProxyInfoBuilder();
+        final Optional<String> alertProxyHost = alertProperties.getAlertProxyHost();
+        final Optional<String> alertProxyPort = alertProperties.getAlertProxyPort();
+        final Optional<String> alertProxyUsername = alertProperties.getAlertProxyUsername();
+        final Optional<String> alertProxyPassword = alertProperties.getAlertProxyPassword();
+        if (alertProxyHost.isPresent()) {
+            proxyBuilder.setHost(alertProxyHost.get());
+        }
+        if (alertProxyPort.isPresent()) {
+            proxyBuilder.setPort(NumberUtils.toInt(alertProxyPort.get()));
+        }
+        if (alertProxyUsername.isPresent()) {
+            proxyBuilder.setUsername(alertProxyUsername.get());
+        }
+        if (alertProxyPassword.isPresent()) {
+            proxyBuilder.setPassword(alertProxyPassword.get());
+        }
+        return proxyBuilder;
     }
 
     @Transactional
