@@ -24,7 +24,6 @@
 package com.synopsys.integration.alert.provider.blackduck;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -81,7 +80,6 @@ public class BlackDuckProviderContentTypes {
     public static final String LABEL_VULNERABILITY_DELETED = "Deleted Vulnerabilities";
     public static final String LABEL_VULNERABILITY_SEVERITY = "Severity";
 
-    public static final List<ProviderContentType> ALL = new ArrayList();
     public static final ProviderContentType BOM_EDIT = new ProviderContentType(
         NotificationType.BOM_EDIT.name(),
         Collections.emptyList()
@@ -147,14 +145,7 @@ public class BlackDuckProviderContentTypes {
         RULE_VIOLATION_FIELD_LIST
     );
 
-    static {
-        ALL.add(BOM_EDIT);
-        ALL.add(LICENSE_LIMIT);
-        ALL.add(POLICY_OVERRIDE);
-        ALL.add(RULE_VIOLATION);
-        ALL.add(RULE_VIOLATION_CLEARED);
-        ALL.add(VULNERABILITY);
-    }
+    public static final List<ProviderContentType> ALL = Arrays.asList(BOM_EDIT, LICENSE_LIMIT, POLICY_OVERRIDE, RULE_VIOLATION, RULE_VIOLATION_CLEARED, VULNERABILITY);
 
     private BlackDuckProviderContentTypes() {
         // This class should not be instantiated

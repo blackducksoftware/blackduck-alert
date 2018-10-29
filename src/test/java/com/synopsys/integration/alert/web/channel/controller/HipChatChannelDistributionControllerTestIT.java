@@ -45,6 +45,7 @@ public class HipChatChannelDistributionControllerTestIT extends ControllerTest {
 
     @Override
     public Long saveGlobalConfig() {
+        hipChatGlobalRepositoryAccessor.deleteAll();
         final MockHipChatGlobalEntity mockHipChatGlobalEntity = new MockHipChatGlobalEntity();
         mockHipChatGlobalEntity.setApiKey(testProperties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY));
         mockHipChatGlobalEntity.setHostServer("");

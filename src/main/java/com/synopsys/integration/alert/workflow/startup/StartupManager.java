@@ -49,6 +49,7 @@ import com.synopsys.integration.alert.database.purge.PurgeReader;
 import com.synopsys.integration.alert.database.purge.PurgeWriter;
 import com.synopsys.integration.alert.database.scheduling.SchedulingConfigEntity;
 import com.synopsys.integration.alert.database.scheduling.SchedulingRepository;
+import com.synopsys.integration.alert.database.security.StringEncryptionConverter;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
@@ -101,10 +102,12 @@ public class StartupManager {
     @Value("${server.ssl.trustStoreType:}")
     private String trustStoreType;
 
+    private final StringEncryptionConverter stringEncryptionConverter;
+
     @Autowired
     public StartupManager(final SchedulingRepository schedulingRepository, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
         final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer,
-        final List<ProviderDescriptor> providerDescriptorList) {
+        final List<ProviderDescriptor> providerDescriptorList, final StringEncryptionConverter stringEncryptionConverter) {
         this.schedulingRepository = schedulingRepository;
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
@@ -114,6 +117,7 @@ public class StartupManager {
         this.phoneHomeTask = phoneHometask;
         this.alertStartupInitializer = alertStartupInitializer;
         this.providerDescriptorList = providerDescriptorList;
+        this.stringEncryptionConverter = stringEncryptionConverter;
     }
 
     @Transactional
@@ -130,7 +134,13 @@ public class StartupManager {
 
     public void checkEncryptionProperties() {
         alertProperties.getAlertEncryptionPassword().orElseThrow(() -> new IllegalArgumentException("Encryption password not configured"));
-        alertProperties.getAlertEncryptionStaticSalt().orElseThrow(() -> new IllegalArgumentException("Encryption salt not configured"));
+        alertProperties.getAlertEncryptionGlobalSalt().orElseThrow(() -> new IllegalArgumentException("Encryption salt not configured"));
+        if (stringEncryptionConverter.isInitialized()) {
+            logger.info("Encryption utilities: Initialized");
+        } else {
+            logger.error("Encryption utilities: Not Initialized");
+            throw new IllegalArgumentException("Encryption utilities not initialized");
+        }
     }
 
     public void initializeChannelPropertyManagers() {

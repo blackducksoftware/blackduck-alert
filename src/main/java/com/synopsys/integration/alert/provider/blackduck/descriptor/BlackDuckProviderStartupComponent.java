@@ -23,6 +23,8 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,8 +48,9 @@ public class BlackDuckProviderStartupComponent extends StartupComponent {
     }
 
     @Override
-    public Set<AlertStartupProperty> getGlobalEntityPropertyMapping() {
-        return entityPropertyMapper.mapEntityToProperties(BlackDuckProvider.COMPONENT_NAME, GlobalBlackDuckConfigEntity.class);
+    public Map<String, AlertStartupProperty> getGlobalEntityPropertyMapping() {
+        final Set<String> overrideFields = Collections.singleton("blackDuckUrl");
+        return entityPropertyMapper.mapEntityToProperties(BlackDuckProvider.COMPONENT_NAME, GlobalBlackDuckConfigEntity.class, overrideFields);
     }
 
 }

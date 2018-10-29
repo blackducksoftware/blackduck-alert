@@ -27,6 +27,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -40,14 +41,12 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.StartupComponent;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.alert.workflow.PropertyInitializer;
 
 @Component
 public class AlertStartupInitializer {
-    public static final String ALERT_PROPERTY_PREFIX = "BLACKDUCK_ALERT_";
     private final Logger logger = LoggerFactory.getLogger(AlertStartupInitializer.class);
     private final ConversionService conversionService;
     private final Environment environment;
@@ -57,7 +56,7 @@ public class AlertStartupInitializer {
 
     @Autowired
     public AlertStartupInitializer(final PropertyInitializer propertyInitializer, final DescriptorMap descriptorMap, final Environment environment,
-            final ConversionService conversionService) {
+        final ConversionService conversionService) {
         this.propertyInitializer = propertyInitializer;
         this.descriptorMap = descriptorMap;
         this.environment = environment;
@@ -66,17 +65,17 @@ public class AlertStartupInitializer {
     }
 
     // TODO try and move this functionality to startup component and eliminate this class
-    public void initializeConfigs() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException, AlertException {
+    public void initializeConfigs() throws IllegalArgumentException, SecurityException {
         descriptorMap.getStartupRestApis().forEach(descriptor -> {
             final StartupComponent startupComponent = descriptor.getStartupComponent();
-            final Set<AlertStartupProperty> startupProperties = startupComponent.getGlobalEntityPropertyMapping();
+            final Map<String, AlertStartupProperty> startupProperties = startupComponent.getGlobalEntityPropertyMapping();
             if (startupProperties != null && !startupProperties.isEmpty()) {
                 try {
                     final Config restModel = startupComponent.getEmptyConfigObject();
                     final boolean propertySet = initializeConfig(restModel, startupProperties);
                     if (propertySet) {
                         final DatabaseEntity entity = descriptor.getTypeConverter().populateEntityFromConfig(restModel);
-                        propertyInitializer.save(entity, descriptor.getRepositoryAccessor());
+                        propertyInitializer.save(entity, descriptor.getRepositoryAccessor(), startupProperties);
                     }
                 } catch (final IllegalArgumentException | SecurityException ex) {
                     logger.error("Error initializing property manager", ex);
@@ -86,9 +85,9 @@ public class AlertStartupInitializer {
         });
     }
 
-    private boolean initializeConfig(final Config globalRestModel, final Set<AlertStartupProperty> configProperties) {
+    private boolean initializeConfig(final Config globalRestModel, final Map<String, AlertStartupProperty> configProperties) {
         boolean propertySet = false;
-        for (final AlertStartupProperty property : configProperties) {
+        for (final AlertStartupProperty property : configProperties.values()) {
             alertStartupProperties.add(property);
             final String propertyKey = property.getPropertyKey();
             logger.debug("Checking property key {}", propertyKey);
@@ -99,6 +98,7 @@ public class AlertStartupInitializer {
             }
             try {
                 propertySet = setRestModelValue(value, globalRestModel, property) || propertySet;
+                logger.debug("Property Set? {}", propertySet);
             } catch (final NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
                 logger.error("Error initializing {} ", propertyKey, ex);
             }
@@ -107,7 +107,7 @@ public class AlertStartupInitializer {
     }
 
     public boolean setRestModelValue(final String value, final Config globalRestModel, final AlertStartupProperty property)
-            throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+        throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         if (StringUtils.isNotBlank(value)) {
             logger.debug("Found the value: {}", value);
             final Field declaredField = globalRestModel.getClass().getDeclaredField(property.getFieldName());

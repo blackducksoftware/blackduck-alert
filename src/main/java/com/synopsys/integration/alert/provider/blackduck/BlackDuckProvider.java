@@ -23,8 +23,11 @@
  */
 package com.synopsys.integration.alert.provider.blackduck;
 
+import java.util.Comparator;
 import java.util.EnumSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -73,7 +76,10 @@ public class BlackDuckProvider extends Provider {
 
     @Override
     public Set<ProviderContentType> getProviderContentTypes() {
-        return BlackDuckProviderContentTypes.ALL.stream().collect(Collectors.toSet());
+        final Predicate<ProviderContentType> excludeBom = Predicate.isEqual(BlackDuckProviderContentTypes.BOM_EDIT);
+        final Predicate<ProviderContentType> excludeLicense = Predicate.isEqual(BlackDuckProviderContentTypes.LICENSE_LIMIT);
+        final Predicate<ProviderContentType> filterExcludedTypes = excludeBom.or(excludeLicense).negate();
+        return BlackDuckProviderContentTypes.ALL.stream().filter(filterExcludedTypes).sorted(Comparator.comparing(ProviderContentType::getNotificationType)).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     @Override

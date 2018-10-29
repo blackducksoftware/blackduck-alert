@@ -12,7 +12,7 @@ ENV CERTIFICATE_MANAGER_DIR $BLACKDUCK_HOME/alert/bin
 
 ENV ALERT_HOME $BLACKDUCK_HOME/alert
 ENV ALERT_CONFIG_HOME $ALERT_HOME/alert-config
-ENV SECURITY_DIR $ALERT_CONFIG_HOME/security
+ENV SECURITY_DIR $ALERT_HOME/security
 ENV ALERT_TAR_HOME $ALERT_HOME/alert-tar
 ENV PATH $ALERT_TAR_HOME/bin:$PATH
 ENV ALERT_DATA_DIR $ALERT_CONFIG_HOME/data
@@ -32,24 +32,12 @@ RUN set -e \
     && addgroup -S alert \
     && adduser -h "$ALERT_HOME" -g alert -s /sbin/nologin -G alert -S -D alert
 
-COPY --chown=alert:alert blackduck-alert-boot-$VERSION $ALERT_HOME/alert-tar
+COPY blackduck-alert-boot-$VERSION $ALERT_HOME/alert-tar
 
-COPY --chown=alert:alert docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-COPY --chown=alert:alert --from=docker-common healthcheck.sh /usr/local/bin/docker-healthcheck.sh
-COPY --chown=alert:alert --from=docker-common certificate-manager.sh "$CERTIFICATE_MANAGER_DIR/certificate-manager.sh"
-
-USER alert:alert
-WORKDIR $ALERT_HOME
-
-RUN mkdir -p $CERTIFICATE_MANAGER_DIR
-RUN mkdir -p $ALERT_CONFIG_HOME
-RUN mkdir -p $SECURITY_DIR
-RUN mkdir -p $ALERT_DB_DIR
-
-VOLUME [ "$SECURITY_DIR", "$ALERT_DATA_DIR" ]
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+COPY --from=docker-common healthcheck.sh /usr/local/bin/docker-healthcheck.sh
+COPY --from=docker-common certificate-manager.sh "$CERTIFICATE_MANAGER_DIR/certificate-manager.sh"
 
 EXPOSE 8080
 
-ENTRYPOINT [ "docker-entrypoint.sh" ]
-
-CMD [ "blackduck-alert" ]
+ENTRYPOINT [ "docker-entrypoint.sh", "blackduck-alert" ]

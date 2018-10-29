@@ -66,7 +66,7 @@ public class SlackDistributionDescriptorActionApi extends DescriptorActionApi {
     @Override
     public void testConfig(final Config restModel) throws IntegrationException {
         final SlackChannelEvent event = slackEventProducer.createChannelTestEvent((CommonDistributionConfig) restModel);
-        slackChannel.sendAuditedMessage(event);
+        slackChannel.sendMessage(event);
     }
 
 }
