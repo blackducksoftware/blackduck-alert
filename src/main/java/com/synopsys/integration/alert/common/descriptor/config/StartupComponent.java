@@ -23,10 +23,10 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config;
 
-import java.util.Set;
+import java.util.Map;
 
-import com.synopsys.integration.alert.workflow.startup.AlertStartupProperty;
 import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.alert.workflow.startup.AlertStartupProperty;
 
 public abstract class StartupComponent {
     private final Config emptyConfigObject;
@@ -39,6 +39,6 @@ public abstract class StartupComponent {
         return emptyConfigObject;
     }
 
-    public abstract Set<AlertStartupProperty> getGlobalEntityPropertyMapping();
+    public abstract Map<String, AlertStartupProperty> getGlobalEntityPropertyMapping();
 
 }

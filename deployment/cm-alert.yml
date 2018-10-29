@@ -11,7 +11,7 @@ data:
 
   # Encryption settings:
   ALERT_ENCRYPTION_PASSWORD: ""
-  ALERT_ENCRYPTION_STATIC_SALT: ""
+  ALERT_ENCRYPTION_GLOBAL_SALT: ""
 
   #Proxy Settings
   #HUB_PROXY_HOST:

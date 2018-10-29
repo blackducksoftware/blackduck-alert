@@ -65,8 +65,8 @@ public class AlertProperties {
     @Value("${alert.encryption.password:}")
     private String alertEncryptionPassword;
 
-    @Value("${alert.encryption.static.salt:}")
-    private String alertEncryptionStaticSalt;
+    @Value("${alert.encryption.global.salt:}")
+    private String alertEncryptionGlobalSalt;
 
     public String getAlertConfigHome() {
         return StringUtils.trimToNull(alertConfigHome);
@@ -104,8 +104,8 @@ public class AlertProperties {
         return getOptionalString(alertEncryptionPassword);
     }
 
-    public Optional<String> getAlertEncryptionStaticSalt() {
-        return getOptionalString(alertEncryptionStaticSalt);
+    public Optional<String> getAlertEncryptionGlobalSalt() {
+        return getOptionalString(alertEncryptionGlobalSalt);
     }
 
     private Optional<String> getOptionalString(final String value) {

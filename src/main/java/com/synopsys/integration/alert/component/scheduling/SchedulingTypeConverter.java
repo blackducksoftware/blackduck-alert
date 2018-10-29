@@ -34,25 +34,25 @@ import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.config.TypeConverter;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.scheduling.SchedulingConfigEntity;
+import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.web.component.scheduling.SchedulingConfig;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
-import com.synopsys.integration.alert.workflow.scheduled.frequency.OnDemandTask;
 
 @Component
 public class SchedulingTypeConverter extends TypeConverter {
     private final PurgeTask purgeTask;
     private final DailyTask dailyTask;
-    private final OnDemandTask onDemandTask;
+    private final BlackDuckAccumulator blackDuckAccumulator;
 
     @Autowired
-    //TODO DailyTask and OnDemandTask create circular dependency injections, so we have to make them lazy
-    public SchedulingTypeConverter(final ContentConverter contentConverter, @Lazy final DailyTask dailyTask, @Lazy final OnDemandTask onDemandTask, final PurgeTask purgeTask) {
+    //TODO DailyTask create circular dependency injections, so we have to make them lazy
+    public SchedulingTypeConverter(final ContentConverter contentConverter, @Lazy final DailyTask dailyTask, final PurgeTask purgeTask, final BlackDuckAccumulator blackDuckAccumulator) {
         super(contentConverter);
         this.purgeTask = purgeTask;
         this.dailyTask = dailyTask;
-        this.onDemandTask = onDemandTask;
+        this.blackDuckAccumulator = blackDuckAccumulator;
     }
 
     @Override
@@ -82,9 +82,9 @@ public class SchedulingTypeConverter extends TypeConverter {
     private SchedulingConfig addConfigNextRunData(final SchedulingConfig schedulingRestModel) {
         schedulingRestModel.setDailyDigestNextRun(dailyTask.getFormatedNextRunTime().orElse(null));
         schedulingRestModel.setPurgeDataNextRun(purgeTask.getFormatedNextRunTime().orElse(null));
-        final Optional<Long> onDemandNextRun = onDemandTask.getMillisecondsToNextRun();
-        if (onDemandNextRun.isPresent()) {
-            final Long seconds = TimeUnit.MILLISECONDS.toSeconds(onDemandNextRun.get());
+        final Optional<Long> blackDuckAccumulatorNextRun = blackDuckAccumulator.getMillisecondsToNextRun();
+        if (blackDuckAccumulatorNextRun.isPresent()) {
+            final Long seconds = TimeUnit.MILLISECONDS.toSeconds(blackDuckAccumulatorNextRun.get());
             schedulingRestModel.setAccumulatorNextRun(String.valueOf(seconds));
         }
         return schedulingRestModel;

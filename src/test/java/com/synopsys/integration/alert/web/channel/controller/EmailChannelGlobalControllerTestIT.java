@@ -42,6 +42,11 @@ public class EmailChannelGlobalControllerTestIT extends GlobalControllerTest {
         final MockEmailGlobalRestModel mockGlobalConfig = new MockEmailGlobalRestModel();
         mockGlobalConfig.setMailSmtpHost(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST));
         mockGlobalConfig.setMailSmtpFrom(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM));
+        mockGlobalConfig.setMailSmtpUser(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_USER));
+        mockGlobalConfig.setMailSmtpPassword(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PASSWORD));
+        mockGlobalConfig.setMailSmtpEhlo(Boolean.valueOf(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_EHLO)));
+        mockGlobalConfig.setMailSmtpAuth(Boolean.valueOf(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_AUTH)));
+        mockGlobalConfig.setMailSmtpPort(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT));
         return mockGlobalConfig.createGlobalRestModel();
     }
 
@@ -51,12 +56,12 @@ public class EmailChannelGlobalControllerTestIT extends GlobalControllerTest {
     public void testTestConfig() throws Exception {
         final String testRestUrl = restUrl + "/test";
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl)
-                .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
-                .with(SecurityMockMvcRequestPostProcessors.csrf());
+                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
         config.setId(String.valueOf(entity.getId()));
         request.content(gson.toJson(config));
         request.contentType(contentType);
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isMethodNotAllowed());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
 }
