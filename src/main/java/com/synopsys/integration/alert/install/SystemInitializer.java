@@ -69,8 +69,7 @@ public class SystemInitializer {
     }
 
     private void saveEncryptionProperties(final RequiredSystemConfiguration requiredSystemConfiguration) {
-        alertProperties.setAlertEncryptionPassword(requiredSystemConfiguration.getGlobalEncryptionPassword());
-        alertProperties.setAlertEncryptionGlobalSalt(requiredSystemConfiguration.getGlobalEncryptionSalt());
+        // TODO implement this
     }
 
     private void saveBlackDuckConfiguration(final RequiredSystemConfiguration requiredSystemConfiguration) {
