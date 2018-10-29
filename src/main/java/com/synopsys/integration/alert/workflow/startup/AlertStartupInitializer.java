@@ -96,7 +96,6 @@ public class AlertStartupInitializer {
                 logger.debug("Not found in system env, checking Spring env");
                 value = environment.getProperty(propertyKey);
             }
-            logger.debug("Setting property: {} value: {}");
             try {
                 propertySet = setRestModelValue(value, globalRestModel, property) || propertySet;
                 logger.debug("Property Set? {}", propertySet);

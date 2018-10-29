@@ -36,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,7 +80,12 @@ public class BlackDuckAccumulator extends ScheduledTask {
         this.notificationManager = notificationManager;
         // TODO: do not store a file with the timestamp save this information into a database table for tasks.  Perhaps a task metadata object stored in the database.
         final String accumulatorFileName = String.format("%s-last-search.txt", getTaskName());
-        this.searchRangeFilePath = new File(alertProperties.getAlertConfigHome(), accumulatorFileName);
+
+        String accumulatorFileDirectory = "data/";
+        if (StringUtils.isNotBlank(alertProperties.getAlertConfigHome())) {
+            accumulatorFileDirectory = String.format("%s/data", alertProperties.getAlertConfigHome());
+        }
+        this.searchRangeFilePath = new File(accumulatorFileDirectory, accumulatorFileName);
     }
 
     public File getSearchRangeFilePath() {
