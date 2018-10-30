@@ -31,25 +31,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentCollector;
+import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckLicenseLimitMessageContentCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyMessageContentCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckVulnerabilityMessageContentCollector;
 
 @Component
 public class BlackDuckTopicCollectorFactory {
-
     private final ObjectFactory<BlackDuckVulnerabilityMessageContentCollector> vulnerabilityTopicCollectorFactory;
     private final ObjectFactory<BlackDuckPolicyMessageContentCollector> policyTopicCollectorFactory;
+    private final ObjectFactory<BlackDuckLicenseLimitMessageContentCollector> licenseLimitTopicCollectorFactory;
 
     @Autowired
-    public BlackDuckTopicCollectorFactory(final ObjectFactory<BlackDuckVulnerabilityMessageContentCollector> vulnerabilityTopicCollectorFactory, final ObjectFactory<BlackDuckPolicyMessageContentCollector> policyTopicCollectorFactory) {
+    public BlackDuckTopicCollectorFactory(final ObjectFactory<BlackDuckVulnerabilityMessageContentCollector> vulnerabilityTopicCollectorFactory, final ObjectFactory<BlackDuckPolicyMessageContentCollector> policyTopicCollectorFactory,
+        final ObjectFactory<BlackDuckLicenseLimitMessageContentCollector> licenseLimitTopicCollectorFactory) {
         this.vulnerabilityTopicCollectorFactory = vulnerabilityTopicCollectorFactory;
         this.policyTopicCollectorFactory = policyTopicCollectorFactory;
+        this.licenseLimitTopicCollectorFactory = licenseLimitTopicCollectorFactory;
     }
 
     public Set<MessageContentCollector> createTopicCollectors() {
         final Set<MessageContentCollector> collectorSet = new HashSet<>();
         collectorSet.add(vulnerabilityTopicCollectorFactory.getObject());
         collectorSet.add(policyTopicCollectorFactory.getObject());
+        collectorSet.add(licenseLimitTopicCollectorFactory.getObject());
         return collectorSet;
     }
 }
