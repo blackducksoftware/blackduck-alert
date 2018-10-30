@@ -41,6 +41,7 @@ import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.field.HierarchicalField;
+import com.synopsys.integration.alert.common.field.LongHierarchicalField;
 import com.synopsys.integration.alert.common.field.ObjectHierarchicalField;
 import com.synopsys.integration.alert.common.field.StringHierarchicalField;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
@@ -104,6 +105,10 @@ public abstract class MessageContentCollector {
 
     protected final List<StringHierarchicalField> getStringFields(final List<HierarchicalField> fields) {
         return getTypedFields(fields, StringHierarchicalField.class);
+    }
+
+    protected final List<LongHierarchicalField> getLongFields(final List<HierarchicalField> fields) {
+        return getTypedFields(fields, LongHierarchicalField.class);
     }
 
     protected final List<ObjectHierarchicalField> getObjectFields(final List<HierarchicalField> fields) {
