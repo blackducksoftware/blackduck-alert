@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.scheduling.TaskScheduler;
 
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.TestAlertProperties;
 import com.synopsys.integration.alert.TestBlackDuckProperties;
 import com.synopsys.integration.alert.common.FilePersistenceUtil;
@@ -65,7 +66,7 @@ public class BlackDuckAccumulatorTest {
 
         notificationManager = Mockito.mock(NotificationManager.class);
         taskScheduler = Mockito.mock(TaskScheduler.class);
-        filePersistenceUtil = new FilePersistenceUtil(testAlertProperties);
+        filePersistenceUtil = new FilePersistenceUtil(testAlertProperties, new Gson());
     }
 
     @After

@@ -30,30 +30,49 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
+
 @Component
 public class FilePersistenceUtil {
     public static final String ENCODING = "UTF-8";
     private final File parentDataDirectory;
+    private final Gson gson;
 
-    public FilePersistenceUtil(final AlertProperties alertProperties) {
+    public FilePersistenceUtil(final AlertProperties alertProperties, final Gson gson) {
+        this.gson = gson;
         String dataDirectory = "data/";
         if (StringUtils.isNotBlank(alertProperties.getAlertConfigHome())) {
             dataDirectory = String.format("%s/data", alertProperties.getAlertConfigHome());
         }
-        parentDataDirectory = new File(dataDirectory);
+        this.parentDataDirectory = new File(dataDirectory);
     }
 
     public void writeToFile(final String fileName, final String content) throws IOException {
         FileUtils.write(createFilePath(fileName), content, ENCODING);
     }
 
+    public void writeJsonToFile(final String fileName, final Object content) throws IOException {
+        final String jsonString = gson.toJson(content);
+        writeToFile(fileName, jsonString);
+    }
+
     public String readFromFile(final String fileName) throws IOException {
         return FileUtils.readFileToString(createFilePath(fileName), ENCODING);
+    }
+
+    public <T> T readJsonFromFile(final String fileName, final Class<T> clazz) throws IOException {
+        final String jsonString = readFromFile(fileName);
+        return gson.fromJson(jsonString, clazz);
     }
 
     public boolean exists(final String fileName) {
         final File file = createFilePath(fileName);
         return file.exists();
+    }
+
+    public void delete(final String fileName) throws IOException {
+        final File file = createFilePath(fileName);
+        FileUtils.forceDelete(file);
     }
 
     private File createFilePath(final String fileName) {
