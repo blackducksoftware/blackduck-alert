@@ -23,7 +23,9 @@
  */
 package com.synopsys.integration.alert.database.system;
 
-import java.util.Optional;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -40,12 +42,38 @@ public class SystemStatusUtility {
     }
 
     @Transactional
-    public Optional<SystemStatus> getSystemStatus() {
-        return systemStatusRepository.findById(SYSTEM_STATUS_ID);
+    public void setSystemInitialized(final boolean systemInitialized) {
+        final SystemStatus systemStatus = getSystemStatus();
+        final SystemStatus newSystemStatus = new SystemStatus(systemInitialized, systemStatus.getStartupTime(), systemStatus.getStartupErrors());
+        newSystemStatus.setId(SYSTEM_STATUS_ID);
+        updateSystemStatus(newSystemStatus);
     }
 
     @Transactional
-    public void updateSystemStatus(final SystemStatus systemStatus) {
+    public void startupOccurred() {
+        ZonedDateTime zonedDateTime = ZonedDateTime.now();
+        zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneOffset.UTC);
+        final SystemStatus systemStatus = getSystemStatus();
+        final SystemStatus newSystemStatus = new SystemStatus(systemStatus.isInitialConfigurationPerformed(), Date.from(zonedDateTime.toInstant()), systemStatus.getStartupErrors());
+        newSystemStatus.setId(SYSTEM_STATUS_ID);
+        updateSystemStatus(newSystemStatus);
+    }
+
+    @Transactional
+    public void setStartupErrors(final String errors) {
+        final SystemStatus systemStatus = getSystemStatus();
+        final SystemStatus newSystemStatus = new SystemStatus(systemStatus.isInitialConfigurationPerformed(), systemStatus.getStartupTime(), errors);
+        newSystemStatus.setId(SYSTEM_STATUS_ID);
+        updateSystemStatus(newSystemStatus);
+    }
+
+    private SystemStatus getSystemStatus() {
+        final SystemStatus systemStatus = systemStatusRepository.findById(SYSTEM_STATUS_ID).orElse(new SystemStatus());
+        systemStatus.setId(SYSTEM_STATUS_ID);
+        return systemStatus;
+    }
+
+    private void updateSystemStatus(final SystemStatus systemStatus) {
         systemStatus.setId(SYSTEM_STATUS_ID);
         systemStatusRepository.save(systemStatus);
     }

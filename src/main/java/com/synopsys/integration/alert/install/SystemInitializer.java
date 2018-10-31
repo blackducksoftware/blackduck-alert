@@ -23,9 +23,6 @@
  */
 package com.synopsys.integration.alert.install;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,9 +31,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
-import com.synopsys.integration.alert.database.system.SystemStatus;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 
 @Component
@@ -44,19 +41,21 @@ public class SystemInitializer {
     private final SystemStatusUtility systemStatusUtility;
     private final AlertProperties alertProperties;
     private final GlobalBlackDuckRepository globalBlackDuckRepository;
+    private final EncryptionUtility encryptionUtility;
 
     @Autowired
-    public SystemInitializer(final SystemStatusUtility systemStatusUtility, final AlertProperties alertProperties, final GlobalBlackDuckRepository globalBlackDuckRepository) {
+    public SystemInitializer(final SystemStatusUtility systemStatusUtility, final AlertProperties alertProperties, final GlobalBlackDuckRepository globalBlackDuckRepository, final EncryptionUtility encryptionUtility) {
         this.systemStatusUtility = systemStatusUtility;
         this.alertProperties = alertProperties;
         this.globalBlackDuckRepository = globalBlackDuckRepository;
+        this.encryptionUtility = encryptionUtility;
     }
 
     @Transactional
     public void updateRequiredConfiguration(final RequiredSystemConfiguration requiredSystemConfiguration) {
         saveEncryptionProperties(requiredSystemConfiguration);
         saveBlackDuckConfiguration(requiredSystemConfiguration);
-        updateSystemStatus();
+        systemStatusUtility.setSystemInitialized(true);
     }
 
     private Optional<GlobalBlackDuckConfigEntity> getGlobalBlackDuckConfigEntity() {
@@ -70,6 +69,7 @@ public class SystemInitializer {
 
     private void saveEncryptionProperties(final RequiredSystemConfiguration requiredSystemConfiguration) {
         // TODO implement this
+
     }
 
     private void saveBlackDuckConfiguration(final RequiredSystemConfiguration requiredSystemConfiguration) {
@@ -82,17 +82,5 @@ public class SystemInitializer {
             blackDuckConfigToSave.setId(blackDuckConfigEntity.get().getId());
         }
         globalBlackDuckRepository.save(blackDuckConfigToSave);
-    }
-
-    private void updateSystemStatus() {
-        final Optional<SystemStatus> currentStatus = systemStatusUtility.getSystemStatus();
-        ZonedDateTime zonedDateTime = ZonedDateTime.now();
-        zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneOffset.UTC);
-        SystemStatus updatedStatus = new SystemStatus(true, Date.from(zonedDateTime.toInstant()), "");
-        if (currentStatus.isPresent()) {
-            updatedStatus = new SystemStatus(true, currentStatus.get().getStartupTime(), currentStatus.get().getStartupErrors());
-        }
-
-        systemStatusUtility.updateSystemStatus(updatedStatus);
     }
 }
