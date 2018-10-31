@@ -32,6 +32,8 @@ RUN set -e \
     && addgroup -S alert \
     && adduser -h "$ALERT_HOME" -g alert -s /sbin/nologin -G alert -S -D alert
 
+RUN mkdir -p -m 777 $SECURITY_DIR
+
 COPY blackduck-alert-boot-$VERSION $ALERT_HOME/alert-tar
 
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
