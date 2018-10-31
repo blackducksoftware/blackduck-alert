@@ -44,13 +44,11 @@ public class EncryptionUtility {
     private static final String DATA_FILE_NAME = "alert_encryption_data.json";
     private final AlertProperties alertProperties;
     private final FilePersistenceUtil filePersistenceUtil;
-    private final String salt;
 
     @Autowired
     public EncryptionUtility(final AlertProperties alertProperties, final FilePersistenceUtil filePersistenceUtil) {
         this.alertProperties = alertProperties;
         this.filePersistenceUtil = filePersistenceUtil;
-        this.salt = alertProperties.getAlertEncryptionGlobalSalt().orElse(null);
     }
 
     public String encrypt(final String value) {
@@ -63,7 +61,7 @@ public class EncryptionUtility {
         try {
             final TextEncryptor decryptor = Encryptors.delux(getPassword(), getEncodedSalt());
             decryptedValue = decryptor.decrypt(encryptedValue);
-        } catch (final IllegalArgumentException ex) {
+        } catch (final IllegalArgumentException | NullPointerException ex) {
             logger.error("Error decrypting value", ex);
         }
         return decryptedValue;
@@ -71,7 +69,7 @@ public class EncryptionUtility {
 
     public boolean isInitialized() {
         final String password = getPassword();
-        final String salt = getSalt();
+        final String salt = getGlobalSalt();
 
         if (null != password && null != salt) {
             return true;
@@ -80,9 +78,18 @@ public class EncryptionUtility {
         }
     }
 
+    public void updateEncryptionFields(final String password, final String globalSalt) {
+        try {
+            final EncryptionFileData encryptionFileData = new EncryptionFileData(password, globalSalt);
+            filePersistenceUtil.writeJsonToFile(DATA_FILE_NAME, encryptionFileData);
+        } catch (final IOException ex) {
+            logger.debug("Error writing data to file", ex);
+        }
+    }
+
     private String getEncodedSalt() {
         if (isInitialized()) {
-            final byte[] saltBytes = getSalt().getBytes(Charsets.UTF_8);
+            final byte[] saltBytes = getGlobalSalt().getBytes(Charsets.UTF_8);
             return Hex.encodeHexString(saltBytes);
         } else {
             return null;
@@ -104,7 +111,7 @@ public class EncryptionUtility {
         }
     }
 
-    private String getSalt() {
+    private String getGlobalSalt() {
         final Optional<String> saltFromEnvironment = alertProperties.getAlertEncryptionGlobalSalt();
         return saltFromEnvironment.orElse(getGlobalSaltFromFile());
     }
@@ -119,11 +126,7 @@ public class EncryptionUtility {
         }
     }
 
-    //    public static EncryptionFileData createEncryptionFileData(final String password, final String globalSalt) {
-    //        return new EncryptionFileData(password, globalSalt);
-    //    }
-
-    public class EncryptionFileData {
+    private class EncryptionFileData {
         private final String password;
         private final String globalSalt;
 
