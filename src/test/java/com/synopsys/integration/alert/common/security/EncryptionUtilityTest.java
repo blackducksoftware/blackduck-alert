@@ -10,6 +10,7 @@ import java.io.File;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -39,6 +40,13 @@ public class EncryptionUtilityTest {
         file.mkdirs();
     }
 
+    @After
+    public void cleanupTest() throws Exception {
+        if (filePersistenceUtil.exists(FILE_NAME)) {
+            filePersistenceUtil.delete(FILE_NAME);
+        }
+    }
+
     @Test
     public void testEncryption() {
         final String sensitiveValue = "sensitiveDataText";
@@ -59,6 +67,14 @@ public class EncryptionUtilityTest {
         final String sensitiveValue = "notEncryptedHexText!";
         final String decryptedValue = encryptionUtility.decrypt(sensitiveValue);
         assertNotNull(decryptedValue);
+        assertTrue(StringUtils.isBlank(decryptedValue));
+    }
+
+    @Test
+    public void testDecryptionNullSaltException() {
+        final String sensitiveValue = "notEncryptedHexText!";
+        Mockito.when(alertProperties.getAlertEncryptionGlobalSalt()).thenReturn(Optional.empty());
+        final String decryptedValue = encryptionUtility.decrypt(sensitiveValue);
         assertTrue(StringUtils.isBlank(decryptedValue));
     }
 
@@ -93,15 +109,21 @@ public class EncryptionUtilityTest {
         filePersistenceUtil.writeToFile(FILE_NAME, "{password: \"savedPassword\", globalSalt: \"savedSalt\"}");
         assertTrue(encryptionUtility.isInitialized());
         assertTrue(filePersistenceUtil.exists(FILE_NAME));
-
-        filePersistenceUtil.delete(FILE_NAME);
     }
 
-    //    @Test
-    //    public void testCreateEncryptionFileData() {
-    //        final String expectedPassword = "expectedPassword";
-    //        final String expectedSalt = "expectedSalt";
-    //        EncryptionUtility
-    //    }
+    @Test
+    public void testCreateEncryptionFileData() throws Exception {
+        final String expectedPassword = "expectedPassword";
+        final String expectedSalt = "expectedSalt";
+        Mockito.when(alertProperties.getAlertEncryptionPassword()).thenReturn(Optional.empty());
+        Mockito.when(alertProperties.getAlertEncryptionGlobalSalt()).thenReturn(Optional.empty());
+        assertFalse(encryptionUtility.isInitialized());
+        encryptionUtility.updateEncryptionFields(expectedPassword, expectedSalt);
+        assertTrue(encryptionUtility.isInitialized());
+        assertTrue(filePersistenceUtil.exists(FILE_NAME));
+        final String content = filePersistenceUtil.readFromFile(FILE_NAME);
+        assertTrue(content.contains(expectedPassword));
+        assertTrue(content.contains(expectedSalt));
+    }
 
 }
