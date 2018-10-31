@@ -8,6 +8,11 @@ buildscript {
     }
 
     dependencies {
+        configurations.all {
+            resolutionStrategy {
+                force 'com.blackducksoftware.integration:integration-test-common:4.0.5'
+            }
+        }
         classpath 'com.blackducksoftware.integration:common-gradle-plugin:0.0.+'
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
         classpath 'com.bmuschko:gradle-docker-plugin:3.6.1'
