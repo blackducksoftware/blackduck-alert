@@ -37,9 +37,9 @@ items:
           imagePullPolicy: Always
           resources:
             requests:
-              memory: 512M
+              memory: 2560M
             limits:
-              memory: 512M
+              memory: 2560M
           envFrom:
           - configMapRef:
               name: hub-config
