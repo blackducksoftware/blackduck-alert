@@ -38,7 +38,7 @@ public class SystemStatus extends DatabaseEntity {
     private boolean initialConfigurationPerformed;
     @Column(name = "startup_time")
     private Date startupTime;
-    @Column(name = "startupErrors")
+    @Column(name = "startup_errors")
     private String startupErrors;
 
     public SystemStatus() {

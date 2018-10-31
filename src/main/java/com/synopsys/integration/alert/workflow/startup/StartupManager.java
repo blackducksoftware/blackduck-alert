@@ -51,6 +51,7 @@ import com.synopsys.integration.alert.database.purge.PurgeWriter;
 import com.synopsys.integration.alert.database.scheduling.SchedulingConfigEntity;
 import com.synopsys.integration.alert.database.scheduling.SchedulingRepository;
 import com.synopsys.integration.alert.database.security.StringEncryptionConverter;
+import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
@@ -104,11 +105,12 @@ public class StartupManager {
     private String trustStoreType;
 
     private final StringEncryptionConverter stringEncryptionConverter;
+    private final SystemStatusUtility systemStatusUtility;
 
     @Autowired
     public StartupManager(final SchedulingRepository schedulingRepository, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
         final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer,
-        final List<ProviderDescriptor> providerDescriptorList, final StringEncryptionConverter stringEncryptionConverter) {
+        final List<ProviderDescriptor> providerDescriptorList, final StringEncryptionConverter stringEncryptionConverter, final SystemStatusUtility systemStatusUtility) {
         this.schedulingRepository = schedulingRepository;
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
@@ -119,6 +121,7 @@ public class StartupManager {
         this.alertStartupInitializer = alertStartupInitializer;
         this.providerDescriptorList = providerDescriptorList;
         this.stringEncryptionConverter = stringEncryptionConverter;
+        this.systemStatusUtility = systemStatusUtility;
     }
 
     @Transactional
@@ -131,6 +134,8 @@ public class StartupManager {
         validateProviders();
         initializeCronJobs();
         initializeProviders();
+        systemStatusUtility.startupOccurred();
+
     }
 
     public void checkEncryptionProperties() {
