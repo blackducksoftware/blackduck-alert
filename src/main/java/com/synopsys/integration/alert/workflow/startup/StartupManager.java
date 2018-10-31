@@ -26,6 +26,7 @@ package com.synopsys.integration.alert.workflow.startup;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -127,26 +128,13 @@ public class StartupManager {
     @Transactional
     public void startup() {
         logger.info("Alert Starting...");
-        checkEncryptionProperties();
         initializeChannelPropertyManagers();
+        validate();
         logConfiguration();
         listProperties();
-        validateProviders();
         initializeCronJobs();
         initializeProviders();
         systemStatusUtility.startupOccurred();
-
-    }
-
-    public void checkEncryptionProperties() {
-        alertProperties.getAlertEncryptionPassword().orElseThrow(() -> new IllegalArgumentException("Encryption password not configured"));
-        alertProperties.getAlertEncryptionGlobalSalt().orElseThrow(() -> new IllegalArgumentException("Encryption salt not configured"));
-        if (stringEncryptionConverter.isInitialized()) {
-            logger.info("Encryption utilities: Initialized");
-        } else {
-            logger.error("Encryption utilities: Not Initialized");
-            throw new IllegalArgumentException("Encryption utilities not initialized");
-        }
     }
 
     public void initializeChannelPropertyManagers() {
@@ -155,6 +143,89 @@ public class StartupManager {
         } catch (final Exception e) {
             logger.error("Error inserting startup values", e);
         }
+    }
+
+    public void validate() {
+        final List<String> errorList = new LinkedList<>();
+        checkEncryptionProperties(errorList);
+        validateProviders(errorList);
+
+        if (errorList.isEmpty()) {
+            systemStatusUtility.setStartupErrors(null);
+        } else {
+            systemStatusUtility.setStartupErrors(StringUtils.join(errorList, ";"));
+        }
+    }
+
+    public void checkEncryptionProperties(final List<String> errorList) {
+        if (stringEncryptionConverter.isInitialized()) {
+            logger.info("Encryption utilities: Initialized");
+        } else {
+            logger.error("Encryption utilities: Not Initialized");
+            errorList.add("Encryption utility not initialized");
+        }
+    }
+
+    public void validateProviders(final List<String> errorList) {
+        logger.info("Validating configured providers: ");
+        logger.info("----------------------------------------");
+        validateBlackDuckProvider(errorList);
+        logger.info("----------------------------------------");
+    }
+
+    // TODO add this validationg to provider descriptors so we can run this when it's defined
+    public void validateBlackDuckProvider(final List<String> errorList) {
+        logger.info("Validating Black Duck Provider...");
+        try {
+            final HubServerVerifier verifier = new HubServerVerifier();
+            final ProxyInfoBuilder proxyBuilder = createProxyInfoBuilder();
+            final ProxyInfo proxyInfo = proxyBuilder.build();
+            final Optional<String> blackDuckUrlOptional = blackDuckProperties.getBlackDuckUrl();
+            if (!blackDuckUrlOptional.isPresent()) {
+                logger.error("  -> Black Duck Provider Invalid; cause: Black Duck URL missing...");
+                errorList.add("Black Duck Provider invalid: URL missing");
+            } else {
+                final String blackDuckUrlString = blackDuckUrlOptional.get();
+                final Boolean trustCertificate = BooleanUtils.toBoolean(alertProperties.getAlertTrustCertificate().orElse(false));
+                final Integer timeout = blackDuckProperties.getBlackDuckTimeout();
+                logger.debug("  -> Black Duck Provider URL found validating: {}", blackDuckUrlString);
+                logger.debug("  -> Black Duck Provider Trust Cert: {}", trustCertificate);
+                logger.debug("  -> Black Duck Provider Timeout: {}", timeout);
+                final URL blackDuckUrl = new URL(blackDuckUrlString);
+                if ("localhost".equals(blackDuckUrl.getHost())) {
+                    logger.warn("  -> Black Duck Provider Using localhost...");
+                    final String blackDuckWebServerHost = blackDuckProperties.getPublicBlackDuckWebserverHost().orElse("");
+                    logger.warn("  -> Black Duck Provider Using localhost because PUBLIC_BLACKDUCK_WEBSERVER_HOST environment variable is set to {}", blackDuckWebServerHost);
+                }
+                verifier.verifyIsHubServer(blackDuckUrl, proxyInfo, trustCertificate, timeout);
+                logger.info("  -> Black Duck Provider Valid!");
+            }
+        } catch (final MalformedURLException | IntegrationException ex) {
+            logger.error("  -> Black Duck Provider Invalid; cause: {}", ex.getMessage());
+            logger.debug("  -> Black Duck Provider Stack Trace: ", ex);
+            errorList.add("Black Duck Provider invalid: " + ex.getMessage());
+        }
+    }
+
+    private ProxyInfoBuilder createProxyInfoBuilder() {
+        final ProxyInfoBuilder proxyBuilder = new ProxyInfoBuilder();
+        final Optional<String> alertProxyHost = alertProperties.getAlertProxyHost();
+        final Optional<String> alertProxyPort = alertProperties.getAlertProxyPort();
+        final Optional<String> alertProxyUsername = alertProperties.getAlertProxyUsername();
+        final Optional<String> alertProxyPassword = alertProperties.getAlertProxyPassword();
+        if (alertProxyHost.isPresent()) {
+            proxyBuilder.setHost(alertProxyHost.get());
+        }
+        if (alertProxyPort.isPresent()) {
+            proxyBuilder.setPort(NumberUtils.toInt(alertProxyPort.get()));
+        }
+        if (alertProxyUsername.isPresent()) {
+            proxyBuilder.setUsername(alertProxyUsername.get());
+        }
+        if (alertProxyPassword.isPresent()) {
+            proxyBuilder.setPassword(alertProxyPassword.get());
+        }
+        return proxyBuilder;
     }
 
     public void logConfiguration() {
@@ -186,66 +257,6 @@ public class StartupManager {
             logger.info(property);
         }
         logger.info("----------------------------------------");
-    }
-
-    public void validateProviders() {
-        logger.info("Validating configured providers: ");
-        logger.info("----------------------------------------");
-        validateBlackDuckProvider();
-        logger.info("----------------------------------------");
-    }
-
-    // TODO add this validationg to provider descriptors so we can run this when it's defined
-    public void validateBlackDuckProvider() {
-        logger.info("Validating Black Duck Provider...");
-        try {
-            final HubServerVerifier verifier = new HubServerVerifier();
-            final ProxyInfoBuilder proxyBuilder = createProxyInfoBuilder();
-            final ProxyInfo proxyInfo = proxyBuilder.build();
-            final Optional<String> blackDuckUrlOptional = blackDuckProperties.getBlackDuckUrl();
-            if (!blackDuckUrlOptional.isPresent()) {
-                logger.error("  -> Black Duck Provider Invalid; cause: Black Duck URL missing...");
-            } else {
-                final String blackDuckUrlString = blackDuckUrlOptional.get();
-                final Boolean trustCertificate = BooleanUtils.toBoolean(alertProperties.getAlertTrustCertificate().orElse(false));
-                final Integer timeout = blackDuckProperties.getBlackDuckTimeout();
-                logger.debug("  -> Black Duck Provider URL found validating: {}", blackDuckUrlString);
-                logger.debug("  -> Black Duck Provider Trust Cert: {}", trustCertificate);
-                logger.debug("  -> Black Duck Provider Timeout: {}", timeout);
-                final URL blackDuckUrl = new URL(blackDuckUrlString);
-                if ("localhost".equals(blackDuckUrl.getHost())) {
-                    logger.warn("  -> Black Duck Provider Using localhost...");
-                    final String blackDuckWebServerHost = blackDuckProperties.getPublicBlackDuckWebserverHost().orElse("");
-                    logger.warn("  -> Black Duck Provider Using localhost because PUBLIC_BLACKDUCK_WEBSERVER_HOST environment variable is set to {}", blackDuckWebServerHost);
-                }
-                verifier.verifyIsHubServer(blackDuckUrl, proxyInfo, trustCertificate, timeout);
-                logger.info("  -> Black Duck Provider Valid!");
-            }
-        } catch (final MalformedURLException | IntegrationException ex) {
-            logger.error("  -> Black Duck Provider Invalid; cause: {}", ex.getMessage());
-            logger.debug("  -> Black Duck Provider Stack Trace: ", ex);
-        }
-    }
-
-    private ProxyInfoBuilder createProxyInfoBuilder() {
-        final ProxyInfoBuilder proxyBuilder = new ProxyInfoBuilder();
-        final Optional<String> alertProxyHost = alertProperties.getAlertProxyHost();
-        final Optional<String> alertProxyPort = alertProperties.getAlertProxyPort();
-        final Optional<String> alertProxyUsername = alertProperties.getAlertProxyUsername();
-        final Optional<String> alertProxyPassword = alertProperties.getAlertProxyPassword();
-        if (alertProxyHost.isPresent()) {
-            proxyBuilder.setHost(alertProxyHost.get());
-        }
-        if (alertProxyPort.isPresent()) {
-            proxyBuilder.setPort(NumberUtils.toInt(alertProxyPort.get()));
-        }
-        if (alertProxyUsername.isPresent()) {
-            proxyBuilder.setUsername(alertProxyUsername.get());
-        }
-        if (alertProxyPassword.isPresent()) {
-            proxyBuilder.setPassword(alertProxyPassword.get());
-        }
-        return proxyBuilder;
     }
 
     @Transactional
