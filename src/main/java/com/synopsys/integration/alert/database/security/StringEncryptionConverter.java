@@ -36,7 +36,14 @@ public class StringEncryptionConverter implements AttributeConverter<String, Str
     private static EncryptionUtility encryptionUtility;
 
     public boolean isInitialized() {
-        return StringEncryptionConverter.encryptionUtility != null;
+        boolean initialized = StringEncryptionConverter.encryptionUtility != null;
+        if (initialized) {
+            initialized = encryptionUtility.isInitialized();
+        } else {
+            initialized = false;
+        }
+
+        return initialized;
     }
 
     @Autowired

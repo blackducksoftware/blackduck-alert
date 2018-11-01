@@ -125,5 +125,4 @@ public class EncryptionUtilityTest {
         assertTrue(content.contains(expectedPassword));
         assertTrue(content.contains(expectedSalt));
     }
-
 }

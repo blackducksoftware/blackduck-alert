@@ -78,13 +78,9 @@ public class EncryptionUtility {
         }
     }
 
-    public void updateEncryptionFields(final String password, final String globalSalt) {
-        try {
-            final EncryptionFileData encryptionFileData = new EncryptionFileData(password, globalSalt);
-            filePersistenceUtil.writeJsonToFile(DATA_FILE_NAME, encryptionFileData);
-        } catch (final IOException ex) {
-            logger.debug("Error writing data to file", ex);
-        }
+    public void updateEncryptionFields(final String password, final String globalSalt) throws IOException {
+        final EncryptionFileData encryptionFileData = new EncryptionFileData(password, globalSalt);
+        filePersistenceUtil.writeJsonToFile(DATA_FILE_NAME, encryptionFileData);
     }
 
     private String getEncodedSalt() {
