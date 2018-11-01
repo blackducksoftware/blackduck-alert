@@ -20,7 +20,7 @@ ENV ALERT_DB_DIR $ALERT_DATA_DIR/alertdb
 ENV ALERT_TEMPLATES_DIR $ALERT_TAR_HOME/templates
 ENV ALERT_IMAGES_DIR $ALERT_TAR_HOME/images
 
-ENV ALERT_MAX_HEAP_SIZE 350m
+ENV ALERT_MAX_HEAP_SIZE 2048m
 
 RUN set -e \
     && mkdir -p $ALERT_HOME \
@@ -31,6 +31,8 @@ RUN set -e \
     		bash \
     && addgroup -S alert \
     && adduser -h "$ALERT_HOME" -g alert -s /sbin/nologin -G alert -S -D alert
+
+RUN mkdir -p -m 777 $SECURITY_DIR
 
 COPY blackduck-alert-boot-$VERSION $ALERT_HOME/alert-tar
 
