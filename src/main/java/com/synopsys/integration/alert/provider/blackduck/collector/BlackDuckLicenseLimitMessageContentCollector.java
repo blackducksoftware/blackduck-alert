@@ -64,7 +64,8 @@ public class BlackDuckLicenseLimitMessageContentCollector extends MessageContent
             optionalValue.ifPresent(value -> linkableItems.add(new LinkableItem(field.getLabel(), value.toString())));
         }
         if (!linkableItems.isEmpty()) {
-            categoryItems.add(new CategoryItem(CategoryKey.from(notificationContent.getNotificationType()), ItemOperation.UPDATE, notificationContent.getId(), linkableItems));
+            final CategoryKey key = CategoryKey.from(notificationContent.getNotificationType(), notificationContent.getId().toString());
+            categoryItems.add(new CategoryItem(key, ItemOperation.UPDATE, notificationContent.getId(), linkableItems));
         }
     }
 }
