@@ -1,5 +1,7 @@
 package com.synopsys.integration.alert.database.security;
 
+import static org.junit.Assert.assertFalse;
+
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -41,5 +43,12 @@ public class StringEncryptionConverterTest {
         stringEncryptionConverter.setEncryptionUtility(encryptionUtility);
         stringEncryptionConverter.convertToEntityAttribute("");
         Mockito.verify(encryptionUtility, Mockito.times(0)).decrypt(Mockito.anyString());
+    }
+
+    @Test
+    public void testEncryptionUtilityNotInitialized() {
+        final StringEncryptionConverter stringEncryptionConverter = new StringEncryptionConverter();
+        stringEncryptionConverter.setEncryptionUtility(null);
+        assertFalse(stringEncryptionConverter.isInitialized());
     }
 }
