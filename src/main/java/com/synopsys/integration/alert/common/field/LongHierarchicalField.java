@@ -24,7 +24,7 @@
 package com.synopsys.integration.alert.common.field;
 
 import java.lang.reflect.Type;
-import java.util.Collection;
+import java.util.List;
 
 import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
 public class LongHierarchicalField extends HierarchicalField {
     private static final Type TYPE = new TypeToken<Long>() {}.getType();
 
-    public LongHierarchicalField(final Collection<String> pathToField, final String innerMostFieldName, final FieldContentIdentifier contentIdentifier, final String label) {
+    public LongHierarchicalField(final List<String> pathToField, final String innerMostFieldName, final FieldContentIdentifier contentIdentifier, final String label) {
         super(pathToField, innerMostFieldName, contentIdentifier, label, TYPE);
     }
 }

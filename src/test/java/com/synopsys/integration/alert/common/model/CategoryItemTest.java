@@ -2,8 +2,8 @@ package com.synopsys.integration.alert.common.model;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.junit.Test;
 
@@ -13,15 +13,14 @@ public class CategoryItemTest {
 
     @Test
     public void testCategoryItemFields() {
-
         final CategoryKey categoryKey = CategoryKey.from("categoryKey");
         final ItemOperation operation = ItemOperation.ADD;
-        final List<LinkableItem> itemList = Collections.emptyList();
+        final SortedSet<LinkableItem> items = new TreeSet<>();
         final Long notificationId = 10L;
-        final CategoryItem categoryItem = new CategoryItem(categoryKey, operation, notificationId, itemList);
+        final CategoryItem categoryItem = new CategoryItem(categoryKey, operation, notificationId, items);
         assertEquals(categoryKey, categoryItem.getCategoryKey());
         assertEquals(operation, categoryItem.getOperation());
         assertEquals(notificationId, categoryItem.getNotificationId());
-        assertEquals(itemList, categoryItem.getItemList());
+        assertEquals(items, categoryItem.getItems());
     }
 }
