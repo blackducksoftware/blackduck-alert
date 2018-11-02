@@ -25,8 +25,11 @@ public class AboutControllerTest {
         final String version = "1.2.3";
         final String description = "description";
         final String gitHubUrl = "https://www.google.com";
+        final boolean initialized = true;
+        final String startupTime = "startup time is now";
+        final String startupErrors = "startup errors";
 
-        final AboutModel model = new AboutModel(version, description, gitHubUrl);
+        final AboutModel model = new AboutModel(version, description, gitHubUrl, initialized, startupTime, startupErrors);
         final AboutActions aboutActions = Mockito.mock(AboutActions.class);
         final AboutHandler aboutHandler = new AboutHandler(contentConverter, aboutActions);
 

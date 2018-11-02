@@ -29,16 +29,21 @@ public class AboutModel extends Stringable {
     private String version;
     private String description;
     private String projectUrl;
+    private boolean initialized;
+    private String startupTime;
+    private String startupErrors;
 
     protected AboutModel() {
 
     }
 
-    public AboutModel(final String version, final String description, final String projectUrl) {
-
+    public AboutModel(final String version, final String description, final String projectUrl, final boolean initialized, final String startupTime, final String startupErrors) {
         this.version = version;
         this.description = description;
         this.projectUrl = projectUrl;
+        this.initialized = initialized;
+        this.startupTime = startupTime;
+        this.startupErrors = startupErrors;
     }
 
     public String getVersion() {
@@ -51,5 +56,17 @@ public class AboutModel extends Stringable {
 
     public String getProjectUrl() {
         return projectUrl;
+    }
+
+    public boolean isInitialized() {
+        return initialized;
+    }
+
+    public String getStartupTime() {
+        return startupTime;
+    }
+
+    public String getStartupErrors() {
+        return startupErrors;
     }
 }

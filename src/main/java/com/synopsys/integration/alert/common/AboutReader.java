@@ -31,7 +31,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.web.model.AboutModel;
+import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.util.ResourceUtil;
 
 @Component
@@ -39,17 +41,21 @@ public class AboutReader {
     public final static String PRODUCT_VERSION_UNKNOWN = "unknown";
     private final static Logger logger = LoggerFactory.getLogger(AboutReader.class);
     private final Gson gson;
+    private final SystemStatusUtility systemStatusUtility;
 
     @Autowired
-    public AboutReader(final Gson gson) {
+    public AboutReader(final Gson gson, final SystemStatusUtility systemStatusUtility) {
         this.gson = gson;
+        this.systemStatusUtility = systemStatusUtility;
     }
 
     public AboutModel getAboutModel() {
         try {
             final String aboutJson = ResourceUtil.getResourceAsString(getClass(), "/about.txt", StandardCharsets.UTF_8.toString());
             final AboutModel aboutModel = gson.fromJson(aboutJson, AboutModel.class);
-            return new AboutModel(aboutModel.getVersion(), aboutModel.getDescription(), aboutModel.getProjectUrl());
+            final String startupDate = systemStatusUtility.getStartupTime() != null ? RestConstants.formatDate(systemStatusUtility.getStartupTime()) : "";
+            return new AboutModel(aboutModel.getVersion(), aboutModel.getDescription(), aboutModel.getProjectUrl(), systemStatusUtility.isSystemInitialized(), startupDate,
+                systemStatusUtility.getStartupErrors());
         } catch (final Exception e) {
             logger.error(e.getMessage(), e);
             return null;

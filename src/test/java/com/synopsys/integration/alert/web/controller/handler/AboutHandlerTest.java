@@ -22,11 +22,14 @@ public class AboutHandlerTest {
         final String version = "1.2.3";
         final String description = "description";
         final String gitHubUrl = "https://www.google.com";
+        final boolean initialized = true;
+        final String startupTime = "startup time is now";
+        final String startupErrors = "startup errors";
 
         final Gson gson = new Gson();
         final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
 
-        final AboutModel model = new AboutModel(version, description, gitHubUrl);
+        final AboutModel model = new AboutModel(version, description, gitHubUrl, initialized, startupTime, startupErrors);
         final AboutActions aboutActions = Mockito.mock(AboutActions.class);
         final AboutHandler aboutHandler = new AboutHandler(contentConverter, aboutActions);
 
