@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.util.Stringable;
@@ -34,14 +35,14 @@ import com.synopsys.integration.util.Stringable;
 public class CategoryItem extends Stringable {
     private final CategoryKey categoryKey;
     private final ItemOperation operation;
-    private final List<LinkableItem> itemList;
+    private final SortedSet<LinkableItem> items;
     private final Long notificationId;
 
-    public CategoryItem(final CategoryKey categoryKey, final ItemOperation operation, final Long notificationId, final List<LinkableItem> itemList) {
+    public CategoryItem(final CategoryKey categoryKey, final ItemOperation operation, final Long notificationId, final SortedSet<LinkableItem> items) {
         this.categoryKey = categoryKey;
         this.operation = operation;
         this.notificationId = notificationId;
-        this.itemList = itemList;
+        this.items = items;
     }
 
     public CategoryKey getCategoryKey() {
@@ -56,8 +57,8 @@ public class CategoryItem extends Stringable {
         return notificationId;
     }
 
-    public List<LinkableItem> getItemList() {
-        return itemList;
+    public SortedSet<LinkableItem> getItems() {
+        return items;
     }
 
     /**
@@ -66,7 +67,7 @@ public class CategoryItem extends Stringable {
      */
     public Map<String, List<LinkableItem>> getItemsOfSameName() {
         final Map<String, List<LinkableItem>> map = new LinkedHashMap<>();
-        for (final LinkableItem item : itemList) {
+        for (final LinkableItem item : items) {
             if (!map.containsKey(item.getName())) {
                 map.put(item.getName(), new ArrayList<>());
             }
