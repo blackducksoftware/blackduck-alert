@@ -24,10 +24,11 @@
 
 package com.synopsys.integration.alert.provider.blackduck.collector;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +69,7 @@ public class BlackDuckPolicyMessageContentCollector extends MessageContentCollec
         final List<LinkableItem> componentVersionItems = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_COMPONENT_VERSION_NAME);
         final Optional<LinkableItem> firstName = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_POLICY_OVERRIDE_FIRST_NAME).stream().findFirst();
         final Optional<LinkableItem> lastName = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_POLICY_OVERRIDE_LAST_NAME).stream().findFirst();
-        final List<LinkableItem> applicableItems = new ArrayList<>();
+        final SortedSet<LinkableItem> applicableItems = new TreeSet<>();
         applicableItems.addAll(componentItems);
         applicableItems.addAll(componentVersionItems);
 
@@ -104,18 +105,18 @@ public class BlackDuckPolicyMessageContentCollector extends MessageContentCollec
     }
 
     private void addApplicableItems(final List<CategoryItem> categoryItems, final Long notificationId, final LinkableItem policyItem, final String policyUrl, final ItemOperation operation,
-        final Optional<LinkableItem> nameItem, final List<LinkableItem> applicableItems) {
+        final Optional<LinkableItem> nameItem, final SortedSet<LinkableItem> applicableItems) {
         for (final LinkableItem item : applicableItems) {
             final Optional<String> itemUrl = item.getUrl();
             if (itemUrl.isPresent()) {
                 final CategoryKey categoryKey = CategoryKey.from(CATEGORY_TYPE, policyUrl, itemUrl.get());
-                final List<LinkableItem> linkableItemList;
+                final SortedSet<LinkableItem> linkableItems;
                 if (nameItem.isPresent()) {
-                    linkableItemList = createLinkableItemList(policyItem, item, nameItem.get());
+                    linkableItems = createLinkableItemSet(policyItem, item, nameItem.get());
                 } else {
-                    linkableItemList = createLinkableItemList(policyItem, item);
+                    linkableItems = createLinkableItemSet(policyItem, item);
                 }
-                addItem(categoryItems, new CategoryItem(categoryKey, operation, notificationId, linkableItemList));
+                addItem(categoryItems, new CategoryItem(categoryKey, operation, notificationId, linkableItems));
             }
         }
     }
