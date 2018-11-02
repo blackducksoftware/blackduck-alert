@@ -23,10 +23,11 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.collector;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -57,7 +58,7 @@ public class BlackDuckLicenseLimitMessageContentCollector extends MessageContent
     protected void addCategoryItems(final List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<HierarchicalField> notificationFields, final NotificationContent notificationContent) {
         final List<LongHierarchicalField> longFields = getLongFields(notificationFields);
 
-        final List<LinkableItem> linkableItems = new ArrayList<>();
+        final SortedSet<LinkableItem> linkableItems = new TreeSet<>();
         for (final LongHierarchicalField field : longFields) {
             final Optional<Long> optionalValue = jsonFieldAccessor.getFirst(field);
             optionalValue.ifPresent(value -> linkableItems.add(new LinkableItem(field.getLabel(), value.toString())));

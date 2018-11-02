@@ -189,7 +189,7 @@ public class HipChatChannelTest extends ChannelTest {
         final ChannelRestConnectionFactory restFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, null, null, null, null, restFactory);
 
-        try (final RestConnection restConnection = new UnauthenticatedRestConnection(new PrintStreamIntLogger(System.out, LogLevel.INFO), new URL("http://google.com"), 100, null);) {
+        try (final RestConnection restConnection = new UnauthenticatedRestConnection(new PrintStreamIntLogger(System.out, LogLevel.INFO), new URL("http://google.com"), 100, null)) {
             final RestConnection mockRestConnection = Mockito.spy(restConnection);
             Mockito.doThrow(new IntegrationException("Mock exception")).when(mockRestConnection).connect();
             Mockito.when(restFactory.createUnauthenticatedRestConnection(Mockito.anyString())).thenReturn(mockRestConnection);
@@ -257,9 +257,8 @@ public class HipChatChannelTest extends ChannelTest {
         final AggregateMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Chunked Request");
         int count = 0;
         while (gson.toJson(messageContent).length() < HipChatChannel.MESSAGE_SIZE_LIMIT * 2) {
-            final LinkableItem newItem = new LinkableItem("Name", "Relatively long value #" + count + " with some trailing text for good measure...", "https://google.com");
-            messageContent.getCategoryItemList().get(0).getItemList().add(newItem);
-            count++;
+            final LinkableItem newItem = new LinkableItem("Name " + count++, "Relatively long value #" + count + " with some trailing text for good measure...", "https://google.com");
+            messageContent.getCategoryItemList().get(0).getItems().add(newItem);
         }
         return messageContent;
     }
