@@ -360,8 +360,8 @@ class Index extends Component {
                         pagination
                         search
                     >
-                        <TableHeaderColumn dataField="name" dataSort columnTitle columnClassName="tableCell">Job Name</TableHeaderColumn>
-                        <TableHeaderColumn dataField="notificationProviderName" dataSort columnTitle columnClassName="tableCell" dataFormat={this.providerColumnDataFormat}>Provider Name</TableHeaderColumn>
+                        <TableHeaderColumn dataField="name" dataSort columnTitle columnClassName="tableCell">Distribution Job</TableHeaderColumn>
+                        <TableHeaderColumn dataField="notificationProviderName" dataSort columnTitle columnClassName="tableCell" dataFormat={this.providerColumnDataFormat}>Provider</TableHeaderColumn>
                         <TableHeaderColumn dataField="notificationType" dataSort width="145" columnClassName="tableCell" dataFormat={this.notificationTypeDataFormat}>Notification Types</TableHeaderColumn>
                         <TableHeaderColumn dataField="timeCreated" dataSort width="160" columnTitle columnClassName="tableCell">Time Created</TableHeaderColumn>
                         <TableHeaderColumn dataField="timeLastSent" dataSort width="160" columnTitle columnClassName="tableCell">Time Last Sent</TableHeaderColumn>

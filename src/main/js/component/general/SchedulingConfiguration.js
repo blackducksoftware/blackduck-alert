@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import Select from 'react-select-2';
+import Select from 'react-select';
 
 import {getSchedulingConfig, updateSchedulingConfig} from '../../store/actions/schedulingConfig';
 
@@ -95,7 +95,6 @@ class SchedulingConfiguration extends React.Component {
         }
     }
 
-
     render() {
         const {
             errorFields, errorMessage, updateStatus
@@ -131,10 +130,10 @@ class SchedulingConfiguration extends React.Component {
                                 id="schedulingConfigurationHour"
                                 className="accumulatorTypeAheadField"
                                 onChange={this.handleDailyDigestChanged}
-                                searchable
+                                isSearchable
                                 options={dailyDigestOptions}
                                 placeholder="Choose the hour of day"
-                                value={this.state.dailyDigestHourOfDay}
+                                value={dailyDigestOptions.find(option => option.value === this.state.dailyDigestHourOfDay)}
                             />
                         </div>
                         {errorFields && errorFields.dailyDigestHourOfDay &&
@@ -157,10 +156,10 @@ class SchedulingConfiguration extends React.Component {
                                 id="schedulingConfigurationFrequency"
                                 className="accumulatorTypeAheadField"
                                 onChange={this.handlePurgeChanged}
-                                searchable
+                                isSearchable
                                 options={purgeOptions}
                                 placeholder="Choose the frequency"
-                                value={this.state.purgeDataFrequencyDays}
+                                value={purgeOptions.find(option => option.value === this.state.purgeDataFrequencyDays)}
                             />
                         </div>
                         {errorFields && errorFields.purgeDataFrequencyDays &&
