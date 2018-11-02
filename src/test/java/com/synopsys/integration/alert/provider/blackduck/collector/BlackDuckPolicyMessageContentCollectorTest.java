@@ -72,11 +72,9 @@ public class BlackDuckPolicyMessageContentCollectorTest {
         insertAndAssertCountsOnTopic(collector, n1, topicName, categoryCount, linkableItemsCount);
 
         categoryCount += numberOfPoliciesOverriden - policyOverlap;
-        linkableItemsCount += numberOfPoliciesOverriden * numberOfPolicyOverrideComponents * 3;
         insertAndAssertCountsOnTopic(collector, n2, topicName, categoryCount, linkableItemsCount);
 
         categoryCount += numberOfPoliciesOverriden - policyOverlap;
-        linkableItemsCount += numberOfPoliciesOverriden * numberOfPolicyOverrideComponents * 3;
         insertAndAssertCountsOnTopic(collector, n3, topicName, categoryCount, linkableItemsCount);
 
         Assert.assertEquals(1, collector.collect(FormatType.DEFAULT).size());
@@ -121,7 +119,7 @@ public class BlackDuckPolicyMessageContentCollectorTest {
     private int getCategoryItemLinkableItemsCount(final List<CategoryItem> items) {
         int count = 0;
         for (final CategoryItem item : items) {
-            count += item.getItemList().size();
+            count += item.getItems().size();
         }
         return count;
     }
