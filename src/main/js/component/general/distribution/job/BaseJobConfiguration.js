@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import Select from 'react-select-2';
+import Select from 'react-select';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import TextInput from '../../../../field/input/TextInput';
@@ -290,6 +290,8 @@ class BaseJobConfiguration extends Component {
         if (!this.props.currentDistributionComponents) {
             return null;
         } else {
+            const formatOptions = this.createFormatTypeOptions();
+            const notificationOptions = this.createNotificationTypeOptions();
             return (
                 <div>
                     <div className="form-group">
@@ -300,9 +302,9 @@ class BaseJobConfiguration extends Component {
                                 className="typeAheadField"
                                 onChange={this.handleFormatChanged}
                                 removeSelected
-                                options={this.createFormatTypeOptions()}
+                                options={formatOptions}
                                 placeholder="Choose the format for the job"
-                                value={this.state.formatType}
+                                value={formatOptions.find(option => option.value === this.state.formatType)}
                             />
                             {this.state.error.formatTypeError && <label className="fieldError" name="formatTypeError">
                                 {this.state.error.formatTypeError}
@@ -319,9 +321,9 @@ class BaseJobConfiguration extends Component {
                                 searchable
                                 multi
                                 removeSelected
-                                options={this.createNotificationTypeOptions()}
+                                options={notificationOptions}
                                 placeholder="Choose the notification types"
-                                value={this.state.notificationTypes}
+                                value={notificationOptions.find(option => option.value === this.state.notificationTypes)}
                             />
                             {this.state.error.notificationTypesError && <label className="fieldError" name="notificationTypesError">
                                 {this.state.error.notificationTypesError}
@@ -339,6 +341,11 @@ class BaseJobConfiguration extends Component {
     }
 
     render() {
+        const providerOptions = this.state.providerOptions;
+        var selectedProviderOption = null
+        if (providerOptions) {
+            selectedProviderOption = providerOptions.find(option => option.value === this.state.providerName)
+        }
         return (
             <form className="form-horizontal" onSubmit={this.onSubmit}>
                 <TextInput id="name" label="Job Name" name="name" value={this.state.name} onChange={this.handleChange} errorName="nameError" errorValue={this.state.error.nameError}/>
@@ -352,7 +359,7 @@ class BaseJobConfiguration extends Component {
                             searchable
                             options={frequencyOptions}
                             placeholder="Choose the frequency"
-                            value={this.state.frequency}
+                            value={frequencyOptions.find(option => option.value === this.state.frequency)}
                         />
                         {this.state.error.frequencyError && <label className="fieldError" name="frequencyError">
                             {this.state.error.frequencyError}
@@ -367,10 +374,10 @@ class BaseJobConfiguration extends Component {
                             className="typeAheadField"
                             onChange={this.handleProviderChanged}
                             searchable
-                            options={this.state.providerOptions}
+                            options={providerOptions}
                             optionRenderer={this.renderOption}
                             placeholder="Choose the provider"
-                            value={this.state.providerName}
+                            value={selectedProviderOption}
                             valueRenderer={this.renderOption}
                         />
                         {this.state.error.providerNameError && <label className="fieldError" name="providerNameError">

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import Select from 'react-select-2';
+import Select from 'react-select';
 import TextInput from '../../../../field/input/TextInput';
 import CheckboxInput from '../../../../field/input/CheckboxInput';
 import {getDistributionJob} from '../../../../store/actions/distributions';
@@ -74,7 +74,11 @@ class HipChatJobConfiguration extends Component {
     }
 
     render() {
-
+        const colorOptions = this.state.colorOptions;
+        var selectedColorOption = null
+        if (colorOptions) {
+            selectedColorOption = colorOptions.find(option => option.value === this.state.color)
+        }
         const content = (
             <div>
                 <TextInput id="jobHipChatRoomId" label="Room Id" name="roomId" value={this.state.roomId} onChange={this.handleChange} errorName="roomIdError" errorValue={this.props.error.roomIdError}/>
@@ -86,10 +90,10 @@ class HipChatJobConfiguration extends Component {
                             id="jobHipChatColor"
                             className="typeAheadField"
                             onChange={this.handleColorChanged}
-                            searchable
-                            options={this.state.colorOptions}
+                            isSearchable
+                            options={colorOptions}
                             placeholder="Choose the message color"
-                            value={this.state.color}
+                            value={selectedColorOption}
                         />
                     </div>
                 </div>
