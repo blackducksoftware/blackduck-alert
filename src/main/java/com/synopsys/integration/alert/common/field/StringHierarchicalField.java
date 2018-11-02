@@ -24,7 +24,7 @@
 package com.synopsys.integration.alert.common.field;
 
 import java.lang.reflect.Type;
-import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import com.google.gson.reflect.TypeToken;
@@ -35,21 +35,17 @@ public class StringHierarchicalField extends HierarchicalField {
 
     private final String configNameMapping;
 
-    public StringHierarchicalField(final Collection<String> pathToField, final String innerMostFieldName, final FieldContentIdentifier contentIdentifier, final String label) {
+    public StringHierarchicalField(final List<String> pathToField, final String innerMostFieldName, final FieldContentIdentifier contentIdentifier, final String label) {
         super(pathToField, innerMostFieldName, contentIdentifier, label, TYPE);
         this.configNameMapping = null;
     }
 
-    public StringHierarchicalField(final Collection<String> pathToField, final String innerMostFieldName, final FieldContentIdentifier contentIdentifier, final String label, final String configNameMapping) {
+    public StringHierarchicalField(final List<String> pathToField, final String innerMostFieldName, final FieldContentIdentifier contentIdentifier, final String label, final String configNameMapping) {
         super(pathToField, innerMostFieldName, contentIdentifier, label, TYPE);
         this.configNameMapping = configNameMapping;
     }
 
     public Optional<String> getConfigNameMapping() {
         return Optional.ofNullable(configNameMapping);
-    }
-
-    public boolean isFilterable() {
-        return configNameMapping != null;
     }
 }
