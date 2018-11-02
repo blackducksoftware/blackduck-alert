@@ -56,7 +56,7 @@ public class ProviderContentType extends Stringable {
                    .parallelStream()
                    .filter(field -> targetClass.isAssignableFrom(field.getClass()))
                    .map(field -> targetClass.cast(field))
-                   .filter(StringHierarchicalField::isFilterable)
+                   .filter(field -> field.getConfigNameMapping().isPresent())
                    .collect(Collectors.toList());
     }
 }
