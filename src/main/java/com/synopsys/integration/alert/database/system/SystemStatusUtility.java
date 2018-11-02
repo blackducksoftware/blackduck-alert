@@ -42,6 +42,11 @@ public class SystemStatusUtility {
     }
 
     @Transactional
+    public boolean isSystemInitialized() {
+        return getSystemStatus().isInitialConfigurationPerformed();
+    }
+
+    @Transactional
     public void setSystemInitialized(final boolean systemInitialized) {
         final SystemStatus systemStatus = getSystemStatus();
         final SystemStatus newSystemStatus = new SystemStatus(systemInitialized, systemStatus.getStartupTime(), systemStatus.getStartupErrors());
@@ -57,6 +62,16 @@ public class SystemStatusUtility {
         final SystemStatus newSystemStatus = new SystemStatus(systemStatus.isInitialConfigurationPerformed(), Date.from(zonedDateTime.toInstant()), systemStatus.getStartupErrors());
         newSystemStatus.setId(SYSTEM_STATUS_ID);
         updateSystemStatus(newSystemStatus);
+    }
+
+    @Transactional
+    public Date getStartupTime() {
+        return getSystemStatus().getStartupTime();
+    }
+
+    @Transactional
+    public String getStartupErrors() {
+        return getSystemStatus().getStartupErrors();
     }
 
     @Transactional
