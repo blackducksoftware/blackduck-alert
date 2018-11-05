@@ -26,16 +26,16 @@ package com.synopsys.integration.alert.workflow.filter.builder;
 import java.util.List;
 import java.util.function.Predicate;
 
-import com.synopsys.integration.alert.common.field.StringHierarchicalField;
+import com.synopsys.integration.alert.common.field.HierarchicalField;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.workflow.filter.field.JsonExtractor;
 
 public class JsonFieldFilterBuilder implements JsonFilterBuilder {
     private final JsonExtractor jsonExtractor;
-    private final StringHierarchicalField hierarchicalField;
+    private final HierarchicalField<String> hierarchicalField;
     private final String value;
 
-    public JsonFieldFilterBuilder(final JsonExtractor jsonExtractor, final StringHierarchicalField hierarchicalField, final String value) {
+    public JsonFieldFilterBuilder(final JsonExtractor jsonExtractor, final HierarchicalField<String> hierarchicalField, final String value) {
         this.jsonExtractor = jsonExtractor;
         this.hierarchicalField = hierarchicalField;
         this.value = value;

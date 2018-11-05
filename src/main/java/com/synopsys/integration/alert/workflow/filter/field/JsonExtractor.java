@@ -41,7 +41,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.common.field.HierarchicalField;
-import com.synopsys.integration.alert.common.field.StringHierarchicalField;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.util.Stringable;
 
@@ -54,12 +53,12 @@ public class JsonExtractor {
         this.gson = gson;
     }
 
-    public JsonFieldAccessor createJsonFieldAccessor(final List<HierarchicalField> fields, final String json) {
+    public JsonFieldAccessor createJsonFieldAccessor(final List<HierarchicalField<?>> fields, final String json) {
         final Map<HierarchicalField, List<Object>> fieldToValuesMap = new HashMap<>();
         final JsonObject jsonObjectModel = gson.fromJson(json, JsonObject.class);
 
         for (final HierarchicalField field : fields) {
-            final List<String> fieldNameHierarchy = field.getFullPathToField();
+            final List<String> fieldNameHierarchy = field.getPathToField();
             final Type fieldDataType = field.getType();
 
             final List<JsonElement> foundElements = getInnerElements(jsonObjectModel, fieldNameHierarchy);
@@ -70,7 +69,7 @@ public class JsonExtractor {
         return new JsonFieldAccessor(fieldToValuesMap);
     }
 
-    public List<String> getValuesFromConfig(final StringHierarchicalField field, final Config config) {
+    public List<String> getValuesFromConfig(final HierarchicalField<String> field, final Config config) {
         final JsonElement jsonConfigModel = gson.toJsonTree(config);
         final Optional<String> mapping = field.getConfigNameMapping();
 
@@ -90,8 +89,8 @@ public class JsonExtractor {
         return values;
     }
 
-    public List<String> getValuesFromJson(final StringHierarchicalField field, final String json) {
-        final List<String> fieldNameHierarchy = field.getFullPathToField();
+    public <T> List<T> getValuesFromJson(final HierarchicalField<T> field, final String json) {
+        final List<String> fieldNameHierarchy = field.getPathToField();
         final JsonObject object = gson.fromJson(json, JsonObject.class);
 
         final List<JsonElement> foundElements = getInnerElements(object, fieldNameHierarchy);

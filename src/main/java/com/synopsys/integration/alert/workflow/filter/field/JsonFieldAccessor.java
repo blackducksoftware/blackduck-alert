@@ -23,77 +23,30 @@
  */
 package com.synopsys.integration.alert.workflow.filter.field;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.field.HierarchicalField;
-import com.synopsys.integration.alert.common.field.LongHierarchicalField;
-import com.synopsys.integration.alert.common.field.ObjectHierarchicalField;
-import com.synopsys.integration.alert.common.field.StringHierarchicalField;
 
 public class JsonFieldAccessor {
-    private final Map<StringHierarchicalField, List<String>> stringMappings = new HashMap<>();
-    private final Map<LongHierarchicalField, List<Long>> longMappings = new HashMap<>();
-    private final Map<ObjectHierarchicalField, List<Object>> objectMappings = new HashMap<>();
+    private final Map<HierarchicalField, List<Object>> fieldToDataMap;
 
     public JsonFieldAccessor(final Map<HierarchicalField, List<Object>> fieldToDataMap) {
-        initializeSubMap(fieldToDataMap, stringMappings, StringHierarchicalField.class);
-        initializeSubMap(fieldToDataMap, longMappings, LongHierarchicalField.class);
-        initializeSubMap(fieldToDataMap, objectMappings, ObjectHierarchicalField.class);
+        this.fieldToDataMap = fieldToDataMap;
     }
 
-    public List<String> get(final StringHierarchicalField field) {
-        return getFrom(stringMappings, field);
-    }
-
-    public List<Long> get(final LongHierarchicalField field) {
-        return getFrom(longMappings, field);
-    }
-
-    public List<Object> get(final ObjectHierarchicalField field) {
-        return getFrom(objectMappings, field);
-    }
-
-    public <T> List<T> get(final ObjectHierarchicalField field, final Class<T> expectedClazz) throws AlertException {
-        final List<Object> objectList = get(field);
-
-        final List<T> typedList = new ArrayList<>();
-        for (final Object object : objectList) {
-            if (expectedClazz.isAssignableFrom(object.getClass())) {
-                typedList.add(expectedClazz.cast(object));
-            } else {
-                throw new AlertException(String.format("Invalid data type '%s' for field '%s'.", expectedClazz.getName(), field.getLabel()));
-            }
-        }
-        return typedList;
-    }
-
-    public Optional<String> getFirst(final StringHierarchicalField field) {
-        return getFirst(get(field));
-    }
-
-    public Optional<Long> getFirst(final LongHierarchicalField field) {
-        return getFirst(get(field));
-    }
-
-    public Optional<Object> getFirst(final ObjectHierarchicalField field) {
-        return getFirst(get(field));
-    }
-
-    public <T> Optional<T> getFirst(final ObjectHierarchicalField field, final Class<T> expectedClass) throws AlertException {
-        return getFirst(get(field, expectedClass));
-    }
-
-    private <K, V> List<V> getFrom(final Map<K, List<V>> map, final K field) {
-        if (map.containsKey(field)) {
-            return map.get(field);
+    public <T> List<T> get(final HierarchicalField<T> field) {
+        final List<T> foundValues = (List<T>) fieldToDataMap.get(field);
+        if (foundValues != null) {
+            return foundValues;
         }
         return Collections.emptyList();
+    }
+
+    public <T> Optional<T> getFirst(final HierarchicalField<T> field) {
+        return getFirst(get(field));
     }
 
     private <V> Optional<V> getFirst(final List<V> list) {
@@ -102,20 +55,5 @@ public class JsonFieldAccessor {
             return Optional.of(firstValue);
         }
         return Optional.empty();
-    }
-
-    private <K, V> void initializeSubMap(final Map<HierarchicalField, List<Object>> fieldToDataMap, final Map<K, List<V>> subMap, final Class<K> targetKeyClass) {
-        for (final Map.Entry<HierarchicalField, List<Object>> entry : fieldToDataMap.entrySet()) {
-            final HierarchicalField key = entry.getKey();
-            if (targetKeyClass.isAssignableFrom(key.getClass())) {
-                final List<V> newValues = new ArrayList<>();
-
-                final List<Object> values = entry.getValue();
-                for (final Object value : values) {
-                    newValues.add((V) value);
-                }
-                subMap.put((K) key, newValues);
-            }
-        }
     }
 }

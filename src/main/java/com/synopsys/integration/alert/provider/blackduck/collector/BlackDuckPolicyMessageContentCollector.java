@@ -38,7 +38,6 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.field.HierarchicalField;
-import com.synopsys.integration.alert.common.field.StringHierarchicalField;
 import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.common.model.CategoryKey;
 import com.synopsys.integration.alert.common.model.LinkableItem;
@@ -62,8 +61,8 @@ public class BlackDuckPolicyMessageContentCollector extends MessageContentCollec
     }
 
     @Override
-    protected void addCategoryItems(final List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<HierarchicalField> notificationFields, final NotificationContent notificationContent) {
-        final List<StringHierarchicalField> categoryFields = getStringFields(notificationFields);
+    protected void addCategoryItems(final List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<HierarchicalField<?>> notificationFields, final NotificationContent notificationContent) {
+        final List<HierarchicalField<String>> categoryFields = getStringFields(notificationFields);
         final List<LinkableItem> policyItems = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_POLICY_NAME);
         final List<LinkableItem> componentItems = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_COMPONENT_NAME);
         final List<LinkableItem> componentVersionItems = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_COMPONENT_VERSION_NAME);
