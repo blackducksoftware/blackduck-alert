@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import Select from 'react-select-2';
+import Select from 'react-select';
 import TextInput from '../../../../field/input/TextInput';
 import CheckboxInput from '../../../../field/input/CheckboxInput';
 import {getDistributionJob} from '../../../../store/actions/distributions';
@@ -74,22 +74,26 @@ class HipChatJobConfiguration extends Component {
     }
 
     render() {
-
+        const colorOptions = this.state.colorOptions;
+        var selectedColorOption = null
+        if (colorOptions) {
+            selectedColorOption = colorOptions.find(option => option.value === this.state.color)
+        }
         const content = (
             <div>
                 <TextInput id="jobHipChatRoomId" label="Room Id" name="roomId" value={this.state.roomId} onChange={this.handleChange} errorName="roomIdError" errorValue={this.props.error.roomIdError}/>
                 <CheckboxInput id="jobHipChatNotify" label="Notify" name="notify" value={this.state.notify} onChange={this.handleChange} errorName="notifyError" errorValue={this.props.error.notifyError}/>
                 <div className="form-group">
-                    <label className="col-sm-3 control-label">Color</label>
-                    <div className="col-sm-8">
+                    <label className="col-sm-3 col-form-label text-right">Color</label>
+                    <div className="d-inline-flex p-2 col-sm-8">
                         <Select
                             id="jobHipChatColor"
                             className="typeAheadField"
                             onChange={this.handleColorChanged}
-                            searchable
-                            options={this.state.colorOptions}
+                            isSearchable
+                            options={colorOptions}
                             placeholder="Choose the message color"
-                            value={this.state.color}
+                            value={selectedColorOption}
                         />
                     </div>
                 </div>
