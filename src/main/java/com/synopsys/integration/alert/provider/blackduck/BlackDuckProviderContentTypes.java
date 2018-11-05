@@ -31,9 +31,7 @@ import java.util.List;
 import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
 import com.synopsys.integration.alert.common.field.HierarchicalField;
-import com.synopsys.integration.alert.common.field.LongHierarchicalField;
-import com.synopsys.integration.alert.common.field.ObjectHierarchicalField;
-import com.synopsys.integration.alert.common.field.StringHierarchicalField;
+import com.synopsys.integration.alert.common.field.HierarchicalFieldFactory;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.notification.content.VulnerabilitySourceQualifiedId;
@@ -99,28 +97,28 @@ public class BlackDuckProviderContentTypes {
     public static final ProviderContentType LICENSE_LIMIT = new ProviderContentType(
         NotificationType.LICENSE_LIMIT.name(),
         Arrays.asList(
-            new StringHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT), JSON_FIELD_MESSAGE, FieldContentIdentifier.TOPIC, LABEL_LICENSE_LIMIT_MESSAGE),
-            new StringHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT), JSON_FIELD_MARKETING_URL, FieldContentIdentifier.TOPIC_URL, LABEL_LICENSE_LIMIT_MESSAGE + HierarchicalField.LABEL_URL_SUFFIX),
-            new LongHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT), JSON_FIELD_CODE_SIZE, FieldContentIdentifier.CATEGORY_ITEM, LABEL_LICENSE_LIMIT_USED_CODE_SIZE),
-            new LongHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT), JSON_FIELD_LIMIT_HARD, FieldContentIdentifier.CATEGORY_ITEM, LABEL_LICENSE_LIMIT_HARD),
-            new LongHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT), JSON_FIELD_LIMIT_SOFT, FieldContentIdentifier.CATEGORY_ITEM, LABEL_LICENSE_LIMIT_SOFT)
+            HierarchicalFieldFactory.createStringField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_MESSAGE), FieldContentIdentifier.TOPIC, LABEL_LICENSE_LIMIT_MESSAGE),
+            HierarchicalFieldFactory.createStringField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_MARKETING_URL), FieldContentIdentifier.TOPIC_URL, LABEL_LICENSE_LIMIT_MESSAGE + HierarchicalField.LABEL_URL_SUFFIX),
+            HierarchicalFieldFactory.createLongField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_CODE_SIZE), FieldContentIdentifier.CATEGORY_ITEM, LABEL_LICENSE_LIMIT_USED_CODE_SIZE),
+            HierarchicalFieldFactory.createLongField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_LIMIT_HARD), FieldContentIdentifier.CATEGORY_ITEM, LABEL_LICENSE_LIMIT_HARD),
+            HierarchicalFieldFactory.createLongField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_LIMIT_SOFT), FieldContentIdentifier.CATEGORY_ITEM, LABEL_LICENSE_LIMIT_SOFT)
         )
     );
 
     public static final ProviderContentType POLICY_OVERRIDE = new ProviderContentType(
         NotificationType.POLICY_OVERRIDE.name(),
         Arrays.asList(
-            new StringHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT), JSON_FIELD_PROJECT_NAME, FieldContentIdentifier.TOPIC, LABEL_PROJECT_NAME, CONFIG_MAPPING_CONFIGURED_PROJECTS),
-            new StringHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT), JSON_FIELD_PROJECT_VERSION_NAME, FieldContentIdentifier.SUB_TOPIC, LABEL_PROJECT_VERSION_NAME),
-            new StringHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT), JSON_FIELD_PROJECT_VERSION, FieldContentIdentifier.SUB_TOPIC_URL, LABEL_PROJECT_VERSION_NAME + HierarchicalField.LABEL_URL_SUFFIX),
-            new StringHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT), JSON_FIELD_COMPONENT_NAME, FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_NAME),
-            new StringHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT), JSON_FIELD_COMPONENT, FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_NAME + HierarchicalField.LABEL_URL_SUFFIX),
-            new StringHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT), JSON_FIELD_COMPONENT_VERSION_NAME, FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_VERSION_NAME),
-            new StringHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT), JSON_FIELD_COMPONENT_VERSION, FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_VERSION_NAME + HierarchicalField.LABEL_URL_SUFFIX),
-            new StringHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT), JSON_FIELD_FIRST_NAME, FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_OVERRIDE_FIRST_NAME),
-            new StringHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT), JSON_FIELD_LAST_NAME, FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_OVERRIDE_LAST_NAME),
-            new StringHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_POLICY_INFOS), JSON_FIELD_POLICY_NAME, FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_NAME),
-            new StringHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_POLICY_INFOS), JSON_FIELD_POLICY, FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_NAME + HierarchicalField.LABEL_URL_SUFFIX)
+            HierarchicalFieldFactory.createStringField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_NAME), FieldContentIdentifier.TOPIC, LABEL_PROJECT_NAME, CONFIG_MAPPING_CONFIGURED_PROJECTS),
+            HierarchicalFieldFactory.createStringField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_VERSION_NAME), FieldContentIdentifier.SUB_TOPIC, LABEL_PROJECT_VERSION_NAME),
+            HierarchicalFieldFactory.createStringField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_VERSION), FieldContentIdentifier.SUB_TOPIC_URL, LABEL_PROJECT_VERSION_NAME + HierarchicalField.LABEL_URL_SUFFIX),
+            HierarchicalFieldFactory.createStringField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_NAME), FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_NAME),
+            HierarchicalFieldFactory.createStringField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT), FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_NAME + HierarchicalField.LABEL_URL_SUFFIX),
+            HierarchicalFieldFactory.createStringField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_VERSION_NAME), FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_VERSION_NAME),
+            HierarchicalFieldFactory.createStringField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_VERSION), FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_VERSION_NAME + HierarchicalField.LABEL_URL_SUFFIX),
+            HierarchicalFieldFactory.createStringField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_FIRST_NAME), FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_OVERRIDE_FIRST_NAME),
+            HierarchicalFieldFactory.createStringField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_LAST_NAME), FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_OVERRIDE_LAST_NAME),
+            HierarchicalFieldFactory.createStringField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_POLICY_INFOS, JSON_FIELD_POLICY_NAME), FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_NAME),
+            HierarchicalFieldFactory.createStringField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_POLICY_INFOS, JSON_FIELD_POLICY), FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_NAME + HierarchicalField.LABEL_URL_SUFFIX)
         )
     );
     private static final Type VULNERABILITY_TYPE = new TypeToken<VulnerabilitySourceQualifiedId>() {}.getType();
@@ -128,31 +126,32 @@ public class BlackDuckProviderContentTypes {
     public static final ProviderContentType VULNERABILITY = new ProviderContentType(
         NotificationType.VULNERABILITY.name(),
         Arrays.asList(
-            new StringHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_AFFECTED_PROJECT_VERSIONS), JSON_FIELD_PROJECT_NAME, FieldContentIdentifier.TOPIC, LABEL_PROJECT_NAME, CONFIG_MAPPING_CONFIGURED_PROJECTS),
-            new StringHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_AFFECTED_PROJECT_VERSIONS), JSON_FIELD_PROJECT_VERSION_NAME, FieldContentIdentifier.SUB_TOPIC, LABEL_PROJECT_VERSION_NAME),
-            new StringHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_AFFECTED_PROJECT_VERSIONS), JSON_FIELD_PROJECT_VERSION, FieldContentIdentifier.SUB_TOPIC_URL,
+            HierarchicalFieldFactory.createStringField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_AFFECTED_PROJECT_VERSIONS, JSON_FIELD_PROJECT_NAME), FieldContentIdentifier.TOPIC, LABEL_PROJECT_NAME, CONFIG_MAPPING_CONFIGURED_PROJECTS),
+            HierarchicalFieldFactory.createStringField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_AFFECTED_PROJECT_VERSIONS, JSON_FIELD_PROJECT_VERSION_NAME), FieldContentIdentifier.SUB_TOPIC, LABEL_PROJECT_VERSION_NAME),
+            HierarchicalFieldFactory.createStringField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_AFFECTED_PROJECT_VERSIONS, JSON_FIELD_PROJECT_VERSION), FieldContentIdentifier.SUB_TOPIC_URL,
                 LABEL_PROJECT_VERSION_NAME + HierarchicalField.LABEL_URL_SUFFIX),
-            new StringHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT), JSON_FIELD_COMPONENT_NAME, FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_NAME),
-            new StringHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT), JSON_FIELD_COMPONENT, FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_NAME + HierarchicalField.LABEL_URL_SUFFIX),
-            new StringHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT), JSON_FIELD_VERSION_NAME, FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_VERSION_NAME),
-            new StringHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT), JSON_FIELD_COMPONENT_VERSION, FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_VERSION_NAME + HierarchicalField.LABEL_URL_SUFFIX),
-            new ObjectHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT), JSON_FIELD_NEW_VULNERABILITY_IDS, FieldContentIdentifier.CATEGORY_ITEM, LABEL_VULNERABILITY_NEW, VULNERABILITY_TYPE),
-            new ObjectHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT), JSON_FIELD_UPDATED_VULNERABILITY_IDS, FieldContentIdentifier.CATEGORY_ITEM, LABEL_VULNERABILITY_UPDATED, VULNERABILITY_TYPE),
-            new ObjectHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT), JSON_FIELD_DELETED_VULNERABILITY_IDS, FieldContentIdentifier.CATEGORY_ITEM, LABEL_VULNERABILITY_DELETED, VULNERABILITY_TYPE)
+            HierarchicalFieldFactory.createStringField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_NAME), FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_NAME),
+            HierarchicalFieldFactory.createStringField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT), FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_NAME + HierarchicalField.LABEL_URL_SUFFIX),
+            HierarchicalFieldFactory.createStringField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_VERSION_NAME), FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_VERSION_NAME),
+            HierarchicalFieldFactory.createStringField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_VERSION), FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_VERSION_NAME + HierarchicalField.LABEL_URL_SUFFIX),
+            HierarchicalFieldFactory.createObjectField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_NEW_VULNERABILITY_IDS), FieldContentIdentifier.CATEGORY_ITEM, LABEL_VULNERABILITY_NEW, VulnerabilitySourceQualifiedId.class),
+            HierarchicalFieldFactory.createObjectField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_UPDATED_VULNERABILITY_IDS), FieldContentIdentifier.CATEGORY_ITEM, LABEL_VULNERABILITY_UPDATED, VulnerabilitySourceQualifiedId.class),
+            HierarchicalFieldFactory.createObjectField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_DELETED_VULNERABILITY_IDS), FieldContentIdentifier.CATEGORY_ITEM, LABEL_VULNERABILITY_DELETED, VulnerabilitySourceQualifiedId.class)
         )
     );
 
-    private static final List<HierarchicalField> RULE_VIOLATION_FIELD_LIST = Arrays.asList(
-        new StringHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT), JSON_FIELD_PROJECT_NAME, FieldContentIdentifier.TOPIC, LABEL_PROJECT_NAME, CONFIG_MAPPING_CONFIGURED_PROJECTS),
-        new StringHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT), JSON_FIELD_PROJECT_VERSION_NAME, FieldContentIdentifier.SUB_TOPIC, LABEL_PROJECT_VERSION_NAME),
-        new StringHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT), JSON_FIELD_PROJECT_VERSION, FieldContentIdentifier.SUB_TOPIC_URL, LABEL_PROJECT_VERSION_NAME + HierarchicalField.LABEL_URL_SUFFIX),
-        new StringHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_VERSION_STATUSES), JSON_FIELD_COMPONENT_NAME, FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_NAME),
-        new StringHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_VERSION_STATUSES), JSON_FIELD_COMPONENT, FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_NAME + HierarchicalField.LABEL_URL_SUFFIX),
-        new StringHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_VERSION_STATUSES), JSON_FIELD_COMPONENT_VERSION_NAME, FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_VERSION_NAME),
-        new StringHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_VERSION_STATUSES), JSON_FIELD_COMPONENT_VERSION, FieldContentIdentifier.CATEGORY_ITEM,
+    private static final List<HierarchicalField<?>> RULE_VIOLATION_FIELD_LIST = Arrays.asList(
+        HierarchicalFieldFactory.createStringField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_NAME), FieldContentIdentifier.TOPIC, LABEL_PROJECT_NAME, CONFIG_MAPPING_CONFIGURED_PROJECTS),
+        HierarchicalFieldFactory.createStringField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_VERSION_NAME), FieldContentIdentifier.SUB_TOPIC, LABEL_PROJECT_VERSION_NAME),
+        HierarchicalFieldFactory.createStringField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_VERSION), FieldContentIdentifier.SUB_TOPIC_URL, LABEL_PROJECT_VERSION_NAME + HierarchicalField.LABEL_URL_SUFFIX),
+        HierarchicalFieldFactory.createStringField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_VERSION_STATUSES, JSON_FIELD_COMPONENT_NAME), FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_NAME),
+        HierarchicalFieldFactory
+            .createStringField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_VERSION_STATUSES, JSON_FIELD_COMPONENT), FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_NAME + HierarchicalField.LABEL_URL_SUFFIX),
+        HierarchicalFieldFactory.createStringField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_VERSION_STATUSES, JSON_FIELD_COMPONENT_VERSION_NAME), FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_VERSION_NAME),
+        HierarchicalFieldFactory.createStringField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_VERSION_STATUSES, JSON_FIELD_COMPONENT_VERSION), FieldContentIdentifier.CATEGORY_ITEM,
             LABEL_COMPONENT_VERSION_NAME + HierarchicalField.LABEL_URL_SUFFIX),
-        new StringHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_POLICY_INFOS), JSON_FIELD_POLICY_NAME, FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_NAME),
-        new StringHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_POLICY_INFOS), JSON_FIELD_POLICY, FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_NAME + HierarchicalField.LABEL_URL_SUFFIX)
+        HierarchicalFieldFactory.createStringField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_POLICY_INFOS, JSON_FIELD_POLICY_NAME), FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_NAME),
+        HierarchicalFieldFactory.createStringField(Arrays.asList(JSON_FIELD_CONTENT, JSON_FIELD_POLICY_INFOS, JSON_FIELD_POLICY), FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_NAME + HierarchicalField.LABEL_URL_SUFFIX)
     );
     public static final ProviderContentType RULE_VIOLATION = new ProviderContentType(
         NotificationType.RULE_VIOLATION.name(),

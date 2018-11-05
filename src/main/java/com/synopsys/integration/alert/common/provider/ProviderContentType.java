@@ -23,21 +23,22 @@
  */
 package com.synopsys.integration.alert.common.provider;
 
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
+import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.alert.common.field.HierarchicalField;
-import com.synopsys.integration.alert.common.field.StringHierarchicalField;
 import com.synopsys.integration.util.Stringable;
 
 public class ProviderContentType extends Stringable {
     private final String notificationType;
-    private final Collection<HierarchicalField> notificationFields;
+    private final Collection<HierarchicalField<?>> notificationFields;
 
-    public ProviderContentType(@NotNull final String notificationType, @NotNull final Collection<HierarchicalField> notificationFields) {
+    public ProviderContentType(@NotNull final String notificationType, @NotNull final Collection<HierarchicalField<?>> notificationFields) {
         this.notificationType = notificationType;
         this.notificationFields = notificationFields;
     }
@@ -46,17 +47,17 @@ public class ProviderContentType extends Stringable {
         return notificationType;
     }
 
-    public List<HierarchicalField> getNotificationFields() {
+    public List<HierarchicalField<?>> getNotificationFields() {
         return notificationFields.parallelStream().collect(Collectors.toList());
     }
 
-    public List<StringHierarchicalField> getFilterableFields() {
-        final Class<StringHierarchicalField> targetClass = StringHierarchicalField.class;
+    public List<HierarchicalField<String>> getFilterableFields() {
+        final Type stringType = new TypeToken<String>() {}.getType();
         return notificationFields
                    .parallelStream()
-                   .filter(field -> targetClass.isAssignableFrom(field.getClass()))
-                   .map(field -> targetClass.cast(field))
                    .filter(field -> field.getConfigNameMapping().isPresent())
+                   .filter(field -> stringType.equals(field.getType()))
+                   .map(field -> (HierarchicalField<String>) field)
                    .collect(Collectors.toList());
     }
 }

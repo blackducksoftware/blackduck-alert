@@ -24,47 +24,47 @@
 package com.synopsys.integration.alert.common.field;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
+import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
 
-public abstract class HierarchicalField extends Field {
+public class HierarchicalField<T> extends Field {
     public static final String LABEL_URL_SUFFIX = "_url";
 
     private final FieldContentIdentifier contentIdentifier;
-    private final Type type;
-    private List<String> fieldList;
+    private final String configNameMapping;
+    private final List<String> fieldPath;
 
-    public HierarchicalField(final List<String> pathToField, final String innerMostFieldName, final FieldContentIdentifier contentIdentifier, final String label, final Type type) {
+    protected HierarchicalField(final List<String> fullFieldPath, final String innerMostFieldName, final FieldContentIdentifier contentIdentifier, final String label) {
+        this(fullFieldPath, innerMostFieldName, contentIdentifier, label, null);
+    }
+
+    protected HierarchicalField(final List<String> fullFieldPath, final String innerMostFieldName, final FieldContentIdentifier contentIdentifier, final String label, final String configNameMapping) {
         super(innerMostFieldName, label);
-
-        initFieldList(pathToField, innerMostFieldName);
+        this.fieldPath = fullFieldPath;
         this.contentIdentifier = contentIdentifier;
-        this.type = type;
+        this.configNameMapping = configNameMapping;
     }
 
     /**
      * @return an unmodifiable list of fields representing the path to a field nested within an object
      */
-    public List<String> getFullPathToField() {
-        return fieldList;
+    public List<String> getPathToField() {
+        return Collections.unmodifiableList(fieldPath);
     }
 
     public FieldContentIdentifier getContentIdentifier() {
         return contentIdentifier;
     }
 
-    public Type getType() {
-        return type;
+    public Optional<String> getConfigNameMapping() {
+        return Optional.ofNullable(configNameMapping);
     }
 
-    private void initFieldList(final Collection<String> pathToField, final String innerMostFieldName) {
-        final List<String> list = new ArrayList<>();
-        list.addAll(pathToField);
-        list.add(innerMostFieldName);
-        this.fieldList = Collections.unmodifiableList(list);
+    public Type getType() {
+        return new TypeToken<T>() {}.getType();
     }
 }

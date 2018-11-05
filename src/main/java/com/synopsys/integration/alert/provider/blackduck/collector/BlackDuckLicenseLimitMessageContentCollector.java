@@ -35,7 +35,6 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.field.HierarchicalField;
-import com.synopsys.integration.alert.common.field.LongHierarchicalField;
 import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.common.model.CategoryKey;
 import com.synopsys.integration.alert.common.model.LinkableItem;
@@ -55,11 +54,11 @@ public class BlackDuckLicenseLimitMessageContentCollector extends MessageContent
     }
 
     @Override
-    protected void addCategoryItems(final List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<HierarchicalField> notificationFields, final NotificationContent notificationContent) {
-        final List<LongHierarchicalField> longFields = getLongFields(notificationFields);
+    protected void addCategoryItems(final List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<HierarchicalField<?>> notificationFields, final NotificationContent notificationContent) {
+        final List<HierarchicalField<Long>> longFields = getLongFields(notificationFields);
 
         final SortedSet<LinkableItem> linkableItems = new TreeSet<>();
-        for (final LongHierarchicalField field : longFields) {
+        for (final HierarchicalField<Long> field : longFields) {
             final Optional<Long> optionalValue = jsonFieldAccessor.getFirst(field);
             optionalValue.ifPresent(value -> linkableItems.add(new LinkableItem(field.getLabel(), value.toString())));
         }
