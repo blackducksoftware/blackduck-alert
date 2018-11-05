@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.Vector;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -41,6 +43,7 @@ import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.field.HierarchicalField;
+import com.synopsys.integration.alert.common.field.LongHierarchicalField;
 import com.synopsys.integration.alert.common.field.ObjectHierarchicalField;
 import com.synopsys.integration.alert.common.field.StringHierarchicalField;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
@@ -106,6 +109,10 @@ public abstract class MessageContentCollector {
         return getTypedFields(fields, StringHierarchicalField.class);
     }
 
+    protected final List<LongHierarchicalField> getLongFields(final List<HierarchicalField> fields) {
+        return getTypedFields(fields, LongHierarchicalField.class);
+    }
+
     protected final List<ObjectHierarchicalField> getObjectFields(final List<HierarchicalField> fields) {
         return getTypedFields(fields, ObjectHierarchicalField.class);
     }
@@ -118,7 +125,7 @@ public abstract class MessageContentCollector {
         if (foundItem.isPresent()) {
             final CategoryItem categoryItem = foundItem.get();
             if (categoryItem.getOperation().equals(newItem.getOperation())) {
-                categoryItem.getItemList().addAll(newItem.getItemList());
+                categoryItem.getItems().addAll(newItem.getItems());
             } else {
                 // operation is different treat like another category item
                 categoryItems.add(newItem);
@@ -146,8 +153,8 @@ public abstract class MessageContentCollector {
         throw new IllegalStateException(String.format("The list provided did not contain the required field: %s", label));
     }
 
-    protected final List<LinkableItem> createLinkableItemList(final LinkableItem... items) {
-        final List<LinkableItem> list = new ArrayList<>();
+    protected final SortedSet<LinkableItem> createLinkableItemSet(final LinkableItem... items) {
+        final SortedSet<LinkableItem> list = new TreeSet<>();
         if (null != items) {
             for (final LinkableItem item : items) {
                 list.add(item);
