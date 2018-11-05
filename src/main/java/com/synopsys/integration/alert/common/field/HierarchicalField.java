@@ -38,7 +38,7 @@ public abstract class HierarchicalField extends Field {
     private final Type type;
     private List<String> fieldList;
 
-    public HierarchicalField(final Collection<String> pathToField, final String innerMostFieldName, final FieldContentIdentifier contentIdentifier, final String label, final Type type) {
+    public HierarchicalField(final List<String> pathToField, final String innerMostFieldName, final FieldContentIdentifier contentIdentifier, final String label, final Type type) {
         super(innerMostFieldName, label);
 
         initFieldList(pathToField, innerMostFieldName);

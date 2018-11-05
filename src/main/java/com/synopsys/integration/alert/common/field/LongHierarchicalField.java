@@ -25,27 +25,14 @@ package com.synopsys.integration.alert.common.field;
 
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.Optional;
 
 import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
 
-public class StringHierarchicalField extends HierarchicalField {
-    private static final Type TYPE = new TypeToken<String>() {}.getType();
+public class LongHierarchicalField extends HierarchicalField {
+    private static final Type TYPE = new TypeToken<Long>() {}.getType();
 
-    private final String configNameMapping;
-
-    public StringHierarchicalField(final List<String> pathToField, final String innerMostFieldName, final FieldContentIdentifier contentIdentifier, final String label) {
+    public LongHierarchicalField(final List<String> pathToField, final String innerMostFieldName, final FieldContentIdentifier contentIdentifier, final String label) {
         super(pathToField, innerMostFieldName, contentIdentifier, label, TYPE);
-        this.configNameMapping = null;
-    }
-
-    public StringHierarchicalField(final List<String> pathToField, final String innerMostFieldName, final FieldContentIdentifier contentIdentifier, final String label, final String configNameMapping) {
-        super(pathToField, innerMostFieldName, contentIdentifier, label, TYPE);
-        this.configNameMapping = configNameMapping;
-    }
-
-    public Optional<String> getConfigNameMapping() {
-        return Optional.ofNullable(configNameMapping);
     }
 }

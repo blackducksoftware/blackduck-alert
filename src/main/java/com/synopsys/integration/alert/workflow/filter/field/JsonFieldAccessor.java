@@ -32,20 +32,27 @@ import java.util.Optional;
 
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.field.HierarchicalField;
+import com.synopsys.integration.alert.common.field.LongHierarchicalField;
 import com.synopsys.integration.alert.common.field.ObjectHierarchicalField;
 import com.synopsys.integration.alert.common.field.StringHierarchicalField;
 
 public class JsonFieldAccessor {
-    private Map<StringHierarchicalField, List<String>> stringMappings = new HashMap<>();
-    private Map<ObjectHierarchicalField, List<Object>> objectMappings = new HashMap<>();
+    private final Map<StringHierarchicalField, List<String>> stringMappings = new HashMap<>();
+    private final Map<LongHierarchicalField, List<Long>> longMappings = new HashMap<>();
+    private final Map<ObjectHierarchicalField, List<Object>> objectMappings = new HashMap<>();
 
     public JsonFieldAccessor(final Map<HierarchicalField, List<Object>> fieldToDataMap) {
         initializeSubMap(fieldToDataMap, stringMappings, StringHierarchicalField.class);
+        initializeSubMap(fieldToDataMap, longMappings, LongHierarchicalField.class);
         initializeSubMap(fieldToDataMap, objectMappings, ObjectHierarchicalField.class);
     }
 
     public List<String> get(final StringHierarchicalField field) {
         return getFrom(stringMappings, field);
+    }
+
+    public List<Long> get(final LongHierarchicalField field) {
+        return getFrom(longMappings, field);
     }
 
     public List<Object> get(final ObjectHierarchicalField field) {
@@ -70,6 +77,10 @@ public class JsonFieldAccessor {
         return getFirst(get(field));
     }
 
+    public Optional<Long> getFirst(final LongHierarchicalField field) {
+        return getFirst(get(field));
+    }
+
     public Optional<Object> getFirst(final ObjectHierarchicalField field) {
         return getFirst(get(field));
     }
@@ -85,7 +96,7 @@ public class JsonFieldAccessor {
         return Collections.emptyList();
     }
 
-    private <K, V> Optional<V> getFirst(final List<V> list) {
+    private <V> Optional<V> getFirst(final List<V> list) {
         if (!list.isEmpty()) {
             final V firstValue = list.get(0);
             return Optional.of(firstValue);
@@ -93,7 +104,7 @@ public class JsonFieldAccessor {
         return Optional.empty();
     }
 
-    private <K, V> void initializeSubMap(final Map<HierarchicalField, List<Object>> fieldToDataMap, Map<K, List<V>> subMap, final Class<K> targetKeyClass) {
+    private <K, V> void initializeSubMap(final Map<HierarchicalField, List<Object>> fieldToDataMap, final Map<K, List<V>> subMap, final Class<K> targetKeyClass) {
         for (final Map.Entry<HierarchicalField, List<Object>> entry : fieldToDataMap.entrySet()) {
             final HierarchicalField key = entry.getKey();
             if (targetKeyClass.isAssignableFrom(key.getClass())) {
@@ -106,6 +117,5 @@ public class JsonFieldAccessor {
                 subMap.put((K) key, newValues);
             }
         }
-
     }
 }

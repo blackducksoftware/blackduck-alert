@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 
 class LabeledField extends Component {
@@ -6,12 +6,12 @@ class LabeledField extends Component {
         const field = inputDiv || this.props.field;
         return (
             <div className="form-group">
-                <label className="col-sm-3 control-label">{this.props.label}</label>
+                <label className="col-sm-3 col-form-label text-right">{this.props.label}</label>
                 {field}
-                { this.props.errorMessage &&
-                    <div className="col-sm-offset-3 col-sm-8">
-                        <p className="fieldError">{this.props.errorMessage}</p>
-                    </div>
+                {this.props.errorMessage &&
+                <div className="offset-sm-3 col-sm-8">
+                    <p className="fieldError">{this.props.errorMessage}</p>
+                </div>
                 }
             </div>
         );

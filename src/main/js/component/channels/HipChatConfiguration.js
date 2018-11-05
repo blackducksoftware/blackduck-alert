@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 
 import TextInput from '../../field/input/TextInput';
 import PasswordInput from '../../field/input/PasswordInput';
 import ConfigButtons from '../common/ConfigButtons';
-import { getConfig, testConfig, updateConfig, toggleShowHostServer } from '../../store/actions/hipChatConfig';
+import {getConfig, testConfig, toggleShowHostServer, updateConfig} from '../../store/actions/hipChatConfig';
 
 class HipChatConfiguration extends React.Component {
     constructor(props) {
@@ -38,7 +38,7 @@ class HipChatConfiguration extends React.Component {
         }
     }
 
-    handleChange({ target }) {
+    handleChange({target}) {
         const value = target.type === 'checkbox' ? target.checked : target.value;
         this.setState({
             [target.name]: value
@@ -49,44 +49,48 @@ class HipChatConfiguration extends React.Component {
         event.preventDefault();
         event.stopPropagation();
 
-        const { id } = this.props;
-        this.props.updateConfig({ id, ...this.state });
+        const {id} = this.props;
+        this.props.updateConfig({id, ...this.state});
     }
 
     handleTest() {
-        const { id } = this.props;
-        this.props.testConfig({ id, ...this.state });
+        const {id} = this.props;
+        this.props.testConfig({id, ...this.state});
     }
 
     render() {
         const disabled = this.props.fetching || !this.state.dataLoaded;
-        const { errorMessage, testStatus, updateStatus } = this.props;
+        const {errorMessage, testStatus, updateStatus} = this.props;
         const showAdvanced = this.props.showAdvanced;
         const showAdvancedLabel = (showAdvanced) ? 'Hide Advanced' : 'Show Advanced';
         return (
             <div>
                 <h1>
-                    <span className="fa fa-comments" />
+                    <span className="fa fa-comments"/>
                     HipChat
                 </h1>
-                { testStatus && testStatus === 'SUCCESS' && <div className="alert alert-success">
+                {testStatus && testStatus === 'SUCCESS' && <div className="alert alert-success">
                     <div>Test was successful!</div>
                 </div>}
 
-                { errorMessage && <div className="alert alert-danger">
-                    { errorMessage }
-                </div> }
+                {errorMessage && <div className="alert alert-danger">
+                    {errorMessage}
+                </div>}
 
-                { updateStatus === 'UPDATED' && <div className="alert alert-success">
-                    { 'Update successful' }
-                </div> }
+                {updateStatus === 'UPDATED' && <div className="alert alert-success">
+                    {'Update successful'}
+                </div>}
 
                 <form className="form-horizontal" disabled={disabled} onSubmit={this.handleSubmit}>
-                    <PasswordInput id="hipChatApiKey" label="Api Key" name="apiKey" readOnly={disabled} value={this.state.apiKey} isSet={this.state.apiKeyIsSet} onChange={this.handleChange} errorName="apiKeyError" errorValue={this.props.fieldErrors.apiKey} />
+                    <PasswordInput id="hipChatApiKey" label="Api Key" name="apiKey" readOnly={disabled} value={this.state.apiKey} isSet={this.state.apiKeyIsSet} onChange={this.handleChange} errorName="apiKeyError"
+                                   errorValue={this.props.fieldErrors.apiKey}/>
 
                     <div className="form-group">
-                        <div className="col-sm-8 col-sm-offset-3">
-                            <button type="button" className="btn-link" onClick={() => { this.props.toggleShowHostServer(!showAdvanced); return false; }}>
+                        <div className="col-sm-8 offset-sm-3">
+                            <button type="button" className="btn btn-link" onClick={() => {
+                                this.props.toggleShowHostServer(!showAdvanced);
+                                return false;
+                            }}>
                                 {showAdvancedLabel}
                             </button>
                         </div>
@@ -94,11 +98,12 @@ class HipChatConfiguration extends React.Component {
 
                     {showAdvanced &&
                     <div>
-                        <TextInput id="hipChatServerUrl" label="HipChat Host Server Url" name="hostServer" value={this.state.hostServer} onChange={this.handleChange} errorName="hostServerError" errorValue={this.props.fieldErrors.hostServer} />
+                        <TextInput id="hipChatServerUrl" label="HipChat Host Server Url" name="hostServer" value={this.state.hostServer} onChange={this.handleChange} errorName="hostServerError"
+                                   errorValue={this.props.fieldErrors.hostServer}/>
                     </div>
                     }
-                    
-                    <ConfigButtons submitId="hipChat-submit" cancelId="hipChat-cancel" includeSave includeTest onTestClick={this.handleTest} />
+
+                    <ConfigButtons submitId="hipChat-submit" cancelId="hipChat-cancel" includeSave includeTest onTestClick={this.handleTest}/>
                 </form>
             </div>
         );

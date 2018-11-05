@@ -31,6 +31,7 @@ import java.util.List;
 import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
 import com.synopsys.integration.alert.common.field.HierarchicalField;
+import com.synopsys.integration.alert.common.field.LongHierarchicalField;
 import com.synopsys.integration.alert.common.field.ObjectHierarchicalField;
 import com.synopsys.integration.alert.common.field.StringHierarchicalField;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
@@ -49,6 +50,13 @@ public class BlackDuckProviderContentTypes {
     public static final String JSON_FIELD_COMPONENT_VERSION = "componentVersion";
 
     public static final String CONFIG_MAPPING_CONFIGURED_PROJECTS = "configuredProjects";
+
+    //license limit fields
+    public static final String JSON_FIELD_MESSAGE = "message";
+    public static final String JSON_FIELD_MARKETING_URL = "marketingPageUrl";
+    public static final String JSON_FIELD_CODE_SIZE = "usedCodeSize";
+    public static final String JSON_FIELD_LIMIT_HARD = "hardLimit";
+    public static final String JSON_FIELD_LIMIT_SOFT = "softLimit";
 
     // policy fields
     public static final String JSON_FIELD_COMPONENT_VERSION_STATUSES = "componentVersionStatuses";
@@ -74,6 +82,10 @@ public class BlackDuckProviderContentTypes {
     public static final String LABEL_POLICY_OVERRIDE_FIRST_NAME = JSON_FIELD_FIRST_NAME;
     public static final String LABEL_POLICY_OVERRIDE_LAST_NAME = JSON_FIELD_LAST_NAME;
     public static final String LABEL_POLICY_OVERRIDE_BY = "Policy Overridden by";
+    public static final String LABEL_LICENSE_LIMIT_MESSAGE = "License Limit Message";
+    public static final String LABEL_LICENSE_LIMIT_USED_CODE_SIZE = "Used Code Size";
+    public static final String LABEL_LICENSE_LIMIT_HARD = "Hard Limit";
+    public static final String LABEL_LICENSE_LIMIT_SOFT = "Soft Limit";
 
     public static final String LABEL_VULNERABILITY_NEW = "New Vulnerabilities";
     public static final String LABEL_VULNERABILITY_UPDATED = "Updated Vulnerabilities";
@@ -86,7 +98,13 @@ public class BlackDuckProviderContentTypes {
     );
     public static final ProviderContentType LICENSE_LIMIT = new ProviderContentType(
         NotificationType.LICENSE_LIMIT.name(),
-        Collections.emptyList()
+        Arrays.asList(
+            new StringHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT), JSON_FIELD_MESSAGE, FieldContentIdentifier.TOPIC, LABEL_LICENSE_LIMIT_MESSAGE),
+            new StringHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT), JSON_FIELD_MARKETING_URL, FieldContentIdentifier.TOPIC_URL, LABEL_LICENSE_LIMIT_MESSAGE + HierarchicalField.LABEL_URL_SUFFIX),
+            new LongHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT), JSON_FIELD_CODE_SIZE, FieldContentIdentifier.CATEGORY_ITEM, LABEL_LICENSE_LIMIT_USED_CODE_SIZE),
+            new LongHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT), JSON_FIELD_LIMIT_HARD, FieldContentIdentifier.CATEGORY_ITEM, LABEL_LICENSE_LIMIT_HARD),
+            new LongHierarchicalField(Arrays.asList(JSON_FIELD_CONTENT), JSON_FIELD_LIMIT_SOFT, FieldContentIdentifier.CATEGORY_ITEM, LABEL_LICENSE_LIMIT_SOFT)
+        )
     );
 
     public static final ProviderContentType POLICY_OVERRIDE = new ProviderContentType(
