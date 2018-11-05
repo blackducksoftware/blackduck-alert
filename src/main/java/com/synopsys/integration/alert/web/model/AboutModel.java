@@ -33,19 +33,19 @@ public class AboutModel extends Stringable {
     private String projectUrl;
     private boolean initialized;
     private String startupTime;
-    private List<String> startupErrors;
+    private List<String> systemMessages;
 
     protected AboutModel() {
 
     }
 
-    public AboutModel(final String version, final String description, final String projectUrl, final boolean initialized, final String startupTime, final List<String> startupErrors) {
+    public AboutModel(final String version, final String description, final String projectUrl, final boolean initialized, final String startupTime, final List<String> systemMessages) {
         this.version = version;
         this.description = description;
         this.projectUrl = projectUrl;
         this.initialized = initialized;
         this.startupTime = startupTime;
-        this.startupErrors = startupErrors;
+        this.systemMessages = systemMessages;
     }
 
     public String getVersion() {
@@ -68,7 +68,7 @@ public class AboutModel extends Stringable {
         return startupTime;
     }
 
-    public List<String> getStartupErrors() {
-        return startupErrors;
+    public List<String> getSystemMessages() {
+        return systemMessages;
     }
 }

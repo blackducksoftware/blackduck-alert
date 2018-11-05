@@ -24,8 +24,8 @@ class AboutInfoFooter extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        const {startupErrors} = nextProps;
-        const showOverlay = startupErrors && startupErrors.length > 0 ? true : false;
+        const {systemMessages} = nextProps;
+        const showOverlay = systemMessages && systemMessages.length > 0 ? true : false;
         this.setState({showOverlay: showOverlay});
     }
 
@@ -34,7 +34,7 @@ class AboutInfoFooter extends React.Component {
         const showOverlay = errorMessages ? true : false;
         const divClassName = showOverlay ? "errorStatus" : "validStatus";
         const iconClassName = showOverlay ? "fa fa-exclamation-triangle" : "fa fa-check-circle";
-        const popover = (<Popover id="system-errors-popover" title="System Errors">{errorMessages}</Popover>);
+        const popover = (<Popover id="system-errors-popover" title="System Messages">{errorMessages}</Popover>);
         const overlayComponent = (
             <Overlay
                 rootClose
@@ -59,9 +59,9 @@ class AboutInfoFooter extends React.Component {
     }
 
     createErrorList() {
-        const {startupErrors} = this.props;
-        if (startupErrors && startupErrors.length > 0) {
-            return startupErrors.map((message) => {
+        const {systemMessages} = this.props;
+        if (systemMessages && systemMessages.length > 0) {
+            return systemMessages.map((message) => {
                 return (<div>{message}</div>);
             });
         } else {
@@ -98,7 +98,7 @@ AboutInfoFooter.propTypes = {
     version: PropTypes.string.isRequired,
     description: PropTypes.string,
     projectUrl: PropTypes.string.isRequired,
-    startupErrors: PropTypes.arrayOf(PropTypes.string)
+    systemMessages: PropTypes.arrayOf(PropTypes.string)
 };
 
 AboutInfoFooter.defaultProps = {
@@ -106,7 +106,7 @@ AboutInfoFooter.defaultProps = {
     version: '',
     description: '',
     projectUrl: '',
-    startupErrors: []
+    systemMessages: []
 };
 
 const mapStateToProps = state => ({
@@ -114,7 +114,7 @@ const mapStateToProps = state => ({
     version: state.about.version,
     description: state.about.description,
     projectUrl: state.about.projectUrl,
-    startupErrors: state.about.startupErrors
+    systemMessages: state.about.systemMessages
 });
 
 const mapDispatchToProps = dispatch => ({

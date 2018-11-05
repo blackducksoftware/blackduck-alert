@@ -151,9 +151,9 @@ public class StartupManager {
         validateProviders(errorList);
 
         if (errorList.isEmpty()) {
-            systemStatusUtility.setStartupErrors(null);
+            systemStatusUtility.setSystemMessages(null);
         } else {
-            systemStatusUtility.setStartupErrors(errorList);
+            systemStatusUtility.setSystemMessages(errorList);
         }
     }
 
