@@ -153,7 +153,7 @@ public class StartupManager {
         if (errorList.isEmpty()) {
             systemStatusUtility.setStartupErrors(null);
         } else {
-            systemStatusUtility.setStartupErrors(StringUtils.join(errorList, ";"));
+            systemStatusUtility.setStartupErrors(errorList);
         }
     }
 
