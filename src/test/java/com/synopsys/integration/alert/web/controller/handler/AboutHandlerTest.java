@@ -2,6 +2,8 @@ package com.synopsys.integration.alert.web.controller.handler;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.Test;
@@ -24,7 +26,7 @@ public class AboutHandlerTest {
         final String gitHubUrl = "https://www.google.com";
         final boolean initialized = true;
         final String startupTime = "startup time is now";
-        final String startupErrors = "startup errors";
+        final List<String> startupErrors = Collections.singletonList("startup errors");
 
         final Gson gson = new Gson();
         final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());

@@ -23,6 +23,8 @@
  */
 package com.synopsys.integration.alert.web.model;
 
+import java.util.List;
+
 import com.synopsys.integration.util.Stringable;
 
 public class AboutModel extends Stringable {
@@ -31,13 +33,13 @@ public class AboutModel extends Stringable {
     private String projectUrl;
     private boolean initialized;
     private String startupTime;
-    private String startupErrors;
+    private List<String> startupErrors;
 
     protected AboutModel() {
 
     }
 
-    public AboutModel(final String version, final String description, final String projectUrl, final boolean initialized, final String startupTime, final String startupErrors) {
+    public AboutModel(final String version, final String description, final String projectUrl, final boolean initialized, final String startupTime, final List<String> startupErrors) {
         this.version = version;
         this.description = description;
         this.projectUrl = projectUrl;
@@ -66,7 +68,7 @@ public class AboutModel extends Stringable {
         return startupTime;
     }
 
-    public String getStartupErrors() {
+    public List<String> getStartupErrors() {
         return startupErrors;
     }
 }

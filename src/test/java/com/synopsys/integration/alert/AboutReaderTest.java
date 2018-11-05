@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collections;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +26,7 @@ public class AboutReaderTest {
         systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         Mockito.when(systemStatusUtility.isSystemInitialized()).thenReturn(Boolean.TRUE);
         Mockito.when(systemStatusUtility.getStartupTime()).thenReturn(new Date());
-        Mockito.when(systemStatusUtility.getStartupErrors()).thenReturn("startup errors");
+        Mockito.when(systemStatusUtility.getStartupErrors()).thenReturn(Collections.singletonList("startup errors"));
     }
 
     @Test

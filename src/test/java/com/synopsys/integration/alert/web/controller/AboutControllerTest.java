@@ -2,6 +2,8 @@ package com.synopsys.integration.alert.web.controller;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.Test;
@@ -27,7 +29,7 @@ public class AboutControllerTest {
         final String gitHubUrl = "https://www.google.com";
         final boolean initialized = true;
         final String startupTime = "startup time is now";
-        final String startupErrors = "startup errors";
+        final List<String> startupErrors = Collections.singletonList("startup errors");
 
         final AboutModel model = new AboutModel(version, description, gitHubUrl, initialized, startupTime, startupErrors);
         final AboutActions aboutActions = Mockito.mock(AboutActions.class);

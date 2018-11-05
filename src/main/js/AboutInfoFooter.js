@@ -1,38 +1,76 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import '../css/footer.scss';
-import {OverlayTrigger, Popover} from 'react-bootstrap'
+import {Overlay, Popover} from 'react-bootstrap'
 
 import {getAboutInfo} from './store/actions/about';
 
 class AboutInfoFooter extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            showOverlay: false
+        };
+        this.createErrorComponent = this.createErrorComponent.bind(this);
+        this.createErrorList = this.createErrorList.bind(this);
+        this.handleOverlayButton = this.handleOverlayButton.bind(this);
     }
 
     componentDidMount() {
         this.props.getAboutInfo();
+
+    }
+
+    componentWillReceiveProps(nextProps) {
+        const {startupErrors} = nextProps;
+        const showOverlay = startupErrors && startupErrors.length > 0 ? true : false;
+        this.setState({showOverlay: showOverlay});
     }
 
     createErrorComponent() {
-        const {startupErrors} = this.props;
-
-        const message = startupErrors ? startupErrors : "none";
-        const divClassName = startupErrors ? "errorStatus" : "validStatus";
-        const iconClassName = startupErrors ? "fa fa-exclamation-triangle" : "fa fa-check-circle";
-
-        const popover = (<Popover id="system-errors-popover" title="System Errors">{message}</Popover>);
+        const errorMessages = this.createErrorList();
+        const showOverlay = errorMessages ? true : false;
+        const divClassName = showOverlay ? "errorStatus" : "validStatus";
+        const iconClassName = showOverlay ? "fa fa-exclamation-triangle" : "fa fa-check-circle";
+        const popover = (<Popover id="system-errors-popover" title="System Errors">{errorMessages}</Popover>);
+        const overlayComponent = (
+            <Overlay
+                rootClose
+                show={this.state.showOverlay}
+                onHide={() => this.setState({showOverlay: false})}
+                container={this}
+                placement="top"
+                target={() => ReactDOM.findDOMNode(this.target)}
+            >
+                {popover}
+            </Overlay>);
         return (
             <div className="statusPopover">
-                <OverlayTrigger
-                    container={this}
-                    trigger="click"
-                    placement="top"
-                    overlay={popover}>
+                <div ref={button => {
+                    this.target = button
+                }} onClick={this.handleOverlayButton}>
                     <div className={divClassName}><span className={iconClassName}></span></div>
-                </OverlayTrigger>
-            </div>);
+                </div>
+                {overlayComponent}
+            </div>
+        );
+    }
+
+    createErrorList() {
+        const {startupErrors} = this.props;
+        if (startupErrors && startupErrors.length > 0) {
+            return startupErrors.map((message) => {
+                return (<div>{message}</div>);
+            });
+        } else {
+            return null;
+        }
+    }
+
+    handleOverlayButton() {
+        this.setState({showOverlay: !this.state.showOverlay});
     }
 
     render() {
@@ -60,7 +98,7 @@ AboutInfoFooter.propTypes = {
     version: PropTypes.string.isRequired,
     description: PropTypes.string,
     projectUrl: PropTypes.string.isRequired,
-    startupErrors: PropTypes.string
+    startupErrors: PropTypes.arrayOf(PropTypes.string)
 };
 
 AboutInfoFooter.defaultProps = {
@@ -68,7 +106,7 @@ AboutInfoFooter.defaultProps = {
     version: '',
     description: '',
     projectUrl: '',
-    startupErrors: ''
+    startupErrors: []
 };
 
 const mapStateToProps = state => ({

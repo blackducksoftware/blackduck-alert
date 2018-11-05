@@ -25,8 +25,12 @@ package com.synopsys.integration.alert.database.system;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,14 +74,21 @@ public class SystemStatusUtility {
     }
 
     @Transactional
-    public String getStartupErrors() {
-        return getSystemStatus().getStartupErrors();
+    public List<String> getStartupErrors() {
+        final String startupErrors = getSystemStatus().getStartupErrors();
+        if (StringUtils.isBlank(startupErrors)) {
+            return Collections.emptyList();
+        } else {
+            final List<String> errors = Arrays.asList(StringUtils.split(getSystemStatus().getStartupErrors(), ";"));
+            return errors;
+        }
     }
 
     @Transactional
-    public void setStartupErrors(final String errors) {
+    public void setStartupErrors(final List<String> errors) {
+        final String concatenatedErrors = StringUtils.join(errors, ";");
         final SystemStatus systemStatus = getSystemStatus();
-        final SystemStatus newSystemStatus = new SystemStatus(systemStatus.isInitialConfigurationPerformed(), systemStatus.getStartupTime(), errors);
+        final SystemStatus newSystemStatus = new SystemStatus(systemStatus.isInitialConfigurationPerformed(), systemStatus.getStartupTime(), concatenatedErrors);
         newSystemStatus.setId(SYSTEM_STATUS_ID);
         updateSystemStatus(newSystemStatus);
     }

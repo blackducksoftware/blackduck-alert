@@ -2,6 +2,9 @@ package com.synopsys.integration.alert.common.model;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.Test;
 
 import com.synopsys.integration.alert.web.model.AboutModel;
@@ -15,7 +18,7 @@ public class AboutModelTest {
         final String gitHubUrl = "https://www.google.com";
         final boolean initialized = true;
         final String startupTime = "startup time is now";
-        final String startupErrors = "startup errors";
+        final List<String> startupErrors = Collections.singletonList("startup errors");
 
         final AboutModel model = new AboutModel(version, description, gitHubUrl, initialized, startupTime, startupErrors);
 

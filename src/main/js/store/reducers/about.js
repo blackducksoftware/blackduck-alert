@@ -9,7 +9,7 @@ const initialState = {
     providerList: [],
     initialized: false,
     startupTime: '',
-    startupErrors: ''
+    startupErrors: []
 };
 
 const config = (state = initialState, action) => {
