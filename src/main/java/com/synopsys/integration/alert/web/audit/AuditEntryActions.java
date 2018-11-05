@@ -172,9 +172,6 @@ public class AuditEntryActions {
                         listToAddTo.add(restModel);
                     } else if (null != restModel.getNotification() && StringUtils.isNotBlank(restModel.getNotification().getContent()) && restModel.getNotification().getContent().contains(searchTerm)) {
                         listToAddTo.add(restModel);
-                    } else {
-                        logger.info("This entry did not match the search term: {}. Entry: name {}, status {}, time created {}, time last sent {}", searchTerm, restModel.getName(), restModel.getStatus(), restModel.getTimeCreated(),
-                            restModel.getTimeLastSent());
                     }
                 }
             }
