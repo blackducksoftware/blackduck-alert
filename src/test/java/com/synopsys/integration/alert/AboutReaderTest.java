@@ -26,7 +26,7 @@ public class AboutReaderTest {
         systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         Mockito.when(systemStatusUtility.isSystemInitialized()).thenReturn(Boolean.TRUE);
         Mockito.when(systemStatusUtility.getStartupTime()).thenReturn(new Date());
-        Mockito.when(systemStatusUtility.getStartupErrors()).thenReturn(Collections.singletonList("startup errors"));
+        Mockito.when(systemStatusUtility.getSystemMessages()).thenReturn(Collections.singletonList("startup errors"));
     }
 
     @Test

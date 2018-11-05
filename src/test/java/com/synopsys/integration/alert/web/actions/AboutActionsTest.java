@@ -20,9 +20,9 @@ public class AboutActionsTest {
         final String gitHubUrl = "https://www.google.com";
         final boolean initialized = true;
         final String startupTime = "startup time is now";
-        final List<String> startupErrors = Collections.singletonList("startup errors");
+        final List<String> systemMessages = Collections.singletonList("startup messages");
 
-        final AboutModel model = new AboutModel(version, description, gitHubUrl, initialized, startupTime, startupErrors);
+        final AboutModel model = new AboutModel(version, description, gitHubUrl, initialized, startupTime, systemMessages);
         final AboutReader aboutReader = Mockito.mock(AboutReader.class);
         Mockito.when(aboutReader.getAboutModel()).thenReturn(model);
         final AboutActions aboutActions = new AboutActions(aboutReader);

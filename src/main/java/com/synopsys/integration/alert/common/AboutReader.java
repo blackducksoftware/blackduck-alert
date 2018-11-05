@@ -55,7 +55,7 @@ public class AboutReader {
             final AboutModel aboutModel = gson.fromJson(aboutJson, AboutModel.class);
             final String startupDate = systemStatusUtility.getStartupTime() != null ? RestConstants.formatDate(systemStatusUtility.getStartupTime()) : "";
             return new AboutModel(aboutModel.getVersion(), aboutModel.getDescription(), aboutModel.getProjectUrl(), systemStatusUtility.isSystemInitialized(), startupDate,
-                systemStatusUtility.getStartupErrors());
+                systemStatusUtility.getSystemMessages());
         } catch (final Exception e) {
             logger.error(e.getMessage(), e);
             return null;

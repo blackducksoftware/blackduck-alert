@@ -18,15 +18,15 @@ public class AboutModelTest {
         final String gitHubUrl = "https://www.google.com";
         final boolean initialized = true;
         final String startupTime = "startup time is now";
-        final List<String> startupErrors = Collections.singletonList("startup errors");
+        final List<String> systemMessages = Collections.singletonList("startup messages");
 
-        final AboutModel model = new AboutModel(version, description, gitHubUrl, initialized, startupTime, startupErrors);
+        final AboutModel model = new AboutModel(version, description, gitHubUrl, initialized, startupTime, systemMessages);
 
         assertEquals(version, model.getVersion());
         assertEquals(description, model.getDescription());
         assertEquals(gitHubUrl, model.getProjectUrl());
         assertEquals(initialized, model.isInitialized());
         assertEquals(startupTime, model.getStartupTime());
-        assertEquals(startupErrors, model.getStartupErrors());
+        assertEquals(systemMessages, model.getSystemMessages());
     }
 }

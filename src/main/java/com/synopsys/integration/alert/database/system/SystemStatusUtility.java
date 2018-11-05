@@ -53,7 +53,7 @@ public class SystemStatusUtility {
     @Transactional
     public void setSystemInitialized(final boolean systemInitialized) {
         final SystemStatus systemStatus = getSystemStatus();
-        final SystemStatus newSystemStatus = new SystemStatus(systemInitialized, systemStatus.getStartupTime(), systemStatus.getStartupErrors());
+        final SystemStatus newSystemStatus = new SystemStatus(systemInitialized, systemStatus.getStartupTime(), systemStatus.getSystemMessages());
         newSystemStatus.setId(SYSTEM_STATUS_ID);
         updateSystemStatus(newSystemStatus);
     }
@@ -63,7 +63,7 @@ public class SystemStatusUtility {
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
         zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneOffset.UTC);
         final SystemStatus systemStatus = getSystemStatus();
-        final SystemStatus newSystemStatus = new SystemStatus(systemStatus.isInitialConfigurationPerformed(), Date.from(zonedDateTime.toInstant()), systemStatus.getStartupErrors());
+        final SystemStatus newSystemStatus = new SystemStatus(systemStatus.isInitialConfigurationPerformed(), Date.from(zonedDateTime.toInstant()), systemStatus.getSystemMessages());
         newSystemStatus.setId(SYSTEM_STATUS_ID);
         updateSystemStatus(newSystemStatus);
     }
@@ -74,21 +74,21 @@ public class SystemStatusUtility {
     }
 
     @Transactional
-    public List<String> getStartupErrors() {
-        final String startupErrors = getSystemStatus().getStartupErrors();
-        if (StringUtils.isBlank(startupErrors)) {
+    public List<String> getSystemMessages() {
+        final String systemMessages = getSystemStatus().getSystemMessages();
+        if (StringUtils.isBlank(systemMessages)) {
             return Collections.emptyList();
         } else {
-            final List<String> errors = Arrays.asList(StringUtils.split(getSystemStatus().getStartupErrors(), ";"));
-            return errors;
+            final List<String> messages = Arrays.asList(StringUtils.split(getSystemStatus().getSystemMessages(), ";"));
+            return messages;
         }
     }
 
     @Transactional
-    public void setStartupErrors(final List<String> errors) {
-        final String concatenatedErrors = StringUtils.join(errors, ";");
+    public void setSystemMessages(final List<String> messages) {
+        final String concatenatedMessages = StringUtils.join(messages, ";");
         final SystemStatus systemStatus = getSystemStatus();
-        final SystemStatus newSystemStatus = new SystemStatus(systemStatus.isInitialConfigurationPerformed(), systemStatus.getStartupTime(), concatenatedErrors);
+        final SystemStatus newSystemStatus = new SystemStatus(systemStatus.isInitialConfigurationPerformed(), systemStatus.getStartupTime(), concatenatedMessages);
         newSystemStatus.setId(SYSTEM_STATUS_ID);
         updateSystemStatus(newSystemStatus);
     }
