@@ -19,14 +19,16 @@ class AboutInfoFooter extends React.Component {
     }
 
     componentDidMount() {
-        this.props.getAboutInfo();
-
+        this.startAutoReload();
     }
 
     componentWillReceiveProps(nextProps) {
         const {systemMessages} = nextProps;
         const showOverlay = systemMessages && systemMessages.length > 0 ? true : false;
         this.setState({showOverlay: showOverlay});
+        if (!nextProps.fetching) {
+            this.startAutoReload();
+        }
     }
 
     createErrorComponent() {
@@ -71,6 +73,16 @@ class AboutInfoFooter extends React.Component {
 
     handleOverlayButton() {
         this.setState({showOverlay: !this.state.showOverlay});
+    }
+
+    cancelAutoReload() {
+        clearTimeout(this.timeout);
+    }
+
+    startAutoReload() {
+        // Run reload in 10seconds - kill an existing timer if it exists.
+        this.cancelAutoReload();
+        this.timeout = setTimeout(() => this.props.getAboutInfo(), 10000);
     }
 
     render() {
