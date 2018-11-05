@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {Modal} from 'react-bootstrap';
-import Select from 'react-select-2';
+import Select from 'react-select';
 
 import GroupEmailJobConfiguration from './job/GroupEmailJobConfiguration';
 import HipChatJobConfiguration from './job/HipChatJobConfiguration';
@@ -114,6 +114,7 @@ class JobAddModal extends Component {
     }
 
     render() {
+        const jobTypeOptions = this.createJobTypeOptions();
         return (
             <Modal show={this.state.show} onHide={this.handleClose}>
 
@@ -124,17 +125,17 @@ class JobAddModal extends Component {
                 <Modal.Body>
                     <form className="form-horizontal">
                         <div className="form-group">
-                            <label className="col-sm-3 control-label">Type</label>
+                            <label className="col-sm-3 col-form-label text-right">Type</label>
                             <div className="col-sm-8">
                                 <Select
                                     id="jobAddType"
                                     className="typeAheadField"
                                     onChange={this.handleTypeChanged}
                                     clearable={false}
-                                    options={this.createJobTypeOptions()}
+                                    options={jobTypeOptions}
                                     optionRenderer={this.renderOption}
                                     placeholder="Choose the Job Type"
-                                    value={this.state.values.typeValue}
+                                    value={jobTypeOptions.find(option => option.value === this.state.values.typeValue)}
                                     valueRenderer={this.renderOption}
                                 />
                             </div>
