@@ -26,7 +26,6 @@ package com.synopsys.integration.alert.workflow.startup;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -146,35 +145,28 @@ public class StartupManager {
     }
 
     public void validate() {
-        final List<String> errorList = new LinkedList<>();
-        checkEncryptionProperties(errorList);
-        validateProviders(errorList);
-
-        if (errorList.isEmpty()) {
-            systemStatusUtility.setSystemMessages(null);
-        } else {
-            systemStatusUtility.setSystemMessages(errorList);
-        }
+        checkEncryptionProperties();
+        validateProviders();
     }
 
-    public void checkEncryptionProperties(final List<String> errorList) {
+    public void checkEncryptionProperties() {
         if (stringEncryptionConverter.isInitialized()) {
             logger.info("Encryption utilities: Initialized");
         } else {
             logger.error("Encryption utilities: Not Initialized");
-            errorList.add("Encryption utility not initialized");
+            systemStatusUtility.addSystemMessage("Encryption utility not initialized", "ERROR");
         }
     }
 
-    public void validateProviders(final List<String> errorList) {
+    public void validateProviders() {
         logger.info("Validating configured providers: ");
         logger.info("----------------------------------------");
-        validateBlackDuckProvider(errorList);
+        validateBlackDuckProvider();
         logger.info("----------------------------------------");
     }
 
     // TODO add this validationg to provider descriptors so we can run this when it's defined
-    public void validateBlackDuckProvider(final List<String> errorList) {
+    public void validateBlackDuckProvider() {
         logger.info("Validating Black Duck Provider...");
         try {
             final HubServerVerifier verifier = new HubServerVerifier();
@@ -183,7 +175,7 @@ public class StartupManager {
             final Optional<String> blackDuckUrlOptional = blackDuckProperties.getBlackDuckUrl();
             if (!blackDuckUrlOptional.isPresent()) {
                 logger.error("  -> Black Duck Provider Invalid; cause: Black Duck URL missing...");
-                errorList.add("Black Duck Provider invalid: URL missing");
+                systemStatusUtility.addSystemMessage("Black Duck Provider invalid: URL missing", "ERROR");
             } else {
                 final String blackDuckUrlString = blackDuckUrlOptional.get();
                 final Boolean trustCertificate = BooleanUtils.toBoolean(alertProperties.getAlertTrustCertificate().orElse(false));
@@ -196,6 +188,7 @@ public class StartupManager {
                     logger.warn("  -> Black Duck Provider Using localhost...");
                     final String blackDuckWebServerHost = blackDuckProperties.getPublicBlackDuckWebserverHost().orElse("");
                     logger.warn("  -> Black Duck Provider Using localhost because PUBLIC_BLACKDUCK_WEBSERVER_HOST environment variable is set to {}", blackDuckWebServerHost);
+                    systemStatusUtility.addSystemMessage("BlackDuck Provider Using localhost", "WARN");
                 }
                 verifier.verifyIsHubServer(blackDuckUrl, proxyInfo, trustCertificate, timeout);
                 logger.info("  -> Black Duck Provider Valid!");
@@ -203,7 +196,7 @@ public class StartupManager {
         } catch (final MalformedURLException | IntegrationException ex) {
             logger.error("  -> Black Duck Provider Invalid; cause: {}", ex.getMessage());
             logger.debug("  -> Black Duck Provider Stack Trace: ", ex);
-            errorList.add("Black Duck Provider invalid: " + ex.getMessage());
+            systemStatusUtility.addSystemMessage("Black Duck Provider invalid: " + ex.getMessage(), "ERROR");
         }
     }
 

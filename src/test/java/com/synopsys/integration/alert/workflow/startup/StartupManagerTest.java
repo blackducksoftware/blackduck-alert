@@ -4,8 +4,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 
 import org.junit.After;
@@ -89,8 +87,7 @@ public class StartupManagerTest {
         final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(testAlertProperties);
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final StartupManager startupManager = new StartupManager(null, testAlertProperties, testGlobalProperties, null, null, null, null, null, null, null, systemStatusUtility);
-        final List<String> errorList = new LinkedList<>();
-        startupManager.validateProviders(errorList);
+        startupManager.validateProviders();
         assertTrue(outputLogger.isLineContainingText("Validating configured providers: "));
     }
 
@@ -101,8 +98,7 @@ public class StartupManagerTest {
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final StartupManager startupManager = new StartupManager(null, testAlertProperties, testGlobalProperties, null, null, null, null, null, null, null, systemStatusUtility);
         testGlobalProperties.setBlackDuckUrl(null);
-        final List<String> errorList = new LinkedList<>();
-        startupManager.validateBlackDuckProvider(errorList);
+        startupManager.validateBlackDuckProvider();
         assertTrue(outputLogger.isLineContainingText("Validating Black Duck Provider..."));
         assertTrue(outputLogger.isLineContainingText("Black Duck Provider Invalid; cause: Black Duck URL missing..."));
     }
@@ -114,8 +110,7 @@ public class StartupManagerTest {
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final StartupManager startupManager = new StartupManager(null, testAlertProperties, testGlobalProperties, null, null, null, null, null, null, null, systemStatusUtility);
         testGlobalProperties.setBlackDuckUrl("https://localhost:443");
-        final List<String> errorList = new LinkedList<>();
-        startupManager.validateBlackDuckProvider(errorList);
+        startupManager.validateBlackDuckProvider();
         assertTrue(outputLogger.isLineContainingText("Validating Black Duck Provider..."));
         assertTrue(outputLogger.isLineContainingText("Black Duck Provider Using localhost..."));
         assertTrue(outputLogger.isLineContainingText("Black Duck Provider Using localhost because PUBLIC_BLACKDUCK_WEBSERVER_HOST environment variable is set to"));
@@ -130,8 +125,7 @@ public class StartupManagerTest {
 
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final StartupManager startupManager = new StartupManager(null, testAlertProperties, spiedGlobalProperties, null, null, null, null, null, null, null, systemStatusUtility);
-        final List<String> errorList = new LinkedList<>();
-        startupManager.validateBlackDuckProvider(errorList);
+        startupManager.validateBlackDuckProvider();
         assertTrue(outputLogger.isLineContainingText("Validating Black Duck Provider..."));
         assertTrue(outputLogger.isLineContainingText("Black Duck Provider Using localhost..."));
         assertTrue(outputLogger.isLineContainingText("Black Duck Provider Using localhost because PUBLIC_BLACKDUCK_WEBSERVER_HOST environment variable is set to"));
@@ -144,8 +138,7 @@ public class StartupManagerTest {
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final StartupManager startupManager = new StartupManager(null, testAlertProperties, testGlobalProperties, null, null, null, null, null, null, null, systemStatusUtility);
         testGlobalProperties.setBlackDuckUrl("https://localhost:443");
-        final List<String> errorList = new LinkedList<>();
-        startupManager.validateBlackDuckProvider(errorList);
+        startupManager.validateBlackDuckProvider();
         assertTrue(outputLogger.isLineContainingText("Validating Black Duck Provider..."));
         assertTrue(outputLogger.isLineContainingText("Black Duck Provider Using localhost..."));
         assertTrue(outputLogger.isLineContainingText("Black Duck Provider Invalid; cause:"));
@@ -158,8 +151,7 @@ public class StartupManagerTest {
 
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final StartupManager startupManager = new StartupManager(null, testAlertProperties, testGlobalProperties, null, null, null, null, null, null, null, systemStatusUtility);
-        final List<String> errorList = new LinkedList<>();
-        startupManager.validateBlackDuckProvider(errorList);
+        startupManager.validateBlackDuckProvider();
         assertTrue(outputLogger.isLineContainingText("Validating Black Duck Provider..."));
         assertTrue(outputLogger.isLineContainingText("Black Duck Provider Valid!"));
     }

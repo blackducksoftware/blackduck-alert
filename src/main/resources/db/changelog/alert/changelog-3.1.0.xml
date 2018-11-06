@@ -5,9 +5,18 @@
             <column autoIncrement="true" name="ID" type="BIGINT(19)">
                 <constraints primaryKey="true" primaryKeyName="SYSTEM_STATUS_KEY"/>
             </column>
-            <column name="initialized_configuration" type="BOOLEAN"/>
-            <column name="startup_time" type="TIMESTAMP"/>
-            <column name="startup_errors" type="VARCHAR(255)"/>
+            <column name="INITIALIZED_CONFIGURATION" type="BOOLEAN"/>
+            <column name="STARTUP_TIME" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="psantos" id="1541000360346-2">
+        <createTable tableName="SYSTEM_MESSAGES" schemaName="ALERT">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+                <constraints primaryKey="true" primaryKeyName="SYSTEM_MESSAGES_KEY"/>
+            </column>
+            <column name="CREATED_AT" type="TIMESTAMP"/>
+            <column name="SEVERITY" type="VARCHAR(50)"/>
+            <column name="CONTENT" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>
