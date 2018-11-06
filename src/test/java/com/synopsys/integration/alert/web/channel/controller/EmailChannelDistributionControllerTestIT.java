@@ -14,6 +14,8 @@ import com.synopsys.integration.alert.channel.email.mock.MockEmailRestModel;
 import com.synopsys.integration.alert.database.channel.email.EmailDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalRepositoryAccessor;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
+import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserEntity;
@@ -34,6 +36,8 @@ public class EmailChannelDistributionControllerTestIT extends ControllerTest {
     private BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor;
     @Autowired
     private UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor;
+    @Autowired
+    private GlobalBlackDuckRepository globalBlackDuckRepository;
 
     @Before
     public void testSetup() {
@@ -51,6 +55,12 @@ public class EmailChannelDistributionControllerTestIT extends ControllerTest {
         final UserProjectRelation userProjectRelation3 = new UserProjectRelation(user2.getId(), project3.getId());
         final UserProjectRelation userProjectRelation4 = new UserProjectRelation(user3.getId(), project4.getId());
         userProjectRelationRepositoryAccessor.deleteAndSaveAll(new HashSet<>(Arrays.asList(userProjectRelation1, userProjectRelation2, userProjectRelation3, userProjectRelation4)));
+
+        final GlobalBlackDuckConfigEntity blackDuckConfigEntity = new GlobalBlackDuckConfigEntity(300,
+            testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY),
+            testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
+        globalBlackDuckRepository.deleteAll();
+        globalBlackDuckRepository.save(blackDuckConfigEntity);
     }
 
     @Override

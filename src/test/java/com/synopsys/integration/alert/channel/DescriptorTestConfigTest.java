@@ -84,6 +84,7 @@ public abstract class DescriptorTestConfigTest<R extends CommonDistributionConfi
         try {
             spyDescriptorConfig.testConfig(restModel);
         } catch (final IntegrationException e) {
+            e.printStackTrace();
             Assert.fail();
         }
 
