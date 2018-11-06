@@ -64,7 +64,7 @@ class AboutInfoFooter extends React.Component {
         const {systemMessages} = this.props;
         if (systemMessages && systemMessages.length > 0) {
             return systemMessages.map((message) => {
-                return (<div>{message}</div>);
+                return (<div>{message.severity} {message.content}</div>);
             });
         } else {
             return null;
@@ -110,7 +110,7 @@ AboutInfoFooter.propTypes = {
     version: PropTypes.string.isRequired,
     description: PropTypes.string,
     projectUrl: PropTypes.string.isRequired,
-    systemMessages: PropTypes.arrayOf(PropTypes.string)
+    systemMessages: PropTypes.arrayOf(PropTypes.object)
 };
 
 AboutInfoFooter.defaultProps = {

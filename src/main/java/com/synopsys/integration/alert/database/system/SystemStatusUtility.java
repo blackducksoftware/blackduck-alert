@@ -25,12 +25,9 @@ package com.synopsys.integration.alert.database.system;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,10 +36,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class SystemStatusUtility {
     private static final Long SYSTEM_STATUS_ID = 1L;
     private final SystemStatusRepository systemStatusRepository;
+    private final SystemMessageRepository systemMessageRepository;
 
     @Autowired
-    public SystemStatusUtility(final SystemStatusRepository systemStatusRepository) {
+    public SystemStatusUtility(final SystemStatusRepository systemStatusRepository, final SystemMessageRepository systemMessageRepository) {
         this.systemStatusRepository = systemStatusRepository;
+        this.systemMessageRepository = systemMessageRepository;
     }
 
     @Transactional
@@ -53,7 +52,7 @@ public class SystemStatusUtility {
     @Transactional
     public void setSystemInitialized(final boolean systemInitialized) {
         final SystemStatus systemStatus = getSystemStatus();
-        final SystemStatus newSystemStatus = new SystemStatus(systemInitialized, systemStatus.getStartupTime(), systemStatus.getSystemMessages());
+        final SystemStatus newSystemStatus = new SystemStatus(systemInitialized, systemStatus.getStartupTime());
         newSystemStatus.setId(SYSTEM_STATUS_ID);
         updateSystemStatus(newSystemStatus);
     }
@@ -63,7 +62,7 @@ public class SystemStatusUtility {
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
         zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneOffset.UTC);
         final SystemStatus systemStatus = getSystemStatus();
-        final SystemStatus newSystemStatus = new SystemStatus(systemStatus.isInitialConfigurationPerformed(), Date.from(zonedDateTime.toInstant()), systemStatus.getSystemMessages());
+        final SystemStatus newSystemStatus = new SystemStatus(systemStatus.isInitialConfigurationPerformed(), Date.from(zonedDateTime.toInstant()));
         newSystemStatus.setId(SYSTEM_STATUS_ID);
         updateSystemStatus(newSystemStatus);
     }
@@ -74,23 +73,16 @@ public class SystemStatusUtility {
     }
 
     @Transactional
-    public List<String> getSystemMessages() {
-        final String systemMessages = getSystemStatus().getSystemMessages();
-        if (StringUtils.isBlank(systemMessages)) {
-            return Collections.emptyList();
-        } else {
-            final List<String> messages = Arrays.asList(StringUtils.split(getSystemStatus().getSystemMessages(), ";"));
-            return messages;
-        }
+    public List<SystemMessage> getSystemMessages() {
+        return systemMessageRepository.findAll();
     }
 
     @Transactional
-    public void setSystemMessages(final List<String> messages) {
-        final String concatenatedMessages = StringUtils.join(messages, ";");
-        final SystemStatus systemStatus = getSystemStatus();
-        final SystemStatus newSystemStatus = new SystemStatus(systemStatus.isInitialConfigurationPerformed(), systemStatus.getStartupTime(), concatenatedMessages);
-        newSystemStatus.setId(SYSTEM_STATUS_ID);
-        updateSystemStatus(newSystemStatus);
+    public void addSystemMessage(final String message, final String severity) {
+        ZonedDateTime zonedDateTime = ZonedDateTime.now();
+        zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneOffset.UTC);
+        final SystemMessage systemMessage = new SystemMessage(Date.from(zonedDateTime.toInstant()), severity, message);
+        systemMessageRepository.save(systemMessage);
     }
 
     private SystemStatus getSystemStatus() {

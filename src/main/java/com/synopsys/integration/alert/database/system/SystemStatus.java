@@ -38,17 +38,14 @@ public class SystemStatus extends DatabaseEntity {
     private boolean initialConfigurationPerformed;
     @Column(name = "startup_time")
     private Date startupTime;
-    @Column(name = "startup_errors")
-    private String systemMessages;
 
     public SystemStatus() {
         //JPA requires a default constructor
     }
 
-    public SystemStatus(final boolean initialConfigurationPerformed, final Date startupTime, final String systemMessages) {
+    public SystemStatus(final boolean initialConfigurationPerformed, final Date startupTime) {
         this.initialConfigurationPerformed = initialConfigurationPerformed;
         this.startupTime = startupTime;
-        this.systemMessages = systemMessages;
     }
 
     public boolean isInitialConfigurationPerformed() {
@@ -57,9 +54,5 @@ public class SystemStatus extends DatabaseEntity {
 
     public Date getStartupTime() {
         return startupTime;
-    }
-
-    public String getSystemMessages() {
-        return systemMessages;
     }
 }
