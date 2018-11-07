@@ -21,15 +21,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.system;
+package com.synopsys.integration.alert.common.enumeration;
 
-import java.util.Date;
-import java.util.List;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-
-public interface SystemMessageRepository extends JpaRepository<SystemMessage, Long> {
-    @Query("SELECT message FROM SystemMessage message WHERE message.created >= ?1 ORDER BY created_at desc")
-    List<SystemMessage> findByCreatedAfter(final Date date);
+public enum SystemMessageType {
+    INFO,
+    ERROR,
+    WARNING;
 }

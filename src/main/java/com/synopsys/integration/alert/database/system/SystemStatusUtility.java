@@ -32,6 +32,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
+
 @Component
 public class SystemStatusUtility {
     private static final Long SYSTEM_STATUS_ID = 1L;
@@ -77,11 +79,16 @@ public class SystemStatusUtility {
         return systemMessageRepository.findAll();
     }
 
+    public List<SystemMessage> getSystemMessagesSinceLastStart() {
+        final SystemStatus systemStatus = getSystemStatus();
+        return systemMessageRepository.findByCreatedAfter(systemStatus.getStartupTime());
+    }
+
     @Transactional
-    public void addSystemMessage(final String message, final String severity) {
+    public void addSystemMessage(final String message, final SystemMessageType type) {
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
         zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneOffset.UTC);
-        final SystemMessage systemMessage = new SystemMessage(Date.from(zonedDateTime.toInstant()), severity, message);
+        final SystemMessage systemMessage = new SystemMessage(Date.from(zonedDateTime.toInstant()), type.name(), message);
         systemMessageRepository.save(systemMessage);
     }
 
