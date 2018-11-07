@@ -31,8 +31,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.database.system.SystemMessage;
 import com.synopsys.integration.alert.web.actions.SystemActions;
+import com.synopsys.integration.alert.web.model.SystemMessageModel;
 
 @Component
 public class SystemHandler extends ControllerHandler {
@@ -45,12 +45,12 @@ public class SystemHandler extends ControllerHandler {
     }
 
     public ResponseEntity<String> getLatestMessages() {
-        final List<SystemMessage> systemMessageList = actions.getLatestSystemMessages();
+        final List<SystemMessageModel> systemMessageList = actions.getLatestSystemMessages();
         return new ResponseEntity<>(getContentConverter().getJsonString(systemMessageList), HttpStatus.OK);
     }
 
     public ResponseEntity<String> getSystemMessages() {
-        final List<SystemMessage> systemMessageList = actions.getSystemMessages();
+        final List<SystemMessageModel> systemMessageList = actions.getSystemMessages();
         return new ResponseEntity<>(getContentConverter().getJsonString(systemMessageList), HttpStatus.OK);
     }
 }

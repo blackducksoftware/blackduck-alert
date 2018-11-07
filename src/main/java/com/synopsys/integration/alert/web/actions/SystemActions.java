@@ -24,12 +24,15 @@
 package com.synopsys.integration.alert.web.actions;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.database.system.SystemMessage;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
+import com.synopsys.integration.alert.web.model.SystemMessageModel;
+import com.synopsys.integration.rest.RestConstants;
 
 @Component
 public class SystemActions {
@@ -40,11 +43,16 @@ public class SystemActions {
         this.systemStatusUtility = systemStatusUtility;
     }
 
-    public List<SystemMessage> getLatestSystemMessages() {
-        return systemStatusUtility.getSystemMessagesSinceLastStart();
+    public List<SystemMessageModel> getLatestSystemMessages() {
+        return systemStatusUtility.getSystemMessagesSinceLastStart().stream().map(this::convert).collect(Collectors.toList());
     }
 
-    public List<SystemMessage> getSystemMessages() {
-        return systemStatusUtility.getSystemMessages();
+    public List<SystemMessageModel> getSystemMessages() {
+        return systemStatusUtility.getSystemMessages().stream().map(this::convert).collect(Collectors.toList());
+    }
+
+    private SystemMessageModel convert(final SystemMessage systemMessage) {
+        final String createdAt = RestConstants.formatDate(systemMessage.getCreated());
+        return new SystemMessageModel(systemMessage.getSeverity(), createdAt, systemMessage.getContent());
     }
 }
