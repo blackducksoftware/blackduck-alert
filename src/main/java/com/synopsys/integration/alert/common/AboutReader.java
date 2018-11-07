@@ -24,7 +24,6 @@
 package com.synopsys.integration.alert.common;
 
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.database.system.SystemMessage;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.web.model.AboutModel;
 import com.synopsys.integration.rest.RestConstants;
@@ -70,13 +68,5 @@ public class AboutReader {
         } else {
             return PRODUCT_VERSION_UNKNOWN;
         }
-    }
-
-    public List<SystemMessage> getLatestSystemMessages() {
-        return systemStatusUtility.getSystemMessagesSinceLastStart();
-    }
-
-    public List<SystemMessage> getSystemMessages() {
-        return systemStatusUtility.getSystemMessages();
     }
 }

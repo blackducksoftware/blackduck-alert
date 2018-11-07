@@ -23,14 +23,12 @@
  */
 package com.synopsys.integration.alert.web.actions;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.AboutReader;
-import com.synopsys.integration.alert.database.system.SystemMessage;
 import com.synopsys.integration.alert.web.model.AboutModel;
 
 @Component
@@ -44,13 +42,5 @@ public class AboutActions {
 
     public Optional<AboutModel> getAboutModel() {
         return Optional.ofNullable(aboutReader.getAboutModel());
-    }
-
-    public List<SystemMessage> getLatestSystemMessages() {
-        return aboutReader.getLatestSystemMessages();
-    }
-
-    public List<SystemMessage> getSystemMessages() {
-        return aboutReader.getSystemMessages();
     }
 }

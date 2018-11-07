@@ -1,7 +1,7 @@
-import {SYSTEM_LATEST_MESSAGES_FETCH_ERROR, SYSTEM_LATEST_MESSAGES_FETCHING} from './types';
+import {SYSTEM_LATEST_MESSAGES_FETCH_ERROR, SYSTEM_LATEST_MESSAGES_FETCHED, SYSTEM_LATEST_MESSAGES_FETCHING} from './types';
 import {verifyLoginByStatus} from "./session";
 
-const LATEST_MESSAGES_URL = '/alert/api/about/system/messages/latest';
+const LATEST_MESSAGES_URL = '/alert/api/system/messages/latest';
 
 function fetchingLatestSystemMessages() {
     return {

@@ -28,20 +28,24 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.web.controller.handler.AboutHandler;
+import com.synopsys.integration.alert.web.controller.handler.SystemHandler;
 
 @RestController
-public class AboutController extends BaseController {
-    private final AboutHandler aboutDataHandler;
+public class SystemController extends BaseController {
+    private final SystemHandler handler;
 
     @Autowired
-    public AboutController(final AboutHandler aboutDataHandler) {
-        this.aboutDataHandler = aboutDataHandler;
+    public SystemController(final SystemHandler handler) {
+        this.handler = handler;
     }
 
-    @GetMapping(value = "/about")
-    public ResponseEntity<String> about() {
-        return aboutDataHandler.getAboutData();
+    @GetMapping(value = "/system/messages/latest")
+    public ResponseEntity<String> getLatestSystemMessages() {
+        return handler.getLatestMessages();
     }
 
+    @GetMapping(value = "/system/messages")
+    public ResponseEntity<String> getSystemMessages() {
+        return handler.getSystemMessages();
+    }
 }

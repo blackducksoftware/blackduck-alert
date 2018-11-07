@@ -21,27 +21,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.controller;
+package com.synopsys.integration.alert.web.actions;
+
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.web.controller.handler.AboutHandler;
+import com.synopsys.integration.alert.database.system.SystemMessage;
+import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 
-@RestController
-public class AboutController extends BaseController {
-    private final AboutHandler aboutDataHandler;
+@Component
+public class SystemActions {
+    private final SystemStatusUtility systemStatusUtility;
 
     @Autowired
-    public AboutController(final AboutHandler aboutDataHandler) {
-        this.aboutDataHandler = aboutDataHandler;
+    public SystemActions(final SystemStatusUtility systemStatusUtility) {
+        this.systemStatusUtility = systemStatusUtility;
     }
 
-    @GetMapping(value = "/about")
-    public ResponseEntity<String> about() {
-        return aboutDataHandler.getAboutData();
+    public List<SystemMessage> getLatestSystemMessages() {
+        return systemStatusUtility.getSystemMessagesSinceLastStart();
     }
 
+    public List<SystemMessage> getSystemMessages() {
+        return systemStatusUtility.getSystemMessages();
+    }
 }
