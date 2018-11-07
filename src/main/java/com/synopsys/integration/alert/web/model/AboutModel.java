@@ -23,9 +23,6 @@
  */
 package com.synopsys.integration.alert.web.model;
 
-import java.util.List;
-
-import com.synopsys.integration.alert.database.system.SystemMessage;
 import com.synopsys.integration.util.Stringable;
 
 public class AboutModel extends Stringable {
@@ -34,19 +31,17 @@ public class AboutModel extends Stringable {
     private String projectUrl;
     private boolean initialized;
     private String startupTime;
-    private List<SystemMessage> systemMessages;
 
     protected AboutModel() {
 
     }
 
-    public AboutModel(final String version, final String description, final String projectUrl, final boolean initialized, final String startupTime, final List<SystemMessage> systemMessages) {
+    public AboutModel(final String version, final String description, final String projectUrl, final boolean initialized, final String startupTime) {
         this.version = version;
         this.description = description;
         this.projectUrl = projectUrl;
         this.initialized = initialized;
         this.startupTime = startupTime;
-        this.systemMessages = systemMessages;
     }
 
     public String getVersion() {
@@ -67,9 +62,5 @@ public class AboutModel extends Stringable {
 
     public String getStartupTime() {
         return startupTime;
-    }
-
-    public List<SystemMessage> getSystemMessages() {
-        return systemMessages;
     }
 }

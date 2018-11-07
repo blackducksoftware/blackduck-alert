@@ -23,6 +23,7 @@
  */
 package com.synopsys.integration.alert.web.controller.handler;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +31,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.database.system.SystemMessage;
 import com.synopsys.integration.alert.web.actions.AboutActions;
 import com.synopsys.integration.alert.web.model.AboutModel;
-import com.synopsys.integration.alert.common.ContentConverter;
 
 @Component
 public class AboutHandler extends ControllerHandler {
@@ -52,5 +54,15 @@ public class AboutHandler extends ControllerHandler {
             return new ResponseEntity<>(getContentConverter().getJsonString(model), HttpStatus.OK);
         }
         return new ResponseEntity<>(ERROR_ABOUT_MODEL_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+
+    public ResponseEntity<String> getLatestMessages() {
+        final List<SystemMessage> systemMessageList = aboutActions.getLatestSystemMessages();
+        return new ResponseEntity<>(getContentConverter().getJsonString(systemMessageList), HttpStatus.OK);
+    }
+
+    public ResponseEntity<String> getSystemMessages() {
+        final List<SystemMessage> systemMessageList = aboutActions.getSystemMessages();
+        return new ResponseEntity<>(getContentConverter().getJsonString(systemMessageList), HttpStatus.OK);
     }
 }

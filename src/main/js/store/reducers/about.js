@@ -9,7 +9,7 @@ const initialState = {
     providerList: [],
     initialized: false,
     startupTime: '',
-    systemMessages: []
+    latestMessages: []
 };
 
 const config = (state = initialState, action) => {
@@ -25,8 +25,7 @@ const config = (state = initialState, action) => {
                 description: action.description,
                 projectUrl: action.projectUrl,
                 initialized: action.initialized,
-                startupTime: action.startupTime,
-                systemMessages: action.systemMessages
+                startupTime: action.startupTime
             });
         case ABOUT_INFO_FETCH_ERROR:
             return Object.assign({}, state, {
