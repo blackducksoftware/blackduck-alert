@@ -2,9 +2,6 @@ package com.synopsys.integration.alert.web.controller.handler;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 import org.junit.Test;
@@ -15,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.database.system.SystemMessage;
 import com.synopsys.integration.alert.web.actions.AboutActions;
 import com.synopsys.integration.alert.web.model.AboutModel;
 
@@ -28,12 +24,11 @@ public class AboutHandlerTest {
         final String gitHubUrl = "https://www.google.com";
         final boolean initialized = true;
         final String startupTime = "startup time is now";
-        final List<SystemMessage> systemMessages = Collections.singletonList(new SystemMessage(new Date(), "ERROR", "startup messages"));
 
         final Gson gson = new Gson();
         final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
 
-        final AboutModel model = new AboutModel(version, description, gitHubUrl, initialized, startupTime, systemMessages);
+        final AboutModel model = new AboutModel(version, description, gitHubUrl, initialized, startupTime);
         final AboutActions aboutActions = Mockito.mock(AboutActions.class);
         final AboutHandler aboutHandler = new AboutHandler(contentConverter, aboutActions);
 

@@ -43,4 +43,14 @@ public class AboutController extends BaseController {
     public ResponseEntity<String> about() {
         return aboutDataHandler.getAboutData();
     }
+
+    @GetMapping(value = "/about/messages/latest")
+    public ResponseEntity<String> getLatestSystemMessages() {
+        return aboutDataHandler.getLatestMessages();
+    }
+
+    @GetMapping(value = "/about/messages")
+    public ResponseEntity<String> getSystemMessages() {
+        return aboutDataHandler.getSystemMessages();
+    }
 }

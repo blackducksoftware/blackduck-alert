@@ -11,6 +11,7 @@ import hipChatConfig from './hipChatConfig';
 import projects from './projects';
 import schedulingConfig from './schedulingConfig';
 import session from './session';
+import system from './system';
 import refresh from './refresh';
 
 
@@ -25,6 +26,7 @@ const rootReducer = combineReducers({
     projects,
     schedulingConfig,
     session,
+    system,
     refresh,
     routing
 });

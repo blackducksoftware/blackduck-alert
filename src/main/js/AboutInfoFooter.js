@@ -6,6 +6,7 @@ import '../css/footer.scss';
 import {Overlay, Popover} from 'react-bootstrap'
 
 import {getAboutInfo} from './store/actions/about';
+import {getLatestMessages} from './store/actions/system';
 
 class AboutInfoFooter extends React.Component {
     constructor(props) {
@@ -16,15 +17,17 @@ class AboutInfoFooter extends React.Component {
         this.createErrorComponent = this.createErrorComponent.bind(this);
         this.createErrorList = this.createErrorList.bind(this);
         this.handleOverlayButton = this.handleOverlayButton.bind(this);
+        this.reload = this.reload.bind(this);
     }
 
     componentDidMount() {
+        this.props.getAboutInfo();
         this.startAutoReload();
     }
 
     componentWillReceiveProps(nextProps) {
-        const {systemMessages} = nextProps;
-        const showOverlay = systemMessages && systemMessages.length > 0 ? true : false;
+        const {latestMessages} = nextProps;
+        const showOverlay = latestMessages && latestMessages.length > 0 ? true : false;
         this.setState({showOverlay: showOverlay});
         if (!nextProps.fetching) {
             this.startAutoReload();
@@ -61,9 +64,9 @@ class AboutInfoFooter extends React.Component {
     }
 
     createErrorList() {
-        const {systemMessages} = this.props;
-        if (systemMessages && systemMessages.length > 0) {
-            return systemMessages.map((message) => {
+        const {latestMessages} = this.props;
+        if (latestMessages && latestMessages.length > 0) {
+            return latestMessages.map((message) => {
                 return (<div>{message.severity} {message.created} {message.content}</div>);
             });
         } else {
@@ -82,8 +85,14 @@ class AboutInfoFooter extends React.Component {
     startAutoReload() {
         // Run reload in 10seconds - kill an existing timer if it exists.
         this.cancelAutoReload();
-        this.timeout = setTimeout(() => this.props.getAboutInfo(), 10000);
+        this.timeout = setTimeout(() => this.reload(), 10000);
     }
+
+    reload() {
+        this.props.getAboutInfo();
+        this.props.getLatestMessages();
+    }
+
 
     render() {
         const {version, projectUrl} = this.props;
@@ -110,7 +119,7 @@ AboutInfoFooter.propTypes = {
     version: PropTypes.string.isRequired,
     description: PropTypes.string,
     projectUrl: PropTypes.string.isRequired,
-    systemMessages: PropTypes.arrayOf(PropTypes.object)
+    latestMessages: PropTypes.arrayOf(PropTypes.object)
 };
 
 AboutInfoFooter.defaultProps = {
@@ -118,7 +127,7 @@ AboutInfoFooter.defaultProps = {
     version: '',
     description: '',
     projectUrl: '',
-    systemMessages: []
+    latestMessages: []
 };
 
 const mapStateToProps = state => ({
@@ -126,11 +135,12 @@ const mapStateToProps = state => ({
     version: state.about.version,
     description: state.about.description,
     projectUrl: state.about.projectUrl,
-    systemMessages: state.about.systemMessages
+    latestMessages: state.system.latestMessages
 });
 
 const mapDispatchToProps = dispatch => ({
-    getAboutInfo: () => dispatch(getAboutInfo())
+    getAboutInfo: () => dispatch(getAboutInfo()),
+    getLatestMessages: () => dispatch(getLatestMessages())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AboutInfoFooter);
