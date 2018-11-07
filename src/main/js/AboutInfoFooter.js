@@ -36,7 +36,7 @@ class AboutInfoFooter extends React.Component {
         const showOverlay = errorMessages ? true : false;
         const divClassName = showOverlay ? "errorStatus" : "validStatus";
         const iconClassName = showOverlay ? "fa fa-exclamation-triangle" : "fa fa-check-circle";
-        const popover = (<Popover id="system-errors-popover" title="System Messages">{errorMessages}</Popover>);
+        const popover = (<Popover id="system-errors-popover" className="popoverContent" title="System Messages">{errorMessages}</Popover>);
         const overlayComponent = (
             <Overlay
                 rootClose
@@ -64,7 +64,7 @@ class AboutInfoFooter extends React.Component {
         const {systemMessages} = this.props;
         if (systemMessages && systemMessages.length > 0) {
             return systemMessages.map((message) => {
-                return (<div>{message.severity} {message.content}</div>);
+                return (<div>{message.severity} {message.created} {message.content}</div>);
             });
         } else {
             return null;
