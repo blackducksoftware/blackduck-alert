@@ -64,6 +64,10 @@
   color: green;
 }
 
+.statusPopover .warningStatus {
+  color: yellow;
+}
+
 @keyframes errorBlinker {
   50% {
     opacity: 0;
