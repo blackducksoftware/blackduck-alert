@@ -7,6 +7,7 @@ import {Overlay, Popover} from 'react-bootstrap'
 
 import {getAboutInfo} from './store/actions/about';
 import {getLatestMessages} from './store/actions/system';
+import SystemMessage from "./component/common/SystemMessage";
 
 class AboutInfoFooter extends React.Component {
     constructor(props) {
@@ -22,6 +23,7 @@ class AboutInfoFooter extends React.Component {
 
     componentDidMount() {
         this.props.getAboutInfo();
+        this.props.getLatestMessages();
         this.startAutoReload();
     }
 
@@ -67,7 +69,7 @@ class AboutInfoFooter extends React.Component {
         const {latestMessages} = this.props;
         if (latestMessages && latestMessages.length > 0) {
             return latestMessages.map((message) => {
-                return (<div>{message.severity} {message.created} {message.content}</div>);
+                return (<SystemMessage createdAt={message.createdAt} content={message.content} severity={message.severity}/>);
             });
         } else {
             return null;
