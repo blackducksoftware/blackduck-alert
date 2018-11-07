@@ -130,7 +130,7 @@ class SchedulingConfiguration extends React.Component {
                                 id="schedulingConfigurationHour"
                                 className="accumulatorTypeAheadField"
                                 onChange={this.handleDailyDigestChanged}
-                                isSearchable
+                                isSearchable={true}
                                 options={dailyDigestOptions}
                                 placeholder="Choose the hour of day"
                                 value={dailyDigestOptions.find(option => option.value === this.state.dailyDigestHourOfDay)}
@@ -156,7 +156,7 @@ class SchedulingConfiguration extends React.Component {
                                 id="schedulingConfigurationFrequency"
                                 className="accumulatorTypeAheadField"
                                 onChange={this.handlePurgeChanged}
-                                isSearchable
+                                isSearchable={true}
                                 options={purgeOptions}
                                 placeholder="Choose the frequency"
                                 value={purgeOptions.find(option => option.value === this.state.purgeDataFrequencyDays)}

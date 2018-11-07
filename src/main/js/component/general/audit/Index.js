@@ -282,6 +282,7 @@ class Index extends Component {
 
     onSearchChange(searchText, colInfos, multiColumnSearch) {
         this.setState({
+            currentPage: 1,
             searchTerm: searchText
         });
         this.reloadAuditEntries(null, null, searchText)

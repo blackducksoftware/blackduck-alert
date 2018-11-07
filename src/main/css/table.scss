@@ -35,18 +35,22 @@
 .addJobButton {
   border: 1px solid darken(#337ab7, 5%);
   background-color: #337ab7;
+  color: #FFFFFF;
   &:hover {
     background-color: darken(#337ab7, 10%);
     border-color: darken(#337ab7, 17%);
+    color: #FFFFFF;
   }
 }
 
 .deleteJobButton {
   border: 1px solid darken($color-danger, 5%);
   background-color: $color-danger;
+  color: #FFFFFF;
   &:hover {
     background-color: darken($color-danger, 10%);
     border-color: darken($color-danger, 17%);
+    color: #FFFFFF;
   }
 }
 

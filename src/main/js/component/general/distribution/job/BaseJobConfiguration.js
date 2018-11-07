@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import Select from 'react-select';
+import Select, {components} from 'react-select';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import TextInput from '../../../../field/input/TextInput';
@@ -11,6 +11,20 @@ import {frequencyOptions} from '../../../../util/distribution-data';
 import {getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob} from '../../../../store/actions/distributions';
 import {getDistributionDescriptor} from '../../../../store/actions/descriptors';
 import DescriptorOption from "../../../common/DescriptorOption";
+
+const {Option, SingleValue} = components;
+
+const CustomProviderTypeOptionLabel = (props) => (
+    <Option {...props}>
+        <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value}/>
+    </Option>
+);
+
+const CustomProviderTypeLabel = (props) => (
+    <SingleValue {...props}>
+        <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value}/>
+    </SingleValue>
+);
 
 class BaseJobConfiguration extends Component {
     constructor(props) {
@@ -282,10 +296,6 @@ class BaseJobConfiguration extends Component {
         }
     }
 
-    renderOption(option) {
-        return (<DescriptorOption icon={option.icon} label={option.label} value={option.value}/>);
-    }
-
     renderDistributionForm() {
         if (!this.props.currentDistributionComponents) {
             return null;
@@ -318,8 +328,8 @@ class BaseJobConfiguration extends Component {
                                 id="jobType"
                                 className="typeAheadField"
                                 onChange={this.handleNotificationChanged}
-                                searchable
-                                multi
+                                isSearchable={true}
+                                isMulti={true}
                                 removeSelected
                                 options={notificationOptions}
                                 placeholder="Choose the notification types"
@@ -356,7 +366,7 @@ class BaseJobConfiguration extends Component {
                             id="jobFrequency"
                             className="typeAheadField"
                             onChange={this.handleFrequencyChanged}
-                            searchable
+                            isSearchable={true}
                             options={frequencyOptions}
                             placeholder="Choose the frequency"
                             value={frequencyOptions.find(option => option.value === this.state.frequency)}
@@ -373,12 +383,11 @@ class BaseJobConfiguration extends Component {
                             id="providerName"
                             className="typeAheadField"
                             onChange={this.handleProviderChanged}
-                            searchable
+                            isSearchable={true}
                             options={providerOptions}
-                            optionRenderer={this.renderOption}
                             placeholder="Choose the provider"
                             value={selectedProviderOption}
-                            valueRenderer={this.renderOption}
+                            components={{Option: CustomProviderTypeOptionLabel, SingleValue: CustomProviderTypeLabel}}
                         />
                         {this.state.error.providerNameError && <label className="fieldError" name="providerNameError">
                             {this.state.error.providerNameError}
