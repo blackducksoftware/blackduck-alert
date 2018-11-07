@@ -2,13 +2,27 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {Modal} from 'react-bootstrap';
-import Select from 'react-select';
+import Select, {components} from 'react-select';
 
 import GroupEmailJobConfiguration from './job/GroupEmailJobConfiguration';
 import HipChatJobConfiguration from './job/HipChatJobConfiguration';
 import SlackJobConfiguration from './job/SlackJobConfiguration';
 import DescriptorOption from "../../common/DescriptorOption";
 import {resetDistributionDescriptor} from '../../../store/actions/descriptors';
+
+const {Option, SingleValue} = components;
+
+const CustomJobTypeOptionLabel = (props) => (
+    <Option {...props}>
+        <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value}/>
+    </Option>
+);
+
+const CustomJobTypeLabel = (props) => (
+    <SingleValue {...props}>
+        <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value}/>
+    </SingleValue>
+);
 
 class JobAddModal extends Component {
     constructor(props) {
@@ -109,10 +123,6 @@ class JobAddModal extends Component {
         }
     }
 
-    renderOption(option) {
-        return (<DescriptorOption icon={option.icon} label={option.label} value={option.value}/>);
-    }
-
     render() {
         const jobTypeOptions = this.createJobTypeOptions();
         return (
@@ -131,12 +141,11 @@ class JobAddModal extends Component {
                                     id="jobAddType"
                                     className="typeAheadField"
                                     onChange={this.handleTypeChanged}
-                                    clearable={false}
+                                    isClearable={false}
                                     options={jobTypeOptions}
-                                    optionRenderer={this.renderOption}
                                     placeholder="Choose the Job Type"
                                     value={jobTypeOptions.find(option => option.value === this.state.values.typeValue)}
-                                    valueRenderer={this.renderOption}
+                                    components={{Option: CustomJobTypeOptionLabel, SingleValue: CustomJobTypeLabel}}
                                 />
                             </div>
                         </div>

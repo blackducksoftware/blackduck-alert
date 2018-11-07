@@ -90,7 +90,7 @@ class HipChatJobConfiguration extends Component {
                             id="jobHipChatColor"
                             className="typeAheadField"
                             onChange={this.handleColorChanged}
-                            isSearchable
+                            isSearchable={true}
                             options={colorOptions}
                             placeholder="Choose the message color"
                             value={selectedColorOption}
