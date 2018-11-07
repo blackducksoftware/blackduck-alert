@@ -8,7 +8,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.blackducksoftware.integration:common-gradle-plugin:0.0.39'
+        classpath 'com.blackducksoftware.integration:common-gradle-plugin:0.0.+'
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
         classpath 'com.bmuschko:gradle-docker-plugin:3.6.1'
     }
