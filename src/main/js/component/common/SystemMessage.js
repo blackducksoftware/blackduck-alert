@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import '../../../css/footer.scss';
+import '../../../css/messages.scss';
 
 class SystemMessage extends Component {
 
