@@ -54,7 +54,8 @@ dependencies {
     runtime 'com.h2database:h2'
 
     compile 'org.jsoup:jsoup:1.9.2'
-    compile 'javax.mail:mail:1.4.7'
+    compile 'javax.mail:javax.mail-api:1.6.2'
+    compile 'com.sun.mail:javax.mail:1.6.2'
     compile 'org.freemarker:freemarker:2.3.25-incubating'
 
     compile 'org.springframework.boot:spring-boot-starter-activemq'

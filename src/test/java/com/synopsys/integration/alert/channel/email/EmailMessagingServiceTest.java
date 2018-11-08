@@ -6,11 +6,11 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
+import javax.mail.internet.MimeMessage;
 
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.sun.mail.smtp.SMTPMessage;
 import com.synopsys.integration.alert.TestProperties;
 import com.synopsys.integration.alert.TestPropertyKey;
 import com.synopsys.integration.alert.common.AlertProperties;
@@ -35,7 +35,7 @@ public class EmailMessagingServiceTest {
         Mockito.when(mockSession.getTransport(Mockito.anyString())).thenReturn(mockTransport);
         Mockito.when(mockSession.getProperties()).thenReturn(testProperties.getProperties());
 
-        final Message message = new SMTPMessage(mockSession);
+        final Message message = new MimeMessage(mockSession);
         Mockito.doNothing().when(mockTransport).sendMessage(Mockito.eq(message), Mockito.any());
 
         emailMessagingService.sendMessage(emailProperties, mockSession, message);
