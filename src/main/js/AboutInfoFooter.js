@@ -74,7 +74,7 @@ class AboutInfoFooter extends React.Component {
         if (latestMessages && latestMessages.length > 0) {
             return latestMessages.map((message, index) => {
                 const itemKey = `system_message_${message.createdAt}`;
-                return (<SystemMessage key={itemKey} createdAt={message.createdAt} content={message.content} severity={message.severity}/>);
+                return (<SystemMessage key={itemKey} createdAt={message.createdAt} content={message.content} type={message.type}/>);
             });
         } else {
             return null;
@@ -82,16 +82,16 @@ class AboutInfoFooter extends React.Component {
     }
 
     hasErrorMessages(messages) {
-        return this.containsSeverity(messages, 'ERROR');
+        return this.containsType(messages, 'ERROR');
     }
 
     hasWarninigMessages(messages) {
-        return this.containsSeverity(messages, 'WARNING');
+        return this.containsType(messages, 'WARNING');
     }
 
-    containsSeverity(messages, severity) {
+    containsType(messages, type) {
         if (messages && messages.length > 0) {
-            if (messages.find(message => message.severity === severity)) {
+            if (messages.find(message => message.type === type)) {
                 return true;
             } else {
                 return false;

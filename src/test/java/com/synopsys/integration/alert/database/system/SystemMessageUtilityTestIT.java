@@ -47,7 +47,7 @@ public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
         assertEquals(1, actualMessageList.size());
         final SystemMessage actualMessage = actualMessageList.get(0);
         assertEquals(content, actualMessage.getContent());
-        assertEquals(systemMessageType.name(), actualMessage.getSeverity());
+        assertEquals(systemMessageType.name(), actualMessage.getType());
     }
 
     @Test
@@ -55,9 +55,9 @@ public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
         final List<SystemMessage> savedMessages = createSystemMessageList();
         final ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
         final Date currentDate = Date.from(currentTime.toInstant());
-        savedMessages.add(new SystemMessage(currentDate, "severity", "content"));
+        savedMessages.add(new SystemMessage(currentDate, "type", "content"));
         currentTime.plusMinutes(5);
-        savedMessages.add(new SystemMessage(Date.from(currentTime.toInstant()), "severity", "content"));
+        savedMessages.add(new SystemMessage(Date.from(currentTime.toInstant()), "type", "content"));
         systemMessageRepository.saveAll(savedMessages);
         final List<SystemMessage> actualMessageList = systemMessageUtility.getSystemMessagesSince(currentDate);
         assertNotNull(actualMessageList);
@@ -71,9 +71,9 @@ public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
         ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
         final List<SystemMessage> savedMessages = new ArrayList<>(expectedMessages);
         final Date currentDate = Date.from(currentTime.toInstant());
-        savedMessages.add(new SystemMessage(currentDate, "severity", "content"));
+        savedMessages.add(new SystemMessage(currentDate, "type", "content"));
         currentTime = currentTime.plusMinutes(5);
-        savedMessages.add(new SystemMessage(Date.from(currentTime.toInstant()), "severity", "content"));
+        savedMessages.add(new SystemMessage(Date.from(currentTime.toInstant()), "type", "content"));
         systemMessageRepository.saveAll(savedMessages);
         final List<SystemMessage> actualMessageList = systemMessageUtility.findByCreatedAtBefore(currentDate);
         assertNotNull(actualMessageList);
@@ -99,7 +99,7 @@ public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
         for (int index = 0; index < MESSAGE_COUNT; index++) {
             zonedDateTime = zonedDateTime.minusMinutes(1);
-            messages.add(new SystemMessage(Date.from(zonedDateTime.toInstant()), "severity_" + index, "content_" + index));
+            messages.add(new SystemMessage(Date.from(zonedDateTime.toInstant()), "type_" + index, "content_" + index));
         }
         return messages;
     }
