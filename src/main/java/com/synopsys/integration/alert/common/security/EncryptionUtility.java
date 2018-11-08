@@ -24,6 +24,8 @@
 package com.synopsys.integration.alert.common.security;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.codec.Charsets;
@@ -76,6 +78,21 @@ public class EncryptionUtility {
         } else {
             return false;
         }
+    }
+
+    public List<String> checkForErrors() {
+        final List<String> errors = new LinkedList<>();
+        final String password = getPassword();
+        final String salt = getGlobalSalt();
+        if (null == password) {
+            errors.add("Encryption Password missing");
+        }
+
+        if (null == salt) {
+            errors.add("Encryption global salt missing");
+        }
+
+        return errors;
     }
 
     public void updateEncryptionFields(final String password, final String globalSalt) throws IOException {

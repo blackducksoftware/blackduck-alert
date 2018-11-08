@@ -43,10 +43,10 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.provider.Provider;
+import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.synopsys.integration.alert.database.scheduling.SchedulingConfigEntity;
 import com.synopsys.integration.alert.database.scheduling.SchedulingRepository;
-import com.synopsys.integration.alert.database.security.StringEncryptionConverter;
 import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -101,14 +101,14 @@ public class StartupManager {
     @Value("${server.ssl.trustStoreType:}")
     private String trustStoreType;
 
-    private final StringEncryptionConverter stringEncryptionConverter;
+    private final EncryptionUtility encryptionUtility;
     private final SystemStatusUtility systemStatusUtility;
     private final SystemMessageUtility systemMessageUtility;
 
     @Autowired
     public StartupManager(final SchedulingRepository schedulingRepository, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
         final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer,
-        final List<ProviderDescriptor> providerDescriptorList, final StringEncryptionConverter stringEncryptionConverter, final SystemStatusUtility systemStatusUtility, final SystemMessageUtility systemMessageUtility) {
+        final List<ProviderDescriptor> providerDescriptorList, final EncryptionUtility encryptionUtility, final SystemStatusUtility systemStatusUtility, final SystemMessageUtility systemMessageUtility) {
         this.schedulingRepository = schedulingRepository;
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
@@ -118,7 +118,7 @@ public class StartupManager {
         this.phoneHomeTask = phoneHometask;
         this.alertStartupInitializer = alertStartupInitializer;
         this.providerDescriptorList = providerDescriptorList;
-        this.stringEncryptionConverter = stringEncryptionConverter;
+        this.encryptionUtility = encryptionUtility;
         this.systemStatusUtility = systemStatusUtility;
         this.systemMessageUtility = systemMessageUtility;
     }
@@ -149,11 +149,12 @@ public class StartupManager {
     }
 
     public void checkEncryptionProperties() {
-        if (stringEncryptionConverter.isInitialized()) {
+        if (encryptionUtility.isInitialized()) {
             logger.info("Encryption utilities: Initialized");
         } else {
             logger.error("Encryption utilities: Not Initialized");
-            systemMessageUtility.addSystemMessage("Encryption utility not initialized", SystemMessageType.ERROR);
+            final List<String> errors = encryptionUtility.checkForErrors();
+            errors.forEach(errorMessage -> systemMessageUtility.addSystemMessage(errorMessage, SystemMessageType.ERROR));
         }
     }
 
