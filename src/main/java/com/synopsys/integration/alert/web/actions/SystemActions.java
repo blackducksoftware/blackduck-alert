@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.database.system.SystemMessage;
+import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.web.model.SystemMessageModel;
 import com.synopsys.integration.rest.RestConstants;
@@ -37,18 +38,20 @@ import com.synopsys.integration.rest.RestConstants;
 @Component
 public class SystemActions {
     private final SystemStatusUtility systemStatusUtility;
+    private final SystemMessageUtility systemMessageUtility;
 
     @Autowired
-    public SystemActions(final SystemStatusUtility systemStatusUtility) {
+    public SystemActions(final SystemStatusUtility systemStatusUtility, final SystemMessageUtility systemMessageUtility) {
         this.systemStatusUtility = systemStatusUtility;
+        this.systemMessageUtility = systemMessageUtility;
     }
 
     public List<SystemMessageModel> getLatestSystemMessages() {
-        return systemStatusUtility.getSystemMessagesSinceLastStart().stream().map(this::convert).collect(Collectors.toList());
+        return systemMessageUtility.getSystemMessagesSince(systemStatusUtility.getStartupTime()).stream().map(this::convert).collect(Collectors.toList());
     }
 
     public List<SystemMessageModel> getSystemMessages() {
-        return systemStatusUtility.getSystemMessages().stream().map(this::convert).collect(Collectors.toList());
+        return systemMessageUtility.getSystemMessages().stream().map(this::convert).collect(Collectors.toList());
     }
 
     private SystemMessageModel convert(final SystemMessage systemMessage) {
