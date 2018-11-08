@@ -27,13 +27,17 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+import com.synopsys.integration.alert.database.entity.BaseEntity;
 
 @Entity
 @Table(schema = "alert", name = "system_status")
-public class SystemStatus extends DatabaseEntity {
+public class SystemStatus extends BaseEntity {
+    @Id
+    @Column(name = "id")
+    private Long id;
     @Column(name = "initialized_configuration")
     private boolean initialConfigurationPerformed;
     @Column(name = "startup_time")
@@ -54,5 +58,13 @@ public class SystemStatus extends DatabaseEntity {
 
     public Date getStartupTime() {
         return startupTime;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(final Long id) {
+        this.id = id;
     }
 }
