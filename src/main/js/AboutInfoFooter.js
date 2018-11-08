@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import '../css/footer.scss';
+import '../css/messages.scss';
 import {Overlay, Popover} from 'react-bootstrap'
 
 import SystemMessage from './component/common/SystemMessage';
@@ -108,7 +109,7 @@ class AboutInfoFooter extends React.Component {
     getIconColor() {
         const {latestMessages} = this.props;
         if (this.hasErrorMessages(latestMessages)) {
-            return "errorStatus"
+            return "statusPopoverError errorStatus"
         } else if (this.hasWarninigMessages(latestMessages)) {
             return "warningStatus"
         } else {

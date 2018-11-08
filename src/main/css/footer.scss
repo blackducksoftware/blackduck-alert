@@ -55,17 +55,8 @@
   cursor: pointer;
 }
 
-.statusPopover .errorStatus {
-  color: darkred;
+.statusPopoverError {
   animation: errorBlinker 3s linear infinite;
-}
-
-.statusPopover .validStatus {
-  color: green;
-}
-
-.statusPopover .warningStatus {
-  color: yellow;
 }
 
 @keyframes errorBlinker {
