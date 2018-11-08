@@ -48,6 +48,7 @@ public class SystemMessageUtility {
         return systemMessageRepository.findAll();
     }
 
+    @Transactional
     public List<SystemMessage> getSystemMessagesSince(final Date date) {
         return systemMessageRepository.findByCreatedAfter(date);
     }
