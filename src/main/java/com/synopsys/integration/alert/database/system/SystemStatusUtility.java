@@ -33,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class SystemStatusUtility {
-    private static final Long SYSTEM_STATUS_ID = 1L;
+    public static final Long SYSTEM_STATUS_ID = 1L;
     private final SystemStatusRepository systemStatusRepository;
 
     @Autowired
@@ -50,7 +50,6 @@ public class SystemStatusUtility {
     public void setSystemInitialized(final boolean systemInitialized) {
         final SystemStatus systemStatus = getSystemStatus();
         final SystemStatus newSystemStatus = new SystemStatus(systemInitialized, systemStatus.getStartupTime());
-        newSystemStatus.setId(SYSTEM_STATUS_ID);
         updateSystemStatus(newSystemStatus);
     }
 
@@ -60,7 +59,6 @@ public class SystemStatusUtility {
         zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneOffset.UTC);
         final SystemStatus systemStatus = getSystemStatus();
         final SystemStatus newSystemStatus = new SystemStatus(systemStatus.isInitialConfigurationPerformed(), Date.from(zonedDateTime.toInstant()));
-        newSystemStatus.setId(SYSTEM_STATUS_ID);
         updateSystemStatus(newSystemStatus);
     }
 
@@ -71,7 +69,6 @@ public class SystemStatusUtility {
 
     private SystemStatus getSystemStatus() {
         final SystemStatus systemStatus = systemStatusRepository.findById(SYSTEM_STATUS_ID).orElse(new SystemStatus());
-        systemStatus.setId(SYSTEM_STATUS_ID);
         return systemStatus;
     }
 

@@ -16,14 +16,18 @@ public class SystemStatusTest {
         final SystemStatus systemStatus = new SystemStatus();
         assertFalse(systemStatus.isInitialConfigurationPerformed());
         assertNull(systemStatus.getStartupTime());
+        assertNull(systemStatus.getId());
     }
 
     @Test
     public void testGetters() {
         final Date date = new Date();
         final boolean initialized = true;
+        final Long id = 22L;
         final SystemStatus systemStatus = new SystemStatus(initialized, date);
+        systemStatus.setId(id);
         assertTrue(systemStatus.isInitialConfigurationPerformed());
         assertEquals(date, systemStatus.getStartupTime());
+        assertEquals(id, systemStatus.getId());
     }
 }

@@ -2,7 +2,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
     <changeSet author="psantos" id="1541000360346-1">
         <createTable tableName="SYSTEM_STATUS" schemaName="ALERT">
-            <column autoIncrement="true" name="ID" type="BIGINT(19)">
+            <column name="ID" type="BIGINT(19)">
                 <constraints primaryKey="true" primaryKeyName="SYSTEM_STATUS_KEY"/>
             </column>
             <column name="INITIALIZED_CONFIGURATION" type="BOOLEAN"/>
