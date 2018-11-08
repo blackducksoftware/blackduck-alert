@@ -14,17 +14,17 @@ public class SystemMessageTest {
         final SystemMessage systemMessage = new SystemMessage();
         assertNull(systemMessage.getContent());
         assertNull(systemMessage.getCreated());
-        assertNull(systemMessage.getSeverity());
+        assertNull(systemMessage.getType());
     }
 
     @Test
     public void testGetters() {
         final Date date = new Date();
-        final String severity = "severity";
+        final String type = "type";
         final String content = "contents";
-        final SystemMessage systemMessage = new SystemMessage(date, severity, content);
+        final SystemMessage systemMessage = new SystemMessage(date, type, content);
         assertEquals(date, systemMessage.getCreated());
-        assertEquals(severity, systemMessage.getSeverity());
+        assertEquals(type, systemMessage.getType());
         assertEquals(content, systemMessage.getContent());
     }
 }
