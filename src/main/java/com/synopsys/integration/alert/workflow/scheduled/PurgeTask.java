@@ -40,15 +40,15 @@ import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 import com.synopsys.integration.alert.workflow.NotificationManager;
 
 @Component
-public class PurgeTask2 extends ScheduledTask {
+public class PurgeTask extends ScheduledTask {
     private static final int DEFAULT_DAY_OFFSET = 1;
-    private final Logger logger = LoggerFactory.getLogger(PurgeTask2.class);
+    private final Logger logger = LoggerFactory.getLogger(PurgeTask.class);
     private final NotificationManager notificationManager;
     private final SystemMessageUtility systemMessageUtility;
     private int dayOffset;
 
     @Autowired
-    public PurgeTask2(final TaskScheduler taskScheduler, final NotificationManager notificationManager, final SystemMessageUtility systemMessageUtility) {
+    public PurgeTask(final TaskScheduler taskScheduler, final NotificationManager notificationManager, final SystemMessageUtility systemMessageUtility) {
         super(taskScheduler, "purge-task");
         this.notificationManager = notificationManager;
         this.systemMessageUtility = systemMessageUtility;

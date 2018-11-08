@@ -29,18 +29,18 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.database.RepositoryAccessor;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
-import com.synopsys.integration.alert.workflow.scheduled.PurgeTask2;
+import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
 
 @Component
 public class SchedulingRepositoryAccessor extends RepositoryAccessor {
     private final SchedulingRepository repository;
     private final DailyTask dailyTask;
-    private final PurgeTask2 purgeTask;
+    private final PurgeTask purgeTask;
 
     @Autowired
     //TODO DailyTask creates a circular dependency injection, so we have to make it lazy
-    public SchedulingRepositoryAccessor(final SchedulingRepository repository, @Lazy final DailyTask dailyTask, final PurgeTask2 purgeTask) {
+    public SchedulingRepositoryAccessor(final SchedulingRepository repository, @Lazy final DailyTask dailyTask, final PurgeTask purgeTask) {
         super(repository);
         this.repository = repository;
         this.dailyTask = dailyTask;
