@@ -16,18 +16,21 @@ import org.mockito.Mockito;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AboutReader;
 import com.synopsys.integration.alert.database.system.SystemMessage;
+import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.web.model.AboutModel;
 
 public class AboutReaderTest {
     private SystemStatusUtility systemStatusUtility;
+    private SystemMessageUtility systemMessageUtility;
 
     @Before
     public void initialize() {
         systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         Mockito.when(systemStatusUtility.isSystemInitialized()).thenReturn(Boolean.TRUE);
         Mockito.when(systemStatusUtility.getStartupTime()).thenReturn(new Date());
-        Mockito.when(systemStatusUtility.getSystemMessages()).thenReturn(Collections.singletonList(new SystemMessage(new Date(), "ERROR", "startup errors")));
+        systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
+        Mockito.when(systemMessageUtility.getSystemMessages()).thenReturn(Collections.singletonList(new SystemMessage(new Date(), "ERROR", "startup errors")));
     }
 
     @Test

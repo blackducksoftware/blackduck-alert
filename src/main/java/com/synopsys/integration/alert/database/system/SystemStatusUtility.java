@@ -26,24 +26,19 @@ package com.synopsys.integration.alert.database.system;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
-
 @Component
 public class SystemStatusUtility {
     private static final Long SYSTEM_STATUS_ID = 1L;
     private final SystemStatusRepository systemStatusRepository;
-    private final SystemMessageRepository systemMessageRepository;
 
     @Autowired
-    public SystemStatusUtility(final SystemStatusRepository systemStatusRepository, final SystemMessageRepository systemMessageRepository) {
+    public SystemStatusUtility(final SystemStatusRepository systemStatusRepository) {
         this.systemStatusRepository = systemStatusRepository;
-        this.systemMessageRepository = systemMessageRepository;
     }
 
     @Transactional
@@ -72,24 +67,6 @@ public class SystemStatusUtility {
     @Transactional
     public Date getStartupTime() {
         return getSystemStatus().getStartupTime();
-    }
-
-    @Transactional
-    public List<SystemMessage> getSystemMessages() {
-        return systemMessageRepository.findAll();
-    }
-
-    public List<SystemMessage> getSystemMessagesSinceLastStart() {
-        final SystemStatus systemStatus = getSystemStatus();
-        return systemMessageRepository.findByCreatedAfter(systemStatus.getStartupTime());
-    }
-
-    @Transactional
-    public void addSystemMessage(final String message, final SystemMessageType type) {
-        ZonedDateTime zonedDateTime = ZonedDateTime.now();
-        zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneOffset.UTC);
-        final SystemMessage systemMessage = new SystemMessage(Date.from(zonedDateTime.toInstant()), type.name(), message);
-        systemMessageRepository.save(systemMessage);
     }
 
     private SystemStatus getSystemStatus() {

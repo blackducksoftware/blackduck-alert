@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.workflow.startup;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -44,18 +43,15 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.provider.Provider;
-import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
-import com.synopsys.integration.alert.database.purge.PurgeProcessor;
-import com.synopsys.integration.alert.database.purge.PurgeReader;
-import com.synopsys.integration.alert.database.purge.PurgeWriter;
 import com.synopsys.integration.alert.database.scheduling.SchedulingConfigEntity;
 import com.synopsys.integration.alert.database.scheduling.SchedulingRepository;
 import com.synopsys.integration.alert.database.security.StringEncryptionConverter;
+import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
-import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
+import com.synopsys.integration.alert.workflow.scheduled.PurgeTask2;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.OnDemandTask;
 import com.synopsys.integration.blackduck.service.model.HubServerVerifier;
@@ -72,7 +68,7 @@ public class StartupManager {
     private final BlackDuckProperties blackDuckProperties;
     private final DailyTask dailyTask;
     private final OnDemandTask onDemandTask;
-    private final PurgeTask purgeTask;
+    private final PurgeTask2 purgeTask;
     private final PhoneHomeTask phoneHomeTask;
     private final AlertStartupInitializer alertStartupInitializer;
     private final List<ProviderDescriptor> providerDescriptorList;
@@ -107,11 +103,12 @@ public class StartupManager {
 
     private final StringEncryptionConverter stringEncryptionConverter;
     private final SystemStatusUtility systemStatusUtility;
+    private final SystemMessageUtility systemMessageUtility;
 
     @Autowired
     public StartupManager(final SchedulingRepository schedulingRepository, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
-        final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer,
-        final List<ProviderDescriptor> providerDescriptorList, final StringEncryptionConverter stringEncryptionConverter, final SystemStatusUtility systemStatusUtility) {
+        final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask2 purgeTask, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer,
+        final List<ProviderDescriptor> providerDescriptorList, final StringEncryptionConverter stringEncryptionConverter, final SystemStatusUtility systemStatusUtility, final SystemMessageUtility systemMessageUtility) {
         this.schedulingRepository = schedulingRepository;
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
@@ -123,6 +120,7 @@ public class StartupManager {
         this.providerDescriptorList = providerDescriptorList;
         this.stringEncryptionConverter = stringEncryptionConverter;
         this.systemStatusUtility = systemStatusUtility;
+        this.systemMessageUtility = systemMessageUtility;
     }
 
     @Transactional
@@ -155,7 +153,7 @@ public class StartupManager {
             logger.info("Encryption utilities: Initialized");
         } else {
             logger.error("Encryption utilities: Not Initialized");
-            systemStatusUtility.addSystemMessage("Encryption utility not initialized", SystemMessageType.ERROR);
+            systemMessageUtility.addSystemMessage("Encryption utility not initialized", SystemMessageType.ERROR);
         }
     }
 
@@ -168,36 +166,36 @@ public class StartupManager {
 
     // TODO add this validation to provider descriptors so we can run this when it's defined
     public void validateBlackDuckProvider() {
-        logger.info("Validating Black Duck Provider...");
+        logger.info("Validating BlackDuck Provider...");
         try {
             final HubServerVerifier verifier = new HubServerVerifier();
             final ProxyInfoBuilder proxyBuilder = createProxyInfoBuilder();
             final ProxyInfo proxyInfo = proxyBuilder.build();
             final Optional<String> blackDuckUrlOptional = blackDuckProperties.getBlackDuckUrl();
             if (!blackDuckUrlOptional.isPresent()) {
-                logger.error("  -> Black Duck Provider Invalid; cause: Black Duck URL missing...");
-                systemStatusUtility.addSystemMessage("Black Duck Provider invalid: URL missing", SystemMessageType.ERROR);
+                logger.error("  -> BlackDuck Provider Invalid; cause: Black Duck URL missing...");
+                systemMessageUtility.addSystemMessage("BlackDuck Provider invalid: URL missing", SystemMessageType.ERROR);
             } else {
                 final String blackDuckUrlString = blackDuckUrlOptional.get();
                 final Boolean trustCertificate = BooleanUtils.toBoolean(alertProperties.getAlertTrustCertificate().orElse(false));
                 final Integer timeout = blackDuckProperties.getBlackDuckTimeout();
-                logger.debug("  -> Black Duck Provider URL found validating: {}", blackDuckUrlString);
-                logger.debug("  -> Black Duck Provider Trust Cert: {}", trustCertificate);
-                logger.debug("  -> Black Duck Provider Timeout: {}", timeout);
+                logger.debug("  -> BlackDuck Provider URL found validating: {}", blackDuckUrlString);
+                logger.debug("  -> BlackDuck Provider Trust Cert: {}", trustCertificate);
+                logger.debug("  -> BlackDuck Provider Timeout: {}", timeout);
                 final URL blackDuckUrl = new URL(blackDuckUrlString);
                 if ("localhost".equals(blackDuckUrl.getHost())) {
-                    logger.warn("  -> Black Duck Provider Using localhost...");
+                    logger.warn("  -> BlackDuck Provider Using localhost...");
                     final String blackDuckWebServerHost = blackDuckProperties.getPublicBlackDuckWebserverHost().orElse("");
-                    logger.warn("  -> Black Duck Provider Using localhost because PUBLIC_BLACKDUCK_WEBSERVER_HOST environment variable is set to {}", blackDuckWebServerHost);
-                    systemStatusUtility.addSystemMessage("BlackDuck Provider Using localhost", SystemMessageType.WARNING);
+                    logger.warn("  -> BlackDuck Provider Using localhost because PUBLIC_BLACKDUCK_WEBSERVER_HOST environment variable is set to {}", blackDuckWebServerHost);
+                    systemMessageUtility.addSystemMessage("BlackDuck Provider Using localhost", SystemMessageType.WARNING);
                 }
                 verifier.verifyIsHubServer(blackDuckUrl, proxyInfo, trustCertificate, timeout);
-                logger.info("  -> Black Duck Provider Valid!");
+                logger.info("  -> BlackDuck Provider Valid!");
             }
         } catch (final MalformedURLException | IntegrationException ex) {
-            logger.error("  -> Black Duck Provider Invalid; cause: {}", ex.getMessage());
-            logger.debug("  -> Black Duck Provider Stack Trace: ", ex);
-            systemStatusUtility.addSystemMessage("Black Duck Provider invalid: " + ex.getMessage(), SystemMessageType.ERROR);
+            logger.error("  -> BlackDuck Provider Invalid; cause: {}", ex.getMessage());
+            logger.debug("  -> BlackDuck Provider Stack Trace: ", ex);
+            systemMessageUtility.addSystemMessage("BlackDuck Provider invalid: " + ex.getMessage(), SystemMessageType.ERROR);
         }
     }
 
@@ -232,14 +230,14 @@ public class StartupManager {
         logger.info("Alert Proxy Authenticated: {}", authenticatedProxy);
         logger.info("Alert Proxy User:          {}", alertProperties.getAlertProxyUsername().orElse(""));
         logger.info("");
-        logger.info("Black Duck URL:                 {}", blackDuckProperties.getBlackDuckUrl().orElse(""));
-        logger.info("Black Duck Webserver Host:                 {}", blackDuckProperties.getPublicBlackDuckWebserverHost().orElse(""));
-        logger.info("Black Duck Webserver Port:                 {}", blackDuckProperties.getPublicBlackDuckWebserverPort().orElse(""));
+        logger.info("BlackDuck URL:                 {}", blackDuckProperties.getBlackDuckUrl().orElse(""));
+        logger.info("BlackDuck Webserver Host:                 {}", blackDuckProperties.getPublicBlackDuckWebserverHost().orElse(""));
+        logger.info("BlackDuck Webserver Port:                 {}", blackDuckProperties.getPublicBlackDuckWebserverPort().orElse(""));
         final Optional<GlobalBlackDuckConfigEntity> optionalGlobalBlackDuckConfigEntity = blackDuckProperties.getBlackDuckConfig();
         if (optionalGlobalBlackDuckConfigEntity.isPresent()) {
             final GlobalBlackDuckConfigEntity globalBlackDuckConfigEntity = optionalGlobalBlackDuckConfigEntity.get();
-            logger.info("Black Duck API Token:           **********");
-            logger.info("Black Duck Timeout:             {}", globalBlackDuckConfigEntity.getBlackDuckTimeout());
+            logger.info("BlackDuck API Token:           **********");
+            logger.info("BlackDuck Timeout:             {}", globalBlackDuckConfigEntity.getBlackDuckTimeout());
         }
         logger.info("----------------------------------------");
     }
@@ -296,15 +294,9 @@ public class StartupManager {
             if (!globalSchedulingConfigs.isEmpty() && globalSchedulingConfigs.get(0) != null) {
                 final SchedulingConfigEntity globalSchedulingConfig = globalSchedulingConfigs.get(0);
                 final String purgeDataFrequencyDays = globalSchedulingConfig.getPurgeDataFrequencyDays();
-                final PurgeReader reader = purgeTask.createReaderWithDayOffset(Integer.valueOf(purgeDataFrequencyDays));
-                final PurgeProcessor processor = purgeTask.processor();
-                final PurgeWriter writer = purgeTask.writer();
-
-                final List<NotificationContent> purgeData = reader.read();
-                final List<NotificationContent> processedData = processor.process(purgeData);
-                final List<List<NotificationContent>> dataToDelete = new ArrayList<>();
-                dataToDelete.add(processedData);
-                writer.write(dataToDelete);
+                purgeTask.setDayOffset(Integer.valueOf(purgeDataFrequencyDays));
+                purgeTask.run();
+                purgeTask.resetDayOffset();
                 return Boolean.TRUE;
             } else {
                 return Boolean.FALSE;
