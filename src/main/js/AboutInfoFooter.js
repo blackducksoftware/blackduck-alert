@@ -14,7 +14,8 @@ class AboutInfoFooter extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            showOverlay: false
+            showOverlay: false,
+            hideOverlayByUser: false
         };
         this.createErrorComponent = this.createErrorComponent.bind(this);
         this.createMessageList = this.createMessageList.bind(this);
@@ -29,10 +30,13 @@ class AboutInfoFooter extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        const {latestMessages} = nextProps;
-        const showOverlay = this.hasErrorMessages(latestMessages);
-        this.setState({showOverlay: showOverlay});
         if (!nextProps.fetching) {
+            const {latestMessages} = nextProps;
+            const showOverlay = this.hasErrorMessages(latestMessages);
+
+            if (!this.state.hideOverlayByUser) {
+                this.setState({showOverlay: showOverlay});
+            }
             this.startAutoReload();
         }
     }
@@ -46,7 +50,7 @@ class AboutInfoFooter extends React.Component {
             <Overlay
                 rootClose
                 show={this.state.showOverlay}
-                onHide={() => this.setState({showOverlay: false})}
+                onHide={() => this.setState({showOverlay: false, hideOverlayByUser: true})}
                 container={this}
                 placement="top"
                 target={() => ReactDOM.findDOMNode(this.target)}
@@ -119,7 +123,7 @@ class AboutInfoFooter extends React.Component {
 
 
     handleOverlayButton() {
-        this.setState({showOverlay: !this.state.showOverlay});
+        this.setState({showOverlay: !this.state.showOverlay, hideOverlayByUser: !this.state.hideOverlayByUser});
     }
 
     cancelAutoReload() {
