@@ -12,21 +12,9 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
-import com.synopsys.integration.alert.Application;
+import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
 import com.synopsys.integration.alert.channel.email.mock.MockEmailEntity;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
@@ -38,7 +26,6 @@ import com.synopsys.integration.alert.channel.slack.mock.MockSlackEntity;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
-import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.database.channel.email.EmailDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.database.channel.email.EmailGroupDistributionConfigEntity;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
@@ -55,17 +42,8 @@ import com.synopsys.integration.alert.database.relation.repository.DistributionN
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.workflow.processor.MessageContentAggregator;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
-import com.synopsys.integration.test.annotation.DatabaseConnectionTest;
-import com.synopsys.integration.test.annotation.ExternalConnectionTest;
 
-@Category({ DatabaseConnectionTest.class, ExternalConnectionTest.class })
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { Application.class, DatabaseDataSource.class })
-@TestPropertySource(locations = "classpath:spring-test.properties")
-@Transactional
-@WebAppConfiguration
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
-public class NotificationToChannelEventConverterTest {
+public class NotificationToChannelEventConverterTest extends AlertIntegrationTest {
     @Autowired
     private EmailDistributionRepositoryAccessor emailDistributionRepositoryAccessor;
     @Autowired

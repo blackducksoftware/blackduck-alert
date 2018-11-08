@@ -13,28 +13,15 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
-import com.synopsys.integration.alert.Application;
+import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
-import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.database.channel.JobConfigReader;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
@@ -42,16 +29,8 @@ import com.synopsys.integration.alert.web.channel.model.EmailDistributionConfig;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.workflow.filter.NotificationFilter;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
-import com.synopsys.integration.test.annotation.IntegrationTest;
 
-@Category({ IntegrationTest.class })
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { Application.class, DatabaseDataSource.class })
-@TestPropertySource(locations = "classpath:spring-test.properties")
-@Transactional
-@WebAppConfiguration
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
-public class MessageContentAggregatorTest {
+public class MessageContentAggregatorTest extends AlertIntegrationTest {
 
     @Autowired
     private List<ProviderDescriptor> providerDescriptors;

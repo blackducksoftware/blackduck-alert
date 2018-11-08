@@ -2,33 +2,20 @@ package com.synopsys.integration.alert.audit.controller;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
-import com.synopsys.integration.alert.Application;
+import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.audit.mock.MockAuditEntryEntity;
 import com.synopsys.integration.alert.channel.hipchat.mock.MockHipChatEntity;
-import com.synopsys.integration.alert.database.DatabaseDataSource;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
@@ -42,16 +29,8 @@ import com.synopsys.integration.alert.database.entity.repository.NotificationCon
 import com.synopsys.integration.alert.mock.entity.MockCommonDistributionEntity;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.web.controller.BaseController;
-import com.synopsys.integration.test.annotation.DatabaseConnectionTest;
 
-@Category(DatabaseConnectionTest.class)
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { Application.class, DatabaseDataSource.class })
-@Transactional
-@WebAppConfiguration
-@TestPropertySource(locations = "classpath:spring-test.properties")
-@TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
-public class AuditEntryControllerTestIT {
+public class AuditEntryControllerTestIT extends AlertIntegrationTest {
 
     private final String auditUrl = BaseController.BASE_PATH + "/audit";
     @Autowired
@@ -128,7 +107,7 @@ public class AuditEntryControllerTestIT {
 
         CommonDistributionConfigEntity commonEntity = mockCommonDistributionEntity.createEntity();
         commonEntity.setDistributionConfigId(hipChatDistributionConfigEntity.getId());
-        
+
         final MockNotificationContent mockNotifications = new MockNotificationContent();
         NotificationContent notificationEntity = mockNotifications.createEntity();
         notificationEntity = notificationRepository.save(notificationEntity);
