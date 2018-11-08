@@ -37,18 +37,18 @@ import com.synopsys.integration.alert.database.scheduling.SchedulingConfigEntity
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.web.component.scheduling.SchedulingConfig;
 import com.synopsys.integration.alert.web.model.Config;
-import com.synopsys.integration.alert.workflow.scheduled.PurgeTask2;
+import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
 
 @Component
 public class SchedulingTypeConverter extends TypeConverter {
-    private final PurgeTask2 purgeTask;
+    private final PurgeTask purgeTask;
     private final DailyTask dailyTask;
     private final BlackDuckAccumulator blackDuckAccumulator;
 
     @Autowired
     //TODO DailyTask create circular dependency injections, so we have to make them lazy
-    public SchedulingTypeConverter(final ContentConverter contentConverter, @Lazy final DailyTask dailyTask, final PurgeTask2 purgeTask, final BlackDuckAccumulator blackDuckAccumulator) {
+    public SchedulingTypeConverter(final ContentConverter contentConverter, @Lazy final DailyTask dailyTask, final PurgeTask purgeTask, final BlackDuckAccumulator blackDuckAccumulator) {
         super(contentConverter);
         this.purgeTask = purgeTask;
         this.dailyTask = dailyTask;

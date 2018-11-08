@@ -21,7 +21,7 @@ import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.web.scheduling.mock.MockGlobalSchedulingEntity;
 import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
-import com.synopsys.integration.alert.workflow.scheduled.PurgeTask2;
+import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.OnDemandTask;
 
@@ -66,7 +66,7 @@ public class StartupManagerTest {
         final OnDemandTask onDemandTask = Mockito.mock(OnDemandTask.class);
         Mockito.doNothing().when(dailyTask).scheduleExecution(Mockito.anyString());
         Mockito.doReturn(Optional.of("time")).when(dailyTask).getFormatedNextRunTime();
-        final PurgeTask2 purgeTask = Mockito.mock(PurgeTask2.class);
+        final PurgeTask purgeTask = Mockito.mock(PurgeTask.class);
         Mockito.doNothing().when(purgeTask).scheduleExecution(Mockito.anyString());
         Mockito.doReturn(Optional.of("time")).when(purgeTask).getFormatedNextRunTime();
         final SchedulingRepository schedulingRepository = Mockito.mock(SchedulingRepository.class);

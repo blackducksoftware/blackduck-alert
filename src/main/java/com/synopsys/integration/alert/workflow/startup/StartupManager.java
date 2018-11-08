@@ -51,7 +51,7 @@ import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
-import com.synopsys.integration.alert.workflow.scheduled.PurgeTask2;
+import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.OnDemandTask;
 import com.synopsys.integration.blackduck.service.model.HubServerVerifier;
@@ -68,7 +68,7 @@ public class StartupManager {
     private final BlackDuckProperties blackDuckProperties;
     private final DailyTask dailyTask;
     private final OnDemandTask onDemandTask;
-    private final PurgeTask2 purgeTask;
+    private final PurgeTask purgeTask;
     private final PhoneHomeTask phoneHomeTask;
     private final AlertStartupInitializer alertStartupInitializer;
     private final List<ProviderDescriptor> providerDescriptorList;
@@ -107,7 +107,7 @@ public class StartupManager {
 
     @Autowired
     public StartupManager(final SchedulingRepository schedulingRepository, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
-        final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask2 purgeTask, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer,
+        final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer,
         final List<ProviderDescriptor> providerDescriptorList, final StringEncryptionConverter stringEncryptionConverter, final SystemStatusUtility systemStatusUtility, final SystemMessageUtility systemMessageUtility) {
         this.schedulingRepository = schedulingRepository;
         this.alertProperties = alertProperties;
