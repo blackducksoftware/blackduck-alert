@@ -2,13 +2,27 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import {Modal} from 'react-bootstrap';
-import Select from 'react-select-2';
+import Select, {components} from 'react-select';
 
 import GroupEmailJobConfiguration from './job/GroupEmailJobConfiguration';
 import HipChatJobConfiguration from './job/HipChatJobConfiguration';
 import SlackJobConfiguration from './job/SlackJobConfiguration';
 import DescriptorOption from "../../common/DescriptorOption";
 import {resetDistributionDescriptor} from '../../../store/actions/descriptors';
+
+const {Option, SingleValue} = components;
+
+const CustomJobTypeOptionLabel = (props) => (
+    <Option {...props}>
+        <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value}/>
+    </Option>
+);
+
+const CustomJobTypeLabel = (props) => (
+    <SingleValue {...props}>
+        <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value}/>
+    </SingleValue>
+);
 
 class JobAddModal extends Component {
     constructor(props) {
@@ -109,11 +123,8 @@ class JobAddModal extends Component {
         }
     }
 
-    renderOption(option) {
-        return (<DescriptorOption icon={option.icon} label={option.label} value={option.value}/>);
-    }
-
     render() {
+        const jobTypeOptions = this.createJobTypeOptions();
         return (
             <Modal show={this.state.show} onHide={this.handleClose}>
 
@@ -124,18 +135,17 @@ class JobAddModal extends Component {
                 <Modal.Body>
                     <form className="form-horizontal">
                         <div className="form-group">
-                            <label className="col-sm-3 control-label">Type</label>
+                            <label className="col-sm-3 col-form-label text-right">Type</label>
                             <div className="col-sm-8">
                                 <Select
                                     id="jobAddType"
                                     className="typeAheadField"
                                     onChange={this.handleTypeChanged}
-                                    clearable={false}
-                                    options={this.createJobTypeOptions()}
-                                    optionRenderer={this.renderOption}
+                                    isClearable={false}
+                                    options={jobTypeOptions}
                                     placeholder="Choose the Job Type"
-                                    value={this.state.values.typeValue}
-                                    valueRenderer={this.renderOption}
+                                    value={jobTypeOptions.find(option => option.value === this.state.values.typeValue)}
+                                    components={{Option: CustomJobTypeOptionLabel, SingleValue: CustomJobTypeLabel}}
                                 />
                             </div>
                         </div>

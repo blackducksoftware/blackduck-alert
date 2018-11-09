@@ -1,5 +1,5 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import CheckboxInput from '../../field/input/CheckboxInput';
 import NumberInput from '../../field/input/NumberInput';
@@ -7,7 +7,7 @@ import PasswordInput from '../../field/input/PasswordInput';
 import TextInput from '../../field/input/TextInput';
 import ConfigButtons from '../common/ConfigButtons';
 
-import { getEmailConfig, updateEmailConfig, toggleAdvancedEmailOptions } from '../../store/actions/emailConfig';
+import {getEmailConfig, toggleAdvancedEmailOptions, updateEmailConfig} from '../../store/actions/emailConfig';
 
 class EmailConfiguration extends React.Component {
     constructor(props) {
@@ -91,28 +91,28 @@ class EmailConfiguration extends React.Component {
     handleSubmit(evt) {
         evt.preventDefault();
         evt.stopPropagation();
-        const { id } = this.props;
-        this.props.updateEmailConfig({ id, ...this.state });
+        const {id} = this.props;
+        this.props.updateEmailConfig({id, ...this.state});
     }
 
     render() {
         const showAdvanced = this.props.showAdvanced;
         const showAdvancedLabel = (showAdvanced) ? 'Hide Advanced' : 'Show Advanced';
-        const { errorMessage, updateStatus } = this.props;
+        const {errorMessage, updateStatus} = this.props;
         return (
             <div>
                 <h1>
-                    <span className="fa fa-envelope" />
+                    <span className="fa fa-envelope"/>
                     Email
                 </h1>
                 <form className="form-horizontal" onSubmit={this.handleSubmit}>
-                    { errorMessage && <div className="alert alert-danger">
-                        { errorMessage }
-                    </div> }
+                    {errorMessage && <div className="alert alert-danger">
+                        {errorMessage}
+                    </div>}
 
-                    { updateStatus === 'UPDATED' && <div className="alert alert-success">
-                        { 'Update successful' }
-                    </div> }
+                    {updateStatus === 'UPDATED' && <div className="alert alert-success">
+                        {'Update successful'}
+                    </div>}
 
                     <TextInput
                         id="emailSmtpHost"
@@ -166,8 +166,11 @@ class EmailConfiguration extends React.Component {
                     />
 
                     <div className="form-group">
-                        <div className="col-sm-8 col-sm-offset-3">
-                            <button id="emailAdvanced" type="button" className="btn-link" onClick={() => { this.props.toggleAdvancedEmailOptions(!showAdvanced); return false; }}>
+                        <div className="col-sm-8 offset-sm-3">
+                            <button id="emailAdvanced" type="button" className="btn btn-link" onClick={() => {
+                                this.props.toggleAdvancedEmailOptions(!showAdvanced);
+                                return false;
+                            }}>
                                 {showAdvancedLabel}
                             </button>
                         </div>
@@ -596,7 +599,7 @@ class EmailConfiguration extends React.Component {
                         />
                     </div>
                     }
-                    <ConfigButtons cancelId="email-cancel" submitId="email-submit" includeSave includeTest={false} />
+                    <ConfigButtons cancelId="email-cancel" submitId="email-submit" includeSave includeTest={false}/>
                 </form>
             </div>
         );

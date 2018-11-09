@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import Select from 'react-select-2';
+import Select, {components} from 'react-select';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import TextInput from '../../../../field/input/TextInput';
@@ -11,6 +11,20 @@ import {frequencyOptions} from '../../../../util/distribution-data';
 import {getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob} from '../../../../store/actions/distributions';
 import {getDistributionDescriptor} from '../../../../store/actions/descriptors';
 import DescriptorOption from "../../../common/DescriptorOption";
+
+const {Option, SingleValue} = components;
+
+const CustomProviderTypeOptionLabel = (props) => (
+    <Option {...props}>
+        <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value}/>
+    </Option>
+);
+
+const CustomProviderTypeLabel = (props) => (
+    <SingleValue {...props}>
+        <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value}/>
+    </SingleValue>
+);
 
 class BaseJobConfiguration extends Component {
     constructor(props) {
@@ -282,27 +296,25 @@ class BaseJobConfiguration extends Component {
         }
     }
 
-    renderOption(option) {
-        return (<DescriptorOption icon={option.icon} label={option.label} value={option.value}/>);
-    }
-
     renderDistributionForm() {
         if (!this.props.currentDistributionComponents) {
             return null;
         } else {
+            const formatOptions = this.createFormatTypeOptions();
+            const notificationOptions = this.createNotificationTypeOptions();
             return (
                 <div>
                     <div className="form-group">
-                        <label className="col-sm-3 control-label">Format</label>
-                        <div className="col-sm-8">
+                        <label className="col-sm-3 col-form-label text-right">Format</label>
+                        <div className="d-inline-flex p-2 col-sm-8">
                             <Select
                                 id="formatType"
                                 className="typeAheadField"
                                 onChange={this.handleFormatChanged}
                                 removeSelected
-                                options={this.createFormatTypeOptions()}
+                                options={formatOptions}
                                 placeholder="Choose the format for the job"
-                                value={this.state.formatType}
+                                value={formatOptions.find(option => option.value === this.state.formatType)}
                             />
                             {this.state.error.formatTypeError && <label className="fieldError" name="formatTypeError">
                                 {this.state.error.formatTypeError}
@@ -310,18 +322,18 @@ class BaseJobConfiguration extends Component {
                         </div>
                     </div>
                     <div className="form-group">
-                        <label className="col-sm-3 control-label">Notification Types</label>
-                        <div className="col-sm-8">
+                        <label className="col-sm-3 col-form-label text-right">Notification Types</label>
+                        <div className="d-inline-flex p-2 col-sm-8">
                             <Select
                                 id="jobType"
                                 className="typeAheadField"
                                 onChange={this.handleNotificationChanged}
-                                searchable
-                                multi
+                                isSearchable={true}
+                                isMulti={true}
                                 removeSelected
-                                options={this.createNotificationTypeOptions()}
+                                options={notificationOptions}
                                 placeholder="Choose the notification types"
-                                value={this.state.notificationTypes}
+                                value={notificationOptions.find(option => option.value === this.state.notificationTypes)}
                             />
                             {this.state.error.notificationTypesError && <label className="fieldError" name="notificationTypesError">
                                 {this.state.error.notificationTypesError}
@@ -339,20 +351,25 @@ class BaseJobConfiguration extends Component {
     }
 
     render() {
+        const providerOptions = this.state.providerOptions;
+        var selectedProviderOption = null
+        if (providerOptions) {
+            selectedProviderOption = providerOptions.find(option => option.value === this.state.providerName)
+        }
         return (
             <form className="form-horizontal" onSubmit={this.onSubmit}>
                 <TextInput id="name" label="Job Name" name="name" value={this.state.name} onChange={this.handleChange} errorName="nameError" errorValue={this.state.error.nameError}/>
                 <div className="form-group">
-                    <label className="col-sm-3 control-label">Frequency</label>
-                    <div className="col-sm-8">
+                    <label className="col-sm-3 col-form-label text-right">Frequency</label>
+                    <div className="d-inline-flex p-2 col-sm-8">
                         <Select
                             id="jobFrequency"
                             className="typeAheadField"
                             onChange={this.handleFrequencyChanged}
-                            searchable
+                            isSearchable={true}
                             options={frequencyOptions}
                             placeholder="Choose the frequency"
-                            value={this.state.frequency}
+                            value={frequencyOptions.find(option => option.value === this.state.frequency)}
                         />
                         {this.state.error.frequencyError && <label className="fieldError" name="frequencyError">
                             {this.state.error.frequencyError}
@@ -360,18 +377,17 @@ class BaseJobConfiguration extends Component {
                     </div>
                 </div>
                 <div className="form-group">
-                    <label className="col-sm-3 control-label">Provider</label>
-                    <div className="col-sm-8">
+                    <label className="col-sm-3 col-form-label text-right">Provider</label>
+                    <div className="d-inline-flex p-2 col-sm-8">
                         <Select
                             id="providerName"
                             className="typeAheadField"
                             onChange={this.handleProviderChanged}
-                            searchable
-                            options={this.state.providerOptions}
-                            optionRenderer={this.renderOption}
+                            isSearchable={true}
+                            options={providerOptions}
                             placeholder="Choose the provider"
-                            value={this.state.providerName}
-                            valueRenderer={this.renderOption}
+                            value={selectedProviderOption}
+                            components={{Option: CustomProviderTypeOptionLabel, SingleValue: CustomProviderTypeLabel}}
                         />
                         {this.state.error.providerNameError && <label className="fieldError" name="providerNameError">
                             {this.state.error.providerNameError}
