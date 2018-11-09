@@ -133,8 +133,11 @@ public class StartupManager {
     }
 
     public void checkEncryptionProperties() {
-        alertProperties.getAlertEncryptionPassword().orElseThrow(() -> new IllegalArgumentException("Encryption password not configured"));
-        alertProperties.getAlertEncryptionGlobalSalt().orElseThrow(() -> new IllegalArgumentException("Encryption salt not configured"));
+        final String encryptionPassword = alertProperties.getAlertEncryptionPassword().orElseThrow(() -> new IllegalArgumentException("Encryption password not configured"));
+        final String encryptionSalt = alertProperties.getAlertEncryptionGlobalSalt().orElseThrow(() -> new IllegalArgumentException("Encryption salt not configured"));
+        if (StringUtils.isNotBlank(encryptionPassword) && StringUtils.isNotBlank(encryptionSalt)) {
+            logger.debug("Encryption properties have been set.");
+        }
         if (stringEncryptionConverter.isInitialized()) {
             logger.info("Encryption utilities: Initialized");
         } else {
