@@ -11,7 +11,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.synopsys.integration.alert.common.field.HierarchicalField;
-import com.synopsys.integration.alert.common.field.HierarchicalFieldFactory;
 import com.synopsys.integration.alert.workflow.filter.field.JsonFieldAccessor;
 
 public class JsonFieldAccessorTest {
@@ -19,7 +18,7 @@ public class JsonFieldAccessorTest {
     @Test
     public void getStringListTest() {
         final List<Object> expectedValues = Arrays.asList("value", "other value", "multi \n line \n value");
-        final HierarchicalField<String> expectedField = HierarchicalFieldFactory.createStringField(Arrays.asList("innerString"), null, null);
+        final HierarchicalField<String> expectedField = HierarchicalField.createStringField(Arrays.asList("innerString"), null, null);
         final Map<HierarchicalField, List<Object>> map = new HashMap<>();
         map.put(expectedField, expectedValues);
 
@@ -30,7 +29,7 @@ public class JsonFieldAccessorTest {
     @Test
     public void getFirstStringTest() {
         final List<Object> expectedValues = Arrays.asList("value", "other value", "multi \n line \n value");
-        final HierarchicalField<String> expectedField = HierarchicalFieldFactory.createStringField(Arrays.asList("innerString"), null, null);
+        final HierarchicalField<String> expectedField = HierarchicalField.createStringField(Arrays.asList("innerString"), null, null);
         final Map<HierarchicalField, List<Object>> map = new HashMap<>();
         map.put(expectedField, expectedValues);
 
@@ -41,7 +40,7 @@ public class JsonFieldAccessorTest {
     @Test
     public void getObjectListTest() {
         final List<Object> expectedValues = Arrays.asList(new MyObject("first value"), new MyObject("second value"));
-        final HierarchicalField<MyObject> expectedField = HierarchicalFieldFactory.createObjectField(Arrays.asList("innerObject"), null, null, MyObject.class);
+        final HierarchicalField<MyObject> expectedField = HierarchicalField.createObjectField(Arrays.asList("innerObject"), null, null, MyObject.class);
         final Map<HierarchicalField, List<Object>> map = new HashMap<>();
         map.put(expectedField, expectedValues);
 
@@ -52,7 +51,7 @@ public class JsonFieldAccessorTest {
     @Test
     public void getFirstObjectTest() {
         final List<Object> expectedValues = Arrays.asList(new MyObject("first value"), new MyObject("second value"));
-        final HierarchicalField<MyObject> expectedField = HierarchicalFieldFactory.createObjectField(Arrays.asList("innerObject"), null, null, MyObject.class);
+        final HierarchicalField<MyObject> expectedField = HierarchicalField.createObjectField(Arrays.asList("innerObject"), null, null, MyObject.class);
         final Map<HierarchicalField, List<Object>> map = new HashMap<>();
         map.put(expectedField, expectedValues);
 
@@ -62,7 +61,7 @@ public class JsonFieldAccessorTest {
 
     @Test
     public void getStringWhenListIsEmptyTest() {
-        final HierarchicalField<String> expectedField = HierarchicalFieldFactory.createStringField(Arrays.asList("innerString"), null, null);
+        final HierarchicalField<String> expectedField = HierarchicalField.createStringField(Arrays.asList("innerString"), null, null);
         final List<Object> expectedValues = Collections.emptyList();
         final Map<HierarchicalField, List<Object>> map = new HashMap<>();
         map.put(expectedField, expectedValues);
@@ -73,7 +72,7 @@ public class JsonFieldAccessorTest {
 
     @Test
     public void getObjectWhenListIsEmptyTest() {
-        final HierarchicalField<MyObject> expectedField = HierarchicalFieldFactory.createObjectField(Arrays.asList("innerObject"), null, null, MyObject.class);
+        final HierarchicalField<MyObject> expectedField = HierarchicalField.createObjectField(Arrays.asList("innerObject"), null, null, MyObject.class);
         final List<Object> expectedValues = Collections.emptyList();
         final Map<HierarchicalField, List<Object>> map = new HashMap<>();
         map.put(expectedField, expectedValues);
@@ -84,7 +83,7 @@ public class JsonFieldAccessorTest {
 
     @Test
     public void getFirstObjectWhenListIsEmptyTest() {
-        final HierarchicalField<MyObject> expectedField = HierarchicalFieldFactory.createObjectField(Arrays.asList("innerObject"), null, null, MyObject.class);
+        final HierarchicalField<MyObject> expectedField = HierarchicalField.createObjectField(Arrays.asList("innerObject"), null, null, MyObject.class);
         final List<Object> expectedValues = Collections.emptyList();
         final Map<HierarchicalField, List<Object>> map = new HashMap<>();
         map.put(expectedField, expectedValues);
@@ -95,7 +94,7 @@ public class JsonFieldAccessorTest {
 
     @Test
     public void getTypedObjectWhenMapIsEmptyTest() {
-        final HierarchicalField<MyObject> expectedField = HierarchicalFieldFactory.createObjectField(Arrays.asList("innerObject"), null, null, MyObject.class);
+        final HierarchicalField<MyObject> expectedField = HierarchicalField.createObjectField(Arrays.asList("innerObject"), null, null, MyObject.class);
         final Map<HierarchicalField, List<Object>> map = new HashMap<>();
 
         final JsonFieldAccessor accessor = new JsonFieldAccessor(map);

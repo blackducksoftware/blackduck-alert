@@ -11,7 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.field.HierarchicalFieldFactory;
+import com.synopsys.integration.alert.common.field.HierarchicalField;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.workflow.filter.field.JsonExtractor;
 
@@ -33,7 +33,7 @@ public class GsonFilterTest {
         final List<NotificationContent> notificationList = Arrays.asList(policyNotification, vulnerabilityNotification);
 
         final List<String> jsonFieldList = Arrays.asList("content", "projectName");
-        final JsonFieldFilterBuilder projectNameFilter = new JsonFieldFilterBuilder(jsonExtractor, HierarchicalFieldFactory.createStringField(jsonFieldList, null, null), PROJECT_NAME_1);
+        final JsonFieldFilterBuilder projectNameFilter = new JsonFieldFilterBuilder(jsonExtractor, HierarchicalField.createStringField(jsonFieldList, null, null), PROJECT_NAME_1);
 
         final List<NotificationContent> filteredList = notificationList.stream().filter(projectNameFilter.buildPredicate()).collect(Collectors.toList());
         assertEquals(1, filteredList.size());
@@ -47,8 +47,8 @@ public class GsonFilterTest {
 
         final List<String> policyJsonFieldHierarchy = Arrays.asList("content", "projectName");
         final List<String> vulnerabilityJsonFieldHierarchy = Arrays.asList("content", "affectedProjectVersions", "projectName");
-        final JsonFieldFilterBuilder policyProjectNameFilter = new JsonFieldFilterBuilder(jsonExtractor, HierarchicalFieldFactory.createStringField(policyJsonFieldHierarchy, null, null), PROJECT_NAME_1);
-        final JsonFieldFilterBuilder vulnerabilityProjectNameFilter = new JsonFieldFilterBuilder(jsonExtractor, HierarchicalFieldFactory.createStringField(vulnerabilityJsonFieldHierarchy, null, null), PROJECT_NAME_1);
+        final JsonFieldFilterBuilder policyProjectNameFilter = new JsonFieldFilterBuilder(jsonExtractor, HierarchicalField.createStringField(policyJsonFieldHierarchy, null, null), PROJECT_NAME_1);
+        final JsonFieldFilterBuilder vulnerabilityProjectNameFilter = new JsonFieldFilterBuilder(jsonExtractor, HierarchicalField.createStringField(vulnerabilityJsonFieldHierarchy, null, null), PROJECT_NAME_1);
         final JsonFilterBuilder compoundFilter = new OrFieldFilterBuilder(policyProjectNameFilter, vulnerabilityProjectNameFilter);
 
         final List<NotificationContent> filteredList = notificationList.stream().filter(compoundFilter.buildPredicate()).collect(Collectors.toList());
@@ -64,8 +64,8 @@ public class GsonFilterTest {
         final List<String> vulnerabilityComponentJsonFieldHierarchy = Arrays.asList("content", "componentName");
         final List<String> vulnerabilityProjectJsonFieldHierarchy = Arrays.asList("content", "affectedProjectVersions", "projectName");
 
-        final JsonFieldFilterBuilder vulnerabilityComponentNameFilter = new JsonFieldFilterBuilder(jsonExtractor, HierarchicalFieldFactory.createStringField(vulnerabilityComponentJsonFieldHierarchy, null, null), COMPONENT_NAME_1);
-        final JsonFieldFilterBuilder vulnerabilityProjectNameFilter = new JsonFieldFilterBuilder(jsonExtractor, HierarchicalFieldFactory.createStringField(vulnerabilityProjectJsonFieldHierarchy, null, null), PROJECT_NAME_1);
+        final JsonFieldFilterBuilder vulnerabilityComponentNameFilter = new JsonFieldFilterBuilder(jsonExtractor, HierarchicalField.createStringField(vulnerabilityComponentJsonFieldHierarchy, null, null), COMPONENT_NAME_1);
+        final JsonFieldFilterBuilder vulnerabilityProjectNameFilter = new JsonFieldFilterBuilder(jsonExtractor, HierarchicalField.createStringField(vulnerabilityProjectJsonFieldHierarchy, null, null), PROJECT_NAME_1);
         final JsonFilterBuilder compoundFilter = new AndFieldFilterBuilder(vulnerabilityComponentNameFilter, vulnerabilityProjectNameFilter);
 
         final List<NotificationContent> filteredList = notificationList.stream().filter(compoundFilter.buildPredicate()).collect(Collectors.toList());

@@ -28,22 +28,46 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
 
 public class HierarchicalField<T> extends Field {
     public static final String LABEL_URL_SUFFIX = "_url";
 
+    private final Class<T> type;
     private final FieldContentIdentifier contentIdentifier;
     private final String configNameMapping;
     private final List<String> fieldPath;
 
-    protected HierarchicalField(final List<String> fullFieldPath, final String innerMostFieldName, final FieldContentIdentifier contentIdentifier, final String label) {
-        this(fullFieldPath, innerMostFieldName, contentIdentifier, label, null);
+    public static <T> HierarchicalField<T> createObjectField(final List<String> fieldPath, final FieldContentIdentifier contentIdentifier, final String label, final Class<T> fieldClazz) {
+        return new HierarchicalField<>(fieldClazz, fieldPath, getInnerMostFieldName(fieldPath), contentIdentifier, label);
     }
 
-    protected HierarchicalField(final List<String> fullFieldPath, final String innerMostFieldName, final FieldContentIdentifier contentIdentifier, final String label, final String configNameMapping) {
+    public static HierarchicalField<Long> createLongField(final List<String> fieldPath, final FieldContentIdentifier contentIdentifier, final String label) {
+        return new HierarchicalField<>(Long.class, fieldPath, getInnerMostFieldName(fieldPath), contentIdentifier, label);
+    }
+
+    public static HierarchicalField<String> createStringField(final List<String> fieldPath, final FieldContentIdentifier contentIdentifier, final String label) {
+        return new HierarchicalField<>(String.class, fieldPath, getInnerMostFieldName(fieldPath), contentIdentifier, label);
+    }
+
+    public static HierarchicalField<String> createStringField(final List<String> fieldPath, final FieldContentIdentifier contentIdentifier, final String label, final String configNameMapping) {
+        return new HierarchicalField<>(String.class, fieldPath, getInnerMostFieldName(fieldPath), contentIdentifier, label, configNameMapping);
+    }
+
+    private static String getInnerMostFieldName(final List<String> fieldPath) {
+        if (fieldPath != null && !fieldPath.isEmpty()) {
+            return fieldPath.get(fieldPath.size() - 1);
+        }
+        return null;
+    }
+
+    protected HierarchicalField(final Class<T> clazz, final List<String> fullFieldPath, final String innerMostFieldName, final FieldContentIdentifier contentIdentifier, final String label) {
+        this(clazz, fullFieldPath, innerMostFieldName, contentIdentifier, label, null);
+    }
+
+    protected HierarchicalField(final Class<T> clazz, final List<String> fullFieldPath, final String innerMostFieldName, final FieldContentIdentifier contentIdentifier, final String label, final String configNameMapping) {
         super(innerMostFieldName, label);
+        this.type = clazz;
         this.fieldPath = fullFieldPath;
         this.contentIdentifier = contentIdentifier;
         this.configNameMapping = configNameMapping;
@@ -65,6 +89,6 @@ public class HierarchicalField<T> extends Field {
     }
 
     public Type getType() {
-        return new TypeToken<T>() {}.getType();
+        return type;
     }
 }
