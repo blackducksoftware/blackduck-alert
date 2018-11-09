@@ -277,17 +277,12 @@ public abstract class MessageContentCollector {
         collectedContent.add(content);
     }
 
-    private <T> List<HierarchicalField<T>> getTypedFields(final List<HierarchicalField<?>> fields, final Class<T> targetClass) {
-        for (final HierarchicalField<?> field : fields) {
-            final Class<?> classOfField = field.getClass();
-            classOfField.isAssignableFrom()
-        }
-        //        final Type targetType = new TypeToken<T>() {}.getType();
-        //        return fields
-        //                   .parallelStream()
-        //                   .filter(field -> targetType.equals(field.getType()))
-        //                   .map(field -> (HierarchicalField<T>) field)
-        //                   .collect(Collectors.toList());
+    private <T> List<HierarchicalField<T>> getTypedFields(final List<HierarchicalField<?>> fields, final Class targetClass) {
+        return fields
+                   .parallelStream()
+                   .filter(field -> targetClass.equals(field.getType()))
+                   .map(field -> (HierarchicalField<T>) field)
+                   .collect(Collectors.toList());
     }
 
     private <T extends HierarchicalField> Optional<T> getRelatedUrlField(final List<T> categoryFields, final String label) {

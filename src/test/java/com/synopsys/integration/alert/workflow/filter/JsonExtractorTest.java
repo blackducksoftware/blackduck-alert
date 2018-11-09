@@ -10,10 +10,11 @@ import org.junit.Test;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.field.HierarchicalField;
-import com.synopsys.integration.alert.common.field.HierarchicalFieldFactory;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.alert.workflow.filter.field.JsonFieldAccessor;
+
+;
 
 public class JsonExtractorTest {
     private final Gson gson = new Gson();
@@ -33,8 +34,8 @@ public class JsonExtractorTest {
         final String innerObjectJson = gson.toJson(innerObject);
         final String json = "{\"innerString\":\"" + innerString + "\",\"innerObject\":" + innerObjectJson + "}";
 
-        final HierarchicalField<String> stringField = HierarchicalFieldFactory.createStringField(Arrays.asList("innerString"), null, null);
-        final HierarchicalField<DummyClass> objectField = HierarchicalFieldFactory.createObjectField(Arrays.asList("innerObject"), null, null, DummyClass.class);
+        final HierarchicalField<String> stringField = HierarchicalField.createStringField(Arrays.asList("innerString"), null, null);
+        final HierarchicalField<DummyClass> objectField = HierarchicalField.createObjectField(Arrays.asList("innerObject"), null, null, DummyClass.class);
         final List<HierarchicalField<?>> fields = Arrays.asList(stringField, objectField);
 
         final JsonFieldAccessor accessor = jsonExtractor.createJsonFieldAccessor(fields, json);
@@ -48,7 +49,7 @@ public class JsonExtractorTest {
         final String value = "thing that I want";
         final String json = "{\"content\":{\"someObject\":{\"" + key + "\":\"" + value + "\"}}}";
         final List<String> pathToField = Arrays.asList("content", "someObject", key);
-        final HierarchicalField<String> field = HierarchicalFieldFactory.createStringField(pathToField, null, null);
+        final HierarchicalField<String> field = HierarchicalField.createStringField(pathToField, null, null);
         final List<String> values = jsonExtractor.getValuesFromJson(field, json);
         Assert.assertEquals(Arrays.asList(value), values);
     }
@@ -60,7 +61,7 @@ public class JsonExtractorTest {
         final String value2 = "other thing that I want";
         final String json = "{\"content\":{\"someObject\":[{\"" + key + "\":\"" + value1 + "\"},{\"" + key + "\":\"" + value2 + "\"}]}}";
         final List<String> pathToField = Arrays.asList("content", "someObject", key);
-        final HierarchicalField<String> field = HierarchicalFieldFactory.createStringField(pathToField, null, null);
+        final HierarchicalField<String> field = HierarchicalField.createStringField(pathToField, null, null);
         final List<String> values = jsonExtractor.getValuesFromJson(field, json);
         Assert.assertEquals(Arrays.asList(value1, value2), values);
     }
@@ -79,15 +80,15 @@ public class JsonExtractorTest {
         final CommonDistributionConfig commonDistributionConfig = new CommonDistributionConfig(id, distributionConfigId, distributionType, name, providerName, frequency, filterByProject, configuredProjects, notificationTypes,
             FormatType.DEFAULT.name());
 
-        final HierarchicalField<String> nameField = HierarchicalFieldFactory.createStringField(Arrays.asList(), null, null, "name");
+        final HierarchicalField<String> nameField = HierarchicalField.createStringField(Arrays.asList(), null, null, "name");
         final List<String> nameValues = jsonExtractor.getValuesFromConfig(nameField, commonDistributionConfig);
         Assert.assertEquals(Arrays.asList(name), nameValues);
 
-        final HierarchicalField<String> configuredProjectsField = HierarchicalFieldFactory.createStringField(Arrays.asList(), null, null, "configuredProjects");
+        final HierarchicalField<String> configuredProjectsField = HierarchicalField.createStringField(Arrays.asList(), null, null, "configuredProjects");
         final List<String> configuredProjectValues = jsonExtractor.getValuesFromConfig(configuredProjectsField, commonDistributionConfig);
         Assert.assertEquals(configuredProjects, configuredProjectValues);
 
-        final HierarchicalField<String> notificationTypesField = HierarchicalFieldFactory.createStringField(Arrays.asList(), null, null, "notificationTypes");
+        final HierarchicalField<String> notificationTypesField = HierarchicalField.createStringField(Arrays.asList(), null, null, "notificationTypes");
         final List<String> notificationTypeValues = jsonExtractor.getValuesFromConfig(notificationTypesField, commonDistributionConfig);
         Assert.assertEquals(notificationTypes, notificationTypeValues);
     }
