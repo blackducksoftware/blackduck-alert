@@ -1,8 +1,8 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import ReadOnlyField from '../../field/ReadOnlyField';
-import { getAboutInfo } from '../../store/actions/about';
+import {getAboutInfo} from '../../store/actions/about';
 
 class AboutInfo extends React.Component {
     constructor(props) {
@@ -16,8 +16,8 @@ class AboutInfo extends React.Component {
     iconColumnRenderer(cell) {
         const altText = cell;
         const keyText = `aboutIconKey-${cell}`;
-        const classNameText= `fa fa-${cell}`;
-        return (<span key={keyText} alt={altText} className={classNameText} aria-hidden="true" />);
+        const classNameText = `fa fa-${cell}`;
+        return (<span key={keyText} alt={altText} className={classNameText} aria-hidden="true"/>);
     }
 
     createDescriptorTable(tableData) {
@@ -29,10 +29,12 @@ class AboutInfo extends React.Component {
         return (
             <div className="form-group">
                 <BootstrapTable
+                    version="4"
                     data={tableData}
                     options={tableOptions}
                     headerContainerClass="scrollable"
-                    bodyContainerClass="scrollable">
+                    bodyContainerClass="scrollable"
+                >
                     <TableHeaderColumn dataField="fontAwesomeIcon" className="iconTableRow" columnClassName="iconTableRow" dataFormat={this.iconColumnRenderer}>
                     </TableHeaderColumn>
                     <TableHeaderColumn dataField="label" isKey>
@@ -44,7 +46,7 @@ class AboutInfo extends React.Component {
     }
 
     render() {
-        const { version,description, projectUrl } = this.props;
+        const {version, description, projectUrl} = this.props;
         const providerList = this.props.descriptors.items['PROVIDER_CONFIG'];
         const channelList = this.props.descriptors.items['CHANNEL_DISTRIBUTION_CONFIG'];
         const projectUrlLink = <a alt={projectUrl} href={projectUrl}>{projectUrl}</a>;
@@ -62,20 +64,20 @@ class AboutInfo extends React.Component {
                     <ReadOnlyField label="Project URL" name="projectUrl" readOnly="true" value={projectUrlLink}/>
                     <div className="form-group">
                         <div className="form-group">
-                            <label className="col-sm-3 control-label">Supported Providers</label>
-                            <div className="col-sm-8">
+                            <label className="col-sm-3 col-form-label text-right">Supported Providers</label>
+                            <div className="d-inline-flex p-2 col-sm-8">
                                 <div className="form-control-static">
-                                {providerTable}
+                                    {providerTable}
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div className="form-group">
                         <div className="form-group">
-                            <label className="col-sm-3 control-label">Supported Distribution Channels</label>
-                            <div className="col-sm-8">
+                            <label className="col-sm-3 col-form-label text-right">Supported Distribution Channels</label>
+                            <div className="d-inline-flex p-2 col-sm-8">
                                 <div className="form-control-static">
-                                {channelTable}
+                                    {channelTable}
                                 </div>
                             </div>
                         </div>
