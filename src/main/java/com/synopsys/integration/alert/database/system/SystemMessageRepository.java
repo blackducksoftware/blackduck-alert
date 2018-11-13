@@ -21,18 +21,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.purge;
+package com.synopsys.integration.alert.database.system;
 
+import java.util.Date;
 import java.util.List;
 
-import org.springframework.batch.item.ItemProcessor;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
-import com.synopsys.integration.alert.database.entity.NotificationContent;
+public interface SystemMessageRepository extends JpaRepository<SystemMessage, Long> {
+    @Query("SELECT message FROM SystemMessage message WHERE message.created >= ?1 AND message.created < ?2 ORDER BY created_at asc")
+    List<SystemMessage> findByCreatedBetween(final Date start, final Date end);
 
-public class PurgeProcessor implements ItemProcessor<List<NotificationContent>, List<NotificationContent>> {
+    SystemMessage findTopByOrderByCreatedAsc();
 
-    @Override
-    public List<NotificationContent> process(final List<NotificationContent> item) throws Exception {
-        return item;
-    }
 }

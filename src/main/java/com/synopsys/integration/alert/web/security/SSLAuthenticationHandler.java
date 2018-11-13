@@ -48,35 +48,38 @@ public class SSLAuthenticationHandler extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
         final String[] allowedPaths = {
-                "/",
-                "/#",
-                "/favicon.ico",
-                "/fonts/**",
-                "/js/bundle.js",
-                "/js/bundle.js.map",
-                "/css/style.css",
-                "index.html",
-                BaseController.BASE_PATH + "/login",
-                BaseController.BASE_PATH + "/logout",
-                BaseController.BASE_PATH + "/about" };
+            "/",
+            "/#",
+            "/favicon.ico",
+            "/fonts/**",
+            "/js/bundle.js",
+            "/js/bundle.js.map",
+            "/css/style.css",
+            "index.html",
+            BaseController.BASE_PATH + "/login",
+            BaseController.BASE_PATH + "/logout",
+            BaseController.BASE_PATH + "/about",
+            BaseController.BASE_PATH + "/system/messages/latest"
+        };
 
         final String[] csrfIgnoredPaths = {
-                "/",
-                "/#",
-                "/favicon.ico",
-                "/fonts/**",
-                "/js/bundle.js",
-                "/js/bundle.js.map",
-                "/css/style.css",
-                "index.html",
-                BaseController.BASE_PATH + "/login",
-                BaseController.BASE_PATH + "/verify",
-                BaseController.BASE_PATH + "/about" };
+            "/",
+            "/#",
+            "/favicon.ico",
+            "/fonts/**",
+            "/js/bundle.js",
+            "/js/bundle.js.map",
+            "/css/style.css",
+            "index.html",
+            BaseController.BASE_PATH + "/login",
+            BaseController.BASE_PATH + "/verify",
+            BaseController.BASE_PATH + "/about",
+            BaseController.BASE_PATH + "/system/messages/latest" };
 
         http.requiresChannel().anyRequest().requiresSecure()
-                .and().csrf().csrfTokenRepository(csrfTokenRepository).ignoringAntMatchers(csrfIgnoredPaths)
-                .and().authorizeRequests().antMatchers(allowedPaths).permitAll()
-                .and().authorizeRequests().anyRequest().hasRole("ADMIN")
-                .and().logout().logoutSuccessUrl("/");
+            .and().csrf().csrfTokenRepository(csrfTokenRepository).ignoringAntMatchers(csrfIgnoredPaths)
+            .and().authorizeRequests().antMatchers(allowedPaths).permitAll()
+            .and().authorizeRequests().anyRequest().hasRole("ADMIN")
+            .and().logout().logoutSuccessUrl("/");
     }
 }
