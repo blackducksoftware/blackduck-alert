@@ -24,17 +24,10 @@
 package com.synopsys.integration.alert.common;
 
 import java.util.Optional;
-import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import com.synopsys.integration.blackduck.configuration.HubServerConfigBuilder;
-import com.synopsys.integration.log.IntLogger;
-import com.synopsys.integration.rest.connection.UnauthenticatedRestConnectionBuilder;
-import com.synopsys.integration.rest.proxy.ProxyInfoBuilder;
 
 @Component
 public class AlertProperties {
@@ -113,66 +106,5 @@ public class AlertProperties {
             return Optional.of(value);
         }
         return Optional.empty();
-    }
-
-    public UnauthenticatedRestConnectionBuilder createUnauthenticatedRestConnectionBuilder(final IntLogger logger, final String baseUrl, final int blackDuckTimeout) {
-        final UnauthenticatedRestConnectionBuilder restConnectionBuilder = new UnauthenticatedRestConnectionBuilder();
-        restConnectionBuilder.setLogger(logger);
-        restConnectionBuilder.setTimeout(blackDuckTimeout);
-
-        final Optional<String> alertProxyHost = getAlertProxyHost();
-        final Optional<String> alertProxyPort = getAlertProxyPort();
-        final Optional<String> alertProxyUsername = getAlertProxyUsername();
-        final Optional<String> alertProxyPassword = getAlertProxyPassword();
-        final Optional<Boolean> alertTrustCertificate = getAlertTrustCertificate();
-        restConnectionBuilder.setBaseUrl(baseUrl);
-        if (alertProxyHost.isPresent()) {
-            restConnectionBuilder.setProxyHost(alertProxyHost.get());
-        }
-        if (alertProxyPort.isPresent()) {
-            restConnectionBuilder.setProxyPort(NumberUtils.toInt(alertProxyPort.get()));
-        }
-        if (alertProxyUsername.isPresent()) {
-            restConnectionBuilder.setProxyUsername(alertProxyUsername.get());
-        }
-        if (alertProxyPassword.isPresent()) {
-            restConnectionBuilder.setProxyPassword(alertProxyPassword.get());
-        }
-        if (alertTrustCertificate.isPresent()) {
-            restConnectionBuilder.setAlwaysTrustServerCertificate(alertTrustCertificate.get());
-        }
-
-        return restConnectionBuilder;
-    }
-
-    public ProxyInfoBuilder createProxyInfoBuilder() {
-        final ProxyInfoBuilder proxyBuilder = new ProxyInfoBuilder();
-        final Optional<String> alertProxyHost = getAlertProxyHost();
-        final Optional<String> alertProxyPort = getAlertProxyPort();
-        final Optional<String> alertProxyUsername = getAlertProxyUsername();
-        final Optional<String> alertProxyPassword = getAlertProxyPassword();
-        if (alertProxyHost.isPresent()) {
-            proxyBuilder.setHost(alertProxyHost.get());
-        }
-        if (alertProxyPort.isPresent()) {
-            proxyBuilder.setPort(NumberUtils.toInt(alertProxyPort.get()));
-        }
-        if (alertProxyUsername.isPresent()) {
-            proxyBuilder.setUsername(alertProxyUsername.get());
-        }
-        if (alertProxyPassword.isPresent()) {
-            proxyBuilder.setPassword(alertProxyPassword.get());
-        }
-        return proxyBuilder;
-    }
-
-    public Properties getBlackDuckProperties() {
-        final Properties properties = new Properties();
-        properties.setProperty(HubServerConfigBuilder.HUB_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "trust.cert", String.valueOf(getAlertTrustCertificate().orElse(false)));
-        properties.setProperty(HubServerConfigBuilder.HUB_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.host", getAlertProxyHost().orElse(""));
-        properties.setProperty(HubServerConfigBuilder.HUB_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.port", getAlertProxyPort().orElse(""));
-        properties.setProperty(HubServerConfigBuilder.HUB_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.username", getAlertProxyUsername().orElse(""));
-        properties.setProperty(HubServerConfigBuilder.HUB_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.password", getAlertProxyPassword().orElse(""));
-        return properties;
     }
 }

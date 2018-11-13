@@ -25,7 +25,9 @@ package com.synopsys.integration.alert.channel.rest;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Optional;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +65,7 @@ public class ChannelRestConnectionFactory {
             logger.error("URL WAS NULL");
             return null;
         }
-        final UnauthenticatedRestConnectionBuilder restConnectionBuilder = alertProperties.createUnauthenticatedRestConnectionBuilder(intLogger, url.toString(), timeout);
+        final UnauthenticatedRestConnectionBuilder restConnectionBuilder = createUnauthenticatedRestConnectionBuilder(intLogger, url.toString(), timeout);
 
         final RestConnection connection = restConnectionBuilder.build();
         try {
@@ -85,6 +87,36 @@ public class ChannelRestConnectionFactory {
             logger.error("Problem generating the URL: " + apiUrl, e);
         }
         return url;
+    }
+
+    private UnauthenticatedRestConnectionBuilder createUnauthenticatedRestConnectionBuilder(final IntLogger logger, final String baseUrl, final int blackDuckTimeout) {
+        final UnauthenticatedRestConnectionBuilder restConnectionBuilder = new UnauthenticatedRestConnectionBuilder();
+        restConnectionBuilder.setLogger(logger);
+        restConnectionBuilder.setTimeout(blackDuckTimeout);
+
+        final Optional<String> alertProxyHost = alertProperties.getAlertProxyHost();
+        final Optional<String> alertProxyPort = alertProperties.getAlertProxyPort();
+        final Optional<String> alertProxyUsername = alertProperties.getAlertProxyUsername();
+        final Optional<String> alertProxyPassword = alertProperties.getAlertProxyPassword();
+        final Optional<Boolean> alertTrustCertificate = alertProperties.getAlertTrustCertificate();
+        restConnectionBuilder.setBaseUrl(baseUrl);
+        if (alertProxyHost.isPresent()) {
+            restConnectionBuilder.setProxyHost(alertProxyHost.get());
+        }
+        if (alertProxyPort.isPresent()) {
+            restConnectionBuilder.setProxyPort(NumberUtils.toInt(alertProxyPort.get()));
+        }
+        if (alertProxyUsername.isPresent()) {
+            restConnectionBuilder.setProxyUsername(alertProxyUsername.get());
+        }
+        if (alertProxyPassword.isPresent()) {
+            restConnectionBuilder.setProxyPassword(alertProxyPassword.get());
+        }
+        if (alertTrustCertificate.isPresent()) {
+            restConnectionBuilder.setAlwaysTrustServerCertificate(alertTrustCertificate.get());
+        }
+
+        return restConnectionBuilder;
     }
 
 }

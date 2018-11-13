@@ -48,38 +48,40 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
         final String[] allowedPaths = {
-                "/",
-                "/#",
-                "/favicon.ico",
-                "/h2/**",
-                "/fonts/**",
-                "/js/bundle.js",
-                "/js/bundle.js.map",
-                "/css/style.css",
-                "index.html",
-                BaseController.BASE_PATH + "/configuration/provider/blackduck",
-                BaseController.BASE_PATH + "/login",
-                BaseController.BASE_PATH + "/logout",
-                BaseController.BASE_PATH + "/about" };
+            "/",
+            "/#",
+            "/favicon.ico",
+            "/h2/**",
+            "/fonts/**",
+            "/js/bundle.js",
+            "/js/bundle.js.map",
+            "/css/style.css",
+            "index.html",
+            BaseController.BASE_PATH + "/configuration/provider/blackduck",
+            BaseController.BASE_PATH + "/login",
+            BaseController.BASE_PATH + "/logout",
+            BaseController.BASE_PATH + "/about",
+            BaseController.BASE_PATH + "/system/messages/latest" };
 
         final String[] csrfIgnoredPaths = {
-                "/",
-                "/#",
-                "/favicon.ico",
-                "/h2/**",
-                "/fonts/**",
-                "/js/bundle.js",
-                "/js/bundle.js.map",
-                "/css/style.css",
-                "index.html",
-                BaseController.BASE_PATH + "/login",
-                BaseController.BASE_PATH + "/verify",
-                BaseController.BASE_PATH + "/about" };
+            "/",
+            "/#",
+            "/favicon.ico",
+            "/h2/**",
+            "/fonts/**",
+            "/js/bundle.js",
+            "/js/bundle.js.map",
+            "/css/style.css",
+            "index.html",
+            BaseController.BASE_PATH + "/login",
+            BaseController.BASE_PATH + "/verify",
+            BaseController.BASE_PATH + "/about",
+            BaseController.BASE_PATH + "/system/messages/latest" };
 
         http.csrf().csrfTokenRepository(csrfTokenRepository).ignoringAntMatchers(csrfIgnoredPaths)
-                .and().authorizeRequests().antMatchers(allowedPaths).permitAll()
-                .and().authorizeRequests().anyRequest().hasRole("ADMIN")
-                .and().logout().logoutSuccessUrl("/");
+            .and().authorizeRequests().antMatchers(allowedPaths).permitAll()
+            .and().authorizeRequests().anyRequest().hasRole("ADMIN")
+            .and().logout().logoutSuccessUrl("/");
         // The profile above ensures that this will not be used if SSL is enabled.
         http.headers().frameOptions().disable();
     }

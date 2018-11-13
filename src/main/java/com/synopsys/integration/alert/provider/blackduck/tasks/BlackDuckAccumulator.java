@@ -23,7 +23,6 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.tasks;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.time.ZoneOffset;
@@ -35,8 +34,6 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +41,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.model.DateRange;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -70,26 +68,22 @@ public class BlackDuckAccumulator extends ScheduledTask {
 
     private final BlackDuckProperties blackDuckProperties;
     private final NotificationManager notificationManager;
-    private final File searchRangeFilePath;
+    private final FilePersistenceUtil filePersistenceUtil;
+    private final String searchRangeFileName;
 
     @Autowired
     public BlackDuckAccumulator(final TaskScheduler taskScheduler, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
-        final NotificationManager notificationManager) {
+        final NotificationManager notificationManager, final FilePersistenceUtil filePersistenceUtil) {
         super(taskScheduler, "blackduck-accumulator-task");
         this.blackDuckProperties = blackDuckProperties;
         this.notificationManager = notificationManager;
+        this.filePersistenceUtil = filePersistenceUtil;
         // TODO: do not store a file with the timestamp save this information into a database table for tasks.  Perhaps a task metadata object stored in the database.
-        final String accumulatorFileName = String.format("%s-last-search.txt", getTaskName());
-
-        String accumulatorFileDirectory = "data/";
-        if (StringUtils.isNotBlank(alertProperties.getAlertConfigHome())) {
-            accumulatorFileDirectory = String.format("%s/data", alertProperties.getAlertConfigHome());
-        }
-        this.searchRangeFilePath = new File(accumulatorFileDirectory, accumulatorFileName);
+        this.searchRangeFileName = String.format("%s-last-search.txt", getTaskName());
     }
 
-    public File getSearchRangeFilePath() {
-        return searchRangeFilePath;
+    public String getSearchRangeFileName() {
+        return this.searchRangeFileName;
     }
 
     public String formatDate(final Date date) {
@@ -104,10 +98,10 @@ public class BlackDuckAccumulator extends ScheduledTask {
     public void accumulate() {
         logger.info("### Accumulator Starting Operation...");
         try {
-            if (!getSearchRangeFilePath().exists()) {
+            if (!filePersistenceUtil.exists(getSearchRangeFileName())) {
                 initializeSearchRangeFile();
             }
-            final DateRange dateRange = createDateRange(getSearchRangeFilePath());
+            final DateRange dateRange = createDateRange(getSearchRangeFileName());
             final Date nextSearchStartTime = accumulate(dateRange);
             final String nextSearchStartString = formatDate(nextSearchStartTime);
             logger.info("Accumulator Next Range Start Time: {} ", nextSearchStartString);
@@ -129,14 +123,14 @@ public class BlackDuckAccumulator extends ScheduledTask {
         zonedDate = zonedDate.withZoneSameInstant(ZoneOffset.UTC);
         zonedDate = zonedDate.withSecond(0).withNano(0);
         final Date date = Date.from(zonedDate.toInstant());
-        FileUtils.write(getSearchRangeFilePath(), formatDate(date), ENCODING);
+        filePersistenceUtil.writeToFile(getSearchRangeFileName(), formatDate(date));
     }
 
     protected void saveNextSearchStart(final String nextSearchStart) throws IOException {
-        FileUtils.write(getSearchRangeFilePath(), nextSearchStart, ENCODING);
+        filePersistenceUtil.writeToFile(getSearchRangeFileName(), nextSearchStart);
     }
 
-    protected DateRange createDateRange(final File lastSearchFile) {
+    protected DateRange createDateRange(final String lastSearchFileName) {
         ZonedDateTime zonedEndDate = ZonedDateTime.now();
         zonedEndDate = zonedEndDate.withZoneSameInstant(ZoneOffset.UTC);
         zonedEndDate = zonedEndDate.withSecond(0).withNano(0);
@@ -145,8 +139,8 @@ public class BlackDuckAccumulator extends ScheduledTask {
 
         Date startDate = Date.from(zonedStartDate.toInstant());
         try {
-            if (lastSearchFile.exists()) {
-                final String lastRunValue = readSearchStartTime(lastSearchFile);
+            if (filePersistenceUtil.exists(lastSearchFileName)) {
+                final String lastRunValue = readSearchStartTime(lastSearchFileName);
                 final Date startTime = parseDateString(lastRunValue);
                 zonedStartDate = ZonedDateTime.ofInstant(startTime.toInstant(), zonedEndDate.getZone());
             } else {
@@ -159,8 +153,8 @@ public class BlackDuckAccumulator extends ScheduledTask {
         return new DateRange(startDate, endDate);
     }
 
-    protected String readSearchStartTime(final File lastSearchFile) throws IOException {
-        return FileUtils.readFileToString(lastSearchFile, ENCODING);
+    protected String readSearchStartTime(final String lastSearchFileName) throws IOException {
+        return filePersistenceUtil.readFromFile(lastSearchFileName);
     }
 
     protected Date parseDateString(final String date) throws ParseException {

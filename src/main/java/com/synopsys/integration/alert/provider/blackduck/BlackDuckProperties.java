@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.provider.blackduck;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -185,12 +186,22 @@ public class BlackDuckProperties {
 
     public HubServerConfigBuilder createServerConfigBuilderWithoutAuthentication(final IntLogger logger, final int blackDuckTimeout) {
         final HubServerConfigBuilder blackDuckServerConfigBuilder = new HubServerConfigBuilder();
-        blackDuckServerConfigBuilder.setFromProperties(alertProperties.getBlackDuckProperties());
+        blackDuckServerConfigBuilder.setFromProperties(getBlackDuckProperties());
         blackDuckServerConfigBuilder.setLogger(logger);
         blackDuckServerConfigBuilder.setTimeout(blackDuckTimeout);
         blackDuckServerConfigBuilder.setUrl(getBlackDuckUrl().orElse(""));
 
         return blackDuckServerConfigBuilder;
+    }
+
+    private Properties getBlackDuckProperties() {
+        final Properties properties = new Properties();
+        properties.setProperty(HubServerConfigBuilder.HUB_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "trust.cert", String.valueOf(alertProperties.getAlertTrustCertificate().orElse(false)));
+        properties.setProperty(HubServerConfigBuilder.HUB_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.host", alertProperties.getAlertProxyHost().orElse(""));
+        properties.setProperty(HubServerConfigBuilder.HUB_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.port", alertProperties.getAlertProxyPort().orElse(""));
+        properties.setProperty(HubServerConfigBuilder.HUB_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.username", alertProperties.getAlertProxyUsername().orElse(""));
+        properties.setProperty(HubServerConfigBuilder.HUB_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.password", alertProperties.getAlertProxyPassword().orElse(""));
+        return properties;
     }
 
 }

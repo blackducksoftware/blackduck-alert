@@ -28,8 +28,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.web.model.AboutModel;
 import com.synopsys.integration.alert.common.AboutReader;
+import com.synopsys.integration.alert.web.model.AboutModel;
 
 @Component
 public class AboutActions {
@@ -43,5 +43,4 @@ public class AboutActions {
     public Optional<AboutModel> getAboutModel() {
         return Optional.ofNullable(aboutReader.getAboutModel());
     }
-
 }
