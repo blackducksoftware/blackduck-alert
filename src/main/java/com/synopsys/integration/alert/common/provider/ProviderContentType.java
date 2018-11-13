@@ -51,11 +51,12 @@ public class ProviderContentType extends Stringable {
     }
 
     public List<JsonField<String>> getFilterableFields() {
-        final TypeRef stringType = new TypeRef<String>() {};
+        final TypeRef stringType = new TypeRef<List<String>>() {};
+
         return notificationFields
                    .parallelStream()
                    .filter(field -> field.getConfigNameMapping().isPresent())
-                   .filter(field -> stringType.equals(field.getTypeRef()))
+                   .filter(field -> stringType.getType().equals(field.getTypeRef().getType()))
                    .map(field -> (JsonField<String>) field)
                    .collect(Collectors.toList());
     }
