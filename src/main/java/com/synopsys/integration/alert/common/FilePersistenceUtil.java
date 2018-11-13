@@ -28,6 +28,7 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -38,6 +39,7 @@ public class FilePersistenceUtil {
     private final File parentDataDirectory;
     private final Gson gson;
 
+    @Autowired
     public FilePersistenceUtil(final AlertProperties alertProperties, final Gson gson) {
         this.gson = gson;
         String dataDirectory = "data/";

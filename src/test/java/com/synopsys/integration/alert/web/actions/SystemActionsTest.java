@@ -23,15 +23,36 @@ public class SystemActionsTest {
         systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
         final List<SystemMessage> messages = createSystemMessageList();
         Mockito.when(systemMessageUtility.getSystemMessages()).thenReturn(messages);
-        Mockito.when(systemMessageUtility.getSystemMessagesSince(Mockito.any())).thenReturn(messages);
+        Mockito.when(systemMessageUtility.getSystemMessagesAfter(Mockito.any())).thenReturn(messages);
     }
 
     @Test
-    public void testGetLatestSystemMessages() {
+    public void getSystemMessagesSinceStartup() {
         final SystemActions systemActions = new SystemActions(systemStatusUtility, systemMessageUtility);
-        systemActions.getLatestSystemMessages();
+        systemActions.getSystemMessagesSinceStartup();
         Mockito.verify(systemStatusUtility).getStartupTime();
-        Mockito.verify(systemMessageUtility).getSystemMessagesSince(Mockito.any());
+        Mockito.verify(systemMessageUtility).getSystemMessagesAfter(Mockito.any());
+    }
+
+    @Test
+    public void testGetSystemMessagesAfter() throws Exception {
+        final SystemActions systemActions = new SystemActions(systemStatusUtility, systemMessageUtility);
+        systemActions.getSystemMessagesAfter("2018-11-13T00:00:00.000Z");
+        Mockito.verify(systemMessageUtility).getSystemMessagesAfter(Mockito.any());
+    }
+
+    @Test
+    public void testGetSystemMessagesBefore() throws Exception {
+        final SystemActions systemActions = new SystemActions(systemStatusUtility, systemMessageUtility);
+        systemActions.getSystemMessagesBefore("2018-11-13T00:00:00.000Z");
+        Mockito.verify(systemMessageUtility).getSystemMessagesBefore(Mockito.any());
+    }
+
+    @Test
+    public void testGetSystemMessagesBetween() throws Exception {
+        final SystemActions systemActions = new SystemActions(systemStatusUtility, systemMessageUtility);
+        systemActions.getSystemMessagesBetween("2018-11-13T00:00:00.000Z", "2018-11-13T01:00:00.000Z");
+        Mockito.verify(systemMessageUtility).findBetween(Mockito.any());
     }
 
     @Test

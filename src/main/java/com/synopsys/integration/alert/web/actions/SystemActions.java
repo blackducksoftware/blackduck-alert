@@ -23,12 +23,15 @@
  */
 package com.synopsys.integration.alert.web.actions;
 
+import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.model.DateRange;
 import com.synopsys.integration.alert.database.system.SystemMessage;
 import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
@@ -46,8 +49,23 @@ public class SystemActions {
         this.systemMessageUtility = systemMessageUtility;
     }
 
-    public List<SystemMessageModel> getLatestSystemMessages() {
-        return systemMessageUtility.getSystemMessagesSince(systemStatusUtility.getStartupTime()).stream().map(this::convert).collect(Collectors.toList());
+    public List<SystemMessageModel> getSystemMessagesSinceStartup() {
+        return systemMessageUtility.getSystemMessagesAfter(systemStatusUtility.getStartupTime()).stream().map(this::convert).collect(Collectors.toList());
+    }
+
+    public List<SystemMessageModel> getSystemMessagesAfter(final String startDate) throws ParseException {
+        final Date date = RestConstants.parseDateString(startDate);
+        return systemMessageUtility.getSystemMessagesAfter(date).stream().map(this::convert).collect(Collectors.toList());
+    }
+
+    public List<SystemMessageModel> getSystemMessagesBefore(final String endDate) throws ParseException {
+        final Date date = RestConstants.parseDateString(endDate);
+        return systemMessageUtility.getSystemMessagesBefore(date).stream().map(this::convert).collect(Collectors.toList());
+    }
+
+    public List<SystemMessageModel> getSystemMessagesBetween(final String startDate, final String endDate) throws ParseException {
+        final DateRange dateRange = new DateRange(RestConstants.parseDateString(startDate), RestConstants.parseDateString(endDate));
+        return systemMessageUtility.findBetween(dateRange).stream().map(this::convert).collect(Collectors.toList());
     }
 
     public List<SystemMessageModel> getSystemMessages() {

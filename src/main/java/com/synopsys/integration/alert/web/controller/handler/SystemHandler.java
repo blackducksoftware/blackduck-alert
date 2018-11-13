@@ -23,8 +23,12 @@
  */
 package com.synopsys.integration.alert.web.controller.handler;
 
+import java.text.ParseException;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +40,7 @@ import com.synopsys.integration.alert.web.model.SystemMessageModel;
 
 @Component
 public class SystemHandler extends ControllerHandler {
+    final Logger logger = LoggerFactory.getLogger(SystemHandler.class);
     private final SystemActions actions;
 
     @Autowired
@@ -44,13 +49,29 @@ public class SystemHandler extends ControllerHandler {
         this.actions = actions;
     }
 
-    public ResponseEntity<String> getLatestMessages() {
-        final List<SystemMessageModel> systemMessageList = actions.getLatestSystemMessages();
+    public ResponseEntity<String> getLatestMessagesSinceStartup() {
+        final List<SystemMessageModel> systemMessageList = actions.getSystemMessagesSinceStartup();
         return new ResponseEntity<>(getContentConverter().getJsonString(systemMessageList), HttpStatus.OK);
     }
 
-    public ResponseEntity<String> getSystemMessages() {
-        final List<SystemMessageModel> systemMessageList = actions.getSystemMessages();
-        return new ResponseEntity<>(getContentConverter().getJsonString(systemMessageList), HttpStatus.OK);
+    public ResponseEntity<String> getSystemMessages(final String startDate, final String endDate) {
+        try {
+            if (StringUtils.isBlank(startDate) && StringUtils.isBlank(endDate)) {
+                final List<SystemMessageModel> systemMessageList = actions.getSystemMessages();
+                return new ResponseEntity<>(getContentConverter().getJsonString(systemMessageList), HttpStatus.OK);
+            } else if (StringUtils.isNotBlank(startDate) && StringUtils.isBlank(endDate)) {
+                final List<SystemMessageModel> systemMessageList = actions.getSystemMessagesAfter(startDate);
+                return new ResponseEntity<>(getContentConverter().getJsonString(systemMessageList), HttpStatus.OK);
+            } else if (StringUtils.isBlank(startDate) && StringUtils.isNotBlank(endDate)) {
+                final List<SystemMessageModel> systemMessageList = actions.getSystemMessagesBefore(endDate);
+                return new ResponseEntity<>(getContentConverter().getJsonString(systemMessageList), HttpStatus.OK);
+            } else {
+                final List<SystemMessageModel> systemMessageList = actions.getSystemMessagesBetween(startDate, endDate);
+                return new ResponseEntity<>(getContentConverter().getJsonString(systemMessageList), HttpStatus.OK);
+            }
+        } catch (final ParseException ex) {
+            logger.error("error occured getting system messages", ex);
+            return createResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+        }
     }
 }

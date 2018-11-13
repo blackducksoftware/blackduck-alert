@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
+import com.synopsys.integration.alert.common.model.DateRange;
 
 public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
     private static final int MESSAGE_COUNT = 5;
@@ -59,7 +60,7 @@ public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
         currentTime.plusMinutes(5);
         savedMessages.add(new SystemMessage(Date.from(currentTime.toInstant()), "type", "content"));
         systemMessageRepository.saveAll(savedMessages);
-        final List<SystemMessage> actualMessageList = systemMessageUtility.getSystemMessagesSince(currentDate);
+        final List<SystemMessage> actualMessageList = systemMessageUtility.getSystemMessagesAfter(currentDate);
         assertNotNull(actualMessageList);
         assertEquals(2, actualMessageList.size());
     }
@@ -75,7 +76,27 @@ public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
         currentTime = currentTime.plusMinutes(5);
         savedMessages.add(new SystemMessage(Date.from(currentTime.toInstant()), "type", "content"));
         systemMessageRepository.saveAll(savedMessages);
-        final List<SystemMessage> actualMessageList = systemMessageUtility.findByCreatedAtBefore(currentDate);
+        final List<SystemMessage> actualMessageList = systemMessageUtility.getSystemMessagesBefore(currentDate);
+        assertNotNull(actualMessageList);
+        assertEquals(MESSAGE_COUNT, actualMessageList.size());
+        assertEquals(expectedMessages, actualMessageList);
+    }
+
+    @Test
+    public void testFindBetweenDateRange() {
+        final List<SystemMessage> expectedMessages = createSystemMessageList();
+        Collections.reverse(expectedMessages);
+        ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
+        final ZonedDateTime startTime = currentTime.minusMinutes(10);
+        final List<SystemMessage> savedMessages = new ArrayList<>(expectedMessages);
+        final Date currentDate = Date.from(currentTime.toInstant());
+        savedMessages.add(new SystemMessage(currentDate, "type", "content"));
+        currentTime = currentTime.plusMinutes(5);
+        savedMessages.add(new SystemMessage(Date.from(startTime.minusMinutes(15).toInstant()), "type", "content"));
+        savedMessages.add(new SystemMessage(Date.from(currentTime.toInstant()), "type", "content"));
+        systemMessageRepository.saveAll(savedMessages);
+        final DateRange dateRange = new DateRange(Date.from(startTime.toInstant()), currentDate);
+        final List<SystemMessage> actualMessageList = systemMessageUtility.findBetween(dateRange);
         assertNotNull(actualMessageList);
         assertEquals(MESSAGE_COUNT, actualMessageList.size());
         assertEquals(expectedMessages, actualMessageList);

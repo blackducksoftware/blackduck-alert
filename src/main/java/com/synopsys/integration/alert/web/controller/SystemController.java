@@ -26,6 +26,7 @@ package com.synopsys.integration.alert.web.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.web.controller.handler.SystemHandler;
@@ -41,11 +42,11 @@ public class SystemController extends BaseController {
 
     @GetMapping(value = "/system/messages/latest")
     public ResponseEntity<String> getLatestSystemMessages() {
-        return handler.getLatestMessages();
+        return handler.getLatestMessagesSinceStartup();
     }
 
     @GetMapping(value = "/system/messages")
-    public ResponseEntity<String> getSystemMessages() {
-        return handler.getSystemMessages();
+    public ResponseEntity<String> getSystemMessages(@RequestParam(value = "startDate", required = false) final String startDate, @RequestParam(value = "endDate", required = false) final String endDate) {
+        return handler.getSystemMessages(startDate, endDate);
     }
 }

@@ -33,6 +33,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
+import com.synopsys.integration.alert.common.model.DateRange;
 
 @Component
 public class SystemMessageUtility {
@@ -44,16 +45,6 @@ public class SystemMessageUtility {
     }
 
     @Transactional
-    public List<SystemMessage> getSystemMessages() {
-        return systemMessageRepository.findAll();
-    }
-
-    @Transactional
-    public List<SystemMessage> getSystemMessagesSince(final Date date) {
-        return systemMessageRepository.findByCreatedAfter(date);
-    }
-
-    @Transactional
     public void addSystemMessage(final String message, final SystemMessageType type) {
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
         zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneOffset.UTC);
@@ -62,8 +53,27 @@ public class SystemMessageUtility {
     }
 
     @Transactional
-    public List<SystemMessage> findByCreatedAtBefore(final Date date) {
-        return systemMessageRepository.findByCreatedBefore(date);
+    public List<SystemMessage> getSystemMessages() {
+        return systemMessageRepository.findAll();
+    }
+
+    @Transactional
+    public List<SystemMessage> getSystemMessagesAfter(final Date date) {
+        ZonedDateTime zonedDateTime = ZonedDateTime.now();
+        zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneOffset.UTC);
+        final Date currentTime = Date.from(zonedDateTime.toInstant());
+        return systemMessageRepository.findByCreatedBetween(date, currentTime);
+    }
+
+    @Transactional
+    public List<SystemMessage> getSystemMessagesBefore(final Date date) {
+        final SystemMessage oldestMessage = systemMessageRepository.findTopByOrderByCreatedAsc();
+        return systemMessageRepository.findByCreatedBetween(oldestMessage.getCreated(), date);
+    }
+
+    @Transactional
+    public List<SystemMessage> findBetween(final DateRange dateRange) {
+        return systemMessageRepository.findByCreatedBetween(dateRange.getStart(), dateRange.getEnd());
     }
 
     @Transactional
