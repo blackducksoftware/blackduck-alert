@@ -28,16 +28,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.synopsys.integration.alert.common.field.HierarchicalField;
+import com.synopsys.integration.alert.common.field.JsonField;
 
 public class JsonFieldAccessor {
-    private final Map<HierarchicalField, List<Object>> fieldToDataMap;
+    private final Map<JsonField, List<Object>> fieldToDataMap;
 
-    public JsonFieldAccessor(final Map<HierarchicalField, List<Object>> fieldToDataMap) {
+    public JsonFieldAccessor(final Map<JsonField, List<Object>> fieldToDataMap) {
         this.fieldToDataMap = fieldToDataMap;
     }
 
-    public <T> List<T> get(final HierarchicalField<T> field) {
+    public <T> List<T> get(final JsonField<T> field) {
         final List<T> foundValues = (List<T>) fieldToDataMap.get(field);
         if (foundValues != null) {
             return foundValues;
@@ -45,7 +45,7 @@ public class JsonFieldAccessor {
         return Collections.emptyList();
     }
 
-    public <T> Optional<T> getFirst(final HierarchicalField<T> field) {
+    public <T> Optional<T> getFirst(final JsonField<T> field) {
         return getFirst(get(field));
     }
 

@@ -30,8 +30,7 @@ import com.synopsys.integration.alert.workflow.filter.field.JsonFieldAccessor;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 public class BlackDuckPolicyMessageContentCollectorTest {
-    private final Gson gson = new Gson();
-    private final JsonExtractor jsonExtractor = new JsonExtractor(gson);
+    private final JsonExtractor jsonExtractor = new JsonExtractor(new Gson());
     private final List<MessageContentProcessor> messageContentProcessorList = Arrays.asList(new DefaultMessageContentProcessor(), new DigestMessageContentProcessor());
 
     @Test
