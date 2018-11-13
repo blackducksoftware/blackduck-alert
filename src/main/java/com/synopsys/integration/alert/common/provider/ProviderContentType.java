@@ -23,22 +23,21 @@
  */
 package com.synopsys.integration.alert.common.provider;
 
-import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
-import com.google.gson.reflect.TypeToken;
-import com.synopsys.integration.alert.common.field.HierarchicalField;
+import com.jayway.jsonpath.TypeRef;
+import com.synopsys.integration.alert.common.field.JsonField;
 import com.synopsys.integration.util.Stringable;
 
 public class ProviderContentType extends Stringable {
     private final String notificationType;
-    private final Collection<HierarchicalField<?>> notificationFields;
+    private final Collection<JsonField<?>> notificationFields;
 
-    public ProviderContentType(@NotNull final String notificationType, @NotNull final Collection<HierarchicalField<?>> notificationFields) {
+    public ProviderContentType(@NotNull final String notificationType, @NotNull final Collection<JsonField<?>> notificationFields) {
         this.notificationType = notificationType;
         this.notificationFields = notificationFields;
     }
@@ -47,17 +46,17 @@ public class ProviderContentType extends Stringable {
         return notificationType;
     }
 
-    public List<HierarchicalField<?>> getNotificationFields() {
+    public List<JsonField<?>> getNotificationFields() {
         return notificationFields.parallelStream().collect(Collectors.toList());
     }
 
-    public List<HierarchicalField<String>> getFilterableFields() {
-        final Type stringType = new TypeToken<String>() {}.getType();
+    public List<JsonField<String>> getFilterableFields() {
+        final TypeRef stringType = new TypeRef<String>() {};
         return notificationFields
                    .parallelStream()
                    .filter(field -> field.getConfigNameMapping().isPresent())
-                   .filter(field -> stringType.equals(field.getType()))
-                   .map(field -> (HierarchicalField<String>) field)
+                   .filter(field -> stringType.equals(field.getTypeRef()))
+                   .map(field -> (JsonField<String>) field)
                    .collect(Collectors.toList());
     }
 }

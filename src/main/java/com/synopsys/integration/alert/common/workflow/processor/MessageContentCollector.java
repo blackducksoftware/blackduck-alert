@@ -39,10 +39,11 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.jayway.jsonpath.TypeRef;
 import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.common.field.HierarchicalField;
+import com.synopsys.integration.alert.common.field.JsonField;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.common.model.LinkableItem;
@@ -74,7 +75,7 @@ public abstract class MessageContentCollector {
 
     public void insert(final NotificationContent notification) {
         try {
-            final List<HierarchicalField<?>> notificationFields = getFieldsForNotificationType(notification.getNotificationType());
+            final List<JsonField<?>> notificationFields = getFieldsForNotificationType(notification.getNotificationType());
             final JsonFieldAccessor jsonFieldAccessor = createJsonAccessor(notificationFields, notification.getContent());
             final List<AggregateMessageContent> contents = getContentsOrCreateIfDoesNotExist(jsonFieldAccessor, notificationFields);
             for (final AggregateMessageContent content : contents) {
@@ -96,22 +97,22 @@ public abstract class MessageContentCollector {
         }
     }
 
-    protected abstract void addCategoryItems(final List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<HierarchicalField<?>> notificationFields, final NotificationContent notificationContent);
+    protected abstract void addCategoryItems(final List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final NotificationContent notificationContent);
 
     protected final List<AggregateMessageContent> getCopyOfCollectedContent() {
         return Collections.unmodifiableList(collectedContent);
     }
 
-    protected final List<HierarchicalField<String>> getStringFields(final List<HierarchicalField<?>> fields) {
-        return getTypedFields(fields, String.class);
+    protected final List<JsonField<String>> getStringFields(final List<JsonField<?>> fields) {
+        return getTypedFields(fields, new TypeRef<String>() {});
     }
 
-    protected final List<HierarchicalField<Long>> getLongFields(final List<HierarchicalField<?>> fields) {
-        return getTypedFields(fields, Long.class);
+    protected final List<JsonField<Long>> getLongFields(final List<JsonField<?>> fields) {
+        return getTypedFields(fields, new TypeRef<Long>() {});
     }
 
-    protected final <T> List<HierarchicalField<T>> getFieldsOfType(final List<HierarchicalField<?>> fields, final Class<T> targetClass) {
-        return getTypedFields(fields, targetClass);
+    protected final <T> List<JsonField<T>> getFieldsOfType(final List<JsonField<?>> fields, final TypeRef<?> typeRef) {
+        return getTypedFields(fields, typeRef);
     }
 
     protected void addItem(final List<CategoryItem> categoryItems, final CategoryItem newItem) {
@@ -132,18 +133,18 @@ public abstract class MessageContentCollector {
         }
     }
 
-    protected final List<LinkableItem> getLinkableItemsByLabel(final JsonFieldAccessor accessor, final List<HierarchicalField<String>> fields, final String label) {
-        final Optional<HierarchicalField<String>> foundField = getFieldByLabel(fields, label);
+    protected final List<LinkableItem> getLinkableItemsByLabel(final JsonFieldAccessor accessor, final List<JsonField<String>> fields, final String label) {
+        final Optional<JsonField<String>> foundField = getFieldByLabel(fields, label);
         if (foundField.isPresent()) {
-            final HierarchicalField<String> valueField = foundField.get();
-            final Optional<HierarchicalField<String>> foundUrlField = getRelatedUrlField(fields, label);
+            final JsonField<String> valueField = foundField.get();
+            final Optional<JsonField<String>> foundUrlField = getRelatedUrlField(fields, label);
             return createLinkableItemsFromFields(accessor, valueField, foundUrlField.orElse(null));
         }
         return Collections.emptyList();
     }
 
-    protected final <T> List<T> getFieldValueObjectsByLabel(final JsonFieldAccessor accessor, final List<HierarchicalField<T>> fields, final String label) throws AlertException {
-        final Optional<HierarchicalField<T>> field = getFieldByLabel(fields, label);
+    protected final <T> List<T> getFieldValueObjectsByLabel(final JsonFieldAccessor accessor, final List<JsonField<T>> fields, final String label) throws AlertException {
+        final Optional<JsonField<T>> field = getFieldByLabel(fields, label);
         if (field.isPresent()) {
             return accessor.get(field.get());
         }
@@ -160,7 +161,7 @@ public abstract class MessageContentCollector {
         return list;
     }
 
-    private List<HierarchicalField<?>> getFieldsForNotificationType(final String notificationType) {
+    private List<JsonField<?>> getFieldsForNotificationType(final String notificationType) {
         for (final ProviderContentType providerContentType : contentTypes) {
             if (providerContentType.getNotificationType().equals(notificationType)) {
                 return providerContentType.getNotificationFields();
@@ -169,11 +170,11 @@ public abstract class MessageContentCollector {
         throw new IllegalArgumentException(String.format("No such notification type '%s' supported; accepted values are: %s", notificationType, String.join(",", getSupportedNotificationTypes())));
     }
 
-    private JsonFieldAccessor createJsonAccessor(final List<HierarchicalField<?>> notificationFields, final String notificationJson) {
+    private JsonFieldAccessor createJsonAccessor(final List<JsonField<?>> notificationFields, final String notificationJson) {
         return jsonExtractor.createJsonFieldAccessor(notificationFields, notificationJson);
     }
 
-    private List<AggregateMessageContent> getContentsOrCreateIfDoesNotExist(final JsonFieldAccessor accessor, final List<HierarchicalField<?>> notificationFields) {
+    private List<AggregateMessageContent> getContentsOrCreateIfDoesNotExist(final JsonFieldAccessor accessor, final List<JsonField<?>> notificationFields) {
         final List<AggregateMessageContent> aggregateMessageContentsForNotifications = new ArrayList<>();
 
         final List<LinkableItem> topicItems = getTopicItems(accessor, notificationFields);
@@ -204,28 +205,28 @@ public abstract class MessageContentCollector {
         return aggregateMessageContentsForNotifications;
     }
 
-    private List<LinkableItem> getTopicItems(final JsonFieldAccessor accessor, final List<HierarchicalField<?>> fields) {
+    private List<LinkableItem> getTopicItems(final JsonFieldAccessor accessor, final List<JsonField<?>> fields) {
         return getLinkableItems(accessor, fields, FieldContentIdentifier.TOPIC, FieldContentIdentifier.TOPIC_URL, true);
     }
 
-    private List<LinkableItem> getSubTopicItems(final JsonFieldAccessor accessor, final List<HierarchicalField<?>> fields) {
+    private List<LinkableItem> getSubTopicItems(final JsonFieldAccessor accessor, final List<JsonField<?>> fields) {
         return getLinkableItems(accessor, fields, FieldContentIdentifier.SUB_TOPIC, FieldContentIdentifier.SUB_TOPIC_URL, false);
     }
 
-    private List<LinkableItem> getLinkableItems(final JsonFieldAccessor accessor, final List<HierarchicalField<?>> fields, final FieldContentIdentifier fieldContentIdentifier, final FieldContentIdentifier urlFieldContentIdentifier,
+    private List<LinkableItem> getLinkableItems(final JsonFieldAccessor accessor, final List<JsonField<?>> fields, final FieldContentIdentifier fieldContentIdentifier, final FieldContentIdentifier urlFieldContentIdentifier,
         final boolean required) {
-        final Optional<HierarchicalField<?>> optionalField = getFieldForContentIdentifier(fields, fieldContentIdentifier);
+        final Optional<JsonField<?>> optionalField = getFieldForContentIdentifier(fields, fieldContentIdentifier);
         if (!optionalField.isPresent()) {
             if (required) {
                 throw new IllegalStateException(String.format("The list provided did not contain the required field: %s", fieldContentIdentifier));
             }
             return Collections.emptyList();
         }
-        final Optional<HierarchicalField<?>> optionalUrlField = getFieldForContentIdentifier(fields, urlFieldContentIdentifier);
+        final Optional<JsonField<?>> optionalUrlField = getFieldForContentIdentifier(fields, urlFieldContentIdentifier);
 
         // These will always be String fields
-        final HierarchicalField<String> valueField = (HierarchicalField<String>) optionalField.get();
-        final HierarchicalField<String> urlField = (HierarchicalField<String>) optionalUrlField.orElse(null);
+        final JsonField<String> valueField = (JsonField<String>) optionalField.get();
+        final JsonField<String> urlField = (JsonField<String>) optionalUrlField.orElse(null);
 
         return createLinkableItemsFromFields(accessor, valueField, urlField);
     }
@@ -240,14 +241,14 @@ public abstract class MessageContentCollector {
         return null;
     }
 
-    private Optional<HierarchicalField<?>> getFieldForContentIdentifier(final List<HierarchicalField<?>> fields, final FieldContentIdentifier contentIdentifier) {
+    private Optional<JsonField<?>> getFieldForContentIdentifier(final List<JsonField<?>> fields, final FieldContentIdentifier contentIdentifier) {
         return fields
                    .parallelStream()
                    .filter(field -> contentIdentifier.equals(field.getContentIdentifier()))
                    .findFirst();
     }
 
-    private List<LinkableItem> createLinkableItemsFromFields(final JsonFieldAccessor jsonFieldAccessor, final HierarchicalField<String> dataField, final HierarchicalField<String> linkField) {
+    private List<LinkableItem> createLinkableItemsFromFields(final JsonFieldAccessor jsonFieldAccessor, final JsonField<String> dataField, final JsonField<String> linkField) {
         final List<String> values = jsonFieldAccessor.get(dataField);
         if (linkField != null) {
             final List<String> links = jsonFieldAccessor.get(linkField);
@@ -277,22 +278,22 @@ public abstract class MessageContentCollector {
         collectedContent.add(content);
     }
 
-    private <T> List<HierarchicalField<T>> getTypedFields(final List<HierarchicalField<?>> fields, final Class targetClass) {
+    private <T> List<JsonField<T>> getTypedFields(final List<JsonField<?>> fields, final TypeRef<?> typeRef) {
         return fields
                    .parallelStream()
-                   .filter(field -> targetClass.equals(field.getType()))
-                   .map(field -> (HierarchicalField<T>) field)
+                   .filter(field -> field.isOfType(typeRef.getType()))
+                   .map(field -> (JsonField<T>) field)
                    .collect(Collectors.toList());
     }
 
-    private <T extends HierarchicalField> Optional<T> getRelatedUrlField(final List<T> categoryFields, final String label) {
+    private <T extends JsonField> Optional<T> getRelatedUrlField(final List<T> categoryFields, final String label) {
         return categoryFields
                    .parallelStream()
-                   .filter(field -> field.getLabel().equals(label + HierarchicalField.LABEL_URL_SUFFIX))
+                   .filter(field -> field.getLabel().equals(label + JsonField.LABEL_URL_SUFFIX))
                    .findFirst();
     }
 
-    private <T extends HierarchicalField> Optional<T> getFieldByLabel(final List<T> fields, final String label) {
+    private <T extends JsonField> Optional<T> getFieldByLabel(final List<T> fields, final String label) {
         return fields
                    .parallelStream()
                    .filter(field -> label.equals(field.getLabel()))

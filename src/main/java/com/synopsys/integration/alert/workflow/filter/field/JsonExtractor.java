@@ -23,153 +23,106 @@
  */
 package com.synopsys.integration.alert.workflow.filter.field;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.common.field.HierarchicalField;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.PathNotFoundException;
+import com.jayway.jsonpath.TypeRef;
+import com.jayway.jsonpath.spi.json.GsonJsonProvider;
+import com.jayway.jsonpath.spi.json.JsonProvider;
+import com.jayway.jsonpath.spi.mapper.GsonMappingProvider;
+import com.jayway.jsonpath.spi.mapper.MappingProvider;
+import com.synopsys.integration.alert.common.field.JsonField;
 import com.synopsys.integration.alert.web.model.Config;
-import com.synopsys.integration.util.Stringable;
 
 @Component
 public class JsonExtractor {
+    private final static Logger logger = LoggerFactory.getLogger(JsonExtractor.class);
     private final Gson gson;
 
     @Autowired
     public JsonExtractor(final Gson gson) {
         this.gson = gson;
+        initializeJsonPath();
     }
 
-    public JsonFieldAccessor createJsonFieldAccessor(final List<HierarchicalField<?>> fields, final String json) {
-        final Map<HierarchicalField, List<Object>> fieldToValuesMap = new HashMap<>();
-        final JsonObject jsonObjectModel = gson.fromJson(json, JsonObject.class);
+    private void initializeJsonPath() {
+        Configuration.setDefaults(new Configuration.Defaults() {
 
-        for (final HierarchicalField field : fields) {
-            final List<String> fieldNameHierarchy = field.getPathToField();
-            final Type fieldDataType = field.getType();
+            private final JsonProvider jsonProvider = new GsonJsonProvider(gson);
+            private final MappingProvider mappingProvider = new GsonMappingProvider(gson);
 
-            final List<JsonElement> foundElements = getInnerElements(jsonObjectModel, fieldNameHierarchy);
-            final List<Object> values = getValuesFromJsonElements(foundElements, jsonElement -> gson.fromJson(jsonElement, fieldDataType));
+            @Override
+            public JsonProvider jsonProvider() {
+                return jsonProvider;
+            }
 
+            @Override
+            public MappingProvider mappingProvider() {
+                return mappingProvider;
+            }
+
+            @Override
+            public Set<Option> options() {
+                return EnumSet.of(Option.ALWAYS_RETURN_LIST);
+            }
+        });
+
+    }
+
+    public JsonFieldAccessor createJsonFieldAccessor(final List<JsonField<?>> fields, final String json) {
+        final Map<JsonField, List<Object>> fieldToValuesMap = new HashMap<>();
+        for (final JsonField field : fields) {
+            final List<Object> values = getValuesFromJson(field.getTypeRef(), field.getJsonPath(), json);
             fieldToValuesMap.put(field, values);
         }
         return new JsonFieldAccessor(fieldToValuesMap);
     }
 
-    public List<String> getValuesFromConfig(final HierarchicalField<String> field, final Config config) {
-        final JsonElement jsonConfigModel = gson.toJsonTree(config);
-        final Optional<String> mapping = field.getConfigNameMapping();
-
-        final List<String> values = new ArrayList<>();
+    public <T> List<T> getValuesFromConfig(final JsonField<T> field, final Config config) {
+        final Optional<JsonPath> mapping = field.getConfigNameMapping();
+        final List<T> values = new ArrayList<>();
         if (mapping.isPresent()) {
-            final List<String> pathToField = Arrays.asList(mapping.get());
-            final List<JsonElement> foundElements = getInnerElements(jsonConfigModel, pathToField);
-            for (final JsonElement found : foundElements) {
-                if (found.isJsonPrimitive()) {
-                    values.add(found.getAsString());
-                } else if (found.isJsonArray()) {
-                    final List<String> valuesFromArray = getValuesFromJsonElements(found.getAsJsonArray(), jsonElement -> jsonElement.getAsString());
-                    values.addAll(valuesFromArray);
-                }
-            }
+            values.addAll(getValuesFromObject(field.getTypeRef(), mapping.get(), config));
         }
         return values;
     }
 
-    public <T> List<T> getValuesFromJson(final HierarchicalField<T> field, final String json) {
-        final List<String> fieldNameHierarchy = field.getPathToField();
-        final JsonObject object = gson.fromJson(json, JsonObject.class);
-
-        final List<JsonElement> foundElements = getInnerElements(object, fieldNameHierarchy);
-        return getValuesFromJsonElements(foundElements, jsonElement -> gson.fromJson(jsonElement, field.getType()));
+    public <T> List<T> getValuesFromJson(final JsonField<T> field, final String json) {
+        return getValuesFromJson(field.getTypeRef(), field.getJsonPath(), json);
     }
 
-    private List<JsonElement> getInnerElements(final JsonElement element, final List<String> path) {
-        return getInnerElements(element, buildPathLinkedList(path));
-    }
-
-    private List<JsonElement> getInnerElements(final JsonElement element, final PathNode pathNode) {
-        if (element == null) {
-            return Collections.emptyList();
-        } else {
-            if (element.isJsonPrimitive()) {
-                return Arrays.asList(element);
+    private <T> List<T> getValuesFromJson(final TypeRef<?> typeRef, final JsonPath jsonPath, final String json) {
+        final List values = new ArrayList<>();
+        try {
+            final Object obj = JsonPath.parse(json).read(jsonPath, typeRef);
+            if (Collection.class.isAssignableFrom(obj.getClass())) {
+                values.addAll((Collection) obj);
             } else {
-                if (pathNode != null && element.isJsonObject()) {
-                    final String key = pathNode.getKey();
-                    final JsonObject jsonObject = element.getAsJsonObject();
-                    final JsonElement foundElement = jsonObject.get(key);
-                    return getInnerElements(foundElement, pathNode.getNextNode());
-                } else if (element.isJsonArray()) {
-                    final JsonArray foundArray = element.getAsJsonArray();
-                    final List<JsonElement> foundValues = new ArrayList<>(foundArray.size());
-                    for (final JsonElement arrayElement : foundArray) {
-                        foundValues.addAll(getInnerElements(arrayElement, pathNode));
-                    }
-                    return foundValues;
-                }
-                return Arrays.asList(element);
+                values.add(obj);
             }
+        } catch (final PathNotFoundException e) {
+            logger.debug(String.format("Could not find the path: %s. For: %s", jsonPath.getPath(), json), e);
         }
+        return values;
     }
 
-    private <T> List<T> getValuesFromJsonElements(final Iterable<JsonElement> elementList, final Function<JsonElement, T> function) {
-        final List<T> objectsFromJson = new ArrayList<>();
-        for (final JsonElement element : elementList) {
-            objectsFromJson.add(function.apply(element));
-        }
-        return objectsFromJson;
-    }
-
-    private PathNode buildPathLinkedList(final List<String> fullPathToField) {
-        PathNode previousNode = null;
-        PathNode firstNode = null;
-
-        for (final String key : fullPathToField) {
-            final PathNode currentNode = new PathNode(key);
-            if (firstNode == null) {
-                firstNode = currentNode;
-            }
-            if (previousNode != null) {
-                previousNode.setNextNode(currentNode);
-            }
-            previousNode = currentNode;
-        }
-        return firstNode;
-    }
-
-    private class PathNode extends Stringable {
-        private final String key;
-        private PathNode nextNode;
-
-        public PathNode(final String key) {
-            this.key = key;
-            this.nextNode = null;
-        }
-
-        public String getKey() {
-            return key;
-        }
-
-        public PathNode getNextNode() {
-            return nextNode;
-        }
-
-        public void setNextNode(final PathNode nextNode) {
-            this.nextNode = nextNode;
-        }
+    private <T> List<T> getValuesFromObject(final TypeRef<?> typeRef, final JsonPath jsonPath, final Object json) {
+        return getValuesFromJson(typeRef, jsonPath, gson.toJson(json));
     }
 }

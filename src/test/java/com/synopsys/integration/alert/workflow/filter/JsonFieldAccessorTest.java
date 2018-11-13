@@ -10,7 +10,9 @@ import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.synopsys.integration.alert.common.field.HierarchicalField;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.TypeRef;
+import com.synopsys.integration.alert.common.field.JsonField;
 import com.synopsys.integration.alert.workflow.filter.field.JsonFieldAccessor;
 
 public class JsonFieldAccessorTest {
@@ -18,8 +20,8 @@ public class JsonFieldAccessorTest {
     @Test
     public void getStringListTest() {
         final List<Object> expectedValues = Arrays.asList("value", "other value", "multi \n line \n value");
-        final HierarchicalField<String> expectedField = HierarchicalField.createStringField(Arrays.asList("innerString"), null, null);
-        final Map<HierarchicalField, List<Object>> map = new HashMap<>();
+        final JsonField<String> expectedField = JsonField.createStringField(JsonPath.compile("$.innerString"), "innerString", null, null);
+        final Map<JsonField, List<Object>> map = new HashMap<>();
         map.put(expectedField, expectedValues);
 
         final JsonFieldAccessor accessor = new JsonFieldAccessor(map);
@@ -29,8 +31,8 @@ public class JsonFieldAccessorTest {
     @Test
     public void getFirstStringTest() {
         final List<Object> expectedValues = Arrays.asList("value", "other value", "multi \n line \n value");
-        final HierarchicalField<String> expectedField = HierarchicalField.createStringField(Arrays.asList("innerString"), null, null);
-        final Map<HierarchicalField, List<Object>> map = new HashMap<>();
+        final JsonField<String> expectedField = JsonField.createStringField(JsonPath.compile("$.innerString"), "innerString", null, null);
+        final Map<JsonField, List<Object>> map = new HashMap<>();
         map.put(expectedField, expectedValues);
 
         final JsonFieldAccessor accessor = new JsonFieldAccessor(map);
@@ -40,8 +42,8 @@ public class JsonFieldAccessorTest {
     @Test
     public void getObjectListTest() {
         final List<Object> expectedValues = Arrays.asList(new MyObject("first value"), new MyObject("second value"));
-        final HierarchicalField<MyObject> expectedField = HierarchicalField.createObjectField(Arrays.asList("innerObject"), null, null, MyObject.class);
-        final Map<HierarchicalField, List<Object>> map = new HashMap<>();
+        final JsonField<MyObject> expectedField = JsonField.createObjectField(JsonPath.compile("$.innerString"), "innerString", null, null, new TypeRef<MyObject>() {});
+        final Map<JsonField, List<Object>> map = new HashMap<>();
         map.put(expectedField, expectedValues);
 
         final JsonFieldAccessor accessor = new JsonFieldAccessor(map);
@@ -51,8 +53,8 @@ public class JsonFieldAccessorTest {
     @Test
     public void getFirstObjectTest() {
         final List<Object> expectedValues = Arrays.asList(new MyObject("first value"), new MyObject("second value"));
-        final HierarchicalField<MyObject> expectedField = HierarchicalField.createObjectField(Arrays.asList("innerObject"), null, null, MyObject.class);
-        final Map<HierarchicalField, List<Object>> map = new HashMap<>();
+        final JsonField<MyObject> expectedField = JsonField.createObjectField(JsonPath.compile("$.innerObject"), "innerObject", null, null, new TypeRef<MyObject>() {});
+        final Map<JsonField, List<Object>> map = new HashMap<>();
         map.put(expectedField, expectedValues);
 
         final JsonFieldAccessor accessor = new JsonFieldAccessor(map);
@@ -61,9 +63,9 @@ public class JsonFieldAccessorTest {
 
     @Test
     public void getStringWhenListIsEmptyTest() {
-        final HierarchicalField<String> expectedField = HierarchicalField.createStringField(Arrays.asList("innerString"), null, null);
+        final JsonField<String> expectedField = JsonField.createStringField(JsonPath.compile("$.innerString"), "innerString", null, null);
         final List<Object> expectedValues = Collections.emptyList();
-        final Map<HierarchicalField, List<Object>> map = new HashMap<>();
+        final Map<JsonField, List<Object>> map = new HashMap<>();
         map.put(expectedField, expectedValues);
 
         final JsonFieldAccessor accessor = new JsonFieldAccessor(map);
@@ -72,9 +74,9 @@ public class JsonFieldAccessorTest {
 
     @Test
     public void getObjectWhenListIsEmptyTest() {
-        final HierarchicalField<MyObject> expectedField = HierarchicalField.createObjectField(Arrays.asList("innerObject"), null, null, MyObject.class);
+        final JsonField<MyObject> expectedField = JsonField.createObjectField(JsonPath.compile("$.innerString"), "innerString", null, null, new TypeRef<MyObject>() {});
         final List<Object> expectedValues = Collections.emptyList();
-        final Map<HierarchicalField, List<Object>> map = new HashMap<>();
+        final Map<JsonField, List<Object>> map = new HashMap<>();
         map.put(expectedField, expectedValues);
 
         final JsonFieldAccessor accessor = new JsonFieldAccessor(map);
@@ -83,9 +85,9 @@ public class JsonFieldAccessorTest {
 
     @Test
     public void getFirstObjectWhenListIsEmptyTest() {
-        final HierarchicalField<MyObject> expectedField = HierarchicalField.createObjectField(Arrays.asList("innerObject"), null, null, MyObject.class);
+        final JsonField<MyObject> expectedField = JsonField.createObjectField(JsonPath.compile("$.innerObject"), "innerObject", null, null, new TypeRef<MyObject>() {});
         final List<Object> expectedValues = Collections.emptyList();
-        final Map<HierarchicalField, List<Object>> map = new HashMap<>();
+        final Map<JsonField, List<Object>> map = new HashMap<>();
         map.put(expectedField, expectedValues);
 
         final JsonFieldAccessor accessor = new JsonFieldAccessor(map);
@@ -94,8 +96,8 @@ public class JsonFieldAccessorTest {
 
     @Test
     public void getTypedObjectWhenMapIsEmptyTest() {
-        final HierarchicalField<MyObject> expectedField = HierarchicalField.createObjectField(Arrays.asList("innerObject"), null, null, MyObject.class);
-        final Map<HierarchicalField, List<Object>> map = new HashMap<>();
+        final JsonField<MyObject> expectedField = JsonField.createObjectField(JsonPath.compile("$.innerObject"), "innerObject", null, null, new TypeRef<MyObject>() {});
+        final Map<JsonField, List<Object>> map = new HashMap<>();
 
         final JsonFieldAccessor accessor = new JsonFieldAccessor(map);
         Assert.assertEquals(Collections.emptyList(), accessor.get(expectedField));

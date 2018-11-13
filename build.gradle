@@ -53,6 +53,7 @@ dependencies {
     compile 'org.liquibase:liquibase-core'
     runtime 'com.h2database:h2'
 
+    compile 'com.jayway.jsonpath:json-path:2.3.0'
     compile 'org.jsoup:jsoup:1.9.2'
     compile 'javax.mail:javax.mail-api:1.6.2'
     compile 'com.sun.mail:javax.mail:1.6.2'

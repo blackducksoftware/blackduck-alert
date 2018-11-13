@@ -39,7 +39,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.field.HierarchicalField;
+import com.synopsys.integration.alert.common.field.JsonField;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.database.channel.JobConfigReader;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
@@ -93,7 +93,7 @@ public class NotificationFilter {
 
         final Set<NotificationContent> filteredNotifications = new HashSet<>();
         notificationsByType.forEach((type, groupedNotifications) -> {
-            final Set<HierarchicalField<String>> filterableFields = getFilterableFieldsByNotificationType(type, providerContentTypes);
+            final Set<JsonField> filterableFields = getFilterableFieldsByNotificationType(type, providerContentTypes);
             final Predicate<NotificationContent> filterForNotificationType = createFilter(filterableFields, distributionConfigs);
 
             final List<NotificationContent> matchingNotifications = applyFilter(groupedNotifications, filterForNotificationType);
@@ -119,7 +119,7 @@ public class NotificationFilter {
 
         final Set<NotificationContent> filteredNotifications = new HashSet<>();
         notificationsByType.forEach((type, groupedNotifications) -> {
-            final Set<HierarchicalField<String>> filterableFields = getFilterableFieldsByNotificationType(type, providerContentTypes);
+            final Set<JsonField> filterableFields = getFilterableFieldsByNotificationType(type, providerContentTypes);
             final Predicate<NotificationContent> filterForNotificationType = createJobFilter(filterableFields, jobConfiguration);
 
             final List<NotificationContent> matchingNotifications = applyFilter(groupedNotifications, filterForNotificationType);
@@ -158,7 +158,7 @@ public class NotificationFilter {
                    .collect(Collectors.toList());
     }
 
-    private Set<HierarchicalField<String>> getFilterableFieldsByNotificationType(final String notificationType, final Collection<ProviderContentType> contentTypes) {
+    private Set<JsonField> getFilterableFieldsByNotificationType(final String notificationType, final Collection<ProviderContentType> contentTypes) {
         return contentTypes
                    .parallelStream()
                    .filter(contentType -> notificationType.equals(contentType.getNotificationType()))
@@ -166,7 +166,7 @@ public class NotificationFilter {
                    .collect(Collectors.toSet());
     }
 
-    private Predicate<NotificationContent> createFilter(final Collection<HierarchicalField<String>> filterableFields, final Collection<? extends CommonDistributionConfig> distributionConfigs) {
+    private Predicate<NotificationContent> createFilter(final Collection<JsonField> filterableFields, final Collection<? extends CommonDistributionConfig> distributionConfigs) {
         Predicate<NotificationContent> orPredicate = DefaultFilterBuilders.ALWAYS_FALSE.buildPredicate();
         for (final CommonDistributionConfig config : distributionConfigs) {
             orPredicate = orPredicate.or(createJobFilter(filterableFields, config));
@@ -174,10 +174,10 @@ public class NotificationFilter {
         return orPredicate;
     }
 
-    private Predicate<NotificationContent> createJobFilter(final Collection<HierarchicalField<String>> filterableFields, final CommonDistributionConfig config) {
+    private Predicate<NotificationContent> createJobFilter(final Collection<JsonField> filterableFields, final CommonDistributionConfig config) {
         JsonFilterBuilder filterBuilder = DefaultFilterBuilders.ALWAYS_TRUE;
         if (shouldFilter(config)) {
-            for (final HierarchicalField<String> field : filterableFields) {
+            for (final JsonField field : filterableFields) {
                 final Collection<String> valuesFromField = jsonExtractor.getValuesFromConfig(field, config);
                 final JsonFilterBuilder fieldFilter = createFilterBuilderForAllValues(field, valuesFromField);
                 filterBuilder = new AndFieldFilterBuilder(filterBuilder, fieldFilter);
@@ -186,7 +186,7 @@ public class NotificationFilter {
         return filterBuilder.buildPredicate();
     }
 
-    private JsonFilterBuilder createFilterBuilderForAllValues(final HierarchicalField<String> field, final Collection<String> applicableValues) {
+    private JsonFilterBuilder createFilterBuilderForAllValues(final JsonField field, final Collection<String> applicableValues) {
         JsonFilterBuilder filterBuilderForAllValues = DefaultFilterBuilders.ALWAYS_FALSE;
         for (final String value : applicableValues) {
             final JsonFilterBuilder filterBuilderForValue = new JsonFieldFilterBuilder(jsonExtractor, field, value);
