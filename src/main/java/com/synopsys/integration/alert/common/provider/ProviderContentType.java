@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
-import com.jayway.jsonpath.TypeRef;
 import com.synopsys.integration.alert.common.field.JsonField;
 import com.synopsys.integration.util.Stringable;
 
@@ -51,12 +50,10 @@ public class ProviderContentType extends Stringable {
     }
 
     public List<JsonField<String>> getFilterableFields() {
-        final TypeRef stringType = new TypeRef<List<String>>() {};
-
         return notificationFields
                    .parallelStream()
                    .filter(field -> field.getConfigNameMapping().isPresent())
-                   .filter(field -> field.isOfType(stringType.getType()))
+                   .filter(field -> field.isOfType(String.class))
                    .map(field -> (JsonField<String>) field)
                    .collect(Collectors.toList());
     }
