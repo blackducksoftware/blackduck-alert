@@ -77,6 +77,7 @@ public class JsonExtractor {
                 return mappingProvider;
             }
 
+            // Because we always return lists, every TypeRef must be a list of the class type you want
             @Override
             public Set<Option> options() {
                 return EnumSet.of(Option.ALWAYS_RETURN_LIST);
@@ -111,11 +112,9 @@ public class JsonExtractor {
         final List values = new ArrayList<>();
         try {
             final Object obj = JsonPath.parse(json).read(jsonPath, typeRef);
-            if (Collection.class.isAssignableFrom(obj.getClass())) {
-                values.addAll((Collection) obj);
-            } else {
-                values.add(obj);
-            }
+            //The object is always going to be a collection because we set the JsonPath configuration to always return lists
+            values.addAll((Collection) obj);
+
         } catch (final PathNotFoundException e) {
             logger.debug(String.format("Could not find the path: %s. For: %s", jsonPath.getPath(), json), e);
         }
