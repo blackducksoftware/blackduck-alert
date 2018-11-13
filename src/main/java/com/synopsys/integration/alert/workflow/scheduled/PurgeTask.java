@@ -23,70 +23,86 @@
  */
 package com.synopsys.integration.alert.workflow.scheduled;
 
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.List;
 
-import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.core.launch.support.SimpleJobLauncher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.PlatformTransactionManager;
 
 import com.synopsys.integration.alert.database.entity.NotificationContent;
-import com.synopsys.integration.alert.database.purge.PurgeProcessor;
-import com.synopsys.integration.alert.database.purge.PurgeReader;
-import com.synopsys.integration.alert.database.purge.PurgeWriter;
+import com.synopsys.integration.alert.database.system.SystemMessage;
+import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 import com.synopsys.integration.alert.workflow.NotificationManager;
 
 @Component
-public class PurgeTask extends JobScheduledTask<PurgeReader, PurgeProcessor, PurgeWriter> {
-
-    public static final String PURGE_STEP_NAME = "PurgeStep";
-    public static final String PURGE_JOB_NAME = "PurgeJob";
-    public static final String TASK_NAME = "purge-db";
+public class PurgeTask extends ScheduledTask {
+    private static final int DEFAULT_DAY_OFFSET = 1;
+    private final Logger logger = LoggerFactory.getLogger(PurgeTask.class);
+    private final NotificationManager notificationManager;
+    private final SystemMessageUtility systemMessageUtility;
+    private int dayOffset;
 
     @Autowired
-    public PurgeTask(final SimpleJobLauncher jobLauncher, final JobBuilderFactory jobBuilderFactory, final StepBuilderFactory stepBuilderFactory, final TaskExecutor taskExecutor, final NotificationManager notificationManager,
-            final PlatformTransactionManager transactionManager, final TaskScheduler taskScheduler) {
-        super(jobLauncher, jobBuilderFactory, stepBuilderFactory, taskExecutor, notificationManager, transactionManager, taskScheduler, TASK_NAME);
+    public PurgeTask(final TaskScheduler taskScheduler, final NotificationManager notificationManager, final SystemMessageUtility systemMessageUtility) {
+        super(taskScheduler, "purge-task");
+        this.notificationManager = notificationManager;
+        this.systemMessageUtility = systemMessageUtility;
+        this.dayOffset = 1;
     }
 
     @Override
-    public Step createStep(final PurgeReader reader, final PurgeProcessor processor, final PurgeWriter writer) {
-        return stepBuilderFactory.get(PURGE_STEP_NAME).<List<NotificationContent>, List<NotificationContent>>chunk(1).reader(reader).processor(processor).writer(writer).taskExecutor(taskExecutor).transactionManager(transactionManager)
-                       .build();
+    public void run() {
+        purgeNotifications();
+        purgeSystemMessages();
     }
 
-    @Override
-    public PurgeReader reader() {
-        return createReaderWithDayOffset(1);
+    public void setDayOffset(final int dayOffset) {
+        this.dayOffset = dayOffset;
     }
 
-    @Override
-    public PurgeWriter writer() {
-        return new PurgeWriter(notificationManager);
+    public void resetDayOffset() {
+        setDayOffset(DEFAULT_DAY_OFFSET);
     }
 
-    @Override
-    public PurgeProcessor processor() {
-        return new PurgeProcessor();
+    private void purgeNotifications() {
+        try {
+            final Date date = createDate();
+            logger.info("Searching for notifications to purge earlier than {}", date);
+            final List<NotificationContent> notifications = notificationManager.findByCreatedAtBefore(date);
+
+            if (notifications == null || notifications.isEmpty()) {
+                logger.info("No notifications found to purge");
+            } else {
+                logger.info("Found {} notifications to purge", notifications.size());
+                logger.info("Purging {} notifications.", notifications.size());
+                notificationManager.deleteNotificationList(notifications);
+            }
+        } catch (final Exception ex) {
+            logger.error("Error in purging notifications", ex);
+        }
     }
 
-    @Override
-    public String getJobName() {
-        return PURGE_JOB_NAME;
+    private void purgeSystemMessages() {
+        try {
+            final Date date = createDate();
+            final List<SystemMessage> messages = systemMessageUtility.getSystemMessagesBefore(date);
+            systemMessageUtility.deleteSystemMessages(messages);
+        } catch (final Exception ex) {
+            logger.error("Error purging system messages", ex);
+        }
     }
 
-    @Override
-    public String getStepName() {
-        return PURGE_STEP_NAME;
+    public Date createDate() {
+        ZonedDateTime zonedDate = ZonedDateTime.now();
+        zonedDate = zonedDate.minusDays(dayOffset);
+        zonedDate = zonedDate.withZoneSameInstant(ZoneOffset.UTC);
+        zonedDate = zonedDate.withHour(0).withMinute(0).withSecond(0).withNano(0);
+        final Date date = Date.from(zonedDate.toInstant());
+        return date;
     }
-
-    public PurgeReader createReaderWithDayOffset(final int dayOffset) {
-        return new PurgeReader(notificationManager, dayOffset);
-    }
-
 }

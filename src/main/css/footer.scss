@@ -1,45 +1,70 @@
 .footer {
-    position: fixed;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    background-color: #fafafa;
-    height: 24px;
-    line-height: 24px;
-    text-align: left;
-    margin: 0;
-    border-top: 1px solid #ddd;
-    padding-left: 15px;
-    padding-right: 15px;
-    font-family: 'Open Sans', sans-serif;
-    font-size: 11px;
-    color: black;
-    display:inline-flex;
-    transition: opacity .3s ease-in-out 0s;
-    z-index: 9999;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: #fafafa;
+  height: 24px;
+  line-height: 24px;
+  text-align: left;
+  margin: 0;
+  border-top: 1px solid #ddd;
+  padding-left: 15px;
+  padding-right: 15px;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 11px;
+  color: black;
+  display: inline-flex;
+  transition: opacity .3s ease-in-out 0s;
+  z-index: 9999;
 }
 
 .footer a {
-    color: #333;
+  color: #333;
 }
 
 .footer a:hover {
-    color: #333;
+  color: #333;
 }
 
 .productName {
-    text-align: left;
-    float: left;
+  text-align: left;
+  float: left;
 }
 
 .productVersion {
-    text-align: left;
-    margin-left: .4em;
-    margin-right: auto;
+  text-align: left;
+  margin-left: .4em;
+  margin-right: auto;
 }
 
 .copyright {
-    margin-left: auto;
-    text-align: left;
-    float: right;
+  margin-left: auto;
+  text-align: left;
+  float: right;
+}
+
+.statusPopover {
+  float: right;
+  border: 1px solid transparent;
+  font-size: 18px;
+  margin-left: 5px;
+}
+
+.statusPopover:hover {
+  cursor: pointer;
+}
+
+.statusPopoverError {
+  animation: errorBlinker 3s linear infinite;
+}
+
+@keyframes errorBlinker {
+  50% {
+    opacity: 0;
+  }
+}
+
+.popoverContent {
+  width: 50%;
 }

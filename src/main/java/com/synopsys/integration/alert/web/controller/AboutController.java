@@ -43,4 +43,5 @@ public class AboutController extends BaseController {
     public ResponseEntity<String> about() {
         return aboutDataHandler.getAboutData();
     }
+
 }
