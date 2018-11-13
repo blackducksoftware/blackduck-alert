@@ -68,6 +68,7 @@ public class SystemMessageUtility {
     @Transactional
     public List<SystemMessage> getSystemMessagesBefore(final Date date) {
         final SystemMessage oldestMessage = systemMessageRepository.findTopByOrderByCreatedAsc();
+        // FIXME this results in an NPE if there has never been a message because oldestMessage is null
         return systemMessageRepository.findByCreatedBetween(oldestMessage.getCreated(), date);
     }
 
