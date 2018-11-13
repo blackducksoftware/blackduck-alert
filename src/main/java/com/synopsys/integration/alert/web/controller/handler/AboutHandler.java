@@ -30,9 +30,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.web.actions.AboutActions;
 import com.synopsys.integration.alert.web.model.AboutModel;
-import com.synopsys.integration.alert.common.ContentConverter;
 
 @Component
 public class AboutHandler extends ControllerHandler {

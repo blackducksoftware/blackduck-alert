@@ -1,9 +1,4 @@
-import {
-    ABOUT_INFO_FETCHING,
-    ABOUT_INFO_FETCHED,
-    ABOUT_INFO_FETCH_ERROR,
-    SERIALIZE
-} from '../actions/types';
+import {ABOUT_INFO_FETCH_ERROR, ABOUT_INFO_FETCHED, ABOUT_INFO_FETCHING, SERIALIZE} from '../actions/types';
 
 const initialState = {
     fetching: false,
@@ -11,7 +6,10 @@ const initialState = {
     description: '',
     projectUrl: '',
     channelList: [],
-    providerList: []
+    providerList: [],
+    initialized: false,
+    startupTime: '',
+    latestMessages: []
 };
 
 const config = (state = initialState, action) => {
@@ -25,7 +23,9 @@ const config = (state = initialState, action) => {
                 fetching: false,
                 version: action.version,
                 description: action.description,
-                projectUrl: action.projectUrl
+                projectUrl: action.projectUrl,
+                initialized: action.initialized,
+                startupTime: action.startupTime
             });
         case ABOUT_INFO_FETCH_ERROR:
             return Object.assign({}, state, {
