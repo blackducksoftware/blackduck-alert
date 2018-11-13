@@ -68,7 +68,7 @@ public class SystemInitializer {
     }
 
     private void saveEncryptionProperties(final RequiredSystemConfiguration requiredSystemConfiguration) {
-        // TODO implement this
+        // TODO implement this later with the UI changes to perform an initial setup of alert.
 
     }
 

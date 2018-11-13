@@ -68,8 +68,7 @@ public class SystemStatusUtility {
     }
 
     private SystemStatus getSystemStatus() {
-        final SystemStatus systemStatus = systemStatusRepository.findById(SYSTEM_STATUS_ID).orElse(new SystemStatus());
-        return systemStatus;
+        return systemStatusRepository.findById(SYSTEM_STATUS_ID).orElse(new SystemStatus());
     }
 
     private void updateSystemStatus(final SystemStatus systemStatus) {

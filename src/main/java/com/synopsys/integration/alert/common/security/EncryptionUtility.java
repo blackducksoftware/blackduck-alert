@@ -73,11 +73,7 @@ public class EncryptionUtility {
         final String password = getPassword();
         final String salt = getGlobalSalt();
 
-        if (null != password && null != salt) {
-            return true;
-        } else {
-            return false;
-        }
+        return null != password && null != salt;
     }
 
     public List<String> checkForErrors() {

@@ -90,7 +90,7 @@ public class PurgeTask extends ScheduledTask {
     private void purgeSystemMessages() {
         try {
             final Date date = createDate();
-            final List<SystemMessage> messages = systemMessageUtility.findByCreatedAtBefore(date);
+            final List<SystemMessage> messages = systemMessageUtility.getSystemMessagesBefore(date);
             systemMessageUtility.deleteSystemMessages(messages);
         } catch (final Exception ex) {
             logger.error("Error purging system messages", ex);
