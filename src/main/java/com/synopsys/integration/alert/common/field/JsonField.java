@@ -59,6 +59,10 @@ public class JsonField<T> extends Stringable {
         return new JsonField<String>(new TypeRef<List<String>>() {}, jsonPath, fieldName, contentIdentifier, label, configNameMapping);
     }
 
+    public static JsonPath createJsonPath(final String pattern, final String... fields) {
+        return JsonPath.compile(String.format(pattern, fields));
+    }
+
     protected JsonField(final TypeRef<?> typeRef, final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label) {
         this(typeRef, jsonPath, fieldName, contentIdentifier, label, null);
     }
