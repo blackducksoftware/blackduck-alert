@@ -86,7 +86,7 @@ class HipChatConfiguration extends React.Component {
                                    errorValue={this.props.fieldErrors.apiKey}/>
 
                     <div className="form-group">
-                        <div className="col-sm-8 offset-sm-3">
+                        <div className="col-sm-9 offset-sm-3">
                             <button type="button" className="btn btn-link" onClick={() => {
                                 this.props.toggleShowHostServer(!showAdvanced);
                                 return false;
