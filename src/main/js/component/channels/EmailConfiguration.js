@@ -166,7 +166,7 @@ class EmailConfiguration extends React.Component {
                     />
 
                     <div className="form-group">
-                        <div className="col-sm-8 offset-sm-3">
+                        <div className="col-sm-9 offset-sm-3">
                             <button id="emailAdvanced" type="button" className="btn btn-link" onClick={() => {
                                 this.props.toggleAdvancedEmailOptions(!showAdvanced);
                                 return false;

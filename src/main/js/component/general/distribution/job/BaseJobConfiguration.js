@@ -302,11 +302,15 @@ class BaseJobConfiguration extends Component {
         } else {
             const formatOptions = this.createFormatTypeOptions();
             const notificationOptions = this.createNotificationTypeOptions();
+            var configuredNotificationOptions = null;
+            if (this.state.notificationTypes) {
+                configuredNotificationOptions = notificationOptions.filter(option => this.state.notificationTypes.indexOf(option.value) !== -1);
+            }
             return (
                 <div>
                     <div className="form-group">
                         <label className="col-sm-3 col-form-label text-right">Format</label>
-                        <div className="d-inline-flex p-2 col-sm-8">
+                        <div className="d-inline-flex p-2 col-sm-9">
                             <Select
                                 id="formatType"
                                 className="typeAheadField"
@@ -323,7 +327,7 @@ class BaseJobConfiguration extends Component {
                     </div>
                     <div className="form-group">
                         <label className="col-sm-3 col-form-label text-right">Notification Types</label>
-                        <div className="d-inline-flex p-2 col-sm-8">
+                        <div className="d-inline-flex p-2 col-sm-9">
                             <Select
                                 id="jobType"
                                 className="typeAheadField"
@@ -333,7 +337,7 @@ class BaseJobConfiguration extends Component {
                                 removeSelected
                                 options={notificationOptions}
                                 placeholder="Choose the notification types"
-                                value={notificationOptions.filter(option => this.state.notificationTypes.indexOf(option.value) !== -1)}
+                                value={configuredNotificationOptions}
                             />
                             {this.state.error.notificationTypesError && <label className="fieldError" name="notificationTypesError">
                                 {this.state.error.notificationTypesError}
@@ -361,7 +365,7 @@ class BaseJobConfiguration extends Component {
                 <TextInput id="name" label="Job Name" name="name" value={this.state.name} onChange={this.handleChange} errorName="nameError" errorValue={this.state.error.nameError}/>
                 <div className="form-group">
                     <label className="col-sm-3 col-form-label text-right">Frequency</label>
-                    <div className="d-inline-flex p-2 col-sm-8">
+                    <div className="d-inline-flex p-2 col-sm-9">
                         <Select
                             id="jobFrequency"
                             className="typeAheadField"
@@ -378,7 +382,7 @@ class BaseJobConfiguration extends Component {
                 </div>
                 <div className="form-group">
                     <label className="col-sm-3 col-form-label text-right">Provider</label>
-                    <div className="d-inline-flex p-2 col-sm-8">
+                    <div className="d-inline-flex p-2 col-sm-9">
                         <Select
                             id="providerName"
                             className="typeAheadField"

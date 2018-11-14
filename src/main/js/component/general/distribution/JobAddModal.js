@@ -136,7 +136,7 @@ class JobAddModal extends Component {
                     <form className="form-horizontal">
                         <div className="form-group">
                             <label className="col-sm-3 col-form-label text-right">Type</label>
-                            <div className="col-sm-8">
+                            <div className="d-inline-flex p-2 col-sm-9">
                                 <Select
                                     id="jobAddType"
                                     className="typeAheadField"

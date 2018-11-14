@@ -6,7 +6,7 @@ import GeneralButton from '../../field/input/GeneralButton';
 
 const ConfigButtons = props => (
     <div className="form-group">
-        <div className="offset-sm-3 col-sm-8">
+        <div className="offset-sm-3 col-sm-9">
             {props.includeTest &&
             <div style={{
                 display: 'inline-block', paddingRight: '12px', marginRight: '12px', borderRight: '1px solid #aaa'
