@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
+import com.synopsys.integration.alert.install.SystemInitializer;
 import com.synopsys.integration.alert.web.actions.SystemActions;
 
 public class SystemHandlerTest {
@@ -19,7 +20,7 @@ public class SystemHandlerTest {
 
     @Before
     public void initialize() {
-        systemActions = Mockito.spy(new SystemActions(Mockito.mock(SystemStatusUtility.class), Mockito.mock(SystemMessageUtility.class)));
+        systemActions = Mockito.spy(new SystemActions(Mockito.mock(SystemStatusUtility.class), Mockito.mock(SystemMessageUtility.class), Mockito.mock(SystemInitializer.class)));
     }
 
     @Test

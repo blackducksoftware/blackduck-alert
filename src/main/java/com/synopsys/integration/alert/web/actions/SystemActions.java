@@ -35,6 +35,8 @@ import com.synopsys.integration.alert.common.model.DateRange;
 import com.synopsys.integration.alert.database.system.SystemMessage;
 import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
+import com.synopsys.integration.alert.install.RequiredSystemConfiguration;
+import com.synopsys.integration.alert.install.SystemInitializer;
 import com.synopsys.integration.alert.web.model.SystemMessageModel;
 import com.synopsys.integration.rest.RestConstants;
 
@@ -42,11 +44,17 @@ import com.synopsys.integration.rest.RestConstants;
 public class SystemActions {
     private final SystemStatusUtility systemStatusUtility;
     private final SystemMessageUtility systemMessageUtility;
+    private final SystemInitializer systemInitializer;
 
     @Autowired
-    public SystemActions(final SystemStatusUtility systemStatusUtility, final SystemMessageUtility systemMessageUtility) {
+    public SystemActions(final SystemStatusUtility systemStatusUtility, final SystemMessageUtility systemMessageUtility, final SystemInitializer systemInitializer) {
         this.systemStatusUtility = systemStatusUtility;
         this.systemMessageUtility = systemMessageUtility;
+        this.systemInitializer = systemInitializer;
+    }
+
+    public boolean isSystemInitialized() {
+        return systemStatusUtility.isSystemInitialized();
     }
 
     public List<SystemMessageModel> getSystemMessagesSinceStartup() {
@@ -75,5 +83,10 @@ public class SystemActions {
     private SystemMessageModel convert(final SystemMessage systemMessage) {
         final String createdAt = RestConstants.formatDate(systemMessage.getCreated());
         return new SystemMessageModel(systemMessage.getType(), createdAt, systemMessage.getContent());
+    }
+
+    public RequiredSystemConfiguration saveRequiredInformation(final RequiredSystemConfiguration requiredSystemConfiguration) {
+        systemInitializer.updateRequiredConfiguration(requiredSystemConfiguration);
+        return requiredSystemConfiguration;
     }
 }

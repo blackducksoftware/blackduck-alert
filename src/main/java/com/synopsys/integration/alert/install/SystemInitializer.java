@@ -23,9 +23,12 @@
  */
 package com.synopsys.integration.alert.install;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +41,7 @@ import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 
 @Component
 public class SystemInitializer {
+    private final Logger logger = LoggerFactory.getLogger(SystemInitializer.class);
     private final SystemStatusUtility systemStatusUtility;
     private final AlertProperties alertProperties;
     private final GlobalBlackDuckRepository globalBlackDuckRepository;
@@ -53,9 +57,18 @@ public class SystemInitializer {
 
     @Transactional
     public void updateRequiredConfiguration(final RequiredSystemConfiguration requiredSystemConfiguration) {
+        logger.info("updating required configuration for initialization");
         saveEncryptionProperties(requiredSystemConfiguration);
+        saveProxySettings(requiredSystemConfiguration);
         saveBlackDuckConfiguration(requiredSystemConfiguration);
         systemStatusUtility.setSystemInitialized(true);
+    }
+
+    private void saveProxySettings(final RequiredSystemConfiguration requiredSystemConfiguration) {
+        alertProperties.setAlertProxyHost(requiredSystemConfiguration.getProxyHost());
+        alertProperties.setAlertProxyPort(requiredSystemConfiguration.getProxyPort());
+        alertProperties.setAlertProxyUsername(requiredSystemConfiguration.getProxyUsername());
+        alertProperties.setAlertProxyPassword(requiredSystemConfiguration.getProxyPassword());
     }
 
     private Optional<GlobalBlackDuckConfigEntity> getGlobalBlackDuckConfigEntity() {
@@ -68,8 +81,11 @@ public class SystemInitializer {
     }
 
     private void saveEncryptionProperties(final RequiredSystemConfiguration requiredSystemConfiguration) {
-        // TODO implement this later with the UI changes to perform an initial setup of alert.
-
+        try {
+            encryptionUtility.updateEncryptionFields(requiredSystemConfiguration.getGlobalEncryptionPassword(), requiredSystemConfiguration.getGlobalEncryptionSalt());
+        } catch (final IOException ex) {
+            logger.error("Error saving encryption configuration during intialization.", ex);
+        }
     }
 
     private void saveBlackDuckConfiguration(final RequiredSystemConfiguration requiredSystemConfiguration) {
