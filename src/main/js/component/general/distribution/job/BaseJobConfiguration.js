@@ -333,7 +333,7 @@ class BaseJobConfiguration extends Component {
                                 removeSelected
                                 options={notificationOptions}
                                 placeholder="Choose the notification types"
-                                value={notificationOptions.find(option => option.value === this.state.notificationTypes)}
+                                value={notificationOptions.filter(option => this.state.notificationTypes.indexOf(option.value) !== -1)}
                             />
                             {this.state.error.notificationTypesError && <label className="fieldError" name="notificationTypesError">
                                 {this.state.error.notificationTypesError}
