@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.database.system;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -67,8 +68,13 @@ public class SystemMessageUtility {
 
     @Transactional
     public List<SystemMessage> getSystemMessagesBefore(final Date date) {
-        final SystemMessage oldestMessage = systemMessageRepository.findTopByOrderByCreatedAsc();
-        return systemMessageRepository.findByCreatedBetween(oldestMessage.getCreated(), date);
+        final long recordCount = systemMessageRepository.count();
+        if (recordCount == 0) {
+            return Collections.emptyList();
+        } else {
+            final SystemMessage oldestMessage = systemMessageRepository.findTopByOrderByCreatedAsc();
+            return systemMessageRepository.findByCreatedBetween(oldestMessage.getCreated(), date);
+        }
     }
 
     @Transactional
