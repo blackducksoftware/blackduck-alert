@@ -35,6 +35,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.install.RequiredSystemConfiguration;
 import com.synopsys.integration.alert.web.actions.SystemActions;
 import com.synopsys.integration.alert.web.model.SystemMessageModel;
 
@@ -72,6 +73,20 @@ public class SystemHandler extends ControllerHandler {
         } catch (final ParseException ex) {
             logger.error("error occured getting system messages", ex);
             return createResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+        }
+    }
+
+    public ResponseEntity<String> isSystemInitialized() {
+        final String body = String.format("{\"initialized\":\"%s\"}", actions.isSystemInitialized());
+        return new ResponseEntity<>(body, HttpStatus.OK);
+    }
+
+    public ResponseEntity<String> saveRequiredInformation(final RequiredSystemConfiguration requiredSystemConfiguration) {
+        if (actions.isSystemInitialized()) {
+            return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
+        } else {
+            final RequiredSystemConfiguration savedConfig = actions.saveRequiredInformation(requiredSystemConfiguration);
+            return new ResponseEntity<>(getContentConverter().getJsonString(savedConfig), HttpStatus.OK);
         }
     }
 }

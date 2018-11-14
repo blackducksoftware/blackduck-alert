@@ -26,9 +26,12 @@ package com.synopsys.integration.alert.web.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.synopsys.integration.alert.install.RequiredSystemConfiguration;
 import com.synopsys.integration.alert.web.controller.handler.SystemHandler;
 
 @RestController
@@ -48,5 +51,15 @@ public class SystemController extends BaseController {
     @GetMapping(value = "/system/messages")
     public ResponseEntity<String> getSystemMessages(@RequestParam(value = "startDate", required = false) final String startDate, @RequestParam(value = "endDate", required = false) final String endDate) {
         return handler.getSystemMessages(startDate, endDate);
+    }
+
+    @GetMapping(value = "/system/setup")
+    public ResponseEntity<String> getSystemSetup() {
+        return handler.isSystemInitialized();
+    }
+
+    @PostMapping(value = "/system/setup")
+    public ResponseEntity<String> initialSystemSetup(@RequestBody final RequiredSystemConfiguration requiredSystemConfiguration) {
+        return handler.saveRequiredInformation(requiredSystemConfiguration);
     }
 }

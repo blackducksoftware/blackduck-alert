@@ -32,12 +32,22 @@ public class RequiredSystemConfiguration extends Stringable {
     private final String globalEncryptionPassword;
     private final String globalEncryptionSalt;
 
-    public RequiredSystemConfiguration(final String blackDuckProviderUrl, final Integer blackDuckConnectionTimeout, final String blackDuckApiToken, final String globalEncryptionPassword, final String globalEncryptionSalt) {
+    private final String proxyHost;
+    private final String proxyPort;
+    private final String proxyUsername;
+    private final String proxyPassword;
+
+    public RequiredSystemConfiguration(final String blackDuckProviderUrl, final Integer blackDuckConnectionTimeout, final String blackDuckApiToken, final String globalEncryptionPassword, final String globalEncryptionSalt,
+        final String proxyHost, final String proxyPort, final String proxyUsername, final String proxyPassword) {
         this.blackDuckProviderUrl = blackDuckProviderUrl;
         this.blackDuckConnectionTimeout = blackDuckConnectionTimeout;
         this.blackDuckApiToken = blackDuckApiToken;
         this.globalEncryptionPassword = globalEncryptionPassword;
         this.globalEncryptionSalt = globalEncryptionSalt;
+        this.proxyHost = proxyHost;
+        this.proxyPort = proxyPort;
+        this.proxyUsername = proxyUsername;
+        this.proxyPassword = proxyPassword;
     }
 
     public String getBlackDuckProviderUrl() {
@@ -58,5 +68,21 @@ public class RequiredSystemConfiguration extends Stringable {
 
     public String getGlobalEncryptionSalt() {
         return globalEncryptionSalt;
+    }
+
+    public String getProxyHost() {
+        return proxyHost;
+    }
+
+    public String getProxyPort() {
+        return proxyPort;
+    }
+
+    public String getProxyUsername() {
+        return proxyUsername;
+    }
+
+    public String getProxyPassword() {
+        return proxyPassword;
     }
 }
