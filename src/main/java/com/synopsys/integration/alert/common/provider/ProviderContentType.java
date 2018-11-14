@@ -29,15 +29,14 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
-import com.synopsys.integration.alert.common.field.HierarchicalField;
-import com.synopsys.integration.alert.common.field.StringHierarchicalField;
+import com.synopsys.integration.alert.common.field.JsonField;
 import com.synopsys.integration.util.Stringable;
 
 public class ProviderContentType extends Stringable {
     private final String notificationType;
-    private final Collection<HierarchicalField> notificationFields;
+    private final Collection<JsonField<?>> notificationFields;
 
-    public ProviderContentType(@NotNull final String notificationType, @NotNull final Collection<HierarchicalField> notificationFields) {
+    public ProviderContentType(@NotNull final String notificationType, @NotNull final Collection<JsonField<?>> notificationFields) {
         this.notificationType = notificationType;
         this.notificationFields = notificationFields;
     }
@@ -46,17 +45,16 @@ public class ProviderContentType extends Stringable {
         return notificationType;
     }
 
-    public List<HierarchicalField> getNotificationFields() {
+    public List<JsonField<?>> getNotificationFields() {
         return notificationFields.parallelStream().collect(Collectors.toList());
     }
 
-    public List<StringHierarchicalField> getFilterableFields() {
-        final Class<StringHierarchicalField> targetClass = StringHierarchicalField.class;
+    public List<JsonField<String>> getFilterableFields() {
         return notificationFields
                    .parallelStream()
-                   .filter(field -> targetClass.isAssignableFrom(field.getClass()))
-                   .map(field -> targetClass.cast(field))
                    .filter(field -> field.getConfigNameMapping().isPresent())
+                   .filter(field -> field.isOfType(String.class))
+                   .map(field -> (JsonField<String>) field)
                    .collect(Collectors.toList());
     }
 }

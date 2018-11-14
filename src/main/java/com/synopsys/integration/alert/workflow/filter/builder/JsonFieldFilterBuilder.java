@@ -26,25 +26,25 @@ package com.synopsys.integration.alert.workflow.filter.builder;
 import java.util.List;
 import java.util.function.Predicate;
 
-import com.synopsys.integration.alert.common.field.StringHierarchicalField;
+import com.synopsys.integration.alert.common.field.JsonField;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.workflow.filter.field.JsonExtractor;
 
 public class JsonFieldFilterBuilder implements JsonFilterBuilder {
     private final JsonExtractor jsonExtractor;
-    private final StringHierarchicalField hierarchicalField;
+    private final JsonField jsonField;
     private final String value;
 
-    public JsonFieldFilterBuilder(final JsonExtractor jsonExtractor, final StringHierarchicalField hierarchicalField, final String value) {
+    public JsonFieldFilterBuilder(final JsonExtractor jsonExtractor, final JsonField jsonField, final String value) {
         this.jsonExtractor = jsonExtractor;
-        this.hierarchicalField = hierarchicalField;
+        this.jsonField = jsonField;
         this.value = value;
     }
 
     @Override
     public Predicate<NotificationContent> buildPredicate() {
         final Predicate<NotificationContent> contentPredicate = (notification) -> {
-            final List<String> contentValues = jsonExtractor.getValuesFromJson(hierarchicalField, notification.getContent());
+            final List<String> contentValues = jsonExtractor.getValuesFromJson(jsonField, notification.getContent());
             for (final String contentValue : contentValues) {
                 if (value.equals(contentValue)) {
                     return true;
