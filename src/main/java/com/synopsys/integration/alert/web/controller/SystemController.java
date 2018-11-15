@@ -55,7 +55,7 @@ public class SystemController extends BaseController {
 
     @GetMapping(value = "/system/setup")
     public ResponseEntity<String> getSystemSetup() {
-        return handler.getRequiredInformation();
+        return handler.getCurrentSetup();
     }
 
     @PostMapping(value = "/system/setup")
