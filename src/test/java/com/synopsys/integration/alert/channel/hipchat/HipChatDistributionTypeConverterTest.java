@@ -46,7 +46,7 @@ public class HipChatDistributionTypeConverterTest extends AlertIntegrationTest {
         final HipChatDistributionConfigEntity savedHipChatEntity = hipChatDistributionRepository.save(hipChatDistributionConfigEntity);
 
         final CommonDistributionConfigEntity commonDistributionConfigEntity = new CommonDistributionConfigEntity(savedHipChatEntity.getId(), HipChatChannel.COMPONENT_NAME, "nice name", "some_provider", FrequencyType.REAL_TIME,
-            Boolean.FALSE, FormatType.DEFAULT);
+            Boolean.FALSE, "", FormatType.DEFAULT);
         final CommonDistributionConfigEntity savedCommonEntity = commonDistributionRepository.save(commonDistributionConfigEntity);
 
         final Config config = hipChatDistributionTypeConverter.populateConfigFromEntity(savedHipChatEntity);

@@ -37,8 +37,8 @@ public class SlackDistributionConfig extends CommonDistributionConfig {
     }
 
     public SlackDistributionConfig(final String id, final String webhook, final String channelUsername, final String channelName, final String distributionConfigId, final String distributionType, final String name,
-        final String providerName, final String frequency, final String filterByProject, final List<String> configuredProjects, final List<String> notificationTypes, final String formatType) {
-        super(id, distributionConfigId, distributionType, name, providerName, frequency, filterByProject, configuredProjects, notificationTypes, formatType);
+        final String providerName, final String frequency, final String filterByProject, final String projectNamePattern, final List<String> configuredProjects, final List<String> notificationTypes, final String formatType) {
+        super(id, distributionConfigId, distributionType, name, providerName, frequency, filterByProject, projectNamePattern, configuredProjects, notificationTypes, formatType);
         this.webhook = webhook;
         this.channelUsername = channelUsername;
         this.channelName = channelName;
