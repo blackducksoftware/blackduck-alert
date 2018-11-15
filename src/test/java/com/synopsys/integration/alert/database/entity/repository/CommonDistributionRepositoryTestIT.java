@@ -41,8 +41,9 @@ public class CommonDistributionRepositoryTestIT extends AlertIntegrationTest {
         final String providerName = "provider_blackduck";
         final FrequencyType frequency = FrequencyType.DAILY;
         final Boolean filterByProject = Boolean.TRUE;
+        final String projectNamePattern = "pattern";
         final FormatType formatType = FormatType.DEFAULT;
-        final CommonDistributionConfigEntity entity = new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, providerName, frequency, filterByProject, formatType);
+        final CommonDistributionConfigEntity entity = new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, providerName, frequency, filterByProject, projectNamePattern, formatType);
         final CommonDistributionConfigEntity savedEntity = commonDistributionRepository.save(entity);
 
         assertEquals(1, commonDistributionRepository.count());
@@ -52,5 +53,6 @@ public class CommonDistributionRepositoryTestIT extends AlertIntegrationTest {
         assertEquals(name, savedEntity.getName());
         assertEquals(frequency, savedEntity.getFrequency());
         assertEquals(filterByProject, savedEntity.getFilterByProject());
+        assertEquals(projectNamePattern, savedEntity.getProjectNamePattern());
     }
 }

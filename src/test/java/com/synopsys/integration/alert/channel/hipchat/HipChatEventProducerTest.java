@@ -36,7 +36,7 @@ public class HipChatEventProducerTest {
             content, commonDistributionConfigId, roomId, notify, color);
 
         HipChatDistributionConfig hipChatDistributionConfig = new HipChatDistributionConfig(commonDistributionConfigId.toString(), roomId.toString(), notify, color, distributionConfigId.toString(),
-            distributionType, "Test HipChat Job", providerName, "REAL_TIME", "FALSE", Collections.emptyList(), Collections.emptyList(), formatType);
+            distributionType, "Test HipChat Job", providerName, "REAL_TIME", "FALSE", "", Collections.emptyList(), Collections.emptyList(), formatType);
 
         final HipChatChannelEvent event = hipChatEventProducer.createChannelEvent(hipChatDistributionConfig, content);
         assertEquals(expected.getAuditEntryId(), event.getAuditEntryId());
@@ -53,7 +53,7 @@ public class HipChatEventProducerTest {
         final HipChatChannelEvent expectedTest = new HipChatChannelEvent(RestConstants.formatDate(new Date()), providerName, formatType, testContent, commonDistributionConfigId, roomId, notify, color);
 
         hipChatDistributionConfig = new HipChatDistributionConfig(commonDistributionConfigId.toString(), roomId.toString(), notify, color, distributionConfigId.toString(),
-            distributionType, "Test HipChat Job", providerName, "REAL_TIME", "FALSE", Collections.emptyList(), Collections.emptyList(), "DEFAULT");
+            distributionType, "Test HipChat Job", providerName, "REAL_TIME", "FALSE", "", Collections.emptyList(), Collections.emptyList(), "DEFAULT");
 
         final HipChatChannelEvent testEvent = hipChatEventProducer.createChannelTestEvent(hipChatDistributionConfig);
         assertEquals(expectedTest.getAuditEntryId(), testEvent.getAuditEntryId());

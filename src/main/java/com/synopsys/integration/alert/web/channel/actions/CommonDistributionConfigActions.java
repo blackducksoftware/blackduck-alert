@@ -24,6 +24,8 @@
 package com.synopsys.integration.alert.web.channel.actions;
 
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -75,6 +77,13 @@ public class CommonDistributionConfigActions {
         if (StringUtils.isNotBlank(commonConfig.getFilterByProject()) && !contentConverter.isBoolean(commonConfig.getFilterByProject())) {
             fieldErrors.put("filterByProject", "Not a Boolean.");
         }
+        if (StringUtils.isNotBlank(commonConfig.getProjectNamePattern())) {
+            try {
+                Pattern.compile(commonConfig.getProjectNamePattern());
+            } catch (final PatternSyntaxException e) {
+                fieldErrors.put("projectNamePattern", "Project name pattern is not a regular expression. " + e.getMessage());
+            }
+        }
         if (BooleanUtils.toBoolean(commonConfig.getFilterByProject()) && (null == commonConfig.getConfiguredProjects() || commonConfig.getConfiguredProjects().isEmpty())) {
             fieldErrors.put("configuredProjects", "You must select at least one project.");
         }
@@ -116,8 +125,8 @@ public class CommonDistributionConfigActions {
         final FrequencyType frequencyType = Enum.valueOf(FrequencyType.class, commonConfig.getFrequency());
         final Boolean filterByProject = contentConverter.getBooleanValue(commonConfig.getFilterByProject());
         final FormatType formatType = Enum.valueOf(FormatType.class, commonConfig.getFormatType());
-        final CommonDistributionConfigEntity commonEntity =
-            new CommonDistributionConfigEntity(distributionConfigId, commonConfig.getDistributionType(), commonConfig.getName(), commonConfig.getProviderName(), frequencyType, filterByProject, formatType);
+        final CommonDistributionConfigEntity commonEntity = new CommonDistributionConfigEntity(distributionConfigId, commonConfig.getDistributionType(), commonConfig.getName(), commonConfig.getProviderName(), frequencyType, filterByProject,
+            commonConfig.getProjectNamePattern(), formatType);
         final Long longId = contentConverter.getLongValue(commonConfig.getId());
         commonEntity.setId(longId);
         return commonEntity;

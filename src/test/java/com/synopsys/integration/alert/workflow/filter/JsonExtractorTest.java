@@ -73,9 +73,11 @@ public class JsonExtractorTest {
         final String providerName = "some provider";
         final String frequency = "REAL_TIME";
         final String filterByProject = "true";
+        final String projectNamePattern = "projectNamePattern";
         final List<String> configuredProjects = Arrays.asList("project1", "project2", "project3");
         final List<String> notificationTypes = Arrays.asList("type1", "type2");
-        final CommonDistributionConfig commonDistributionConfig = new CommonDistributionConfig(id, distributionConfigId, distributionType, name, providerName, frequency, filterByProject, configuredProjects, notificationTypes,
+        final CommonDistributionConfig commonDistributionConfig = new CommonDistributionConfig(id, distributionConfigId, distributionType, name, providerName, frequency, filterByProject, projectNamePattern, configuredProjects,
+            notificationTypes,
             FormatType.DEFAULT.name());
 
         final JsonField<String> nameField = JsonField.createStringField(null, null, null, null, JsonPath.compile("$.name"));
