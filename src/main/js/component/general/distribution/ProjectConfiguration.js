@@ -5,6 +5,7 @@ import {BootstrapTable, ReactBsTable, TableHeaderColumn} from 'react-bootstrap-t
 
 import CheckboxInput from '../../../field/input/CheckboxInput';
 import {getProjects} from '../../../store/actions/projects';
+import TextInput from "../../../field/input/TextInput";
 
 function assignClassName(row, rowIdx) {
     return 'tableRow';
@@ -99,9 +100,11 @@ class ProjectConfiguration extends Component {
             onSelectAll: this.onRowSelectedAll
         };
 
-        let projectTable = null;
+        let projectSelectionDiv = null;
         if (!this.props.includeAllProjects) {
-            projectTable = (<div>
+            projectSelectionDiv = (<div>
+                <TextInput id="projectNamePattern" label="Project name pattern" name="projectNamePattern" value={this.props.projectNamePattern} onChange={this.props.handleChange} errorName="projectNamePatternError"
+                           errorValue={this.props.projectNamePatternError}/>
                 <BootstrapTable
                     version="4"
                     data={projectData}
@@ -138,7 +141,7 @@ class ProjectConfiguration extends Component {
                     errorValue={this.props.includeAllProjectsError}
                 />
                 {this.props.error.configuredProjectsError && <label className="fieldError" name="projectTableErrors">{this.props.error.configuredProjectsError}</label>}
-                {projectTable}
+                {projectSelectionDiv}
             </div>
         );
     }
@@ -147,6 +150,7 @@ class ProjectConfiguration extends Component {
 ProjectConfiguration.defaultProps = {
     projects: [],
     configuredProjects: [],
+    projectNamePattern: '',
     errorMsg: null,
     error: {},
     includeAllProjects: true
@@ -155,6 +159,7 @@ ProjectConfiguration.defaultProps = {
 ProjectConfiguration.propTypes = {
     includeAllProjects: PropTypes.bool,
     configuredProjects: PropTypes.arrayOf(PropTypes.string),
+    projectNamePattern: PropTypes.string,
     projects: PropTypes.arrayOf(PropTypes.any),
     fetching: PropTypes.bool.isRequired,
     errorMsg: PropTypes.string,
