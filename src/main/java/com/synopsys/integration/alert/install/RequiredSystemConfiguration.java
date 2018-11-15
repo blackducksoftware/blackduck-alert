@@ -40,6 +40,13 @@ public class RequiredSystemConfiguration extends Stringable {
     private final String proxyPassword;
 
     public RequiredSystemConfiguration(final String blackDuckProviderUrl, final Integer blackDuckConnectionTimeout, final String blackDuckApiToken,
+        final boolean isGlobalEncryptionPasswordSet,
+        final boolean isGlobalEncryptionSaltSet,
+        final String proxyHost, final String proxyPort, final String proxyUsername, final String proxyPassword) {
+        this(blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, null, isGlobalEncryptionPasswordSet, null, isGlobalEncryptionSaltSet, proxyHost, proxyPort, proxyUsername, proxyPassword);
+    }
+
+    public RequiredSystemConfiguration(final String blackDuckProviderUrl, final Integer blackDuckConnectionTimeout, final String blackDuckApiToken,
         final String globalEncryptionPassword, final boolean isGlobalEncryptionPasswordSet,
         final String globalEncryptionSalt, final boolean isGlobalEncryptionSaltSet,
         final String proxyHost, final String proxyPort, final String proxyUsername, final String proxyPassword) {

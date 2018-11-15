@@ -153,6 +153,7 @@ public class StartupManager {
             logger.info("Encryption utilities: Initialized");
         } else {
             logger.error("Encryption utilities: Not Initialized");
+            systemStatusUtility.setSystemInitialized(false);
             final List<String> errors = encryptionUtility.checkForErrors();
             errors.forEach(errorMessage -> systemMessageUtility.addSystemMessage(errorMessage, SystemMessageType.ERROR));
         }
@@ -176,6 +177,7 @@ public class StartupManager {
             if (!blackDuckUrlOptional.isPresent()) {
                 logger.error("  -> BlackDuck Provider Invalid; cause: Black Duck URL missing...");
                 systemMessageUtility.addSystemMessage("BlackDuck Provider invalid: URL missing", SystemMessageType.ERROR);
+                systemStatusUtility.setSystemInitialized(false);
             } else {
                 final String blackDuckUrlString = blackDuckUrlOptional.get();
                 final Boolean trustCertificate = BooleanUtils.toBoolean(alertProperties.getAlertTrustCertificate().orElse(false));
@@ -197,6 +199,7 @@ public class StartupManager {
             logger.error("  -> BlackDuck Provider Invalid; cause: {}", ex.getMessage());
             logger.debug("  -> BlackDuck Provider Stack Trace: ", ex);
             systemMessageUtility.addSystemMessage("BlackDuck Provider invalid: " + ex.getMessage(), SystemMessageType.ERROR);
+            systemStatusUtility.setSystemInitialized(false);
         }
     }
 

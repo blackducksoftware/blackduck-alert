@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -91,12 +92,16 @@ public class SystemActions {
         return new SystemSetupModel(systemConfiguration.getBlackDuckProviderUrl(),
             systemConfiguration.getBlackDuckConnectionTimeout(),
             systemConfiguration.getBlackDuckApiToken(),
+            StringUtils.isNotBlank(systemConfiguration.getBlackDuckApiToken()),
             systemConfiguration.getGlobalEncryptionPassword(),
+            systemConfiguration.isGlobalEncryptionPasswordSet(),
             systemConfiguration.getGlobalEncryptionSalt(),
+            systemConfiguration.isGloblaEncryptionSaltSet(),
             systemConfiguration.getProxyHost(),
             systemConfiguration.getProxyPort(),
             systemConfiguration.getProxyUsername(),
-            systemConfiguration.getProxyPassword());
+            systemConfiguration.getProxyPassword(),
+            StringUtils.isNotBlank(systemConfiguration.getProxyPassword()));
     }
 
     public SystemSetupModel saveRequiredInformation(final SystemSetupModel requiredSystemConfiguration) {
@@ -104,7 +109,9 @@ public class SystemActions {
             requiredSystemConfiguration.getBlackDuckConnectionTimeout(),
             requiredSystemConfiguration.getBlackDuckApiToken(),
             requiredSystemConfiguration.getGlobalEncryptionPassword(),
+            requiredSystemConfiguration.isGlobalEncryptionPasswordIsSet(),
             requiredSystemConfiguration.getGlobalEncryptionSalt(),
+            requiredSystemConfiguration.isGlobalEncryptionSaltIsSet(),
             requiredSystemConfiguration.getProxyHost(),
             requiredSystemConfiguration.getProxyPort(),
             requiredSystemConfiguration.getProxyUsername(),

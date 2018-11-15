@@ -69,8 +69,8 @@ public class SystemInitializer {
         String blackDuckUrl = null;
         Integer blackDuckConnectionTimeout = null;
         String blackDuckApiToken = null;
-        if(blackDuckConfigEntity.isPresent()) {
-            GlobalBlackDuckConfigEntity blackDuckEntity = blackDuckConfigEntity.get();
+        if (blackDuckConfigEntity.isPresent()) {
+            final GlobalBlackDuckConfigEntity blackDuckEntity = blackDuckConfigEntity.get();
             blackDuckUrl = blackDuckEntity.getBlackDuckUrl();
             blackDuckConnectionTimeout = blackDuckEntity.getBlackDuckTimeout();
             blackDuckApiToken = blackDuckEntity.getBlackDuckApiKey();
@@ -79,12 +79,12 @@ public class SystemInitializer {
         return new RequiredSystemConfiguration(blackDuckUrl,
             blackDuckConnectionTimeout,
             blackDuckApiToken,
-            requiredSystemConfiguration.getGlobalEncryptionPassword(),
-            requiredSystemConfiguration.getGlobalEncryptionSalt(),
+            encryptionUtility.isPasswordSet(),
+            encryptionUtility.isGlobalSaltSet(),
             proxyHost.orElse(null),
             proxyPort.orElse(null),
             proxyUsername.orElse(null),
-            proxyPassword.orElse(null)));
+            proxyPassword.orElse(null));
 
     }
 
