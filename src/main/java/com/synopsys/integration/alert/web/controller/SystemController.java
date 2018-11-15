@@ -31,8 +31,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.install.RequiredSystemConfiguration;
 import com.synopsys.integration.alert.web.controller.handler.SystemHandler;
+import com.synopsys.integration.alert.web.model.SystemSetupModel;
 
 @RestController
 public class SystemController extends BaseController {
@@ -55,11 +55,11 @@ public class SystemController extends BaseController {
 
     @GetMapping(value = "/system/setup")
     public ResponseEntity<String> getSystemSetup() {
-        return handler.isSystemInitialized();
+        return handler.getRequiredInformation();
     }
 
     @PostMapping(value = "/system/setup")
-    public ResponseEntity<String> initialSystemSetup(@RequestBody final RequiredSystemConfiguration requiredSystemConfiguration) {
+    public ResponseEntity<String> initialSystemSetup(@RequestBody final SystemSetupModel requiredSystemConfiguration) {
         return handler.saveRequiredInformation(requiredSystemConfiguration);
     }
 }

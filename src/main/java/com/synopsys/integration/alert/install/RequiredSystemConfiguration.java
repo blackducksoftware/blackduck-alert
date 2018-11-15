@@ -31,19 +31,25 @@ public class RequiredSystemConfiguration extends Stringable {
     private final String blackDuckApiToken;
     private final String globalEncryptionPassword;
     private final String globalEncryptionSalt;
+    private final boolean globalEncryptionPasswordSet;
+    private final boolean globlaEncryptionSaltSet;
 
     private final String proxyHost;
     private final String proxyPort;
     private final String proxyUsername;
     private final String proxyPassword;
 
-    public RequiredSystemConfiguration(final String blackDuckProviderUrl, final Integer blackDuckConnectionTimeout, final String blackDuckApiToken, final String globalEncryptionPassword, final String globalEncryptionSalt,
+    public RequiredSystemConfiguration(final String blackDuckProviderUrl, final Integer blackDuckConnectionTimeout, final String blackDuckApiToken,
+        final String globalEncryptionPassword, final boolean isGlobalEncryptionPasswordSet,
+        final String globalEncryptionSalt, final boolean isGlobalEncryptionSaltSet,
         final String proxyHost, final String proxyPort, final String proxyUsername, final String proxyPassword) {
         this.blackDuckProviderUrl = blackDuckProviderUrl;
         this.blackDuckConnectionTimeout = blackDuckConnectionTimeout;
         this.blackDuckApiToken = blackDuckApiToken;
         this.globalEncryptionPassword = globalEncryptionPassword;
+        this.globalEncryptionPasswordSet = isGlobalEncryptionPasswordSet;
         this.globalEncryptionSalt = globalEncryptionSalt;
+        this.globlaEncryptionSaltSet = isGlobalEncryptionSaltSet;
         this.proxyHost = proxyHost;
         this.proxyPort = proxyPort;
         this.proxyUsername = proxyUsername;
@@ -66,8 +72,16 @@ public class RequiredSystemConfiguration extends Stringable {
         return globalEncryptionPassword;
     }
 
+    public boolean isGlobalEncryptionPasswordSet() {
+        return globalEncryptionPasswordSet;
+    }
+
     public String getGlobalEncryptionSalt() {
         return globalEncryptionSalt;
+    }
+
+    public boolean isGloblaEncryptionSaltSet() {
+        return globlaEncryptionSaltSet;
     }
 
     public String getProxyHost() {

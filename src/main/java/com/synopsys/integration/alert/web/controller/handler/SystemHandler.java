@@ -35,9 +35,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.install.RequiredSystemConfiguration;
 import com.synopsys.integration.alert.web.actions.SystemActions;
 import com.synopsys.integration.alert.web.model.SystemMessageModel;
+import com.synopsys.integration.alert.web.model.SystemSetupModel;
 
 @Component
 public class SystemHandler extends ControllerHandler {
@@ -76,16 +76,16 @@ public class SystemHandler extends ControllerHandler {
         }
     }
 
-    public ResponseEntity<String> isSystemInitialized() {
+    public ResponseEntity<String> getRequiredInformation() {
         final String body = String.format("{\"initialized\":\"%s\"}", actions.isSystemInitialized());
         return new ResponseEntity<>(body, HttpStatus.OK);
     }
 
-    public ResponseEntity<String> saveRequiredInformation(final RequiredSystemConfiguration requiredSystemConfiguration) {
+    public ResponseEntity<String> saveRequiredInformation(final SystemSetupModel requiredSystemConfiguration) {
         if (actions.isSystemInitialized()) {
             return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
         } else {
-            final RequiredSystemConfiguration savedConfig = actions.saveRequiredInformation(requiredSystemConfiguration);
+            final SystemSetupModel savedConfig = actions.saveRequiredInformation(requiredSystemConfiguration);
             return new ResponseEntity<>(getContentConverter().getJsonString(savedConfig), HttpStatus.OK);
         }
     }

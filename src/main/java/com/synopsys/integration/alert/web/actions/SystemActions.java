@@ -38,6 +38,7 @@ import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.install.RequiredSystemConfiguration;
 import com.synopsys.integration.alert.install.SystemInitializer;
 import com.synopsys.integration.alert.web.model.SystemMessageModel;
+import com.synopsys.integration.alert.web.model.SystemSetupModel;
 import com.synopsys.integration.rest.RestConstants;
 
 @Component
@@ -85,8 +86,31 @@ public class SystemActions {
         return new SystemMessageModel(systemMessage.getType(), createdAt, systemMessage.getContent());
     }
 
-    public RequiredSystemConfiguration saveRequiredInformation(final RequiredSystemConfiguration requiredSystemConfiguration) {
-        systemInitializer.updateRequiredConfiguration(requiredSystemConfiguration);
+    public SystemSetupModel getCurrentSystemSetup() {
+        final RequiredSystemConfiguration systemConfiguration = systemInitializer.getCurrentSystemSetup();
+        return new SystemSetupModel(systemConfiguration.getBlackDuckProviderUrl(),
+            systemConfiguration.getBlackDuckConnectionTimeout(),
+            systemConfiguration.getBlackDuckApiToken(),
+            systemConfiguration.getGlobalEncryptionPassword(),
+            systemConfiguration.getGlobalEncryptionSalt(),
+            systemConfiguration.getProxyHost(),
+            systemConfiguration.getProxyPort(),
+            systemConfiguration.getProxyUsername(),
+            systemConfiguration.getProxyPassword());
+    }
+
+    public SystemSetupModel saveRequiredInformation(final SystemSetupModel requiredSystemConfiguration) {
+        final RequiredSystemConfiguration configToSave = new RequiredSystemConfiguration(requiredSystemConfiguration.getBlackDuckProviderUrl(),
+            requiredSystemConfiguration.getBlackDuckConnectionTimeout(),
+            requiredSystemConfiguration.getBlackDuckApiToken(),
+            requiredSystemConfiguration.getGlobalEncryptionPassword(),
+            requiredSystemConfiguration.getGlobalEncryptionSalt(),
+            requiredSystemConfiguration.getProxyHost(),
+            requiredSystemConfiguration.getProxyPort(),
+            requiredSystemConfiguration.getProxyUsername(),
+            requiredSystemConfiguration.getProxyPassword());
+        systemInitializer.updateRequiredConfiguration(configToSave);
         return requiredSystemConfiguration;
     }
+
 }
