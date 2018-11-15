@@ -55,6 +55,39 @@ public class SystemInitializer {
         this.encryptionUtility = encryptionUtility;
     }
 
+    public boolean isSystemInitialized() {
+        return systemStatusUtility.isSystemInitialized();
+    }
+
+    @Transactional
+    public RequiredSystemConfiguration getCurrentSystemSetup() {
+        final Optional<String> proxyHost = alertProperties.getAlertProxyHost();
+        final Optional<String> proxyPort = alertProperties.getAlertProxyPort();
+        final Optional<String> proxyUsername = alertProperties.getAlertProxyUsername();
+        final Optional<String> proxyPassword = alertProperties.getAlertProxyPassword();
+        final Optional<GlobalBlackDuckConfigEntity> blackDuckConfigEntity = getGlobalBlackDuckConfigEntity();
+        String blackDuckUrl = null;
+        Integer blackDuckConnectionTimeout = null;
+        String blackDuckApiToken = null;
+        if(blackDuckConfigEntity.isPresent()) {
+            GlobalBlackDuckConfigEntity blackDuckEntity = blackDuckConfigEntity.get();
+            blackDuckUrl = blackDuckEntity.getBlackDuckUrl();
+            blackDuckConnectionTimeout = blackDuckEntity.getBlackDuckTimeout();
+            blackDuckApiToken = blackDuckEntity.getBlackDuckApiKey();
+        }
+
+        return new RequiredSystemConfiguration(blackDuckUrl,
+            blackDuckConnectionTimeout,
+            blackDuckApiToken,
+            requiredSystemConfiguration.getGlobalEncryptionPassword(),
+            requiredSystemConfiguration.getGlobalEncryptionSalt(),
+            proxyHost.orElse(null),
+            proxyPort.orElse(null),
+            proxyUsername.orElse(null),
+            proxyPassword.orElse(null)));
+
+    }
+
     @Transactional
     public void updateRequiredConfiguration(final RequiredSystemConfiguration requiredSystemConfiguration) {
         logger.info("updating required configuration for initialization");

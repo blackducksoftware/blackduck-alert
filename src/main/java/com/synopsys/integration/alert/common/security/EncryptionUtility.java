@@ -70,10 +70,7 @@ public class EncryptionUtility {
     }
 
     public boolean isInitialized() {
-        final String password = getPassword();
-        final String salt = getGlobalSalt();
-
-        return null != password && null != salt;
+        return isPasswordSet() && isGlobalSaltSet();
     }
 
     public List<String> checkForErrors() {
@@ -105,6 +102,10 @@ public class EncryptionUtility {
         }
     }
 
+    public boolean isPasswordSet() {
+        return null != getPassword();
+    }
+
     private String getPassword() {
         final Optional<String> passwordFromEnvironment = alertProperties.getAlertEncryptionPassword();
         return passwordFromEnvironment.orElse(getPasswordFromFile());
@@ -118,6 +119,10 @@ public class EncryptionUtility {
             logger.debug("Error getting password from file.", ex);
             return null;
         }
+    }
+
+    public boolean isGlobalSaltSet() {
+        return null != getGlobalSalt();
     }
 
     private String getGlobalSalt() {
