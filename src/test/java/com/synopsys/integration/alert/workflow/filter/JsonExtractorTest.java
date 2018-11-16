@@ -80,15 +80,15 @@ public class JsonExtractorTest {
             notificationTypes,
             FormatType.DEFAULT.name());
 
-        final JsonField<String> nameField = JsonField.createStringField(null, null, null, null, JsonPath.compile("$.name"));
+        final JsonField<String> nameField = JsonField.createStringField(null, null, null, null, Arrays.asList(JsonPath.compile("$.name")));
         final List<String> nameValues = jsonExtractor.getValuesFromConfig(nameField, commonDistributionConfig);
         Assert.assertEquals(Arrays.asList(name), nameValues);
 
-        final JsonField<String> configuredProjectsField = JsonField.createStringField(null, null, null, null, JsonPath.compile("$.configuredProjects[*]"));
+        final JsonField<String> configuredProjectsField = JsonField.createStringField(null, null, null, null, Arrays.asList(JsonPath.compile("$.configuredProjects[*]")));
         final List<String> configuredProjectValues = jsonExtractor.getValuesFromConfig(configuredProjectsField, commonDistributionConfig);
         Assert.assertEquals(configuredProjects, configuredProjectValues);
 
-        final JsonField<String> notificationTypesField = JsonField.createStringField(null, null, null, null, JsonPath.compile("$.notificationTypes[*]"));
+        final JsonField<String> notificationTypesField = JsonField.createStringField(null, null, null, null, Arrays.asList(JsonPath.compile("$.notificationTypes[*]")));
         final List<String> notificationTypeValues = jsonExtractor.getValuesFromConfig(notificationTypesField, commonDistributionConfig);
         Assert.assertEquals(notificationTypes, notificationTypeValues);
     }

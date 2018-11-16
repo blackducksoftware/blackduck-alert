@@ -37,7 +37,7 @@ public class JsonField<T> extends Stringable {
 
     private final TypeRef<?> typeRef;
     private final FieldContentIdentifier contentIdentifier;
-    private final JsonPath configNameMapping;
+    private final List<JsonPath> configNameMappings;
     private final JsonPath jsonPath;
 
     private final String fieldName;
@@ -55,8 +55,8 @@ public class JsonField<T> extends Stringable {
         return new JsonField<String>(new TypeRef<List<String>>() {}, jsonPath, fieldName, contentIdentifier, label);
     }
 
-    public static JsonField<String> createStringField(final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label, final JsonPath configNameMapping) {
-        return new JsonField<String>(new TypeRef<List<String>>() {}, jsonPath, fieldName, contentIdentifier, label, configNameMapping);
+    public static JsonField<String> createStringField(final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label, final List<JsonPath> configNameMappings) {
+        return new JsonField<String>(new TypeRef<List<String>>() {}, jsonPath, fieldName, contentIdentifier, label, configNameMappings);
     }
 
     public static JsonPath createJsonPath(final String pattern, final String... fields) {
@@ -67,13 +67,13 @@ public class JsonField<T> extends Stringable {
         this(typeRef, jsonPath, fieldName, contentIdentifier, label, null);
     }
 
-    protected JsonField(final TypeRef<?> typeRef, final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label, final JsonPath configNameMapping) {
+    protected JsonField(final TypeRef<?> typeRef, final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label, final List<JsonPath> configNameMappings) {
         this.fieldName = fieldName;
         this.label = label;
         this.typeRef = typeRef;
         this.jsonPath = jsonPath;
         this.contentIdentifier = contentIdentifier;
-        this.configNameMapping = configNameMapping;
+        this.configNameMappings = configNameMappings;
     }
 
     public String getFieldName() {
@@ -92,8 +92,8 @@ public class JsonField<T> extends Stringable {
         return contentIdentifier;
     }
 
-    public Optional<JsonPath> getConfigNameMapping() {
-        return Optional.ofNullable(configNameMapping);
+    public Optional<List<JsonPath>> getConfigNameMappings() {
+        return Optional.ofNullable(configNameMappings);
     }
 
     public TypeRef<?> getTypeRef() {

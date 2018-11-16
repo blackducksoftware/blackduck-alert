@@ -26,6 +26,8 @@ package com.synopsys.integration.alert.workflow.filter.builder;
 import java.util.List;
 import java.util.function.Predicate;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.synopsys.integration.alert.common.field.JsonField;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.workflow.filter.field.JsonExtractor;
@@ -46,7 +48,7 @@ public class JsonFieldFilterBuilder implements JsonFilterBuilder {
         final Predicate<NotificationContent> contentPredicate = (notification) -> {
             final List<String> contentValues = jsonExtractor.getValuesFromJson(jsonField, notification.getContent());
             for (final String contentValue : contentValues) {
-                if (value.equals(contentValue)) {
+                if (StringUtils.isNotBlank(contentValue) && contentValue.matches(value)) {
                     return true;
                 }
             }
