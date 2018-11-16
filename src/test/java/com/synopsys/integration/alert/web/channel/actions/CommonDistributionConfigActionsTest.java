@@ -86,7 +86,7 @@ public class CommonDistributionConfigActionsTest {
         final CommonDistributionConfigActions commonDistributionConfigActions = new CommonDistributionConfigActions(null, null, commonDistributionRepository, contentConverter);
 
         final CommonDistributionConfig commonDistributionConfig = new CommonDistributionConfig("Not numeric", "100", "type", "New name", "provider", "frequency", "true",
-            "namePattern", Collections.emptyList(), Arrays.asList("notificationType"), "format");
+            "", Collections.emptyList(), Arrays.asList("notificationType"), "format");
         final Map<String, String> fieldErrors = new HashMap<>();
         commonDistributionConfigActions.validateCommonConfig(commonDistributionConfig, fieldErrors);
 

@@ -90,7 +90,7 @@ public class CommonDistributionConfigActions {
                 fieldErrors.put("projectNamePattern", "Project name pattern is not a regular expression. " + e.getMessage());
             }
         }
-        if (BooleanUtils.toBoolean(commonConfig.getFilterByProject()) && (null == commonConfig.getConfiguredProjects() || commonConfig.getConfiguredProjects().isEmpty())) {
+        if (BooleanUtils.toBoolean(commonConfig.getFilterByProject()) && (null == commonConfig.getConfiguredProjects() || commonConfig.getConfiguredProjects().isEmpty()) && StringUtils.isBlank(commonConfig.getProjectNamePattern())) {
             fieldErrors.put("configuredProjects", "You must select at least one project.");
         }
         if (StringUtils.isBlank(commonConfig.getFormatType())) {
