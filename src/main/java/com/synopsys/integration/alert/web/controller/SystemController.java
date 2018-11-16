@@ -23,6 +23,8 @@
  */
 package com.synopsys.integration.alert.web.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -54,8 +56,9 @@ public class SystemController extends BaseController {
     }
 
     @GetMapping(value = "/system/setup")
-    public ResponseEntity<String> getSystemSetup() {
-        return handler.getCurrentSetup();
+    public ResponseEntity<String> getSystemSetup(final HttpServletRequest request) {
+        final String contextPath = request.getServletContext().getContextPath();
+        return handler.getCurrentSetup(contextPath);
     }
 
     @PostMapping(value = "/system/setup")

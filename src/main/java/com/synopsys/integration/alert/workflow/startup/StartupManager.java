@@ -144,31 +144,40 @@ public class StartupManager {
     }
 
     public void validate() {
-        checkEncryptionProperties();
-        validateProviders();
+        boolean valid = true;
+        valid = valid && checkEncryptionProperties();
+        valid = valid && validateProviders();
+        systemStatusUtility.setSystemInitialized(valid);
+
     }
 
-    public void checkEncryptionProperties() {
+    public boolean checkEncryptionProperties() {
+        final boolean valid;
         if (encryptionUtility.isInitialized()) {
             logger.info("Encryption utilities: Initialized");
+            valid = true;
         } else {
             logger.error("Encryption utilities: Not Initialized");
-            systemStatusUtility.setSystemInitialized(false);
             final List<String> errors = encryptionUtility.checkForErrors();
             errors.forEach(errorMessage -> systemMessageUtility.addSystemMessage(errorMessage, SystemMessageType.ERROR));
+            valid = false;
         }
+        return valid;
     }
 
-    public void validateProviders() {
+    public boolean validateProviders() {
+        final boolean valid;
         logger.info("Validating configured providers: ");
         logger.info("----------------------------------------");
-        validateBlackDuckProvider();
+        valid = validateBlackDuckProvider();
         logger.info("----------------------------------------");
+        return valid;
     }
 
     // TODO add this validation to provider descriptors so we can run this when it's defined
-    public void validateBlackDuckProvider() {
+    public boolean validateBlackDuckProvider() {
         logger.info("Validating BlackDuck Provider...");
+        boolean valid = true;
         try {
             final HubServerVerifier verifier = new HubServerVerifier();
             final ProxyInfoBuilder proxyBuilder = createProxyInfoBuilder();
@@ -177,7 +186,7 @@ public class StartupManager {
             if (!blackDuckUrlOptional.isPresent()) {
                 logger.error("  -> BlackDuck Provider Invalid; cause: Black Duck URL missing...");
                 systemMessageUtility.addSystemMessage("BlackDuck Provider invalid: URL missing", SystemMessageType.ERROR);
-                systemStatusUtility.setSystemInitialized(false);
+                valid = false;
             } else {
                 final String blackDuckUrlString = blackDuckUrlOptional.get();
                 final Boolean trustCertificate = BooleanUtils.toBoolean(alertProperties.getAlertTrustCertificate().orElse(false));
@@ -199,8 +208,9 @@ public class StartupManager {
             logger.error("  -> BlackDuck Provider Invalid; cause: {}", ex.getMessage());
             logger.debug("  -> BlackDuck Provider Stack Trace: ", ex);
             systemMessageUtility.addSystemMessage("BlackDuck Provider invalid: " + ex.getMessage(), SystemMessageType.ERROR);
-            systemStatusUtility.setSystemInitialized(false);
+            valid = false;
         }
+        return valid;
     }
 
     private ProxyInfoBuilder createProxyInfoBuilder() {
