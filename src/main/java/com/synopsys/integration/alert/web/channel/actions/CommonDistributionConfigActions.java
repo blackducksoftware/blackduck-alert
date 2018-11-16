@@ -60,19 +60,25 @@ public class CommonDistributionConfigActions {
 
     @Transactional
     public void validateCommonConfig(final CommonDistributionConfig commonConfig, final Map<String, String> fieldErrors) {
+        if (StringUtils.isNotBlank(commonConfig.getId()) && !StringUtils.isNumeric(commonConfig.getId())) {
+            fieldErrors.put("id", "Not an Integer.");
+        }
         if (StringUtils.isNotBlank(commonConfig.getName())) {
             final CommonDistributionConfigEntity entity = commonDistributionRepository.findByName(commonConfig.getName());
-            if (entity != null && (entity.getId() != contentConverter.getLongValue(commonConfig.getId()))) {
+            if (entity != null && StringUtils.isNumeric(commonConfig.getId()) && (entity.getId() != contentConverter.getLongValue(commonConfig.getId()))) {
                 fieldErrors.put("name", "A distribution configuration with this name already exists.");
             }
         } else {
             fieldErrors.put("name", "Name cannot be blank.");
         }
-        if (StringUtils.isNotBlank(commonConfig.getId()) && !StringUtils.isNumeric(commonConfig.getId())) {
-            fieldErrors.put("id", "Not an Integer.");
-        }
         if (StringUtils.isNotBlank(commonConfig.getDistributionConfigId()) && !StringUtils.isNumeric(commonConfig.getDistributionConfigId())) {
             fieldErrors.put("distributionConfigId", "Not an Integer.");
+        }
+        if (StringUtils.isBlank(commonConfig.getDistributionType())) {
+            fieldErrors.put("distributionType", "You must choose a distribution type.");
+        }
+        if (StringUtils.isBlank(commonConfig.getProviderName())) {
+            fieldErrors.put("providerName", "You must choose a provider.");
         }
         if (StringUtils.isNotBlank(commonConfig.getFilterByProject()) && !contentConverter.isBoolean(commonConfig.getFilterByProject())) {
             fieldErrors.put("filterByProject", "Not a Boolean.");
