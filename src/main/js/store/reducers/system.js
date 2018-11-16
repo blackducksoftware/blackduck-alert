@@ -14,11 +14,16 @@ import {
 
 const initialState = {
     fetching: false,
+    fetchingSetup: false,
     updateStatus: null,
     latestMessages: [],
-    errorMessage: null,
-    setupData: null,
-    setupRedirect: false
+    errorMessage: '',
+    setupData: {},
+    setupRedirect: false,
+    error: {
+        message: '',
+        fieldErrors: []
+    }
 };
 
 const config = (state = initialState, action) => {
@@ -38,41 +43,47 @@ const config = (state = initialState, action) => {
             });
         case SYSTEM_SETUP_FETCHING:
             return Object.assign({}, state, {
-                fetching: true,
+                fetchingSetup: true,
                 updateStatus: 'FETCHING'
             });
         case SYSTEM_SETUP_FETCH_REDIRECTED:
             return Object.assign({}, state, {
-                fetching: false,
+                fetchingSetup: false,
                 setupRedirect: true
             });
         case SYSTEM_SETUP_FETCHED:
             return Object.assign({}, state, {
-                fetching: false,
+                fetchingSetup: false,
                 updateStatus: 'FETCHED',
                 setupData: action.setupData
             });
         case SYSTEM_SETUP_FETCH_ERROR:
             return Object.assign({}, state, {
-                fetching: false,
+                fetchingSetup: false,
                 updateStatus: 'ERROR',
-                errorMessage: action.message
+                error: {
+                    message: action.message,
+                    ...action.errors,
+                }
             });
         case SYSTEM_SETUP_UPDATING:
             return Object.assign({}, state, {
-                fetching: true,
+                fetchingSetup: true,
                 updateStatus: 'UPDATING'
             });
         case SYSTEM_SETUP_UPDATED:
             return Object.assign({}, state, {
-                fetching: false,
+                fetchingSetup: false,
                 updateStatus: 'UPDATED'
             });
         case SYSTEM_SETUP_UPDATE_ERROR:
             return Object.assign({}, state, {
-                fetching: false,
+                fetchingSetup: false,
                 updateStatus: 'ERROR',
-                errorMessage: action.message
+                error: {
+                    message: action.message,
+                    ...action.errors,
+                }
             });
         case SERIALIZE:
             return initialState;

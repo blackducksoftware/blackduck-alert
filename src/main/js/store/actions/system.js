@@ -76,10 +76,11 @@ function systemSetupUpdated() {
     };
 }
 
-function systemSetupUpdateError(message) {
+function systemSetupUpdateError(message, errors) {
     return {
         type: SYSTEM_SETUP_UPDATE_ERROR,
-        message
+        message,
+        errors
     }
 }
 
@@ -106,15 +107,12 @@ export function getCurrentSystemSetup() {
         dispatch(fetchingSystemSetup())
         fetch(SYSTEM_SETUP_URL)
             .then((response) => {
-                console.log("System Setup requested.");
                 if (response.redirected) {
                     dispatch(fetchSetupRedirected())
                 } else {
                     if (response.ok) {
-                        console.log("Response body:")
-                        response.text().then((body) => {
+                        response.json().then((body) => {
                             console.log(body);
-                            console.log("System setup data fetched")
                             dispatch(systemSetupFetched(body))
                         })
                     } else {
@@ -122,7 +120,7 @@ export function getCurrentSystemSetup() {
                     }
                 }
             })
-            .catch(dispatch(systemSetupFetchError(console.error)));
+            .catch(console.error);
     };
 }
 
@@ -142,13 +140,28 @@ export function saveSystemSetup(setupData) {
 
         fetch(SYSTEM_SETUP_URL, options)
             .then((response) => {
+
                 if (response.ok) {
                     dispatch(systemSetupUpdated());
+                    dispatch(getCurrentSystemSetup());
                 } else {
-                    dispatch(systemSetupUpdateError(response.statusText))
+                    response.json().then((body) => {
+                        const jsonErrors = body.errors;
+                        if (jsonErrors) {
+                            const errors = {};
+                            for (const key in jsonErrors) {
+                                if (jsonErrors.hasOwnProperty(key)) {
+                                    const name = key.concat('Error');
+                                    const value = jsonErrors[key];
+                                    errors[name] = value;
+                                }
+                            }
+                            dispatch(systemSetupUpdateError(body.message, errors))
+                        }
+                    })
                 }
             })
-            .catch(dispatch(systemSetupUpdateError(console.error)));
+            .catch(console.error);
 
     };
 }
