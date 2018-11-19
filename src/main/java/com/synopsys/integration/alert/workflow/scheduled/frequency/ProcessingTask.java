@@ -69,7 +69,7 @@ public abstract class ProcessingTask extends ScheduledTask {
         final ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
         final Date startDate = Date.from(lastRunTime.toInstant());
         final Date endDate = Date.from(currentTime.toInstant());
-        return new DateRange(startDate, endDate);
+        return DateRange.of(startDate, endDate);
     }
 
     @Override
