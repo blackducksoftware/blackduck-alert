@@ -35,7 +35,7 @@ public class SlackEventProducerTest {
             content, commonDistributionConfigId, channelUsername, webhook, channelName);
 
         SlackDistributionConfig slackDistributionConfig = new SlackDistributionConfig(commonDistributionConfigId.toString(), webhook, channelUsername, channelName, distributionConfigId.toString(), distributionType, "Test HipChat Job",
-            providerName, "REAL_TIME", "FALSE", Collections.emptyList(), Collections.emptyList(), formatType);
+            providerName, "REAL_TIME", "FALSE", "", Collections.emptyList(), Collections.emptyList(), formatType);
 
         final SlackChannelEvent event = slackEventProducer.createChannelEvent(slackDistributionConfig, content);
         assertEquals(expected.getAuditEntryId(), event.getAuditEntryId());
@@ -53,7 +53,7 @@ public class SlackEventProducerTest {
             testContent, commonDistributionConfigId, channelUsername, webhook, channelName);
 
         slackDistributionConfig = new SlackDistributionConfig("1", webhook, channelUsername, channelName, "1", distributionType, "Test HipChat Job", providerName,
-            "REAL_TIME", "FALSE", Collections.emptyList(), Collections.emptyList(), "DEFAULT");
+            "REAL_TIME", "FALSE", "", Collections.emptyList(), Collections.emptyList(), "DEFAULT");
 
         final SlackChannelEvent testEvent = slackEventProducer.createChannelTestEvent(slackDistributionConfig);
         assertEquals(expectedTest.getAuditEntryId(), testEvent.getAuditEntryId());

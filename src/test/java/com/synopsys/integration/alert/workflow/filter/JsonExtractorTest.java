@@ -73,20 +73,22 @@ public class JsonExtractorTest {
         final String providerName = "some provider";
         final String frequency = "REAL_TIME";
         final String filterByProject = "true";
+        final String projectNamePattern = "projectNamePattern";
         final List<String> configuredProjects = Arrays.asList("project1", "project2", "project3");
         final List<String> notificationTypes = Arrays.asList("type1", "type2");
-        final CommonDistributionConfig commonDistributionConfig = new CommonDistributionConfig(id, distributionConfigId, distributionType, name, providerName, frequency, filterByProject, configuredProjects, notificationTypes,
+        final CommonDistributionConfig commonDistributionConfig = new CommonDistributionConfig(id, distributionConfigId, distributionType, name, providerName, frequency, filterByProject, projectNamePattern, configuredProjects,
+            notificationTypes,
             FormatType.DEFAULT.name());
 
-        final JsonField<String> nameField = JsonField.createStringField(null, null, null, null, JsonPath.compile("$.name"));
+        final JsonField<String> nameField = JsonField.createStringField(null, null, null, null, Arrays.asList(JsonPath.compile("$.name")));
         final List<String> nameValues = jsonExtractor.getValuesFromConfig(nameField, commonDistributionConfig);
         Assert.assertEquals(Arrays.asList(name), nameValues);
 
-        final JsonField<String> configuredProjectsField = JsonField.createStringField(null, null, null, null, JsonPath.compile("$.configuredProjects[*]"));
+        final JsonField<String> configuredProjectsField = JsonField.createStringField(null, null, null, null, Arrays.asList(JsonPath.compile("$.configuredProjects[*]")));
         final List<String> configuredProjectValues = jsonExtractor.getValuesFromConfig(configuredProjectsField, commonDistributionConfig);
         Assert.assertEquals(configuredProjects, configuredProjectValues);
 
-        final JsonField<String> notificationTypesField = JsonField.createStringField(null, null, null, null, JsonPath.compile("$.notificationTypes[*]"));
+        final JsonField<String> notificationTypesField = JsonField.createStringField(null, null, null, null, Arrays.asList(JsonPath.compile("$.notificationTypes[*]")));
         final List<String> notificationTypeValues = jsonExtractor.getValuesFromConfig(notificationTypesField, commonDistributionConfig);
         Assert.assertEquals(notificationTypes, notificationTypeValues);
     }
