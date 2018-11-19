@@ -95,7 +95,9 @@ public class EmailEventProducer extends ChannelEventProducer {
             blackDuckProjectEntities = blackDuckProjectRepositoryAccessor.readEntities()
                                            .stream()
                                            .map(databaseEntity -> (BlackDuckProjectEntity) databaseEntity)
-                                           .filter(databaseEntity -> databaseEntity.getName().matches(emailDistributionConfig.getProjectNamePattern()) || emailDistributionConfig.getConfiguredProjects().contains(databaseEntity.getName()))
+                                           .filter(
+                                               databaseEntity -> doesProjectNameMatchThePattern(databaseEntity.getName(), emailDistributionConfig.getProjectNamePattern())
+                                                                     || doesProjectNameMatchAConfiguredProject(databaseEntity.getName(), emailDistributionConfig.getConfiguredProjects()))
                                            .collect(Collectors.toSet());
         } else if (emailDistributionConfig.getProviderName().equals(BlackDuckProvider.COMPONENT_NAME)) {
             blackDuckProjectEntities = blackDuckProjectRepositoryAccessor.readEntities()
@@ -154,5 +156,13 @@ public class EmailEventProducer extends ChannelEventProducer {
                                  .collect(Collectors.toSet());
         }
         return emailAddresses;
+    }
+
+    private boolean doesProjectNameMatchThePattern(final String currentProjectName, final String projectNamePattern) {
+        return currentProjectName.matches(projectNamePattern);
+    }
+
+    private boolean doesProjectNameMatchAConfiguredProject(final String currentProjectName, final List<String> configuredProjectNames) {
+        return configuredProjectNames.contains(currentProjectName);
     }
 }
