@@ -46,7 +46,7 @@ public class SlackDistributionTypeConverterTest extends AlertIntegrationTest {
         final SlackDistributionConfigEntity savedSlackEntity = slackDistributionRepository.save(slackDistributionConfigEntity);
 
         final CommonDistributionConfigEntity commonDistributionConfigEntity = new CommonDistributionConfigEntity(savedSlackEntity.getId(), SlackChannel.COMPONENT_NAME, "nice name", "some_provider", FrequencyType.REAL_TIME,
-            Boolean.FALSE, FormatType.DEFAULT);
+            Boolean.FALSE, "", FormatType.DEFAULT);
         final CommonDistributionConfigEntity savedCommonEntity = commonDistributionRepository.save(commonDistributionConfigEntity);
 
         final Config config = slackDistributionTypeConverter.populateConfigFromEntity(savedSlackEntity);
