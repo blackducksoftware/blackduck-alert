@@ -83,8 +83,7 @@ public class EmailChannelDescriptorTestIT extends DescriptorTestConfigTest<Email
         final DatabaseEntity distributionEntity = getDistributionEntity();
         final String subjectLine = "Alert It Test";
         final EmailDistributionConfig jobConfig = new EmailDistributionConfig("1", String.valueOf(distributionEntity.getId()), getDescriptor().getDestinationName(), "Test Job", "provider", FrequencyType.DAILY.name(), "true",
-            "", subjectLine, true,
-            Collections.emptyList(), Collections.emptyList(), FormatType.DIGEST.name());
+            "", subjectLine, "", true, Collections.emptyList(), Collections.emptyList(), FormatType.DIGEST.name());
 
         final EmailChannelEvent channelEvent = channelEventProducer.createChannelEvent(jobConfig, content);
 
