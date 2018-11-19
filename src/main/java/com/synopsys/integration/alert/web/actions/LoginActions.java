@@ -90,18 +90,19 @@ public class LoginActions {
                 logger.error("Rest connection close failure", ex);
             }
         } catch (final AlertFieldException afex) {
-            logger.error("Error establishing connection", afex);
+            logger.error("Error establishing connection");
             final Map<String, String> fieldErrorMap = afex.getFieldErrors();
             fieldErrorMap.keySet().forEach(key -> {
                 final String value = fieldErrorMap.get(key);
                 logger.error(String.format("Field Error %s - %s", key, value));
             });
-
             logger.info("User not authenticated");
+            logger.debug(afex.getMessage(), afex);
             return false;
         } catch (final IntegrationException ex) {
-            logger.error("Error establishing connection", ex);
+            logger.error("Error establishing connection");
             logger.info("User not authenticated");
+            logger.debug(ex.getMessage(), ex);
             return false;
         }
 
