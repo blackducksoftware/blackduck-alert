@@ -7,7 +7,8 @@ import PasswordInput from '../../field/input/PasswordInput';
 import TextInput from '../../field/input/TextInput';
 import ConfigButtons from '../common/ConfigButtons';
 
-import {getEmailConfig, toggleAdvancedEmailOptions, updateEmailConfig} from '../../store/actions/emailConfig';
+import {getEmailConfig, testEmailConfigClosed, testEmailConfigOpened, toggleAdvancedEmailOptions, updateEmailConfig} from '../../store/actions/emailConfig';
+import ChannelTestModal from "../common/ChannelTestModal";
 
 class EmailConfiguration extends React.Component {
     constructor(props) {
@@ -599,7 +600,15 @@ class EmailConfiguration extends React.Component {
                         />
                     </div>
                     }
-                    <ConfigButtons cancelId="email-cancel" submitId="email-submit" includeSave includeTest={false}/>
+                    <ConfigButtons cancelId="email-cancel" submitId="email-submit" includeSave includeTest onTestClick={(event) => {
+                        event.preventDefault();
+                        this.props.testEmailConfigOpened();
+                    }}/>
+                    <ChannelTestModal destinationName={"Email address"} showTestModal={this.props.showTestModal} cancelTestModal={this.props.testEmailConfigClosed} sendTestMessage={(destination) => {
+                        // TODO invoke API
+                        alert("Destination: " + destination);
+                        this.props.testEmailConfigClosed();
+                    }}/>
                 </form>
             </div>
         );
@@ -657,6 +666,7 @@ EmailConfiguration.propTypes = {
     mailSmtpUserSet: PropTypes.bool,
     mailSmtpNoopStrict: PropTypes.bool,
     showAdvanced: PropTypes.bool.isRequired,
+    showTestModal: PropTypes.bool.isRequired,
     toggleAdvancedEmailOptions: PropTypes.func.isRequired,
     getEmailConfig: PropTypes.func.isRequired,
     errorMessage: PropTypes.string,
@@ -722,6 +732,7 @@ const mapStateToProps = state => ({
     mailSmtpUserSet: state.emailConfig.mailSmtpUserSet,
     mailSmtpNoopStrict: state.emailConfig.mailSmtpNoopStrict,
     showAdvanced: state.emailConfig.showAdvanced,
+    showTestModal: state.emailConfig.showTestModal,
     id: state.emailConfig.id,
     errorMessage: state.emailConfig.error.message,
     fieldErrors: state.emailConfig.error.fieldErrors,
@@ -731,7 +742,9 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     toggleAdvancedEmailOptions: toggle => dispatch(toggleAdvancedEmailOptions(toggle)),
     getEmailConfig: () => dispatch(getEmailConfig()),
-    updateEmailConfig: config => dispatch(updateEmailConfig(config))
+    updateEmailConfig: config => dispatch(updateEmailConfig(config)),
+    testEmailConfigOpened: () => dispatch(testEmailConfigOpened()),
+    testEmailConfigClosed: () => dispatch(testEmailConfigClosed())
 
 });
 

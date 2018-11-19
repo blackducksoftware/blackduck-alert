@@ -1,4 +1,14 @@
-import {EMAIL_CONFIG_FETCHED, EMAIL_CONFIG_FETCHING, EMAIL_CONFIG_HIDE_ADVANCED, EMAIL_CONFIG_SHOW_ADVANCED, EMAIL_CONFIG_UPDATE_ERROR, EMAIL_CONFIG_UPDATED, EMAIL_CONFIG_UPDATING} from './types';
+import {
+    EMAIL_CONFIG_FETCHED,
+    EMAIL_CONFIG_FETCHING,
+    EMAIL_CONFIG_HIDE_ADVANCED,
+    EMAIL_CONFIG_HIDE_TEST_MODAL,
+    EMAIL_CONFIG_SHOW_ADVANCED,
+    EMAIL_CONFIG_SHOW_TEST_MODAL,
+    EMAIL_CONFIG_UPDATE_ERROR,
+    EMAIL_CONFIG_UPDATED,
+    EMAIL_CONFIG_UPDATING
+} from './types';
 
 import {verifyLoginByStatus} from './session';
 
@@ -117,6 +127,21 @@ export function toggleAdvancedEmailOptions(toggle) {
         return {type: EMAIL_CONFIG_SHOW_ADVANCED};
     }
     return {type: EMAIL_CONFIG_HIDE_ADVANCED};
+}
+
+
+// TODO add test started, inProgress, succeeded, failed
+// TODO add test request (config, destination)
+export function testEmailConfigOpened() {
+    return {type: EMAIL_CONFIG_SHOW_TEST_MODAL};
+}
+
+export function testEmailConfigClosed() {
+    return {type: EMAIL_CONFIG_HIDE_TEST_MODAL};
+}
+
+export function cancelTest() {
+    return {type: EMAIL_CONFIG_HIDE_TEST_MODAL};
 }
 
 export function getEmailConfig() {
