@@ -67,10 +67,10 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
     public void sendMessage(final Set<String> emailAddresses, final String subjectLine, final String provider, final String formatType, final AggregateMessageContent content, final String blackDuckProjectName) throws IntegrationException {
         final EmailGlobalConfigEntity globalConfigEntity = getGlobalConfigEntity();
         if (!isValidGlobalConfigEntity(globalConfigEntity)) {
-            throw new IntegrationException("ERROR: Missing global config.");
+            throw new AlertException("ERROR: Missing global config.");
         }
         if (null == emailAddresses || emailAddresses.isEmpty()) {
-            throw new IntegrationException("ERROR: Could not determine what email addresses to send this content to.");
+            throw new AlertException("ERROR: Could not determine what email addresses to send this content to.");
         }
         final EmailProperties emailProperties = new EmailProperties(getGlobalConfigEntity());
         try {

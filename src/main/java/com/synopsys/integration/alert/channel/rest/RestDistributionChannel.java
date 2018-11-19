@@ -112,7 +112,7 @@ public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntit
         return channelRestConnectionFactory;
     }
 
-    public abstract String getApiUrl(G globalConfig);
+    public abstract String getApiUrl(G globalConfig) throws AlertException;
 
     public abstract String getApiUrl(String apiUrl);
 
