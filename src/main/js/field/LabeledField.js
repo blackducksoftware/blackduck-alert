@@ -9,7 +9,7 @@ class LabeledField extends Component {
                 <label className="col-sm-3 col-form-label text-right">{this.props.label}</label>
                 {field}
                 {this.props.errorMessage &&
-                <div className="offset-sm-3 col-sm-8">
+                <div className="offset-sm-3 col-sm-9">
                     <p className="fieldError">{this.props.errorMessage}</p>
                 </div>
                 }

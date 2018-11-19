@@ -7,7 +7,7 @@ export default class TextInput extends LabeledField {
         const placeholderText = (isSet) ? '********' : null;
         const className = inputClass || 'form-control';
 
-        return (super.render(<div className="d-inline-flex p-2 col-sm-8">
+        return (super.render(<div className="d-inline-flex p-2 col-sm-9">
             <input
                 id={this.props.id}
                 type="text"
