@@ -13,7 +13,7 @@ public class SystemMessageModelTest {
         final String content = "content";
 
         final SystemMessageModel model = new SystemMessageModel(type, createdAt, content);
-        assertEquals(type, model.getType());
+        assertEquals(type, model.getSeverity());
         assertEquals(createdAt, model.getCreatedAt());
         assertEquals(content, model.getContent());
     }
