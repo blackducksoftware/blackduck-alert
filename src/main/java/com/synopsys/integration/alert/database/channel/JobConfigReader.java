@@ -68,6 +68,9 @@ public class JobConfigReader {
 
     @Transactional
     public Optional<? extends CommonDistributionConfig> getPopulatedConfig(final Long configId) {
+        if (null == configId) {
+            return Optional.empty();
+        }
         final Optional<CommonDistributionConfigEntity> foundEntity = commonDistributionRepository.findById(configId);
         if (foundEntity.isPresent()) {
             final CommonDistributionConfigEntity configEntity = foundEntity.get();

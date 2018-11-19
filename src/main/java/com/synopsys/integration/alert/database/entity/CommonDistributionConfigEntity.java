@@ -51,6 +51,9 @@ public class CommonDistributionConfigEntity extends DatabaseEntity {
     @Column(name = "filter_by_project")
     private Boolean filterByProject;
 
+    @Column(name = "project_name_pattern")
+    private String projectNamePattern;
+
     @Column(name = "format_type")
     private FormatType formatType;
 
@@ -59,13 +62,14 @@ public class CommonDistributionConfigEntity extends DatabaseEntity {
     }
 
     public CommonDistributionConfigEntity(final Long distributionConfigId, final String distributionType, final String name, final String providerName, final FrequencyType frequency, final Boolean filterByProject,
-        final FormatType formatType) {
+        final String projectNamePattern, final FormatType formatType) {
         this.distributionConfigId = distributionConfigId;
         this.distributionType = distributionType;
         this.name = name;
         this.providerName = providerName;
         this.frequency = frequency;
         this.filterByProject = filterByProject;
+        this.projectNamePattern = projectNamePattern;
         this.formatType = formatType;
     }
 
@@ -95,6 +99,10 @@ public class CommonDistributionConfigEntity extends DatabaseEntity {
 
     public Boolean getFilterByProject() {
         return filterByProject;
+    }
+
+    public String getProjectNamePattern() {
+        return projectNamePattern;
     }
 
     public FormatType getFormatType() {

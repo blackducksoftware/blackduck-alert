@@ -96,10 +96,13 @@ public class JsonExtractor {
     }
 
     public <T> List<T> getValuesFromConfig(final JsonField<T> field, final Config config) {
-        final Optional<JsonPath> mapping = field.getConfigNameMapping();
+        final Optional<List<JsonPath>> mappings = field.getConfigNameMappings();
         final List<T> values = new ArrayList<>();
-        if (mapping.isPresent()) {
-            values.addAll(getValuesFromObject(field.getTypeRef(), mapping.get(), config));
+        if (mappings.isPresent()) {
+            final List<JsonPath> configMappings = mappings.get();
+            configMappings.forEach(jsonPath -> {
+                values.addAll(getValuesFromObject(field.getTypeRef(), jsonPath, config));
+            });
         }
         return values;
     }
