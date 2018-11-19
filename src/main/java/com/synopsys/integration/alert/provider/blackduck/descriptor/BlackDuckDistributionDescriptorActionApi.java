@@ -45,7 +45,7 @@ public class BlackDuckDistributionDescriptorActionApi extends DescriptorActionAp
     }
 
     @Override
-    public void testConfig(final Config restModel) {
+    public void testConfig(final Config restModel, final String ignoredDestination) {
 
     }
 }

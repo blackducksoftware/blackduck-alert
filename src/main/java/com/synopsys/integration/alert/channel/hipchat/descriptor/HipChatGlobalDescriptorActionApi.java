@@ -42,7 +42,7 @@ public class HipChatGlobalDescriptorActionApi extends DescriptorActionApi {
 
     @Autowired
     public HipChatGlobalDescriptorActionApi(final HipChatGlobalTypeConverter databaseContentConverter, final HipChatGlobalRepositoryAccessor repositoryAccessor, final HipChatChannel hipChatChannel,
-        final HipChatStartupComponent hipChatStartupComponent) {
+            final HipChatStartupComponent hipChatStartupComponent) {
         super(databaseContentConverter, repositoryAccessor, hipChatStartupComponent);
         this.hipChatChannel = hipChatChannel;
     }
@@ -56,8 +56,8 @@ public class HipChatGlobalDescriptorActionApi extends DescriptorActionApi {
     }
 
     @Override
-    public void testConfig(final Config restModel) throws IntegrationException {
-        hipChatChannel.testGlobalConfig(restModel);
+    public void testConfig(final Config restModel, final String testChannelId) throws IntegrationException {
+        hipChatChannel.testGlobalConfig(restModel, testChannelId);
     }
 
 }

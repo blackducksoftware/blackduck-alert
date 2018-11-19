@@ -30,6 +30,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.ContentConverter;
@@ -83,9 +84,9 @@ public class ChannelGlobalConfigController extends ConfigController {
     }
 
     @Override
-    public ResponseEntity<String> testConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
+    public ResponseEntity<String> testConfig(@RequestBody(required = false) final String restModel, @RequestParam(required = false) final String destination, @PathVariable final String descriptorName) {
         final DescriptorActionApi descriptor = descriptorMap.getChannelDescriptor(descriptorName).getRestApi(ActionApiType.CHANNEL_GLOBAL_CONFIG);
-        return controllerHandler.testConfig(descriptor.getConfigFromJson(restModel), descriptor);
+        return controllerHandler.testConfig(descriptor.getConfigFromJson(restModel), destination, descriptor);
     }
 
 }

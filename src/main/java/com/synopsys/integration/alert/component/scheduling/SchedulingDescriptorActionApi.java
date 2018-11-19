@@ -74,7 +74,7 @@ public class SchedulingDescriptorActionApi extends DescriptorActionApi {
     }
 
     @Override
-    public void testConfig(final Config restModel) throws IntegrationException {
+    public void testConfig(final Config ignoredRestModel, final String ignoredDestination) throws IntegrationException {
         throw new IntegrationException("Should not be implemented");
     }
 

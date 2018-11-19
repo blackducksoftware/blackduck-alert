@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.ContentConverter;
@@ -109,10 +110,10 @@ public class ChannelDistributionConfigController extends ConfigController {
 
     @Override
     @PostMapping("/{descriptorName}/test")
-    public ResponseEntity<String> testConfig(@RequestBody(required = false) final String restModel, @PathVariable final String descriptorName) {
+    public ResponseEntity<String> testConfig(@RequestBody(required = false) final String restModel, @RequestParam(required = false) final String destination, @PathVariable final String descriptorName) {
         final DescriptorActionApi descriptor = descriptorMap.getChannelDescriptor(descriptorName).getRestApi(ActionApiType.CHANNEL_DISTRIBUTION_CONFIG);
         final CommonDistributionConfig parsedRestModel = (CommonDistributionConfig) descriptor.getConfigFromJson(restModel);
-        return controllerHandler.testConfig(parsedRestModel, descriptor);
+        return controllerHandler.testConfig(parsedRestModel, destination, descriptor);
     }
 
 }

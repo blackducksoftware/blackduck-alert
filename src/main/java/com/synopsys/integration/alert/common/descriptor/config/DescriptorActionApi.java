@@ -63,9 +63,9 @@ public abstract class DescriptorActionApi {
         return getStartupComponent() != null;
     }
 
-    public abstract void validateConfig(Config restModel, Map<String, String> fieldErrors);
+    public abstract void validateConfig(final Config restModel, final Map<String, String> fieldErrors);
 
-    public abstract void testConfig(Config restModel) throws IntegrationException;
+    public abstract void testConfig(final Config restModel, final String destination) throws IntegrationException;
 
     public Optional<? extends DatabaseEntity> readEntity(final long id) {
         return getRepositoryAccessor().readEntity(id);

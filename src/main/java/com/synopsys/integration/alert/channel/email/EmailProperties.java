@@ -30,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalConfigEntity;
+import com.synopsys.integration.alert.web.channel.model.EmailGlobalConfig;
 
 public class EmailProperties {
     // property keys
@@ -42,6 +43,13 @@ public class EmailProperties {
             throw new IllegalArgumentException("Could not find the global Email configuration");
         }
         updateFromConfig(emailConfigEntity);
+    }
+
+    public EmailProperties(final EmailGlobalConfig emailGlobalConfig) {
+        if (emailGlobalConfig == null) {
+            throw new IllegalArgumentException("The global Email configuration was not populated");
+        }
+        updateFromConfig(emailGlobalConfig);
     }
 
     public void updateFromConfig(final EmailGlobalConfigEntity emailConfigEntity) {
@@ -93,6 +101,59 @@ public class EmailProperties {
         addJavaMailOption(EmailPropertyKeys.JAVAMAIL_NOOP_STRICT_KEY, emailConfigEntity.getMailSmtpNoopStrict());
 
         this.mailSmtpPassword = emailConfigEntity.getMailSmtpPassword();
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY, this.mailSmtpPassword);
+    }
+
+    // TODO abstract and unify this method with the above method
+    public void updateFromConfig(final EmailGlobalConfig emailGlobalConfig) {
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_USER_KEY, emailGlobalConfig.getMailSmtpUser());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_HOST_KEY, emailGlobalConfig.getMailSmtpHost());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_PORT_KEY, emailGlobalConfig.getMailSmtpPort());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_CONNECTION_TIMEOUT_KEY, emailGlobalConfig.getMailSmtpConnectionTimeout());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_TIMEOUT_KEY, emailGlobalConfig.getMailSmtpTimeout());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_WRITETIMEOUT_KEY, emailGlobalConfig.getMailSmtpWriteTimeout());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_FROM_KEY, emailGlobalConfig.getMailSmtpFrom());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_LOCALHOST_KEY, emailGlobalConfig.getMailSmtpLocalhost());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_LOCALHOST_ADDRESS_KEY, emailGlobalConfig.getMailSmtpLocalAddress());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_LOCALHOST_PORT_KEY, emailGlobalConfig.getMailSmtpLocalPort());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_EHLO_KEY, emailGlobalConfig.getMailSmtpEhlo());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_AUTH_KEY, emailGlobalConfig.getMailSmtpAuth());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_AUTH_MECHANISMS_KEY, emailGlobalConfig.getMailSmtpAuthMechanisms());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_AUTH_LOGIN_DISABLE_KEY, emailGlobalConfig.getMailSmtpAuthLoginDisable());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_AUTH_LOGIN_PLAIN_DISABLE_KEY, emailGlobalConfig.getMailSmtpAuthPlainDisable());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_AUTH_DIGEST_MD5_DISABLE_KEY, emailGlobalConfig.getMailSmtpAuthDigestMd5Disable());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_AUTH_NTLM_DISABLE_KEY, emailGlobalConfig.getMailSmtpAuthNtlmDisable());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_AUTH_NTLM_DOMAIN_KEY, emailGlobalConfig.getMailSmtpAuthNtlmDomain());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_AUTH_NTLM_FLAGS_KEY, emailGlobalConfig.getMailSmtpAuthNtlmFlags());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_AUTH_XOAUTH2_DISABLE_KEY, emailGlobalConfig.getMailSmtpAuthXoauth2Disable());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_SUBMITTER_KEY, emailGlobalConfig.getMailSmtpSubmitter());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_DSN_NOTIFY_KEY, emailGlobalConfig.getMailSmtpDnsNotify());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_DSN_RET_KEY, emailGlobalConfig.getMailSmtpDnsRet());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_ALLOW_8_BITMIME_KEY, emailGlobalConfig.getMailSmtpAllow8bitmime());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_SEND_PARTIAL_KEY, emailGlobalConfig.getMailSmtpSendPartial());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_SASL_ENABLE_KEY, emailGlobalConfig.getMailSmtpSaslEnable());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_SASL_MECHANISMS_KEY, emailGlobalConfig.getMailSmtpSaslMechanisms());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_SASL_AUTHORIZATION_ID_KEY, emailGlobalConfig.getMailSmtpSaslAuthorizationId());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_SASL_REALM_KEY, emailGlobalConfig.getMailSmtpSaslRealm());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_SASL_USE_CANONICAL_HOSTNAME_KEY, emailGlobalConfig.getMailSmtpSaslUseCanonicalHostname());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_QUITWAIT_KEY, emailGlobalConfig.getMailSmtpQuitwait());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_REPORT_SUCCESS_KEY, emailGlobalConfig.getMailSmtpReportSuccess());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_SSL_ENABLE_KEY, emailGlobalConfig.getMailSmtpSslEnable());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_SSL_CHECKSERVERIDENTITY_KEY, emailGlobalConfig.getMailSmtpSslCheckServerIdentity());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_SSL_TRUST_KEY, emailGlobalConfig.getMailSmtpSslTrust());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_SSL_PROTOCOLS_KEY, emailGlobalConfig.getMailSmtpSslProtocols());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_SSL_CIPHERSUITES_KEY, emailGlobalConfig.getMailSmtpSslCipherSuites());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_STARTTLS_ENABLE_KEY, emailGlobalConfig.getMailSmtpStartTlsEnable());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_STARTTLS_REQUIRED_KEY, emailGlobalConfig.getMailSmtpStartTlsRequired());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_PROXY_HOST_KEY, emailGlobalConfig.getMailSmtpProxyHost());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_PROXY_PORT_KEY, emailGlobalConfig.getMailSmtpProxyPort());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_SOCKS_HOST_KEY, emailGlobalConfig.getMailSmtpSocksHost());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_SOCKS_PORT_KEY, emailGlobalConfig.getMailSmtpSocksPort());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_MAILEXTENSION_KEY, emailGlobalConfig.getMailSmtpMailExtension());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_USERSET_KEY, emailGlobalConfig.getMailSmtpUserSet());
+        addJavaMailOption(EmailPropertyKeys.JAVAMAIL_NOOP_STRICT_KEY, emailGlobalConfig.getMailSmtpNoopStrict());
+
+        this.mailSmtpPassword = emailGlobalConfig.getMailSmtpPassword();
         addJavaMailOption(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY, this.mailSmtpPassword);
     }
 

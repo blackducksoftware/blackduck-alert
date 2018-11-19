@@ -46,7 +46,7 @@ public class HipChatDistributionDescriptorActionApi extends DescriptorActionApi 
 
     @Autowired
     public HipChatDistributionDescriptorActionApi(final HipChatDistributionTypeConverter databaseContentConverter, final HipChatDistributionRepositoryAccessor repositoryAccessor,
-        final HipChatChannel hipChatChannel, final HipChatEventProducer hipChatEventProducer) {
+            final HipChatChannel hipChatChannel, final HipChatEventProducer hipChatEventProducer) {
         super(databaseContentConverter, repositoryAccessor);
         this.hipChatEventProducer = hipChatEventProducer;
         this.hipChatChannel = hipChatChannel;
@@ -63,7 +63,7 @@ public class HipChatDistributionDescriptorActionApi extends DescriptorActionApi 
     }
 
     @Override
-    public void testConfig(final Config restModel) throws IntegrationException {
+    public void testConfig(final Config restModel, final String ignoredDestination) throws IntegrationException {
         final HipChatChannelEvent event = hipChatEventProducer.createChannelTestEvent((CommonDistributionConfig) restModel);
         hipChatChannel.sendMessage(event);
     }

@@ -24,6 +24,7 @@
 package com.synopsys.integration.alert.channel.email;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.Set;
@@ -43,6 +44,8 @@ import com.synopsys.integration.alert.database.audit.AuditUtility;
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalConfigEntity;
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalRepository;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.web.channel.model.EmailGlobalConfig;
+import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component(value = EmailGroupChannel.COMPONENT_NAME)
@@ -61,18 +64,31 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
 
     @Override
     public void sendMessage(final EmailChannelEvent event) throws IntegrationException {
-        sendMessage(event.getEmailAddresses(), event.getSubjectLine(), event.getProvider(), event.getFormatType(), event.getContent(), "ProjectName");
-    }
-
-    public void sendMessage(final Set<String> emailAddresses, final String subjectLine, final String provider, final String formatType, final AggregateMessageContent content, final String blackDuckProjectName) throws IntegrationException {
         final EmailGlobalConfigEntity globalConfigEntity = getGlobalConfigEntity();
         if (!isValidGlobalConfigEntity(globalConfigEntity)) {
             throw new IntegrationException("ERROR: Missing global config.");
         }
+        final EmailProperties emailProperties = new EmailProperties(globalConfigEntity);
+        sendMessage(emailProperties, event.getEmailAddresses(), event.getSubjectLine(), event.getProvider(), event.getFormatType(), event.getContent(), "ProjectName");
+    }
+
+    @Override
+    public String testGlobalConfig(final Config restModel, final String destination) throws IntegrationException {
+        try {
+            final EmailProperties globalConfigEntity = new EmailProperties((EmailGlobalConfig) restModel);
+            final AggregateMessageContent messageContent = new AggregateMessageContent("Message Content", "Test from Alert", Collections.emptyList());
+            sendMessage(globalConfigEntity, Collections.singleton(destination), "Test from Alert", "Global Configuration", "", messageContent, "N/A");
+            return "Success!";
+        } catch (final Exception e) {
+            return e.getMessage();
+        }
+    }
+
+    public void sendMessage(final EmailProperties emailProperties, final Set<String> emailAddresses, final String subjectLine, final String provider, final String formatType, final AggregateMessageContent content,
+            final String blackDuckProjectName) throws IntegrationException {
         if (null == emailAddresses || emailAddresses.isEmpty()) {
             throw new IntegrationException("ERROR: Could not determine what email addresses to send this content to.");
         }
-        final EmailProperties emailProperties = new EmailProperties(getGlobalConfigEntity());
         try {
             final EmailMessagingService emailService = new EmailMessagingService(getAlertProperties(), emailProperties);
 

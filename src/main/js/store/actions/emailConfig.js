@@ -13,6 +13,7 @@ import {
 import {verifyLoginByStatus} from './session';
 
 const CONFIG_URL = '/alert/api/configuration/channel/global/channel_email';
+const TEST_URL = CONFIG_URL + '/test';
 
 function scrubConfig(config) {
     return {
@@ -131,17 +132,33 @@ export function toggleAdvancedEmailOptions(toggle) {
 
 
 // TODO add test started, inProgress, succeeded, failed
-// TODO add test request (config, destination)
-export function testEmailConfigOpened() {
+export function openEmailConfigTest() {
     return {type: EMAIL_CONFIG_SHOW_TEST_MODAL};
 }
 
-export function testEmailConfigClosed() {
+export function closeEmailConfigTest() {
     return {type: EMAIL_CONFIG_HIDE_TEST_MODAL};
 }
 
-export function cancelTest() {
-    return {type: EMAIL_CONFIG_HIDE_TEST_MODAL};
+export function sendEmailConfigTest(config, destination) {
+    return (dispatch, getState) => {
+        dispatch(closeEmailConfigTest());
+        const body = scrubConfig(config);
+        const {csrfToken} = getState().session;
+        const requestUrl = `${TEST_URL}?destination=${destination}`;
+        fetch(requestUrl, {
+            credentials: 'same-origin',
+            method: 'POST',
+            body: JSON.stringify(body),
+            headers: {
+                'content-type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            }
+        })
+            .then((response) => {
+                // TODO handle response
+            })
+    };
 }
 
 export function getEmailConfig() {

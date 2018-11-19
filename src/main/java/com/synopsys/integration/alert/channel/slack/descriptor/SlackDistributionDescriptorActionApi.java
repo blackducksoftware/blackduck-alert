@@ -46,7 +46,7 @@ public class SlackDistributionDescriptorActionApi extends DescriptorActionApi {
 
     @Autowired
     public SlackDistributionDescriptorActionApi(final SlackDistributionTypeConverter databaseContentConverter, final SlackDistributionRepositoryAccessor repositoryAccessor,
-        final SlackChannel slackChannel, final SlackEventProducer slackEventProducer) {
+            final SlackChannel slackChannel, final SlackEventProducer slackEventProducer) {
         super(databaseContentConverter, repositoryAccessor);
         this.slackEventProducer = slackEventProducer;
         this.slackChannel = slackChannel;
@@ -64,7 +64,7 @@ public class SlackDistributionDescriptorActionApi extends DescriptorActionApi {
     }
 
     @Override
-    public void testConfig(final Config restModel) throws IntegrationException {
+    public void testConfig(final Config restModel, final String ignoredDestination) throws IntegrationException {
         final SlackChannelEvent event = slackEventProducer.createChannelTestEvent((CommonDistributionConfig) restModel);
         slackChannel.sendMessage(event);
     }

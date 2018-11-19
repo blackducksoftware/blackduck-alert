@@ -118,8 +118,8 @@ public class DescriptorConfigActions {
         return "Valid";
     }
 
-    public String testConfig(final Config config, final DescriptorActionApi descriptorActionApi) throws IntegrationException {
-        descriptorActionApi.testConfig(config);
+    public String testConfig(final Config config, final String destination, final DescriptorActionApi descriptorActionApi) throws IntegrationException {
+        descriptorActionApi.testConfig(config, destination);
         return "Successfully sent test message.";
     }
 

@@ -60,7 +60,7 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
 
     @Autowired
     public BlackDuckProviderDescriptorActionApi(final BlackDuckTypeConverter databaseContentConverter, final BlackDuckRepositoryAccessor repositoryAccessor, final BlackDuckProviderStartupComponent startupComponent,
-        final BlackDuckProperties blackDuckProperties) {
+            final BlackDuckProperties blackDuckProperties) {
         super(databaseContentConverter, repositoryAccessor, startupComponent);
         this.blackDuckProperties = blackDuckProperties;
     }
@@ -81,7 +81,7 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
     }
 
     @Override
-    public void testConfig(final Config restModel) throws IntegrationException {
+    public void testConfig(final Config restModel, final String ignoredDestination) throws IntegrationException {
         final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
 
         final BlackDuckConfig blackDuckConfig = (BlackDuckConfig) restModel;
