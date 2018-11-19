@@ -14,7 +14,7 @@ public class SystemMessageTest {
         final SystemMessage systemMessage = new SystemMessage();
         assertNull(systemMessage.getContent());
         assertNull(systemMessage.getCreated());
-        assertNull(systemMessage.getType());
+        assertNull(systemMessage.getSeverity());
     }
 
     @Test
@@ -24,7 +24,7 @@ public class SystemMessageTest {
         final String content = "contents";
         final SystemMessage systemMessage = new SystemMessage(date, type, content);
         assertEquals(date, systemMessage.getCreated());
-        assertEquals(type, systemMessage.getType());
+        assertEquals(type, systemMessage.getSeverity());
         assertEquals(content, systemMessage.getContent());
     }
 }

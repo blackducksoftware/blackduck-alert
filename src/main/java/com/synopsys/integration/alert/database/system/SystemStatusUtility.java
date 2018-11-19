@@ -55,16 +55,20 @@ public class SystemStatusUtility {
 
     @Transactional
     public void startupOccurred() {
-        ZonedDateTime zonedDateTime = ZonedDateTime.now();
-        zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneOffset.UTC);
         final SystemStatus systemStatus = getSystemStatus();
-        final SystemStatus newSystemStatus = new SystemStatus(systemStatus.isInitialConfigurationPerformed(), Date.from(zonedDateTime.toInstant()));
+        final SystemStatus newSystemStatus = new SystemStatus(systemStatus.isInitialConfigurationPerformed(), createCurrentDateTimestamp());
         updateSystemStatus(newSystemStatus);
     }
 
     @Transactional
     public Date getStartupTime() {
         return getSystemStatus().getStartupTime();
+    }
+
+    private Date createCurrentDateTimestamp() {
+        ZonedDateTime zonedDateTime = ZonedDateTime.now();
+        zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneOffset.UTC);
+        return Date.from(zonedDateTime.toInstant());
     }
 
     private SystemStatus getSystemStatus() {

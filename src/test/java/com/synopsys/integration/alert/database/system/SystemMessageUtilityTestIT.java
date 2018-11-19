@@ -48,7 +48,7 @@ public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
         assertEquals(1, actualMessageList.size());
         final SystemMessage actualMessage = actualMessageList.get(0);
         assertEquals(content, actualMessage.getContent());
-        assertEquals(systemMessageType.name(), actualMessage.getType());
+        assertEquals(systemMessageType.name(), actualMessage.getSeverity());
     }
 
     @Test
