@@ -80,7 +80,10 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
     }
 
     @Override
-    public String getApiUrl(final HipChatGlobalConfigEntity globalConfig) {
+    public String getApiUrl(final HipChatGlobalConfigEntity globalConfig) throws AlertException {
+        if (!isValidGlobalConfig(globalConfig)) {
+            throw new AlertException("ERROR: Missing global config.");
+        }
         return getApiUrl(globalConfig.getHostServer());
     }
 
@@ -101,7 +104,7 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
         final HipChatGlobalConfig hipChatGlobalConfig = (HipChatGlobalConfig) restModel;
 
         if (StringUtils.isBlank(hipChatGlobalConfig.getApiKey())) {
-            throw new IntegrationException("Invalid API key: API key not provided");
+            throw new AlertException("Invalid API key: API key not provided");
         }
         final RestConnection restConnection = getChannelRestConnectionFactory().createUnauthenticatedRestConnection(getApiUrl(hipChatGlobalConfig.getHostServer()));
         if (restConnection != null) {
@@ -139,10 +142,10 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
     @Override
     public List<Request> createRequests(final HipChatGlobalConfigEntity globalConfig, final HipChatChannelEvent event) throws IntegrationException {
         if (!isValidGlobalConfig(globalConfig)) {
-            throw new IntegrationException("ERROR: Missing global config.");
+            throw new AlertException("ERROR: Missing global config.");
         }
         if (event.getRoomId() == null) {
-            throw new IntegrationException("Room ID missing");
+            throw new AlertException("Room ID missing");
         } else {
             final String htmlMessage = createHtmlMessage(event.getContent());
             if (isChunkedMessageNeeded(htmlMessage)) {

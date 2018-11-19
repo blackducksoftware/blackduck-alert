@@ -39,6 +39,7 @@ import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.channel.rest.RestDistributionChannel;
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.common.model.LinkableItem;
@@ -88,9 +89,9 @@ public class SlackChannel extends RestDistributionChannel<GlobalChannelConfigEnt
     @Override
     public List<Request> createRequests(final GlobalChannelConfigEntity globalConfig, final SlackChannelEvent event) throws IntegrationException {
         if (StringUtils.isBlank(event.getWebHook())) {
-            throw new IntegrationException("Missing Webhook URL");
+            throw new AlertException("Missing Webhook URL");
         } else if (StringUtils.isBlank(event.getChannelName())) {
-            throw new IntegrationException("Missing channel name");
+            throw new AlertException("Missing channel name");
         } else {
             if (StringUtils.isBlank(event.getContent().getValue())) {
                 return Collections.emptyList();
