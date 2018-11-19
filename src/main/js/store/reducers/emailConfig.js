@@ -1,8 +1,20 @@
-import {EMAIL_CONFIG_FETCHED, EMAIL_CONFIG_FETCHING, EMAIL_CONFIG_HIDE_ADVANCED, EMAIL_CONFIG_SHOW_ADVANCED, EMAIL_CONFIG_UPDATE_ERROR, EMAIL_CONFIG_UPDATED, EMAIL_CONFIG_UPDATING, SERIALIZE} from '../actions/types';
+import {
+    EMAIL_CONFIG_FETCHED,
+    EMAIL_CONFIG_FETCHING,
+    EMAIL_CONFIG_HIDE_ADVANCED,
+    EMAIL_CONFIG_HIDE_TEST_MODAL,
+    EMAIL_CONFIG_SHOW_ADVANCED,
+    EMAIL_CONFIG_SHOW_TEST_MODAL,
+    EMAIL_CONFIG_UPDATE_ERROR,
+    EMAIL_CONFIG_UPDATED,
+    EMAIL_CONFIG_UPDATING,
+    SERIALIZE
+} from '../actions/types';
 
 const initialState = {
     fetching: false,
     showAdvanced: false,
+    showTestModal: false,
     updateStatus: null,
     error: {
         message: '',
@@ -34,6 +46,16 @@ const config = (state = initialState, action) => {
         case EMAIL_CONFIG_HIDE_ADVANCED:
             return Object.assign({}, state, {
                 showAdvanced: false
+            });
+
+        case EMAIL_CONFIG_SHOW_TEST_MODAL:
+            return Object.assign({}, state, {
+                showTestModal: true
+            });
+
+        case EMAIL_CONFIG_HIDE_TEST_MODAL:
+            return Object.assign({}, state, {
+                showTestModal: false
             });
 
         case EMAIL_CONFIG_UPDATING:

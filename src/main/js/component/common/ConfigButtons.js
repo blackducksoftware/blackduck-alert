@@ -39,7 +39,7 @@ ConfigButtons.defaultProps = {
     includeTest: false,
     onCancelClick: () => {
     },
-    onTestClick: () => {
+    onTestClick: (evt) => {
     }
 };
 
