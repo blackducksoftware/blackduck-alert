@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.install;
+package com.synopsys.integration.alert.workflow.startup.install;
 
 import com.synopsys.integration.util.Stringable;
 
