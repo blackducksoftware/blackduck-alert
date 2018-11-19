@@ -95,9 +95,8 @@ public class EmailEventProducer extends ChannelEventProducer {
             blackDuckProjectEntities = blackDuckProjectRepositoryAccessor.readEntities()
                                            .stream()
                                            .map(databaseEntity -> (BlackDuckProjectEntity) databaseEntity)
-                                           .filter(
-                                               databaseEntity -> doesProjectNameMatchThePattern(databaseEntity.getName(), emailDistributionConfig.getProjectNamePattern())
-                                                                     || doesProjectNameMatchAConfiguredProject(databaseEntity.getName(), emailDistributionConfig.getConfiguredProjects()))
+                                           .filter(databaseEntity -> doesProjectNameMatchThePattern(databaseEntity.getName(), emailDistributionConfig.getProjectNamePattern())
+                                                                         || doesProjectNameMatchAConfiguredProject(databaseEntity.getName(), emailDistributionConfig.getConfiguredProjects()))
                                            .collect(Collectors.toSet());
         } else if (emailDistributionConfig.getProviderName().equals(BlackDuckProvider.COMPONENT_NAME)) {
             blackDuckProjectEntities = blackDuckProjectRepositoryAccessor.readEntities()
