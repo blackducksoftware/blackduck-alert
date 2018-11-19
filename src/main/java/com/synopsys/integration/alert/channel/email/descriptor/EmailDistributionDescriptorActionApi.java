@@ -44,7 +44,7 @@ public class EmailDistributionDescriptorActionApi extends DescriptorActionApi {
 
     @Autowired
     public EmailDistributionDescriptorActionApi(final EmailDistributionTypeConverter databaseContentConverter, final EmailDistributionRepositoryAccessor repositoryAccessor, final EmailGroupChannel emailGroupChannel,
-        final EmailEventProducer emailEventProducer) {
+            final EmailEventProducer emailEventProducer) {
         super(databaseContentConverter, repositoryAccessor);
         this.emailGroupChannel = emailGroupChannel;
         this.emailEventProducer = emailEventProducer;
@@ -55,7 +55,7 @@ public class EmailDistributionDescriptorActionApi extends DescriptorActionApi {
     }
 
     @Override
-    public void testConfig(final Config restModel) throws IntegrationException {
+    public void testConfig(final Config restModel, final String ignoredDestination) throws IntegrationException {
         final EmailChannelEvent event = emailEventProducer.createChannelTestEvent((CommonDistributionConfig) restModel);
         emailGroupChannel.sendMessage(event);
     }

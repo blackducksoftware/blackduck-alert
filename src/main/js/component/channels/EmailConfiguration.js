@@ -7,7 +7,7 @@ import PasswordInput from '../../field/input/PasswordInput';
 import TextInput from '../../field/input/TextInput';
 import ConfigButtons from '../common/ConfigButtons';
 
-import {getEmailConfig, testEmailConfigClosed, testEmailConfigOpened, toggleAdvancedEmailOptions, updateEmailConfig} from '../../store/actions/emailConfig';
+import {closeEmailConfigTest, getEmailConfig, openEmailConfigTest, toggleAdvancedEmailOptions, updateEmailConfig} from '../../store/actions/emailConfig';
 import ChannelTestModal from "../common/ChannelTestModal";
 
 class EmailConfiguration extends React.Component {
@@ -602,12 +602,12 @@ class EmailConfiguration extends React.Component {
                     }
                     <ConfigButtons cancelId="email-cancel" submitId="email-submit" includeSave includeTest onTestClick={(event) => {
                         event.preventDefault();
-                        this.props.testEmailConfigOpened();
+                        this.props.openEmailConfigTest();
                     }}/>
-                    <ChannelTestModal destinationName={"Email address"} showTestModal={this.props.showTestModal} cancelTestModal={this.props.testEmailConfigClosed} sendTestMessage={(destination) => {
+                    <ChannelTestModal destinationName={"Email address"} showTestModal={this.props.showTestModal} cancelTestModal={this.props.closeEmailConfigTest} sendTestMessage={(destination) => {
                         // TODO invoke API
                         alert("Destination: " + destination);
-                        this.props.testEmailConfigClosed();
+                        this.props.closeEmailConfigTest();
                     }}/>
                 </form>
             </div>
@@ -743,8 +743,8 @@ const mapDispatchToProps = dispatch => ({
     toggleAdvancedEmailOptions: toggle => dispatch(toggleAdvancedEmailOptions(toggle)),
     getEmailConfig: () => dispatch(getEmailConfig()),
     updateEmailConfig: config => dispatch(updateEmailConfig(config)),
-    testEmailConfigOpened: () => dispatch(testEmailConfigOpened()),
-    testEmailConfigClosed: () => dispatch(testEmailConfigClosed())
+    openEmailConfigTest: () => dispatch(openEmailConfigTest()),
+    closeEmailConfigTest: () => dispatch(closeEmailConfigTest())
 
 });
 

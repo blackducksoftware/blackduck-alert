@@ -70,7 +70,7 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
 
     @Autowired
     public HipChatChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditUtility auditUtility, final HipChatGlobalRepository hipChatGlobalRepository,
-        final ChannelRestConnectionFactory channelRestConnectionFactory) {
+            final ChannelRestConnectionFactory channelRestConnectionFactory) {
         super(gson, alertProperties, blackDuckProperties, auditUtility, hipChatGlobalRepository, HipChatChannelEvent.class, channelRestConnectionFactory);
     }
 
@@ -94,7 +94,8 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
     }
 
     @Override
-    public String testGlobalConfig(final Config restModel) throws IntegrationException {
+    // FIXME use channelId to send a test message
+    public String testGlobalConfig(final Config restModel, final String channelId) throws IntegrationException {
         if (restModel == null) {
             return "The provided config was null.";
         }

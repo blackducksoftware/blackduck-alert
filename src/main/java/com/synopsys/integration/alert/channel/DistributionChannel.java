@@ -51,7 +51,7 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, E
     private final BlackDuckProperties blackDuckProperties;
 
     public DistributionChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditUtility auditUtility, final JpaRepository<G, Long> globalRepository,
-        final Class eventClass) {
+            final Class eventClass) {
         super(gson, eventClass);
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
@@ -111,7 +111,8 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, E
 
     public abstract void sendMessage(final E event) throws IntegrationException;
 
-    public String testGlobalConfig(final Config restModel) throws IntegrationException {
+    // TODO
+    public String testGlobalConfig(final Config restModel, final String destination) throws IntegrationException {
         if (restModel != null) {
             throw new AlertException("Test method not implemented.");
         }

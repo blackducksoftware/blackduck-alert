@@ -160,8 +160,8 @@ public abstract class Descriptor {
         getRestApi(actionApiType).validateConfig(config, fieldErrors);
     }
 
-    public void testConfig(final ActionApiType actionApiType, final Config config) throws IntegrationException {
-        getRestApi(actionApiType).testConfig(config);
+    public void testConfig(final ActionApiType actionApiType, final Config config, final String destination) throws IntegrationException {
+        getRestApi(actionApiType).testConfig(config, destination);
     }
 
 }

@@ -43,7 +43,7 @@ public class EmailGlobalDescriptorActionApi extends DescriptorActionApi {
 
     @Autowired
     public EmailGlobalDescriptorActionApi(final EmailGlobalTypeConverter databaseContentConverter, final EmailGlobalRepositoryAccessor repositoryAccessor, final EmailGlobalStartupComponent startupComponent,
-        final EmailGroupChannel emailGroupChannel) {
+            final EmailGroupChannel emailGroupChannel) {
         super(databaseContentConverter, repositoryAccessor, startupComponent);
         this.emailGroupChannel = emailGroupChannel;
     }
@@ -65,8 +65,8 @@ public class EmailGlobalDescriptorActionApi extends DescriptorActionApi {
     }
 
     @Override
-    public void testConfig(final Config restModel) throws IntegrationException {
-        emailGroupChannel.testGlobalConfig(restModel);
+    public void testConfig(final Config restModel, final String testEmailAddress) throws IntegrationException {
+        emailGroupChannel.testGlobalConfig(restModel, testEmailAddress);
     }
 
 }

@@ -46,17 +46,17 @@ public abstract class ConfigController extends BaseController {
     public abstract List<? extends Config> getConfig(final Long id, final String descriptorName);
 
     @PostMapping
-    public abstract ResponseEntity<String> postConfig(String config, final String descriptorName);
+    public abstract ResponseEntity<String> postConfig(final String config, final String descriptorName);
 
     @PutMapping
-    public abstract ResponseEntity<String> putConfig(String config, final String descriptorName);
+    public abstract ResponseEntity<String> putConfig(final String config, final String descriptorName);
 
     @PostMapping(value = "/validate")
-    public abstract ResponseEntity<String> validateConfig(String config, final String descriptorName);
+    public abstract ResponseEntity<String> validateConfig(final String config, final String descriptorName);
 
     @DeleteMapping
-    public abstract ResponseEntity<String> deleteConfig(Long id, final String descriptorName);
+    public abstract ResponseEntity<String> deleteConfig(final Long id, final String descriptorName);
 
     @PostMapping(value = "/test")
-    public abstract ResponseEntity<String> testConfig(String config, final String descriptorName);
+    public abstract ResponseEntity<String> testConfig(final String config, final String destination, final String descriptorName);
 }
