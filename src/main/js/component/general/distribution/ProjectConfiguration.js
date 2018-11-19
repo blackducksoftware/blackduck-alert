@@ -103,7 +103,7 @@ class ProjectConfiguration extends Component {
         let projectSelectionDiv = null;
         if (!this.props.includeAllProjects) {
             projectSelectionDiv = (<div>
-                <TextInput id="projectNamePattern" label="Project name pattern" name="projectNamePattern" value={this.props.projectNamePattern} onChange={this.props.handleChange} errorName="projectNamePatternError"
+                <TextInput id="projectNamePattern" label="Project Name Pattern" name="projectNamePattern" value={this.props.projectNamePattern} onChange={this.props.handleChange} errorName="projectNamePatternError"
                            errorValue={this.props.error.projectNamePatternError}/>
                 <BootstrapTable
                     version="4"
