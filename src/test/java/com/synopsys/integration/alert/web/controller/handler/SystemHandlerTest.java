@@ -11,8 +11,8 @@ import org.springframework.http.ResponseEntity;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
-import com.synopsys.integration.alert.install.SystemInitializer;
 import com.synopsys.integration.alert.web.actions.SystemActions;
+import com.synopsys.integration.alert.workflow.startup.install.SystemInitializer;
 
 public class SystemHandlerTest {
     private SystemActions systemActions;

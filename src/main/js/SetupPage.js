@@ -81,7 +81,7 @@ class SetupPage extends Component {
                                     <h2>Encryption Configuration</h2>
                                     <PasswordInput
                                         id="encryptionPassword"
-                                        label="Encryption Password"
+                                        label="Password"
                                         name="globalEncryptionPassword"
                                         value={this.state.setupData.globalEncryptionPassword}
                                         isSet={this.state.setupData.globalEncryptionPasswordSet}
@@ -91,7 +91,7 @@ class SetupPage extends Component {
                                     />
                                     <PasswordInput
                                         id="encryptionSalt"
-                                        label="Encryption Salt"
+                                        label="Salt"
                                         name="globalEncryptionSalt"
                                         value={this.state.setupData.globalEncryptionSalt}
                                         isSet={this.state.setupData.globalEncryptionSaltSet}
@@ -105,7 +105,7 @@ class SetupPage extends Component {
                                         <h2>BlackDuck Configuration</h2>
                                         <TextInput
                                             id="blackDuckProviderUrl"
-                                            label="BlackDuck Url"
+                                            label="Url"
                                             name="blackDuckProviderUrl"
                                             value={this.state.setupData.blackDuckProviderUrl}
                                             onChange={this.handleChange}
@@ -150,7 +150,7 @@ class SetupPage extends Component {
                                         />
                                         <PasswordInput
                                             id="proxyPassword"
-                                            label="Proxy Password"
+                                            label="Password"
                                             name="proxyPassword"
                                             value={this.state.setupData.proxyPassword}
                                             isSet={this.state.setupData.proxyPasswordSet}

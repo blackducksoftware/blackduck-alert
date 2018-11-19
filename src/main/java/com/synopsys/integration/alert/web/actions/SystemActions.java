@@ -36,10 +36,10 @@ import com.synopsys.integration.alert.common.model.DateRange;
 import com.synopsys.integration.alert.database.system.SystemMessage;
 import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
-import com.synopsys.integration.alert.install.RequiredSystemConfiguration;
-import com.synopsys.integration.alert.install.SystemInitializer;
 import com.synopsys.integration.alert.web.model.SystemMessageModel;
 import com.synopsys.integration.alert.web.model.SystemSetupModel;
+import com.synopsys.integration.alert.workflow.startup.install.RequiredSystemConfiguration;
+import com.synopsys.integration.alert.workflow.startup.install.SystemInitializer;
 import com.synopsys.integration.rest.RestConstants;
 
 @Component

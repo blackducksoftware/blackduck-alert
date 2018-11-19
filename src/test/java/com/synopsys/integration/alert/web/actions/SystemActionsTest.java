@@ -12,7 +12,7 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.database.system.SystemMessage;
 import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
-import com.synopsys.integration.alert.install.SystemInitializer;
+import com.synopsys.integration.alert.workflow.startup.install.SystemInitializer;
 
 public class SystemActionsTest {
     private SystemStatusUtility systemStatusUtility;
