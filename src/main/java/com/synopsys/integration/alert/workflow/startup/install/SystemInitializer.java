@@ -38,6 +38,7 @@ import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
+import com.synopsys.integration.alert.workflow.startup.SystemValidator;
 
 @Component
 public class SystemInitializer {
@@ -46,13 +47,16 @@ public class SystemInitializer {
     private final AlertProperties alertProperties;
     private final GlobalBlackDuckRepository globalBlackDuckRepository;
     private final EncryptionUtility encryptionUtility;
+    private final SystemValidator systemValidator;
 
     @Autowired
-    public SystemInitializer(final SystemStatusUtility systemStatusUtility, final AlertProperties alertProperties, final GlobalBlackDuckRepository globalBlackDuckRepository, final EncryptionUtility encryptionUtility) {
+    public SystemInitializer(final SystemStatusUtility systemStatusUtility, final AlertProperties alertProperties, final GlobalBlackDuckRepository globalBlackDuckRepository, final EncryptionUtility encryptionUtility,
+        final SystemValidator systemValidator) {
         this.systemStatusUtility = systemStatusUtility;
         this.alertProperties = alertProperties;
         this.globalBlackDuckRepository = globalBlackDuckRepository;
         this.encryptionUtility = encryptionUtility;
+        this.systemValidator = systemValidator;
     }
 
     public boolean isSystemInitialized() {
@@ -94,7 +98,7 @@ public class SystemInitializer {
         saveEncryptionProperties(requiredSystemConfiguration);
         saveProxySettings(requiredSystemConfiguration);
         saveBlackDuckConfiguration(requiredSystemConfiguration);
-        systemStatusUtility.setSystemInitialized(true);
+        systemValidator.validate();
     }
 
     private void saveProxySettings(final RequiredSystemConfiguration requiredSystemConfiguration) {
