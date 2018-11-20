@@ -66,11 +66,12 @@ public class SystemValidator {
         this.systemMessageUtility = systemMessageUtility;
     }
 
-    public void validate() {
+    public boolean validate() {
         boolean valid = true;
         valid = valid && validateEncryptionProperties();
         valid = valid && validateProviders();
         systemStatusUtility.setSystemInitialized(valid);
+        return valid;
     }
 
     public boolean validateEncryptionProperties() {

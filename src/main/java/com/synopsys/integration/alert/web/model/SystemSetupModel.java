@@ -30,41 +30,41 @@ public class SystemSetupModel extends MaskedModel {
     private Integer blackDuckConnectionTimeout;
     @SensitiveField
     private String blackDuckApiToken;
-    private boolean blackDuckApiTokenIsSet;
+    private boolean blackDuckApiTokenSet;
     @SensitiveField
     private String globalEncryptionPassword;
-    private boolean globalEncryptionPasswordIsSet;
+    private boolean globalEncryptionPasswordSet;
     @SensitiveField
     private String globalEncryptionSalt;
-    private boolean globalEncryptionSaltIsSet;
+    private boolean globalEncryptionSaltSet;
 
     private String proxyHost;
     private String proxyPort;
     private String proxyUsername;
     @SensitiveField
     private String proxyPassword;
-    private boolean proxyPasswordIsSet;
+    private boolean proxyPasswordSet;
 
     public SystemSetupModel() {
 
     }
 
-    public SystemSetupModel(final String blackDuckProviderUrl, final Integer blackDuckConnectionTimeout, final String blackDuckApiToken, final boolean blackDuckApiTokenIsSet,
-        final String globalEncryptionPassword, final boolean globalEncryptionPasswordIsSet, final String globalEncryptionSalt, final boolean globalEncryptionSaltIsSet,
-        final String proxyHost, final String proxyPort, final String proxyUsername, final String proxyPassword, final boolean proxyPasswordIsSet) {
+    public SystemSetupModel(final String blackDuckProviderUrl, final Integer blackDuckConnectionTimeout, final String blackDuckApiToken, final boolean blackDuckApiTokenSet,
+        final String globalEncryptionPassword, final boolean globalEncryptionPasswordSet, final String globalEncryptionSalt, final boolean globalEncryptionSaltSet,
+        final String proxyHost, final String proxyPort, final String proxyUsername, final String proxyPassword, final boolean proxyPasswordSet) {
         this.blackDuckProviderUrl = blackDuckProviderUrl;
         this.blackDuckConnectionTimeout = blackDuckConnectionTimeout;
         this.blackDuckApiToken = blackDuckApiToken;
-        this.blackDuckApiTokenIsSet = blackDuckApiTokenIsSet;
+        this.blackDuckApiTokenSet = blackDuckApiTokenSet;
         this.globalEncryptionPassword = globalEncryptionPassword;
-        this.globalEncryptionPasswordIsSet = globalEncryptionPasswordIsSet;
+        this.globalEncryptionPasswordSet = globalEncryptionPasswordSet;
         this.globalEncryptionSalt = globalEncryptionSalt;
-        this.globalEncryptionSaltIsSet = globalEncryptionSaltIsSet;
+        this.globalEncryptionSaltSet = globalEncryptionSaltSet;
         this.proxyHost = proxyHost;
         this.proxyPort = proxyPort;
         this.proxyUsername = proxyUsername;
         this.proxyPassword = proxyPassword;
-        this.proxyPasswordIsSet = proxyPasswordIsSet;
+        this.proxyPasswordSet = proxyPasswordSet;
     }
 
     public String getBlackDuckProviderUrl() {
@@ -79,24 +79,24 @@ public class SystemSetupModel extends MaskedModel {
         return blackDuckApiToken;
     }
 
-    public boolean isBlackDuckApiTokenIsSet() {
-        return blackDuckApiTokenIsSet;
+    public boolean isBlackDuckApiTokenSet() {
+        return blackDuckApiTokenSet;
     }
 
     public String getGlobalEncryptionPassword() {
         return globalEncryptionPassword;
     }
 
-    public boolean isGlobalEncryptionPasswordIsSet() {
-        return globalEncryptionPasswordIsSet;
+    public boolean isGlobalEncryptionPasswordSet() {
+        return globalEncryptionPasswordSet;
     }
 
     public String getGlobalEncryptionSalt() {
         return globalEncryptionSalt;
     }
 
-    public boolean isGlobalEncryptionSaltIsSet() {
-        return globalEncryptionSaltIsSet;
+    public boolean isGlobalEncryptionSaltSet() {
+        return globalEncryptionSaltSet;
     }
 
     public String getProxyHost() {
@@ -115,7 +115,7 @@ public class SystemSetupModel extends MaskedModel {
         return proxyPassword;
     }
 
-    public boolean isProxyPasswordIsSet() {
-        return proxyPasswordIsSet;
+    public boolean isProxyPasswordSet() {
+        return proxyPasswordSet;
     }
 }

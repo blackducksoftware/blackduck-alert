@@ -88,11 +88,18 @@ public class SystemHandler extends ControllerHandler {
     }
 
     public ResponseEntity<String> saveRequiredInformation(final SystemSetupModel requiredSystemConfiguration) {
+        final ResponseEntity<String> response;
         if (actions.isSystemInitialized()) {
-            return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
+            response = new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
         } else {
             final SystemSetupModel savedConfig = actions.saveRequiredInformation(requiredSystemConfiguration);
-            return new ResponseEntity<>(getContentConverter().getJsonString(savedConfig), HttpStatus.OK);
+            final boolean initialized = actions.isSystemInitialized();
+            if (initialized) {
+                response = new ResponseEntity<>(getContentConverter().getJsonString(savedConfig), HttpStatus.OK);
+            } else {
+                response = createResponse(HttpStatus.BAD_REQUEST, "fieldErrors");
+            }
         }
+        return response;
     }
 }
