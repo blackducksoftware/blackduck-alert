@@ -150,7 +150,7 @@ public class BlackDuckAccumulator extends ScheduledTask {
         } catch (final IOException | ParseException e) {
             logger.error("Error creating date range", e);
         }
-        return new DateRange(startDate, endDate);
+        return DateRange.of(startDate, endDate);
     }
 
     protected String readSearchStartTime(final String lastSearchFileName) throws IOException {
