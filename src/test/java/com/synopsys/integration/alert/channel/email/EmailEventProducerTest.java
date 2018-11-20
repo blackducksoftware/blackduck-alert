@@ -34,7 +34,7 @@ public class EmailEventProducerTest {
         final String subjectLine = "Alert unit test";
 
         final EmailDistributionConfig emailDistributionConfig = new EmailDistributionConfig(commonDistributionConfigId.toString(), distributionConfigId.toString(), distributionType, "Job Name",
-            providerName, "REAL_TIME", "FALSE", null, subjectLine, false, Collections.emptyList(), Collections.emptyList(), formatType);
+            providerName, "REAL_TIME", "FALSE", null, subjectLine, "", false, Collections.emptyList(), Collections.emptyList(), formatType);
 
         final MockBlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor = new MockBlackDuckProjectRepositoryAccessor();
         final MockBlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor = new MockBlackDuckUserRepositoryAccessor();
@@ -68,7 +68,7 @@ public class EmailEventProducerTest {
         final String subjectLine = "Alert unit test";
 
         final EmailDistributionConfig emailDistributionConfig = new EmailDistributionConfig(commonDistributionConfigId.toString(), distributionConfigId.toString(), distributionType, "Job Name",
-            providerName, "REAL_TIME", "FALSE", null, subjectLine, false, Collections.emptyList(), Collections.emptyList(), formatType);
+            providerName, "REAL_TIME", "FALSE", null, subjectLine, "", false, Collections.emptyList(), Collections.emptyList(), formatType);
 
         final MockBlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor = new MockBlackDuckProjectRepositoryAccessor();
         final MockBlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor = new MockBlackDuckUserRepositoryAccessor();
@@ -124,8 +124,7 @@ public class EmailEventProducerTest {
             testContent, commonDistributionConfigId, Collections.emptySet(), subjectLine);
 
         final EmailDistributionConfig emailDistributionConfig = new EmailDistributionConfig(commonDistributionConfigId.toString(), distributionConfigId.toString(), distributionType, "Test Email Job", BlackDuckProvider.COMPONENT_NAME,
-            "REAL_TIME", "false",
-            "", subjectLine, false, Collections.emptyList(), Collections.emptyList(), "DEFAULT");
+            "REAL_TIME", "false", "", subjectLine, "", false, Collections.emptyList(), Collections.emptyList(), "DEFAULT");
 
         final EmailChannelEvent testEvent = emailEventProducer.createChannelTestEvent(emailDistributionConfig);
         assertEquals(expectedTest.getAuditEntryId(), testEvent.getAuditEntryId());
@@ -175,7 +174,7 @@ public class EmailEventProducerTest {
             testContent, commonDistributionConfigId, new HashSet<>(Arrays.asList(email1, email2)), subjectLine);
 
         final EmailDistributionConfig emailDistributionConfig = new EmailDistributionConfig(commonDistributionConfigId.toString(), distributionConfigId.toString(), distributionType, "Test Email Job", BlackDuckProvider.COMPONENT_NAME,
-            "REAL_TIME", "false", "", subjectLine, false, Collections.emptyList(), Collections.emptyList(), "DEFAULT");
+            "REAL_TIME", "false", "", subjectLine, "", false, Collections.emptyList(), Collections.emptyList(), "DEFAULT");
 
         final EmailChannelEvent testEvent = emailEventProducer.createChannelTestEvent(emailDistributionConfig);
         assertEquals(expectedTest.getAuditEntryId(), testEvent.getAuditEntryId());
@@ -229,7 +228,7 @@ public class EmailEventProducerTest {
             testContent, commonDistributionConfigId, new HashSet<>(Arrays.asList(email1, email2, email3, email4)), subjectLine);
 
         final EmailDistributionConfig emailDistributionConfig = new EmailDistributionConfig(commonDistributionConfigId.toString(), distributionConfigId.toString(), distributionType, "Test Email Job", BlackDuckProvider.COMPONENT_NAME,
-            "REAL_TIME", "true", "", subjectLine, false, Arrays.asList(project1, project2), Collections.emptyList(), "DEFAULT");
+            "REAL_TIME", "true", "", subjectLine, "", false, Arrays.asList(project1, project2), Collections.emptyList(), "DEFAULT");
 
         final EmailChannelEvent testEvent = emailEventProducer.createChannelTestEvent(emailDistributionConfig);
         assertEquals(expectedTest.getAuditEntryId(), testEvent.getAuditEntryId());

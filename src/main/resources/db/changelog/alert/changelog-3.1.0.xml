@@ -19,4 +19,9 @@
             <column name="CONTENT" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
+    <changeSet author="jrichard" id="1541000360346-3">
+        <addColumn tableName="COMMON_DISTRIBUTION_CONFIG" schemaName="ALERT">
+            <column name="PROJECT_NAME_PATTERN" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

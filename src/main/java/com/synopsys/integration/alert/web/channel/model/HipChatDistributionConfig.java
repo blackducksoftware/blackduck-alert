@@ -37,9 +37,8 @@ public class HipChatDistributionConfig extends CommonDistributionConfig {
     }
 
     public HipChatDistributionConfig(final String id, final String roomId, final boolean notify, final String color, final String distributionConfigId, final String distributionType, final String name, final String providerName,
-        final String frequency,
-        final String filterByProject, final List<String> configuredProjects, final List<String> notificationTypes, final String formatType) {
-        super(id, distributionConfigId, distributionType, name, providerName, frequency, filterByProject, configuredProjects, notificationTypes, formatType);
+        final String frequency, final String filterByProject, final String projectNamePattern, final List<String> configuredProjects, final List<String> notificationTypes, final String formatType) {
+        super(id, distributionConfigId, distributionType, name, providerName, frequency, filterByProject, projectNamePattern, configuredProjects, notificationTypes, formatType);
         this.roomId = roomId;
         this.notify = notify;
         this.color = color;

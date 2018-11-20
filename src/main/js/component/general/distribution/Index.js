@@ -232,7 +232,8 @@ class Index extends Component {
                                 frequency: item.frequency,
                                 formatType: item.formatType,
                                 notificationTypes: item.notificationTypes,
-                                configuredProjects: item.configuredProjects
+                                configuredProjects: item.configuredProjects,
+                                projectNamePattern: item.projectNamePattern
                             };
 
                             newJobs.push(jobConfig);

@@ -160,7 +160,7 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
 
     private EmailDistributionConfig createEmailDistributionJob(final String distributionType, final String providerName, final String frequency,
         final List<String> configuredProjects, final List<String> notificationTypes, final FormatType formatType) {
-        return new EmailDistributionConfig("1L", "1L", distributionType, "Test Distribution Job", providerName, frequency, "true", null, "TestEmailSubject", true, configuredProjects, notificationTypes, formatType.name());
+        return new EmailDistributionConfig("1L", "1L", distributionType, "Test Distribution Job", providerName, frequency, "true", null, "TestEmailSubject", "", true, configuredProjects, notificationTypes, formatType.name());
     }
 
     private String getNotificationContentFromFile(final String notificationJsonFileName) throws Exception {

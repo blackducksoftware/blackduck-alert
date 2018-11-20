@@ -12,22 +12,24 @@ public class MockCommonDistributionEntity extends MockEntityUtil<CommonDistribut
     private String name;
     private FrequencyType frequency;
     private Boolean filterByProject;
+    private final String projectNamePattern;
     private Long id;
     private String providerName;
     private FormatType formatType;
 
     public MockCommonDistributionEntity() {
-        this(1L, HipChatChannel.COMPONENT_NAME.toString(), "Name", "provider_blackduck", FrequencyType.REAL_TIME, FormatType.DEFAULT, true, 2L);
+        this(1L, HipChatChannel.COMPONENT_NAME.toString(), "Name", "provider_blackduck", FrequencyType.REAL_TIME, FormatType.DEFAULT, true, "", 2L);
     }
 
     private MockCommonDistributionEntity(final Long distributionConfigId, final String distributionType, final String name, final String providerName, final FrequencyType frequency, final FormatType formatType,
-        final Boolean filterByProject, final Long id) {
+        final Boolean filterByProject, final String projectNamePattern, final Long id) {
         super();
         this.distributionConfigId = distributionConfigId;
         this.distributionType = distributionType;
         this.name = name;
         this.frequency = frequency;
         this.filterByProject = filterByProject;
+        this.projectNamePattern = projectNamePattern;
         this.id = id;
         this.providerName = providerName;
         this.formatType = formatType;
@@ -73,6 +75,10 @@ public class MockCommonDistributionEntity extends MockEntityUtil<CommonDistribut
         this.frequency = frequency;
     }
 
+    public String getProjectNamePattern() {
+        return projectNamePattern;
+    }
+
     public Boolean getFilterByProject() {
         return filterByProject;
     }
@@ -100,7 +106,7 @@ public class MockCommonDistributionEntity extends MockEntityUtil<CommonDistribut
 
     @Override
     public CommonDistributionConfigEntity createEntity() {
-        final CommonDistributionConfigEntity entity = new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, providerName, frequency, filterByProject, formatType);
+        final CommonDistributionConfigEntity entity = new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, providerName, frequency, filterByProject, projectNamePattern, formatType);
         entity.setId(id);
         return entity;
     }

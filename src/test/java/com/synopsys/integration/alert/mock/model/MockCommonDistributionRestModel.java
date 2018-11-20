@@ -36,6 +36,7 @@ public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDis
     private final String providerName;
     private String frequency;
     private String filterByProject;
+    private String projectNamePattern;
     private List<String> configuredProjects;
     private List<NotificationType> notificationTypes;
     private String lastRan;
@@ -47,14 +48,13 @@ public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDis
     }
 
     private MockCommonDistributionRestModel(final String distributionConfigId) {
-        this("2", distributionConfigId, HipChatChannel.COMPONENT_NAME.toString(), "Name", "provider_blackduck", FrequencyType.REAL_TIME.name(), "true", projectMock.createProjectListing(),
+        this("2", distributionConfigId, HipChatChannel.COMPONENT_NAME.toString(), "Name", "provider_blackduck", FrequencyType.REAL_TIME.name(), "true", "projectNamePattern", projectMock.createProjectListing(),
             notificationTypeMock.createNotificiationTypeListing(),
             null, null, FormatType.DEFAULT.name());
     }
 
     private MockCommonDistributionRestModel(final String id, final String distributionConfigId, final String distributionType, final String name, final String providerName, final String frequency, final String filterByProject,
-        final List<String> configuredProjects,
-        final List<NotificationType> notificationTypes, final String lastRan, final String status, final String formatType) {
+        final String projectNamePattern, final List<String> configuredProjects, final List<NotificationType> notificationTypes, final String lastRan, final String status, final String formatType) {
         super();
         this.id = id;
         this.distributionConfigId = distributionConfigId;
@@ -63,6 +63,7 @@ public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDis
         this.providerName = providerName;
         this.frequency = frequency;
         this.filterByProject = filterByProject;
+        this.projectNamePattern = projectNamePattern;
         this.configuredProjects = configuredProjects;
         this.notificationTypes = notificationTypes;
         this.lastRan = lastRan;
@@ -112,6 +113,14 @@ public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDis
 
     public void setFilterByProject(final String filterByProject) {
         this.filterByProject = filterByProject;
+    }
+
+    public String getProjectNamePattern() {
+        return projectNamePattern;
+    }
+
+    public void setProjectNamePattern(final String projectNamePattern) {
+        this.projectNamePattern = projectNamePattern;
     }
 
     public List<String> getProjects() {
@@ -174,7 +183,8 @@ public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDis
 
     @Override
     public CommonDistributionConfig createRestModel() {
-        return new CommonDistributionConfig(id, distributionConfigId, distributionType, name, providerName, frequency, filterByProject, projectMock.createProjectListing(), notificationTypeMock.createNotificiationTypeListingAsStrings(),
+        return new CommonDistributionConfig(id, distributionConfigId, distributionType, name, providerName, frequency, filterByProject, projectNamePattern, projectMock.createProjectListing(),
+            notificationTypeMock.createNotificiationTypeListingAsStrings(),
             formatType);
     }
 
@@ -187,6 +197,7 @@ public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDis
         json.addProperty("providerName", providerName);
         json.addProperty("frequency", frequency);
         json.addProperty("filterByProject", filterByProject);
+        json.addProperty("projectNamePattern", projectNamePattern);
         json.add("configuredProjects", projectMock.getProjectListingJson());
         json.add("notificationTypes", notificationTypeMock.getNotificationListingJson());
         json.addProperty("formatType", formatType);
