@@ -84,7 +84,7 @@ public class SystemActions {
 
     private SystemMessageModel convert(final SystemMessage systemMessage) {
         final String createdAt = RestConstants.formatDate(systemMessage.getCreated());
-        return new SystemMessageModel(systemMessage.getSeverity(), createdAt, systemMessage.getContent());
+        return new SystemMessageModel(systemMessage.getSeverity(), createdAt, systemMessage.getContent(), systemMessage.getType());
     }
 
     public SystemSetupModel getCurrentSystemSetup() {

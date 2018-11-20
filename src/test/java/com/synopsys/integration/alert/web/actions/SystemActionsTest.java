@@ -68,6 +68,6 @@ public class SystemActionsTest {
     private List<SystemMessage> createSystemMessageList() {
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
         zonedDateTime = zonedDateTime.minusMinutes(1);
-        return Collections.singletonList(new SystemMessage(Date.from(zonedDateTime.toInstant()), "type", "content"));
+        return Collections.singletonList(new SystemMessage(Date.from(zonedDateTime.toInstant()), "type", "content", "type"));
     }
 }
