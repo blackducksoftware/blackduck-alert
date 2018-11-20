@@ -45,8 +45,7 @@ public class HipChatDescriptorTestIT extends DescriptorTestConfigTest<HipChatDis
         final Boolean notify = false;
         final String color = "purple";
         final HipChatDistributionConfig jobConfig = new HipChatDistributionConfig("1", roomId, notify, color, String.valueOf(distributionEntity.getId()), getDescriptor().getDestinationName(), "Test Job", "provider",
-            FrequencyType.DAILY.name(), "true",
-            Collections.emptyList(), Collections.emptyList(), FormatType.DIGEST.name());
+            FrequencyType.DAILY.name(), "true", "", Collections.emptyList(), Collections.emptyList(), FormatType.DIGEST.name());
 
         final HipChatChannelEvent channelEvent = channelEventProducer.createChannelEvent(jobConfig, content);
 

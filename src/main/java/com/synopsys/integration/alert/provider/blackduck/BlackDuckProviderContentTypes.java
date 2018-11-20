@@ -52,6 +52,7 @@ public class BlackDuckProviderContentTypes {
     public static final String JSON_FIELD_COMPONENT_VERSION_NAME = "componentVersionName";
     public static final String JSON_FIELD_COMPONENT_VERSION = "componentVersion";
 
+    public static final String CONFIG_MAPPING_PROJECT_NAME_PATTERN = "projectNamePattern";
     public static final String CONFIG_MAPPING_CONFIGURED_PROJECTS = "configuredProjects[*]";
 
     //license limit fields
@@ -114,7 +115,8 @@ public class BlackDuckProviderContentTypes {
     public static final ProviderContentType POLICY_OVERRIDE = new ProviderContentType(
         NotificationType.POLICY_OVERRIDE.name(),
         Arrays.asList(
-            createStringField(createJsonPath("$.%s.%s", JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_NAME), JSON_FIELD_PROJECT_NAME, FieldContentIdentifier.TOPIC, LABEL_PROJECT_NAME, createJsonPath("$.%s", CONFIG_MAPPING_CONFIGURED_PROJECTS)),
+            createStringField(createJsonPath("$.%s.%s", JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_NAME), JSON_FIELD_PROJECT_NAME, FieldContentIdentifier.TOPIC, LABEL_PROJECT_NAME,
+                Arrays.asList(createJsonPath("$.%s", CONFIG_MAPPING_CONFIGURED_PROJECTS), createJsonPath("$.%s", CONFIG_MAPPING_PROJECT_NAME_PATTERN))),
             createStringField(createJsonPath("$.%s.%s", JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_VERSION_NAME), JSON_FIELD_PROJECT_VERSION_NAME, FieldContentIdentifier.SUB_TOPIC, LABEL_PROJECT_VERSION_NAME),
             createStringField(createJsonPath("$.%s.%s", JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_VERSION), JSON_FIELD_PROJECT_VERSION, FieldContentIdentifier.SUB_TOPIC_URL, LABEL_PROJECT_VERSION_NAME + JsonField.LABEL_URL_SUFFIX),
             createStringField(createJsonPath("$.%s.%s", JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_NAME), JSON_FIELD_COMPONENT_NAME, FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_NAME),
@@ -133,7 +135,7 @@ public class BlackDuckProviderContentTypes {
         NotificationType.VULNERABILITY.name(),
         Arrays.asList(
             createStringField(createJsonPath("$.%s.%s.%s", JSON_FIELD_CONTENT, JSON_FIELD_AFFECTED_PROJECT_VERSIONS, JSON_FIELD_PROJECT_NAME), JSON_FIELD_PROJECT_NAME, FieldContentIdentifier.TOPIC, LABEL_PROJECT_NAME,
-                createJsonPath("$.%s", CONFIG_MAPPING_CONFIGURED_PROJECTS)),
+                Arrays.asList(createJsonPath("$.%s", CONFIG_MAPPING_CONFIGURED_PROJECTS), createJsonPath("$.%s", CONFIG_MAPPING_PROJECT_NAME_PATTERN))),
             createStringField(createJsonPath("$.%s.%s.%s", JSON_FIELD_CONTENT, JSON_FIELD_AFFECTED_PROJECT_VERSIONS, JSON_FIELD_PROJECT_VERSION_NAME), JSON_FIELD_PROJECT_VERSION_NAME, FieldContentIdentifier.SUB_TOPIC,
                 LABEL_PROJECT_VERSION_NAME),
             createStringField(createJsonPath("$.%s.%s.%s", JSON_FIELD_CONTENT, JSON_FIELD_AFFECTED_PROJECT_VERSIONS, JSON_FIELD_PROJECT_VERSION), JSON_FIELD_PROJECT_VERSION, FieldContentIdentifier.SUB_TOPIC_URL,
@@ -152,7 +154,8 @@ public class BlackDuckProviderContentTypes {
     );
 
     private static final List<JsonField<?>> RULE_VIOLATION_FIELD_LIST = Arrays.asList(
-        createStringField(createJsonPath("$.%s.%s", JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_NAME), JSON_FIELD_PROJECT_NAME, FieldContentIdentifier.TOPIC, LABEL_PROJECT_NAME, createJsonPath("$.%s", CONFIG_MAPPING_CONFIGURED_PROJECTS)),
+        createStringField(createJsonPath("$.%s.%s", JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_NAME), JSON_FIELD_PROJECT_NAME, FieldContentIdentifier.TOPIC, LABEL_PROJECT_NAME,
+            Arrays.asList(createJsonPath("$.%s", CONFIG_MAPPING_CONFIGURED_PROJECTS), createJsonPath("$.%s", CONFIG_MAPPING_PROJECT_NAME_PATTERN))),
         createStringField(createJsonPath("$.%s.%s", JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_VERSION_NAME), JSON_FIELD_PROJECT_VERSION_NAME, FieldContentIdentifier.SUB_TOPIC, LABEL_PROJECT_VERSION_NAME),
         createStringField(createJsonPath("$.%s.%s", JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_VERSION), JSON_FIELD_PROJECT_VERSION, FieldContentIdentifier.SUB_TOPIC_URL, LABEL_PROJECT_VERSION_NAME + JsonField.LABEL_URL_SUFFIX),
         createStringField(createJsonPath("$.%s.%s.%s", JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_VERSION_STATUSES, JSON_FIELD_COMPONENT_NAME), JSON_FIELD_COMPONENT_NAME, FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_NAME),

@@ -55,6 +55,7 @@ public class CommonTypeConverter {
         channelConfig.setFrequency(commonEntity.getFrequency().name());
         channelConfig.setFormatType(commonEntity.getFormatType().name());
         channelConfig.setName(commonEntity.getName());
+        channelConfig.setProjectNamePattern(commonEntity.getProjectNamePattern());
         channelConfig.setConfiguredProjects(configuredProjectsActions.getConfiguredProjects(commonEntity));
         channelConfig.setNotificationTypes(notificationTypesActions.getNotificationTypes(commonEntity));
         return channelConfig;
