@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.model.DateRange;
 
@@ -46,11 +47,17 @@ public class SystemMessageUtility {
     }
 
     @Transactional
-    public void addSystemMessage(final String message, final SystemMessageType type) {
+    public void addSystemMessage(final String message, final SystemMessageSeverity severity, final SystemMessageType messageType) {
         ZonedDateTime zonedDateTime = ZonedDateTime.now();
         zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneOffset.UTC);
-        final SystemMessage systemMessage = new SystemMessage(Date.from(zonedDateTime.toInstant()), type.name(), message);
+        final SystemMessage systemMessage = new SystemMessage(Date.from(zonedDateTime.toInstant()), severity.name(), message, messageType.name());
         systemMessageRepository.save(systemMessage);
+    }
+
+    @Transactional
+    public void removeSystemMessagesByType(final SystemMessageType messageType) {
+        final List<SystemMessage> messages = systemMessageRepository.findByType(messageType.name());
+        systemMessageRepository.deleteAll(messages);
     }
 
     @Transactional

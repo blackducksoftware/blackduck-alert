@@ -43,14 +43,17 @@ public class SystemMessage extends DatabaseEntity {
     private String severity;
     @Column(name = "content")
     private String content;
+    @Column(name = "type")
+    private String type;
 
     public SystemMessage() {
     }
 
-    public SystemMessage(final Date created, final String severity, final String content) {
+    public SystemMessage(final Date created, final String severity, final String content, final String type) {
         this.created = created;
         this.severity = severity;
         this.content = content;
+        this.type = type;
     }
 
     public Date getCreated() {
@@ -63,5 +66,9 @@ public class SystemMessage extends DatabaseEntity {
 
     public String getContent() {
         return content;
+    }
+
+    public String getType() {
+        return type;
     }
 }
