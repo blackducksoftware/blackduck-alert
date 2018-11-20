@@ -59,13 +59,15 @@ public class SingleEntityConfigActions extends DescriptorConfigActions {
     }
 
     @Override
+    // TODO why do we need the config to be saved when we are testing it?
     public String testConfig(Config restModel, final String destination, final DescriptorActionApi descriptor) throws IntegrationException {
         final List<? extends DatabaseEntity> globalConfigs = descriptor.readEntities();
+        DatabaseEntity globalConfig = null;
         if (globalConfigs.size() == 1) {
-            restModel = updateEntityWithSavedEntity(restModel, globalConfigs.get(0));
-            return super.testConfig(restModel, destination, descriptor);
+            globalConfig = globalConfigs.get(0);
         }
-        return "Config did not have the expected number of rows: Expected 1, but found " + globalConfigs.size();
+        restModel = updateEntityWithSavedEntity(restModel, globalConfig);
+        return super.testConfig(restModel, destination, descriptor);
     }
 
 }

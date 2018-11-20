@@ -1,14 +1,13 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {Modal} from 'react-bootstrap';
-import {connect} from 'react-redux';
 import TextInput from "../../field/input/TextInput";
 
 class ChannelTestModal extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            value: "",
+            destination: "",
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -18,12 +17,14 @@ class ChannelTestModal extends Component {
     handleChange(event) {
         event.preventDefault();
         const target = event.target;
-        this.setState({value: target.value});
+        this.setState({destination: target.value});
     }
 
-    handleSendTestMessage() {
+    handleSendTestMessage(event) {
+        event.preventDefault();
+        event.stopPropagation();
         // TODO add spinner and success/failure message?
-        this.props.sendTestMessage(this.state.value);
+        this.props.sendTestMessage(this.state.destination);
     }
 
     render() {
@@ -32,7 +33,7 @@ class ChannelTestModal extends Component {
                 <Modal.Title>Test Your Configuration</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <TextInput id="destinationName" label={this.props.destinationName} name="destinationName" value={this.state.value} onChange={this.handleChange}/>
+                <TextInput id="destinationName" label={this.props.destinationName} name="destinationName" value={this.state.destination} onChange={this.handleChange}/>
             </Modal.Body>
             <Modal.Footer>
                 <button id="testCancel" type="button" className="btn btn-link" onClick={this.props.cancelTestModal}>Cancel</button>
@@ -59,9 +60,4 @@ ChannelTestModal.defaultProps = {
     }
 };
 
-// TODO is connect required?
-const mapStateToProps = state => ({});
-
-const mapDispatchToProps = dispatch => ({});
-
-export default connect(mapStateToProps, mapDispatchToProps)(ChannelTestModal);
+export default ChannelTestModal;
