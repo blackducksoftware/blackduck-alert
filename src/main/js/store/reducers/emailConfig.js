@@ -40,21 +40,25 @@ const config = (state = initialState, action) => {
 
         case EMAIL_CONFIG_SHOW_ADVANCED:
             return Object.assign({}, state, {
+                updateStatus: null,
                 showAdvanced: true
             });
 
         case EMAIL_CONFIG_HIDE_ADVANCED:
             return Object.assign({}, state, {
+                updateStatus: null,
                 showAdvanced: false
             });
 
         case EMAIL_CONFIG_SHOW_TEST_MODAL:
             return Object.assign({}, state, {
+                updateStatus: null,
                 showTestModal: true
             });
 
         case EMAIL_CONFIG_HIDE_TEST_MODAL:
             return Object.assign({}, state, {
+                updateStatus: null,
                 showTestModal: false
             });
 

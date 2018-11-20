@@ -152,6 +152,9 @@ public class DescriptorConfigActions {
     }
 
     public <T> T updateEntityWithSavedEntity(final T entity, final DatabaseEntity savedEntity) throws AlertException {
+        if (savedEntity == null) {
+            return entity;
+        }
         try {
             final Class<?> newConfigClass = entity.getClass();
 
