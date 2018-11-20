@@ -93,12 +93,12 @@ public class SystemInitializer {
     }
 
     @Transactional
-    public void updateRequiredConfiguration(final RequiredSystemConfiguration requiredSystemConfiguration) {
+    public boolean updateRequiredConfiguration(final RequiredSystemConfiguration requiredSystemConfiguration) {
         logger.info("updating required configuration for initialization");
         saveEncryptionProperties(requiredSystemConfiguration);
         saveProxySettings(requiredSystemConfiguration);
         saveBlackDuckConfiguration(requiredSystemConfiguration);
-        systemValidator.validate();
+        return systemValidator.validate();
     }
 
     private void saveProxySettings(final RequiredSystemConfiguration requiredSystemConfiguration) {

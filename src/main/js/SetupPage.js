@@ -48,6 +48,7 @@ class SetupPage extends Component {
                 proxyPassword: nextProps.currentSetupData.proxyPassword || '',
                 proxyPasswordSet: nextProps.currentSetupData.proxyPasswordSet || false
             });
+            console.log("New State: ", newState);
             this.setState({
                 setupData: newState
             })
