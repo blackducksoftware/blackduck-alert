@@ -111,7 +111,6 @@ class HipChatConfiguration extends React.Component {
                             showTestModal={this.props.showTestModal}
                             cancelTestModal={this.props.closeHipChatConfigTest}
                             sendTestMessage={destination => {
-                                console.log("Destination: " + destination)
                                 this.handleTest(destination);
                             }}/>
                     </div>
