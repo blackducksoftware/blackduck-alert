@@ -32,8 +32,6 @@ class SetupPage extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log("Current Props: ", this.props);
-        console.log("Next Props:    ", nextProps);
         if (nextProps.updateStatus === 'FETCHED' && this.props.updateStatus != nextProps.updateStatus) {
             const newState = Object.assign({}, this.state.setupData, {
                 globalEncryptionPassword: nextProps.currentSetupData.globalEncryptionPassword || '',
@@ -50,7 +48,6 @@ class SetupPage extends Component {
                 proxyPassword: nextProps.currentSetupData.proxyPassword || '',
                 proxyPasswordSet: nextProps.currentSetupData.proxyPasswordSet || false
             });
-            console.log("New State: ", newState);
             this.setState({
                 setupData: newState
             })

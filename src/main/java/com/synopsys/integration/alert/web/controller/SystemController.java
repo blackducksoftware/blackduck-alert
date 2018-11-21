@@ -55,13 +55,13 @@ public class SystemController extends BaseController {
         return handler.getSystemMessages(startDate, endDate);
     }
 
-    @GetMapping(value = "/system/setup")
-    public ResponseEntity<String> getSystemSetup(final HttpServletRequest request) {
+    @GetMapping(value = "/system/setup/initial")
+    public ResponseEntity<String> getInitialSystemSetup(final HttpServletRequest request) {
         final String contextPath = request.getServletContext().getContextPath();
         return handler.getCurrentSetup(contextPath);
     }
 
-    @PostMapping(value = "/system/setup")
+    @PostMapping(value = "/system/setup/initial")
     public ResponseEntity<String> initialSystemSetup(@RequestBody final SystemSetupModel requiredSystemConfiguration) {
         return handler.saveRequiredInformation(requiredSystemConfiguration);
     }
