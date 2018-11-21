@@ -5,6 +5,7 @@ import {
     EMAIL_CONFIG_HIDE_TEST_MODAL,
     EMAIL_CONFIG_SHOW_ADVANCED,
     EMAIL_CONFIG_SHOW_TEST_MODAL,
+    EMAIL_CONFIG_TEST_SUCCESSFUL,
     EMAIL_CONFIG_UPDATE_ERROR,
     EMAIL_CONFIG_UPDATED,
     EMAIL_CONFIG_UPDATING
@@ -156,6 +157,13 @@ export function closeEmailConfigTest() {
     return {type: EMAIL_CONFIG_HIDE_TEST_MODAL};
 }
 
+export function emailConfigTestSucceeded() {
+    return {
+
+        type: EMAIL_CONFIG_TEST_SUCCESSFUL
+    };
+}
+
 export function getEmailConfig() {
     return (dispatch, getState) => {
         dispatch(fetchingEmailConfig());
@@ -226,7 +234,7 @@ export function sendEmailConfigTest(config, destination) {
             .then((response) => {
                 dispatch(closeEmailConfigTest());
                 if (response.ok) {
-                    // TODO show "message sent" text
+                    return dispatch(emailConfigTestSucceeded());
                 } else {
                     handleFailureResponse(dispatch, response);
                 }

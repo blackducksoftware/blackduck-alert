@@ -104,7 +104,7 @@ public class EmailProperties {
         addJavaMailOption(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY, this.mailSmtpPassword);
     }
 
-    // TODO abstract and unify this method with the above method
+    // TODO abstract and unify this method with the above method somehow
     public void updateFromConfig(final EmailGlobalConfig emailGlobalConfig) {
         addJavaMailOption(EmailPropertyKeys.JAVAMAIL_USER_KEY, emailGlobalConfig.getMailSmtpUser());
         addJavaMailOption(EmailPropertyKeys.JAVAMAIL_HOST_KEY, emailGlobalConfig.getMailSmtpHost());
