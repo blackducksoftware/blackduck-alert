@@ -114,7 +114,7 @@ public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
         savedMessages.add(new SystemMessage(Date.from(startTime.minusMinutes(15).toInstant()), SEVERITY, "content", TYPE));
         savedMessages.add(new SystemMessage(Date.from(currentTime.toInstant()), SEVERITY, "content", TYPE));
         systemMessageRepository.saveAll(savedMessages);
-        final DateRange dateRange = new DateRange(Date.from(startTime.toInstant()), currentDate);
+        final DateRange dateRange = DateRange.of(Date.from(startTime.toInstant()), currentDate);
         final List<SystemMessage> actualMessageList = systemMessageUtility.findBetween(dateRange);
         assertNotNull(actualMessageList);
         assertEquals(MESSAGE_COUNT, actualMessageList.size());

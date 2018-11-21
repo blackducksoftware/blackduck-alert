@@ -75,7 +75,7 @@ public class SystemActions {
     }
 
     public List<SystemMessageModel> getSystemMessagesBetween(final String startDate, final String endDate) throws ParseException {
-        final DateRange dateRange = new DateRange(RestConstants.parseDateString(startDate), RestConstants.parseDateString(endDate));
+        final DateRange dateRange = DateRange.of(startDate, endDate);
         return systemMessageUtility.findBetween(dateRange).stream().map(this::convert).collect(Collectors.toList());
     }
 
