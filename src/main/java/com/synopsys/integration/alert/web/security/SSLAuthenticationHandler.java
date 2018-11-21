@@ -60,7 +60,7 @@ public class SSLAuthenticationHandler extends WebSecurityConfigurerAdapter {
             BaseController.BASE_PATH + "/logout",
             BaseController.BASE_PATH + "/about",
             BaseController.BASE_PATH + "/system/messages/latest",
-            BaseController.BASE_PATH + "/system/setup"
+            BaseController.BASE_PATH + "/system/setup/initial"
         };
 
         final String[] csrfIgnoredPaths = {
@@ -76,7 +76,7 @@ public class SSLAuthenticationHandler extends WebSecurityConfigurerAdapter {
             BaseController.BASE_PATH + "/verify",
             BaseController.BASE_PATH + "/about",
             BaseController.BASE_PATH + "/system/messages/latest",
-            BaseController.BASE_PATH + "/system/setup"
+            BaseController.BASE_PATH + "/system/setup/initial"
         };
 
         http.requiresChannel().anyRequest().requiresSecure()
