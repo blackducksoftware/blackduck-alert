@@ -73,15 +73,15 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
     }
 
     @Override
-    public String testGlobalConfig(final Config restModel, final String destination) throws IntegrationException {
-        try {
-            final EmailProperties globalConfigEntity = new EmailProperties((EmailGlobalConfig) restModel);
-            final AggregateMessageContent messageContent = new AggregateMessageContent("Message Content", "Test from Alert", Collections.emptyList());
-            sendMessage(globalConfigEntity, Collections.singleton(destination), "Test from Alert", "Global Configuration", "", messageContent, "N/A");
-            return "Success!";
-        } catch (final Exception e) {
-            return e.getMessage();
+    public String testGlobalConfig(final Config restModel, final String testEmailAddress) throws IntegrationException {
+        Set<String> emailAddresses = null;
+        if (StringUtils.isNotBlank(testEmailAddress)) {
+            emailAddresses = Collections.singleton(testEmailAddress);
         }
+        final EmailProperties globalConfigEntity = new EmailProperties((EmailGlobalConfig) restModel);
+        final AggregateMessageContent messageContent = new AggregateMessageContent("Message Content", "Test from Alert", Collections.emptyList());
+        sendMessage(globalConfigEntity, emailAddresses, "Test from Alert", "Global Configuration", "", messageContent, "N/A");
+        return "Success!";
     }
 
     public void sendMessage(final EmailProperties emailProperties, final Set<String> emailAddresses, final String subjectLine, final String provider, final String formatType, final AggregateMessageContent content,

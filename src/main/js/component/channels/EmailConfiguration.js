@@ -99,7 +99,7 @@ class EmailConfiguration extends React.Component {
     render() {
         const showAdvanced = this.props.showAdvanced;
         const showAdvancedLabel = (showAdvanced) ? 'Hide Advanced' : 'Show Advanced';
-        const {errorMessage, updateStatus} = this.props;
+        const {errorMessage, actionMessage} = this.props;
         return (
             <div>
                 <h1>
@@ -111,10 +111,8 @@ class EmailConfiguration extends React.Component {
                         {errorMessage}
                     </div>}
 
-                    {updateStatus === 'UPDATED' && <div className="alert alert-success">
-                        {'Update successful'}
-
-                        // TODO add testMessageStatus
+                    {actionMessage && <div className="alert alert-success">
+                        {actionMessage}
                     </div>}
 
                     <TextInput
@@ -612,7 +610,6 @@ class EmailConfiguration extends React.Component {
                             showTestModal={this.props.showTestModal}
                             cancelTestModal={this.props.closeEmailConfigTest}
                             sendTestMessage={destination => {
-                                alert("Send Clicked");
                                 this.props.sendEmailConfigTest({...this.state}, destination);
                             }}/>
                     </div>
@@ -678,6 +675,7 @@ EmailConfiguration.propTypes = {
     getEmailConfig: PropTypes.func.isRequired,
     errorMessage: PropTypes.string,
     updateStatus: PropTypes.string,
+    actionMessage: PropTypes.string,
     fieldErrors: PropTypes.arrayOf(PropTypes.any)
 };
 
@@ -743,7 +741,8 @@ const mapStateToProps = state => ({
     id: state.emailConfig.id,
     errorMessage: state.emailConfig.error.message,
     fieldErrors: state.emailConfig.error.fieldErrors,
-    updateStatus: state.emailConfig.updateStatus
+    updateStatus: state.emailConfig.updateStatus,
+    actionMessage: state.emailConfig.actionMessage
 });
 
 const mapDispatchToProps = dispatch => ({
