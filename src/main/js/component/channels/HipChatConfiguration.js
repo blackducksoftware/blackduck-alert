@@ -5,7 +5,8 @@ import {connect} from 'react-redux';
 import TextInput from '../../field/input/TextInput';
 import PasswordInput from '../../field/input/PasswordInput';
 import ConfigButtons from '../common/ConfigButtons';
-import {getConfig, testConfig, toggleShowHostServer, updateConfig} from '../../store/actions/hipChatConfig';
+import {closeHipChatConfigTest, getConfig, openHipChatConfigTest, testConfig, toggleShowHostServer, updateConfig} from '../../store/actions/hipChatConfig';
+import ChannelTestModal from "../common/ChannelTestModal";
 
 class HipChatConfiguration extends React.Component {
     constructor(props) {
@@ -53,9 +54,9 @@ class HipChatConfiguration extends React.Component {
         this.props.updateConfig({id, ...this.state});
     }
 
-    handleTest() {
+    handleTest(destination) {
         const {id} = this.props;
-        this.props.testConfig({id, ...this.state});
+        this.props.testConfig({id, ...this.state}, destination);
     }
 
     render() {
@@ -69,8 +70,8 @@ class HipChatConfiguration extends React.Component {
                     <span className="fa fa-comments"/>
                     HipChat
                 </h1>
-                {testStatus && testStatus === 'SUCCESS' && <div className="alert alert-success">
-                    <div>Test was successful!</div>
+                {testStatus === 'SUCCESS' && <div className="alert alert-success">
+                    <div>Test message sent</div>
                 </div>}
 
                 {errorMessage && <div className="alert alert-danger">
@@ -103,7 +104,17 @@ class HipChatConfiguration extends React.Component {
                     </div>
                     }
 
-                    <ConfigButtons submitId="hipChat-submit" cancelId="hipChat-cancel" includeSave includeTest onTestClick={this.handleTest}/>
+                    <ConfigButtons submitId="hipChat-submit" cancelId="hipChat-cancel" includeSave includeTest onTestClick={this.props.openHipChatConfigTest}/>
+                    <div>
+                        <ChannelTestModal
+                            destinationName="Room ID"
+                            showTestModal={this.props.showTestModal}
+                            cancelTestModal={this.props.closeHipChatConfigTest}
+                            sendTestMessage={destination => {
+                                console.log("Destination: " + destination)
+                                this.handleTest(destination);
+                            }}/>
+                    </div>
                 </form>
             </div>
         );
@@ -122,6 +133,7 @@ HipChatConfiguration.propTypes = {
     fetching: PropTypes.bool.isRequired,
     getConfig: PropTypes.func.isRequired,
     testConfig: PropTypes.func.isRequired,
+    showTestModal: PropTypes.bool.isRequired,
     updateConfig: PropTypes.func.isRequired,
     showAdvanced: PropTypes.bool.isRequired,
     toggleShowHostServer: PropTypes.func.isRequired,
@@ -144,6 +156,7 @@ const mapStateToProps = state => ({
     apiKey: state.hipChatConfig.apiKey,
     apiKeyIsSet: state.hipChatConfig.apiKeyIsSet,
     testStatus: state.hipChatConfig.testStatus,
+    showTestModal: state.hipChatConfig.showTestModal,
     updateStatus: state.hipChatConfig.updateStatus,
     errorMessage: state.hipChatConfig.error.message,
     fieldErrors: state.hipChatConfig.error.fieldErrors,
@@ -157,7 +170,9 @@ const mapDispatchToProps = dispatch => ({
     toggleShowHostServer: toggle => dispatch(toggleShowHostServer(toggle)),
     getConfig: () => dispatch(getConfig()),
     updateConfig: config => dispatch(updateConfig(config)),
-    testConfig: config => dispatch(testConfig(config))
+    openHipChatConfigTest: () => dispatch(openHipChatConfigTest()),
+    closeHipChatConfigTest: () => dispatch(closeHipChatConfigTest()),
+    testConfig: (config, destination) => dispatch(testConfig(config, destination))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(HipChatConfiguration);

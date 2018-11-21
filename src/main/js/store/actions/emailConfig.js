@@ -14,7 +14,7 @@ import {
 import {verifyLoginByStatus} from './session';
 
 const CONFIG_URL = '/alert/api/configuration/channel/global/channel_email';
-const TEST_URL = CONFIG_URL + '/test';
+const TEST_URL = `${CONFIG_URL}/test`;
 
 function scrubConfig(config) {
     return {
@@ -147,8 +147,6 @@ export function toggleAdvancedEmailOptions(toggle) {
     return {type: EMAIL_CONFIG_HIDE_ADVANCED};
 }
 
-
-// TODO add test started, inProgress, succeeded, failed
 export function openEmailConfigTest() {
     return {type: EMAIL_CONFIG_SHOW_TEST_MODAL};
 }

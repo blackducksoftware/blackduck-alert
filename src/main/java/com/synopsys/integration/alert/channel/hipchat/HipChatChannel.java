@@ -85,21 +85,21 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
     }
 
     @Override
-    public String testGlobalConfig(final Config restModel, final String roomId) throws IntegrationException {
+    public String testGlobalConfig(final Config restModel, final String testRoomId) throws IntegrationException {
         if (restModel == null) {
             return "The provided config was null.";
         }
 
         final HipChatGlobalConfig hipChatGlobalConfig = (HipChatGlobalConfig) restModel;
-        final String configuredApiUrl = getConfiguredApiUrl(hipChatGlobalConfig.getApiKey());
+        final String configuredApiUrl = getConfiguredApiUrl(hipChatGlobalConfig.getHostServer());
         final RestConnection restConnection = getChannelRestConnectionFactory().createUnauthenticatedRestConnection(configuredApiUrl);
         try {
-            testApiKey(restConnection, hipChatGlobalConfig.getHostServer(), configuredApiUrl);
+            testApiKey(restConnection, configuredApiUrl, hipChatGlobalConfig.getApiKey());
 
             final Integer parsedRoomId;
             try {
-                parsedRoomId = Integer.valueOf(roomId);
-            } catch (final NumberFormatException e) {
+                parsedRoomId = Integer.valueOf(testRoomId);
+            } catch (final NullPointerException | NumberFormatException e) {
                 throw new AlertException("The provided room id is an invalid number.");
             }
 
@@ -134,12 +134,10 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
         }
     }
 
-    private void testApiKey(final RestConnection restConnection, final String hostServer, final String apiKey) throws IntegrationException {
+    private void testApiKey(final RestConnection restConnection, final String configuredApiUrl, final String apiKey) throws IntegrationException {
         if (StringUtils.isBlank(apiKey)) {
             throw new IntegrationException("Invalid API key: API key not provided");
         }
-
-        final String configuredApiUrl = getConfiguredApiUrl(hostServer);
         if (restConnection != null) {
             try {
                 final String url = configuredApiUrl + "/v2/room/*/notification";
@@ -161,7 +159,7 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
                 throw new AlertException("Invalid API key: " + response.getStatusMessage());
             } catch (final IntegrationException e) {
                 logger.error("Unable to create a response", e);
-                throw new IntegrationException("Invalid API key: " + e.getMessage());
+                throw new AlertException("Invalid API key: " + e.getMessage());
             }
         }
     }

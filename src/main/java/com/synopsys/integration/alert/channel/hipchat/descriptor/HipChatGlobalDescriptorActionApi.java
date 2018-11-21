@@ -56,8 +56,8 @@ public class HipChatGlobalDescriptorActionApi extends DescriptorActionApi {
     }
 
     @Override
-    public void testConfig(final Config restModel, final String testChannelId) throws IntegrationException {
-        hipChatChannel.testGlobalConfig(restModel, testChannelId);
+    public void testConfig(final Config restModel, final String testRoomId) throws IntegrationException {
+        hipChatChannel.testGlobalConfig(restModel, testRoomId);
     }
 
 }

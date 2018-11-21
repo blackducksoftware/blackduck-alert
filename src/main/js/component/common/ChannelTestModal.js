@@ -7,7 +7,7 @@ class ChannelTestModal extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            destination: "",
+            destination: ''
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -23,11 +23,15 @@ class ChannelTestModal extends Component {
     handleSendTestMessage(event) {
         event.preventDefault();
         event.stopPropagation();
-        // TODO add spinner and success/failure message?
+        this.setState({
+            spinning: true
+        });
         this.props.sendTestMessage(this.state.destination);
     }
 
     render() {
+        // TODO figure out a way to toggle the spinner
+        let spinning = false;
         return (<Modal show={this.props.showTestModal} onHide={this.props.cancelTestModal}>
             <Modal.Header closeButton>
                 <Modal.Title>Test Your Configuration</Modal.Title>
@@ -38,6 +42,11 @@ class ChannelTestModal extends Component {
             <Modal.Footer>
                 <button id="testCancel" type="button" className="btn btn-link" onClick={this.props.cancelTestModal}>Cancel</button>
                 <button id="testSend" type="button" className="btn btn-primary" onClick={this.handleSendTestMessage}>Send Test Message</button>
+                {spinning &&
+                <div className="progressIcon">
+                    <span className="fa fa-spinner fa-pulse" aria-hidden="true"/>
+                </div>
+                }
             </Modal.Footer>
         </Modal>);
     }
@@ -54,7 +63,7 @@ ChannelTestModal.defaultProps = {
     showTestModal: false,
     destinationName: "Destination",
     cancelTestModal: () => {
-        this.setProperty({showTestModal: false})
+        this.setProperty({showTestModal: false});
     },
     sendTestMessage: (dest) => {
     }
