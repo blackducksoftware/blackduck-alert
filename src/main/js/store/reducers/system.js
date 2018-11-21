@@ -21,8 +21,7 @@ const initialState = {
     setupData: {},
     setupRedirect: false,
     error: {
-        message: '',
-        fieldErrors: []
+        message: ''
     }
 };
 

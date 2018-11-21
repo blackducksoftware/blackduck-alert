@@ -7,7 +7,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
-import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -125,49 +124,5 @@ public class EncryptionUtilityTest {
         final String content = filePersistenceUtil.readFromFile(FILE_NAME);
         assertTrue(content.contains(expectedPassword));
         assertTrue(content.contains(expectedSalt));
-    }
-
-    @Test
-    public void testCheckErrorsFromEnvironment() {
-        assertTrue(encryptionUtility.checkForErrors().isEmpty());
-    }
-
-    @Test
-    public void testCheckErrorsPasswordMissing() {
-        Mockito.when(alertProperties.getAlertEncryptionPassword()).thenReturn(Optional.empty());
-        final List<String> errors = encryptionUtility.checkForErrors();
-        assertFalse(errors.isEmpty());
-        assertEquals(1, errors.size());
-        assertEquals("Encryption password missing", errors.get(0));
-
-    }
-
-    @Test
-    public void testCheckErrorsSaltMissing() {
-        Mockito.when(alertProperties.getAlertEncryptionGlobalSalt()).thenReturn(Optional.empty());
-        final List<String> errors = encryptionUtility.checkForErrors();
-        assertFalse(errors.isEmpty());
-        assertEquals(1, errors.size());
-        assertEquals("Encryption global salt missing", errors.get(0));
-    }
-
-    @Test
-    public void testCheckErrorsBothMissing() {
-        Mockito.when(alertProperties.getAlertEncryptionPassword()).thenReturn(Optional.empty());
-        Mockito.when(alertProperties.getAlertEncryptionGlobalSalt()).thenReturn(Optional.empty());
-        final List<String> errors = encryptionUtility.checkForErrors();
-        assertFalse(errors.isEmpty());
-        assertEquals(2, errors.size());
-        assertEquals("Encryption password missing", errors.get(0));
-        assertEquals("Encryption global salt missing", errors.get(1));
-    }
-
-    @Test
-    public void testCheckErrorsFromFileTrue() throws Exception {
-        Mockito.when(alertProperties.getAlertEncryptionPassword()).thenReturn(Optional.empty());
-        Mockito.when(alertProperties.getAlertEncryptionGlobalSalt()).thenReturn(Optional.empty());
-        filePersistenceUtil.writeToFile(FILE_NAME, "{password: \"savedPassword\", globalSalt: \"savedSalt\"}");
-        assertTrue(encryptionUtility.checkForErrors().isEmpty());
-        assertTrue(filePersistenceUtil.exists(FILE_NAME));
     }
 }

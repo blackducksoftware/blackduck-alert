@@ -32,6 +32,8 @@ class SetupPage extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        console.log("Current Props: ", this.props);
+        console.log("Next Props:    ", nextProps);
         if (nextProps.updateStatus === 'FETCHED' && this.props.updateStatus != nextProps.updateStatus) {
             const newState = Object.assign({}, this.state.setupData, {
                 globalEncryptionPassword: nextProps.currentSetupData.globalEncryptionPassword || '',
@@ -67,7 +69,6 @@ class SetupPage extends Component {
 
     handleSubmit(evt) {
         evt.preventDefault();
-        console.log("Submitting", this.state.setupData);
         this.props.saveSystemSetup(this.state.setupData);
     }
 
@@ -88,7 +89,7 @@ class SetupPage extends Component {
                                         isSet={this.state.setupData.globalEncryptionPasswordSet}
                                         onChange={this.handleChange}
                                         errorName="globalEncryptionPasswordError"
-                                        errorValue={this.props.fieldErrors.globalEncryptionPassword}
+                                        errorValue={this.props.fieldErrors.globalEncryptionPasswordError}
                                     />
                                     <PasswordInput
                                         id="encryptionSalt"
@@ -98,7 +99,7 @@ class SetupPage extends Component {
                                         isSet={this.state.setupData.globalEncryptionSaltSet}
                                         onChange={this.handleChange}
                                         errorName="globalEncryptionSaltError"
-                                        errorValue={this.props.fieldErrors.globalEncryptionSalt}
+                                        errorValue={this.props.fieldErrors.globalEncryptionSaltError}
                                     />
                                 </div>
                                 <div className="form-group">
@@ -111,7 +112,7 @@ class SetupPage extends Component {
                                             value={this.state.setupData.blackDuckProviderUrl}
                                             onChange={this.handleChange}
                                             errorName="blackDuckProviderUrlError"
-                                            errorValue={this.props.fieldErrors.blackDuckProviderUrl}
+                                            errorValue={this.props.fieldErrors.blackDuckProviderUrlError}
                                         />
                                         <PasswordInput id="blackDuckConfigurationApiToken" label="API Token" name="blackDuckApiToken" value={this.state.setupData.blackDuckApiToken} isSet={this.state.setupData.blackDuckApiTokenSet}
                                                        onChange={this.handleChange}
@@ -129,7 +130,7 @@ class SetupPage extends Component {
                                             value={this.state.setupData.proxyHost}
                                             onChange={this.handleChange}
                                             errorName="proxyHostError"
-                                            errorValue={this.props.fieldErrors.proxyHost}
+                                            errorValue={this.props.fieldErrors.proxyHostError}
                                         />
                                         <TextInput
                                             id="proxyPort"
@@ -138,7 +139,7 @@ class SetupPage extends Component {
                                             value={this.state.setupData.proxyPort}
                                             onChange={this.handleChange}
                                             errorName="proxyPortError"
-                                            errorValue={this.props.fieldErrors.proxyPort}
+                                            errorValue={this.props.fieldErrors.proxyPortError}
                                         />
                                         <TextInput
                                             id="proxyUserName"
@@ -147,7 +148,7 @@ class SetupPage extends Component {
                                             value={this.state.setupData.proxyUsername}
                                             onChange={this.handleChange}
                                             errorName="proxyUsernameError"
-                                            errorValue={this.props.fieldErrors.proxyUsername}
+                                            errorValue={this.props.fieldErrors.proxyUsernameError}
                                         />
                                         <PasswordInput
                                             id="proxyPassword"
@@ -157,7 +158,7 @@ class SetupPage extends Component {
                                             isSet={this.state.setupData.proxyPasswordSet}
                                             onChange={this.handleChange}
                                             errorName="proxyPasswordError"
-                                            errorValue={this.props.fieldErrors.proxyPassword}
+                                            errorValue={this.props.fieldErrors.proxyPasswordError}
                                         />
                                     </div>
                                 </div>
@@ -196,7 +197,7 @@ const mapStateToProps = state => ({
     fetchingSetup: state.system.fetching,
     updateStatus: state.system.updateStatus,
     currentSetupData: state.system.setupData,
-    fieldErrors: state.system.fieldErrors
+    fieldErrors: state.system.error
 });
 
 const mapDispatchToProps = dispatch => ({
