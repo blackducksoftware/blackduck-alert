@@ -77,6 +77,7 @@ function systemSetupUpdated() {
 }
 
 function systemSetupUpdateError(message, errors) {
+    console.log("System Update Errors", errors);
     return {
         type: SYSTEM_SETUP_UPDATE_ERROR,
         message,
@@ -140,13 +141,13 @@ export function saveSystemSetup(setupData) {
 
         fetch(SYSTEM_SETUP_URL, options)
             .then((response) => {
-
                 if (response.ok) {
                     dispatch(systemSetupUpdated());
                     dispatch(getCurrentSystemSetup());
                 } else {
                     response.json().then((body) => {
                         const jsonErrors = body.errors;
+                        console.log("Save has errors", jsonErrors);
                         if (jsonErrors) {
                             const errors = {};
                             for (const key in jsonErrors) {
@@ -156,6 +157,7 @@ export function saveSystemSetup(setupData) {
                                     errors[name] = value;
                                 }
                             }
+                            console.log("Errors to send", errors);
                             dispatch(systemSetupUpdateError(body.message, errors))
                         }
                     })

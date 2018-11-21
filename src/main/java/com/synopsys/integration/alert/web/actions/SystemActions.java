@@ -26,6 +26,7 @@ package com.synopsys.integration.alert.web.actions;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -104,7 +105,7 @@ public class SystemActions {
             StringUtils.isNotBlank(systemConfiguration.getProxyPassword()));
     }
 
-    public SystemSetupModel saveRequiredInformation(final SystemSetupModel requiredSystemConfiguration) {
+    public SystemSetupModel saveRequiredInformation(final SystemSetupModel requiredSystemConfiguration, final Map<String, String> fieldErrors) {
         final RequiredSystemConfiguration configToSave = new RequiredSystemConfiguration(requiredSystemConfiguration.getBlackDuckProviderUrl(),
             requiredSystemConfiguration.getBlackDuckConnectionTimeout(),
             requiredSystemConfiguration.getBlackDuckApiToken(),
@@ -116,7 +117,7 @@ public class SystemActions {
             requiredSystemConfiguration.getProxyPort(),
             requiredSystemConfiguration.getProxyUsername(),
             requiredSystemConfiguration.getProxyPassword());
-        systemInitializer.updateRequiredConfiguration(configToSave);
+        systemInitializer.updateRequiredConfiguration(configToSave, fieldErrors);
         return requiredSystemConfiguration;
     }
 

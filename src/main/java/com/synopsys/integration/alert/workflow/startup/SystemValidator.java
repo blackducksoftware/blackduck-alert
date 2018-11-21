@@ -25,7 +25,8 @@ package com.synopsys.integration.alert.workflow.startup;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -67,14 +68,22 @@ public class SystemValidator {
     }
 
     public boolean validate() {
-        boolean valid = true;
-        valid = valid && validateEncryptionProperties();
-        valid = valid && validateProviders();
+        return validate(new HashMap<>());
+    }
+
+    public boolean validate(final Map<String, String> fieldErrors) {
+        logger.info("----------------------------------------");
+        logger.info("Validating system configuration....");
+        final boolean encryptionValid = validateEncryptionProperties(fieldErrors);
+        final boolean providersValid = validateProviders(fieldErrors);
+        final boolean valid = encryptionValid && providersValid;
+        logger.info("System configuration valid: {}", valid);
+        logger.info("----------------------------------------");
         systemStatusUtility.setSystemInitialized(valid);
         return valid;
     }
 
-    public boolean validateEncryptionProperties() {
+    public boolean validateEncryptionProperties(final Map<String, String> fieldErrors) {
         final boolean valid;
         if (encryptionUtility.isInitialized()) {
             logger.info("Encryption utilities: Initialized");
@@ -82,24 +91,31 @@ public class SystemValidator {
             systemMessageUtility.removeSystemMessagesByType(SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR);
         } else {
             logger.error("Encryption utilities: Not Initialized");
-            final List<String> errors = encryptionUtility.checkForErrors();
-            errors.forEach(errorMessage -> systemMessageUtility.addSystemMessage(errorMessage, SystemMessageSeverity.ERROR, SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR));
+            if (!encryptionUtility.isPasswordSet()) {
+                final String errorMessage = "Encryption password missing";
+                fieldErrors.put("globalEncryptionPassword", errorMessage);
+                systemMessageUtility.addSystemMessage(errorMessage, SystemMessageSeverity.ERROR, SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR);
+            }
+
+            if (!encryptionUtility.isGlobalSaltSet()) {
+                final String errorMessage = "Encryption global salt missing";
+                fieldErrors.put("globalEncryptionSalt", errorMessage);
+                systemMessageUtility.addSystemMessage(errorMessage, SystemMessageSeverity.ERROR, SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR);
+            }
             valid = false;
         }
         return valid;
     }
 
-    public boolean validateProviders() {
+    public boolean validateProviders(final Map<String, String> fieldErrors) {
         final boolean valid;
         logger.info("Validating configured providers: ");
-        logger.info("----------------------------------------");
-        valid = validateBlackDuckProvider();
-        logger.info("----------------------------------------");
+        valid = validateBlackDuckProvider(fieldErrors);
         return valid;
     }
 
     // TODO add this validation to provider descriptors so we can run this when it's defined
-    public boolean validateBlackDuckProvider() {
+    public boolean validateBlackDuckProvider(final Map<String, String> fieldErrors) {
         logger.info("Validating BlackDuck Provider...");
         boolean valid = true;
         try {
@@ -109,7 +125,9 @@ public class SystemValidator {
             final Optional<String> blackDuckUrlOptional = blackDuckProperties.getBlackDuckUrl();
             if (!blackDuckUrlOptional.isPresent()) {
                 logger.error("  -> BlackDuck Provider Invalid; cause: Black Duck URL missing...");
-                systemMessageUtility.addSystemMessage("BlackDuck Provider invalid: URL missing", SystemMessageSeverity.ERROR, SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING);
+                final String errorMessage = "BlackDuck Provider invalid: URL missing";
+                fieldErrors.put("blackDuckProviderUrl", errorMessage);
+                systemMessageUtility.addSystemMessage(errorMessage, SystemMessageSeverity.ERROR, SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING);
                 valid = false;
             } else {
                 final String blackDuckUrlString = blackDuckUrlOptional.get();
@@ -131,6 +149,7 @@ public class SystemValidator {
         } catch (final MalformedURLException | IntegrationException ex) {
             logger.error("  -> BlackDuck Provider Invalid; cause: {}", ex.getMessage());
             logger.debug("  -> BlackDuck Provider Stack Trace: ", ex);
+            fieldErrors.put("blackDuckProviderUrl", "BlackDuck Provider Url invalid.");
             systemMessageUtility.addSystemMessage("BlackDuck Provider invalid: " + ex.getMessage(), SystemMessageSeverity.ERROR, SystemMessageType.BLACKDUCK_PROVIDER_CONNECTIVITY);
             valid = false;
         }
@@ -140,7 +159,6 @@ public class SystemValidator {
             systemMessageUtility.removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING);
             systemMessageUtility.removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST);
         }
-
         return valid;
     }
 

@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.workflow.startup.install;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -93,12 +94,12 @@ public class SystemInitializer {
     }
 
     @Transactional
-    public boolean updateRequiredConfiguration(final RequiredSystemConfiguration requiredSystemConfiguration) {
+    public boolean updateRequiredConfiguration(final RequiredSystemConfiguration requiredSystemConfiguration, final Map<String, String> fieldErrors) {
         logger.info("updating required configuration for initialization");
         saveEncryptionProperties(requiredSystemConfiguration);
         saveProxySettings(requiredSystemConfiguration);
         saveBlackDuckConfiguration(requiredSystemConfiguration);
-        return systemValidator.validate();
+        return systemValidator.validate(fieldErrors);
     }
 
     private void saveProxySettings(final RequiredSystemConfiguration requiredSystemConfiguration) {
@@ -120,7 +121,7 @@ public class SystemInitializer {
     private void saveEncryptionProperties(final RequiredSystemConfiguration requiredSystemConfiguration) {
         try {
             encryptionUtility.updateEncryptionFields(requiredSystemConfiguration.getGlobalEncryptionPassword(), requiredSystemConfiguration.getGlobalEncryptionSalt());
-        } catch (final IOException ex) {
+        } catch (final IllegalArgumentException | IOException ex) {
             logger.error("Error saving encryption configuration during intialization.", ex);
         }
     }

@@ -24,6 +24,7 @@
 package com.synopsys.integration.alert.web.controller.handler;
 
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +38,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.web.actions.SystemActions;
+import com.synopsys.integration.alert.web.model.ResponseBodyBuilder;
 import com.synopsys.integration.alert.web.model.SystemMessageModel;
 import com.synopsys.integration.alert.web.model.SystemSetupModel;
 
@@ -92,12 +94,15 @@ public class SystemHandler extends ControllerHandler {
         if (actions.isSystemInitialized()) {
             response = new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
         } else {
-            final SystemSetupModel savedConfig = actions.saveRequiredInformation(requiredSystemConfiguration);
-            final boolean initialized = actions.isSystemInitialized();
-            if (initialized) {
+            final HashMap<String, String> fieldErrors = new HashMap<>();
+            final SystemSetupModel savedConfig = actions.saveRequiredInformation(requiredSystemConfiguration, fieldErrors);
+            if (fieldErrors.isEmpty()) {
                 response = new ResponseEntity<>(getContentConverter().getJsonString(savedConfig), HttpStatus.OK);
             } else {
-                response = createResponse(HttpStatus.BAD_REQUEST, "fieldErrors");
+                final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder("Invalid System Setup");
+                responseBodyBuilder.putErrors(fieldErrors);
+                final String responseBody = responseBodyBuilder.build();
+                response = new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
             }
         }
         return response;
