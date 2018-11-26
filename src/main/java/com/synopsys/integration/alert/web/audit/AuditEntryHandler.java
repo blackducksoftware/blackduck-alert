@@ -47,16 +47,16 @@ public class AuditEntryHandler extends ControllerHandler {
         this.auditEntryActions = auditEntryActions;
     }
 
-    public AlertPagedModel<AuditEntryConfig> get(final Integer pageNumber, final Integer pageSize, final String searchTerm, final String sortField, final String sortOrder) {
+    public AlertPagedModel<AuditEntryModel> get(final Integer pageNumber, final Integer pageSize, final String searchTerm, final String sortField, final String sortOrder) {
         return auditEntryActions.get(pageNumber, pageSize, searchTerm, sortField, sortOrder);
     }
 
-    public AuditEntryConfig get(final Long id) {
+    public AuditEntryModel get(final Long id) {
         return auditEntryActions.get(id);
     }
 
     public ResponseEntity<String> resendNotification(final Long id) {
-        AlertPagedModel<AuditEntryConfig> auditEntries = null;
+        AlertPagedModel<AuditEntryModel> auditEntries = null;
         try {
             auditEntries = auditEntryActions.resendNotification(id);
             return createResponse(HttpStatus.OK, id, gson.toJson(auditEntries));

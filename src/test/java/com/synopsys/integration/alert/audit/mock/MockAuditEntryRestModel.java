@@ -4,12 +4,12 @@ import java.util.Date;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.mock.model.MockRestModelUtil;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
-import com.synopsys.integration.alert.web.audit.AuditEntryConfig;
+import com.synopsys.integration.alert.mock.model.MockRestModelUtil;
+import com.synopsys.integration.alert.web.audit.AuditEntryModel;
 import com.synopsys.integration.alert.web.model.NotificationConfig;
 
-public class MockAuditEntryRestModel extends MockRestModelUtil<AuditEntryConfig> {
+public class MockAuditEntryRestModel extends MockRestModelUtil<AuditEntryModel> {
     private final String name;
     private final String eventType;
     private final String timeCreated;
@@ -25,7 +25,7 @@ public class MockAuditEntryRestModel extends MockRestModelUtil<AuditEntryConfig>
     }
 
     private MockAuditEntryRestModel(final String name, final String eventType, final String timeCreated, final String timeLastSent, final String status, final NotificationConfig notification, final String errorMessage,
-            final String errorStackTrace, final String id) {
+        final String errorStackTrace, final String id) {
         super();
         this.name = name;
         this.eventType = eventType;
@@ -76,13 +76,13 @@ public class MockAuditEntryRestModel extends MockRestModelUtil<AuditEntryConfig>
     }
 
     @Override
-    public AuditEntryConfig createRestModel() {
-        return new AuditEntryConfig(id, name, eventType, timeCreated, timeLastSent, status, errorMessage, errorStackTrace, notification);
+    public AuditEntryModel createRestModel() {
+        return new AuditEntryModel(id, name, eventType, timeCreated, timeLastSent, status, errorMessage, errorStackTrace, notification);
     }
 
     @Override
-    public AuditEntryConfig createEmptyRestModel() {
-        return new AuditEntryConfig();
+    public AuditEntryModel createEmptyRestModel() {
+        return new AuditEntryModel();
     }
 
     @Override

@@ -4,10 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.synopsys.integration.alert.audit.mock.MockAuditEntryRestModel;
-import com.synopsys.integration.alert.web.audit.AuditEntryConfig;
+import com.synopsys.integration.alert.web.audit.AuditEntryModel;
 import com.synopsys.integration.alert.web.model.RestModelTest;
 
-public class AuditEntryRestModelTest extends RestModelTest<AuditEntryConfig> {
+public class AuditEntryRestModelTest extends RestModelTest<AuditEntryModel> {
 
     @Override
     public MockAuditEntryRestModel getMockUtil() {
@@ -15,12 +15,12 @@ public class AuditEntryRestModelTest extends RestModelTest<AuditEntryConfig> {
     }
 
     @Override
-    public Class<AuditEntryConfig> getRestModelClass() {
-        return AuditEntryConfig.class;
+    public Class<AuditEntryModel> getRestModelClass() {
+        return AuditEntryModel.class;
     }
 
     @Override
-    public void assertRestModelFieldsNull(final AuditEntryConfig restModel) {
+    public void assertRestModelFieldsNull(final AuditEntryModel restModel) {
         assertNull(restModel.getErrorMessage());
         assertNull(restModel.getErrorStackTrace());
         assertNull(restModel.getEventType());
@@ -32,7 +32,7 @@ public class AuditEntryRestModelTest extends RestModelTest<AuditEntryConfig> {
     }
 
     @Override
-    public void assertRestModelFieldsFull(final AuditEntryConfig restModel) {
+    public void assertRestModelFieldsFull(final AuditEntryModel restModel) {
         assertEquals(getMockUtil().getErrorMessage(), restModel.getErrorMessage());
         assertEquals(getMockUtil().getErrorStackTrace(), restModel.getErrorStackTrace());
         assertEquals(getMockUtil().getEventType(), restModel.getEventType());
