@@ -27,10 +27,13 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,8 +64,18 @@ public class NotificationManager {
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    public Page<NotificationContent> findAll(final PageRequest pageRequest) {
+        return notificationContentRepository.findAll(pageRequest);
+    }
+
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public List<NotificationContent> findByIds(final List<Long> notificationIds) {
         return notificationContentRepository.findAllById(notificationIds);
+    }
+
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    public Optional<NotificationContent> findById(final Long notificationId) {
+        return notificationContentRepository.findById(notificationId);
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)

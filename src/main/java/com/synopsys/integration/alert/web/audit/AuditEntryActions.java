@@ -24,11 +24,9 @@
 package com.synopsys.integration.alert.web.audit;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -89,13 +87,12 @@ public class AuditEntryActions {
     }
 
     public AlertPagedModel<AuditEntryModel> get(final Integer pageNumber, final Integer pageSize, final String searchTerm, final String sortField, final String sortOrder) {
-        List<AuditEntryModel> auditEntries = new ArrayList<>();
+        final List<AuditEntryModel> auditEntries = new ArrayList<>();
 
-        final Page<AuditEntryEntity> auditPage = queryForAuditEntries(sortField, sortOrder);
+        final Page<NotificationContent> auditPage = queryForNotifications(sortField, sortOrder);
         final List<AuditEntryModel> auditEntryModels = createRestModels(auditPage.getContent());
 
         addMatchingModels(auditEntries, auditEntryModels, searchTerm);
-        auditEntries = sortRestModels(auditEntries, sortField, sortOrder);
 
         List<AuditEntryModel> pagedAuditEntries = auditEntries;
         int totalPages = 1;
@@ -122,9 +119,9 @@ public class AuditEntryActions {
 
     public AuditEntryModel get(final Long id) {
         if (id != null) {
-            final Optional<AuditEntryEntity> auditEntryEntity = auditEntryRepository.findById(id);
-            if (auditEntryEntity.isPresent()) {
-                return createRestModel(auditEntryEntity.get());
+            final Optional<NotificationContent> notificationContent = notificationManager.findById(id);
+            if (notificationContent.isPresent()) {
+                return createRestModel(notificationContent.get());
             }
         }
         return null;
@@ -161,18 +158,12 @@ public class AuditEntryActions {
         if (StringUtils.isBlank(searchTerm)) {
             listToAddTo.addAll(modelsToCheck);
         } else {
-            final String lowerSearchTerm = searchTerm.toLowerCase(Locale.ENGLISH);
+            final String lowerCaseSearchTerm = searchTerm.toLowerCase(Locale.ENGLISH);
             for (final AuditEntryModel restModel : modelsToCheck) {
                 if (null != restModel) {
-                    if (StringUtils.isNotBlank(restModel.getName()) && restModel.getName().toLowerCase(Locale.ENGLISH).contains(lowerSearchTerm)) {
+                    if (doAnyJobsMatch(restModel.getJobs(), lowerCaseSearchTerm)) {
                         listToAddTo.add(restModel);
-                    } else if (StringUtils.isNotBlank(restModel.getStatus()) && restModel.getStatus().toLowerCase(Locale.ENGLISH).contains(lowerSearchTerm)) {
-                        listToAddTo.add(restModel);
-                    } else if (StringUtils.isNotBlank(restModel.getTimeCreated()) && restModel.getTimeCreated().toLowerCase(Locale.ENGLISH).contains(lowerSearchTerm)) {
-                        listToAddTo.add(restModel);
-                    } else if (StringUtils.isNotBlank(restModel.getTimeLastSent()) && restModel.getTimeLastSent().toLowerCase(Locale.ENGLISH).contains(lowerSearchTerm)) {
-                        listToAddTo.add(restModel);
-                    } else if (null != restModel.getNotification() && StringUtils.isNotBlank(restModel.getNotification().getContent()) && restModel.getNotification().getContent().toLowerCase(Locale.ENGLISH).contains(lowerSearchTerm)) {
+                    } else if (null != restModel.getNotification() && StringUtils.isNotBlank(restModel.getNotification().getContent()) && restModel.getNotification().getContent().toLowerCase(Locale.ENGLISH).contains(lowerCaseSearchTerm)) {
                         listToAddTo.add(restModel);
                     }
                 }
@@ -180,11 +171,27 @@ public class AuditEntryActions {
         }
     }
 
-    private Page<AuditEntryEntity> queryForAuditEntries(final String sortField, final String sortOrder) {
+    private boolean doAnyJobsMatch(final List<JobModel> jobs, final String lowerCaseSearchTerm) {
+        for (final JobModel jobModel : jobs) {
+            if (StringUtils.isNotBlank(jobModel.getName()) && jobModel.getName().toLowerCase(Locale.ENGLISH).contains(lowerCaseSearchTerm)) {
+                return true;
+            } else if (StringUtils.isNotBlank(jobModel.getStatus()) && jobModel.getStatus().toLowerCase(Locale.ENGLISH).contains(lowerCaseSearchTerm)) {
+                return true;
+            } else if (StringUtils.isNotBlank(jobModel.getTimeAuditCreated()) && jobModel.getTimeAuditCreated().toLowerCase(Locale.ENGLISH).contains(lowerCaseSearchTerm)) {
+                return true;
+            } else if (StringUtils.isNotBlank(jobModel.getTimeLastSent()) && jobModel.getTimeLastSent().toLowerCase(Locale.ENGLISH).contains(lowerCaseSearchTerm)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Page<NotificationContent> queryForNotifications(final String sortField, final String sortOrder) {
         boolean sortQuery = false;
-        String sortingField = "timeLastSent";
-        // We can only modify the query for the fields that exist in AuditEntryEntity
-        if (StringUtils.isNotBlank(sortField) && "timeCreated".equalsIgnoreCase(sortField) || "timeLastSent".equalsIgnoreCase(sortField) || "status".equalsIgnoreCase(sortField)) {
+        String sortingField = "createdAt";
+        // We can only modify the query for the fields that exist in NotificationContent
+        if (StringUtils.isNotBlank(sortField) && "createdAt".equalsIgnoreCase(sortField) || "provider".equalsIgnoreCase(sortField) || "provider_creation_time".equalsIgnoreCase(sortField) || "notification_type".equalsIgnoreCase(sortField)
+                || "content".equalsIgnoreCase(sortField)) {
             sortingField = sortField;
             sortQuery = true;
         }
@@ -196,72 +203,50 @@ public class AuditEntryActions {
         }
         logger.debug("Audit entry get. SortField: {} SortOrder: {}", sortingField, sortingOrder.name());
         final PageRequest pageRequest = PageRequest.of(0, Integer.MAX_VALUE, new Sort(sortingOrder, sortingField));
-        final Page<AuditEntryEntity> auditPage = auditEntryRepository.findAll(pageRequest);
+        final Page<NotificationContent> auditPage = notificationManager.findAll(pageRequest);
         return auditPage;
     }
 
-    private List<AuditEntryModel> sortRestModels(final List<AuditEntryModel> auditEntryModels, final String sortField, final String sortOrder) {
-        // We can only want to sort for the fields that could not be sorted by in the query for AuditEntryEntity
-        if (StringUtils.isNotBlank(sortField) && (sortField.equalsIgnoreCase("name") || sortField.equalsIgnoreCase("notificationProviderName"))) {
-            final boolean sortByName = sortField.equalsIgnoreCase("name");
-            boolean ascendingOrder = false;
-            if (StringUtils.isNotBlank(sortOrder) && "asc".equalsIgnoreCase(sortOrder)) {
-                ascendingOrder = true;
-            }
-            Comparator comparator;
-            if (sortByName) {
-                comparator = Comparator.comparing(AuditEntryModel::getName);
-            } else {
-                final Function<AuditEntryModel, String> function = audit -> audit.getNotification().getProvider();
-                comparator = Comparator.comparing(function);
-            }
-            if (ascendingOrder) {
-                comparator = comparator.reversed();
-            }
-            auditEntryModels.sort(comparator);
-        }
-
+    private List<AuditEntryModel> createRestModels(final List<NotificationContent> notificationContentEntries) {
+        final List<AuditEntryModel> auditEntryModels = notificationContentEntries.stream().map(this::createRestModel).collect(Collectors.toList());
         return auditEntryModels;
     }
 
-    private List<AuditEntryModel> createRestModels(final List<AuditEntryEntity> auditEntryEntities) {
-        final List<AuditEntryModel> auditEntryModels = auditEntryEntities.stream().map(this::createRestModel).collect(Collectors.toList());
-        return auditEntryModels;
-    }
+    private AuditEntryModel createRestModel(final NotificationContent notificationContentEntry) {
+        final List<AuditNotificationRelation> relations = auditNotificationRepository.findByNotificationId(notificationContentEntry.getId());
+        final List<Long> auditEntryIds = relations.stream().map(AuditNotificationRelation::getAuditEntryId).collect(Collectors.toList());
+        final List<AuditEntryEntity> auditEntryEntities = auditEntryRepository.findAllById(auditEntryIds);
 
-    private AuditEntryModel createRestModel(final AuditEntryEntity auditEntryEntity) {
-        final Long commonConfigId = auditEntryEntity.getCommonConfigId();
+        final List<JobModel> jobModels = new ArrayList<>();
+        for (final AuditEntryEntity auditEntryEntity : auditEntryEntities) {
+            final Long commonConfigId = auditEntryEntity.getCommonConfigId();
 
-        final List<AuditNotificationRelation> relations = auditNotificationRepository.findByAuditEntryId(auditEntryEntity.getId());
-        final List<Long> notificationIds = relations.stream().map(AuditNotificationRelation::getNotificationId).collect(Collectors.toList());
-        final List<NotificationContent> notifications = notificationManager.findByIds(notificationIds);
+            final Optional<? extends CommonDistributionConfig> commonConfig = jobConfigReader.getPopulatedConfig(commonConfigId);
 
-        final Optional<? extends CommonDistributionConfig> commonConfig = jobConfigReader.getPopulatedConfig(commonConfigId);
+            final String id = notificationContentConverter.getContentConverter().getStringValue(auditEntryEntity.getId());
+            final String timeCreated = notificationContentConverter.getContentConverter().getStringValue(auditEntryEntity.getTimeCreated());
+            final String timeLastSent = notificationContentConverter.getContentConverter().getStringValue(auditEntryEntity.getTimeLastSent());
 
-        final String id = notificationContentConverter.getContentConverter().getStringValue(auditEntryEntity.getId());
-        final String timeCreated = notificationContentConverter.getContentConverter().getStringValue(auditEntryEntity.getTimeCreated());
-        final String timeLastSent = notificationContentConverter.getContentConverter().getStringValue(auditEntryEntity.getTimeLastSent());
+            String status = null;
+            if (auditEntryEntity.getStatus() != null) {
+                status = auditEntryEntity.getStatus().getDisplayName();
+            }
 
-        String status = null;
-        if (auditEntryEntity.getStatus() != null) {
-            status = auditEntryEntity.getStatus().getDisplayName();
+            final String errorMessage = auditEntryEntity.getErrorMessage();
+            final String errorStackTrace = auditEntryEntity.getErrorStackTrace();
+
+            String distributionConfigName = null;
+            String eventType = null;
+            if (commonConfig.isPresent()) {
+                distributionConfigName = commonConfig.get().getName();
+                eventType = commonConfig.get().getDistributionType();
+            }
+
+            jobModels.add(new JobModel(id, distributionConfigName, eventType, timeCreated, timeLastSent, status, errorMessage, errorStackTrace));
         }
+        final String id = notificationContentConverter.getContentConverter().getStringValue(notificationContentEntry.getId());
+        final NotificationConfig notificationConfig = (NotificationConfig) notificationContentConverter.populateConfigFromEntity(notificationContentEntry);
 
-        final String errorMessage = auditEntryEntity.getErrorMessage();
-        final String errorStackTrace = auditEntryEntity.getErrorStackTrace();
-
-        NotificationConfig notificationConfig = null;
-        if (!notifications.isEmpty() && notifications.get(0) != null) {
-            notificationConfig = (NotificationConfig) notificationContentConverter.populateConfigFromEntity(notifications.get(0));
-        }
-
-        String distributionConfigName = null;
-        String eventType = null;
-        if (commonConfig.isPresent()) {
-            distributionConfigName = commonConfig.get().getName();
-            eventType = commonConfig.get().getDistributionType();
-        }
-
-        return new AuditEntryModel(id, distributionConfigName, eventType, timeCreated, timeLastSent, status, errorMessage, errorStackTrace, notificationConfig);
+        return new AuditEntryModel(id, notificationConfig, jobModels);
     }
 }

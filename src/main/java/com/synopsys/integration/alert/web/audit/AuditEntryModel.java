@@ -49,4 +49,5 @@ public class AuditEntryModel extends Config {
     public List<JobModel> getJobs() {
         return jobs;
     }
+
 }
