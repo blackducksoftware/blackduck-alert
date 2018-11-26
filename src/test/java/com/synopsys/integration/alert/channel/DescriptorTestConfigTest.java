@@ -61,13 +61,13 @@ public abstract class DescriptorTestConfigTest<R extends CommonDistributionConfi
         final DescriptorActionApi spyDescriptorConfig = Mockito.spy(descriptorActionApi);
         final Config restModel = getMockRestModelUtil().createRestModel();
         try {
-            spyDescriptorConfig.testConfig(restModel);
+            spyDescriptorConfig.testConfig(restModel, null);
         } catch (final IntegrationException e) {
             e.printStackTrace();
             Assert.fail();
         }
 
-        Mockito.verify(spyDescriptorConfig).testConfig(Mockito.any());
+        Mockito.verify(spyDescriptorConfig).testConfig(Mockito.any(), Mockito.nullable(String.class));
     }
 
 }
