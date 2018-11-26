@@ -37,8 +37,8 @@ import com.synopsys.integration.alert.database.entity.repository.CommonDistribut
 import com.synopsys.integration.alert.database.entity.repository.NotificationContentRepository;
 import com.synopsys.integration.alert.mock.entity.MockCommonDistributionEntity;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
-import com.synopsys.integration.alert.web.audit.AuditEntryConfig;
 import com.synopsys.integration.alert.web.audit.AuditEntryHandler;
+import com.synopsys.integration.alert.web.audit.AuditEntryModel;
 import com.synopsys.integration.alert.web.model.AlertPagedModel;
 import com.synopsys.integration.alert.web.model.NotificationConfig;
 
@@ -83,10 +83,10 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
 
         auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
 
-        final AlertPagedModel<AuditEntryConfig> auditEntries = auditEntryHandler.get(null, null, null, null, null);
+        final AlertPagedModel<AuditEntryModel> auditEntries = auditEntryHandler.get(null, null, null, null, null);
         assertEquals(1, auditEntries.getTotalPages());
 
-        final AuditEntryConfig auditEntry = auditEntryHandler.get(savedAuditEntryEntity.getId());
+        final AuditEntryModel auditEntry = auditEntryHandler.get(savedAuditEntryEntity.getId());
         assertNotNull(auditEntry);
         assertEquals(auditEntry, auditEntries.getContent().get(0));
 

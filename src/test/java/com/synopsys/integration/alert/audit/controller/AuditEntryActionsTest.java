@@ -33,7 +33,7 @@ import com.synopsys.integration.alert.database.entity.repository.NotificationCon
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.mock.model.MockCommonDistributionRestModel;
 import com.synopsys.integration.alert.web.audit.AuditEntryActions;
-import com.synopsys.integration.alert.web.audit.AuditEntryConfig;
+import com.synopsys.integration.alert.web.audit.AuditEntryModel;
 import com.synopsys.integration.alert.web.model.AlertPagedModel;
 import com.synopsys.integration.alert.web.model.NotificationContentConverter;
 import com.synopsys.integration.alert.workflow.NotificationManager;
@@ -58,7 +58,7 @@ public class AuditEntryActionsTest {
         Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
         final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, null, null, null, null, null, null);
 
-        final AuditEntryConfig restModel = auditEntryActions.get(1L);
+        final AuditEntryModel restModel = auditEntryActions.get(1L);
         assertNull(restModel);
     }
 
@@ -76,7 +76,7 @@ public class AuditEntryActionsTest {
         final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, auditEntryRepository, auditNotificationRepository),
             auditNotificationRepository, jobConfigReader, null, null, null);
 
-        AlertPagedModel<AuditEntryConfig> restModel = null;
+        AlertPagedModel<AuditEntryModel> restModel = null;
         try {
             restModel = auditEntryActions.resendNotification(1L);
             fail();
@@ -122,14 +122,14 @@ public class AuditEntryActionsTest {
         final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, auditEntryRepository, auditNotificationRepository),
             auditNotificationRepository, jobConfigReader, notificationContentConverter, null, null);
 
-        final AlertPagedModel<AuditEntryConfig> restModel = auditEntryActions.get(currentPage, pageSize, null, null, null);
+        final AlertPagedModel<AuditEntryModel> restModel = auditEntryActions.get(currentPage, pageSize, null, null, null);
         assertEquals(pageResponse.getTotalPages(), restModel.getTotalPages());
         assertEquals(pageResponse.getNumber(), restModel.getCurrentPage());
         assertEquals(pageResponse.getSize(), restModel.getPageSize());
 
         for (int index = 0; index < pageSize; index++) {
             final AuditEntryEntity entity = pageResponse.getContent().get(index);
-            final AuditEntryConfig entryRestModel = restModel.getContent().get(index);
+            final AuditEntryModel entryRestModel = restModel.getContent().get(index);
             assertEquals(String.valueOf(entity.getId()), entryRestModel.getId());
         }
     }
@@ -161,7 +161,7 @@ public class AuditEntryActionsTest {
         final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, auditEntryRepository, auditNotificationRepository),
             auditNotificationRepository, jobConfigReader, notificationContentConverter, null, null);
 
-        final AlertPagedModel<AuditEntryConfig> restModel = auditEntryActions.get(currentPage, pageSize, null, null, null);
+        final AlertPagedModel<AuditEntryModel> restModel = auditEntryActions.get(currentPage, pageSize, null, null, null);
         assertEquals(pageResponse.getTotalPages(), restModel.getTotalPages());
         assertEquals(pageResponse.getNumber(), restModel.getCurrentPage());
         //Assert 0 because there aren't any entries in the pageResponse content

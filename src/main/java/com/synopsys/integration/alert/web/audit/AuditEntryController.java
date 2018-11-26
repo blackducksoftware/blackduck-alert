@@ -46,14 +46,14 @@ public class AuditEntryController extends BaseController {
     }
 
     @GetMapping
-    public AlertPagedModel<AuditEntryConfig> get(@RequestParam(value = "pageNumber", required = false) final Integer pageNumber, @RequestParam(value = "pageSize", required = false) final Integer pageSize,
-    @RequestParam(value = "searchTerm", required = false) final String searchTerm, @RequestParam(value = "sortField", required = false) final String sortField,
-    @RequestParam(value = "sortOrder", required = false) final String sortOrder) {
+    public AlertPagedModel<AuditEntryModel> get(@RequestParam(value = "pageNumber", required = false) final Integer pageNumber, @RequestParam(value = "pageSize", required = false) final Integer pageSize,
+        @RequestParam(value = "searchTerm", required = false) final String searchTerm, @RequestParam(value = "sortField", required = false) final String sortField,
+        @RequestParam(value = "sortOrder", required = false) final String sortOrder) {
         return auditEntryHandler.get(pageNumber, pageSize, searchTerm, sortField, sortOrder);
     }
 
     @GetMapping(value = "/{id}")
-    public AuditEntryConfig get(@PathVariable(value = "id") final Long id) {
+    public AuditEntryModel get(@PathVariable(value = "id") final Long id) {
         return auditEntryHandler.get(id);
     }
 
