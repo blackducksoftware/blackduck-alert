@@ -1,10 +1,10 @@
 package com.synopsys.integration.alert.web.controller.handler;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.text.ParseException;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -81,6 +81,44 @@ public class SystemHandlerTest {
 
     @Test
     public void testGetCurrentSetup() {
+        final SystemHandler handler = new SystemHandler(contentConverter, systemActions);
+
+        final String contextPath = "context-path/";
+        final ResponseEntity<String> response = handler.getCurrentSetup(contextPath);
+        Mockito.verify(systemActions).isSystemInitialized();
+        Mockito.verify(systemActions).getCurrentSystemSetup();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        final String body = response.getBody();
+        assertNull(body);
+    }
+
+    @Test
+    public void testGetCurrentSetupInitialized() {
+        final SystemHandler handler = new SystemHandler(contentConverter, systemActions);
+        Mockito.when(systemActions.isSystemInitialized()).thenReturn(Boolean.TRUE);
+        final String contextPath = "context-path/";
+        final ResponseEntity<String> response = handler.getCurrentSetup(contextPath);
+        Mockito.verify(systemActions).isSystemInitialized();
+
+        assertEquals(HttpStatus.FOUND, response.getStatusCode());
+        assertNull(response.getBody());
+        assertEquals(contextPath, response.getHeaders().getFirst("Location"));
+    }
+
+    @Test
+    public void testSaveNotAllowed() {
+        final SystemSetupModel model = new SystemSetupModel();
+        Mockito.when(systemActions.isSystemInitialized()).thenReturn(Boolean.TRUE);
+        final SystemHandler handler = new SystemHandler(contentConverter, systemActions);
+        final ResponseEntity<String> response = handler.saveRequiredInformation(model);
+        Mockito.verify(systemActions).isSystemInitialized();
+
+        assertEquals(HttpStatus.METHOD_NOT_ALLOWED, response.getStatusCode());
+    }
+
+    @Test
+    public void testSaveWithErrors() {
         final String blackDuckProviderUrl = "url";
         final Integer blackDuckConnectionTimeout = 100;
         final String blackDuckApiToken = "token";
@@ -98,32 +136,45 @@ public class SystemHandlerTest {
         final SystemSetupModel model = new SystemSetupModel(blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet,
             globalEncryptionPassword, isGlobalEncryptionPasswordSet, globalEncryptionSalt, isGlobalEncryptionSaltSet,
             proxyHost, proxyPort, proxyUsername, proxyPassword, proxyPasswordSet);
-
-        final SystemHandler handler = new SystemHandler(contentConverter, systemActions);
-
         Mockito.when(systemActions.isSystemInitialized()).thenReturn(Boolean.FALSE);
-        Mockito.when(systemActions.getCurrentSystemSetup()).thenReturn(model);
-        final String contextPath = "context-path/";
-        final ResponseEntity<String> response = handler.getCurrentSetup(contextPath);
+        Mockito.doAnswer(invocation -> {
+            final Map<String, String> fieldErrors = invocation.getArgument(1);
+            fieldErrors.put("propertyKey", "error");
+            return invocation.getArgument(0);
+        }).when(systemActions).saveRequiredInformation(Mockito.any(SystemSetupModel.class), Mockito.anyMap());
+        final SystemHandler handler = new SystemHandler(contentConverter, systemActions);
+        final ResponseEntity<String> response = handler.saveRequiredInformation(model);
         Mockito.verify(systemActions).isSystemInitialized();
-        Mockito.verify(systemActions).getCurrentSystemSetup();
+        Mockito.verify(systemActions).saveRequiredInformation(Mockito.any(SystemSetupModel.class), Mockito.anyMap());
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        final String body = response.getBody();
-        assertNotNull(body);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test
-    public void testGetCurrentSetupInitialized() {
+    public void testSave() {
+        final String blackDuckProviderUrl = "url";
+        final Integer blackDuckConnectionTimeout = 100;
+        final String blackDuckApiToken = "token";
+        final boolean blackDuckApiTokenSet = true;
+        final String globalEncryptionPassword = "password";
+        final boolean isGlobalEncryptionPasswordSet = true;
+        final String globalEncryptionSalt = "salt";
+        final boolean isGlobalEncryptionSaltSet = true;
+        final String proxyHost = "host";
+        final String proxyPort = "port";
+        final String proxyUsername = "username";
+        final String proxyPassword = "password";
+        final boolean proxyPasswordSet = true;
+
+        final SystemSetupModel model = new SystemSetupModel(blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet,
+            globalEncryptionPassword, isGlobalEncryptionPasswordSet, globalEncryptionSalt, isGlobalEncryptionSaltSet,
+            proxyHost, proxyPort, proxyUsername, proxyPassword, proxyPasswordSet);
+        Mockito.when(systemActions.isSystemInitialized()).thenReturn(Boolean.FALSE);
         final SystemHandler handler = new SystemHandler(contentConverter, systemActions);
-        Mockito.when(systemActions.isSystemInitialized()).thenReturn(Boolean.TRUE);
-        final String contextPath = "context-path/";
-        final ResponseEntity<String> response = handler.getCurrentSetup(contextPath);
+        final ResponseEntity<String> response = handler.saveRequiredInformation(model);
         Mockito.verify(systemActions).isSystemInitialized();
+        Mockito.verify(systemActions).saveRequiredInformation(Mockito.any(SystemSetupModel.class), Mockito.anyMap());
 
-        assertEquals(HttpStatus.FOUND, response.getStatusCode());
-        assertNull(response.getBody());
-        assertEquals(contextPath, response.getHeaders().getFirst("Location"));
+        assertEquals(HttpStatus.OK, response.getStatusCode());
     }
-
 }
