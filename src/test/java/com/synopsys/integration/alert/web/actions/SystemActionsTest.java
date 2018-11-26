@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.web.actions;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -114,16 +115,16 @@ public class SystemActionsTest {
 
         assertEquals(blackDuckProviderUrl, actual.getBlackDuckProviderUrl());
         assertEquals(blackDuckConnectionTimeout, actual.getBlackDuckConnectionTimeout());
-        assertEquals(blackDuckApiToken, actual.getBlackDuckApiToken());
+        assertNull(blackDuckApiToken, actual.getBlackDuckApiToken());
         assertTrue(actual.isBlackDuckApiTokenSet());
-        assertEquals(globalEncryptionPassword, actual.getGlobalEncryptionPassword());
+        assertNull(actual.getGlobalEncryptionPassword());
         assertTrue(actual.isGlobalEncryptionPasswordSet());
-        assertEquals(globalEncryptionSalt, actual.getGlobalEncryptionSalt());
+        assertNull(actual.getGlobalEncryptionSalt());
         assertTrue(actual.isGlobalEncryptionSaltSet());
         assertEquals(proxyHost, actual.getProxyHost());
         assertEquals(proxyPort, actual.getProxyPort());
         assertEquals(proxyUsername, actual.getProxyUsername());
-        assertEquals(proxyPassword, actual.getProxyPassword());
+        assertNull(actual.getProxyPassword());
         assertTrue(actual.isProxyPasswordSet());
     }
 
@@ -145,7 +146,7 @@ public class SystemActionsTest {
         final String proxyPassword = "password";
         final boolean proxyPasswordSet = true;
 
-        final SystemSetupModel configuration = new SystemSetupModel(blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet,
+        final SystemSetupModel configuration = SystemSetupModel.of(blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet,
             globalEncryptionPassword, isGlobalEncryptionPasswordSet, globalEncryptionSalt, isGlobalEncryptionSaltSet,
             proxyHost, proxyPort, proxyUsername, proxyPassword, proxyPasswordSet);
 

@@ -23,8 +23,6 @@
  */
 package com.synopsys.integration.alert.database.system;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -48,9 +46,8 @@ public class SystemMessageUtility {
 
     @Transactional
     public void addSystemMessage(final String message, final SystemMessageSeverity severity, final SystemMessageType messageType) {
-        ZonedDateTime zonedDateTime = ZonedDateTime.now();
-        zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneOffset.UTC);
-        final SystemMessage systemMessage = new SystemMessage(Date.from(zonedDateTime.toInstant()), severity.name(), message, messageType.name());
+        final Date currentTime = DateRange.createCurrentDateTimestamp();
+        final SystemMessage systemMessage = new SystemMessage(currentTime, severity.name(), message, messageType.name());
         systemMessageRepository.save(systemMessage);
     }
 
@@ -67,9 +64,7 @@ public class SystemMessageUtility {
 
     @Transactional
     public List<SystemMessage> getSystemMessagesAfter(final Date date) {
-        ZonedDateTime zonedDateTime = ZonedDateTime.now();
-        zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneOffset.UTC);
-        final Date currentTime = Date.from(zonedDateTime.toInstant());
+        final Date currentTime = DateRange.createCurrentDateTimestamp();
         return systemMessageRepository.findByCreatedBetween(date, currentTime);
     }
 

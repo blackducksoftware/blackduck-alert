@@ -114,7 +114,7 @@ public class SystemHandlerTest {
         final ResponseEntity<String> response = handler.saveRequiredInformation(model);
         Mockito.verify(systemActions).isSystemInitialized();
 
-        assertEquals(HttpStatus.METHOD_NOT_ALLOWED, response.getStatusCode());
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
     }
 
     @Test
@@ -133,7 +133,7 @@ public class SystemHandlerTest {
         final String proxyPassword = "password";
         final boolean proxyPasswordSet = true;
 
-        final SystemSetupModel model = new SystemSetupModel(blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet,
+        final SystemSetupModel model = SystemSetupModel.of(blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet,
             globalEncryptionPassword, isGlobalEncryptionPasswordSet, globalEncryptionSalt, isGlobalEncryptionSaltSet,
             proxyHost, proxyPort, proxyUsername, proxyPassword, proxyPasswordSet);
         Mockito.when(systemActions.isSystemInitialized()).thenReturn(Boolean.FALSE);
@@ -166,7 +166,7 @@ public class SystemHandlerTest {
         final String proxyPassword = "password";
         final boolean proxyPasswordSet = true;
 
-        final SystemSetupModel model = new SystemSetupModel(blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet,
+        final SystemSetupModel model = SystemSetupModel.of(blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet,
             globalEncryptionPassword, isGlobalEncryptionPasswordSet, globalEncryptionSalt, isGlobalEncryptionSaltSet,
             proxyHost, proxyPort, proxyUsername, proxyPassword, proxyPasswordSet);
         Mockito.when(systemActions.isSystemInitialized()).thenReturn(Boolean.FALSE);

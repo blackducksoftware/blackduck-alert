@@ -92,7 +92,9 @@ public class SystemHandler extends ControllerHandler {
     public ResponseEntity<String> saveRequiredInformation(final SystemSetupModel requiredSystemConfiguration) {
         final ResponseEntity<String> response;
         if (actions.isSystemInitialized()) {
-            response = new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
+            final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder("System Setup has already occurred");
+            final String responseBody = responseBodyBuilder.build();
+            response = new ResponseEntity<>(responseBody, HttpStatus.CONFLICT);
         } else {
             final HashMap<String, String> fieldErrors = new HashMap<>();
             final SystemSetupModel savedConfig = actions.saveRequiredInformation(requiredSystemConfiguration, fieldErrors);

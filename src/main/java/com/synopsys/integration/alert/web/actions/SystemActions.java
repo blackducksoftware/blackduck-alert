@@ -90,18 +90,14 @@ public class SystemActions {
 
     public SystemSetupModel getCurrentSystemSetup() {
         final RequiredSystemConfiguration systemConfiguration = systemInitializer.getCurrentSystemSetup();
-        return new SystemSetupModel(systemConfiguration.getBlackDuckProviderUrl(),
+        return SystemSetupModel.of(systemConfiguration.getBlackDuckProviderUrl(),
             systemConfiguration.getBlackDuckConnectionTimeout(),
-            systemConfiguration.getBlackDuckApiToken(),
             StringUtils.isNotBlank(systemConfiguration.getBlackDuckApiToken()),
-            systemConfiguration.getGlobalEncryptionPassword(),
             systemConfiguration.isGlobalEncryptionPasswordSet(),
-            systemConfiguration.getGlobalEncryptionSalt(),
             systemConfiguration.isGloblaEncryptionSaltSet(),
             systemConfiguration.getProxyHost(),
             systemConfiguration.getProxyPort(),
             systemConfiguration.getProxyUsername(),
-            systemConfiguration.getProxyPassword(),
             StringUtils.isNotBlank(systemConfiguration.getProxyPassword()));
     }
 
