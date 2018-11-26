@@ -66,7 +66,7 @@ public class DistributionChannelTest extends ChannelTest {
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "Distribution Channel Test", null, subTopic, Collections.emptyList());
 
         final EmailChannelEvent event = new EmailChannelEvent(RestConstants.formatDate(new Date()), "provider", "FORMAT",
-            content, 1L, Collections.emptySet(), "TEST SUBJECT LINE");
+                content, 1L, Collections.emptySet(), "TEST SUBJECT LINE");
 
         channel.handleEvent(event);
     }
@@ -79,10 +79,10 @@ public class DistributionChannelTest extends ChannelTest {
         final SlackChannel slackChannel = new SlackChannel(gson, testAlertProperties, hubProperties, null, null);
         final Config globalConfig = Mockito.mock(Config.class);
 
-        final String nullMessage = slackChannel.testGlobalConfig(null);
+        final String nullMessage = slackChannel.testGlobalConfig(null, null);
         assertEquals("The provided config was null.", nullMessage);
         try {
-            slackChannel.testGlobalConfig(globalConfig);
+            slackChannel.testGlobalConfig(globalConfig, null);
         } catch (final AlertException ex) {
             assertEquals("Test method not implemented.", ex.getMessage());
         }

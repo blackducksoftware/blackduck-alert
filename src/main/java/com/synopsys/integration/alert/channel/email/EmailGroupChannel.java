@@ -87,7 +87,7 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
     public void sendMessage(final EmailProperties emailProperties, final Set<String> emailAddresses, final String subjectLine, final String provider, final String formatType, final AggregateMessageContent content,
             final String blackDuckProjectName) throws IntegrationException {
         if (null == emailAddresses || emailAddresses.isEmpty()) {
-            throw new IntegrationException("ERROR: Could not determine what email addresses to send this content to.");
+            throw new AlertException("ERROR: Could not determine what email addresses to send this content to.");
         }
         try {
             final EmailMessagingService emailService = new EmailMessagingService(getAlertProperties(), emailProperties);

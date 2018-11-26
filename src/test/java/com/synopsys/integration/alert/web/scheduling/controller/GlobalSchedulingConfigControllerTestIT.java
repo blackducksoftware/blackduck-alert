@@ -48,12 +48,17 @@ public class GlobalSchedulingConfigControllerTestIT extends GlobalControllerTest
     public void testTestConfig() throws Exception {
         final String testRestUrl = restUrl + "/test";
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl)
-                .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
-                .with(SecurityMockMvcRequestPostProcessors.csrf());
+                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
         config.setId(String.valueOf(entity.getId()));
         request.content(gson.toJson(config));
         request.contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isMethodNotAllowed());
+    }
+
+    @Override
+    public String getTestDestination() {
+        return null;
     }
 
 }
