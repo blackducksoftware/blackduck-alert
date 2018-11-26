@@ -53,7 +53,7 @@ public class GlobalSchedulingConfigControllerTestIT extends GlobalControllerTest
         config.setId(String.valueOf(entity.getId()));
         request.content(gson.toJson(config));
         request.contentType(contentType);
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isMethodNotAllowed());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
     @Override

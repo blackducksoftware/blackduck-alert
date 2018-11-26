@@ -50,7 +50,7 @@ import com.synopsys.integration.alert.web.model.Config;
 
 @RestController
 @RequestMapping(ConfigController.CHANNEL_CONFIG + "/distribution")
-public class ChannelDistributionConfigController extends ConfigController {
+public class ChannelDistributionConfigController extends TestableConfigController {
     private final ConfigControllerHandler controllerHandler;
     private final DescriptorMap descriptorMap;
 
@@ -113,7 +113,7 @@ public class ChannelDistributionConfigController extends ConfigController {
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final String restModel, @RequestParam(required = false) final String destination, @PathVariable final String descriptorName) {
         final DescriptorActionApi descriptor = descriptorMap.getChannelDescriptor(descriptorName).getRestApi(ActionApiType.CHANNEL_DISTRIBUTION_CONFIG);
         final CommonDistributionConfig parsedRestModel = (CommonDistributionConfig) descriptor.getConfigFromJson(restModel);
-        return controllerHandler.testConfig(parsedRestModel, destination, descriptor);
+        return controllerHandler.testConfig(parsedRestModel, descriptor);
     }
 
 }

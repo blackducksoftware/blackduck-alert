@@ -43,7 +43,7 @@ import com.synopsys.integration.alert.web.model.Config;
 
 @RestController
 @RequestMapping(ConfigController.PROVIDER_CONFIG + "/{descriptorName}")
-public class ProviderConfigController extends ConfigController {
+public class ProviderConfigController extends TestableConfigController {
     private final DescriptorMap descriptorMap;
     private final ConfigControllerHandler configControllerHandler;
 
@@ -86,7 +86,7 @@ public class ProviderConfigController extends ConfigController {
     @Override
     public ResponseEntity<String> testConfig(@RequestBody(required = false) final String restModel, @RequestParam(required = false) final String destination, @PathVariable final String descriptorName) {
         final DescriptorActionApi providerDescriptor = descriptorMap.getProviderDescriptor(descriptorName).getRestApi(ActionApiType.PROVIDER_CONFIG);
-        return configControllerHandler.testConfig(providerDescriptor.getConfigFromJson(restModel), destination, providerDescriptor);
+        return configControllerHandler.testConfig(providerDescriptor.getConfigFromJson(restModel), null, providerDescriptor);
     }
 
 }

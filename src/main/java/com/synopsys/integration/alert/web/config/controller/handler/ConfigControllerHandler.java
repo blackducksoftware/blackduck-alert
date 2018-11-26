@@ -126,6 +126,10 @@ public class ConfigControllerHandler extends ControllerHandler {
         }
     }
 
+    public ResponseEntity<String> testConfig(final Config restModel, final DescriptorActionApi descriptor) {
+        return testConfig(restModel, null, descriptor);
+    }
+
     public ResponseEntity<String> testConfig(final Config restModel, final String destination, final DescriptorActionApi descriptor) {
         if (restModel == null) {
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing");

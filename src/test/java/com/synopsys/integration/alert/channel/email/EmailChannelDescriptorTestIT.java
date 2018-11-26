@@ -69,8 +69,8 @@ public class EmailChannelDescriptorTestIT extends DescriptorTestConfigTest<Email
         final UserProjectRelation userProjectRelation4 = new UserProjectRelation(user3.getId(), project4.getId());
         userProjectRelationRepositoryAccessor.deleteAndSaveAll(new HashSet<>(Arrays.asList(userProjectRelation1, userProjectRelation2, userProjectRelation3, userProjectRelation4)));
         final GlobalBlackDuckConfigEntity blackDuckConfigEntity = new GlobalBlackDuckConfigEntity(300,
-            properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY),
-            properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
+                properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY),
+                properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
         globalBlackDuckRepository.deleteAll();
         globalBlackDuckRepository.save(blackDuckConfigEntity);
     }
@@ -83,8 +83,8 @@ public class EmailChannelDescriptorTestIT extends DescriptorTestConfigTest<Email
         final DatabaseEntity distributionEntity = getDistributionEntity();
         final String subjectLine = "Alert It Test";
         final EmailDistributionConfig jobConfig = new EmailDistributionConfig("1", String.valueOf(distributionEntity.getId()), getDescriptor().getDestinationName(), "Test Job", "provider", FrequencyType.DAILY.name(), "true",
-            "", subjectLine, true,
-            Collections.emptyList(), Collections.emptyList(), FormatType.DIGEST.name());
+                "", subjectLine, true,
+                Collections.emptyList(), Collections.emptyList(), FormatType.DIGEST.name());
 
         final EmailChannelEvent channelEvent = channelEventProducer.createChannelEvent(jobConfig, content);
 
@@ -127,8 +127,8 @@ public class EmailChannelDescriptorTestIT extends DescriptorTestConfigTest<Email
         final Boolean smtpAuth = Boolean.valueOf(properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_AUTH));
         final Integer smtpPort = Integer.valueOf(properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT));
         final EmailGlobalConfigEntity emailGlobalConfigEntity = new EmailGlobalConfigEntity(smtpHost, smtpUser, smtpPassword, smtpPort, null, null, null, smtpFrom, null, null, null, smtpEhlo, smtpAuth, null, null, null, null, null, null,
-            null, null, null, null,
-            null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+                null, null, null, null,
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
         emailGlobalRepository.save(emailGlobalConfigEntity);
     }
 

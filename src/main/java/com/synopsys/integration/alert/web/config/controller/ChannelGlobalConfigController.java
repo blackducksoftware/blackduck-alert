@@ -43,7 +43,7 @@ import com.synopsys.integration.alert.web.model.Config;
 
 @RestController
 @RequestMapping(ConfigController.CHANNEL_CONFIG + "/global/{descriptorName}")
-public class ChannelGlobalConfigController extends ConfigController {
+public class ChannelGlobalConfigController extends TestableConfigController {
     private final ConfigControllerHandler controllerHandler;
     private final DescriptorMap descriptorMap;
 

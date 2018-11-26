@@ -78,9 +78,9 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
         if (StringUtils.isNotBlank(testEmailAddress)) {
             emailAddresses = Collections.singleton(testEmailAddress);
         }
-        final EmailProperties globalConfigEntity = new EmailProperties((EmailGlobalConfig) restModel);
+        final EmailProperties emailProperties = new EmailProperties((EmailGlobalConfig) restModel);
         final AggregateMessageContent messageContent = new AggregateMessageContent("Message Content", "Test from Alert", Collections.emptyList());
-        sendMessage(globalConfigEntity, emailAddresses, "Test from Alert", "Global Configuration", "", messageContent, "N/A");
+        sendMessage(emailProperties, emailAddresses, "Test from Alert", "Global Configuration", "", messageContent, "N/A");
         return "Success!";
     }
 
