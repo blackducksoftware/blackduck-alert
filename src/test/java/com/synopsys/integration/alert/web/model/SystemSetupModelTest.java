@@ -44,7 +44,7 @@ public class SystemSetupModelTest {
         final String proxyPassword = "password";
         final boolean proxyPasswordSet = true;
 
-        final SystemSetupModel configuration = new SystemSetupModel(blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet,
+        final SystemSetupModel configuration = SystemSetupModel.of(blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet,
             globalEncryptionPassword, isGlobalEncryptionPasswordSet, globalEncryptionSalt, isGlobalEncryptionSaltSet,
             proxyHost, proxyPort, proxyUsername, proxyPassword, proxyPasswordSet);
 

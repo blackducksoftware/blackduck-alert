@@ -15,7 +15,7 @@ import {
 const initialState = {
     fetching: false,
     fetchingSetup: false,
-    updateStatus: null,
+    updateStatus: '',
     latestMessages: [],
     errorMessage: '',
     setupData: {},
@@ -29,16 +29,19 @@ const config = (state = initialState, action) => {
     switch (action.type) {
         case SYSTEM_LATEST_MESSAGES_FETCHING:
             return Object.assign({}, state, {
-                fetching: true
+                fetching: true,
+                updateStatus: ''
             });
         case SYSTEM_LATEST_MESSAGES_FETCHED:
             return Object.assign({}, state, {
                 fetching: false,
-                latestMessages: action.latestMessages
+                latestMessages: action.latestMessages,
+                updateStatus: ''
             });
         case SYSTEM_LATEST_MESSAGES_FETCH_ERROR:
             return Object.assign({}, state, {
-                fetching: false
+                fetching: false,
+                updateStatus: ''
             });
         case SYSTEM_SETUP_FETCHING:
             return Object.assign({}, state, {
@@ -48,7 +51,8 @@ const config = (state = initialState, action) => {
         case SYSTEM_SETUP_FETCH_REDIRECTED:
             return Object.assign({}, state, {
                 fetchingSetup: false,
-                setupRedirect: true
+                setupRedirect: true,
+                updateStatus: ''
             });
         case SYSTEM_SETUP_FETCHED:
             return Object.assign({}, state, {

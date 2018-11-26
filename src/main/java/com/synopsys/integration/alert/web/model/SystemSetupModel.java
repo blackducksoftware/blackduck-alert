@@ -49,7 +49,21 @@ public class SystemSetupModel extends MaskedModel {
 
     }
 
-    public SystemSetupModel(final String blackDuckProviderUrl, final Integer blackDuckConnectionTimeout, final String blackDuckApiToken, final boolean blackDuckApiTokenSet,
+    public static final SystemSetupModel of(final String blackDuckProviderUrl, final Integer blackDuckConnectionTimeout, final String blackDuckApiToken, final boolean blackDuckApiTokenSet,
+        final String globalEncryptionPassword, final boolean globalEncryptionPasswordSet, final String globalEncryptionSalt, final boolean globalEncryptionSaltSet,
+        final String proxyHost, final String proxyPort, final String proxyUsername, final String proxyPassword, final boolean proxyPasswordSet) {
+        return new SystemSetupModel(blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet, globalEncryptionPassword, globalEncryptionPasswordSet, globalEncryptionSalt, globalEncryptionSaltSet, proxyHost,
+            proxyPort, proxyUsername, proxyPassword, proxyPasswordSet);
+    }
+
+    public static final SystemSetupModel of(final String blackDuckProviderUrl, final Integer blackDuckConnectionTimeout, final boolean blackDuckApiTokenSet,
+        final boolean globalEncryptionPasswordSet, final boolean globalEncryptionSaltSet,
+        final String proxyHost, final String proxyPort, final String proxyUsername, final boolean proxyPasswordSet) {
+        return new SystemSetupModel(blackDuckProviderUrl, blackDuckConnectionTimeout, null, blackDuckApiTokenSet, null, globalEncryptionPasswordSet, null, globalEncryptionSaltSet, proxyHost,
+            proxyPort, proxyUsername, null, proxyPasswordSet);
+    }
+
+    private SystemSetupModel(final String blackDuckProviderUrl, final Integer blackDuckConnectionTimeout, final String blackDuckApiToken, final boolean blackDuckApiTokenSet,
         final String globalEncryptionPassword, final boolean globalEncryptionPasswordSet, final String globalEncryptionSalt, final boolean globalEncryptionSaltSet,
         final String proxyHost, final String proxyPort, final String proxyUsername, final String proxyPassword, final boolean proxyPasswordSet) {
         this.blackDuckProviderUrl = blackDuckProviderUrl;

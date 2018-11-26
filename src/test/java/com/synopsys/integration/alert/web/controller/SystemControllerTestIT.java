@@ -56,7 +56,8 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     public void testGetInitialSystemSetup() throws Exception {
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(systemInitialSetupBaseUrl)
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
+        // the spring-test.properties file sets the encryption and in order to run a hub URL is needed therefore the environment is setup.
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isFound());
     }
 
     @Test
@@ -76,7 +77,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
         final String proxyPassword = "";
         final boolean proxyPasswordSet = false;
 
-        final SystemSetupModel configuration = new SystemSetupModel(blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet,
+        final SystemSetupModel configuration = SystemSetupModel.of(blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet,
             globalEncryptionPassword, isGlobalEncryptionPasswordSet, globalEncryptionSalt, isGlobalEncryptionSaltSet,
             proxyHost, proxyPort, proxyUsername, proxyPassword, proxyPasswordSet);
 
@@ -84,6 +85,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
         request.content(gson.toJson(configuration));
         request.contentType(contentType);
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
+        // the spring-test.properties file sets the encryption and in order to run a hub URL is needed therefore the environment is setup.
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isConflict());
     }
 }

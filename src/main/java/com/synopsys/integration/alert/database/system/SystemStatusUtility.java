@@ -23,13 +23,13 @@
  */
 package com.synopsys.integration.alert.database.system;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.synopsys.integration.alert.common.model.DateRange;
 
 @Component
 public class SystemStatusUtility {
@@ -66,9 +66,7 @@ public class SystemStatusUtility {
     }
 
     private Date createCurrentDateTimestamp() {
-        ZonedDateTime zonedDateTime = ZonedDateTime.now();
-        zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneOffset.UTC);
-        return Date.from(zonedDateTime.toInstant());
+        return DateRange.createCurrentDateTimestamp();
     }
 
     private SystemStatus getSystemStatus() {
