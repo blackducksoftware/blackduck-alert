@@ -83,7 +83,7 @@ public class SystemHandler extends ControllerHandler {
         if (actions.isSystemInitialized()) {
             final HttpHeaders headers = new HttpHeaders();
             headers.add("Location", contextPath);
-            return new ResponseEntity<>(getContentConverter().getJsonString(actions.getCurrentSystemSetup()), headers, HttpStatus.FOUND);
+            return new ResponseEntity<>(headers, HttpStatus.FOUND);
         } else {
             return new ResponseEntity<>(getContentConverter().getJsonString(actions.getCurrentSystemSetup()), HttpStatus.OK);
         }

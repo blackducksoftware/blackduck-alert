@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.database.system;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -99,6 +100,14 @@ public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
         assertNotNull(actualMessageList);
         assertEquals(MESSAGE_COUNT, actualMessageList.size());
         assertEquals(expectedMessages, actualMessageList);
+    }
+
+    @Test
+    public void testFindCreatedBeforeEmptyList() {
+        final ZonedDateTime currentTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
+        final Date currentDate = Date.from(currentTime.toInstant());
+        final List<SystemMessage> actualMessageList = systemMessageUtility.getSystemMessagesBefore(currentDate);
+        assertTrue(actualMessageList.isEmpty());
     }
 
     @Test
