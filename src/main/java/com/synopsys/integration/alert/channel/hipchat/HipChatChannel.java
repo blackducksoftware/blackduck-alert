@@ -115,10 +115,10 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
     @Override
     public List<Request> createRequests(final HipChatGlobalConfigEntity globalConfig, final HipChatChannelEvent event) throws IntegrationException {
         if (!isValidGlobalConfig(globalConfig)) {
-            throw new IntegrationException("ERROR: Missing global config.");
+            throw new AlertException("ERROR: Missing global config.");
         }
         if (event.getRoomId() == null) {
-            throw new IntegrationException("Room ID missing");
+            throw new AlertException("Room ID missing");
         } else {
             final String htmlMessage = createHtmlMessage(event.getContent());
             if (isChunkedMessageNeeded(htmlMessage)) {

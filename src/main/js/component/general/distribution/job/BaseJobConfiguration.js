@@ -105,7 +105,8 @@ class BaseJobConfiguration extends Component {
                         includeAllProjects: jobConfig.filterByProject == 'false',
                         filterByProject: jobConfig.filterByProject,
                         notificationTypes: jobConfig.notificationTypes,
-                        configuredProjects: jobConfig.configuredProjects
+                        configuredProjects: jobConfig.configuredProjects,
+                        projectNamePattern: jobConfig.projectNamePattern
                     });
                     this.setState(newState);
                 } else {
@@ -176,7 +177,8 @@ class BaseJobConfiguration extends Component {
             formatType: this.state.formatType,
             filterByProject: !this.state.includeAllProjects,
             notificationTypes: this.state.notificationTypes,
-            configuredProjects: this.state.configuredProjects
+            configuredProjects: this.state.configuredProjects,
+            projectNamePattern: this.state.projectNamePattern
         }, this.props.getParentConfiguration());
         configuration.includeAllProjects = !configuration.filterByProject;
         if (configuration.notificationTypes && configuration.notificationTypes.length > 0) {
@@ -346,7 +348,7 @@ class BaseJobConfiguration extends Component {
                     </div>
                     {this.props.childContent}
                     <ProjectConfiguration includeAllProjects={this.state.includeAllProjects} handleChange={this.handleChange} handleProjectChanged={this.handleProjectChanged} projects={this.props.projects}
-                                          configuredProjects={this.state.configuredProjects}/>
+                                          configuredProjects={this.state.configuredProjects} projectNamePattern={this.state.projectNamePattern}/>
                     <ConfigButtons cancelId="job-cancel" submitId="job-submit" includeTest includeCancel onTestClick={this.handleTestSubmit} onCancelClick={this.props.handleCancel}/>
                     <p name="configurationMessage">{this.state.configurationMessage}</p>
                 </div>

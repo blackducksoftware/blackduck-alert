@@ -126,7 +126,7 @@ class JobAddModal extends Component {
     render() {
         const jobTypeOptions = this.createJobTypeOptions();
         return (
-            <Modal show={this.state.show} onHide={this.handleClose}>
+            <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
 
                 <Modal.Header closeButton>
                     <Modal.Title>New Distribution Job</Modal.Title>

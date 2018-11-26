@@ -40,7 +40,7 @@ public class SlackChannelDescriptorTestIT extends DescriptorTestConfigTest<Slack
         final String channelUsername = "Username";
         final String channelName = "channel";
         final SlackDistributionConfig slackDistributionConfig = new SlackDistributionConfig("1", webhook, channelUsername, channelName,
-            String.valueOf(distributionEntity.getId()), getDescriptor().getDestinationName(), "Test Job", "provider", FrequencyType.DAILY.name(), "true",
+            String.valueOf(distributionEntity.getId()), getDescriptor().getDestinationName(), "Test Job", "provider", FrequencyType.DAILY.name(), "true", "",
             Collections.emptyList(), Collections.emptyList(), FormatType.DIGEST.name());
 
         final SlackChannelEvent channelEvent = channelEventProducer.createChannelEvent(slackDistributionConfig, content);

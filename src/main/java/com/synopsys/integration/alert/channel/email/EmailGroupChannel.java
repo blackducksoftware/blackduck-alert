@@ -66,7 +66,7 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
     public void sendMessage(final EmailChannelEvent event) throws IntegrationException {
         final EmailGlobalConfigEntity globalConfigEntity = getGlobalConfigEntity();
         if (!isValidGlobalConfigEntity(globalConfigEntity)) {
-            throw new IntegrationException("ERROR: Missing global config.");
+            throw new AlertException("ERROR: Missing global config.");
         }
         final EmailProperties emailProperties = new EmailProperties(globalConfigEntity);
         sendMessage(emailProperties, event.getEmailAddresses(), event.getSubjectLine(), event.getProvider(), event.getFormatType(), event.getContent(), "ProjectName");

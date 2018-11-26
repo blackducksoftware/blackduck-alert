@@ -112,7 +112,7 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
         if (foundEntity.isPresent()) {
             final CommonDistributionConfigEntity commonEntity = foundEntity.get();
             final CommonDistributionConfigEntity newEntity = new CommonDistributionConfigEntity(commonEntity.getDistributionConfigId(), commonEntity.getDistributionType(), commonEntity.getName(), BlackDuckProvider.COMPONENT_NAME,
-                FrequencyType.DAILY, commonEntity.getFilterByProject(), FormatType.DEFAULT);
+                FrequencyType.DAILY, commonEntity.getFilterByProject(), commonEntity.getProjectNamePattern(), FormatType.DEFAULT);
             newEntity.setId(commonEntity.getId());
             commonDistributionRepository.save(newEntity);
         }
@@ -176,7 +176,7 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
         final String name = "name";
         final FrequencyType frequency = FrequencyType.REAL_TIME;
 
-        final CommonDistributionConfigEntity entity = new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, providerName, frequency, Boolean.TRUE, FormatType.DEFAULT);
+        final CommonDistributionConfigEntity entity = new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, providerName, frequency, Boolean.TRUE, "", FormatType.DEFAULT);
 
         return entity;
     }
