@@ -26,8 +26,8 @@ package com.synopsys.integration.alert.web.controller.handler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.synopsys.integration.alert.web.model.ResponseBodyBuilder;
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.web.model.ResponseBodyBuilder;
 
 public abstract class ControllerHandler {
     private final ContentConverter contentConverter;

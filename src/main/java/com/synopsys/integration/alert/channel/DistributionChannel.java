@@ -111,7 +111,6 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, E
 
     public abstract void sendMessage(final E event) throws IntegrationException;
 
-    // TODO
     public String testGlobalConfig(final Config restModel, final String destination) throws IntegrationException {
         if (restModel != null) {
             throw new AlertException("Test method not implemented.");

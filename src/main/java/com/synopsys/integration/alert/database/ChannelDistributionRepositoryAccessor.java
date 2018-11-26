@@ -27,14 +27,27 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.synopsys.integration.alert.common.descriptor.config.TypeConverter;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
+import com.synopsys.integration.alert.web.model.Config;
 
-public abstract class ChannelDistributionRespositoryAccessor extends RepositoryAccessor {
-    public ChannelDistributionRespositoryAccessor(final JpaRepository<? extends DatabaseEntity, Long> repository) {
+public abstract class ChannelDistributionRepositoryAccessor extends RepositoryAccessor {
+    private final TypeConverter typeConverter;
+
+    public ChannelDistributionRepositoryAccessor(final JpaRepository<? extends DatabaseEntity, Long> repository, final TypeConverter typeConverter) {
         super(repository);
+        this.typeConverter = typeConverter;
     }
 
-    public abstract Optional<? extends CommonDistributionConfig> getJobConfig(final Long distributionConfigId);
+    public Optional<? extends CommonDistributionConfig> getJobConfig(final Long distributionConfigId) {
+        final Optional<? extends DatabaseEntity> optionalDatabaseEntity = readEntity(distributionConfigId);
+        if (optionalDatabaseEntity.isPresent()) {
+            final DatabaseEntity entity = optionalDatabaseEntity.get();
+            final Config distributionConfig = typeConverter.populateConfigFromEntity(entity);
+            return Optional.of((CommonDistributionConfig) distributionConfig);
+        }
+        return Optional.empty();
+    }
 
 }

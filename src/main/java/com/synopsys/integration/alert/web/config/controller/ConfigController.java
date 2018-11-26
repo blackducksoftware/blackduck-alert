@@ -56,7 +56,4 @@ public abstract class ConfigController extends BaseController {
 
     @DeleteMapping
     public abstract ResponseEntity<String> deleteConfig(final Long id, final String descriptorName);
-
-    @PostMapping(value = "/test")
-    public abstract ResponseEntity<String> testConfig(final String config, final String destination, final String descriptorName);
 }
