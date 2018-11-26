@@ -137,7 +137,7 @@ class SchedulingConfiguration extends React.Component {
                             />
                         </div>
                         {errorFields && errorFields.dailyDigestHourOfDay &&
-                        <div className="offset-sm-3 col-sm-9">
+                        <div className="offset-sm-3 col-sm-8">
                             <p className="fieldError">{errorFields.dailyDigestHourOfDay}</p>
                         </div>}
                     </div>
@@ -163,7 +163,7 @@ class SchedulingConfiguration extends React.Component {
                             />
                         </div>
                         {errorFields && errorFields.purgeDataFrequencyDays &&
-                        <div className="offset-sm-3 col-sm-9">
+                        <div className="offset-sm-3 col-sm-8">
                             <p className="fieldError">{errorFields.purgeDataFrequencyDays}</p>
                         </div>}
                     </div>
