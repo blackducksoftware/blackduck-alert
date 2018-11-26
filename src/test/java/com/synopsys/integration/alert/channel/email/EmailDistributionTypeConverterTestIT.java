@@ -42,7 +42,7 @@ public class EmailDistributionTypeConverterTestIT extends AlertIntegrationTest {
         final EmailGroupDistributionConfigEntity savedEmailEntity = emailGroupDistributionRepository.save(emailGroupDistributionConfigEntity);
 
         final CommonDistributionConfigEntity commonDistributionConfigEntity = new CommonDistributionConfigEntity(savedEmailEntity.getId(), EmailGroupChannel.COMPONENT_NAME, "nice name", "some_provider", FrequencyType.REAL_TIME,
-            Boolean.FALSE, FormatType.DEFAULT);
+            Boolean.FALSE, "", FormatType.DEFAULT);
         final CommonDistributionConfigEntity savedCommonEntity = commonDistributionRepository.save(commonDistributionConfigEntity);
 
         final Config config = emailDistributionTypeConverter.populateConfigFromEntity(savedEmailEntity);

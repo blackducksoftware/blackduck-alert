@@ -22,13 +22,13 @@ public class MockEmailRestModel extends MockRestModelUtil<EmailDistributionConfi
     private String id;
     private String emailTemplateLogoImage;
     private String emailSubjectLine;
-    private boolean projectOwnerOnly;
+    private final boolean projectOwnerOnly;
 
     public MockEmailRestModel() {
         this("1", "emailTemplateLogoImage", "emailSubjectLine", false);
     }
 
-    private MockEmailRestModel(final String id, final String emailTemplateLogoImage, final String emailSubjectLine, boolean projectOwnerOnly) {
+    private MockEmailRestModel(final String id, final String emailTemplateLogoImage, final String emailSubjectLine, final boolean projectOwnerOnly) {
         this.id = id;
         this.emailTemplateLogoImage = emailTemplateLogoImage;
         this.emailSubjectLine = emailSubjectLine;
@@ -67,9 +67,9 @@ public class MockEmailRestModel extends MockRestModelUtil<EmailDistributionConfi
     @Override
     public EmailDistributionConfig createRestModel() {
         final EmailDistributionConfig restModel = new EmailDistributionConfig(String.valueOf(distributionMockUtil.getId()), distributionMockUtil.getDistributionConfigId(), distributionMockUtil.getDistributionType(),
-            distributionMockUtil.getName(), distributionMockUtil.getProviderName(), distributionMockUtil.getFrequency(), distributionMockUtil.getFilterByProject(), emailTemplateLogoImage, emailSubjectLine, projectOwnerOnly,
-            distributionMockUtil.getProjects(),
-            distributionMockUtil.getNotificationsAsStrings(), distributionMockUtil.getFormatType());
+            distributionMockUtil.getName(), distributionMockUtil.getProviderName(), distributionMockUtil.getFrequency(), distributionMockUtil.getFilterByProject(), emailTemplateLogoImage, emailSubjectLine,
+            distributionMockUtil.getProjectNamePattern(), projectOwnerOnly,
+            distributionMockUtil.getProjects(), distributionMockUtil.getNotificationsAsStrings(), distributionMockUtil.getFormatType());
         return restModel;
     }
 

@@ -36,8 +36,9 @@ public class EmailDistributionConfig extends CommonDistributionConfig {
     }
 
     public EmailDistributionConfig(final String id, final String distributionConfigId, final String distributionType, final String name, final String providerName, final String frequency, final String filterByProject,
-        final String emailTemplateLogoImage, final String emailSubjectLine, boolean projectOwnerOnly, final List<String> configuredProjects, final List<String> notificationTypes, final String formatType) {
-        super(id, distributionConfigId, distributionType, name, providerName, frequency, filterByProject, configuredProjects, notificationTypes, formatType);
+        final String emailTemplateLogoImage, final String emailSubjectLine, final String projectNamePattern, final boolean projectOwnerOnly, final List<String> configuredProjects, final List<String> notificationTypes,
+        final String formatType) {
+        super(id, distributionConfigId, distributionType, name, providerName, frequency, filterByProject, projectNamePattern, configuredProjects, notificationTypes, formatType);
         this.emailTemplateLogoImage = emailTemplateLogoImage;
         this.emailSubjectLine = emailSubjectLine;
         this.projectOwnerOnly = projectOwnerOnly;
