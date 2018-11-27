@@ -77,11 +77,11 @@ public class NotificationToChannelEventConverterTest extends AlertIntegrationTes
         final DatabaseEntity emailEntity = emailDistributionRepositoryAccessor.saveEntity(emailGroupDistributionConfigEntity);
 
         CommonDistributionConfigEntity slackCommonDistributionConfig = new CommonDistributionConfigEntity(slackEntity.getId(), SlackChannel.COMPONENT_NAME, "Slack Config", "provider_blackduck", FrequencyType.REAL_TIME, false,
-            "", FormatType.DEFAULT);
+                "", FormatType.DEFAULT);
         CommonDistributionConfigEntity hipChatCommonDistributionConfig = new CommonDistributionConfigEntity(hipChatEntity.getId(), HipChatChannel.COMPONENT_NAME, "HipChat Config", "provider_blackduck", FrequencyType.REAL_TIME, false,
-            "", FormatType.DEFAULT);
+                "", FormatType.DEFAULT);
         CommonDistributionConfigEntity emailCommonDistributionConfig = new CommonDistributionConfigEntity(emailEntity.getId(), EmailGroupChannel.COMPONENT_NAME, "Email Config", "provider_blackduck", FrequencyType.REAL_TIME, false,
-            "", FormatType.DEFAULT);
+                "", FormatType.DEFAULT);
 
         slackCommonDistributionConfig = commonDistributionRepository.save(slackCommonDistributionConfig);
         hipChatCommonDistributionConfig = commonDistributionRepository.save(hipChatCommonDistributionConfig);

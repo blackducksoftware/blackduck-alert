@@ -67,7 +67,7 @@ public class SlackChannel extends RestDistributionChannel<GlobalChannelConfigEnt
 
     @Autowired
     public SlackChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditUtility auditUtility,
-        final ChannelRestConnectionFactory channelRestConnectionFactory) {
+            final ChannelRestConnectionFactory channelRestConnectionFactory) {
         super(gson, alertProperties, blackDuckProperties, auditUtility, null, SlackChannelEvent.class, channelRestConnectionFactory);
     }
 
@@ -78,11 +78,6 @@ public class SlackChannel extends RestDistributionChannel<GlobalChannelConfigEnt
 
     @Override
     public String getApiUrl(final GlobalChannelConfigEntity globalConfig) {
-        return SLACK_API;
-    }
-
-    @Override
-    public String getApiUrl(final String apiUrl) {
         return SLACK_API;
     }
 

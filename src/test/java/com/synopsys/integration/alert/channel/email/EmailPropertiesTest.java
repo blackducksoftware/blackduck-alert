@@ -18,6 +18,7 @@ import org.junit.Test;
 
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalConfigEntity;
+import com.synopsys.integration.alert.web.channel.model.EmailGlobalConfig;
 
 public class EmailPropertiesTest {
     @Test
@@ -131,7 +132,7 @@ public class EmailPropertiesTest {
 
         IllegalArgumentException caughtException = null;
         try {
-            new EmailProperties(null);
+            new EmailProperties((EmailGlobalConfig) null);
         } catch (final IllegalArgumentException e) {
             caughtException = e;
         }
