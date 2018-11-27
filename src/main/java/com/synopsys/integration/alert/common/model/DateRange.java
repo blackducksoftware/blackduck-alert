@@ -24,6 +24,8 @@
 package com.synopsys.integration.alert.common.model;
 
 import java.text.ParseException;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 import com.synopsys.integration.rest.RestConstants;
@@ -32,12 +34,17 @@ public class DateRange {
     private final Date start;
     private final Date end;
 
-    public static DateRange of(final Date start, final Date end) {
+    public static final DateRange of(final Date start, final Date end) {
         return new DateRange(start, end);
     }
 
-    public static DateRange of(final String start, final String end) throws ParseException {
+    public static final DateRange of(final String start, final String end) throws ParseException {
         return new DateRange(RestConstants.parseDateString(start), RestConstants.parseDateString(end));
+    }
+
+    public static final Date createCurrentDateTimestamp() {
+        ZonedDateTime zonedDateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
+        return Date.from(zonedDateTime.toInstant());
     }
 
     private DateRange(final Date start, final Date end) {

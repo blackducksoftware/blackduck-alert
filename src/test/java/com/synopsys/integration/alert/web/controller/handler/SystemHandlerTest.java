@@ -1,6 +1,10 @@
 package com.synopsys.integration.alert.web.controller.handler;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
+import java.text.ParseException;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -9,9 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.database.system.SystemMessageUtility;
-import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.web.actions.SystemActions;
+import com.synopsys.integration.alert.web.model.SystemSetupModel;
 
 public class SystemHandlerTest {
     private SystemActions systemActions;
@@ -19,7 +22,7 @@ public class SystemHandlerTest {
 
     @Before
     public void initialize() {
-        systemActions = Mockito.spy(new SystemActions(Mockito.mock(SystemStatusUtility.class), Mockito.mock(SystemMessageUtility.class)));
+        systemActions = Mockito.mock(SystemActions.class);
     }
 
     @Test
@@ -70,9 +73,108 @@ public class SystemHandlerTest {
     @Test
     public void testGetSystemMessagesBadDateRange() throws Exception {
         final SystemHandler handler = new SystemHandler(contentConverter, systemActions);
+        Mockito.when(systemActions.getSystemMessagesBetween(Mockito.anyString(), Mockito.anyString())).thenThrow(new ParseException("errorparsing date ", 0));
         final ResponseEntity<String> responseEntity = handler.getSystemMessages("bad-start-time", "bad-end-time");
         Mockito.verify(systemActions).getSystemMessagesBetween(Mockito.anyString(), Mockito.anyString());
         assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
     }
 
+    @Test
+    public void testGetCurrentSetup() {
+        final SystemHandler handler = new SystemHandler(contentConverter, systemActions);
+
+        final String contextPath = "context-path/";
+        final ResponseEntity<String> response = handler.getCurrentSetup(contextPath);
+        Mockito.verify(systemActions).isSystemInitialized();
+        Mockito.verify(systemActions).getCurrentSystemSetup();
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        final String body = response.getBody();
+        assertNull(body);
+    }
+
+    @Test
+    public void testGetCurrentSetupInitialized() {
+        final SystemHandler handler = new SystemHandler(contentConverter, systemActions);
+        Mockito.when(systemActions.isSystemInitialized()).thenReturn(Boolean.TRUE);
+        final String contextPath = "context-path/";
+        final ResponseEntity<String> response = handler.getCurrentSetup(contextPath);
+        Mockito.verify(systemActions).isSystemInitialized();
+
+        assertEquals(HttpStatus.FOUND, response.getStatusCode());
+        assertNull(response.getBody());
+        assertEquals(contextPath, response.getHeaders().getFirst("Location"));
+    }
+
+    @Test
+    public void testSaveNotAllowed() {
+        final SystemSetupModel model = new SystemSetupModel();
+        Mockito.when(systemActions.isSystemInitialized()).thenReturn(Boolean.TRUE);
+        final SystemHandler handler = new SystemHandler(contentConverter, systemActions);
+        final ResponseEntity<String> response = handler.saveRequiredInformation(model);
+        Mockito.verify(systemActions).isSystemInitialized();
+
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+    }
+
+    @Test
+    public void testSaveWithErrors() {
+        final String blackDuckProviderUrl = "url";
+        final Integer blackDuckConnectionTimeout = 100;
+        final String blackDuckApiToken = "token";
+        final boolean blackDuckApiTokenSet = true;
+        final String globalEncryptionPassword = "password";
+        final boolean isGlobalEncryptionPasswordSet = true;
+        final String globalEncryptionSalt = "salt";
+        final boolean isGlobalEncryptionSaltSet = true;
+        final String proxyHost = "host";
+        final String proxyPort = "port";
+        final String proxyUsername = "username";
+        final String proxyPassword = "password";
+        final boolean proxyPasswordSet = true;
+
+        final SystemSetupModel model = SystemSetupModel.of(blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet,
+            globalEncryptionPassword, isGlobalEncryptionPasswordSet, globalEncryptionSalt, isGlobalEncryptionSaltSet,
+            proxyHost, proxyPort, proxyUsername, proxyPassword, proxyPasswordSet);
+        Mockito.when(systemActions.isSystemInitialized()).thenReturn(Boolean.FALSE);
+        Mockito.doAnswer(invocation -> {
+            final Map<String, String> fieldErrors = invocation.getArgument(1);
+            fieldErrors.put("propertyKey", "error");
+            return invocation.getArgument(0);
+        }).when(systemActions).saveRequiredInformation(Mockito.any(SystemSetupModel.class), Mockito.anyMap());
+        final SystemHandler handler = new SystemHandler(contentConverter, systemActions);
+        final ResponseEntity<String> response = handler.saveRequiredInformation(model);
+        Mockito.verify(systemActions).isSystemInitialized();
+        Mockito.verify(systemActions).saveRequiredInformation(Mockito.any(SystemSetupModel.class), Mockito.anyMap());
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    public void testSave() {
+        final String blackDuckProviderUrl = "url";
+        final Integer blackDuckConnectionTimeout = 100;
+        final String blackDuckApiToken = "token";
+        final boolean blackDuckApiTokenSet = true;
+        final String globalEncryptionPassword = "password";
+        final boolean isGlobalEncryptionPasswordSet = true;
+        final String globalEncryptionSalt = "salt";
+        final boolean isGlobalEncryptionSaltSet = true;
+        final String proxyHost = "host";
+        final String proxyPort = "port";
+        final String proxyUsername = "username";
+        final String proxyPassword = "password";
+        final boolean proxyPasswordSet = true;
+
+        final SystemSetupModel model = SystemSetupModel.of(blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet,
+            globalEncryptionPassword, isGlobalEncryptionPasswordSet, globalEncryptionSalt, isGlobalEncryptionSaltSet,
+            proxyHost, proxyPort, proxyUsername, proxyPassword, proxyPasswordSet);
+        Mockito.when(systemActions.isSystemInitialized()).thenReturn(Boolean.FALSE);
+        final SystemHandler handler = new SystemHandler(contentConverter, systemActions);
+        final ResponseEntity<String> response = handler.saveRequiredInformation(model);
+        Mockito.verify(systemActions).isSystemInitialized();
+        Mockito.verify(systemActions).saveRequiredInformation(Mockito.any(SystemSetupModel.class), Mockito.anyMap());
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
 }
