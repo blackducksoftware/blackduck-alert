@@ -26,7 +26,6 @@ import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.web.model.Config;
 
 public abstract class GlobalControllerTest extends AlertIntegrationTest {
-
     protected final TestProperties testProperties = new TestProperties();
     protected final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
 
@@ -56,6 +55,8 @@ public abstract class GlobalControllerTest extends AlertIntegrationTest {
 
     public abstract String getRestControllerUrl();
 
+    public abstract String getTestDestination();
+
     @Before
     public void setup() {
         gson = new Gson();
@@ -80,8 +81,8 @@ public abstract class GlobalControllerTest extends AlertIntegrationTest {
     @WithMockUser(roles = "ADMIN")
     public void testGetConfig() throws Exception {
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(restUrl)
-                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
-                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
+                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -89,8 +90,8 @@ public abstract class GlobalControllerTest extends AlertIntegrationTest {
     @WithMockUser(roles = "ADMIN")
     public void testPostConfig() throws Exception {
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(restUrl)
-                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
-                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
+                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
         request.content(gson.toJson(config));
         request.contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isCreated());
@@ -100,9 +101,8 @@ public abstract class GlobalControllerTest extends AlertIntegrationTest {
     @WithMockUser(roles = "ADMIN")
     public void testPutConfig() throws Exception {
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(restUrl)
-                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
-                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
-        ;
+                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
         config.setId(String.valueOf(entity.getId()));
         request.content(gson.toJson(config));
         request.contentType(contentType);
@@ -114,32 +114,27 @@ public abstract class GlobalControllerTest extends AlertIntegrationTest {
     public void testDeleteConfig() throws Exception {
         final String deleteUrl = restUrl + "?id=" + entity.getId();
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(deleteUrl)
-                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
-                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
+                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isAccepted());
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     public void testTestConfig() throws Exception {
-        final String testRestUrl = restUrl + "/test";
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl)
-                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
-                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
-        ;
-        request.content(gson.toJson(config));
-        request.contentType(contentType);
-        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
+        expectOkResponse(restUrl + "/test?destination=" + getTestDestination());
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     public void testValidateConfig() throws Exception {
-        final String testRestUrl = restUrl + "/validate";
+        expectOkResponse(restUrl + "/validate");
+    }
+
+    private void expectOkResponse(final String testRestUrl) throws Exception {
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl)
-                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
-                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
-        ;
+                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
         request.content(gson.toJson(config));
         request.contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());

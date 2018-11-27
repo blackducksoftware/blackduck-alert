@@ -12,6 +12,7 @@
 package com.synopsys.integration.alert.channel.hipchat.mock;
 
 import com.google.gson.JsonObject;
+import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.mock.MockGlobalRestModelUtil;
 import com.synopsys.integration.alert.web.channel.model.HipChatGlobalConfig;
 
@@ -22,7 +23,7 @@ public class MockHipChatGlobalRestModel extends MockGlobalRestModelUtil<HipChatG
     private String hostServer;
 
     public MockHipChatGlobalRestModel() {
-        this("ApiKey", false, "1", "HostServer");
+        this("ApiKey", false, "1", HipChatChannel.HIP_CHAT_API);
     }
 
     private MockHipChatGlobalRestModel(final String apiKey, final boolean apiKeyIsSet, final String id, final String hostServer) {

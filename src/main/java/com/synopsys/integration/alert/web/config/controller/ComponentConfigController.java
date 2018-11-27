@@ -81,10 +81,4 @@ public class ComponentConfigController extends ConfigController {
         final DescriptorActionApi descriptor = descriptorMap.getComponentDescriptor(descriptorName).getRestApi(ActionApiType.COMPONENT_CONFIG);
         return controllerHandler.deleteConfig(id, descriptor);
     }
-
-    @Override
-    public ResponseEntity<String> testConfig(@RequestBody(required = false) final String config, final @PathVariable String descriptorName) {
-        return controllerHandler.doNotAllowHttpMethod();
-    }
-
 }

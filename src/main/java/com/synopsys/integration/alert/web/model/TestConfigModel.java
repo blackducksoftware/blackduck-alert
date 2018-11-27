@@ -21,20 +21,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database;
+package com.synopsys.integration.alert.web.model;
 
 import java.util.Optional;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+public class TestConfigModel {
+    private final Config restModel;
+    private final String destination;
 
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
-import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
-
-public abstract class ChannelDistributionRespositoryAccessor extends RepositoryAccessor {
-    public ChannelDistributionRespositoryAccessor(final JpaRepository<? extends DatabaseEntity, Long> repository) {
-        super(repository);
+    public TestConfigModel(final Config restModel) {
+        this.restModel = restModel;
+        this.destination = null;
     }
 
-    public abstract Optional<? extends CommonDistributionConfig> getJobConfig(final Long distributionConfigId);
+    public TestConfigModel(final Config restModel, final String destination) {
+        this.restModel = restModel;
+        this.destination = destination;
+    }
+
+    public Config getRestModel() {
+        return restModel;
+    }
+
+    public Optional<String> getDestination() {
+        return Optional.ofNullable(destination);
+    }
 
 }

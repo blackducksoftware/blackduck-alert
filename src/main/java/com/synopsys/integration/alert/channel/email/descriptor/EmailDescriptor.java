@@ -36,8 +36,8 @@ public class EmailDescriptor extends ChannelDescriptor {
 
     @Autowired
     public EmailDescriptor(final EmailGroupChannel channelListener, final EmailGlobalDescriptorActionApi globalRestApi, final EmailGlobalUIConfig emailGlobalUIConfig,
-        final EmailDistributionDescriptorActionApi distributionRestApi, final EmailDistributionUIConfig emailDistributionUIConfig, final EmailDistributionRepositoryAccessor emailDistributionRepositoryAccessor,
-        final EmailEventProducer emailEventProducer) {
+            final EmailDistributionDescriptorActionApi distributionRestApi, final EmailDistributionUIConfig emailDistributionUIConfig, final EmailDistributionRepositoryAccessor emailDistributionRepositoryAccessor,
+            final EmailEventProducer emailEventProducer) {
         super(EmailGroupChannel.COMPONENT_NAME, EmailGroupChannel.COMPONENT_NAME, channelListener, distributionRestApi, emailDistributionUIConfig, globalRestApi, emailGlobalUIConfig, emailDistributionRepositoryAccessor, emailEventProducer);
     }
 }
