@@ -49,10 +49,14 @@ public class BlackDuckPolicyMessageContentCollectorTest {
     public void insertMultipleAndVerifyCorrectNumberOfCategoryItemsTest() throws Exception {
         final String topicName = "example";
         final int numberOfRulesCleared = 3;
-        final int numberOrRuleComponents = 1;
         final int numberOfPoliciesOverriden = 1;
-        final int numberOfPolicyOverrideComponents = 1;
         final int policyOverlap = 1;
+
+        // there are 3 possible linkable items per notification in the test data
+        // 1- policy rule
+        // 2- component
+        // 3- component version or policy override user
+        final int linkableItemsPerCategory = 3;
 
         final String ruleContent = getNotificationContentFromFile("json/policyRuleClearedNotification.json");
         final String overrideContent = getNotificationContentFromFile("json/policyOverrideNotification.json");
@@ -66,11 +70,11 @@ public class BlackDuckPolicyMessageContentCollectorTest {
 
         int categoryCount = numberOfPoliciesOverriden;
         // add 1 item for the policy override name linkable items
-        int linkableItemsCount = numberOfPoliciesOverriden * numberOfPolicyOverrideComponents * 3;
+        int linkableItemsCount = categoryCount * linkableItemsPerCategory;
         insertAndAssertCountsOnTopic(collector, n0, topicName, categoryCount, linkableItemsCount);
 
         categoryCount += numberOfRulesCleared;
-        linkableItemsCount += numberOfRulesCleared * numberOrRuleComponents * 2;
+        linkableItemsCount = categoryCount * linkableItemsPerCategory;
         insertAndAssertCountsOnTopic(collector, n1, topicName, categoryCount, linkableItemsCount);
 
         categoryCount += numberOfPoliciesOverriden - policyOverlap;
