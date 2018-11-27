@@ -43,6 +43,7 @@ import com.synopsys.integration.alert.database.RepositoryAccessor;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 public class DescriptorConfigActions {
@@ -118,8 +119,8 @@ public class DescriptorConfigActions {
         return "Valid";
     }
 
-    public String testConfig(final Config config, final String destination, final DescriptorActionApi descriptorActionApi) throws IntegrationException {
-        descriptorActionApi.testConfig(config, destination);
+    public String testConfig(final TestConfigModel testConfig, final DescriptorActionApi descriptorActionApi) throws IntegrationException {
+        descriptorActionApi.testConfig(testConfig);
         return "Successfully sent test message.";
     }
 

@@ -17,7 +17,7 @@ public class BlackDuckDistributionDescriptorActionApiTest {
     public void testTestConfig() {
         final BlackDuckDistributionDescriptorActionApi restApi = new BlackDuckDistributionDescriptorActionApi(Mockito.mock(BlackDuckTypeConverter.class), Mockito.mock(BlackDuckRepositoryAccessor.class));
         final BlackDuckDistributionDescriptorActionApi spiedRestApi = Mockito.spy(restApi);
-        spiedRestApi.testConfig(Mockito.any(), Mockito.anyString());
-        Mockito.verify(spiedRestApi).testConfig(Mockito.any(), Mockito.nullable(String.class));
+        spiedRestApi.testConfig(Mockito.any());
+        Mockito.verify(spiedRestApi).testConfig(Mockito.any());
     }
 }

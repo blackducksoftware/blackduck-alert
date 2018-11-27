@@ -45,7 +45,7 @@ import com.synopsys.integration.alert.database.channel.email.EmailGlobalConfigEn
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalRepository;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.web.channel.model.EmailGlobalConfig;
-import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component(value = EmailGroupChannel.COMPONENT_NAME)
@@ -73,12 +73,13 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
     }
 
     @Override
-    public String testGlobalConfig(final Config restModel, final String testEmailAddress) throws IntegrationException {
+    public String testGlobalConfig(final TestConfigModel testConfig) throws IntegrationException {
         Set<String> emailAddresses = null;
+        final String testEmailAddress = testConfig.getDestination().orElse(null);
         if (StringUtils.isNotBlank(testEmailAddress)) {
             emailAddresses = Collections.singleton(testEmailAddress);
         }
-        final EmailProperties emailProperties = new EmailProperties((EmailGlobalConfig) restModel);
+        final EmailProperties emailProperties = new EmailProperties((EmailGlobalConfig) testConfig.getRestModel());
         final AggregateMessageContent messageContent = new AggregateMessageContent("Message Content", "Test from Alert", Collections.emptyList());
         sendMessage(emailProperties, emailAddresses, "Test from Alert", "Global Configuration", "", messageContent, "N/A");
         return "Success!";

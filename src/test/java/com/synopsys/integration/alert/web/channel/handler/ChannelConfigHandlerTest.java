@@ -283,7 +283,7 @@ public class ChannelConfigHandlerTest {
         final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
         final DescriptorActionApi descriptor = Mockito.mock(DescriptorActionApi.class);
         final int responseCode = HttpStatus.BAD_GATEWAY.value();
-        Mockito.when(configActions.testConfig(Mockito.any(), Mockito.nullable(String.class), Mockito.any())).thenThrow(new IntegrationRestException(responseCode, "", "", ""));
+        Mockito.when(configActions.testConfig(Mockito.any(), Mockito.any())).thenThrow(new IntegrationRestException(responseCode, "", "", ""));
         Mockito.when(configActions.getContentConverter()).thenReturn(contentConverter);
 
         final CommonDistributionConfig restModel = mockCommonDistributionRestModel.createRestModel();
@@ -298,7 +298,7 @@ public class ChannelConfigHandlerTest {
 
         final DescriptorActionApi descriptor = Mockito.mock(DescriptorActionApi.class);
 
-        Mockito.when(configActions.testConfig(Mockito.any(), Mockito.nullable(String.class), Mockito.any())).thenThrow(new AlertFieldException(Collections.emptyMap()));
+        Mockito.when(configActions.testConfig(Mockito.any(), Mockito.any())).thenThrow(new AlertFieldException(Collections.emptyMap()));
         Mockito.when(configActions.getContentConverter()).thenReturn(contentConverter);
 
         final CommonDistributionConfig restModel = mockCommonDistributionRestModel.createRestModel();
@@ -313,7 +313,7 @@ public class ChannelConfigHandlerTest {
 
         final DescriptorActionApi descriptor = Mockito.mock(DescriptorActionApi.class);
 
-        Mockito.when(configActions.testConfig(Mockito.any(), Mockito.nullable(String.class), Mockito.any())).thenThrow(new NullPointerException());
+        Mockito.when(configActions.testConfig(Mockito.any(), Mockito.any())).thenThrow(new NullPointerException());
         Mockito.when(configActions.getContentConverter()).thenReturn(contentConverter);
 
         final CommonDistributionConfig restModel = mockCommonDistributionRestModel.createRestModel();

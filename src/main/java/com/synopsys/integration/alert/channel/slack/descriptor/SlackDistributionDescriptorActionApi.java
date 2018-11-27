@@ -37,6 +37,7 @@ import com.synopsys.integration.alert.database.channel.slack.SlackDistributionRe
 import com.synopsys.integration.alert.web.channel.model.SlackDistributionConfig;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -64,8 +65,8 @@ public class SlackDistributionDescriptorActionApi extends DescriptorActionApi {
     }
 
     @Override
-    public void testConfig(final Config restModel, final String ignoredDestination) throws IntegrationException {
-        final SlackChannelEvent event = slackEventProducer.createChannelTestEvent((CommonDistributionConfig) restModel);
+    public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
+        final SlackChannelEvent event = slackEventProducer.createChannelTestEvent((CommonDistributionConfig) testConfig.getRestModel());
         slackChannel.sendMessage(event);
     }
 

@@ -37,6 +37,7 @@ import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributi
 import com.synopsys.integration.alert.web.channel.model.HipChatDistributionConfig;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -63,8 +64,8 @@ public class HipChatDistributionDescriptorActionApi extends DescriptorActionApi 
     }
 
     @Override
-    public void testConfig(final Config restModel, final String ignoredDestination) throws IntegrationException {
-        final HipChatChannelEvent event = hipChatEventProducer.createChannelTestEvent((CommonDistributionConfig) restModel);
+    public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
+        final HipChatChannelEvent event = hipChatEventProducer.createChannelTestEvent((CommonDistributionConfig) testConfig.getRestModel());
         hipChatChannel.sendMessage(event);
     }
 

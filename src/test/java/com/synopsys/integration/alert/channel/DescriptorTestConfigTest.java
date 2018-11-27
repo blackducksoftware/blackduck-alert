@@ -20,6 +20,7 @@ import com.synopsys.integration.alert.database.entity.channel.GlobalChannelConfi
 import com.synopsys.integration.alert.mock.model.MockRestModelUtil;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class DescriptorTestConfigTest<R extends CommonDistributionConfig, E extends DistributionChannelConfigEntity, GE extends GlobalChannelConfigEntity, EP extends ChannelEventProducer> extends AlertIntegrationTest {
@@ -61,13 +62,13 @@ public abstract class DescriptorTestConfigTest<R extends CommonDistributionConfi
         final DescriptorActionApi spyDescriptorConfig = Mockito.spy(descriptorActionApi);
         final Config restModel = getMockRestModelUtil().createRestModel();
         try {
-            spyDescriptorConfig.testConfig(restModel, null);
+            spyDescriptorConfig.testConfig(new TestConfigModel(restModel));
         } catch (final IntegrationException e) {
             e.printStackTrace();
             Assert.fail();
         }
 
-        Mockito.verify(spyDescriptorConfig).testConfig(Mockito.any(), Mockito.nullable(String.class));
+        Mockito.verify(spyDescriptorConfig).testConfig(Mockito.any());
     }
 
 }
