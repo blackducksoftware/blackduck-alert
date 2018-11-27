@@ -21,34 +21,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.model;
+package com.synopsys.integration.alert.common.enumeration;
 
-public class SystemMessageModel {
-    private final String severity;
-    private final String createdAt;
-    private final String content;
-    private final String type;
-
-    public SystemMessageModel(final String severity, final String createdAt, final String content, final String type) {
-        this.severity = severity;
-        this.createdAt = createdAt;
-        this.content = content;
-        this.type = type;
-    }
-
-    public String getSeverity() {
-        return severity;
-    }
-
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public String getType() {
-        return type;
-    }
+public enum SystemMessageSeverity {
+    INFO,
+    ERROR,
+    WARNING;
 }

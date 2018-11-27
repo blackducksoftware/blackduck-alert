@@ -9,19 +9,19 @@ class SystemMessage extends Component {
     }
 
     render() {
-        const {createdAt, content, type} = this.props;
+        const {createdAt, content, severity} = this.props;
         return (<div className="messageHeader">
-            <span className={this.getIcon()} aria-hidden="true" title={type}/><span className="messageDate">{createdAt}</span>
+            <span className={this.getIcon()} aria-hidden="true" title={severity}/><span className="messageDate">{createdAt}</span>
             <div>{content}</div>
         </div>);
     }
 
     getIcon() {
-        const {type} = this.props;
+        const {severity} = this.props;
         const errorIcon = "fa fa-exclamation-triangle ";
-        if (type == 'ERROR') {
+        if (severity == 'ERROR') {
             return `${errorIcon} errorStatus`;
-        } else if (type == 'WARNING') {
+        } else if (severity == 'WARNING') {
             return `${errorIcon} warningStatus`
         } else {
             return "fa fa-check-circle validStatus"
@@ -30,13 +30,13 @@ class SystemMessage extends Component {
 }
 
 SystemMessage.propTypes = {
-    type: PropTypes.string,
+    severity: PropTypes.string,
     createdAt: PropTypes.string,
     content: PropTypes.string
 };
 
 SystemMessage.defaultProps = {
-    type: 'INFO',
+    severity: 'INFO',
     createAt: '',
     content: ''
 };

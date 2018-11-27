@@ -26,8 +26,10 @@ package com.synopsys.integration.alert.web.actions;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -36,17 +38,26 @@ import com.synopsys.integration.alert.database.system.SystemMessage;
 import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.web.model.SystemMessageModel;
+import com.synopsys.integration.alert.web.model.SystemSetupModel;
+import com.synopsys.integration.alert.workflow.startup.install.RequiredSystemConfiguration;
+import com.synopsys.integration.alert.workflow.startup.install.SystemInitializer;
 import com.synopsys.integration.rest.RestConstants;
 
 @Component
 public class SystemActions {
     private final SystemStatusUtility systemStatusUtility;
     private final SystemMessageUtility systemMessageUtility;
+    private final SystemInitializer systemInitializer;
 
     @Autowired
-    public SystemActions(final SystemStatusUtility systemStatusUtility, final SystemMessageUtility systemMessageUtility) {
+    public SystemActions(final SystemStatusUtility systemStatusUtility, final SystemMessageUtility systemMessageUtility, final SystemInitializer systemInitializer) {
         this.systemStatusUtility = systemStatusUtility;
         this.systemMessageUtility = systemMessageUtility;
+        this.systemInitializer = systemInitializer;
+    }
+
+    public boolean isSystemInitialized() {
+        return systemStatusUtility.isSystemInitialized();
     }
 
     public List<SystemMessageModel> getSystemMessagesSinceStartup() {
@@ -74,6 +85,36 @@ public class SystemActions {
 
     private SystemMessageModel convert(final SystemMessage systemMessage) {
         final String createdAt = RestConstants.formatDate(systemMessage.getCreated());
-        return new SystemMessageModel(systemMessage.getType(), createdAt, systemMessage.getContent());
+        return new SystemMessageModel(systemMessage.getSeverity(), createdAt, systemMessage.getContent(), systemMessage.getType());
     }
+
+    public SystemSetupModel getCurrentSystemSetup() {
+        final RequiredSystemConfiguration systemConfiguration = systemInitializer.getCurrentSystemSetup();
+        return SystemSetupModel.of(systemConfiguration.getBlackDuckProviderUrl(),
+            systemConfiguration.getBlackDuckConnectionTimeout(),
+            StringUtils.isNotBlank(systemConfiguration.getBlackDuckApiToken()),
+            systemConfiguration.isGlobalEncryptionPasswordSet(),
+            systemConfiguration.isGloblaEncryptionSaltSet(),
+            systemConfiguration.getProxyHost(),
+            systemConfiguration.getProxyPort(),
+            systemConfiguration.getProxyUsername(),
+            StringUtils.isNotBlank(systemConfiguration.getProxyPassword()));
+    }
+
+    public SystemSetupModel saveRequiredInformation(final SystemSetupModel requiredSystemConfiguration, final Map<String, String> fieldErrors) {
+        final RequiredSystemConfiguration configToSave = new RequiredSystemConfiguration(requiredSystemConfiguration.getBlackDuckProviderUrl(),
+            requiredSystemConfiguration.getBlackDuckConnectionTimeout(),
+            requiredSystemConfiguration.getBlackDuckApiToken(),
+            requiredSystemConfiguration.getGlobalEncryptionPassword(),
+            requiredSystemConfiguration.isGlobalEncryptionPasswordSet(),
+            requiredSystemConfiguration.getGlobalEncryptionSalt(),
+            requiredSystemConfiguration.isGlobalEncryptionSaltSet(),
+            requiredSystemConfiguration.getProxyHost(),
+            requiredSystemConfiguration.getProxyPort(),
+            requiredSystemConfiguration.getProxyUsername(),
+            requiredSystemConfiguration.getProxyPassword());
+        systemInitializer.updateRequiredConfiguration(configToSave, fieldErrors);
+        return requiredSystemConfiguration;
+    }
+
 }

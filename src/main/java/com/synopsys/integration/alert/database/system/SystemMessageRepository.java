@@ -35,4 +35,6 @@ public interface SystemMessageRepository extends JpaRepository<SystemMessage, Lo
 
     SystemMessage findTopByOrderByCreatedAsc();
 
+    List<SystemMessage> findByType(final String type);
+
 }

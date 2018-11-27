@@ -8,9 +8,9 @@ export default class NumberInput extends LabeledField {
 
         let inputDiv = null;
         if (this.props.readOnly) {
-            inputDiv = <div className="d-inline-flex p-2 col-sm-3"><input id={id} type="number" readOnly className={className} name={this.props.name} value={this.props.value}/></div>;
+            inputDiv = <div className="d-inline-flex flex-column p-2 col-sm-3"><input id={id} type="number" readOnly className={className} name={this.props.name} value={this.props.value}/></div>;
         } else {
-            inputDiv = <div className="d-inline-flex p-2 col-sm-3"><input id={id} type="number" className={className} name={this.props.name} value={this.props.value} onChange={this.props.onChange}/></div>;
+            inputDiv = <div className="d-inline-flex flex-column p-2 col-sm-3"><input id={id} type="number" className={className} name={this.props.name} value={this.props.value} onChange={this.props.onChange}/></div>;
         }
         return (
             super.render(inputDiv)
