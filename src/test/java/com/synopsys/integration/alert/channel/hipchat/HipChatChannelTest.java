@@ -34,12 +34,14 @@ import com.synopsys.integration.alert.TestPropertyKey;
 import com.synopsys.integration.alert.channel.ChannelTest;
 import com.synopsys.integration.alert.channel.hipchat.mock.MockHipChatGlobalEntity;
 import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.audit.AuditUtility;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.LogLevel;
 import com.synopsys.integration.log.PrintStreamIntLogger;
@@ -102,7 +104,7 @@ public class HipChatChannelTest extends ChannelTest {
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
 
         final HipChatChannelEvent event = new HipChatChannelEvent(RestConstants.formatDate(new Date()), "provider", "FORMAT",
-            content, null, 12345, Boolean.FALSE, null);
+                content, null, 12345, Boolean.FALSE, null);
 
         final String userDir = System.getProperties().getProperty("user.dir");
         try {
@@ -126,14 +128,22 @@ public class HipChatChannelTest extends ChannelTest {
 
         Mockito.when(restFactory.createUnauthenticatedRestConnection(Mockito.anyString())).thenReturn(null);
 
-        final String nullEntityMessage = hipChatChannel.testGlobalConfig(null);
-        assertEquals("The provided config was null.", nullEntityMessage);
+        try {
+            hipChatChannel.testGlobalConfig(new TestConfigModel(null));
+            fail("Expected exception, but none was thrown");
+        } catch (final AlertException nullEntityException) {
+            assertEquals("The provided config was null.", nullEntityException.getMessage());
+        }
 
         hipChatMockUtil.setApiKey("apiKey");
         final Config config = hipChatMockUtil.createGlobalConfig();
 
-        final String restConnectionNullMessage = hipChatChannel.testGlobalConfig(config);
-        assertEquals("Connection error: see logs for more information.", restConnectionNullMessage);
+        try {
+            hipChatChannel.testGlobalConfig(new TestConfigModel(config, properties.getProperty(TestPropertyKey.TEST_HIPCHAT_ROOM_ID)));
+            fail("Expected exception, but none was thrown");
+        } catch (final AlertException restConnectionNullException) {
+            assertEquals("Connection error: see logs for more information.", restConnectionNullException.getMessage());
+        }
     }
 
     @Test
@@ -145,7 +155,7 @@ public class HipChatChannelTest extends ChannelTest {
 
         try {
             final Config config = hipChatMockUtil.createEmptyGlobalConfig();
-            hipChatChannel.testGlobalConfig(config);
+            hipChatChannel.testGlobalConfig(new TestConfigModel(config));
             fail();
         } catch (final IntegrationException ex) {
             assertEquals("Invalid API key: API key not provided", ex.getMessage());
@@ -163,7 +173,7 @@ public class HipChatChannelTest extends ChannelTest {
         hipChatMockUtil.setApiKey(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY));
         hipChatMockUtil.setHostServer("");
         final Config config = hipChatMockUtil.createGlobalConfig();
-        final String validMessage = hipChatChannel.testGlobalConfig(config);
+        final String validMessage = hipChatChannel.testGlobalConfig(new TestConfigModel(config, properties.getProperty(TestPropertyKey.TEST_HIPCHAT_ROOM_ID)));
         assertEquals("API key is valid.", validMessage);
     }
 
@@ -172,15 +182,22 @@ public class HipChatChannelTest extends ChannelTest {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         testAlertProperties.setAlertTrustCertificate(true);
 
-        final ChannelRestConnectionFactory restFactory = new ChannelRestConnectionFactory(testAlertProperties);
+        final ChannelRestConnectionFactory restFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, null, null, null, null, restFactory);
 
-        hipChatMockUtil.setApiKey("garbage");
-        try {
-            final Config config = hipChatMockUtil.createGlobalConfig();
-            hipChatChannel.testGlobalConfig(config);
-        } catch (final IntegrationException ex) {
-            assertTrue(ex.getMessage().contains("Invalid API key: "));
+        try (final RestConnection restConnection = new UnauthenticatedRestConnection(new PrintStreamIntLogger(System.out, LogLevel.INFO), new URL("http://google.com"), 100, null)) {
+            Mockito.when(restFactory.createUnauthenticatedRestConnection(Mockito.anyString())).thenReturn(restConnection);
+
+            hipChatMockUtil.setApiKey("garbage");
+            try {
+                final Config config = hipChatMockUtil.createGlobalConfig();
+                hipChatChannel.testGlobalConfig(new TestConfigModel(config, properties.getProperty(TestPropertyKey.TEST_HIPCHAT_ROOM_ID)));
+            } catch (final IntegrationException ex) {
+                assertTrue(ex.getMessage().contains("Invalid API key: "));
+            }
+        } catch (final IOException e) {
+            Assert.fail();
+            e.printStackTrace();
         }
     }
 
@@ -197,7 +214,7 @@ public class HipChatChannelTest extends ChannelTest {
             hipChatMockUtil.setApiKey("apiKey");
             try {
                 final Config config = hipChatMockUtil.createGlobalConfig();
-                hipChatChannel.testGlobalConfig(config);
+                hipChatChannel.testGlobalConfig(new TestConfigModel(config));
             } catch (final IntegrationException ex) {
                 assertEquals("Invalid API key: Mock exception", ex.getMessage());
             }
@@ -223,7 +240,7 @@ public class HipChatChannelTest extends ChannelTest {
         final boolean notify = false;
         final String color = "random";
         final HipChatChannelEvent event = new HipChatChannelEvent(RestConstants.formatDate(new Date()), "provider", "FORMAT",
-            content, null, roomId, notify, color);
+                content, null, roomId, notify, color);
 
         hipChatChannel = Mockito.spy(hipChatChannel);
         Mockito.doReturn(new HipChatGlobalConfigEntity(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY), "")).when(hipChatChannel).getGlobalConfigEntity();

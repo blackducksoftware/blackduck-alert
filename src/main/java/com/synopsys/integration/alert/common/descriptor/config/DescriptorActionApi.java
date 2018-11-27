@@ -30,6 +30,7 @@ import java.util.Optional;
 import com.synopsys.integration.alert.database.RepositoryAccessor;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class DescriptorActionApi {
@@ -63,9 +64,9 @@ public abstract class DescriptorActionApi {
         return getStartupComponent() != null;
     }
 
-    public abstract void validateConfig(Config restModel, Map<String, String> fieldErrors);
+    public abstract void validateConfig(final Config restModel, final Map<String, String> fieldErrors);
 
-    public abstract void testConfig(Config restModel) throws IntegrationException;
+    public abstract void testConfig(final TestConfigModel testConfig) throws IntegrationException;
 
     public Optional<? extends DatabaseEntity> readEntity(final long id) {
         return getRepositoryAccessor().readEntity(id);
