@@ -35,6 +35,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -59,13 +60,14 @@ public class SingleEntityConfigActions extends DescriptorConfigActions {
     }
 
     @Override
-    public String testConfig(Config restModel, final DescriptorActionApi descriptor) throws IntegrationException {
+    public String testConfig(final TestConfigModel testConfig, final DescriptorActionApi descriptor) throws IntegrationException {
         final List<? extends DatabaseEntity> globalConfigs = descriptor.readEntities();
+        DatabaseEntity globalConfig = null;
         if (globalConfigs.size() == 1) {
-            restModel = updateEntityWithSavedEntity(restModel, globalConfigs.get(0));
-            return super.testConfig(restModel, descriptor);
+            globalConfig = globalConfigs.get(0);
         }
-        return "Config did not have the expected number of rows: Expected 1, but found " + globalConfigs.size();
+        updateEntityWithSavedEntity(testConfig.getRestModel(), globalConfig);
+        return super.testConfig(testConfig, descriptor);
     }
 
 }

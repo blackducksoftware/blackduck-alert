@@ -52,16 +52,16 @@ public class JobConfigReader {
         final List<CommonDistributionConfigEntity> foundEntities = commonDistributionRepository.findAll();
 
         final List<? extends CommonDistributionConfig> configs = foundEntities
-                                                                     .stream()
-                                                                     .map(entity -> {
-                                                                         final Optional<? extends CommonDistributionConfig> optionalCommonDistributionConfig = getJobConfig(entity.getDistributionConfigId(), entity.getDistributionType());
-                                                                         if (optionalCommonDistributionConfig.isPresent()) {
-                                                                             return optionalCommonDistributionConfig.get();
-                                                                         }
-                                                                         return null;
-                                                                     })
-                                                                     .filter(commonDistributionConfig -> null != commonDistributionConfig)
-                                                                     .collect(Collectors.toList());
+                                                                         .stream()
+                                                                         .map(entity -> {
+                                                                             final Optional<? extends CommonDistributionConfig> optionalCommonDistributionConfig = getJobConfig(entity.getDistributionConfigId(), entity.getDistributionType());
+                                                                             if (optionalCommonDistributionConfig.isPresent()) {
+                                                                                 return optionalCommonDistributionConfig.get();
+                                                                             }
+                                                                             return null;
+                                                                         })
+                                                                         .filter(commonDistributionConfig -> null != commonDistributionConfig)
+                                                                         .collect(Collectors.toList());
 
         return configs;
     }
@@ -81,7 +81,7 @@ public class JobConfigReader {
     }
 
     private Optional<? extends CommonDistributionConfig> getJobConfig(final Long distributionConfigId, final String distributionType) {
-        final Optional<? extends CommonDistributionConfig> optionalConfig = descriptorMap.getChannelDescriptor(distributionType).getChannelDistributionRespositoryAccessor().getJobConfig(distributionConfigId);
+        final Optional<? extends CommonDistributionConfig> optionalConfig = descriptorMap.getChannelDescriptor(distributionType).getChannelDistributionRepositoryAccessor().getJobConfig(distributionConfigId);
         return optionalConfig;
     }
 

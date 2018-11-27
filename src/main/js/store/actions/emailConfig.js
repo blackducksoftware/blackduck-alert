@@ -1,8 +1,20 @@
-import {EMAIL_CONFIG_FETCHED, EMAIL_CONFIG_FETCHING, EMAIL_CONFIG_HIDE_ADVANCED, EMAIL_CONFIG_SHOW_ADVANCED, EMAIL_CONFIG_UPDATE_ERROR, EMAIL_CONFIG_UPDATED, EMAIL_CONFIG_UPDATING} from './types';
+import {
+    EMAIL_CONFIG_FETCHED,
+    EMAIL_CONFIG_FETCHING,
+    EMAIL_CONFIG_HIDE_ADVANCED,
+    EMAIL_CONFIG_HIDE_TEST_MODAL,
+    EMAIL_CONFIG_SHOW_ADVANCED,
+    EMAIL_CONFIG_SHOW_TEST_MODAL,
+    EMAIL_CONFIG_TEST_SUCCESSFUL,
+    EMAIL_CONFIG_UPDATE_ERROR,
+    EMAIL_CONFIG_UPDATED,
+    EMAIL_CONFIG_UPDATING
+} from './types';
 
 import {verifyLoginByStatus} from './session';
 
 const CONFIG_URL = '/alert/api/configuration/channel/global/channel_email';
+const TEST_URL = `${CONFIG_URL}/test`;
 
 function scrubConfig(config) {
     return {
@@ -112,11 +124,42 @@ function emailConfigUpdated(config) {
     };
 }
 
+function handleFailureResponse(dispatch, response) {
+    response.json()
+        .then((data) => {
+            switch (response.status) {
+                case 400:
+                    return dispatch(configError(data.message, data.errors));
+                case 412:
+                    return dispatch(configError(data.message, data.errors));
+                default: {
+                    dispatch(configError(data.message, null));
+                    return dispatch(verifyLoginByStatus(response.status));
+                }
+            }
+        });
+}
+
 export function toggleAdvancedEmailOptions(toggle) {
     if (toggle) {
         return {type: EMAIL_CONFIG_SHOW_ADVANCED};
     }
     return {type: EMAIL_CONFIG_HIDE_ADVANCED};
+}
+
+export function openEmailConfigTest() {
+    return {type: EMAIL_CONFIG_SHOW_TEST_MODAL};
+}
+
+export function closeEmailConfigTest() {
+    return {type: EMAIL_CONFIG_HIDE_TEST_MODAL};
+}
+
+export function emailConfigTestSucceeded() {
+    return {
+
+        type: EMAIL_CONFIG_TEST_SUCCESSFUL
+    };
 }
 
 export function getEmailConfig() {
@@ -165,21 +208,34 @@ export function updateEmailConfig(config) {
                         dispatch(getEmailConfig());
                     });
                 } else {
-                    response.json()
-                        .then((data) => {
-                            switch (response.status) {
-                                case 400:
-                                    return dispatch(configError(data.message, data.errors));
-                                case 412:
-                                    return dispatch(configError(data.message, data.errors));
-                                default: {
-                                    dispatch(configError(data.message, null));
-                                    return dispatch(verifyLoginByStatus(response.status));
-                                }
-                            }
-                        });
+                    handleFailureResponse(dispatch, response);
                 }
             })
             .catch(console.error);
+    };
+}
+
+export function sendEmailConfigTest(config, destination) {
+    return (dispatch, getState) => {
+        const body = scrubConfig(config);
+        const {csrfToken} = getState().session;
+        const requestUrl = `${TEST_URL}?destination=${destination}`;
+        fetch(requestUrl, {
+            credentials: 'same-origin',
+            method: 'POST',
+            body: JSON.stringify(body),
+            headers: {
+                'content-type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            }
+        })
+            .then((response) => {
+                dispatch(closeEmailConfigTest());
+                if (response.ok) {
+                    return dispatch(emailConfigTestSucceeded());
+                } else {
+                    handleFailureResponse(dispatch, response);
+                }
+            })
     };
 }
