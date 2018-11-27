@@ -7,7 +7,8 @@ import PasswordInput from '../../field/input/PasswordInput';
 import TextInput from '../../field/input/TextInput';
 import ConfigButtons from '../common/ConfigButtons';
 
-import {getEmailConfig, toggleAdvancedEmailOptions, updateEmailConfig} from '../../store/actions/emailConfig';
+import {closeEmailConfigTest, getEmailConfig, openEmailConfigTest, sendEmailConfigTest, toggleAdvancedEmailOptions, updateEmailConfig} from '../../store/actions/emailConfig';
+import ChannelTestModal from "../common/ChannelTestModal";
 
 class EmailConfiguration extends React.Component {
     constructor(props) {
@@ -98,7 +99,7 @@ class EmailConfiguration extends React.Component {
     render() {
         const showAdvanced = this.props.showAdvanced;
         const showAdvancedLabel = (showAdvanced) ? 'Hide Advanced' : 'Show Advanced';
-        const {errorMessage, updateStatus} = this.props;
+        const {errorMessage, actionMessage} = this.props;
         return (
             <div>
                 <h1>
@@ -110,8 +111,8 @@ class EmailConfiguration extends React.Component {
                         {errorMessage}
                     </div>}
 
-                    {updateStatus === 'UPDATED' && <div className="alert alert-success">
-                        {'Update successful'}
+                    {actionMessage && <div className="alert alert-success">
+                        {actionMessage}
                     </div>}
 
                     <TextInput
@@ -599,7 +600,19 @@ class EmailConfiguration extends React.Component {
                         />
                     </div>
                     }
-                    <ConfigButtons cancelId="email-cancel" submitId="email-submit" includeSave includeTest={false}/>
+                    <ConfigButtons cancelId="email-cancel" submitId="email-submit" includeSave includeTest onTestClick={(event) => {
+                        event.preventDefault();
+                        this.props.openEmailConfigTest();
+                    }}/>
+                    <div>
+                        <ChannelTestModal
+                            destinationName="Email address"
+                            showTestModal={this.props.showTestModal}
+                            cancelTestModal={this.props.closeEmailConfigTest}
+                            sendTestMessage={destination => {
+                                this.props.sendEmailConfigTest({...this.state}, destination);
+                            }}/>
+                    </div>
                 </form>
             </div>
         );
@@ -657,10 +670,12 @@ EmailConfiguration.propTypes = {
     mailSmtpUserSet: PropTypes.bool,
     mailSmtpNoopStrict: PropTypes.bool,
     showAdvanced: PropTypes.bool.isRequired,
+    showTestModal: PropTypes.bool.isRequired,
     toggleAdvancedEmailOptions: PropTypes.func.isRequired,
     getEmailConfig: PropTypes.func.isRequired,
     errorMessage: PropTypes.string,
     updateStatus: PropTypes.string,
+    actionMessage: PropTypes.string,
     fieldErrors: PropTypes.arrayOf(PropTypes.any)
 };
 
@@ -722,17 +737,21 @@ const mapStateToProps = state => ({
     mailSmtpUserSet: state.emailConfig.mailSmtpUserSet,
     mailSmtpNoopStrict: state.emailConfig.mailSmtpNoopStrict,
     showAdvanced: state.emailConfig.showAdvanced,
+    showTestModal: state.emailConfig.showTestModal,
     id: state.emailConfig.id,
     errorMessage: state.emailConfig.error.message,
     fieldErrors: state.emailConfig.error.fieldErrors,
-    updateStatus: state.emailConfig.updateStatus
+    updateStatus: state.emailConfig.updateStatus,
+    actionMessage: state.emailConfig.actionMessage
 });
 
 const mapDispatchToProps = dispatch => ({
     toggleAdvancedEmailOptions: toggle => dispatch(toggleAdvancedEmailOptions(toggle)),
     getEmailConfig: () => dispatch(getEmailConfig()),
-    updateEmailConfig: config => dispatch(updateEmailConfig(config))
-
+    updateEmailConfig: config => dispatch(updateEmailConfig(config)),
+    sendEmailConfigTest: (config, destination) => dispatch(sendEmailConfigTest(config, destination)),
+    openEmailConfigTest: () => dispatch(openEmailConfigTest()),
+    closeEmailConfigTest: () => dispatch(closeEmailConfigTest())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(EmailConfiguration);

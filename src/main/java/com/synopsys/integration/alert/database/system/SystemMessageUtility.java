@@ -23,8 +23,6 @@
  */
 package com.synopsys.integration.alert.database.system;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -33,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.model.DateRange;
 
@@ -46,11 +45,16 @@ public class SystemMessageUtility {
     }
 
     @Transactional
-    public void addSystemMessage(final String message, final SystemMessageType type) {
-        ZonedDateTime zonedDateTime = ZonedDateTime.now();
-        zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneOffset.UTC);
-        final SystemMessage systemMessage = new SystemMessage(Date.from(zonedDateTime.toInstant()), type.name(), message);
+    public void addSystemMessage(final String message, final SystemMessageSeverity severity, final SystemMessageType messageType) {
+        final Date currentTime = DateRange.createCurrentDateTimestamp();
+        final SystemMessage systemMessage = new SystemMessage(currentTime, severity.name(), message, messageType.name());
         systemMessageRepository.save(systemMessage);
+    }
+
+    @Transactional
+    public void removeSystemMessagesByType(final SystemMessageType messageType) {
+        final List<SystemMessage> messages = systemMessageRepository.findByType(messageType.name());
+        systemMessageRepository.deleteAll(messages);
     }
 
     @Transactional
@@ -60,9 +64,7 @@ public class SystemMessageUtility {
 
     @Transactional
     public List<SystemMessage> getSystemMessagesAfter(final Date date) {
-        ZonedDateTime zonedDateTime = ZonedDateTime.now();
-        zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneOffset.UTC);
-        final Date currentTime = Date.from(zonedDateTime.toInstant());
+        final Date currentTime = DateRange.createCurrentDateTimestamp();
         return systemMessageRepository.findByCreatedBetween(date, currentTime);
     }
 

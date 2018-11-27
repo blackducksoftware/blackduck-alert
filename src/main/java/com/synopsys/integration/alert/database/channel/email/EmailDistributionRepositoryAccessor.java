@@ -23,44 +23,26 @@
  */
 package com.synopsys.integration.alert.database.channel.email;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDistributionTypeConverter;
-import com.synopsys.integration.alert.database.ChannelDistributionRespositoryAccessor;
+import com.synopsys.integration.alert.database.ChannelDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
-import com.synopsys.integration.alert.web.channel.model.EmailDistributionConfig;
-import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 
 @Component
-public class EmailDistributionRepositoryAccessor extends ChannelDistributionRespositoryAccessor {
+public class EmailDistributionRepositoryAccessor extends ChannelDistributionRepositoryAccessor {
     private final EmailGroupDistributionRepository repository;
-    private final EmailDistributionTypeConverter emailDistributionTypeConverter;
 
     @Autowired
     public EmailDistributionRepositoryAccessor(final EmailGroupDistributionRepository repository, final EmailDistributionTypeConverter emailDistributionTypeConverter) {
-        super(repository);
+        super(repository, emailDistributionTypeConverter);
         this.repository = repository;
-        this.emailDistributionTypeConverter = emailDistributionTypeConverter;
     }
 
     @Override
     public DatabaseEntity saveEntity(final DatabaseEntity entity) {
         final EmailGroupDistributionConfigEntity emailEntity = (EmailGroupDistributionConfigEntity) entity;
         return repository.save(emailEntity);
-    }
-
-    @Override
-    public Optional<? extends CommonDistributionConfig> getJobConfig(final Long distributionConfigId) {
-        Optional<? extends CommonDistributionConfig> optionalConfig = Optional.empty();
-        final Optional<? extends DatabaseEntity> optionalDatabaseEntity = readEntity(distributionConfigId);
-        if (optionalDatabaseEntity.isPresent()) {
-            final EmailGroupDistributionConfigEntity emailGroupDistributionConfigEntity = (EmailGroupDistributionConfigEntity) optionalDatabaseEntity.get();
-            final EmailDistributionConfig emailDistributionConfig = (EmailDistributionConfig) emailDistributionTypeConverter.populateConfigFromEntity(emailGroupDistributionConfigEntity);
-            optionalConfig = Optional.of(emailDistributionConfig);
-        }
-        return optionalConfig;
     }
 }

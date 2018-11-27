@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.database.channel.email.EmailGlobalConfigEn
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalRepository;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
 
@@ -66,7 +67,7 @@ public class DistributionChannelTest extends ChannelTest {
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "Distribution Channel Test", null, subTopic, Collections.emptyList());
 
         final EmailChannelEvent event = new EmailChannelEvent(RestConstants.formatDate(new Date()), "provider", "FORMAT",
-            content, 1L, Collections.emptySet(), "TEST SUBJECT LINE");
+                content, 1L, Collections.emptySet(), "TEST SUBJECT LINE");
 
         channel.handleEvent(event);
     }
@@ -79,10 +80,10 @@ public class DistributionChannelTest extends ChannelTest {
         final SlackChannel slackChannel = new SlackChannel(gson, testAlertProperties, hubProperties, null, null);
         final Config globalConfig = Mockito.mock(Config.class);
 
-        final String nullMessage = slackChannel.testGlobalConfig(null);
+        final String nullMessage = slackChannel.testGlobalConfig(new TestConfigModel(null));
         assertEquals("The provided config was null.", nullMessage);
         try {
-            slackChannel.testGlobalConfig(globalConfig);
+            slackChannel.testGlobalConfig(new TestConfigModel(globalConfig));
         } catch (final AlertException ex) {
             assertEquals("Test method not implemented.", ex.getMessage());
         }

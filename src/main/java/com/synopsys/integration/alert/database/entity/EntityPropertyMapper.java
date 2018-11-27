@@ -24,10 +24,8 @@
 package com.synopsys.integration.alert.database.entity;
 
 import java.lang.reflect.Field;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import javax.persistence.Column;
 
@@ -40,18 +38,13 @@ public class EntityPropertyMapper {
     public static final String ALERT_PROPERTY_PREFIX = "ALERT_";
 
     public Map<String, AlertStartupProperty> mapEntityToProperties(final String entityName, final Class<?> entityClass) {
-        return mapEntityToProperties(entityName, entityClass, Collections.emptySet());
-    }
-
-    public Map<String, AlertStartupProperty> mapEntityToProperties(final String entityName, final Class<?> entityClass, final Set<String> overridableFieldNames) {
         final String propertyNamePrefix = ALERT_PROPERTY_PREFIX + entityName + "_";
         final Map<String, AlertStartupProperty> fieldMapping = new HashMap<>();
         for (final Field field : entityClass.getDeclaredFields()) {
             if (field.isAnnotationPresent(Column.class)) {
                 final String propertyKey = (propertyNamePrefix + field.getAnnotation(Column.class).name()).toUpperCase();
                 final String fieldName = field.getName();
-                final boolean alwaysOverride = overridableFieldNames.contains(fieldName);
-                final AlertStartupProperty startupProperty = new AlertStartupProperty(propertyKey, fieldName, alwaysOverride);
+                final AlertStartupProperty startupProperty = new AlertStartupProperty(propertyKey, fieldName);
                 fieldMapping.put(startupProperty.getFieldName(), startupProperty);
             }
         }

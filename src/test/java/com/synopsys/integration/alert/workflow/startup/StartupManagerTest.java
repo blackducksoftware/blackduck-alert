@@ -14,10 +14,8 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.OutputLogger;
 import com.synopsys.integration.alert.TestAlertProperties;
 import com.synopsys.integration.alert.TestBlackDuckProperties;
-import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.synopsys.integration.alert.database.scheduling.SchedulingConfigEntity;
 import com.synopsys.integration.alert.database.scheduling.SchedulingRepository;
-import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.web.scheduling.mock.MockGlobalSchedulingEntity;
 import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
@@ -47,8 +45,8 @@ public class StartupManagerTest {
         final TestBlackDuckProperties mockTestGlobalProperties = Mockito.spy(testGlobalProperties);
         testAlertProperties.setAlertProxyPassword("not_blank_data");
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
-        final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
-        final StartupManager startupManager = new StartupManager(null, testAlertProperties, mockTestGlobalProperties, null, null, null, null, null, null, null, systemStatusUtility, systemMessageUtility);
+        final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
+        final StartupManager startupManager = new StartupManager(null, testAlertProperties, mockTestGlobalProperties, null, null, null, null, null, null, systemStatusUtility, systemValidator);
 
         startupManager.logConfiguration();
         assertTrue(outputLogger.isLineContainingText("Alert Proxy Authenticated: true"));
@@ -74,95 +72,13 @@ public class StartupManagerTest {
         final SchedulingConfigEntity entity = mockGlobalSchedulingEntity.createGlobalEntity();
         Mockito.when(schedulingRepository.save(Mockito.any(SchedulingConfigEntity.class))).thenReturn(entity);
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
-        final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
+        final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
 
-        final StartupManager startupManager = new StartupManager(schedulingRepository, testAlertProperties, null, dailyTask, onDemandTask, purgeTask, phoneHomeTask, null, Collections.emptyList(), null, systemStatusUtility,
-            systemMessageUtility);
+        final StartupManager startupManager = new StartupManager(schedulingRepository, testAlertProperties, null, dailyTask, onDemandTask, purgeTask, phoneHomeTask, null, Collections.emptyList(), systemStatusUtility, systemValidator);
 
         startupManager.initializeCronJobs();
 
         final String expectedLog = entity.toString();
         assertTrue(outputLogger.isLineContainingText(expectedLog));
-    }
-
-    @Test
-    public void testValidateProviders() throws IOException {
-        final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(testAlertProperties);
-        final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
-        final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
-        final StartupManager startupManager = new StartupManager(null, testAlertProperties, testGlobalProperties, null, null, null, null, null, null, null, systemStatusUtility, systemMessageUtility);
-        startupManager.validateProviders();
-        assertTrue(outputLogger.isLineContainingText("Validating configured providers: "));
-    }
-
-    @Test
-    public void testvalidateBlackDuckProviderNullURL() throws IOException {
-        final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(testAlertProperties);
-        final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
-        final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
-        final StartupManager startupManager = new StartupManager(null, testAlertProperties, testGlobalProperties, null, null, null, null, null, null, null, systemStatusUtility, systemMessageUtility);
-        testGlobalProperties.setBlackDuckUrl(null);
-        startupManager.validateBlackDuckProvider();
-        assertTrue(outputLogger.isLineContainingText("Validating BlackDuck Provider..."));
-        assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Invalid; cause: Black Duck URL missing..."));
-    }
-
-    @Test
-    public void testvalidateBlackDuckProviderLocalhostURL() throws IOException {
-        final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(testAlertProperties);
-        final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
-        final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
-        final StartupManager startupManager = new StartupManager(null, testAlertProperties, testGlobalProperties, null, null, null, null, null, null, null, systemStatusUtility, systemMessageUtility);
-        testGlobalProperties.setBlackDuckUrl("https://localhost:443");
-        startupManager.validateBlackDuckProvider();
-        assertTrue(outputLogger.isLineContainingText("Validating BlackDuck Provider..."));
-        assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Using localhost..."));
-        assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Using localhost because PUBLIC_BLACKDUCK_WEBSERVER_HOST environment variable is set to"));
-    }
-
-    @Test
-    public void testvalidateBlackDuckProviderHubWebserverEnvironmentSet() throws IOException {
-        final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(Mockito.mock(GlobalBlackDuckRepository.class), testAlertProperties);
-        final TestBlackDuckProperties spiedGlobalProperties = Mockito.spy(testGlobalProperties);
-        spiedGlobalProperties.setBlackDuckUrl("https://localhost:443");
-
-        final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
-        final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
-        final StartupManager startupManager = new StartupManager(null, testAlertProperties, spiedGlobalProperties, null, null, null, null, null, null, null, systemStatusUtility, systemMessageUtility);
-        startupManager.validateBlackDuckProvider();
-        assertTrue(outputLogger.isLineContainingText("Validating BlackDuck Provider..."));
-        assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Using localhost..."));
-        assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Using localhost because PUBLIC_BLACKDUCK_WEBSERVER_HOST environment variable is set to"));
-    }
-
-    @Test
-    public void testValidateHubInvalidProvider() throws IOException {
-        final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(testAlertProperties);
-        final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
-        final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
-        final StartupManager startupManager = new StartupManager(null, testAlertProperties, testGlobalProperties, null, null, null, null, null, null, null, systemStatusUtility, systemMessageUtility);
-        testGlobalProperties.setBlackDuckUrl("https://localhost:443");
-        startupManager.validateBlackDuckProvider();
-        assertTrue(outputLogger.isLineContainingText("Validating BlackDuck Provider..."));
-        assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Using localhost..."));
-        assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Invalid; cause:"));
-    }
-
-    @Test
-    public void testValidateHubValidProvider() throws IOException {
-        final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(testAlertProperties);
-
-        final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
-        final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
-        final StartupManager startupManager = new StartupManager(null, testAlertProperties, testGlobalProperties, null, null, null, null, null, null, null, systemStatusUtility, systemMessageUtility);
-        startupManager.validateBlackDuckProvider();
-        assertTrue(outputLogger.isLineContainingText("Validating BlackDuck Provider..."));
-        assertTrue(outputLogger.isLineContainingText("BlackDuck Provider Valid!"));
     }
 }
