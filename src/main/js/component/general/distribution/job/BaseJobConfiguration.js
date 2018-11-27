@@ -312,7 +312,7 @@ class BaseJobConfiguration extends Component {
                 <div>
                     <div className="form-group">
                         <label className="col-sm-3 col-form-label text-right">Format</label>
-                        <div className="d-inline-flex p-2 col-sm-9">
+                        <div className="d-inline-flex flex-column p-2 col-sm-9">
                             <Select
                                 id="formatType"
                                 className="typeAheadField"
@@ -329,7 +329,7 @@ class BaseJobConfiguration extends Component {
                     </div>
                     <div className="form-group">
                         <label className="col-sm-3 col-form-label text-right">Notification Types</label>
-                        <div className="d-inline-flex p-2 col-sm-9">
+                        <div className="d-inline-flex flex-column p-2 col-sm-9">
                             <Select
                                 id="jobType"
                                 className="typeAheadField"
@@ -367,7 +367,7 @@ class BaseJobConfiguration extends Component {
                 <TextInput id="name" label="Job Name" name="name" value={this.state.name} onChange={this.handleChange} errorName="nameError" errorValue={this.state.error.nameError}/>
                 <div className="form-group">
                     <label className="col-sm-3 col-form-label text-right">Frequency</label>
-                    <div className="d-inline-flex p-2 col-sm-9">
+                    <div className="d-inline-flex flex-column p-2 col-sm-9">
                         <Select
                             id="jobFrequency"
                             className="typeAheadField"
@@ -384,7 +384,7 @@ class BaseJobConfiguration extends Component {
                 </div>
                 <div className="form-group">
                     <label className="col-sm-3 col-form-label text-right">Provider</label>
-                    <div className="d-inline-flex p-2 col-sm-9">
+                    <div className="d-inline-flex flex-column p-2 col-sm-9">
                         <Select
                             id="providerName"
                             className="typeAheadField"
