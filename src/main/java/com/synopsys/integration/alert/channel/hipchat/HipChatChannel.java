@@ -54,6 +54,7 @@ import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalRepo
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.web.channel.model.HipChatGlobalConfig;
 import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.connection.RestConnection;
 import com.synopsys.integration.rest.request.Request;
@@ -85,7 +86,8 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
     }
 
     @Override
-    public String testGlobalConfig(final Config restModel, final String testRoomId) throws IntegrationException {
+    public String testGlobalConfig(final TestConfigModel testConfig) throws IntegrationException {
+        final Config restModel = testConfig.getRestModel();
         if (restModel == null) {
             throw new AlertException("The provided config was null.");
         }
@@ -97,6 +99,7 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
             final String testResult = testApiKeyAndApiUrlConnection(restConnection, configuredApiUrl, hipChatGlobalConfig.getApiKey());
             final Integer parsedRoomId;
             try {
+                final String testRoomId = testConfig.getDestination().orElse(null);
                 parsedRoomId = Integer.valueOf(testRoomId);
             } catch (final NumberFormatException e) {
                 throw new AlertException("The provided room id is an invalid number.");

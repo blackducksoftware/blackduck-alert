@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionA
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalRepositoryAccessor;
 import com.synopsys.integration.alert.web.channel.model.HipChatGlobalConfig;
 import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
@@ -56,8 +57,8 @@ public class HipChatGlobalDescriptorActionApi extends DescriptorActionApi {
     }
 
     @Override
-    public void testConfig(final Config restModel, final String testRoomId) throws IntegrationException {
-        hipChatChannel.testGlobalConfig(restModel, testRoomId);
+    public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
+        hipChatChannel.testGlobalConfig(testConfig);
     }
 
 }

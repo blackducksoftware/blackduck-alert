@@ -42,6 +42,7 @@ import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionA
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckConfig;
 import com.synopsys.integration.blackduck.configuration.HubServerConfig;
 import com.synopsys.integration.blackduck.configuration.HubServerConfigBuilder;
@@ -81,10 +82,10 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
     }
 
     @Override
-    public void testConfig(final Config restModel, final String ignoredDestination) throws IntegrationException {
+    public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
         final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
 
-        final BlackDuckConfig blackDuckConfig = (BlackDuckConfig) restModel;
+        final BlackDuckConfig blackDuckConfig = (BlackDuckConfig) testConfig.getRestModel();
         final String apiToken = blackDuckConfig.getBlackDuckApiKey();
         final String url = blackDuckConfig.getBlackDuckUrl();
 

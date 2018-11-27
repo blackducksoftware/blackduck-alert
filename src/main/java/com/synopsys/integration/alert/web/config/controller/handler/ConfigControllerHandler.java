@@ -41,6 +41,7 @@ import com.synopsys.integration.alert.web.controller.handler.ControllerHandler;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.alert.web.model.ResponseBodyBuilder;
+import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
@@ -135,7 +136,8 @@ public class ConfigControllerHandler extends ControllerHandler {
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing");
         }
         try {
-            final String responseMessage = descriptorConfigActions.testConfig(restModel, destination, descriptor);
+            final TestConfigModel testConfig = new TestConfigModel(restModel, destination);
+            final String responseMessage = descriptorConfigActions.testConfig(testConfig, descriptor);
             return createResponse(HttpStatus.OK, restModel.getId(), responseMessage);
         } catch (final IntegrationRestException e) {
             logger.error(e.getMessage(), e);

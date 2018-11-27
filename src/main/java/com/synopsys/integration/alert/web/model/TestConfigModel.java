@@ -21,32 +21,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.descriptor;
+package com.synopsys.integration.alert.web.model;
 
-import java.util.Map;
+import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+public class TestConfigModel {
+    private final Config restModel;
+    private final String destination;
 
-import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
-import com.synopsys.integration.alert.web.model.Config;
-import com.synopsys.integration.alert.web.model.TestConfigModel;
-
-@Component
-public class BlackDuckDistributionDescriptorActionApi extends DescriptorActionApi {
-
-    @Autowired
-    public BlackDuckDistributionDescriptorActionApi(final BlackDuckTypeConverter typeConverter, final BlackDuckRepositoryAccessor repositoryAccessor) {
-        super(typeConverter, repositoryAccessor);
+    public TestConfigModel(final Config restModel) {
+        this.restModel = restModel;
+        this.destination = null;
     }
 
-    @Override
-    public void validateConfig(final Config restModel, final Map<String, String> fieldErrors) {
-
+    public TestConfigModel(final Config restModel, final String destination) {
+        this.restModel = restModel;
+        this.destination = destination;
     }
 
-    @Override
-    public void testConfig(final TestConfigModel testConfig) {
-
+    public Config getRestModel() {
+        return restModel;
     }
+
+    public Optional<String> getDestination() {
+        return Optional.ofNullable(destination);
+    }
+
 }
