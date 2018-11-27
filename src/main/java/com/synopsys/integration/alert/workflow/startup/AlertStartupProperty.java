@@ -31,7 +31,7 @@ public class AlertStartupProperty extends Stringable {
     private final boolean alwaysOverride;
 
     public AlertStartupProperty(final String propertyKey, final String fieldName) {
-        this(propertyKey, fieldName, false);
+        this(propertyKey, fieldName, true);
     }
 
     public AlertStartupProperty(final String propertyKey, final String fieldName, final boolean alwaysOverride) {
