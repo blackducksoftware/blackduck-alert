@@ -106,17 +106,14 @@ public class BlackDuckPolicyMessageContentCollector extends MessageContentCollec
     private void addApplicableItems(final List<CategoryItem> categoryItems, final Long notificationId, final LinkableItem policyItem, final String policyUrl, final ItemOperation operation,
         final Optional<LinkableItem> nameItem, final SortedSet<LinkableItem> applicableItems) {
         for (final LinkableItem item : applicableItems) {
-            final Optional<String> itemUrl = item.getUrl();
-            if (itemUrl.isPresent()) {
-                final CategoryKey categoryKey = CategoryKey.from(CATEGORY_TYPE, policyUrl, itemUrl.get());
-                final SortedSet<LinkableItem> linkableItems;
-                if (nameItem.isPresent()) {
-                    linkableItems = createLinkableItemSet(policyItem, item, nameItem.get());
-                } else {
-                    linkableItems = createLinkableItemSet(policyItem, item);
-                }
-                addItem(categoryItems, new CategoryItem(categoryKey, operation, notificationId, linkableItems));
+            final CategoryKey categoryKey = CategoryKey.from(CATEGORY_TYPE, policyUrl);
+            final SortedSet<LinkableItem> linkableItems;
+            if (nameItem.isPresent()) {
+                linkableItems = createLinkableItemSet(policyItem, item, nameItem.get());
+            } else {
+                linkableItems = createLinkableItemSet(policyItem, item);
             }
+            addItem(categoryItems, new CategoryItem(categoryKey, operation, notificationId, linkableItems));
         }
     }
 }

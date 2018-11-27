@@ -44,7 +44,7 @@ public class PropertyInitializer {
     }
 
     public void save(final DatabaseEntity entity, final RepositoryAccessor repositoryAccessor, final Map<String, AlertStartupProperty> startupProperties) {
-        logger.debug("Saving global properties {}", entity);
+        logger.debug("Saving global properties for entity {}", entity);
         final List<? extends DatabaseEntity> savedEntityList = repositoryAccessor.readEntities();
         if (savedEntityList == null || savedEntityList.isEmpty()) {
             logger.debug("No global entities found, saving new values.");
@@ -75,8 +75,10 @@ public class PropertyInitializer {
                     if (startupProperties.containsKey(declaredField.getName())) {
                         final AlertStartupProperty property = startupProperties.get(declaredField.getName());
                         if (property.isAlwaysOverride()) {
-                            logger.debug("Startup Property Override Applied for {}", property.getPropertyKey());
-                            declaredField.set(savedEntity, defaultValue);
+                            if (defaultValue != null) {
+                                logger.debug("Startup Property Override Applied for {}", property.getPropertyKey());
+                                declaredField.set(savedEntity, defaultValue);
+                            }
                         }
                     }
                 }

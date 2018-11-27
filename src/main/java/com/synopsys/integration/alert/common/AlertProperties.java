@@ -107,4 +107,20 @@ public class AlertProperties {
         }
         return Optional.empty();
     }
+
+    public void setAlertProxyHost(final String alertProxyHost) {
+        this.alertProxyHost = alertProxyHost;
+    }
+
+    public void setAlertProxyPort(final String alertProxyPort) {
+        this.alertProxyPort = alertProxyPort;
+    }
+
+    public void setAlertProxyUsername(final String alertProxyUsername) {
+        this.alertProxyUsername = alertProxyUsername;
+    }
+
+    public void setAlertProxyPassword(final String alertProxyPassword) {
+        this.alertProxyPassword = alertProxyPassword;
+    }
 }

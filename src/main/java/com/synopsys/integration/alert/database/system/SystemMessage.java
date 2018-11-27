@@ -39,29 +39,36 @@ public class SystemMessage extends DatabaseEntity {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at")
     private Date created;
-    @Column(name = "type")
-    private String type;
+    @Column(name = "severity")
+    private String severity;
     @Column(name = "content")
     private String content;
+    @Column(name = "type")
+    private String type;
 
     public SystemMessage() {
     }
 
-    public SystemMessage(final Date created, final String type, final String content) {
+    public SystemMessage(final Date created, final String severity, final String content, final String type) {
         this.created = created;
-        this.type = type;
+        this.severity = severity;
         this.content = content;
+        this.type = type;
     }
 
     public Date getCreated() {
         return created;
     }
 
-    public String getType() {
-        return type;
+    public String getSeverity() {
+        return severity;
     }
 
     public String getContent() {
         return content;
+    }
+
+    public String getType() {
+        return type;
     }
 }
