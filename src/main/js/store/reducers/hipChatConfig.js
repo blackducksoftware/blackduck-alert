@@ -1,14 +1,16 @@
 import {
-    HIPCHAT_CONFIG_FETCHING,
     HIPCHAT_CONFIG_FETCHED,
-    HIPCHAT_CONFIG_UPDATE_ERROR,
-    HIPCHAT_CONFIG_UPDATING,
-    HIPCHAT_CONFIG_UPDATED,
-    HIPCHAT_CONFIG_TESTING,
-    HIPCHAT_CONFIG_TEST_SUCCESS,
-    HIPCHAT_CONFIG_TEST_FAILED,
-    HIPCHAT_CONFIG_SHOW_HOST_SERVER,
+    HIPCHAT_CONFIG_FETCHING,
     HIPCHAT_CONFIG_HIDE_HOST_SERVER,
+    HIPCHAT_CONFIG_HIDE_TEST_MODAL,
+    HIPCHAT_CONFIG_SHOW_HOST_SERVER,
+    HIPCHAT_CONFIG_SHOW_TEST_MODAL,
+    HIPCHAT_CONFIG_TEST_FAILED,
+    HIPCHAT_CONFIG_TEST_SUCCESS,
+    HIPCHAT_CONFIG_TESTING,
+    HIPCHAT_CONFIG_UPDATE_ERROR,
+    HIPCHAT_CONFIG_UPDATED,
+    HIPCHAT_CONFIG_UPDATING,
     SERIALIZE
 } from '../actions/types';
 
@@ -24,7 +26,8 @@ const initialState = {
     apiKeyIsSet: false,
     apiKey: null,
     id: null,
-    showAdvanced: false
+    showAdvanced: false,
+    showTestModal: false
 };
 
 const config = (state = initialState, action) => {
@@ -89,6 +92,19 @@ const config = (state = initialState, action) => {
                 updateStatus: null,
                 testing: true,
                 testStatus: ''
+            });
+
+        case HIPCHAT_CONFIG_SHOW_TEST_MODAL:
+            return Object.assign({}, state, {
+                updateStatus: null,
+                showTestModal: true
+            });
+
+        case HIPCHAT_CONFIG_HIDE_TEST_MODAL:
+            return Object.assign({}, state, {
+                updateStatus: null,
+                showTestModal: false,
+                testing: true
             });
 
         case HIPCHAT_CONFIG_TEST_SUCCESS:

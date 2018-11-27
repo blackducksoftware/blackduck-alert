@@ -1,20 +1,22 @@
 import {
-    HIPCHAT_CONFIG_FETCHING,
     HIPCHAT_CONFIG_FETCHED,
-    HIPCHAT_CONFIG_UPDATE_ERROR,
-    HIPCHAT_CONFIG_UPDATING,
-    HIPCHAT_CONFIG_UPDATED,
-    HIPCHAT_CONFIG_TESTING,
-    HIPCHAT_CONFIG_TEST_SUCCESS,
-    HIPCHAT_CONFIG_TEST_FAILED,
+    HIPCHAT_CONFIG_FETCHING,
+    HIPCHAT_CONFIG_HIDE_HOST_SERVER,
+    HIPCHAT_CONFIG_HIDE_TEST_MODAL,
     HIPCHAT_CONFIG_SHOW_HOST_SERVER,
-    HIPCHAT_CONFIG_HIDE_HOST_SERVER
+    HIPCHAT_CONFIG_SHOW_TEST_MODAL,
+    HIPCHAT_CONFIG_TEST_FAILED,
+    HIPCHAT_CONFIG_TEST_SUCCESS,
+    HIPCHAT_CONFIG_TESTING,
+    HIPCHAT_CONFIG_UPDATE_ERROR,
+    HIPCHAT_CONFIG_UPDATED,
+    HIPCHAT_CONFIG_UPDATING
 } from './types';
 
-import { verifyLoginByStatus } from './session';
+import {verifyLoginByStatus} from './session';
 
 const CONFIG_URL = '/alert/api/configuration/channel/global/channel_hipchat';
-const TEST_URL = '/alert/api/configuration/channel/global/channel_hipchat/test';
+const TEST_URL = `${CONFIG_URL}/test`;
 
 function scrubConfig(config) {
     return {
@@ -96,17 +98,29 @@ function testFailed(message, errors) {
     };
 }
 
+export function openHipChatConfigTest() {
+    return {
+        type: HIPCHAT_CONFIG_SHOW_TEST_MODAL
+    };
+}
+
+export function closeHipChatConfigTest() {
+    return {
+        type: HIPCHAT_CONFIG_HIDE_TEST_MODAL
+    };
+}
+
 export function toggleShowHostServer(toggle) {
     if (toggle) {
-        return { type: HIPCHAT_CONFIG_SHOW_HOST_SERVER };
+        return {type: HIPCHAT_CONFIG_SHOW_HOST_SERVER};
     }
-    return { type: HIPCHAT_CONFIG_HIDE_HOST_SERVER };
+    return {type: HIPCHAT_CONFIG_HIDE_HOST_SERVER};
 }
 
 export function getConfig() {
     return (dispatch, getState) => {
         dispatch(fetchingConfig());
-        const { csrfToken } = getState().session;
+        const {csrfToken} = getState().session;
         fetch(CONFIG_URL, {
             credentials: 'same-origin',
             headers: {
@@ -114,7 +128,7 @@ export function getConfig() {
             }
         })
             .then((response) => {
-                if(response.ok) {
+                if (response.ok) {
                     response.json().then((body) => {
                         if (body.length > 0) {
                             dispatch(configFetched(body[0]));
@@ -136,7 +150,7 @@ export function updateConfig(config) {
 
         const method = config.id ? 'PUT' : 'POST';
         const body = scrubConfig(config);
-        const { csrfToken } = getState().session;
+        const {csrfToken} = getState().session;
         fetch(CONFIG_URL, {
             credentials: 'same-origin',
             method,
@@ -149,7 +163,7 @@ export function updateConfig(config) {
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
-                        dispatch(configUpdated({ ...config, id: data.id }));
+                        dispatch(configUpdated({...config, id: data.id}));
                     }).then(() => {
                         dispatch(getConfig());
                     });
@@ -173,12 +187,12 @@ export function updateConfig(config) {
     };
 }
 
-
-export function testConfig(config) {
+export function testConfig(config, destination) {
     return (dispatch, getState) => {
         dispatch(testingConfig());
-        const { csrfToken } = getState().session;
-        fetch(TEST_URL, {
+        const {csrfToken} = getState().session;
+        const requestUrl = `${TEST_URL}?destination=${destination}`;
+        fetch(requestUrl, {
             credentials: 'same-origin',
             method: 'POST',
             body: JSON.stringify(scrubConfig(config)),
@@ -189,6 +203,7 @@ export function testConfig(config) {
         })
         // Refactor this response handler out
             .then((response) => {
+                dispatch(closeHipChatConfigTest());
                 if (response.ok) {
                     dispatch(testSuccess());
                 } else {

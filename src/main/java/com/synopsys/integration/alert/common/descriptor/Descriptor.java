@@ -36,6 +36,7 @@ import com.synopsys.integration.alert.common.enumeration.ActionApiType;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class Descriptor {
@@ -160,8 +161,8 @@ public abstract class Descriptor {
         getRestApi(actionApiType).validateConfig(config, fieldErrors);
     }
 
-    public void testConfig(final ActionApiType actionApiType, final Config config) throws IntegrationException {
-        getRestApi(actionApiType).testConfig(config);
+    public void testConfig(final ActionApiType actionApiType, final TestConfigModel testConfig) throws IntegrationException {
+        getRestApi(actionApiType).testConfig(testConfig);
     }
 
 }

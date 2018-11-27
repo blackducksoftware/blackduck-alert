@@ -29,38 +29,38 @@ import com.synopsys.integration.alert.channel.event.ChannelEventProducer;
 import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
 import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.database.ChannelDistributionRespositoryAccessor;
+import com.synopsys.integration.alert.database.ChannelDistributionRepositoryAccessor;
 
 public abstract class ChannelDescriptor extends Descriptor {
     private final String destinationName;
     private final MessageListener channelListener;
-    private final ChannelDistributionRespositoryAccessor channelDistributionRespositoryAccessor;
+    private final ChannelDistributionRepositoryAccessor channelDistributionRepositoryAccessor;
     private final ChannelEventProducer channelEventProducer;
 
     public ChannelDescriptor(final String name, final String destinationName, final MessageListener channelListener, final DescriptorActionApi distributionDescriptorActionApi,
-        final ChannelDistributionRespositoryAccessor channelDistributionRespositoryAccessor, final ChannelEventProducer channelEventProducer) {
+        final ChannelDistributionRepositoryAccessor channelDistributionRepositoryAccessor, final ChannelEventProducer channelEventProducer) {
         super(name, DescriptorType.CHANNEL);
         this.destinationName = destinationName;
         this.channelListener = channelListener;
-        this.channelDistributionRespositoryAccessor = channelDistributionRespositoryAccessor;
+        this.channelDistributionRepositoryAccessor = channelDistributionRepositoryAccessor;
         this.channelEventProducer = channelEventProducer;
         addChannelDistributionRestApi(distributionDescriptorActionApi);
     }
 
     public ChannelDescriptor(final String name, final String destinationName, final MessageListener channelListener, final DescriptorActionApi distributionDescriptorActionApi,
-        final ChannelDistributionRespositoryAccessor channelDistributionRespositoryAccessor, final ChannelEventProducer channelEventProducer,
+        final ChannelDistributionRepositoryAccessor channelDistributionRepositoryAccessor, final ChannelEventProducer channelEventProducer,
         final UIConfig distributionUIConfig) {
         super(name, DescriptorType.CHANNEL);
         this.destinationName = destinationName;
         this.channelListener = channelListener;
-        this.channelDistributionRespositoryAccessor = channelDistributionRespositoryAccessor;
+        this.channelDistributionRepositoryAccessor = channelDistributionRepositoryAccessor;
         this.channelEventProducer = channelEventProducer;
         addChannelDistributionUiConfigs(distributionDescriptorActionApi, distributionUIConfig);
     }
 
     public ChannelDescriptor(final String name, final String destinationName, final MessageListener channelListener, final DescriptorActionApi distributionDescriptorActionApi, final UIConfig distributionUIConfig,
-        final DescriptorActionApi globalDescriptorActionApi, final UIConfig globalUIConfig, final ChannelDistributionRespositoryAccessor channelDistributionRespositoryAccessor, final ChannelEventProducer channelEventProducer) {
-        this(name, destinationName, channelListener, distributionDescriptorActionApi, channelDistributionRespositoryAccessor, channelEventProducer, distributionUIConfig);
+        final DescriptorActionApi globalDescriptorActionApi, final UIConfig globalUIConfig, final ChannelDistributionRepositoryAccessor channelDistributionRepositoryAccessor, final ChannelEventProducer channelEventProducer) {
+        this(name, destinationName, channelListener, distributionDescriptorActionApi, channelDistributionRepositoryAccessor, channelEventProducer, distributionUIConfig);
         addGlobalUiConfigs(globalDescriptorActionApi, globalUIConfig);
     }
 
@@ -72,8 +72,8 @@ public abstract class ChannelDescriptor extends Descriptor {
         return channelListener;
     }
 
-    public ChannelDistributionRespositoryAccessor getChannelDistributionRespositoryAccessor() {
-        return channelDistributionRespositoryAccessor;
+    public ChannelDistributionRepositoryAccessor getChannelDistributionRepositoryAccessor() {
+        return channelDistributionRepositoryAccessor;
     }
 
     public ChannelEventProducer getChannelEventProducer() {
