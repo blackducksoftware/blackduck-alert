@@ -24,12 +24,11 @@
 package com.synopsys.integration.alert.common.security;
 
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.codec.Charsets;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,28 +69,17 @@ public class EncryptionUtility {
     }
 
     public boolean isInitialized() {
-        final String password = getPassword();
-        final String salt = getGlobalSalt();
-
-        return null != password && null != salt;
-    }
-
-    public List<String> checkForErrors() {
-        final List<String> errors = new LinkedList<>();
-        final String password = getPassword();
-        final String salt = getGlobalSalt();
-        if (null == password) {
-            errors.add("Encryption password missing");
-        }
-
-        if (null == salt) {
-            errors.add("Encryption global salt missing");
-        }
-
-        return errors;
+        return isPasswordSet() && isGlobalSaltSet();
     }
 
     public void updateEncryptionFields(final String password, final String globalSalt) throws IOException {
+        if (StringUtils.isBlank(password)) {
+            throw new IllegalArgumentException("Encryption password cannot be blank");
+        }
+
+        if (StringUtils.isBlank(globalSalt)) {
+            throw new IllegalArgumentException("Encryption global salt cannot be blank");
+        }
         final EncryptionFileData encryptionFileData = new EncryptionFileData(password, globalSalt);
         filePersistenceUtil.writeJsonToFile(DATA_FILE_NAME, encryptionFileData);
     }
@@ -103,6 +91,10 @@ public class EncryptionUtility {
         } else {
             return null;
         }
+    }
+
+    public boolean isPasswordSet() {
+        return null != getPassword();
     }
 
     private String getPassword() {
@@ -118,6 +110,10 @@ public class EncryptionUtility {
             logger.debug("Error getting password from file.", ex);
             return null;
         }
+    }
+
+    public boolean isGlobalSaltSet() {
+        return null != getGlobalSalt();
     }
 
     private String getGlobalSalt() {
