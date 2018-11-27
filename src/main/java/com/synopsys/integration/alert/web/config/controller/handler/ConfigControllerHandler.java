@@ -41,6 +41,7 @@ import com.synopsys.integration.alert.web.controller.handler.ControllerHandler;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.alert.web.model.ResponseBodyBuilder;
+import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
@@ -127,11 +128,16 @@ public class ConfigControllerHandler extends ControllerHandler {
     }
 
     public ResponseEntity<String> testConfig(final Config restModel, final DescriptorActionApi descriptor) {
+        return testConfig(restModel, null, descriptor);
+    }
+
+    public ResponseEntity<String> testConfig(final Config restModel, final String destination, final DescriptorActionApi descriptor) {
         if (restModel == null) {
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing");
         }
         try {
-            final String responseMessage = descriptorConfigActions.testConfig(restModel, descriptor);
+            final TestConfigModel testConfig = new TestConfigModel(restModel, destination);
+            final String responseMessage = descriptorConfigActions.testConfig(testConfig, descriptor);
             return createResponse(HttpStatus.OK, restModel.getId(), responseMessage);
         } catch (final IntegrationRestException e) {
             logger.error(e.getMessage(), e);
@@ -146,6 +152,7 @@ public class ConfigControllerHandler extends ControllerHandler {
             final String responseBody = responseBodyBuilder.build();
             return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
         } catch (final IntegrationException e) {
+            // FIXME An IntegrationException is too generic to possibly know whether a method is allowed or not. This should be supported through a custom exception (e.g. UnsupportedAlertMethodException).
             logger.error(e.getMessage(), e);
             return createResponse(HttpStatus.METHOD_NOT_ALLOWED, restModel.getId(), e.getMessage());
         } catch (final Exception e) {

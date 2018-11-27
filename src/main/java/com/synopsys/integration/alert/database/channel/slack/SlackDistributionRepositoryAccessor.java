@@ -23,44 +23,26 @@
  */
 package com.synopsys.integration.alert.database.channel.slack;
 
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDistributionTypeConverter;
-import com.synopsys.integration.alert.database.ChannelDistributionRespositoryAccessor;
+import com.synopsys.integration.alert.database.ChannelDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
-import com.synopsys.integration.alert.web.channel.model.SlackDistributionConfig;
-import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 
 @Component
-public class SlackDistributionRepositoryAccessor extends ChannelDistributionRespositoryAccessor {
+public class SlackDistributionRepositoryAccessor extends ChannelDistributionRepositoryAccessor {
     private final SlackDistributionRepository repository;
-    private final SlackDistributionTypeConverter slackDistributionTypeConverter;
 
     @Autowired
     public SlackDistributionRepositoryAccessor(final SlackDistributionRepository repository, final SlackDistributionTypeConverter slackDistributionTypeConverter) {
-        super(repository);
+        super(repository, slackDistributionTypeConverter);
         this.repository = repository;
-        this.slackDistributionTypeConverter = slackDistributionTypeConverter;
     }
 
     @Override
     public DatabaseEntity saveEntity(final DatabaseEntity entity) {
         final SlackDistributionConfigEntity slackEntity = (SlackDistributionConfigEntity) entity;
         return repository.save(slackEntity);
-    }
-
-    @Override
-    public Optional<? extends CommonDistributionConfig> getJobConfig(final Long distributionConfigId) {
-        Optional<? extends CommonDistributionConfig> optionalConfig = Optional.empty();
-        final Optional<? extends DatabaseEntity> optionalDatabaseEntity = readEntity(distributionConfigId);
-        if (optionalDatabaseEntity.isPresent()) {
-            final SlackDistributionConfigEntity slackDistributionConfigEntity = (SlackDistributionConfigEntity) optionalDatabaseEntity.get();
-            final SlackDistributionConfig slackDistributionConfig = (SlackDistributionConfig) slackDistributionTypeConverter.populateConfigFromEntity(slackDistributionConfigEntity);
-            optionalConfig = Optional.of(slackDistributionConfig);
-        }
-        return optionalConfig;
     }
 }

@@ -37,7 +37,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.audit.AuditUtility;
 import com.synopsys.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.alert.workflow.MessageReceiver;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
@@ -51,7 +51,7 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, E
     private final BlackDuckProperties blackDuckProperties;
 
     public DistributionChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditUtility auditUtility, final JpaRepository<G, Long> globalRepository,
-        final Class eventClass) {
+            final Class eventClass) {
         super(gson, eventClass);
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
@@ -111,8 +111,8 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, E
 
     public abstract void sendMessage(final E event) throws IntegrationException;
 
-    public String testGlobalConfig(final Config restModel) throws IntegrationException {
-        if (restModel != null) {
+    public String testGlobalConfig(final TestConfigModel testConfig) throws IntegrationException {
+        if (testConfig.getRestModel() != null) {
             throw new AlertException("Test method not implemented.");
         }
         return "The provided config was null.";
