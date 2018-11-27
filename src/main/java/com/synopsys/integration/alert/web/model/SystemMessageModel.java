@@ -24,18 +24,20 @@
 package com.synopsys.integration.alert.web.model;
 
 public class SystemMessageModel {
-    private final String type;
+    private final String severity;
     private final String createdAt;
     private final String content;
+    private final String type;
 
-    public SystemMessageModel(final String type, final String createdAt, final String content) {
-        this.type = type;
+    public SystemMessageModel(final String severity, final String createdAt, final String content, final String type) {
+        this.severity = severity;
         this.createdAt = createdAt;
         this.content = content;
+        this.type = type;
     }
 
-    public String getType() {
-        return type;
+    public String getSeverity() {
+        return severity;
     }
 
     public String getCreatedAt() {
@@ -44,5 +46,9 @@ public class SystemMessageModel {
 
     public String getContent() {
         return content;
+    }
+
+    public String getType() {
+        return type;
     }
 }

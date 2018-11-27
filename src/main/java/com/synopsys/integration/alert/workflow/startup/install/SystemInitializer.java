@@ -21,11 +21,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.install;
+package com.synopsys.integration.alert.workflow.startup.install;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,27 +39,74 @@ import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
+import com.synopsys.integration.alert.workflow.startup.SystemValidator;
 
 @Component
 public class SystemInitializer {
+    private final Logger logger = LoggerFactory.getLogger(SystemInitializer.class);
     private final SystemStatusUtility systemStatusUtility;
     private final AlertProperties alertProperties;
     private final GlobalBlackDuckRepository globalBlackDuckRepository;
     private final EncryptionUtility encryptionUtility;
+    private final SystemValidator systemValidator;
 
     @Autowired
-    public SystemInitializer(final SystemStatusUtility systemStatusUtility, final AlertProperties alertProperties, final GlobalBlackDuckRepository globalBlackDuckRepository, final EncryptionUtility encryptionUtility) {
+    public SystemInitializer(final SystemStatusUtility systemStatusUtility, final AlertProperties alertProperties, final GlobalBlackDuckRepository globalBlackDuckRepository, final EncryptionUtility encryptionUtility,
+        final SystemValidator systemValidator) {
         this.systemStatusUtility = systemStatusUtility;
         this.alertProperties = alertProperties;
         this.globalBlackDuckRepository = globalBlackDuckRepository;
         this.encryptionUtility = encryptionUtility;
+        this.systemValidator = systemValidator;
+    }
+
+    public boolean isSystemInitialized() {
+        return systemStatusUtility.isSystemInitialized();
     }
 
     @Transactional
-    public void updateRequiredConfiguration(final RequiredSystemConfiguration requiredSystemConfiguration) {
+    public RequiredSystemConfiguration getCurrentSystemSetup() {
+        final Optional<String> proxyHost = alertProperties.getAlertProxyHost();
+        final Optional<String> proxyPort = alertProperties.getAlertProxyPort();
+        final Optional<String> proxyUsername = alertProperties.getAlertProxyUsername();
+        final Optional<String> proxyPassword = alertProperties.getAlertProxyPassword();
+        final Optional<GlobalBlackDuckConfigEntity> blackDuckConfigEntity = getGlobalBlackDuckConfigEntity();
+        String blackDuckUrl = null;
+        Integer blackDuckConnectionTimeout = null;
+        String blackDuckApiToken = null;
+        if (blackDuckConfigEntity.isPresent()) {
+            final GlobalBlackDuckConfigEntity blackDuckEntity = blackDuckConfigEntity.get();
+            blackDuckUrl = blackDuckEntity.getBlackDuckUrl();
+            blackDuckConnectionTimeout = blackDuckEntity.getBlackDuckTimeout();
+            blackDuckApiToken = blackDuckEntity.getBlackDuckApiKey();
+        }
+
+        return new RequiredSystemConfiguration(blackDuckUrl,
+            blackDuckConnectionTimeout,
+            blackDuckApiToken,
+            encryptionUtility.isPasswordSet(),
+            encryptionUtility.isGlobalSaltSet(),
+            proxyHost.orElse(null),
+            proxyPort.orElse(null),
+            proxyUsername.orElse(null),
+            proxyPassword.orElse(null));
+
+    }
+
+    @Transactional
+    public boolean updateRequiredConfiguration(final RequiredSystemConfiguration requiredSystemConfiguration, final Map<String, String> fieldErrors) {
+        logger.info("updating required configuration for initialization");
         saveEncryptionProperties(requiredSystemConfiguration);
+        saveProxySettings(requiredSystemConfiguration);
         saveBlackDuckConfiguration(requiredSystemConfiguration);
-        systemStatusUtility.setSystemInitialized(true);
+        return systemValidator.validate(fieldErrors);
+    }
+
+    private void saveProxySettings(final RequiredSystemConfiguration requiredSystemConfiguration) {
+        alertProperties.setAlertProxyHost(requiredSystemConfiguration.getProxyHost());
+        alertProperties.setAlertProxyPort(requiredSystemConfiguration.getProxyPort());
+        alertProperties.setAlertProxyUsername(requiredSystemConfiguration.getProxyUsername());
+        alertProperties.setAlertProxyPassword(requiredSystemConfiguration.getProxyPassword());
     }
 
     private Optional<GlobalBlackDuckConfigEntity> getGlobalBlackDuckConfigEntity() {
@@ -68,8 +119,11 @@ public class SystemInitializer {
     }
 
     private void saveEncryptionProperties(final RequiredSystemConfiguration requiredSystemConfiguration) {
-        // TODO implement this later with the UI changes to perform an initial setup of alert.
-
+        try {
+            encryptionUtility.updateEncryptionFields(requiredSystemConfiguration.getGlobalEncryptionPassword(), requiredSystemConfiguration.getGlobalEncryptionSalt());
+        } catch (final IllegalArgumentException | IOException ex) {
+            logger.error("Error saving encryption configuration during intialization.", ex);
+        }
     }
 
     private void saveBlackDuckConfiguration(final RequiredSystemConfiguration requiredSystemConfiguration) {

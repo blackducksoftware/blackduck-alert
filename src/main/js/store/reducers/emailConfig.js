@@ -1,9 +1,23 @@
-import {EMAIL_CONFIG_FETCHED, EMAIL_CONFIG_FETCHING, EMAIL_CONFIG_HIDE_ADVANCED, EMAIL_CONFIG_SHOW_ADVANCED, EMAIL_CONFIG_UPDATE_ERROR, EMAIL_CONFIG_UPDATED, EMAIL_CONFIG_UPDATING, SERIALIZE} from '../actions/types';
+import {
+    EMAIL_CONFIG_FETCHED,
+    EMAIL_CONFIG_FETCHING,
+    EMAIL_CONFIG_HIDE_ADVANCED,
+    EMAIL_CONFIG_HIDE_TEST_MODAL,
+    EMAIL_CONFIG_SHOW_ADVANCED,
+    EMAIL_CONFIG_SHOW_TEST_MODAL,
+    EMAIL_CONFIG_TEST_SUCCESSFUL,
+    EMAIL_CONFIG_UPDATE_ERROR,
+    EMAIL_CONFIG_UPDATED,
+    EMAIL_CONFIG_UPDATING,
+    SERIALIZE
+} from '../actions/types';
 
 const initialState = {
     fetching: false,
     showAdvanced: false,
+    showTestModal: false,
     updateStatus: null,
+    actionMessage: null,
     error: {
         message: '',
         fieldErrors: []
@@ -28,12 +42,37 @@ const config = (state = initialState, action) => {
 
         case EMAIL_CONFIG_SHOW_ADVANCED:
             return Object.assign({}, state, {
+                updateStatus: null,
                 showAdvanced: true
             });
 
         case EMAIL_CONFIG_HIDE_ADVANCED:
             return Object.assign({}, state, {
+                updateStatus: null,
                 showAdvanced: false
+            });
+
+        case EMAIL_CONFIG_SHOW_TEST_MODAL:
+            return Object.assign({}, state, {
+                updateStatus: null,
+                showTestModal: true
+            });
+
+        case EMAIL_CONFIG_HIDE_TEST_MODAL:
+            return Object.assign({}, state, {
+                updateStatus: null,
+                actionMessage: null,
+                showTestModal: false
+            });
+
+        case EMAIL_CONFIG_TEST_SUCCESSFUL:
+            return Object.assign({}, state, {
+                actionMessage: 'Test message sent',
+                showTestModal: false,
+                error: {
+                    message: '',
+                    fieldErrors: []
+                }
             });
 
         case EMAIL_CONFIG_UPDATING:
@@ -50,6 +89,7 @@ const config = (state = initialState, action) => {
             return Object.assign({}, state, {
                 fetching: false,
                 updateStatus: 'UPDATED',
+                actionMessage: 'Update successful',
                 ...action.config,
                 error: {
                     message: '',
@@ -60,6 +100,7 @@ const config = (state = initialState, action) => {
         case EMAIL_CONFIG_UPDATE_ERROR:
             return Object.assign({}, state, {
                 updateStatus: 'ERROR',
+                actionMessage: null,
                 error: {
                     message: action.message,
                     fieldErrors: action.errors || []

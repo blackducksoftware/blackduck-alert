@@ -55,7 +55,7 @@ public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntit
     private final ChannelRestConnectionFactory channelRestConnectionFactory;
 
     public RestDistributionChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditUtility auditUtility, final JpaRepository<G, Long> globalRepository,
-        final Class eventClass, final ChannelRestConnectionFactory channelRestConnectionFactory) {
+            final Class eventClass, final ChannelRestConnectionFactory channelRestConnectionFactory) {
         super(gson, alertProperties, blackDuckProperties, auditUtility, globalRepository, eventClass);
         this.channelRestConnectionFactory = channelRestConnectionFactory;
     }
@@ -112,9 +112,7 @@ public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntit
         return channelRestConnectionFactory;
     }
 
-    public abstract String getApiUrl(G globalConfig) throws AlertException;
-
-    public abstract String getApiUrl(String apiUrl);
+    public abstract String getApiUrl(final G globalConfig);
 
     public abstract List<Request> createRequests(G globalConfig, final E event) throws IntegrationException;
 

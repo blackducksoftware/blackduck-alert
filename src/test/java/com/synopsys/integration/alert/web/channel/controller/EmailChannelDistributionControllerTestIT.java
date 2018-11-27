@@ -57,8 +57,8 @@ public class EmailChannelDistributionControllerTestIT extends ControllerTest {
         userProjectRelationRepositoryAccessor.deleteAndSaveAll(new HashSet<>(Arrays.asList(userProjectRelation1, userProjectRelation2, userProjectRelation3, userProjectRelation4)));
 
         final GlobalBlackDuckConfigEntity blackDuckConfigEntity = new GlobalBlackDuckConfigEntity(300,
-            testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY),
-            testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
+                testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY),
+                testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
         globalBlackDuckRepository.deleteAll();
         globalBlackDuckRepository.save(blackDuckConfigEntity);
     }

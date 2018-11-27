@@ -88,6 +88,13 @@ distributions {
 
 // run alert locally
 
+// disable the test task when running the alert server to speed up startup time.
+gradle.taskGraph.whenReady { graph ->
+    if (graph.hasTask(runServer)) {
+        test.enabled = false
+    }
+}
+
 task runServer(type: Exec, dependsOn: [build]) {
     File jarFile = new File("build/libs/blackduck-alert-${version}.jar")
 

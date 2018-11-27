@@ -37,6 +37,11 @@ public class ResponseBodyBuilder {
         map.addProperty("message", message);
     }
 
+    public ResponseBodyBuilder(final String message) {
+        this.map = new JsonObject();
+        map.addProperty("message", message);
+    }
+
     public ResponseBodyBuilder put(final String key, final Boolean value) {
         map.addProperty(key, value);
         return this;
