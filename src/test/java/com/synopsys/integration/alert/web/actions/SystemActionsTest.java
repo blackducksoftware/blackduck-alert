@@ -115,7 +115,7 @@ public class SystemActionsTest {
 
         assertEquals(blackDuckProviderUrl, actual.getBlackDuckProviderUrl());
         assertEquals(blackDuckConnectionTimeout, actual.getBlackDuckConnectionTimeout());
-        assertNull(blackDuckApiToken, actual.getBlackDuckApiToken());
+        assertNull(actual.getBlackDuckApiToken());
         assertTrue(actual.isBlackDuckApiTokenSet());
         assertNull(actual.getGlobalEncryptionPassword());
         assertTrue(actual.isGlobalEncryptionPasswordSet());
