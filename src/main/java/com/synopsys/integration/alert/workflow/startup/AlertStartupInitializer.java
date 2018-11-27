@@ -97,12 +97,16 @@ public class AlertStartupInitializer {
                 value = environment.getProperty(propertyKey);
             }
             try {
-                propertySet = setRestModelValue(value, globalRestModel, property) || propertySet;
-                logger.debug("Property Set? {}", propertySet);
+                final boolean modelPropertySet = setRestModelValue(value, globalRestModel, property);
+                logger.debug("Model property {} set? {}", propertyKey, modelPropertySet);
+                propertySet = modelPropertySet || propertySet;
+
             } catch (final NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
                 logger.error("Error initializing {} ", propertyKey, ex);
             }
         }
+
+        logger.debug("Was a Property Set for Model? {}", propertySet);
         return propertySet;
     }
 
