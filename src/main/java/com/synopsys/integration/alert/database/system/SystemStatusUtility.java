@@ -23,13 +23,13 @@
  */
 package com.synopsys.integration.alert.database.system;
 
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.synopsys.integration.alert.common.model.DateRange;
 
 @Component
 public class SystemStatusUtility {
@@ -55,16 +55,18 @@ public class SystemStatusUtility {
 
     @Transactional
     public void startupOccurred() {
-        ZonedDateTime zonedDateTime = ZonedDateTime.now();
-        zonedDateTime = zonedDateTime.withZoneSameInstant(ZoneOffset.UTC);
         final SystemStatus systemStatus = getSystemStatus();
-        final SystemStatus newSystemStatus = new SystemStatus(systemStatus.isInitialConfigurationPerformed(), Date.from(zonedDateTime.toInstant()));
+        final SystemStatus newSystemStatus = new SystemStatus(systemStatus.isInitialConfigurationPerformed(), createCurrentDateTimestamp());
         updateSystemStatus(newSystemStatus);
     }
 
     @Transactional
     public Date getStartupTime() {
         return getSystemStatus().getStartupTime();
+    }
+
+    private Date createCurrentDateTimestamp() {
+        return DateRange.createCurrentDateTimestamp();
     }
 
     private SystemStatus getSystemStatus() {
