@@ -6,11 +6,11 @@ import {getAuditData} from '../../../store/actions/audit';
 import AutoRefresh from '../../common/AutoRefresh';
 import DescriptorLabel from '../../common/DescriptorLabel';
 import RefreshTableCellFormatter from '../../common/RefreshTableCellFormatter';
-import AuditDetails from './Details';
 import NotificationTypeLegend from '../../common/NotificationTypeLegend';
 
 import '../../../../css/audit.scss';
 import {logout} from '../../../store/actions/session';
+import AuditDetails from "./Details";
 
 class Index extends Component {
     constructor(props) {
@@ -22,7 +22,9 @@ class Index extends Component {
             currentPageSize: 10,
             searchTerm: '',
             sortField: 'timeLastSent',
-            sortOrder: 'desc'
+            sortOrder: 'desc',
+            currentRowSelected: {},
+            showDetailModal: false
         };
         // this.addDefaultEntries = this.addDefaultEntries.bind(this);
         this.cancelAutoReload = this.cancelAutoReload.bind(this);
@@ -41,6 +43,8 @@ class Index extends Component {
         this.onSearchChange = this.onSearchChange.bind(this);
         this.providerColumnDataFormat = this.providerColumnDataFormat.bind(this);
         this.onSortChange = this.onSortChange.bind(this);
+        this.handleCloseDetails = this.handleCloseDetails.bind(this);
+        this.onRowClick = this.onRowClick.bind(this);
     }
 
     componentDidMount() {
@@ -112,24 +116,34 @@ class Index extends Component {
 
     setEntriesFromArray(jsonArray = []) {
         const entries = jsonArray.map((entry) => {
-            const result = {
-                id: entry.id,
-                name: entry.name,
-                eventType: entry.eventType,
-                timeCreated: entry.timeCreated,
-                timeLastSent: entry.timeLastSent,
-                status: entry.status,
-                errorMessage: entry.errorMessage,
-                errorStackTrace: entry.errorStackTrace
-            };
-            const {notification} = entry;
-            if (notification) {
-                result.notificationType = notification.notificationType;
-                result.notificationProviderName = notification.provider;
-                result.content = notification.content;
+                const result = {
+                    id: entry.id,
+                    timeCreated: entry.notification.createdAt,
+                    notificationType: entry.notification.notificationType,
+                    notificationProviderName: entry.notification.provider,
+                    content: entry.notification.content,
+                };
+                let status = null;
+                const {jobs} = entry;
+                if (jobs) {
+                    result.jobs = jobs;
+                    if (jobs.length != 0) {
+                        status = 'Success';
+                        for (let i = 0; i < jobs.length; i++) {
+                            let job = jobs[i];
+                            if (job.status === 'Failure') {
+                                status = job.status;
+                                break;
+                            } else if (status === 'Success' && job.status === 'Pending') {
+                                status = job.status;
+                            }
+                        }
+                    }
+                }
+                result.status = status;
+                return result;
             }
-            return result;
-        });
+        );
 
         this.setState({
             entries
@@ -178,10 +192,6 @@ class Index extends Component {
             hasLowVulnerability={hasLowVulnerability}
             hasVulnerability={hasVulnerability}
         />);
-    }
-
-    expandComponent(row) {
-        return <AuditDetails currentEntry={row}/>;
     }
 
     trClassFormat(row, rowIndex) {
@@ -297,15 +307,10 @@ class Index extends Component {
                 if (filteredList && filteredList.length > 0) {
                     const foundDescriptor = filteredList[0];
                     return (<DescriptorLabel keyPrefix='audit-provider-icon' descriptor={foundDescriptor}/>);
-                } else {
-                    return defaultValue;
                 }
-            } else {
-                return defaultValue;
             }
-        } else {
-            return defaultValue;
         }
+        return defaultValue;
     }
 
     onSortChange(sortName, sortOrder) {
@@ -313,9 +318,18 @@ class Index extends Component {
         this.reloadAuditEntries(null, null, null, sortName, sortOrder)
     }
 
+    onRowClick(row, columnIndex, rowIndex, e) {
+        console.log("Clicked on column " + columnIndex);
+        this.setState({currentRowSelected: row, showDetailModal: true});
+    }
+
+    handleCloseDetails() {
+        this.setState({showDetailModal: false});
+    }
+
     render() {
         const auditTableOptions = {
-            defaultSortName: 'timeLastSent',
+            defaultSortName: 'timeCreated',
             defaultSortOrder: 'desc',
             btnGroup: this.createCustomButtonGroup,
             noDataText: 'No events',
@@ -328,7 +342,8 @@ class Index extends Component {
             onPageChange: this.onPageChange,
             onSizePerPageList: this.onSizePerPageListChange,
             onSearchChange: this.onSearchChange,
-            onSortChange: this.onSortChange
+            onSortChange: this.onSortChange,
+            onRowClick: this.onRowClick
         };
 
         const auditFetchInfo = {
@@ -345,13 +360,12 @@ class Index extends Component {
                     </small>
                 </h1>
                 <div>
+                    <AuditDetails handleClose={this.handleCloseDetails} show={this.state.showDetailModal} currentEntry={this.state.currentRowSelected}/>
                     <BootstrapTable
                         version="4"
                         trClassName={this.trClassFormat}
                         condensed
                         data={this.state.entries}
-                        expandableRow={() => true}
-                        expandComponent={this.expandComponent}
                         containerClass="table"
                         fetchInfo={auditFetchInfo}
                         options={auditTableOptions}
@@ -361,14 +375,12 @@ class Index extends Component {
                         pagination
                         search
                     >
-                        <TableHeaderColumn dataField="name" dataSort columnTitle columnClassName="tableCell">Distribution Job</TableHeaderColumn>
                         <TableHeaderColumn dataField="notificationProviderName" dataSort columnTitle columnClassName="tableCell" dataFormat={this.providerColumnDataFormat}>Provider</TableHeaderColumn>
-                        <TableHeaderColumn dataField="notificationType" dataSort width="145" columnClassName="tableCell" dataFormat={this.notificationTypeDataFormat}>Notification Types</TableHeaderColumn>
-                        <TableHeaderColumn dataField="timeCreated" dataSort width="160" columnTitle columnClassName="tableCell">Time Created</TableHeaderColumn>
-                        <TableHeaderColumn dataField="timeLastSent" dataSort width="160" columnTitle columnClassName="tableCell">Time Last Sent</TableHeaderColumn>
-                        <TableHeaderColumn dataField="status" width="75" dataSort columnClassName="tableCell" dataFormat={this.statusColumnDataFormat}>Status</TableHeaderColumn>
+                        <TableHeaderColumn dataField="notificationType" dataSort columnClassName="tableCell" dataFormat={this.notificationTypeDataFormat}>Notification Types</TableHeaderColumn>
+                        <TableHeaderColumn dataField="timeCreated" dataSort columnTitle columnClassName="tableCell">Time Retrieved</TableHeaderColumn>
+                        <TableHeaderColumn dataField="status" dataSort columnClassName="tableCell" dataFormat={this.statusColumnDataFormat}>Status</TableHeaderColumn>
                         <TableHeaderColumn dataField="" width="48" expandable={false} columnClassName="tableCell" dataFormat={this.resendButton}/>
-                        <TableHeaderColumn dataField="id" isKey hidden>Audit Id</TableHeaderColumn>
+                        <TableHeaderColumn dataField="id" isKey hidden>Notification Id</TableHeaderColumn>
                     </BootstrapTable>
 
                     {this.state.inProgress && <div className="progressIcon">
