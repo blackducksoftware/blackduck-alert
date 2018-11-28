@@ -91,6 +91,7 @@ distributions {
 // disable the test task when running the alert server to speed up startup time.
 gradle.taskGraph.whenReady { graph ->
     if (graph.hasTask(runServer)) {
+        compileTestJava.enabled = false
         test.enabled = false
     }
 }
