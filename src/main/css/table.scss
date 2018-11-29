@@ -108,8 +108,15 @@
   position: relative;
   overflow-y: scroll !important;
   overflow-x: hidden;
-  height: 55vh !important;
   width: 100%;
+}
+
+.tableScrollableBody {
+  height: 55vh !important;
+}
+
+.auditTableScrollableBody {
+  height: 50vh !important;
 }
 
 .expandableContainer {
@@ -157,6 +164,6 @@
 
 .auditContentTextArea {
   width: 100%;
-  height: 64vh !important;
+  height: 50vh !important;
 }
 

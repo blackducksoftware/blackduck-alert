@@ -132,7 +132,20 @@ class Details extends Component {
         return (
             <Modal size="lg" show={this.props.show} onHide={this.props.handleClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Notification</Modal.Title>
+                    <Modal.Title>
+                        <div className="notificationTitlePiece">
+                            {this.props.providerNameFormat(this.props.currentEntry.notificationProviderName)}
+                        </div>
+                        <div className="notificationTitlePiece">
+                            {this.props.notificationTypeFormat(this.props.currentEntry.notificationType)}
+                        </div>
+                        <div className="notificationTitlePiece">
+                            {this.props.currentEntry.timeCreated}
+                        </div>
+                        <div className="notificationTitlePiece">
+                            {this.props.statusFormat(this.props.currentEntry.status)}
+                        </div>
+                    </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <div className="expandableContainer">

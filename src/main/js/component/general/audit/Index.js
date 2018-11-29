@@ -346,7 +346,8 @@ class Index extends Component {
                     </small>
                 </h1>
                 <div>
-                    <AuditDetails handleClose={this.handleCloseDetails} show={this.state.showDetailModal} currentEntry={this.state.currentRowSelected}/>
+                    <AuditDetails handleClose={this.handleCloseDetails} show={this.state.showDetailModal} currentEntry={this.state.currentRowSelected} providerNameFormat={this.providerColumnDataFormat}
+                                  notificationTypeFormat={this.notificationTypeDataFormat} statusFormat={this.statusColumnDataFormat}/>
                     <BootstrapTable
                         version="4"
                         trClassName={this.trClassFormat}
@@ -361,7 +362,7 @@ class Index extends Component {
                         pagination
                         search
                     >
-                        <TableHeaderColumn dataField="notificationProviderName" dataSort columnTitle columnClassName="tableCell" dataFormat={this.providerColumnDataFormat}>Provider</TableHeaderColumn>
+                        <TableHeaderColumn dataField="notificationProviderName" dataSort columnClassName="tableCell" dataFormat={this.providerColumnDataFormat}>Provider</TableHeaderColumn>
                         <TableHeaderColumn dataField="notificationType" dataSort columnClassName="tableCell" dataFormat={this.notificationTypeDataFormat}>Notification Types</TableHeaderColumn>
                         <TableHeaderColumn dataField="timeCreated" dataSort columnTitle columnClassName="tableCell">Time Retrieved</TableHeaderColumn>
                         <TableHeaderColumn dataField="status" dataSort columnClassName="tableCell" dataFormat={this.statusColumnDataFormat}>Status</TableHeaderColumn>
