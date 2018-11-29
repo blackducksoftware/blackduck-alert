@@ -21,32 +21,41 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.relation.key;
+package com.synopsys.integration.alert.database.relation;
 
-import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Table;
 
-public class DistributionNotificationTypeRelationPK implements Serializable {
-    private static final long serialVersionUID = 8164991480684683756L;
-    private Long commonDistributionConfigId;
-    private String notificationType;
+import com.synopsys.integration.alert.database.relation.key.UserRoleRelationPK;
 
-    public DistributionNotificationTypeRelationPK() {
-        // JPA requires default constructor definitions
+@Entity
+@IdClass(UserRoleRelationPK.class)
+@Table(schema = "alert", name = "user_roles")
+public class UserRoleRelation extends DatabaseRelation {
+    @Id
+    @Column(name = "user_id")
+    private Long userId;
+
+    @Id
+    @Column(name = "role_id")
+    private Long roleId;
+
+    public UserRoleRelation() {
     }
 
-    public Long getCommonDistributionConfigId() {
-        return commonDistributionConfigId;
+    public UserRoleRelation(final Long userId, final Long roleId) {
+        this.userId = userId;
+        this.roleId = roleId;
     }
 
-    public void setCommonDistributionConfigId(final Long commonDistributionConfigId) {
-        this.commonDistributionConfigId = commonDistributionConfigId;
+    public Long getUserId() {
+        return userId;
     }
 
-    public String getNotificationType() {
-        return notificationType;
-    }
-
-    public void setNotificationType(final String notificationType) {
-        this.notificationType = notificationType;
+    public Long getRoleId() {
+        return roleId;
     }
 }
