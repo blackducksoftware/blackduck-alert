@@ -32,14 +32,16 @@ public class AuditEntryModel extends Config {
 
     private NotificationConfig notification;
     private List<JobModel> jobs;
+    private String overallStatus;
 
     public AuditEntryModel() {
     }
 
-    public AuditEntryModel(final String id, final NotificationConfig notification, final List<JobModel> jobs) {
+    public AuditEntryModel(final String id, final NotificationConfig notification, final List<JobModel> jobs, final String overallStatus) {
         super(id);
         this.notification = notification;
         this.jobs = jobs;
+        this.overallStatus = overallStatus;
     }
 
     public NotificationConfig getNotification() {
@@ -50,4 +52,7 @@ public class AuditEntryModel extends Config {
         return jobs;
     }
 
+    public String getOverallStatus() {
+        return overallStatus;
+    }
 }

@@ -41,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.channel.ChannelTemplateManager;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
+import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
@@ -91,6 +92,8 @@ public class AuditEntryActions {
 
         final Page<NotificationContent> auditPage = queryForNotifications(sortField, sortOrder);
         final List<AuditEntryModel> auditEntryModels = createRestModels(auditPage.getContent());
+        // TODO need to add sorting on audit entries
+        // TODO improve addMatchingModels by making better cross table queries
 
         addMatchingModels(auditEntries, auditEntryModels, searchTerm);
 
@@ -217,6 +220,7 @@ public class AuditEntryActions {
         final List<Long> auditEntryIds = relations.stream().map(AuditNotificationRelation::getAuditEntryId).collect(Collectors.toList());
         final List<AuditEntryEntity> auditEntryEntities = auditEntryRepository.findAllById(auditEntryIds);
 
+        String overallStatus = null;
         final List<JobModel> jobModels = new ArrayList<>();
         for (final AuditEntryEntity auditEntryEntity : auditEntryEntities) {
             final Long commonConfigId = auditEntryEntity.getCommonConfigId();
@@ -230,6 +234,12 @@ public class AuditEntryActions {
             String status = null;
             if (auditEntryEntity.getStatus() != null) {
                 status = auditEntryEntity.getStatus().getDisplayName();
+
+                if (auditEntryEntity.getStatus() == AuditEntryStatus.FAILURE) {
+                    overallStatus = status;
+                } else if (null == overallStatus || (AuditEntryStatus.SUCCESS.getDisplayName().equals(overallStatus) && !AuditEntryStatus.SUCCESS.equals(status))) {
+                    overallStatus = status;
+                }
             }
 
             final String errorMessage = auditEntryEntity.getErrorMessage();
@@ -247,6 +257,6 @@ public class AuditEntryActions {
         final String id = notificationContentConverter.getContentConverter().getStringValue(notificationContentEntry.getId());
         final NotificationConfig notificationConfig = (NotificationConfig) notificationContentConverter.populateConfigFromEntity(notificationContentEntry);
 
-        return new AuditEntryModel(id, notificationConfig, jobModels);
+        return new AuditEntryModel(id, notificationConfig, jobModels, overallStatus);
     }
 }
