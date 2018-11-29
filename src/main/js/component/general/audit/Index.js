@@ -122,25 +122,11 @@ class Index extends Component {
                     notificationType: entry.notification.notificationType,
                     notificationProviderName: entry.notification.provider,
                     content: entry.notification.content,
+                    status: entry.overallStatus
                 };
-                let status = null;
-                const {jobs} = entry;
-                if (jobs) {
-                    result.jobs = jobs;
-                    if (jobs.length != 0) {
-                        status = 'Success';
-                        for (let i = 0; i < jobs.length; i++) {
-                            let job = jobs[i];
-                            if (job.status === 'Failure') {
-                                status = job.status;
-                                break;
-                            } else if (status === 'Success' && job.status === 'Pending') {
-                                status = job.status;
-                            }
-                        }
-                    }
+                if (entry.jobs) {
+                    result.jobs = entry.jobs;
                 }
-                result.status = status;
                 return result;
             }
         );
@@ -370,7 +356,7 @@ class Index extends Component {
                         fetchInfo={auditFetchInfo}
                         options={auditTableOptions}
                         headerContainerClass="scrollable"
-                        bodyContainerClass="tableScrollableBody"
+                        bodyContainerClass="auditTableScrollableBody"
                         remote
                         pagination
                         search

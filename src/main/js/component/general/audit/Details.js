@@ -6,7 +6,7 @@ import TextInput from '../../../field/input/TextInput';
 import TextArea from '../../../field/input/TextArea';
 import {BootstrapTable, ReactBsTable, TableHeaderColumn} from 'react-bootstrap-table';
 import RefreshTableCellFormatter from "../../common/RefreshTableCellFormatter";
-import {Modal} from "react-bootstrap";
+import {Modal, Tab, Tabs} from "react-bootstrap";
 
 class Details extends Component {
     constructor(props) {
@@ -55,7 +55,7 @@ class Details extends Component {
         }
         let errorStackTrace = null;
         if (row.errorStackTrace) {
-            errorStackTrace = <TextArea inputClass="stackTraceContainer" label="Stack Trace" readOnly name="errorStackTrace" value={row.errorStackTrace}/>;
+            errorStackTrace = <TextArea inputClass="textArea" label="Stack Trace" readOnly name="errorStackTrace" value={row.errorStackTrace}/>;
         }
 
         return (<div className="inline">{errorMessage}{errorStackTrace}</div>);
@@ -128,38 +128,46 @@ class Details extends Component {
             jsonContent = Object.assign({}, {'warning': 'Content in an Unknown Format'});
         }
         const jsonPrettyPrintContent = JSON.stringify(jsonContent, null, 2);
+        const jobs = this.props.currentEntry.jobs;
         return (
             <Modal size="lg" show={this.props.show} onHide={this.props.handleClose}>
                 <Modal.Header closeButton>
+                    <Modal.Title>Notification</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <div className="expandableContainer">
-                        <div className="container-fluid">
-                            <BootstrapTable
-                                version="4"
-                                trClassName={this.trClassFormat}
-                                condensed
-                                data={this.props.currentEntry.jobs}
-                                expandableRow={() => true}
-                                expandComponent={this.expandComponent}
-                                containerClass="table"
-                                options={jobTableOptions}
-                                headerContainerClass="scrollable"
-                                bodyContainerClass="auditDetailsTableBody"
-                                pagination
-                                search
-                            >
-                                <TableHeaderColumn dataField="name" dataSort columnTitle columnClassName="tableCell">Distribution Job</TableHeaderColumn>
-                                <TableHeaderColumn dataField="eventType" dataSort columnClassName="tableCell" dataFormat={this.getEventType}>Event Type</TableHeaderColumn>
-                                <TableHeaderColumn dataField="timeLastSent" dataSort columnTitle columnClassName="tableCell">Time Last Sent</TableHeaderColumn>
-                                <TableHeaderColumn dataField="status" dataSort columnClassName="tableCell" dataFormat={this.statusColumnDataFormat}>Status</TableHeaderColumn>
-                                <TableHeaderColumn dataField="" width="48" expandable={false} columnClassName="tableCell" dataFormat={this.resendButton}/>
-                                <TableHeaderColumn dataField="id" isKey hidden>Job Id</TableHeaderColumn>
-                            </BootstrapTable>
-                        </div>
-                        <div className="tableContainer">
-                            <TextArea inputClass="stackTraceContainer" sizeClass='col-sm-12' label="Content" readOnly name="notificationContent" value={jsonPrettyPrintContent}/>
-                        </div>
+                        <Tabs defaultActiveKey={1} id="uncontrolled-tab-example">
+                            <Tab eventKey={1} title="Distribution Jobs">
+                                <div className="container-fluid">
+                                    <BootstrapTable
+                                        version="4"
+                                        trClassName={this.trClassFormat}
+                                        condensed
+                                        data={jobs}
+                                        expandableRow={() => true}
+                                        expandComponent={this.expandComponent}
+                                        containerClass="table"
+                                        options={jobTableOptions}
+                                        headerContainerClass="scrollable"
+                                        bodyContainerClass="auditTableScrollableBody"
+                                        pagination
+                                        search
+                                    >
+                                        <TableHeaderColumn dataField="name" dataSort columnTitle columnClassName="tableCell">Distribution Job</TableHeaderColumn>
+                                        <TableHeaderColumn dataField="eventType" dataSort columnClassName="tableCell" dataFormat={this.getEventType}>Event Type</TableHeaderColumn>
+                                        <TableHeaderColumn dataField="timeLastSent" dataSort columnTitle columnClassName="tableCell">Time Last Sent</TableHeaderColumn>
+                                        <TableHeaderColumn dataField="status" dataSort columnClassName="tableCell" dataFormat={this.statusColumnDataFormat}>Status</TableHeaderColumn>
+                                        <TableHeaderColumn dataField="" width="48" expandable={false} columnClassName="tableCell" dataFormat={this.resendButton}/>
+                                        <TableHeaderColumn dataField="id" isKey hidden>Job Id</TableHeaderColumn>
+                                    </BootstrapTable>
+                                </div>
+                            </Tab>
+                            <Tab eventKey={2} title="Notification Content">
+                                <div className="tableContainer">
+                                    <TextArea inputClass="auditContentTextArea" sizeClass='col-sm-12' label="" readOnly name="notificationContent" value={jsonPrettyPrintContent}/>
+                                </div>
+                            </Tab>
+                        </Tabs>
                     </div>
                 </Modal.Body>
 
