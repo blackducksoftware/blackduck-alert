@@ -5,7 +5,9 @@
             <column name="ID" type="BIGINT(19)" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="REGISTERED_DESCRIPTORS_KEY"/>
             </column>
-            <column name="NAME" type="VARCHAR(255)"/>
+            <column name="NAME" type="VARCHAR(255)">
+                <constraints unique="true"/>
+            </column>
             <column name="TYPE" type="VARCHAR(31)"/>
         </createTable>
     </changeSet>
@@ -18,6 +20,9 @@
                 <constraints foreignKeyName="FK_DESCRIPTOR_FIELD" referencedTableName="REGISTERED_DESCRIPTORS" referencedColumnNames="ID" nullable="false" deleteCascade="true"/>
             </column>
             <column name="SOURCE_KEY" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SENSITIVE" type="BOOLEAN" defaultValue="false">
                 <constraints nullable="false"/>
             </column>
         </createTable>
