@@ -45,6 +45,7 @@ import org.springframework.jms.annotation.EnableJms;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -52,6 +53,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.synopsys.integration.alert.web.security.authentication.UserDatabaseService;
 import com.synopsys.integration.alert.workflow.startup.StartupManager;
 import com.synopsys.integration.rest.RestConstants;
 
@@ -65,6 +67,9 @@ import com.synopsys.integration.rest.RestConstants;
 @SpringBootApplication
 public class Application {
     private final static Logger logger = LoggerFactory.getLogger(Application.class);
+
+    @Autowired
+    private UserDatabaseService userDatabaseService;
     @Autowired
     private StartupManager startupManager;
 
@@ -124,5 +129,12 @@ public class Application {
     @Bean
     public HttpSessionCsrfTokenRepository csrfTokenRepository() {
         return new HttpSessionCsrfTokenRepository();
+    }
+
+    @Bean
+    public DaoAuthenticationProvider alertDatabaseAuthProvider() {
+        final DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDatabaseService);
+        return provider;
     }
 }

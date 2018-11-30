@@ -1,21 +1,22 @@
 package com.synopsys.integration.alert.database.api.user;
 
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 public class UserModel {
     private final String name;
     private final String password;
-    private final EnumSet<UserRole> roles;
+    private final List<GrantedAuthority> roles;
 
     public static final UserModel of(final String userName, final String password, final List<String> roles) {
-        final EnumSet<UserRole> roleSet = EnumSet.copyOf(roles.stream().map(UserRole::valueOf).collect(Collectors.toList()));
-        return new UserModel(userName, password, roleSet);
+        final List<GrantedAuthority> roleAuthorities = roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+        return new UserModel(userName, password, roleAuthorities);
     }
 
-    private UserModel(final String name, final String password, final EnumSet<UserRole> roles) {
+    private UserModel(final String name, final String password, final List<GrantedAuthority> roles) {
         this.name = name;
         this.password = password;
         this.roles = roles;
@@ -29,16 +30,11 @@ public class UserModel {
         return password;
     }
 
-    public EnumSet<UserRole> getRoles() {
+    public List<GrantedAuthority> getRoles() {
         return roles;
     }
 
     public boolean hasRole(final String role) {
-        final Optional<UserRole> parsedRole = Optional.ofNullable(UserRole.valueOf(role.toUpperCase()));
-        return parsedRole.isPresent() && hasRole(parsedRole.get());
-    }
-
-    public boolean hasRole(final UserRole role) {
-        return roles.contains(role);
+        return roles.stream().map(GrantedAuthority::getAuthority).anyMatch(role::equals);
     }
 }
