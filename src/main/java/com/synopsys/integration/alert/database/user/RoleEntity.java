@@ -23,6 +23,7 @@
  */
 package com.synopsys.integration.alert.database.user;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -31,17 +32,18 @@ import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 @Entity
 @Table(schema = "alert", name = "roles")
 public class RoleEntity extends DatabaseEntity {
-    private String rolename;
+    @Column(name = "rolename")
+    private String roleName;
 
     public RoleEntity() {
         // JPA requires default constructor definitions
     }
 
-    public RoleEntity(final String rolename) {
-        this.rolename = rolename;
+    public RoleEntity(final String roleName) {
+        this.roleName = roleName;
     }
 
-    public String getRolename() {
-        return rolename;
+    public String getRoleName() {
+        return roleName;
     }
 }
