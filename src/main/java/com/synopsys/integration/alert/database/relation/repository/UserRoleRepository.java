@@ -23,6 +23,8 @@
  */
 package com.synopsys.integration.alert.database.relation.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.synopsys.integration.alert.database.relation.UserRoleRelation;
@@ -30,4 +32,9 @@ import com.synopsys.integration.alert.database.relation.key.UserRoleRelationPK;
 
 public interface UserRoleRepository extends JpaRepository<UserRoleRelation, UserRoleRelationPK> {
 
+    // find all role ids for a user
+    List<UserRoleRelation> findAllByUserId(final Long userId);
+
+    // fina all user ids for a role
+    List<UserRoleRelation> findAllByRoleId(final Long roleId);
 }

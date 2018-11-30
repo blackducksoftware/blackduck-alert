@@ -23,6 +23,7 @@
  */
 package com.synopsys.integration.alert.database.user;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -31,20 +32,22 @@ import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 @Entity
 @Table(schema = "alert", name = "users")
 public class UserEntity extends DatabaseEntity {
-    private String username;
+    @Column(name = "username")
+    private String userName;
+    @Column(name = "password")
     private String password;
 
     public UserEntity() {
         // JPA requires default constructor definitions
     }
 
-    public UserEntity(final String username, final String password) {
-        this.username = username;
+    public UserEntity(final String userName, final String password) {
+        this.userName = userName;
         this.password = password;
     }
 
-    public String getUsername() {
-        return username;
+    public String getUserName() {
+        return userName;
     }
 
     public String getPassword() {
