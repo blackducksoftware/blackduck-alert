@@ -201,7 +201,7 @@ public class DescriptorAccessor {
                        .orElseThrow(() -> new AlertDatabaseConstraintException("No field for that descriptor with that key exists"));
     }
 
-    public class RegisteredDescriptorModel extends Stringable {
+    public final class RegisteredDescriptorModel extends Stringable {
         private final Long id;
         private final String name;
         private final String type;

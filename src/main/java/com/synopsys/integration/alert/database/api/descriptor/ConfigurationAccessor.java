@@ -112,16 +112,6 @@ public class ConfigurationAccessor {
     }
 
     /**
-     * @return the config resulting from the update
-     */
-    public ConfigurationModel updateConfiguration(final ConfigurationModel configModel) throws AlertDatabaseConstraintException {
-        if (configModel == null) {
-            throw new AlertDatabaseConstraintException("The config model cannot be null");
-        }
-        return updateConfiguration(configModel.getConfigurationId(), configModel.configuredFields.values());
-    }
-
-    /**
      * @return the config after update
      */
     public ConfigurationModel updateConfiguration(final Long descriptorConfigId, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
@@ -215,7 +205,7 @@ public class ConfigurationAccessor {
                        .orElseThrow(() -> new AlertDatabaseConstraintException("A field with that key did not exist"));
     }
 
-    public class ConfigurationModel {
+    public final class ConfigurationModel {
         private final Long descriptorId;
         private final Long configurationId;
         private final Map<String, ConfigurationFieldModel> configuredFields;
@@ -234,7 +224,20 @@ public class ConfigurationAccessor {
             return configurationId;
         }
 
-        public void put(final ConfigurationFieldModel configFieldModel) {
+        public Optional<ConfigurationFieldModel> getField(final String fieldKey) {
+            Objects.requireNonNull(fieldKey);
+            return Optional.ofNullable(configuredFields.get(fieldKey));
+        }
+
+        public List<ConfigurationFieldModel> getCopyOfFieldList() {
+            return new ArrayList<>(configuredFields.values());
+        }
+
+        public Map<String, ConfigurationFieldModel> getCopyOfKeyToFieldMap() {
+            return new HashMap<>(configuredFields);
+        }
+
+        private void put(final ConfigurationFieldModel configFieldModel) {
             Objects.requireNonNull(configFieldModel);
             final String fieldKey = configFieldModel.getFieldKey();
             Objects.requireNonNull(fieldKey);
@@ -244,24 +247,6 @@ public class ConfigurationAccessor {
                 oldConfigField.setFieldValues(values);
             }
             configuredFields.put(fieldKey, configFieldModel);
-        }
-
-        /**
-         * @return true if configFieldModel existed
-         */
-        public boolean delete(final ConfigurationFieldModel configFieldModel) {
-            Objects.requireNonNull(configFieldModel);
-            return delete(configFieldModel.getFieldKey());
-        }
-
-        /**
-         * @return true if a ConfigurationFieldModel containing that fieldKey was present
-         */
-        public boolean delete(final String fieldKey) {
-            Objects.requireNonNull(fieldKey);
-            final boolean containsField = configuredFields.containsKey(fieldKey);
-            configuredFields.remove(fieldKey);
-            return containsField;
         }
 
         private List<String> combine(final ConfigurationFieldModel first, final ConfigurationFieldModel second) {
