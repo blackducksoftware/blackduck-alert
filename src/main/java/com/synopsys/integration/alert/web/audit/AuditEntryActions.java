@@ -216,6 +216,11 @@ public class AuditEntryActions {
     }
 
     private AuditEntryModel createRestModel(final NotificationContent notificationContentEntry) {
+        for (final AuditNotificationRelation relation : notificationContentEntry.getAuditNotificationRelations()) {
+            final AuditEntryEntity entryEntity = relation.getAuditEntryEntity();
+            logger.info(entryEntity.getStatus().getDisplayName());
+        }
+
         final List<AuditNotificationRelation> relations = auditNotificationRepository.findByNotificationId(notificationContentEntry.getId());
         final List<Long> auditEntryIds = relations.stream().map(AuditNotificationRelation::getAuditEntryId).collect(Collectors.toList());
         final List<AuditEntryEntity> auditEntryEntities = auditEntryRepository.findAllById(auditEntryIds);

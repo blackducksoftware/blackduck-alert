@@ -24,10 +24,13 @@
 package com.synopsys.integration.alert.database.audit;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -35,6 +38,7 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.Type;
 
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
+import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 
 @Entity
@@ -117,4 +121,11 @@ public class AuditEntryEntity extends DatabaseEntity {
         this.errorStackTrace = errorStackTrace;
     }
 
+    @OneToMany
+    @JoinColumn(name = "audit_entry_id")
+    private List<AuditNotificationRelation> auditNotificationRelations;
+
+    public List<AuditNotificationRelation> getAuditNotificationRelations() {
+        return auditNotificationRelations;
+    }
 }

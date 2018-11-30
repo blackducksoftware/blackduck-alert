@@ -24,12 +24,17 @@
 package com.synopsys.integration.alert.database.entity;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
 
 @Entity
 @Table(schema = "alert", name = "raw_notification_content")
@@ -77,5 +82,13 @@ public class NotificationContent extends DatabaseEntity {
 
     public Date getProviderCreationTime() {
         return providerCreationTime;
+    }
+
+    @OneToMany
+    @JoinColumn(name = "notification_id")
+    private List<AuditNotificationRelation> auditNotificationRelations;
+
+    public List<AuditNotificationRelation> getAuditNotificationRelations() {
+        return auditNotificationRelations;
     }
 }

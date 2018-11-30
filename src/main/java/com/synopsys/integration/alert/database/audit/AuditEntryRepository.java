@@ -31,4 +31,5 @@ public interface AuditEntryRepository extends JpaRepository<AuditEntryEntity, Lo
     AuditEntryEntity findFirstByCommonConfigIdOrderByTimeLastSentDesc(final Long commonConfigId);
 
     List<AuditEntryEntity> findByCommonConfigId(final Long commonConfigId);
+
 }
