@@ -30,34 +30,27 @@ import javax.persistence.Table;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 
 @Entity
-@Table(schema = "ALERT", name = "DESCRIPTOR_FIELDS")
-public class DescriptorFieldsEntity extends DatabaseEntity {
-    @Column(name = "DESCRIPTOR_ID")
-    private Long descriptorId;
-    @Column(name = "SOURCE_KEY")
-    private String key;
-    @Column(name = "SENSITIVE")
-    private Boolean sensitive;
+@Table(schema = "ALERT", name = "REGISTERED_DESCRIPTORS")
+public class RegisteredDescriptorEntity extends DatabaseEntity {
+    @Column(name = "NAME")
+    private String name;
+    @Column(name = "TYPE")
+    private String type;
 
-    public DescriptorFieldsEntity() {
+    public RegisteredDescriptorEntity() {
         // JPA requires default constructor definitions
     }
 
-    public DescriptorFieldsEntity(final Long descriptorId, final String key, final Boolean sensitive) {
-        this.descriptorId = descriptorId;
-        this.key = key;
-        this.sensitive = sensitive;
+    public RegisteredDescriptorEntity(final String name, final String type) {
+        this.name = name;
+        this.type = type;
     }
 
-    public Long getDescriptorId() {
-        return descriptorId;
+    public String getName() {
+        return name;
     }
 
-    public String getKey() {
-        return key;
-    }
-
-    public Boolean getSensitive() {
-        return sensitive;
+    public String getType() {
+        return type;
     }
 }

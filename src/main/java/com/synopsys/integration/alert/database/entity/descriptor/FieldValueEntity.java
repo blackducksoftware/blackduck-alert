@@ -30,20 +30,34 @@ import javax.persistence.Table;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 
 @Entity
-@Table(schema = "ALERT", name = "DESCRIPTOR_CONFIGS")
-public class DescriptorConfigsEntity extends DatabaseEntity {
-    @Column(name = "DESCRIPTOR_ID")
-    private Long descriptorId;
+@Table(schema = "ALERT", name = "FIELD_VALUES")
+public class FieldValueEntity extends DatabaseEntity {
+    @Column(name = "CONFIG_ID")
+    private Long configId;
+    @Column(name = "FIELD_ID")
+    private Long fieldId;
+    @Column(name = "FIELD_VALUE")
+    private String value;
 
-    public DescriptorConfigsEntity() {
+    public FieldValueEntity() {
         // JPA requires default constructor definitions
     }
 
-    public DescriptorConfigsEntity(final Long descriptorId) {
-        this.descriptorId = descriptorId;
+    public FieldValueEntity(final Long configId, final Long fieldId, final String value) {
+        this.configId = configId;
+        this.fieldId = fieldId;
+        this.value = value;
     }
 
-    public Long getDescriptorId() {
-        return descriptorId;
+    public Long getConfigId() {
+        return configId;
+    }
+
+    public Long getFieldId() {
+        return fieldId;
+    }
+
+    public String getValue() {
+        return value;
     }
 }

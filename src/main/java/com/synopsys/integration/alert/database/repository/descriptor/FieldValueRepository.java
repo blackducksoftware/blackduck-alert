@@ -28,9 +28,9 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.database.entity.descriptor.DescriptorConfigsEntity;
+import com.synopsys.integration.alert.database.entity.descriptor.FieldValueEntity;
 
 @Component
-public interface DescriptorConfigsRepository extends JpaRepository<DescriptorConfigsEntity, Long> {
-    List<DescriptorConfigsEntity> findByDescriptorId(final Long descriptorId);
+public interface FieldValueRepository extends JpaRepository<FieldValueEntity, Long> {
+    List<FieldValueEntity> findByConfigId(final Long configId);
 }

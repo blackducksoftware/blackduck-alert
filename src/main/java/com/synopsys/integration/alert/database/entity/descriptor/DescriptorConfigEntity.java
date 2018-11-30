@@ -21,18 +21,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.repository.descriptor;
+package com.synopsys.integration.alert.database.entity.descriptor;
 
-import java.util.List;
-import java.util.Optional;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Component;
+import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 
-import com.synopsys.integration.alert.database.entity.descriptor.DescriptorFieldsEntity;
+@Entity
+@Table(schema = "ALERT", name = "DESCRIPTOR_CONFIGS")
+public class DescriptorConfigEntity extends DatabaseEntity {
+    @Column(name = "DESCRIPTOR_ID")
+    private Long descriptorId;
 
-@Component
-public interface DescriptorFieldsRepository extends JpaRepository<DescriptorFieldsEntity, Long> {
-    Optional<DescriptorFieldsEntity> findFirstByDescriptorIdAndKey(final Long descriptorId, final String fieldKey);
-    List<DescriptorFieldsEntity> findByDescriptorId(final Long descriptorId);
+    public DescriptorConfigEntity() {
+        // JPA requires default constructor definitions
+    }
+
+    public DescriptorConfigEntity(final Long descriptorId) {
+        this.descriptorId = descriptorId;
+    }
+
+    public Long getDescriptorId() {
+        return descriptorId;
+    }
 }

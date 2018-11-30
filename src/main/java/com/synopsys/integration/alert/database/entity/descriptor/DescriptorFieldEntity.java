@@ -30,34 +30,34 @@ import javax.persistence.Table;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 
 @Entity
-@Table(schema = "ALERT", name = "FIELD_VALUES")
-public class FieldValuesEntity extends DatabaseEntity {
-    @Column(name = "CONFIG_ID")
-    private Long configId;
-    @Column(name = "FIELD_ID")
-    private Long fieldId;
-    @Column(name = "FIELD_VALUE")
-    private String value;
+@Table(schema = "ALERT", name = "DESCRIPTOR_FIELDS")
+public class DescriptorFieldEntity extends DatabaseEntity {
+    @Column(name = "DESCRIPTOR_ID")
+    private Long descriptorId;
+    @Column(name = "SOURCE_KEY")
+    private String key;
+    @Column(name = "SENSITIVE")
+    private Boolean sensitive;
 
-    public FieldValuesEntity() {
+    public DescriptorFieldEntity() {
         // JPA requires default constructor definitions
     }
 
-    public FieldValuesEntity(final Long configId, final Long fieldId, final String value) {
-        this.configId = configId;
-        this.fieldId = fieldId;
-        this.value = value;
+    public DescriptorFieldEntity(final Long descriptorId, final String key, final Boolean sensitive) {
+        this.descriptorId = descriptorId;
+        this.key = key;
+        this.sensitive = sensitive;
     }
 
-    public Long getConfigId() {
-        return configId;
+    public Long getDescriptorId() {
+        return descriptorId;
     }
 
-    public Long getFieldId() {
-        return fieldId;
+    public String getKey() {
+        return key;
     }
 
-    public String getValue() {
-        return value;
+    public Boolean getSensitive() {
+        return sensitive;
     }
 }
