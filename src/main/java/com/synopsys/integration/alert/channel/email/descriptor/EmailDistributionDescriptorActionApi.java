@@ -75,7 +75,7 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
                                            .filter(databaseEntity -> emailGroupChannel.doesProjectNameMatchThePattern(databaseEntity.getName(), emailDistributionConfig.getProjectNamePattern())
                                                                          || emailGroupChannel.doesProjectNameMatchAConfiguredProject(databaseEntity.getName(), emailDistributionConfig.getConfiguredProjects()))
                                            .collect(Collectors.toSet());
-        } else if (emailDistributionConfig.getProviderName().equals(BlackDuckProvider.COMPONENT_NAME)) {
+        } else if (BlackDuckProvider.COMPONENT_NAME.equals(emailDistributionConfig.getProviderName())) {
             blackDuckProjectEntities = blackDuckProjectRepositoryAccessor.readEntities()
                                            .stream()
                                            .map(databaseEntity -> (BlackDuckProjectEntity) databaseEntity)
