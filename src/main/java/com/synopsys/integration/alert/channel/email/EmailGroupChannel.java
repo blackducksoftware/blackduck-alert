@@ -65,9 +65,13 @@ import com.synopsys.integration.exception.IntegrationException;
 public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEntity> {
     public final static String COMPONENT_NAME = "channel_email";
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    // FIXME This will no longer be needed with our new DB Field tables. We'll want to remove these and be sent all the data we need.
     private final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
     private final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor;
     private final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor;
+
+    // TODO we will pass a ValueId through the email configuration. This will reference all emails that should be sent in this case. We'll Access the DB here to retrieve this info.
 
     @Autowired
     public EmailGroupChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditUtility auditUtility, final EmailGlobalRepository emailRepository,
