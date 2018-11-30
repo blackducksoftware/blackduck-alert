@@ -30,27 +30,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
-import com.synopsys.integration.alert.channel.slack.SlackChannelEvent;
-import com.synopsys.integration.alert.channel.slack.SlackEventProducer;
-import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.config.ChannelDistributionDescriptorActionApi;
 import com.synopsys.integration.alert.database.channel.slack.SlackDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.web.channel.model.SlackDistributionConfig;
-import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.web.model.Config;
-import com.synopsys.integration.alert.web.model.TestConfigModel;
-import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class SlackDistributionDescriptorActionApi extends DescriptorActionApi {
-    private final SlackChannel slackChannel;
-    private final SlackEventProducer slackEventProducer;
+public class SlackDistributionDescriptorActionApi extends ChannelDistributionDescriptorActionApi {
 
     @Autowired
-    public SlackDistributionDescriptorActionApi(final SlackDistributionTypeConverter databaseContentConverter, final SlackDistributionRepositoryAccessor repositoryAccessor,
-            final SlackChannel slackChannel, final SlackEventProducer slackEventProducer) {
-        super(databaseContentConverter, repositoryAccessor);
-        this.slackEventProducer = slackEventProducer;
-        this.slackChannel = slackChannel;
+    public SlackDistributionDescriptorActionApi(final SlackDistributionTypeConverter databaseContentConverter, final SlackDistributionRepositoryAccessor repositoryAccessor, final SlackChannel slackChannel) {
+        super(databaseContentConverter, repositoryAccessor, slackChannel);
     }
 
     @Override
@@ -62,12 +52,6 @@ public class SlackDistributionDescriptorActionApi extends DescriptorActionApi {
         if (StringUtils.isBlank(slackRestModel.getChannelName())) {
             fieldErrors.put("channelName", "A channel name is required.");
         }
-    }
-
-    @Override
-    public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
-        final SlackChannelEvent event = slackEventProducer.createChannelTestEvent((CommonDistributionConfig) testConfig.getRestModel());
-        slackChannel.sendMessage(event);
     }
 
 }

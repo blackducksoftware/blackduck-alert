@@ -13,7 +13,6 @@ import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.jms.core.JmsTemplate;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.channel.hipchat.HipChatChannelEvent;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.event.AlertEvent;
 import com.synopsys.integration.alert.common.event.ContentEvent;
