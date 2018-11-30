@@ -30,27 +30,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
-import com.synopsys.integration.alert.channel.hipchat.HipChatChannelEvent;
-import com.synopsys.integration.alert.channel.hipchat.HipChatEventProducer;
-import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.config.ChannelDistributionDescriptorActionApi;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.web.channel.model.HipChatDistributionConfig;
-import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.web.model.Config;
-import com.synopsys.integration.alert.web.model.TestConfigModel;
-import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class HipChatDistributionDescriptorActionApi extends DescriptorActionApi {
-    private final HipChatChannel hipChatChannel;
-    private final HipChatEventProducer hipChatEventProducer;
+public class HipChatDistributionDescriptorActionApi extends ChannelDistributionDescriptorActionApi {
 
     @Autowired
-    public HipChatDistributionDescriptorActionApi(final HipChatDistributionTypeConverter databaseContentConverter, final HipChatDistributionRepositoryAccessor repositoryAccessor,
-            final HipChatChannel hipChatChannel, final HipChatEventProducer hipChatEventProducer) {
-        super(databaseContentConverter, repositoryAccessor);
-        this.hipChatEventProducer = hipChatEventProducer;
-        this.hipChatChannel = hipChatChannel;
+    public HipChatDistributionDescriptorActionApi(final HipChatDistributionTypeConverter databaseContentConverter, final HipChatDistributionRepositoryAccessor repositoryAccessor, final HipChatChannel hipChatChannel) {
+        super(databaseContentConverter, repositoryAccessor, hipChatChannel);
     }
 
     @Override
@@ -61,12 +51,6 @@ public class HipChatDistributionDescriptorActionApi extends DescriptorActionApi 
         } else if (!StringUtils.isNumeric(hipChatRestModel.getRoomId())) {
             fieldErrors.put("roomId", "Room Id must be an integer value");
         }
-    }
-
-    @Override
-    public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
-        final HipChatChannelEvent event = hipChatEventProducer.createChannelTestEvent((CommonDistributionConfig) testConfig.getRestModel());
-        hipChatChannel.sendMessage(event);
     }
 
 }

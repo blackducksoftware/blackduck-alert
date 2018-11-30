@@ -50,18 +50,18 @@ import com.synopsys.integration.rest.request.Request;
 import com.synopsys.integration.rest.request.Response;
 
 // TODO this class should not be part of the hierarchy. It should be used as a helper class to help use rest and all channels should extends DistributionChannel
-public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntity, C extends DistributionChannelConfigEntity, E extends DistributionEvent> extends DistributionChannel<G, E> {
+public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntity, C extends DistributionChannelConfigEntity> extends DistributionChannel<G> {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final ChannelRestConnectionFactory channelRestConnectionFactory;
 
     public RestDistributionChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditUtility auditUtility, final JpaRepository<G, Long> globalRepository,
-            final Class eventClass, final ChannelRestConnectionFactory channelRestConnectionFactory) {
-        super(gson, alertProperties, blackDuckProperties, auditUtility, globalRepository, eventClass);
+        final ChannelRestConnectionFactory channelRestConnectionFactory) {
+        super(gson, alertProperties, blackDuckProperties, auditUtility, globalRepository);
         this.channelRestConnectionFactory = channelRestConnectionFactory;
     }
 
     @Override
-    public void sendMessage(final E event) throws IntegrationException {
+    public void sendMessage(final DistributionEvent event) throws IntegrationException {
         final G globalConfig = getGlobalConfigEntity();
         try (final RestConnection restConnection = channelRestConnectionFactory.createUnauthenticatedRestConnection(getApiUrl(globalConfig))) {
             final List<Request> requests = createRequests(globalConfig, event);
@@ -114,6 +114,6 @@ public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntit
 
     public abstract String getApiUrl(final G globalConfig);
 
-    public abstract List<Request> createRequests(G globalConfig, final E event) throws IntegrationException;
+    public abstract List<Request> createRequests(G globalConfig, final DistributionEvent event) throws IntegrationException;
 
 }

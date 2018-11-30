@@ -27,7 +27,6 @@ import com.synopsys.integration.alert.TestAlertProperties;
 import com.synopsys.integration.alert.TestBlackDuckProperties;
 import com.synopsys.integration.alert.channel.ChannelTest;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
-import com.synopsys.integration.alert.channel.slack.SlackChannelEvent;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
@@ -52,8 +51,8 @@ public class RestDistributionChannelTest extends ChannelTest {
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final Gson gson = new Gson();
         final RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity, DistributionEvent> restChannel = new RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity, DistributionEvent>(
-                gson,
-                testAlertProperties, blackDuckProperties, auditUtility, null, null, channelRestConnectionFactory) {
+            gson,
+            testAlertProperties, blackDuckProperties, auditUtility, null, null, channelRestConnectionFactory) {
 
             @Override
             public String getDistributionType() {
@@ -73,7 +72,7 @@ public class RestDistributionChannelTest extends ChannelTest {
         final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, Collections.emptyList());
         final SlackChannelEvent event = new SlackChannelEvent(RestConstants.formatDate(new Date()), "provider", "FORMAT",
-                content, 1L, "more garbage", "garbage", "garbage");
+            content, 1L, "more garbage", "garbage", "garbage");
         Exception thrownException = null;
         try {
             restChannel.sendAuditedMessage(event);
@@ -92,8 +91,8 @@ public class RestDistributionChannelTest extends ChannelTest {
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties);
         final Gson gson = new Gson();
         final RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity, DistributionEvent> restChannel = createMockRestDistributionChannel(gson, testAlertProperties, blackDuckProperties,
-                channelRestConnectionFactory,
-                request);
+            channelRestConnectionFactory,
+            request);
         final Request returnedRequest = restChannel.createPostMessageRequest("https://google.com", null, "{}");
 
         assertEquals(request.getUri(), returnedRequest.getUri());
@@ -113,8 +112,8 @@ public class RestDistributionChannelTest extends ChannelTest {
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties);
         final Gson gson = new Gson();
         final RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity, DistributionEvent> restChannel = createMockRestDistributionChannel(gson, testAlertProperties, blackDuckProperties,
-                channelRestConnectionFactory,
-                request);
+            channelRestConnectionFactory,
+            request);
         final Request returnedRequest = restChannel.createPostMessageRequest("https://google.com", null, null, "{}");
 
         assertEquals(request.getUri(), returnedRequest.getUri());
@@ -136,8 +135,8 @@ public class RestDistributionChannelTest extends ChannelTest {
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties);
         final Gson gson = new Gson();
         final RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity, DistributionEvent> restChannel = createMockRestDistributionChannel(gson, testAlertProperties, blackDuckProperties,
-                channelRestConnectionFactory,
-                request);
+            channelRestConnectionFactory,
+            request);
         IntegrationException thrown = null;
         try {
             restChannel.sendGenericRequest(restConnection, request);
@@ -154,11 +153,11 @@ public class RestDistributionChannelTest extends ChannelTest {
     }
 
     private RestDistributionChannel createMockRestDistributionChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final ChannelRestConnectionFactory channelRestConnectionFactory,
-            final Request request) {
+        final Request request) {
         final RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity, DistributionEvent> restChannel = new RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity, DistributionEvent>(
-                gson,
-                alertProperties, blackDuckProperties, null, null,
-                null, channelRestConnectionFactory) {
+            gson,
+            alertProperties, blackDuckProperties, null, null,
+            null, channelRestConnectionFactory) {
 
             @Override
             public String getDistributionType() {

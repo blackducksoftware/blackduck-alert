@@ -27,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
-import com.synopsys.integration.alert.channel.slack.SlackEventProducer;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.database.channel.slack.SlackDistributionRepositoryAccessor;
 
@@ -36,9 +35,8 @@ public class SlackDescriptor extends ChannelDescriptor {
 
     @Autowired
     public SlackDescriptor(final SlackChannel channelListener, final SlackDistributionDescriptorActionApi distributionRestApi,
-        final SlackDistributionRepositoryAccessor slackDistributionRepositoryAccessor, final SlackEventProducer slackEventProducer,
-        final SlackUIConfig slackUIConfig) {
-        super(SlackChannel.COMPONENT_NAME, SlackChannel.COMPONENT_NAME, channelListener, distributionRestApi, slackDistributionRepositoryAccessor, slackEventProducer, slackUIConfig);
+        final SlackDistributionRepositoryAccessor slackDistributionRepositoryAccessor, final SlackUIConfig slackUIConfig) {
+        super(SlackChannel.COMPONENT_NAME, SlackChannel.COMPONENT_NAME, channelListener, distributionRestApi, slackDistributionRepositoryAccessor, slackUIConfig);
     }
 
 }
