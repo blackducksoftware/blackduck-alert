@@ -16,9 +16,7 @@
             <column name="ID" type="BIGINT(19)" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="DESCRIPTOR_FIELDS_KEY"/>
             </column>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)">
-                <constraints foreignKeyName="FK_DESCRIPTOR_FIELD" referencedTableName="REGISTERED_DESCRIPTORS" referencedColumnNames="ID" nullable="false" deleteCascade="true"/>
-            </column>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)"/>
             <column name="SOURCE_KEY" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
@@ -26,29 +24,63 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="DESCRIPTOR_FIELDS"
+                baseColumnNames="DESCRIPTOR_ID"
+                constraintName="FK_DESCRIPTOR_FIELD"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="REGISTERED_DESCRIPTORS"
+                referencedColumnNames="ID"
+                deleteCascade="true"
+        />
     </changeSet>
     <changeSet author="gkillough" id="1543499878547-3">
         <createTable tableName="DESCRIPTOR_CONFIGS" schemaName="ALERT">
             <column name="ID" type="BIGINT(19)" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="DESCRIPTOR_CONFIGS_KEY"/>
             </column>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)">
-                <constraints foreignKeyName="FK_DESCRIPTOR_CONFIG" referencedTableName="REGISTERED_DESCRIPTORS" referencedColumnNames="ID" nullable="false" deleteCascade="true"/>
-            </column>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)"/>
         </createTable>
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="DESCRIPTOR_CONFIGS"
+                baseColumnNames="DESCRIPTOR_ID"
+                constraintName="FK_DESCRIPTOR_CONFIG"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="REGISTERED_DESCRIPTORS"
+                referencedColumnNames="ID"
+                deleteCascade="true"
+        />
     </changeSet>
     <changeSet author="gkillough" id="1543499878547-4">
         <createTable tableName="FIELD_VALUES" schemaName="ALERT">
             <column name="ID" type="BIGINT(19)">
                 <constraints primaryKey="true" primaryKeyName="CONFIG_VALUES_KEY"/>
             </column>
-            <column name="CONFIG_ID" type="BIGINT(19)">
-                <constraints foreignKeyName="FK_CONFIG_VALUE" referencedTableName="DESCRIPTOR_CONFIGS" referencedColumnNames="ID" nullable="false" deleteCascade="true"/>
-            </column>
-            <column name="FIELD_ID" type="BIGINT(19)">
-                <constraints foreignKeyName="FK_DESCRIPTOR_FIELD_VALUE" referencedTableName="DESCRIPTOR_FIELDS" referencedColumnNames="ID" nullable="false" deleteCascade="true"/>
-            </column>
+            <column name="CONFIG_ID" type="BIGINT(19)"/>
+            <column name="FIELD_ID" type="BIGINT(19)"/>
             <column name="FIELD_VALUE" type="VARCHAR(255)"/>
         </createTable>
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="FIELD_VALUES"
+                baseColumnNames="CONFIG_ID"
+                constraintName="FK_CONFIG_VALUE"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="DESCRIPTOR_CONFIGS"
+                referencedColumnNames="ID"
+                deleteCascade="true"
+        />
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="FIELD_VALUES"
+                baseColumnNames="FIELD_ID"
+                constraintName="FK_DESCRIPTOR_FIELD_VALUE"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="DESCRIPTOR_FIELDS"
+                referencedColumnNames="ID"
+                deleteCascade="true"
+        />
     </changeSet>
 </databaseChangeLog>

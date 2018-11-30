@@ -29,10 +29,11 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.database.entity.descriptor.RegisteredDescriptorsEntity;
+import com.synopsys.integration.alert.database.entity.descriptor.RegisteredDescriptorEntity;
 
 @Component
-public interface RegisteredDescriptorsRepository extends JpaRepository<RegisteredDescriptorsEntity, Long> {
-    Optional<RegisteredDescriptorsEntity> findFirstByName(final String descriptorName);
-    List<RegisteredDescriptorsEntity> findByType(final String descriptorType);
+public interface RegisteredDescriptorRepository extends JpaRepository<RegisteredDescriptorEntity, Long> {
+    Optional<RegisteredDescriptorEntity> findFirstByName(final String descriptorName);
+
+    List<RegisteredDescriptorEntity> findByType(final String descriptorType);
 }

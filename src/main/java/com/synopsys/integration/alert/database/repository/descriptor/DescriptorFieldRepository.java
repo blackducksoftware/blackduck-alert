@@ -24,13 +24,16 @@
 package com.synopsys.integration.alert.database.repository.descriptor;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.database.entity.descriptor.FieldValuesEntity;
+import com.synopsys.integration.alert.database.entity.descriptor.DescriptorFieldEntity;
 
 @Component
-public interface FieldValuesRepository extends JpaRepository<FieldValuesEntity, Long> {
-    List<FieldValuesEntity> findByConfigId(final Long configId);
+public interface DescriptorFieldRepository extends JpaRepository<DescriptorFieldEntity, Long> {
+    Optional<DescriptorFieldEntity> findFirstByDescriptorIdAndKey(final Long descriptorId, final String fieldKey);
+
+    List<DescriptorFieldEntity> findByDescriptorId(final Long descriptorId);
 }
