@@ -128,7 +128,12 @@ public class DescriptorAccessor {
         if (descriptorField == null) {
             throw new AlertDatabaseConstraintException("The descriptor field cannot be null");
         }
-        final DescriptorFieldEntity newDescriptorFieldEntity = new DescriptorFieldEntity(descriptorId, descriptorField.getKey(), descriptorField.getSensitive());
+        final String fieldKey = descriptorField.getKey();
+        final Optional<DescriptorFieldEntity> storedEntity = descriptorFieldRepository.findFirstByDescriptorIdAndKey(descriptorId, fieldKey);
+        if (storedEntity.isPresent()) {
+            throw new AlertDatabaseConstraintException("This field cannot be added because it already exists");
+        }
+        final DescriptorFieldEntity newDescriptorFieldEntity = new DescriptorFieldEntity(descriptorId, fieldKey, descriptorField.getSensitive());
         final DescriptorFieldEntity createdDescriptorFieldEntity = descriptorFieldRepository.save(newDescriptorFieldEntity);
         return new DescriptorFieldModel(createdDescriptorFieldEntity.getKey(), createdDescriptorFieldEntity.getSensitive());
     }
