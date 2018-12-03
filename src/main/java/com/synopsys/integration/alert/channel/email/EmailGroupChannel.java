@@ -40,15 +40,15 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.DistributionChannel;
+import com.synopsys.integration.alert.channel.email.descriptor.EmailGlobalUIConfig;
 import com.synopsys.integration.alert.channel.email.template.EmailTarget;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.database.audit.AuditUtility;
-import com.synopsys.integration.alert.database.channel.email.EmailGlobalConfigEntity;
-import com.synopsys.integration.alert.database.channel.email.EmailGlobalRepository;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserEntity;
@@ -56,13 +56,14 @@ import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuck
 import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelation;
 import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelationRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.web.channel.model.EmailDistributionConfig;
 import com.synopsys.integration.alert.web.channel.model.EmailGlobalConfig;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
+//FIXME fix emails with either their own table or reference their own hidden fields
 @Component(value = EmailGroupChannel.COMPONENT_NAME)
-public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEntity> {
+public class EmailGroupChannel extends DistributionChannel {
+    public static final String KEY_EMAIL_ADDRESSES = "channel.email.addresses";
     public final static String COMPONENT_NAME = "channel_email";
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -72,12 +73,13 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
     private final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor;
 
     // TODO we will pass a ValueId through the email configuration. This will reference all emails that should be sent in this case. We'll Access the DB here to retrieve this info.
+    // This is still up for debate and all options will need to be considered
 
     @Autowired
-    public EmailGroupChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditUtility auditUtility, final EmailGlobalRepository emailRepository,
+    public EmailGroupChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditUtility auditUtility,
         final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor, final UserProjectRelationRepositoryAccessor userProjectRelationRepositoryAccessor,
         final BlackDuckUserRepositoryAccessor blackDuckUserRepositoryAccessor) {
-        super(gson, alertProperties, blackDuckProperties, auditUtility, emailRepository);
+        super(EmailGroupChannel.COMPONENT_NAME, gson, alertProperties, blackDuckProperties, auditUtility);
 
         this.blackDuckProjectRepositoryAccessor = blackDuckProjectRepositoryAccessor;
         this.userProjectRelationRepositoryAccessor = userProjectRelationRepositoryAccessor;
@@ -85,25 +87,23 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
     }
 
     @Override
-    public String getDistributionType() {
-        return EmailGroupChannel.COMPONENT_NAME;
-    }
-
-    @Override
     public void sendMessage(final DistributionEvent event) throws IntegrationException {
-        final EmailGlobalConfigEntity globalConfigEntity = getGlobalConfigEntity();
-        if (!isValidGlobalConfigEntity(globalConfigEntity)) {
+        final FieldAccessor fieldAccessor = event.getFieldAccessor();
+
+        final String host = fieldAccessor.getString(EmailGlobalUIConfig.KEY_HOST);
+        final String from = fieldAccessor.getString(EmailGlobalUIConfig.KEY_FROM);
+
+        if (!isValidGlobalConfigEntity(host, from)) {
             throw new AlertException("ERROR: Missing global config.");
         }
 
-        final EmailDistributionConfig emailDistributionConfig = (EmailDistributionConfig) event.getCommonDistributionConfig();
         final Set<String> emailAddresses = populateEmails(emailDistributionConfig, event.getContent().getValue());
         emailDistributionConfig.setEmailAddresses(emailAddresses);
         final EmailProperties emailProperties = new EmailProperties(globalConfigEntity);
         sendMessage(emailProperties, emailDistributionConfig.getEmailAddresses(), emailDistributionConfig.getEmailSubjectLine(), event.getProvider(), event.getFormatType(), event.getContent(), "ProjectName");
     }
 
-    private Set<String> populateEmails(final EmailDistributionConfig emailDistributionConfig, final String projectName) {
+    private Set<String> populateEmails(final String projectName) {
         Set<String> emailAddresses = emailDistributionConfig.getEmailAddresses();
         if (null != emailAddresses && !emailAddresses.isEmpty()) {
             return emailAddresses;
@@ -111,7 +111,7 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
         final BlackDuckProjectEntity projectEntity = blackDuckProjectRepositoryAccessor.findByName(projectName);
         emailAddresses = getEmailAddressesForProject(projectEntity, emailDistributionConfig.getProjectOwnerOnly());
         if (emailAddresses.isEmpty()) {
-            logger.error("Could not find any email addresses for project: {}. Job: {}", projectName, emailDistributionConfig.getName());
+            logger.error("Could not find any email addresses for project: {}", projectName);
         }
         return emailAddresses;
     }
@@ -162,8 +162,8 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
         }
     }
 
-    private boolean isValidGlobalConfigEntity(final EmailGlobalConfigEntity globalConfigEntity) {
-        return globalConfigEntity != null && StringUtils.isNotBlank(globalConfigEntity.getMailSmtpHost()) && StringUtils.isNotBlank(globalConfigEntity.getMailSmtpFrom());
+    private boolean isValidGlobalConfigEntity(final String smtpHost, final String smtpFrom) {
+        return StringUtils.isNotBlank(smtpHost) && StringUtils.isNotBlank(smtpFrom);
     }
 
     public Set<String> getEmailAddressesForProject(final BlackDuckProjectEntity blackDuckProjectEntity, final boolean projectOwnerOnly) {

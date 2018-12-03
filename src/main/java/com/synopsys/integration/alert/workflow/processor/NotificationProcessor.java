@@ -32,9 +32,9 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.channel.event.NotificationToChannelEventConverter;
+import com.synopsys.integration.alert.common.configuration.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
-import com.synopsys.integration.alert.database.channel.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 
 @Component

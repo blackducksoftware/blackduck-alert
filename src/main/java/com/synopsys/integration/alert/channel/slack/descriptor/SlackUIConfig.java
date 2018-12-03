@@ -36,6 +36,9 @@ import com.synopsys.integration.alert.common.descriptor.config.field.TextInputCo
 
 @Component
 public class SlackUIConfig extends UIConfig {
+    public static final String KEY_WEBHOOK = "channel.slack.webhook";
+    public static final String KEY_CHANNEL_NAME = "channel.slack.channel.name";
+    public static final String KEY_CHANNEL_USERNAME = "channel.slack.channel.username";
 
     @Override
     public UIComponent generateUIComponent() {
@@ -43,9 +46,9 @@ public class SlackUIConfig extends UIConfig {
     }
 
     public List<ConfigField> setupFields() {
-        final ConfigField webhook = new TextInputConfigField("webhook", "Webhook", true, false);
-        final ConfigField channelUsername = new TextInputConfigField("channelUsername", "Channel Username", false, false);
-        final ConfigField channelName = new TextInputConfigField("channelName", "Channel Name", true, false);
+        final ConfigField webhook = new TextInputConfigField(KEY_WEBHOOK, "Webhook", true, false);
+        final ConfigField channelUsername = new TextInputConfigField(KEY_CHANNEL_USERNAME, "Channel Username", false, false);
+        final ConfigField channelName = new TextInputConfigField(KEY_CHANNEL_NAME, "Channel Name", true, false);
         return Arrays.asList(webhook, channelUsername, channelName);
     }
 
