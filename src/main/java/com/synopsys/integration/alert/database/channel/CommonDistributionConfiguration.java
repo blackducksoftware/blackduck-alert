@@ -14,7 +14,7 @@ import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.database.api.descriptor.ConfigurationAccessor.ConfigurationModel;
 import com.synopsys.integration.alert.database.api.descriptor.ConfigurationFieldModel;
 
-public class CommonConfigurationModel {
+public class CommonDistributionConfiguration {
     public static final String KEY_NAME = "channel.common.name";
     public static final String KEY_CHANNEL_NAME = "channel.common.channel.name";
     public static final String KEY_PROVIDER_NAME = "channel.common.provider.name";
@@ -35,7 +35,7 @@ public class CommonConfigurationModel {
     // FIXME this field is here temporarily as there is some tight coupling to the BD provider when filtering (NotificationFilter).
     private final Boolean filterByProject;
 
-    public CommonConfigurationModel(final ConfigurationModel configurationModel) {
+    public CommonDistributionConfiguration(final ConfigurationModel configurationModel) {
         configurationFieldModelMap = configurationModel.getCopyOfKeyToFieldMap();
 
         id = configurationModel.getConfigurationId();

@@ -50,12 +50,12 @@ public class JobConfigReader {
     }
 
     @Transactional
-    public List<CommonConfigurationModel> getPopulatedConfigs() {
+    public List<CommonDistributionConfiguration> getPopulatedConfigs() {
         final String descriptorType = DescriptorType.CHANNEL.name();
         try {
             final List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationsByType(descriptorType);
             return configurationModels.stream()
-                       .map(configurationModel -> new CommonConfigurationModel(configurationModel))
+                       .map(configurationModel -> new CommonDistributionConfiguration(configurationModel))
                        .collect(Collectors.toList());
         } catch (final AlertDatabaseConstraintException e) {
             logger.error("Was not able to retrieve configurations", e);
@@ -64,14 +64,14 @@ public class JobConfigReader {
     }
 
     @Transactional
-    public Optional<CommonConfigurationModel> getPopulatedConfig(final Long configId) {
+    public Optional<CommonDistributionConfiguration> getPopulatedConfig(final Long configId) {
         if (null == configId) {
             return Optional.empty();
         }
 
         try {
             final ConfigurationModel configurationModel = configurationAccessor.getConfigurationById(configId);
-            return Optional.of(new CommonConfigurationModel(configurationModel));
+            return Optional.of(new CommonDistributionConfiguration(configurationModel));
         } catch (final AlertDatabaseConstraintException e) {
             return Optional.empty();
         }
