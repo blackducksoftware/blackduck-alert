@@ -80,6 +80,10 @@ public class ConfigurationFieldModel extends Stringable {
         return Collections.emptySet();
     }
 
+    public boolean isSet() {
+        return fieldValues != null;
+    }
+
     @Override
     public boolean equals(final Object that) {
         return EqualsBuilder.reflectionEquals(this, that, "fieldValues");
