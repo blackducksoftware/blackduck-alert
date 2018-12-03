@@ -2,7 +2,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
     <changeSet author="psantos" id="1543502711058-1">
         <createTable tableName="ROLES" schemaName="ALERT">
-            <column name="ID" type="BIGINT(19)">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
                 <constraints primaryKey="true" primaryKeyName="ROLE_KEY"/>
             </column>
             <column name="ROLENAME" type="VARCHAR(255)"/>
@@ -10,7 +10,7 @@
     </changeSet>
     <changeSet author="psantos" id="1543502711058-2">
         <createTable tableName="USERS" schemaName="ALERT">
-            <column name="ID" type="BIGINT(19)">
+            <column autoIncrement="true" name="ID" type="BIGINT(19)">
                 <constraints primaryKey="true" primaryKeyName="USER_KEY"/>
             </column>
             <column name="USERNAME" type="VARCHAR(255)">
@@ -39,7 +39,7 @@
         <insert tableName="USERS" schemaName="ALERT">
             <column name="id" value="1"/>
             <column name="USERNAME" value="sysadmin"/>
-            <column name="PASSWORD" value="blackduck"/>
+            <column name="PASSWORD" value="$2a$16$Q3wfnhwA.1Qm3Tz3IkqDC.743C5KI7nJIuYlZ4xKXre/WBYpjUEFy"/>
         </insert>
     </changeSet>
     <changeSet author="psantos" id="1543502711058-6">

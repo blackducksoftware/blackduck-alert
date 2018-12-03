@@ -47,6 +47,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -132,9 +134,15 @@ public class Application {
     }
 
     @Bean
-    public DaoAuthenticationProvider alertDatabaseAuthProvider() {
+    public DaoAuthenticationProvider alertDatabaseAuthProvider(final PasswordEncoder defaultPasswordEncoder) {
         final DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setUserDetailsService(userDatabaseService);
+        provider.setPasswordEncoder(defaultPasswordEncoder);
         return provider;
+    }
+
+    @Bean
+    public PasswordEncoder defaultPasswordEncoder() {
+        return new BCryptPasswordEncoder(16);
     }
 }

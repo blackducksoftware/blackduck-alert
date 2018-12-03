@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.database.api.user;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,9 +12,13 @@ public class UserModel {
     private final String password;
     private final List<GrantedAuthority> roles;
 
-    public static final UserModel of(final String userName, final String password, final List<String> roles) {
+    public static final UserModel of(final String userName, final String password, final Collection<String> roles) {
         final List<GrantedAuthority> roleAuthorities = roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
         return new UserModel(userName, password, roleAuthorities);
+    }
+
+    public static final UserModel of(final String userName, final String password, final List<GrantedAuthority> roles) {
+        return new UserModel(userName, password, roles);
     }
 
     private UserModel(final String name, final String password, final List<GrantedAuthority> roles) {

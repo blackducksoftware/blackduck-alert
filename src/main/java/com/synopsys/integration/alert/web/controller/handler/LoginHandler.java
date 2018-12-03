@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
@@ -74,19 +75,22 @@ public class LoginHandler extends ControllerHandler {
 
     public ResponseEntity<String> authenticateUser(final HttpServletRequest request, final HttpServletResponse response, final LoginConfig loginConfig) {
         final IntLogger logger = new PrintStreamIntLogger(System.out, LogLevel.INFO);
-
+        ResponseEntity<String> responseEntity;
         try {
-            if (loginActions.authenticateUser(loginConfig, logger)) {
+            if (loginActions.authenticateUser(loginConfig)) {
                 final CsrfToken token = csrfTokenRepository.generateToken(request);
                 csrfTokenRepository.saveToken(token, request, response);
                 response.setHeader(token.getHeaderName(), token.getToken());
-                return createResponse(HttpStatus.OK, "{\"message\":\"Success\"}");
+                responseEntity = createResponse(HttpStatus.OK, "{\"message\":\"Success\"}");
+            } else {
+                responseEntity = createResponse(HttpStatus.UNAUTHORIZED, "User not authorized");
             }
-            return createResponse(HttpStatus.UNAUTHORIZED, "User not administrator");
-        } catch (final Exception e) {
-            logger.error(e.getMessage(), e);
-            return createResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        } catch (final BadCredentialsException ex) {
+            responseEntity = createResponse(HttpStatus.UNAUTHORIZED, "User not authorized");
+        } catch (final Exception ex) {
+            logger.error(ex.getMessage(), ex);
+            responseEntity = createResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
         }
+        return responseEntity;
     }
-
 }
