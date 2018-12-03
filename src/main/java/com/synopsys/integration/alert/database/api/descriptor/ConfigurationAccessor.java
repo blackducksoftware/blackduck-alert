@@ -68,15 +68,27 @@ public class ConfigurationAccessor {
         this.fieldValueRepository = fieldValueRepository;
     }
 
+    public Optional<ConfigurationModel> getConfigurationById(final Long id) throws AlertDatabaseConstraintException {
+        if (id == null) {
+            throw new AlertDatabaseConstraintException("The config id cannot be null");
+        }
+        final Optional<DescriptorConfigEntity> optionalDescriptorConfigEntity = descriptorConfigsRepository.findById(id);
+        if (optionalDescriptorConfigEntity.isPresent()) {
+            final DescriptorConfigEntity descriptorConfigEntity = optionalDescriptorConfigEntity.get();
+            return Optional.of(createConfigModel(descriptorConfigEntity.getDescriptorId(), descriptorConfigEntity.getId()));
+        }
+        return Optional.empty();
+    }
+
     public List<ConfigurationModel> getConfigurationsByName(final String descriptorName) throws AlertDatabaseConstraintException {
         if (StringUtils.isEmpty(descriptorName)) {
             throw new AlertDatabaseConstraintException("Descriptor name cannot be empty");
         }
         final Optional<RegisteredDescriptorEntity> registeredDescriptorEntity = registeredDescriptorRepository.findFirstByName(descriptorName);
         if (registeredDescriptorEntity.isPresent()) {
-            return getConfigs(Collections.singleton(registeredDescriptorEntity.get()));
+            return createConfigModels(Collections.singleton(registeredDescriptorEntity.get()));
         }
-        return getConfigs(Collections.emptyList());
+        return createConfigModels(Collections.emptyList());
     }
 
     public List<ConfigurationModel> getConfigurationsByType(final String descriptorType) throws AlertDatabaseConstraintException {
@@ -84,7 +96,7 @@ public class ConfigurationAccessor {
             throw new AlertDatabaseConstraintException("Descriptor type cannot be empty");
         }
         final List<RegisteredDescriptorEntity> registeredDescriptorEntities = registeredDescriptorRepository.findByType(descriptorType);
-        return getConfigs(registeredDescriptorEntities);
+        return createConfigModels(registeredDescriptorEntities);
     }
 
     /**
@@ -104,7 +116,18 @@ public class ConfigurationAccessor {
 
         final ConfigurationModel createdConfig = new ConfigurationModel(descriptorId, savedDescriptorConfig.getId());
         if (configuredFields != null && !configuredFields.isEmpty()) {
-            configuredFields.forEach(configuredField -> createdConfig.configuredFields.put(configuredField.getFieldKey(), configuredField));
+            for (final ConfigurationFieldModel configuredField : configuredFields) {
+                if (configuredField.isSet()) {
+                    final DescriptorFieldEntity associatedField = descriptorFieldRepository
+                                                                          .findFirstByDescriptorIdAndKey(createdConfig.getDescriptorId(), configuredField.getFieldKey())
+                                                                          .orElseThrow(() -> new AlertDatabaseConstraintException("The config is attempting to set a field not associated with its descriptor"));
+                    for (final String value : configuredField.getFieldValues()) {
+                        final FieldValueEntity newFieldValueEntity = new FieldValueEntity(createdConfig.getConfigurationId(), associatedField.getId(), value);
+                        fieldValueRepository.save(newFieldValueEntity);
+                    }
+                }
+                createdConfig.configuredFields.put(configuredField.getFieldKey(), configuredField);
+            }
         }
         return createdConfig;
     }
@@ -152,32 +175,36 @@ public class ConfigurationAccessor {
         descriptorConfigsRepository.deleteById(descriptorConfigId);
     }
 
-    // TODO should we replace this with a JOIN?
-    private List<ConfigurationModel> getConfigs(final Collection<RegisteredDescriptorEntity> descriptors) throws AlertDatabaseConstraintException {
+    private List<ConfigurationModel> createConfigModels(final Collection<RegisteredDescriptorEntity> descriptors) throws AlertDatabaseConstraintException {
         final List<ConfigurationModel> configs = new ArrayList<>();
         for (final RegisteredDescriptorEntity descriptorEntity : descriptors) {
             final List<DescriptorConfigEntity> descriptorConfigEntities = descriptorConfigsRepository.findByDescriptorId(descriptorEntity.getId());
             for (final DescriptorConfigEntity descriptorConfigEntity : descriptorConfigEntities) {
-                final ConfigurationModel newModel = new ConfigurationModel(descriptorEntity.getId(), descriptorConfigEntity.getId());
-                final List<FieldValueEntity> fieldValueEntities = fieldValueRepository.findByConfigId(descriptorConfigEntity.getId());
-                for (final FieldValueEntity fieldValueEntity : fieldValueEntities) {
-                    final DescriptorFieldEntity descriptorFieldEntity = descriptorFieldRepository
-                                                                                .findById(fieldValueEntity.getFieldId())
-                                                                                .orElseThrow(() -> new AlertDatabaseConstraintException("Field id cannot be null"));
-                    final String fieldKey = descriptorFieldEntity.getKey();
-                    final ConfigurationFieldModel fieldModel;
-                    if (descriptorFieldEntity.getSensitive()) {
-                        fieldModel = ConfigurationFieldModel.createSensitive(fieldKey);
-                    } else {
-                        fieldModel = ConfigurationFieldModel.create(fieldKey);
-                    }
-                    fieldModel.setFieldValue(fieldValueEntity.getValue());
-                    newModel.put(fieldModel);
-                }
+                final ConfigurationModel newModel = createConfigModel(descriptorConfigEntity.getDescriptorId(), descriptorConfigEntity.getId());
                 configs.add(newModel);
             }
         }
         return configs;
+    }
+
+    private ConfigurationModel createConfigModel(final Long descriptorId, final Long configId) throws AlertDatabaseConstraintException {
+        final ConfigurationModel newModel = new ConfigurationModel(descriptorId, configId);
+        final List<FieldValueEntity> fieldValueEntities = fieldValueRepository.findByConfigId(configId);
+        for (final FieldValueEntity fieldValueEntity : fieldValueEntities) {
+            final DescriptorFieldEntity descriptorFieldEntity = descriptorFieldRepository
+                                                                        .findById(fieldValueEntity.getFieldId())
+                                                                        .orElseThrow(() -> new AlertDatabaseConstraintException("Field id cannot be null"));
+            final String fieldKey = descriptorFieldEntity.getKey();
+            final ConfigurationFieldModel fieldModel;
+            if (descriptorFieldEntity.getSensitive()) {
+                fieldModel = ConfigurationFieldModel.createSensitive(fieldKey);
+            } else {
+                fieldModel = ConfigurationFieldModel.create(fieldKey);
+            }
+            fieldModel.setFieldValue(fieldValueEntity.getValue());
+            newModel.put(fieldModel);
+        }
+        return newModel;
     }
 
     private Long getDescriptorIdOrThrowException(final String descriptorName) throws AlertDatabaseConstraintException {
