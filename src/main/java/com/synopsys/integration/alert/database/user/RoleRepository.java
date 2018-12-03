@@ -23,6 +23,7 @@
  */
 package com.synopsys.integration.alert.database.user;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -32,4 +33,7 @@ public interface RoleRepository extends JpaRepository<RoleEntity, Long> {
 
     @Query("SELECT entity.roleName FROM RoleEntity entity WHERE entity.id IN (?1)")
     List<String> getRoleNames(final List<Long> roleIds);
+
+    @Query("SELECT entity FROM RoleEntity entity WHERE entity.roleName IN (?1)")
+    List<RoleEntity> findRoleEntitiesByRoleName(final Collection<String> roleIds);
 }

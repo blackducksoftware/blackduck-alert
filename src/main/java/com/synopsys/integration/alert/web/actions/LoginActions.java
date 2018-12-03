@@ -28,6 +28,7 @@ import java.util.Collections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
@@ -35,7 +36,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.web.model.LoginConfig;
-import com.synopsys.integration.log.IntLogger;
 
 @Component
 public class LoginActions {
@@ -47,7 +47,7 @@ public class LoginActions {
         this.alertDatabaseAuthProvider = alertDatabaseAuthProvider;
     }
 
-    public boolean authenticateUser(final LoginConfig loginConfig, final IntLogger logger) {
+    public boolean authenticateUser(final LoginConfig loginConfig) throws BadCredentialsException {
         final Authentication pendingAuthentication = new UsernamePasswordAuthenticationToken(loginConfig.getBlackDuckUsername(), loginConfig.getBlackDuckPassword(), Collections.emptyList());
         final Authentication authentication = alertDatabaseAuthProvider.authenticate(pendingAuthentication);
         SecurityContextHolder.getContext().setAuthentication(authentication);

@@ -35,6 +35,9 @@ public interface UserRoleRepository extends JpaRepository<UserRoleRelation, User
     // find all role ids for a user
     List<UserRoleRelation> findAllByUserId(final Long userId);
 
-    // fina all user ids for a role
+    // find all user ids for a role
     List<UserRoleRelation> findAllByRoleId(final Long roleId);
+
+    // delete the relations by user id
+    void deleteAllByUserId(final Long userId);
 }

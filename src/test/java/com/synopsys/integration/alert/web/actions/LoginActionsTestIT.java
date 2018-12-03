@@ -11,71 +11,89 @@
  */
 package com.synopsys.integration.alert.web.actions;
 
-import java.io.IOException;
+import static junit.framework.TestCase.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 
-import org.junit.After;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Optional;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 
-import com.synopsys.integration.alert.OutputLogger;
+import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.TestProperties;
 import com.synopsys.integration.alert.TestPropertyKey;
+import com.synopsys.integration.alert.database.api.user.UserAccessor;
+import com.synopsys.integration.alert.database.user.UserEntity;
+import com.synopsys.integration.alert.database.user.UserRepository;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
-import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.test.annotation.HubConnectionTest;
 
 @Category(HubConnectionTest.class)
-public class LoginActionsTestIT {
+public class LoginActionsTestIT extends AlertIntegrationTest {
     private final Logger logger = LoggerFactory.getLogger(LoginActionsTestIT.class);
     private final MockLoginRestModel mockLoginRestModel = new MockLoginRestModel();
     private final TestProperties properties = new TestProperties();
+    @Autowired
+    private DaoAuthenticationProvider alertDatabaseAuthProvider;
+    @Autowired
+    private UserAccessor userAccessor;
 
-    private OutputLogger outputLogger;
+    @Autowired
+    private UserRepository userRepository;
 
     @Before
     public void init() throws IOException {
-        outputLogger = new OutputLogger();
 
         mockLoginRestModel.setBlackDuckUsername(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_USERNAME));
         mockLoginRestModel.setBlackDuckPassword(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PASSWORD));
     }
 
-    @After
-    public void cleanup() throws IOException {
-        outputLogger.cleanup();
+    @Test
+    public void authenticateUserTestIT() {
+        final LoginActions loginActions = new LoginActions(alertDatabaseAuthProvider);
+        final boolean userAuthenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel());
+
+        assertTrue(userAuthenticated);
     }
 
     @Test
-    public void authenticateUserTestIT() throws IntegrationException {
-        //        final LoginActions loginActions = new LoginActions(new TestBlackDuckProperties(new TestAlertProperties()));
-        //        final boolean userAuthenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel(), new Slf4jIntLogger(logger));
-        //
-        //        Assert.assertTrue(userAuthenticated);
+    public void testAuthenticateUserFailIT() throws IOException {
+        mockLoginRestModel.setBlackDuckUsername(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_ACTIVE_USER));
+        final LoginActions loginActions = new LoginActions(alertDatabaseAuthProvider);
+        final MockLoginRestModel badRestModel = new MockLoginRestModel();
+        badRestModel.setBlackDuckPassword("badpassword");
+        try {
+            loginActions.authenticateUser(badRestModel.createRestModel());
+            fail();
+        } catch (final BadCredentialsException ex) {
+
+        }
     }
 
     @Test
-    public void testAuthenticateUserFailIT() throws IntegrationException, IOException {
-        //        mockLoginRestModel.setBlackDuckUsername(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_ACTIVE_USER));
-        //        final LoginActions loginActions = new LoginActions(new TestBlackDuckProperties(new TestAlertProperties()));
-        //        final MockLoginRestModel badRestModel = new MockLoginRestModel();
-        //        badRestModel.setBlackDuckPassword("badpassword");
-        //        final boolean userAuthenticated = loginActions.authenticateUser(badRestModel.createRestModel(), new Slf4jIntLogger(logger));
-        //
-        //        assertFalse(userAuthenticated);
-        //        assertTrue(outputLogger.isLineContainingText("User not authenticated"));
-    }
+    public void testAuthenticateUserRoleFailIT() throws IOException {
+        // add a user test then delete a user.
+        final String userName = properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_ACTIVE_USER);
+        mockLoginRestModel.setBlackDuckUsername(userName);
+        final LoginActions loginActions = new LoginActions(alertDatabaseAuthProvider);
+        userAccessor.addUser(userName, mockLoginRestModel.getBlackDuckPassword());
+        final boolean userAuthenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel());
 
-    @Test
-    public void testAuthenticateUserRoleFailIT() throws IntegrationException, IOException {
-        //        mockLoginRestModel.setBlackDuckUsername(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_ACTIVE_USER));
-        //        final LoginActions loginActions = new LoginActions(new TestBlackDuckProperties(new TestAlertProperties()));
-        //
-        //        final boolean userAuthenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel(), new Slf4jIntLogger(logger));
-        //
-        //        assertFalse(userAuthenticated);
-        //        assertTrue(outputLogger.isLineContainingText("User role not authenticated"));
+        assertFalse(userAuthenticated);
+
+        final Optional<UserEntity> userEntity = userRepository.findByUserName(userName);
+        userEntity.ifPresent(entity -> {
+            userAccessor.assignRoles(entity.getUserName(), Collections.emptySet());
+            userRepository.delete(entity);
+        });
     }
 }
