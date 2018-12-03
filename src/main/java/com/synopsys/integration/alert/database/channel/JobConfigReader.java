@@ -71,8 +71,8 @@ public class JobConfigReader {
         }
 
         try {
-            final ConfigurationModel configurationModel = configurationAccessor.getConfigurationById(configId);
-            return Optional.of(new CommonDistributionConfiguration(configurationModel));
+            final ConfigurationModel configurationModel = configurationAccessor.getConfigurationById(configId).orElse(null);
+            return Optional.ofNullable(new CommonDistributionConfiguration(configurationModel));
         } catch (final AlertDatabaseConstraintException e) {
             return Optional.empty();
         }
