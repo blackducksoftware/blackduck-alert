@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.channel.event.NotificationToChannelEventConverter;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
-import com.synopsys.integration.alert.database.channel.CommonConfigurationModel;
+import com.synopsys.integration.alert.database.channel.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 
 @Component
@@ -49,13 +49,13 @@ public class NotificationProcessor {
     }
 
     public List<DistributionEvent> processNotifications(final FrequencyType frequencyType, final List<NotificationContent> notificationList) {
-        final Map<CommonConfigurationModel, List<AggregateMessageContent>> messageContentList = messageContentAggregator.processNotifications(frequencyType, notificationList);
+        final Map<CommonDistributionConfiguration, List<AggregateMessageContent>> messageContentList = messageContentAggregator.processNotifications(frequencyType, notificationList);
         final List<DistributionEvent> notificationEvents = notificationToEventConverter.convertToEvents(messageContentList);
         return notificationEvents;
     }
 
-    public List<DistributionEvent> processNotifications(final CommonConfigurationModel commonDistributionConfig, final List<NotificationContent> notificationList) {
-        final Map<CommonConfigurationModel, List<AggregateMessageContent>> messageContentList = messageContentAggregator.processNotifications(Arrays.asList(commonDistributionConfig), notificationList);
+    public List<DistributionEvent> processNotifications(final CommonDistributionConfiguration commonDistributionConfig, final List<NotificationContent> notificationList) {
+        final Map<CommonDistributionConfiguration, List<AggregateMessageContent>> messageContentList = messageContentAggregator.processNotifications(Arrays.asList(commonDistributionConfig), notificationList);
         final List<DistributionEvent> notificationEvents = notificationToEventConverter.convertToEvents(messageContentList);
         return notificationEvents;
     }

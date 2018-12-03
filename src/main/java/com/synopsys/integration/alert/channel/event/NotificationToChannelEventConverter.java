@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ActionApiType;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
-import com.synopsys.integration.alert.database.channel.CommonConfigurationModel;
+import com.synopsys.integration.alert.database.channel.CommonDistributionConfiguration;
 
 @Component
 public class NotificationToChannelEventConverter {
@@ -48,11 +48,11 @@ public class NotificationToChannelEventConverter {
         this.descriptorMap = descriptorMap;
     }
 
-    public List<DistributionEvent> convertToEvents(final Map<CommonConfigurationModel, List<AggregateMessageContent>> messageContentMap) {
+    public List<DistributionEvent> convertToEvents(final Map<CommonDistributionConfiguration, List<AggregateMessageContent>> messageContentMap) {
         final List<DistributionEvent> distributionEvents = new ArrayList<>();
-        final Set<? extends Map.Entry<CommonConfigurationModel, List<AggregateMessageContent>>> jobMessageContentEntries = messageContentMap.entrySet();
-        for (final Map.Entry<CommonConfigurationModel, List<AggregateMessageContent>> entry : jobMessageContentEntries) {
-            final CommonConfigurationModel jobConfig = entry.getKey();
+        final Set<? extends Map.Entry<CommonDistributionConfiguration, List<AggregateMessageContent>>> jobMessageContentEntries = messageContentMap.entrySet();
+        for (final Map.Entry<CommonDistributionConfiguration, List<AggregateMessageContent>> entry : jobMessageContentEntries) {
+            final CommonDistributionConfiguration jobConfig = entry.getKey();
             final List<AggregateMessageContent> contentList = entry.getValue();
             for (final AggregateMessageContent content : contentList) {
                 distributionEvents.add(createChannelEvent(jobConfig, content));
@@ -62,7 +62,7 @@ public class NotificationToChannelEventConverter {
         return distributionEvents;
     }
 
-    private DistributionEvent createChannelEvent(final CommonConfigurationModel config, final AggregateMessageContent messageContent) {
+    private DistributionEvent createChannelEvent(final CommonDistributionConfiguration config, final AggregateMessageContent messageContent) {
         return descriptorMap.getChannelDescriptor(config.getChannelName()).getRestApi(ActionApiType.CHANNEL_DISTRIBUTION_CONFIG).createChannelEvent(config, messageContent);
     }
 }

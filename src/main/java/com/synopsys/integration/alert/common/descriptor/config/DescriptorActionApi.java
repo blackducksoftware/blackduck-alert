@@ -33,9 +33,10 @@ import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.RepositoryAccessor;
+import com.synopsys.integration.alert.database.api.descriptor.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.channel.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
-import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
@@ -74,7 +75,7 @@ public abstract class DescriptorActionApi {
 
     public abstract void validateConfig(final Config restModel, final Map<String, String> fieldErrors);
 
-    public TestConfigModel createTestConfigModel(final Config config, final String destination) throws AlertFieldException {
+    public TestConfigModel createTestConfigModel(final Map<String, ConfigurationFieldModel> config, final String destination) throws AlertFieldException {
         return new TestConfigModel(config, destination);
     }
 
@@ -108,15 +109,15 @@ public abstract class DescriptorActionApi {
         return getTypeConverter().getConfigFromJson(json);
     }
 
-    public DistributionEvent createChannelEvent(final CommonDistributionConfig commmonDistributionConfig, final AggregateMessageContent messageContent) {
-        return new DistributionEvent(commmonDistributionConfig.getDistributionType(), RestConstants.formatDate(new Date()), commmonDistributionConfig.getProviderName(), commmonDistributionConfig.getFormatType(), messageContent,
-            commmonDistributionConfig);
+    public DistributionEvent createChannelEvent(final CommonDistributionConfiguration commmonDistributionConfig, final AggregateMessageContent messageContent) {
+        return new DistributionEvent(commmonDistributionConfig.getChannelName(), RestConstants.formatDate(new Date()), commmonDistributionConfig.getProviderName(), commmonDistributionConfig.getFormatType().name(), messageContent,
+            commmonDistributionConfig.getConfigurationFieldModelMap());
     }
 
-    public DistributionEvent createChannelTestEvent(final CommonDistributionConfig commmonDistributionConfig) {
+    public DistributionEvent createChannelTestEvent(final CommonDistributionConfiguration commmonDistributionConfig) {
         final AggregateMessageContent messageContent = createTestNotificationContent();
-        return new DistributionEvent(commmonDistributionConfig.getDistributionType(), RestConstants.formatDate(new Date()), commmonDistributionConfig.getProviderName(), commmonDistributionConfig.getFormatType(), messageContent,
-            commmonDistributionConfig);
+        return new DistributionEvent(commmonDistributionConfig.getChannelName(), RestConstants.formatDate(new Date()), commmonDistributionConfig.getProviderName(), commmonDistributionConfig.getFormatType().name(), messageContent,
+            commmonDistributionConfig.getConfigurationFieldModelMap());
     }
 
     public AggregateMessageContent createTestNotificationContent() {
