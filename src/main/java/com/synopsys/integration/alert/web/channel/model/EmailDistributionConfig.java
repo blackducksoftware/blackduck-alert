@@ -24,6 +24,7 @@
 package com.synopsys.integration.alert.web.channel.model;
 
 import java.util.List;
+import java.util.Set;
 
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 
@@ -31,17 +32,19 @@ public class EmailDistributionConfig extends CommonDistributionConfig {
     private String emailTemplateLogoImage;
     private String emailSubjectLine;
     private boolean projectOwnerOnly;
+    private Set<String> emailAddresses;
 
     public EmailDistributionConfig() {
     }
 
     public EmailDistributionConfig(final String id, final String distributionConfigId, final String distributionType, final String name, final String providerName, final String frequency, final String filterByProject,
         final String emailTemplateLogoImage, final String emailSubjectLine, final String projectNamePattern, final boolean projectOwnerOnly, final List<String> configuredProjects, final List<String> notificationTypes,
-        final String formatType) {
+        final String formatType, final Set<String> emailAddresses) {
         super(id, distributionConfigId, distributionType, name, providerName, frequency, filterByProject, projectNamePattern, configuredProjects, notificationTypes, formatType);
         this.emailTemplateLogoImage = emailTemplateLogoImage;
         this.emailSubjectLine = emailSubjectLine;
         this.projectOwnerOnly = projectOwnerOnly;
+        this.emailAddresses = emailAddresses;
     }
 
     public String getEmailTemplateLogoImage() {
@@ -66,5 +69,13 @@ public class EmailDistributionConfig extends CommonDistributionConfig {
 
     public void setProjectOwnerOnly(final boolean projectOwnerOnly) {
         this.projectOwnerOnly = projectOwnerOnly;
+    }
+
+    public Set<String> getEmailAddresses() {
+        return emailAddresses;
+    }
+
+    public void setEmailAddresses(final Set<String> emailAddresses) {
+        this.emailAddresses = emailAddresses;
     }
 }

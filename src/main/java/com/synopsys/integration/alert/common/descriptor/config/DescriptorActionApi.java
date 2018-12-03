@@ -23,15 +23,23 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config;
 
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.synopsys.integration.alert.channel.event.DistributionEvent;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.RepositoryAccessor;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+import com.synopsys.integration.alert.web.exception.AlertFieldException;
+import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.rest.RestConstants;
 
 public abstract class DescriptorActionApi {
     private final TypeConverter typeConverter;
@@ -66,6 +74,10 @@ public abstract class DescriptorActionApi {
 
     public abstract void validateConfig(final Config restModel, final Map<String, String> fieldErrors);
 
+    public TestConfigModel createTestConfigModel(final Config config, final String destination) throws AlertFieldException {
+        return new TestConfigModel(config, destination);
+    }
+
     public abstract void testConfig(final TestConfigModel testConfig) throws IntegrationException;
 
     public Optional<? extends DatabaseEntity> readEntity(final long id) {
@@ -94,6 +106,23 @@ public abstract class DescriptorActionApi {
 
     public Config getConfigFromJson(final String json) {
         return getTypeConverter().getConfigFromJson(json);
+    }
+
+    public DistributionEvent createChannelEvent(final CommonDistributionConfig commmonDistributionConfig, final AggregateMessageContent messageContent) {
+        return new DistributionEvent(commmonDistributionConfig.getDistributionType(), RestConstants.formatDate(new Date()), commmonDistributionConfig.getProviderName(), commmonDistributionConfig.getFormatType(), messageContent,
+            commmonDistributionConfig);
+    }
+
+    public DistributionEvent createChannelTestEvent(final CommonDistributionConfig commmonDistributionConfig) {
+        final AggregateMessageContent messageContent = createTestNotificationContent();
+        return new DistributionEvent(commmonDistributionConfig.getDistributionType(), RestConstants.formatDate(new Date()), commmonDistributionConfig.getProviderName(), commmonDistributionConfig.getFormatType(), messageContent,
+            commmonDistributionConfig);
+    }
+
+    public AggregateMessageContent createTestNotificationContent() {
+        final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
+        return new AggregateMessageContent("testTopic", "Alert Test Message", null, subTopic, Collections.emptyList());
+
     }
 
 }

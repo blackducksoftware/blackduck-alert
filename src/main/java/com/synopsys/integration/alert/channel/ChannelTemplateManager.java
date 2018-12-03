@@ -30,20 +30,20 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
+import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.event.AlertEvent;
 import com.synopsys.integration.alert.database.audit.AuditUtility;
 
 @Component
 public class ChannelTemplateManager {
-    private final Gson gson;
     private final JmsTemplate jmsTemplate;
     private final AuditUtility auditUtility;
+    private ContentConverter contentConverter;
 
     @Autowired
-    public ChannelTemplateManager(final Gson gson, final AuditUtility auditUtility, final JmsTemplate jmsTemplate) {
-        this.gson = gson;
+    public ChannelTemplateManager(ContentConverter contentConverter, final AuditUtility auditUtility, final JmsTemplate jmsTemplate) {
+        this.contentConverter = contentConverter;
         this.auditUtility = auditUtility;
         this.jmsTemplate = jmsTemplate;
     }
@@ -60,12 +60,14 @@ public class ChannelTemplateManager {
         final String destination = event.getDestination();
         if (event instanceof DistributionEvent) {
             final DistributionEvent distributionEvent = (DistributionEvent) event;
-            final Long auditEntryId = auditUtility.createAuditEntry(distributionEvent.getAuditEntryId(), distributionEvent.getCommonDistributionConfigId(), distributionEvent.getContent());
+            String commonIdString = distributionEvent.getCommonDistributionConfig().getId();
+            Long commonId = contentConverter.getLongValue(commonIdString);
+            final Long auditEntryId = auditUtility.createAuditEntry(distributionEvent.getAuditEntryId(), commonId, distributionEvent.getContent());
             distributionEvent.setAuditEntryId(auditEntryId);
-            final String jsonMessage = gson.toJson(distributionEvent);
+            final String jsonMessage = contentConverter.getJsonString(distributionEvent);
             jmsTemplate.convertAndSend(destination, jsonMessage);
         } else {
-            final String jsonMessage = gson.toJson(event);
+            final String jsonMessage = contentConverter.getJsonString(event);
             jmsTemplate.convertAndSend(destination, jsonMessage);
         }
         return true;

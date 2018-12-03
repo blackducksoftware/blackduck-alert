@@ -136,7 +136,8 @@ public class ConfigControllerHandler extends ControllerHandler {
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing");
         }
         try {
-            final TestConfigModel testConfig = new TestConfigModel(restModel, destination);
+            //            final TestConfigModel testConfig = new TestConfigModel(restModel, destination);
+            final TestConfigModel testConfig = descriptor.createTestConfigModel(restModel, destination);
             final String responseMessage = descriptorConfigActions.testConfig(testConfig, descriptor);
             return createResponse(HttpStatus.OK, restModel.getId(), responseMessage);
         } catch (final IntegrationRestException e) {

@@ -34,9 +34,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
+import com.synopsys.integration.alert.common.enumeration.ActionApiType;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.database.channel.CommonConfigurationModel;
-import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 
 @Component
 public class NotificationToChannelEventConverter {
@@ -63,6 +63,6 @@ public class NotificationToChannelEventConverter {
     }
 
     private DistributionEvent createChannelEvent(final CommonConfigurationModel config, final AggregateMessageContent messageContent) {
-        return descriptorMap.getChannelDescriptor(config.getChannelName()).getChannelEventProducer().createChannelEvent(config, messageContent);
+        return descriptorMap.getChannelDescriptor(config.getChannelName()).getRestApi(ActionApiType.CHANNEL_DISTRIBUTION_CONFIG).createChannelEvent(config, messageContent);
     }
 }
