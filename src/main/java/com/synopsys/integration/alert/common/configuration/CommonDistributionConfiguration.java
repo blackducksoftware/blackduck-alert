@@ -1,18 +1,12 @@
-package com.synopsys.integration.alert.database.channel;
+package com.synopsys.integration.alert.common.configuration;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.EnumUtils;
 
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.database.api.descriptor.ConfigurationAccessor.ConfigurationModel;
-import com.synopsys.integration.alert.database.api.descriptor.ConfigurationFieldModel;
 
 public class CommonDistributionConfiguration {
     public static final String KEY_NAME = "channel.common.name";
@@ -29,45 +23,22 @@ public class CommonDistributionConfiguration {
     private final String providerName;
     private final FrequencyType frequencyType;
     private final FormatType formatType;
-    private final Map<String, ConfigurationFieldModel> configurationFieldModelMap;
     private final Set<String> notificationTypes;
-
     // FIXME this field is here temporarily as there is some tight coupling to the BD provider when filtering (NotificationFilter).
     private final Boolean filterByProject;
+    private final FieldAccessor fieldAccessor;
 
     public CommonDistributionConfiguration(final ConfigurationModel configurationModel) {
-        configurationFieldModelMap = configurationModel.getCopyOfKeyToFieldMap();
+        fieldAccessor = new FieldAccessor(configurationModel.getCopyOfKeyToFieldMap());
 
         id = configurationModel.getConfigurationId();
-        name = getFieldValue(KEY_NAME, configurationModel);
-        channelName = getFieldValue(KEY_CHANNEL_NAME, configurationModel);
-        providerName = getFieldValue(KEY_PROVIDER_NAME, configurationModel);
-        notificationTypes = getFieldValues(KEY_NOTIFICATION_TYPES, configurationModel);
-
-        final String frequency = getFieldValue(KEY_FREQUENCY, configurationModel);
-        frequencyType = EnumUtils.getEnum(FrequencyType.class, frequency);
-
-        final String format = getFieldValue(KEY_FORMAT_TYPE, configurationModel);
-        formatType = EnumUtils.getEnum(FormatType.class, format);
-
-        final String projectFilter = getFieldValue(KEY_FILTER_BY_PROJECT, configurationModel);
-        filterByProject = Boolean.parseBoolean(projectFilter);
-    }
-
-    private String getFieldValue(final String key, final ConfigurationModel configurationModel) {
-        final Optional<ConfigurationFieldModel> field = configurationModel.getField(key);
-        if (!field.isPresent()) {
-            return "";
-        }
-        return field.get().getFieldValue().orElse("");
-    }
-
-    private Set<String> getFieldValues(final String key, final ConfigurationModel configurationModel) {
-        final Optional<ConfigurationFieldModel> field = configurationModel.getField(key);
-        if (!field.isPresent()) {
-            return Collections.emptySet();
-        }
-        return field.get().getFieldValues().stream().collect(Collectors.toSet());
+        name = fieldAccessor.getString(KEY_NAME);
+        channelName = fieldAccessor.getString(KEY_CHANNEL_NAME);
+        providerName = fieldAccessor.getString(KEY_PROVIDER_NAME);
+        notificationTypes = fieldAccessor.getAllStrings(KEY_NOTIFICATION_TYPES).stream().collect(Collectors.toSet());
+        frequencyType = fieldAccessor.getEnum(KEY_FREQUENCY, FrequencyType.class);
+        formatType = fieldAccessor.getEnum(KEY_FORMAT_TYPE, FormatType.class);
+        filterByProject = fieldAccessor.getBoolean(KEY_FILTER_BY_PROJECT);
     }
 
     public Long getId() {
@@ -102,7 +73,7 @@ public class CommonDistributionConfiguration {
         return filterByProject;
     }
 
-    public Map<String, ConfigurationFieldModel> getConfigurationFieldModelMap() {
-        return configurationFieldModelMap;
+    public FieldAccessor getFieldAccessor() {
+        return fieldAccessor;
     }
 }

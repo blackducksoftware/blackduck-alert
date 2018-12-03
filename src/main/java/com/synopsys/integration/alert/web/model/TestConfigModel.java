@@ -23,27 +23,26 @@
  */
 package com.synopsys.integration.alert.web.model;
 
-import java.util.Map;
 import java.util.Optional;
 
-import com.synopsys.integration.alert.database.api.descriptor.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 
 public class TestConfigModel {
-    private final Map<String, ConfigurationFieldModel> restModel;
+    private final FieldAccessor fieldAccessor;
     private final String destination;
 
-    public TestConfigModel(final Map<String, ConfigurationFieldModel> restModel) {
-        this.restModel = restModel;
+    public TestConfigModel(final FieldAccessor fieldAccessor) {
+        this.fieldAccessor = fieldAccessor;
         destination = null;
     }
 
-    public TestConfigModel(final Map<String, ConfigurationFieldModel> restModel, final String destination) {
-        this.restModel = restModel;
+    public TestConfigModel(final FieldAccessor fieldAccessor, final String destination) {
+        this.fieldAccessor = fieldAccessor;
         this.destination = destination;
     }
 
-    public Map<String, ConfigurationFieldModel> getRestModel() {
-        return restModel;
+    public FieldAccessor getFieldAccessor() {
+        return fieldAccessor;
     }
 
     public Optional<String> getDestination() {

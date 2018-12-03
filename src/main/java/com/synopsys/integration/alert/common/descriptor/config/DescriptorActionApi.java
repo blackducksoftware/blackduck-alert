@@ -30,11 +30,12 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
+import com.synopsys.integration.alert.common.configuration.CommonDistributionConfiguration;
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.RepositoryAccessor;
 import com.synopsys.integration.alert.database.api.descriptor.ConfigurationFieldModel;
-import com.synopsys.integration.alert.database.channel.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.Config;
@@ -110,14 +111,16 @@ public abstract class DescriptorActionApi {
     }
 
     public DistributionEvent createChannelEvent(final CommonDistributionConfiguration commmonDistributionConfig, final AggregateMessageContent messageContent) {
+        final FieldAccessor fieldAccessor = new FieldAccessor(commmonDistributionConfig.getConfigurationFieldModelMap());
         return new DistributionEvent(commmonDistributionConfig.getChannelName(), RestConstants.formatDate(new Date()), commmonDistributionConfig.getProviderName(), commmonDistributionConfig.getFormatType().name(), messageContent,
-            commmonDistributionConfig.getConfigurationFieldModelMap());
+            fieldAccessor);
     }
 
     public DistributionEvent createChannelTestEvent(final CommonDistributionConfiguration commmonDistributionConfig) {
         final AggregateMessageContent messageContent = createTestNotificationContent();
+        final FieldAccessor fieldAccessor = new FieldAccessor(commmonDistributionConfig.getConfigurationFieldModelMap());
         return new DistributionEvent(commmonDistributionConfig.getChannelName(), RestConstants.formatDate(new Date()), commmonDistributionConfig.getProviderName(), commmonDistributionConfig.getFormatType().name(), messageContent,
-            commmonDistributionConfig.getConfigurationFieldModelMap());
+            fieldAccessor);
     }
 
     public AggregateMessageContent createTestNotificationContent() {

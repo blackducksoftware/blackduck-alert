@@ -52,11 +52,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.typeadapters.RuntimeTypeAdapterFactory;
-import com.synopsys.integration.alert.web.channel.model.EmailDistributionConfig;
-import com.synopsys.integration.alert.web.channel.model.HipChatDistributionConfig;
-import com.synopsys.integration.alert.web.channel.model.SlackDistributionConfig;
-import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.workflow.startup.StartupManager;
 import com.synopsys.integration.rest.RestConstants;
 
@@ -123,16 +118,7 @@ public class Application {
 
     @Bean
     public Gson gson() {
-        final RuntimeTypeAdapterFactory<CommonDistributionConfig> commonDistributionConfigRuntimeTypeAdapterFactory = RuntimeTypeAdapterFactory.of(CommonDistributionConfig.class);
-        final Class<SlackDistributionConfig> slackDistributionConfigClass = SlackDistributionConfig.class;
-        final Class<EmailDistributionConfig> emailDistributionConfigClass = EmailDistributionConfig.class;
-        final Class<HipChatDistributionConfig> hipChatDistributionConfigClass = HipChatDistributionConfig.class;
-
-        commonDistributionConfigRuntimeTypeAdapterFactory.registerSubtype(slackDistributionConfigClass, slackDistributionConfigClass.getSimpleName());
-        commonDistributionConfigRuntimeTypeAdapterFactory.registerSubtype(emailDistributionConfigClass, emailDistributionConfigClass.getSimpleName());
-        commonDistributionConfigRuntimeTypeAdapterFactory.registerSubtype(hipChatDistributionConfigClass, hipChatDistributionConfigClass.getSimpleName());
-
-        return new GsonBuilder().registerTypeAdapterFactory(commonDistributionConfigRuntimeTypeAdapterFactory).setDateFormat(RestConstants.JSON_DATE_FORMAT).create();
+        return new GsonBuilder().setDateFormat(RestConstants.JSON_DATE_FORMAT).create();
     }
 
     @Bean

@@ -23,23 +23,21 @@
  */
 package com.synopsys.integration.alert.channel.event;
 
-import java.util.Map;
-
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.event.ContentEvent;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
-import com.synopsys.integration.alert.database.api.descriptor.ConfigurationFieldModel;
 
 public class DistributionEvent extends ContentEvent {
-    private final Map<String, ConfigurationFieldModel> fields;
+    private final FieldAccessor fieldAccessor;
     private Long auditEntryId;
 
-    public DistributionEvent(final String destination, final String createdAt, final String provider, final String formatType, final AggregateMessageContent content, final Map<String, ConfigurationFieldModel> fields) {
+    public DistributionEvent(final String destination, final String createdAt, final String provider, final String formatType, final AggregateMessageContent content, final FieldAccessor fieldAccessor) {
         super(destination, createdAt, provider, formatType, content);
-        this.fields = fields;
+        this.fieldAccessor = fieldAccessor;
     }
 
-    public Map<String, ConfigurationFieldModel> getFields() {
-        return fields;
+    public FieldAccessor getFieldAccessor() {
+        return fieldAccessor;
     }
 
     public Long getAuditEntryId() {

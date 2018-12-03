@@ -26,6 +26,7 @@ package com.synopsys.integration.alert.web.config.controller.handler;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,7 @@ import org.springframework.http.ResponseEntity;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.database.api.descriptor.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.web.config.actions.DescriptorConfigActions;
 import com.synopsys.integration.alert.web.controller.handler.ControllerHandler;
@@ -131,12 +133,11 @@ public class ConfigControllerHandler extends ControllerHandler {
         return testConfig(restModel, null, descriptor);
     }
 
-    public ResponseEntity<String> testConfig(final Config restModel, final String destination, final DescriptorActionApi descriptor) {
+    public ResponseEntity<String> testConfig(final Map<String, ConfigurationFieldModel> restModel, final String destination, final DescriptorActionApi descriptor) {
         if (restModel == null) {
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing");
         }
         try {
-            //            final TestConfigModel testConfig = new TestConfigModel(restModel, destination);
             final TestConfigModel testConfig = descriptor.createTestConfigModel(restModel, destination);
             final String responseMessage = descriptorConfigActions.testConfig(testConfig, descriptor);
             return createResponse(HttpStatus.OK, restModel.getId(), responseMessage);
