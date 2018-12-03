@@ -21,7 +21,7 @@ class Index extends Component {
             currentPage: 1,
             currentPageSize: 10,
             searchTerm: '',
-            sortField: 'timeLastSent',
+            sortField: 'lastSent',
             sortOrder: 'desc',
             currentRowSelected: {},
             showDetailModal: false
@@ -122,7 +122,8 @@ class Index extends Component {
                     notificationType: entry.notification.notificationType,
                     notificationProviderName: entry.notification.provider,
                     content: entry.notification.content,
-                    status: entry.overallStatus
+                    overallStatus: entry.overallStatus,
+                    lastSent: entry.lastSent
                 };
                 if (entry.jobs) {
                     result.jobs = entry.jobs;
@@ -315,7 +316,7 @@ class Index extends Component {
 
     render() {
         const auditTableOptions = {
-            defaultSortName: 'timeCreated',
+            defaultSortName: 'lastSent',
             defaultSortOrder: 'desc',
             btnGroup: this.createCustomButtonGroup,
             noDataText: 'No events',
@@ -365,7 +366,8 @@ class Index extends Component {
                         <TableHeaderColumn dataField="notificationProviderName" dataSort columnClassName="tableCell" dataFormat={this.providerColumnDataFormat}>Provider</TableHeaderColumn>
                         <TableHeaderColumn dataField="notificationType" dataSort columnClassName="tableCell" dataFormat={this.notificationTypeDataFormat}>Notification Types</TableHeaderColumn>
                         <TableHeaderColumn dataField="timeCreated" dataSort columnTitle columnClassName="tableCell">Time Retrieved</TableHeaderColumn>
-                        <TableHeaderColumn dataField="status" dataSort columnClassName="tableCell" dataFormat={this.statusColumnDataFormat}>Status</TableHeaderColumn>
+                        <TableHeaderColumn dataField="lastSent" dataSort columnTitle columnClassName="tableCell">Last Sent</TableHeaderColumn>
+                        <TableHeaderColumn dataField="overallStatus" dataSort columnClassName="tableCell" dataFormat={this.statusColumnDataFormat}>Status</TableHeaderColumn>
                         <TableHeaderColumn dataField="" width="48" expandable={false} columnClassName="tableCell" dataFormat={this.resendButton}/>
                         <TableHeaderColumn dataField="id" isKey hidden>Notification Id</TableHeaderColumn>
                     </BootstrapTable>
