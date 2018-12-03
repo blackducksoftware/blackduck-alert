@@ -118,9 +118,9 @@ class Index extends Component {
         const entries = jsonArray.map((entry) => {
                 const result = {
                     id: entry.id,
-                    timeCreated: entry.notification.createdAt,
+                    createdAt: entry.notification.createdAt,
                     notificationType: entry.notification.notificationType,
-                    notificationProviderName: entry.notification.provider,
+                    provider: entry.notification.provider,
                     content: entry.notification.content,
                     overallStatus: entry.overallStatus,
                     lastSent: entry.lastSent
@@ -363,9 +363,9 @@ class Index extends Component {
                         pagination
                         search
                     >
-                        <TableHeaderColumn dataField="notificationProviderName" dataSort columnClassName="tableCell" dataFormat={this.providerColumnDataFormat}>Provider</TableHeaderColumn>
+                        <TableHeaderColumn dataField="provider" dataSort columnClassName="tableCell" dataFormat={this.providerColumnDataFormat}>Provider</TableHeaderColumn>
                         <TableHeaderColumn dataField="notificationType" dataSort columnClassName="tableCell" dataFormat={this.notificationTypeDataFormat}>Notification Types</TableHeaderColumn>
-                        <TableHeaderColumn dataField="timeCreated" dataSort columnTitle columnClassName="tableCell">Time Retrieved</TableHeaderColumn>
+                        <TableHeaderColumn dataField="createdAt" dataSort columnTitle columnClassName="tableCell">Time Retrieved</TableHeaderColumn>
                         <TableHeaderColumn dataField="lastSent" dataSort columnTitle columnClassName="tableCell">Last Sent</TableHeaderColumn>
                         <TableHeaderColumn dataField="overallStatus" dataSort columnClassName="tableCell" dataFormat={this.statusColumnDataFormat}>Status</TableHeaderColumn>
                         <TableHeaderColumn dataField="" width="48" expandable={false} columnClassName="tableCell" dataFormat={this.resendButton}/>
