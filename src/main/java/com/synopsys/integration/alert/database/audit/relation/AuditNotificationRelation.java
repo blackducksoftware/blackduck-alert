@@ -27,12 +27,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
-import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.relation.DatabaseRelation;
 
 @Entity
@@ -64,19 +60,4 @@ public class AuditNotificationRelation extends DatabaseRelation {
         return notificationId;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "notification_id", insertable = false, updatable = false)
-    public NotificationContent notificationContent;
-
-    @ManyToOne
-    @JoinColumn(name = "audit_entry_id", insertable = false, updatable = false)
-    private AuditEntryEntity auditEntryEntity;
-
-    public NotificationContent getNotificationContent() {
-        return notificationContent;
-    }
-
-    public AuditEntryEntity getAuditEntryEntity() {
-        return auditEntryEntity;
-    }
 }

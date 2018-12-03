@@ -37,4 +37,5 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
 
     @Query("SELECT entity FROM NotificationContent entity WHERE entity.createdAt < ?1 ORDER BY created_at, provider_creation_time asc")
     List<NotificationContent> findByCreatedAtBefore(final Date date);
+
 }

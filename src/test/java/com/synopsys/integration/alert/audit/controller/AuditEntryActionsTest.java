@@ -73,7 +73,8 @@ public class AuditEntryActionsTest {
         Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(mockAuditEntryEntity.createEmptyEntity()));
         Mockito.when(jobConfigReader.getPopulatedConfig(Mockito.anyLong())).thenReturn(null);
         Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Arrays.asList(mockNotificationEntity.createEntity()));
-        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, auditEntryRepository, auditNotificationRepository),
+        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, auditEntryRepository, auditNotificationRepository, notificationContentConverter,
+            jobConfigReader),
             auditNotificationRepository, jobConfigReader, null, null, null);
 
         AlertPagedModel<AuditEntryModel> restModel = null;
@@ -119,7 +120,8 @@ public class AuditEntryActionsTest {
         final NotificationContentConverter notificationContentConverter = new NotificationContentConverter(contentConverter);
         Mockito.doReturn(Optional.of(mockCommonDistributionRestModel.createRestModel())).when(jobConfigReader).getPopulatedConfig(Mockito.anyLong());
         Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Arrays.asList(notificationContent));
-        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, auditEntryRepository, auditNotificationRepository),
+        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, auditEntryRepository, auditNotificationRepository, notificationContentConverter,
+            jobConfigReader),
             auditNotificationRepository, jobConfigReader, notificationContentConverter, null, null);
 
         final AlertPagedModel<AuditEntryModel> restModel = auditEntryActions.get(currentPage, pageSize, null, null, null);
@@ -158,7 +160,8 @@ public class AuditEntryActionsTest {
         final NotificationContent notificationContent = new MockNotificationContent(new Date(), "provider", new Date(), "notificationType", "{content: \"content is here...\"}", 1L).createEntity();
         Mockito.doReturn(Optional.of(mockCommonDistributionRestModel.createRestModel())).when(jobConfigReader).getPopulatedConfig(Mockito.anyLong());
         Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Arrays.asList(notificationContent));
-        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, auditEntryRepository, auditNotificationRepository),
+        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, auditEntryRepository, auditNotificationRepository, notificationContentConverter,
+            jobConfigReader),
             auditNotificationRepository, jobConfigReader, notificationContentConverter, null, null);
 
         final AlertPagedModel<AuditEntryModel> restModel = auditEntryActions.get(currentPage, pageSize, null, null, null);

@@ -25,15 +25,21 @@ package com.synopsys.integration.alert.workflow;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,8 +48,11 @@ import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
 import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
+import com.synopsys.integration.alert.database.channel.JobConfigReader;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.entity.repository.NotificationContentRepository;
+import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
+import com.synopsys.integration.alert.web.model.NotificationContentConverter;
 
 @Component
 @Transactional
@@ -51,21 +60,81 @@ public class NotificationManager {
     private final NotificationContentRepository notificationContentRepository;
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
+    private final NotificationContentConverter notificationContentConverter;
+    private final JobConfigReader jobConfigReader;
 
     @Autowired
-    public NotificationManager(final NotificationContentRepository notificationContentRepository, final AuditEntryRepository auditEntryRepository, final AuditNotificationRepository auditNotificationRepository) {
+    public NotificationManager(final NotificationContentRepository notificationContentRepository, final AuditEntryRepository auditEntryRepository, final AuditNotificationRepository auditNotificationRepository,
+        @Lazy final NotificationContentConverter notificationContentConverter, @Lazy final JobConfigReader jobConfigReader) {
         this.notificationContentRepository = notificationContentRepository;
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;
-    }
-
-    public NotificationContent saveNotification(final NotificationContent notification) {
-        return notificationContentRepository.save(notification);
+        this.notificationContentConverter = notificationContentConverter;
+        this.jobConfigReader = jobConfigReader;
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public Page<NotificationContent> findAll(final PageRequest pageRequest) {
         return notificationContentRepository.findAll(pageRequest);
+    }
+
+    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    public Page<NotificationContent> findAllWithSearch(final String searchTerm, final PageRequest pageRequest, final Integer maxSize) {
+        final String lcSearchTerm = searchTerm.toLowerCase(Locale.ENGLISH);
+        final List<NotificationContent> matchingNotifications = new ArrayList<>(maxSize);
+
+        final PageRequest currentPageRequest = PageRequest.of(0, Integer.MAX_VALUE, pageRequest.getSort());
+        final Page<NotificationContent> notificationsPage = notificationContentRepository.findAll(currentPageRequest);
+        final List<NotificationContent> notificationContents = notificationsPage.getContent();
+        for (final NotificationContent notificationContent : notificationContents) {
+            if (doesStringMatch(notificationContent.getContent(), lcSearchTerm)
+                    || doesStringMatch(notificationContent.getProvider(), lcSearchTerm)
+                    || doesStringMatch(notificationContent.getNotificationType(), lcSearchTerm)
+                    || doesStringMatch(notificationContentConverter.getContentConverter().getStringValue(notificationContent.getCreatedAt()), lcSearchTerm)) {
+                if (!matchingNotifications.add(notificationContent)) {
+                    break;
+                }
+            } else {
+                final List<AuditEntryEntity> auditEntryEntities = getAuditEntries(notificationContent);
+                for (final AuditEntryEntity auditEntryEntity : auditEntryEntities) {
+                    if (doesStringMatch(auditEntryEntity.getStatus().getDisplayName(), lcSearchTerm)
+                            || doesStringMatch(notificationContentConverter.getContentConverter().getStringValue(auditEntryEntity.getTimeLastSent()), lcSearchTerm)) {
+                        if (!matchingNotifications.add(notificationContent)) {
+                            break;
+                        }
+                    } else {
+                        final Optional<? extends CommonDistributionConfig> optionalCommonDistributionConfig = jobConfigReader.getPopulatedConfig(auditEntryEntity.getCommonConfigId());
+                        if (optionalCommonDistributionConfig.isPresent()) {
+                            final CommonDistributionConfig commonDistributionConfig = optionalCommonDistributionConfig.get();
+                            if (doesStringMatch(commonDistributionConfig.getName(), lcSearchTerm)
+                                    || doesStringMatch(commonDistributionConfig.getDistributionType(), lcSearchTerm)) {
+                                if (!matchingNotifications.add(notificationContent)) {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return new PageImpl<>(matchingNotifications, pageRequest, matchingNotifications.size());
+    }
+
+    private boolean doesStringMatch(final String valueToCheck, final String searchTerm) {
+        if (StringUtils.isNotBlank(valueToCheck) && valueToCheck.toLowerCase(Locale.ENGLISH).contains(searchTerm)) {
+            return true;
+        }
+        return false;
+    }
+
+    private List<AuditEntryEntity> getAuditEntries(final NotificationContent notificationContent) {
+        return auditNotificationRepository.findByNotificationId(notificationContent.getId())
+                   .stream()
+                   .map(relation -> auditEntryRepository.findById(relation.getAuditEntryId()))
+                   .filter(optional -> optional.isPresent())
+                   .map(optional -> optional.get())
+                   .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
@@ -115,4 +184,26 @@ public class NotificationManager {
         auditEntryRepository.deleteAll(auditEntryList);
 
     }
+
+    public PageRequest getPageRequestForNotifications(final String sortField, final String sortOrder) {
+        boolean sortQuery = false;
+        String sortingField = "createdAt";
+        // We can only modify the query for the fields that exist in NotificationContent
+        if (StringUtils.isNotBlank(sortField) && "createdAt".equalsIgnoreCase(sortField)
+                || "provider".equalsIgnoreCase(sortField)
+                || "providerCreationTime".equalsIgnoreCase(sortField)
+                || "notificationType".equalsIgnoreCase(sortField)
+                || "content".equalsIgnoreCase(sortField)) {
+            sortingField = sortField;
+            sortQuery = true;
+        }
+        Sort.Direction sortingOrder = Sort.Direction.DESC;
+        if (StringUtils.isNotBlank(sortOrder) && sortQuery) {
+            if (Sort.Direction.ASC.name().equalsIgnoreCase(sortOrder)) {
+                sortingOrder = Sort.Direction.ASC;
+            }
+        }
+        return PageRequest.of(0, Integer.MAX_VALUE, new Sort(sortingOrder, sortingField));
+    }
+
 }

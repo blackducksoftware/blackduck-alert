@@ -44,9 +44,9 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.model.DateRange;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
+import com.synopsys.integration.alert.database.entity.repository.NotificationContentRepository;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.alert.workflow.NotificationManager;
 import com.synopsys.integration.alert.workflow.scheduled.ScheduledTask;
 import com.synopsys.integration.blackduck.api.generated.view.NotificationView;
 import com.synopsys.integration.blackduck.notification.CommonNotificationView;
@@ -67,16 +67,16 @@ public class BlackDuckAccumulator extends ScheduledTask {
     private static final Logger logger = LoggerFactory.getLogger(BlackDuckAccumulator.class);
 
     private final BlackDuckProperties blackDuckProperties;
-    private final NotificationManager notificationManager;
+    private final NotificationContentRepository notificationContentRepository;
     private final FilePersistenceUtil filePersistenceUtil;
     private final String searchRangeFileName;
 
     @Autowired
     public BlackDuckAccumulator(final TaskScheduler taskScheduler, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
-        final NotificationManager notificationManager, final FilePersistenceUtil filePersistenceUtil) {
+        final NotificationContentRepository notificationContentRepository, final FilePersistenceUtil filePersistenceUtil) {
         super(taskScheduler, "blackduck-accumulator-task");
         this.blackDuckProperties = blackDuckProperties;
-        this.notificationManager = notificationManager;
+        this.notificationContentRepository = notificationContentRepository;
         this.filePersistenceUtil = filePersistenceUtil;
         // TODO: do not store a file with the timestamp save this information into a database table for tasks.  Perhaps a task metadata object stored in the database.
         this.searchRangeFileName = String.format("%s-last-search.txt", getTaskName());
@@ -222,7 +222,7 @@ public class BlackDuckAccumulator extends ScheduledTask {
 
     protected void write(final List<NotificationContent> contentList) {
         logger.info("Writing Notifications...");
-        contentList.forEach(notificationManager::saveNotification);
+        contentList.forEach(notificationContentRepository::save);
     }
 
     private Date calculateNextStartTime(final Optional<Date> latestNotificationCreatedAt, final Date currentStartDate) {
