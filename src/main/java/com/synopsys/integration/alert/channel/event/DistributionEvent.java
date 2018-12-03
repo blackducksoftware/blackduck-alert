@@ -25,18 +25,19 @@ package com.synopsys.integration.alert.channel.event;
 
 import com.synopsys.integration.alert.common.event.ContentEvent;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
+import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 
-public abstract class DistributionEvent extends ContentEvent {
-    private final Long commonDistributionConfigId;
+public class DistributionEvent extends ContentEvent {
+    private final CommonDistributionConfig commonDistributionConfig;
     private Long auditEntryId;
 
-    public DistributionEvent(final String destination, final String createdAt, final String provider, final String formatType, final AggregateMessageContent content, final Long commonDistributionConfigId) {
+    public DistributionEvent(final String destination, final String createdAt, final String provider, final String formatType, final AggregateMessageContent content, final CommonDistributionConfig commonDistributionConfig) {
         super(destination, createdAt, provider, formatType, content);
-        this.commonDistributionConfigId = commonDistributionConfigId;
+        this.commonDistributionConfig = commonDistributionConfig;
     }
 
-    public Long getCommonDistributionConfigId() {
-        return commonDistributionConfigId;
+    public CommonDistributionConfig getCommonDistributionConfig() {
+        return commonDistributionConfig;
     }
 
     public Long getAuditEntryId() {

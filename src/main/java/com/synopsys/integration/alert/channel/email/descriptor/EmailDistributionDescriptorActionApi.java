@@ -23,32 +23,39 @@
  */
 package com.synopsys.integration.alert.channel.email.descriptor;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.email.EmailChannelEvent;
-import com.synopsys.integration.alert.channel.email.EmailEventProducer;
 import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
-import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.config.ChannelDistributionDescriptorActionApi;
 import com.synopsys.integration.alert.database.channel.email.EmailDistributionRepositoryAccessor;
-import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
+import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectEntity;
+import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.web.channel.model.EmailDistributionConfig;
+import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
-import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class EmailDistributionDescriptorActionApi extends DescriptorActionApi {
+public class EmailDistributionDescriptorActionApi extends ChannelDistributionDescriptorActionApi {
     private final EmailGroupChannel emailGroupChannel;
-    private final EmailEventProducer emailEventProducer;
+    private final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
 
     @Autowired
     public EmailDistributionDescriptorActionApi(final EmailDistributionTypeConverter databaseContentConverter, final EmailDistributionRepositoryAccessor repositoryAccessor, final EmailGroupChannel emailGroupChannel,
-            final EmailEventProducer emailEventProducer) {
-        super(databaseContentConverter, repositoryAccessor);
+        final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor) {
+        super(databaseContentConverter, repositoryAccessor, emailGroupChannel);
         this.emailGroupChannel = emailGroupChannel;
-        this.emailEventProducer = emailEventProducer;
+        this.blackDuckProjectRepositoryAccessor = blackDuckProjectRepositoryAccessor;
     }
 
     @Override
@@ -56,8 +63,51 @@ public class EmailDistributionDescriptorActionApi extends DescriptorActionApi {
     }
 
     @Override
-    public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
-        final EmailChannelEvent event = emailEventProducer.createChannelTestEvent((CommonDistributionConfig) testConfig.getRestModel());
-        emailGroupChannel.sendMessage(event);
+    public TestConfigModel createTestConfigModel(final Config config, final String destination) throws AlertFieldException {
+        final EmailDistributionConfig emailDistributionConfig = (EmailDistributionConfig) config;
+
+        final Set<String> emailAddresses = new HashSet<>();
+        Set<BlackDuckProjectEntity> blackDuckProjectEntities = null;
+        if (BooleanUtils.toBoolean(emailDistributionConfig.getFilterByProject())) {
+            blackDuckProjectEntities = blackDuckProjectRepositoryAccessor.readEntities()
+                                           .stream()
+                                           .map(databaseEntity -> (BlackDuckProjectEntity) databaseEntity)
+                                           .filter(databaseEntity -> emailGroupChannel.doesProjectNameMatchThePattern(databaseEntity.getName(), emailDistributionConfig.getProjectNamePattern())
+                                                                         || emailGroupChannel.doesProjectNameMatchAConfiguredProject(databaseEntity.getName(), emailDistributionConfig.getConfiguredProjects()))
+                                           .collect(Collectors.toSet());
+        } else if (BlackDuckProvider.COMPONENT_NAME.equals(emailDistributionConfig.getProviderName())) {
+            blackDuckProjectEntities = blackDuckProjectRepositoryAccessor.readEntities()
+                                           .stream()
+                                           .map(databaseEntity -> (BlackDuckProjectEntity) databaseEntity)
+                                           .collect(Collectors.toSet());
+
+        }
+        if (null != blackDuckProjectEntities) {
+            final Set<String> projectsWithoutEmails = new HashSet<>();
+            blackDuckProjectEntities
+                .stream()
+                .forEach(project -> {
+                    final Set<String> emailsForProject = emailGroupChannel.getEmailAddressesForProject(project, emailDistributionConfig.getProjectOwnerOnly());
+                    if (emailsForProject.isEmpty()) {
+                        projectsWithoutEmails.add(project.getName());
+                    }
+                    emailAddresses.addAll(emailsForProject);
+                });
+            if (!projectsWithoutEmails.isEmpty()) {
+                final String projects = StringUtils.join(projectsWithoutEmails, ", ");
+                final Map<String, String> fieldErrors = new HashMap<>();
+                final String errorMessage;
+                if (emailDistributionConfig.getProjectOwnerOnly()) {
+                    errorMessage = String.format("Could not find Project owners for the projects: %s", projects);
+                } else {
+                    errorMessage = String.format("Could not find any email addresses for the projects: %s", projects);
+                }
+                fieldErrors.put("configuredProjects", errorMessage);
+                throw new AlertFieldException(fieldErrors);
+            }
+        }
+
+        emailDistributionConfig.setEmailAddresses(emailAddresses);
+        return super.createTestConfigModel(emailDistributionConfig, destination);
     }
 }

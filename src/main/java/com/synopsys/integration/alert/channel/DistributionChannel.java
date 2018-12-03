@@ -42,7 +42,7 @@ import com.synopsys.integration.alert.workflow.MessageReceiver;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
-public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, E extends DistributionEvent> extends MessageReceiver<E> {
+public abstract class DistributionChannel<G extends GlobalChannelConfigEntity> extends MessageReceiver {
     private static final Logger logger = LoggerFactory.getLogger(DistributionChannel.class);
 
     private final JpaRepository<G, Long> globalRepository;
@@ -50,9 +50,8 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, E
     private final AlertProperties alertProperties;
     private final BlackDuckProperties blackDuckProperties;
 
-    public DistributionChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditUtility auditUtility, final JpaRepository<G, Long> globalRepository,
-            final Class eventClass) {
-        super(gson, eventClass);
+    public DistributionChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditUtility auditUtility, final JpaRepository<G, Long> globalRepository) {
+        super(gson);
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
         this.auditUtility = auditUtility;
@@ -82,7 +81,7 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, E
     }
 
     @Override
-    public void handleEvent(final E event) {
+    public void handleEvent(final DistributionEvent event) {
         if (event.getDestination().equals(getDistributionType())) {
             try {
                 sendAuditedMessage(event);
@@ -95,7 +94,7 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, E
 
     }
 
-    public void sendAuditedMessage(final E event) throws IntegrationException {
+    public void sendAuditedMessage(final DistributionEvent event) throws IntegrationException {
         try {
             sendMessage(event);
             auditUtility.setAuditEntrySuccess(event.getAuditEntryId());
@@ -109,7 +108,7 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, E
         }
     }
 
-    public abstract void sendMessage(final E event) throws IntegrationException;
+    public abstract void sendMessage(final DistributionEvent event) throws IntegrationException;
 
     public String testGlobalConfig(final TestConfigModel testConfig) throws IntegrationException {
         if (testConfig.getRestModel() != null) {
