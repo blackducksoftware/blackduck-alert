@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 @Entity
 @Table(schema = "ALERT", name = "DESCRIPTOR_FIELDS")
 public class DescriptorFieldEntity extends DatabaseEntity {
-    @Column(name = "DESCRIPTOR_ID")
+    @Column(name = "DESCRIPTOR_ID", nullable = false)
     private Long descriptorId;
     @Column(name = "SOURCE_KEY")
     private String key;
