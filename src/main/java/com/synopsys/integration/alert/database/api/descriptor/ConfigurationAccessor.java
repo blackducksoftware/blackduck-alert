@@ -60,7 +60,7 @@ public class ConfigurationAccessor {
 
     @Autowired
     public ConfigurationAccessor(final RegisteredDescriptorRepository registeredDescriptorRepository, final DescriptorFieldRepository descriptorFieldRepository,
-            final DescriptorConfigRepository descriptorConfigsRepository, final FieldValueRepository fieldValueRepository) {
+        final DescriptorConfigRepository descriptorConfigsRepository, final FieldValueRepository fieldValueRepository) {
         this.registeredDescriptorRepository = registeredDescriptorRepository;
         this.descriptorFieldRepository = descriptorFieldRepository;
         this.descriptorConfigsRepository = descriptorConfigsRepository;
@@ -84,6 +84,17 @@ public class ConfigurationAccessor {
         }
         final List<RegisteredDescriptorEntity> registeredDescriptorEntities = registeredDescriptorRepository.findByType(descriptorType);
         return getConfigs(registeredDescriptorEntities);
+    }
+
+    public ConfigurationModel getConfigurationById(final Long id) throws AlertDatabaseConstraintException {
+        if (null == id) {
+            throw new AlertDatabaseConstraintException("Configuration ID cannot be null.");
+        }
+
+        final DescriptorConfigEntity descriptorConfigEntity = descriptorConfigsRepository
+                                                                  .findById(id)
+                                                                  .orElseThrow(() -> new AlertDatabaseConstraintException("A configuration with that ID did not exist"));
+        return getConfig(descriptorConfigEntity.getId(), descriptorConfigEntity.getDescriptorId());
     }
 
     /**
@@ -160,26 +171,31 @@ public class ConfigurationAccessor {
         for (final RegisteredDescriptorEntity descriptorEntity : descriptors) {
             final List<DescriptorConfigEntity> descriptorConfigEntities = descriptorConfigsRepository.findByDescriptorId(descriptorEntity.getId());
             for (final DescriptorConfigEntity descriptorConfigEntity : descriptorConfigEntities) {
-                final ConfigurationModel newModel = new ConfigurationModel(descriptorEntity.getId(), descriptorConfigEntity.getId());
-                final List<FieldValueEntity> fieldValueEntities = fieldValueRepository.findByConfigId(descriptorConfigEntity.getId());
-                for (final FieldValueEntity fieldValueEntity : fieldValueEntities) {
-                    final DescriptorFieldEntity descriptorFieldEntity = descriptorFieldRepository
-                                                                                .findById(fieldValueEntity.getFieldId())
-                                                                                .orElseThrow(() -> new AlertDatabaseConstraintException("Field id cannot be null"));
-                    final String fieldKey = descriptorFieldEntity.getKey();
-                    final ConfigurationFieldModel fieldModel;
-                    if (descriptorFieldEntity.getSensitive()) {
-                        fieldModel = ConfigurationFieldModel.createSensitive(fieldKey);
-                    } else {
-                        fieldModel = ConfigurationFieldModel.create(fieldKey);
-                    }
-                    fieldModel.setFieldValue(fieldValueEntity.getValue());
-                    newModel.put(fieldModel);
-                }
+                final ConfigurationModel newModel = getConfig(descriptorConfigEntity.getId(), descriptorConfigEntity.getDescriptorId());
                 configs.add(newModel);
             }
         }
         return configs;
+    }
+
+    private ConfigurationModel getConfig(final Long configId, final Long descriptorId) throws AlertDatabaseConstraintException {
+        final ConfigurationModel newModel = new ConfigurationModel(descriptorId, configId);
+        final List<FieldValueEntity> fieldValueEntities = fieldValueRepository.findByConfigId(configId);
+        for (final FieldValueEntity fieldValueEntity : fieldValueEntities) {
+            final DescriptorFieldEntity descriptorFieldEntity = descriptorFieldRepository
+                                                                    .findById(fieldValueEntity.getFieldId())
+                                                                    .orElseThrow(() -> new AlertDatabaseConstraintException("Field id cannot be null"));
+            final String fieldKey = descriptorFieldEntity.getKey();
+            final ConfigurationFieldModel fieldModel;
+            if (descriptorFieldEntity.getSensitive()) {
+                fieldModel = ConfigurationFieldModel.createSensitive(fieldKey);
+            } else {
+                fieldModel = ConfigurationFieldModel.create(fieldKey);
+            }
+            fieldModel.setFieldValue(fieldValueEntity.getValue());
+            newModel.put(fieldModel);
+        }
+        return newModel;
     }
 
     private Long getDescriptorIdOrThrowException(final String descriptorName) throws AlertDatabaseConstraintException {
@@ -187,9 +203,9 @@ public class ConfigurationAccessor {
             throw new AlertDatabaseConstraintException("Descriptor name cannot be empty");
         }
         return registeredDescriptorRepository
-                       .findFirstByName(descriptorName)
-                       .map(RegisteredDescriptorEntity::getId)
-                       .orElseThrow(() -> new AlertDatabaseConstraintException("No descriptor with the provided name was registered"));
+                   .findFirstByName(descriptorName)
+                   .map(RegisteredDescriptorEntity::getId)
+                   .orElseThrow(() -> new AlertDatabaseConstraintException("No descriptor with the provided name was registered"));
     }
 
     private Long getFieldIdOrThrowException(final Long descriptorId, final String fieldKey) throws AlertDatabaseConstraintException {
@@ -200,9 +216,9 @@ public class ConfigurationAccessor {
             throw new AlertDatabaseConstraintException("Field key cannot be empty");
         }
         return descriptorFieldRepository
-                       .findFirstByDescriptorIdAndKey(descriptorId, fieldKey)
-                       .map(DescriptorFieldEntity::getId)
-                       .orElseThrow(() -> new AlertDatabaseConstraintException("A field with that key did not exist"));
+                   .findFirstByDescriptorIdAndKey(descriptorId, fieldKey)
+                   .map(DescriptorFieldEntity::getId)
+                   .orElseThrow(() -> new AlertDatabaseConstraintException("A field with that key did not exist"));
     }
 
     public final class ConfigurationModel {
@@ -211,9 +227,9 @@ public class ConfigurationAccessor {
         private final Map<String, ConfigurationFieldModel> configuredFields;
 
         private ConfigurationModel(final Long registeredDescriptorId, final Long descriptorConfigId) {
-            this.descriptorId = registeredDescriptorId;
-            this.configurationId = descriptorConfigId;
-            this.configuredFields = new HashMap<>();
+            descriptorId = registeredDescriptorId;
+            configurationId = descriptorConfigId;
+            configuredFields = new HashMap<>();
         }
 
         public Long getDescriptorId() {
