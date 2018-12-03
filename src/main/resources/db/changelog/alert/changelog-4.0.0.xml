@@ -5,9 +5,7 @@
             <column name="ID" type="BIGINT(19)" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="REGISTERED_DESCRIPTORS_KEY"/>
             </column>
-            <column name="NAME" type="VARCHAR(255)">
-                <constraints unique="true"/>
-            </column>
+            <column name="NAME" type="VARCHAR(255)"/>
             <column name="TYPE" type="VARCHAR(31)"/>
         </createTable>
     </changeSet>
@@ -32,7 +30,7 @@
                 referencedTableSchemaName="ALERT"
                 referencedTableName="REGISTERED_DESCRIPTORS"
                 referencedColumnNames="ID"
-                deleteCascade="true"
+                onDelete="CASCADE"
         />
     </changeSet>
     <changeSet author="gkillough" id="1543499878547-3">
@@ -50,12 +48,12 @@
                 referencedTableSchemaName="ALERT"
                 referencedTableName="REGISTERED_DESCRIPTORS"
                 referencedColumnNames="ID"
-                deleteCascade="true"
+                onDelete="CASCADE"
         />
     </changeSet>
     <changeSet author="gkillough" id="1543499878547-4">
         <createTable tableName="FIELD_VALUES" schemaName="ALERT">
-            <column name="ID" type="BIGINT(19)">
+            <column name="ID" type="BIGINT(19)" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="CONFIG_VALUES_KEY"/>
             </column>
             <column name="CONFIG_ID" type="BIGINT(19)"/>
@@ -70,7 +68,7 @@
                 referencedTableSchemaName="ALERT"
                 referencedTableName="DESCRIPTOR_CONFIGS"
                 referencedColumnNames="ID"
-                deleteCascade="true"
+                onDelete="CASCADE"
         />
         <addForeignKeyConstraint
                 baseTableSchemaName="ALERT"
@@ -80,7 +78,7 @@
                 referencedTableSchemaName="ALERT"
                 referencedTableName="DESCRIPTOR_FIELDS"
                 referencedColumnNames="ID"
-                deleteCascade="true"
+                onDelete="CASCADE"
         />
     </changeSet>
 </databaseChangeLog>

@@ -48,6 +48,7 @@ import com.synopsys.integration.alert.database.repository.descriptor.DescriptorC
 import com.synopsys.integration.alert.database.repository.descriptor.DescriptorFieldRepository;
 import com.synopsys.integration.alert.database.repository.descriptor.FieldValueRepository;
 import com.synopsys.integration.alert.database.repository.descriptor.RegisteredDescriptorRepository;
+import com.synopsys.integration.util.Stringable;
 
 @Component
 @Transactional
@@ -97,9 +98,6 @@ public class ConfigurationAccessor {
      * @return the config that was created
      */
     public ConfigurationModel createConfiguration(final String descriptorName, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
-        if (StringUtils.isEmpty(descriptorName)) {
-            throw new AlertDatabaseConstraintException("Descriptor name cannot be empty");
-        }
         final Long descriptorId = getDescriptorIdOrThrowException(descriptorName);
         final DescriptorConfigEntity descriptorConfigToSave = new DescriptorConfigEntity(descriptorId);
         final DescriptorConfigEntity savedDescriptorConfig = descriptorConfigsRepository.save(descriptorConfigToSave);
@@ -205,7 +203,7 @@ public class ConfigurationAccessor {
                        .orElseThrow(() -> new AlertDatabaseConstraintException("A field with that key did not exist"));
     }
 
-    public final class ConfigurationModel {
+    public final class ConfigurationModel extends Stringable {
         private final Long descriptorId;
         private final Long configurationId;
         private final Map<String, ConfigurationFieldModel> configuredFields;
