@@ -43,7 +43,7 @@ import com.synopsys.integration.util.Stringable;
 
 @Component
 @Transactional
-// TODO think about how we can version descriptors through code
+// TODO think about how we can maintain versions of descriptors through code
 public class DescriptorAccessor {
     private final RegisteredDescriptorRepository registeredDescriptorRepository;
     private final DescriptorFieldRepository descriptorFieldRepository;
