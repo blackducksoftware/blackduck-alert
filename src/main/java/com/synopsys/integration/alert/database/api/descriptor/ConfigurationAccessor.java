@@ -40,6 +40,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.entity.descriptor.DescriptorConfigEntity;
 import com.synopsys.integration.alert.database.entity.descriptor.DescriptorFieldEntity;
 import com.synopsys.integration.alert.database.entity.descriptor.FieldValueEntity;
@@ -52,20 +53,21 @@ import com.synopsys.integration.util.Stringable;
 
 @Component
 @Transactional
-// FIXME make sure encryption / decryption is implemented
 public class ConfigurationAccessor {
     private final RegisteredDescriptorRepository registeredDescriptorRepository;
     private final DescriptorFieldRepository descriptorFieldRepository;
     private final DescriptorConfigRepository descriptorConfigsRepository;
     private final FieldValueRepository fieldValueRepository;
+    private final EncryptionUtility encryptionUtility;
 
     @Autowired
     public ConfigurationAccessor(final RegisteredDescriptorRepository registeredDescriptorRepository, final DescriptorFieldRepository descriptorFieldRepository,
-        final DescriptorConfigRepository descriptorConfigsRepository, final FieldValueRepository fieldValueRepository) {
+        final DescriptorConfigRepository descriptorConfigsRepository, final FieldValueRepository fieldValueRepository, final EncryptionUtility encryptionUtility) {
         this.registeredDescriptorRepository = registeredDescriptorRepository;
         this.descriptorFieldRepository = descriptorFieldRepository;
         this.descriptorConfigsRepository = descriptorConfigsRepository;
         this.fieldValueRepository = fieldValueRepository;
+        this.encryptionUtility = encryptionUtility;
     }
 
     public Optional<ConfigurationModel> getConfigurationById(final Long id) throws AlertDatabaseConstraintException {
@@ -122,7 +124,7 @@ public class ConfigurationAccessor {
                                                                       .findFirstByDescriptorIdAndKey(createdConfig.getDescriptorId(), configuredField.getFieldKey())
                                                                       .orElseThrow(() -> new AlertDatabaseConstraintException("The config is attempting to set a field not associated with its descriptor"));
                     for (final String value : configuredField.getFieldValues()) {
-                        final FieldValueEntity newFieldValueEntity = new FieldValueEntity(createdConfig.getConfigurationId(), associatedField.getId(), value);
+                        final FieldValueEntity newFieldValueEntity = new FieldValueEntity(createdConfig.getConfigurationId(), associatedField.getId(), encrypt(value, configuredField.isSensitive()));
                         fieldValueRepository.save(newFieldValueEntity);
                     }
                 }
@@ -150,7 +152,7 @@ public class ConfigurationAccessor {
                 for (final ConfigurationFieldModel configFieldModel : configuredFields) {
                     final Long fieldId = getFieldIdOrThrowException(descriptorConfigEntity.getDescriptorId(), configFieldModel.getFieldKey());
                     for (final String value : configFieldModel.getFieldValues()) {
-                        final FieldValueEntity newFieldValue = new FieldValueEntity(descriptorConfigId, fieldId, value);
+                        final FieldValueEntity newFieldValue = new FieldValueEntity(descriptorConfigId, fieldId, encrypt(value, configFieldModel.isSensitive()));
                         fieldValueRepository.save(newFieldValue);
                     }
                     updatedConfig.put(configFieldModel);
@@ -201,7 +203,8 @@ public class ConfigurationAccessor {
             } else {
                 fieldModel = ConfigurationFieldModel.create(fieldKey);
             }
-            fieldModel.setFieldValue(fieldValueEntity.getValue());
+            final String decryptedValue = decrypt(fieldValueEntity.getValue(), fieldModel.isSensitive());
+            fieldModel.setFieldValue(decryptedValue);
             newModel.put(fieldModel);
         }
         return newModel;
@@ -228,6 +231,20 @@ public class ConfigurationAccessor {
                    .findFirstByDescriptorIdAndKey(descriptorId, fieldKey)
                    .map(DescriptorFieldEntity::getId)
                    .orElseThrow(() -> new AlertDatabaseConstraintException("A field with that key did not exist"));
+    }
+
+    private String encrypt(final String value, final Boolean shouldEncrypt) {
+        if (shouldEncrypt && value != null) {
+            return encryptionUtility.encrypt(value);
+        }
+        return value;
+    }
+
+    private String decrypt(final String value, final Boolean shouldDecrypt) {
+        if (shouldDecrypt && value != null) {
+            return encryptionUtility.decrypt(value);
+        }
+        return value;
     }
 
     public final class ConfigurationModel extends Stringable {
@@ -270,8 +287,9 @@ public class ConfigurationAccessor {
                 final ConfigurationFieldModel oldConfigField = configuredFields.get(fieldKey);
                 final List<String> values = combine(oldConfigField, configFieldModel);
                 oldConfigField.setFieldValues(values);
+            } else {
+                configuredFields.put(fieldKey, configFieldModel);
             }
-            configuredFields.put(fieldKey, configFieldModel);
         }
 
         private List<String> combine(final ConfigurationFieldModel first, final ConfigurationFieldModel second) {
