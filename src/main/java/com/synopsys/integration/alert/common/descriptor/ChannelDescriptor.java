@@ -28,35 +28,28 @@ import javax.jms.MessageListener;
 import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
 import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.database.ChannelDistributionRepositoryAccessor;
 
 public abstract class ChannelDescriptor extends Descriptor {
     private final String destinationName;
     private final MessageListener channelListener;
-    private final ChannelDistributionRepositoryAccessor channelDistributionRepositoryAccessor;
 
-    public ChannelDescriptor(final String name, final String destinationName, final MessageListener channelListener, final DescriptorActionApi distributionDescriptorActionApi,
-        final ChannelDistributionRepositoryAccessor channelDistributionRepositoryAccessor) {
+    public ChannelDescriptor(final String name, final String destinationName, final MessageListener channelListener, final DescriptorActionApi distributionDescriptorActionApi) {
         super(name, DescriptorType.CHANNEL);
         this.destinationName = destinationName;
         this.channelListener = channelListener;
-        this.channelDistributionRepositoryAccessor = channelDistributionRepositoryAccessor;
         addChannelDistributionRestApi(distributionDescriptorActionApi);
     }
 
-    public ChannelDescriptor(final String name, final String destinationName, final MessageListener channelListener, final DescriptorActionApi distributionDescriptorActionApi,
-        final ChannelDistributionRepositoryAccessor channelDistributionRepositoryAccessor,
-        final UIConfig distributionUIConfig) {
+    public ChannelDescriptor(final String name, final String destinationName, final MessageListener channelListener, final DescriptorActionApi distributionDescriptorActionApi, final UIConfig distributionUIConfig) {
         super(name, DescriptorType.CHANNEL);
         this.destinationName = destinationName;
         this.channelListener = channelListener;
-        this.channelDistributionRepositoryAccessor = channelDistributionRepositoryAccessor;
         addChannelDistributionUiConfigs(distributionDescriptorActionApi, distributionUIConfig);
     }
 
     public ChannelDescriptor(final String name, final String destinationName, final MessageListener channelListener, final DescriptorActionApi distributionDescriptorActionApi, final UIConfig distributionUIConfig,
-        final DescriptorActionApi globalDescriptorActionApi, final UIConfig globalUIConfig, final ChannelDistributionRepositoryAccessor channelDistributionRepositoryAccessor) {
-        this(name, destinationName, channelListener, distributionDescriptorActionApi, channelDistributionRepositoryAccessor, distributionUIConfig);
+        final DescriptorActionApi globalDescriptorActionApi, final UIConfig globalUIConfig) {
+        this(name, destinationName, channelListener, distributionDescriptorActionApi, distributionUIConfig);
         addGlobalUiConfigs(globalDescriptorActionApi, globalUIConfig);
     }
 
@@ -66,10 +59,6 @@ public abstract class ChannelDescriptor extends Descriptor {
 
     public MessageListener getChannelListener() {
         return channelListener;
-    }
-
-    public ChannelDistributionRepositoryAccessor getChannelDistributionRepositoryAccessor() {
-        return channelDistributionRepositoryAccessor;
     }
 
 }

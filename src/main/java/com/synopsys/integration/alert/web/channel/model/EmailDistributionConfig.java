@@ -26,8 +26,6 @@ package com.synopsys.integration.alert.web.channel.model;
 import java.util.List;
 import java.util.Set;
 
-import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
-
 public class EmailDistributionConfig extends CommonDistributionConfig {
     private String emailTemplateLogoImage;
     private String emailSubjectLine;

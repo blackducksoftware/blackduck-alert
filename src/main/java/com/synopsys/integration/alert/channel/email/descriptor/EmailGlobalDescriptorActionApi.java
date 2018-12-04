@@ -30,10 +30,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
-import com.synopsys.integration.alert.database.channel.email.EmailGlobalRepositoryAccessor;
-import com.synopsys.integration.alert.web.channel.model.EmailGlobalConfig;
-import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -43,24 +41,25 @@ public class EmailGlobalDescriptorActionApi extends DescriptorActionApi {
     private final EmailGroupChannel emailGroupChannel;
 
     @Autowired
-    public EmailGlobalDescriptorActionApi(final EmailGlobalTypeConverter databaseContentConverter, final EmailGlobalRepositoryAccessor repositoryAccessor, final EmailGlobalStartupComponent startupComponent,
-            final EmailGroupChannel emailGroupChannel) {
-        super(databaseContentConverter, repositoryAccessor, startupComponent);
+    public EmailGlobalDescriptorActionApi(final EmailGlobalStartupComponent startupComponent, final EmailGroupChannel emailGroupChannel) {
+        super(startupComponent);
         this.emailGroupChannel = emailGroupChannel;
     }
 
     // TODO Global email config doesn't validate properly or give any indication that saving was successful
     @Override
-    public void validateConfig(final Config restModel, final Map<String, String> fieldErrors) {
-        final EmailGlobalConfig emailRestModel = (EmailGlobalConfig) restModel;
+    public void validateConfig(FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
+        String port = fieldAccessor.getString(EmailGlobalUIConfig.KEY_FROM);
+        String connectionTimeout = fieldAccessor.getString(EmailGlobalUIConfig.KEY_CONNECTION_TIMEOUT);
+        String timeout = fieldAccessor.getString(EmailGlobalUIConfig.KEY_TIMEOUT);
 
-        if (StringUtils.isNotBlank(emailRestModel.getMailSmtpPort()) && !StringUtils.isNumeric(emailRestModel.getMailSmtpPort())) {
+        if (StringUtils.isNotBlank(port) && !StringUtils.isNumeric(port)) {
             fieldErrors.put("mailSmtpPort", NOT_AN_INTEGER);
         }
-        if (StringUtils.isNotBlank(emailRestModel.getMailSmtpConnectionTimeout()) && !StringUtils.isNumeric(emailRestModel.getMailSmtpConnectionTimeout())) {
+        if (StringUtils.isNotBlank(connectionTimeout) && !StringUtils.isNumeric(connectionTimeout)) {
             fieldErrors.put("mailSmtpConnectionTimeout", NOT_AN_INTEGER);
         }
-        if (StringUtils.isNotBlank(emailRestModel.getMailSmtpTimeout()) && !StringUtils.isNumeric(emailRestModel.getMailSmtpTimeout())) {
+        if (StringUtils.isNotBlank(timeout) && !StringUtils.isNumeric(timeout)) {
             fieldErrors.put("mailSmtpTimeout", NOT_AN_INTEGER);
         }
     }

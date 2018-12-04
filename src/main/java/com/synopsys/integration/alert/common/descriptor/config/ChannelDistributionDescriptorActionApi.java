@@ -25,27 +25,25 @@ package com.synopsys.integration.alert.common.descriptor.config;
 
 import com.synopsys.integration.alert.channel.DistributionChannel;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
-import com.synopsys.integration.alert.database.RepositoryAccessor;
-import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class ChannelDistributionDescriptorActionApi extends DescriptorActionApi {
     private final DistributionChannel distributionChannel;
 
-    public ChannelDistributionDescriptorActionApi(final TypeConverter typeConverter, final RepositoryAccessor repositoryAccessor, final DistributionChannel distributionChannel) {
-        super(typeConverter, repositoryAccessor);
+    public ChannelDistributionDescriptorActionApi(final DistributionChannel distributionChannel) {
+        super();
         this.distributionChannel = distributionChannel;
     }
 
-    public ChannelDistributionDescriptorActionApi(final TypeConverter typeConverter, final RepositoryAccessor repositoryAccessor, final DistributionChannel distributionChannel, final StartupComponent startupComponent) {
-        super(typeConverter, repositoryAccessor, startupComponent);
+    public ChannelDistributionDescriptorActionApi(final DistributionChannel distributionChannel, final StartupComponent startupComponent) {
+        super(startupComponent);
         this.distributionChannel = distributionChannel;
     }
 
     @Override
     public void testConfig(final TestConfigModel testConfigModel) throws IntegrationException {
-        final DistributionEvent event = createChannelTestEvent((CommonDistributionConfig) testConfigModel.getRestModel());
+        final DistributionEvent event = createChannelTestEvent(testConfigModel.getCommonDistributionConfiguration());
         distributionChannel.sendMessage(event);
     }
 }
