@@ -32,6 +32,7 @@ import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.TestProperties;
 import com.synopsys.integration.alert.TestPropertyKey;
 import com.synopsys.integration.alert.database.api.user.UserAccessor;
+import com.synopsys.integration.alert.database.api.user.UserModel;
 import com.synopsys.integration.alert.database.user.UserEntity;
 import com.synopsys.integration.alert.database.user.UserRepository;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
@@ -88,7 +89,12 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
         userAccessor.addUser(userName, mockLoginRestModel.getBlackDuckPassword());
         final boolean userAuthenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel());
 
-        assertFalse(userAuthenticated);
+        assertTrue(userAuthenticated);
+        final Optional<UserModel> userModel = userAccessor.getUser(userName);
+        assertTrue(userModel.isPresent());
+        final UserModel model = userModel.get();
+        assertFalse(model.hasRole("ADMIN"));
+        assertTrue(model.getRoles().isEmpty());
 
         final Optional<UserEntity> userEntity = userRepository.findByUserName(userName);
         userEntity.ifPresent(entity -> {
