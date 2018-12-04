@@ -1,0 +1,84 @@
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <changeSet author="gkillough" id="1543499878547-1">
+        <createTable tableName="REGISTERED_DESCRIPTORS" schemaName="ALERT">
+            <column name="ID" type="BIGINT(19)" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="REGISTERED_DESCRIPTORS_KEY"/>
+            </column>
+            <column name="NAME" type="VARCHAR(255)"/>
+            <column name="TYPE" type="VARCHAR(31)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="gkillough" id="1543499878547-2">
+        <createTable tableName="DESCRIPTOR_FIELDS" schemaName="ALERT">
+            <column name="ID" type="BIGINT(19)" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="DESCRIPTOR_FIELDS_KEY"/>
+            </column>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)"/>
+            <column name="SOURCE_KEY" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SENSITIVE" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="DESCRIPTOR_FIELDS"
+                baseColumnNames="DESCRIPTOR_ID"
+                constraintName="FK_DESCRIPTOR_FIELD"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="REGISTERED_DESCRIPTORS"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
+    </changeSet>
+    <changeSet author="gkillough" id="1543499878547-3">
+        <createTable tableName="DESCRIPTOR_CONFIGS" schemaName="ALERT">
+            <column name="ID" type="BIGINT(19)" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="DESCRIPTOR_CONFIGS_KEY"/>
+            </column>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)"/>
+        </createTable>
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="DESCRIPTOR_CONFIGS"
+                baseColumnNames="DESCRIPTOR_ID"
+                constraintName="FK_DESCRIPTOR_CONFIG"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="REGISTERED_DESCRIPTORS"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
+    </changeSet>
+    <changeSet author="gkillough" id="1543499878547-4">
+        <createTable tableName="FIELD_VALUES" schemaName="ALERT">
+            <column name="ID" type="BIGINT(19)" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="CONFIG_VALUES_KEY"/>
+            </column>
+            <column name="CONFIG_ID" type="BIGINT(19)"/>
+            <column name="FIELD_ID" type="BIGINT(19)"/>
+            <column name="FIELD_VALUE" type="VARCHAR(255)"/>
+        </createTable>
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="FIELD_VALUES"
+                baseColumnNames="CONFIG_ID"
+                constraintName="FK_CONFIG_VALUE"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="DESCRIPTOR_CONFIGS"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="FIELD_VALUES"
+                baseColumnNames="FIELD_ID"
+                constraintName="FK_DESCRIPTOR_FIELD_VALUE"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="DESCRIPTOR_FIELDS"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
+    </changeSet>
+</databaseChangeLog>
