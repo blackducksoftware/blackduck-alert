@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,8 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
+import com.synopsys.integration.alert.database.api.user.UserAccessor;
+import com.synopsys.integration.alert.database.api.user.UserModel;
 import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -56,15 +59,17 @@ public class SystemValidator {
     private final EncryptionUtility encryptionUtility;
     private final SystemStatusUtility systemStatusUtility;
     private final SystemMessageUtility systemMessageUtility;
+    private final UserAccessor userAccessor;
 
     @Autowired
     public SystemValidator(final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final EncryptionUtility encryptionUtility, final SystemStatusUtility systemStatusUtility,
-        final SystemMessageUtility systemMessageUtility) {
+        final SystemMessageUtility systemMessageUtility, final UserAccessor userAccessor) {
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
         this.encryptionUtility = encryptionUtility;
         this.systemStatusUtility = systemStatusUtility;
         this.systemMessageUtility = systemMessageUtility;
+        this.userAccessor = userAccessor;
     }
 
     public boolean validate() {
@@ -74,12 +79,32 @@ public class SystemValidator {
     public boolean validate(final Map<String, String> fieldErrors) {
         logger.info("----------------------------------------");
         logger.info("Validating system configuration....");
+        final boolean adminUserPasswordValid = validateDefaultAdminPasswordSet(fieldErrors);
         final boolean encryptionValid = validateEncryptionProperties(fieldErrors);
-        final boolean providersValid = validateProviders(fieldErrors);
-        final boolean valid = encryptionValid && providersValid;
+        final boolean providersValid = validateProviders();
+        final boolean valid = adminUserPasswordValid && encryptionValid && providersValid;
         logger.info("System configuration valid: {}", valid);
         logger.info("----------------------------------------");
         systemStatusUtility.setSystemInitialized(valid);
+        return valid;
+    }
+
+    public boolean validateDefaultAdminPasswordSet(final Map<String, String> fieldErrors) {
+        final Optional<UserModel> userModel = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER);
+        final boolean valid;
+        if (userModel.isPresent()) {
+            valid = StringUtils.isNotBlank(userModel.get().getPassword());
+            if (valid) {
+
+            } else {
+                final String errorMessage = "Default admin user password missing";
+                fieldErrors.put("defaultAdminPassword", errorMessage);
+                systemMessageUtility.addSystemMessage(errorMessage, SystemMessageSeverity.ERROR, SystemMessageType.DEFAULT_ADMIN_USER_ERROR);
+            }
+        } else {
+            valid = false;
+        }
+
         return valid;
     }
 
@@ -107,15 +132,15 @@ public class SystemValidator {
         return valid;
     }
 
-    public boolean validateProviders(final Map<String, String> fieldErrors) {
+    public boolean validateProviders() {
         final boolean valid;
         logger.info("Validating configured providers: ");
-        valid = validateBlackDuckProvider(fieldErrors);
+        valid = validateBlackDuckProvider();
         return valid;
     }
 
     // TODO add this validation to provider descriptors so we can run this when it's defined
-    public boolean validateBlackDuckProvider(final Map<String, String> fieldErrors) {
+    public boolean validateBlackDuckProvider() {
         logger.info("Validating BlackDuck Provider...");
         boolean valid = true;
         try {
@@ -126,8 +151,7 @@ public class SystemValidator {
             if (!blackDuckUrlOptional.isPresent()) {
                 logger.error("  -> BlackDuck Provider Invalid; cause: Black Duck URL missing...");
                 final String errorMessage = "BlackDuck Provider invalid: URL missing";
-                fieldErrors.put("blackDuckProviderUrl", errorMessage);
-                systemMessageUtility.addSystemMessage(errorMessage, SystemMessageSeverity.ERROR, SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING);
+                systemMessageUtility.addSystemMessage(errorMessage, SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING);
                 valid = false;
             } else {
                 final String blackDuckUrlString = blackDuckUrlOptional.get();
@@ -149,8 +173,7 @@ public class SystemValidator {
         } catch (final MalformedURLException | IntegrationException ex) {
             logger.error("  -> BlackDuck Provider Invalid; cause: {}", ex.getMessage());
             logger.debug("  -> BlackDuck Provider Stack Trace: ", ex);
-            fieldErrors.put("blackDuckProviderUrl", "BlackDuck Provider Url invalid.");
-            systemMessageUtility.addSystemMessage("BlackDuck Provider invalid: " + ex.getMessage(), SystemMessageSeverity.ERROR, SystemMessageType.BLACKDUCK_PROVIDER_CONNECTIVITY);
+            systemMessageUtility.addSystemMessage("BlackDuck Provider invalid: " + ex.getMessage(), SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_CONNECTIVITY);
             valid = false;
         }
 
@@ -159,7 +182,7 @@ public class SystemValidator {
             systemMessageUtility.removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_URL_MISSING);
             systemMessageUtility.removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST);
         }
-        return valid;
+        return true;
     }
 
     private ProxyInfoBuilder createProxyInfoBuilder() {

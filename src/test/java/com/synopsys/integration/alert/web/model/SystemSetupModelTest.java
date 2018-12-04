@@ -30,6 +30,8 @@ public class SystemSetupModelTest {
 
     @Test
     public void testFullConstructor() {
+        final String defaultAdminPassword = "password";
+        final boolean defaultAdminPasswordSet = true;
         final String blackDuckProviderUrl = "url";
         final Integer blackDuckConnectionTimeout = 100;
         final String blackDuckApiToken = "token";
@@ -44,7 +46,7 @@ public class SystemSetupModelTest {
         final String proxyPassword = "password";
         final boolean proxyPasswordSet = true;
 
-        final SystemSetupModel configuration = SystemSetupModel.of(blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet,
+        final SystemSetupModel configuration = SystemSetupModel.of(defaultAdminPassword, defaultAdminPasswordSet, blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet,
             globalEncryptionPassword, isGlobalEncryptionPasswordSet, globalEncryptionSalt, isGlobalEncryptionSaltSet,
             proxyHost, proxyPort, proxyUsername, proxyPassword, proxyPasswordSet);
 

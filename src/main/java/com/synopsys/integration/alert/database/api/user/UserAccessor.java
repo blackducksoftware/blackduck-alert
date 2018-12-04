@@ -45,6 +45,7 @@ import com.synopsys.integration.alert.database.user.UserRepository;
 
 @Component
 public class UserAccessor {
+    public static final String DEFAULT_ADMIN_USER = "sysadmin";
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final UserRoleRepository userRoleRepository;
