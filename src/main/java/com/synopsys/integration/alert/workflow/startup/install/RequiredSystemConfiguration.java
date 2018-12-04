@@ -26,6 +26,8 @@ package com.synopsys.integration.alert.workflow.startup.install;
 import com.synopsys.integration.util.Stringable;
 
 public class RequiredSystemConfiguration extends Stringable {
+    private final String defaultAdminPassword;
+    private final boolean defaultAdminPasswordSet;
     private final String blackDuckProviderUrl;
     private final Integer blackDuckConnectionTimeout;
     private final String blackDuckApiToken;
@@ -39,17 +41,19 @@ public class RequiredSystemConfiguration extends Stringable {
     private final String proxyUsername;
     private final String proxyPassword;
 
-    public RequiredSystemConfiguration(final String blackDuckProviderUrl, final Integer blackDuckConnectionTimeout, final String blackDuckApiToken,
+    public RequiredSystemConfiguration(final boolean defaultAdminPasswordSet, final String blackDuckProviderUrl, final Integer blackDuckConnectionTimeout, final String blackDuckApiToken,
         final boolean isGlobalEncryptionPasswordSet,
         final boolean isGlobalEncryptionSaltSet,
         final String proxyHost, final String proxyPort, final String proxyUsername, final String proxyPassword) {
-        this(blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, null, isGlobalEncryptionPasswordSet, null, isGlobalEncryptionSaltSet, proxyHost, proxyPort, proxyUsername, proxyPassword);
+        this(null, defaultAdminPasswordSet, blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, null, isGlobalEncryptionPasswordSet, null, isGlobalEncryptionSaltSet, proxyHost, proxyPort, proxyUsername, proxyPassword);
     }
 
-    public RequiredSystemConfiguration(final String blackDuckProviderUrl, final Integer blackDuckConnectionTimeout, final String blackDuckApiToken,
+    public RequiredSystemConfiguration(final String defaultAdminPassword, final boolean defaultAdminPasswordSet, final String blackDuckProviderUrl, final Integer blackDuckConnectionTimeout, final String blackDuckApiToken,
         final String globalEncryptionPassword, final boolean isGlobalEncryptionPasswordSet,
         final String globalEncryptionSalt, final boolean isGlobalEncryptionSaltSet,
         final String proxyHost, final String proxyPort, final String proxyUsername, final String proxyPassword) {
+        this.defaultAdminPassword = defaultAdminPassword;
+        this.defaultAdminPasswordSet = defaultAdminPasswordSet;
         this.blackDuckProviderUrl = blackDuckProviderUrl;
         this.blackDuckConnectionTimeout = blackDuckConnectionTimeout;
         this.blackDuckApiToken = blackDuckApiToken;
@@ -61,6 +65,14 @@ public class RequiredSystemConfiguration extends Stringable {
         this.proxyPort = proxyPort;
         this.proxyUsername = proxyUsername;
         this.proxyPassword = proxyPassword;
+    }
+
+    public String getDefaultAdminPassword() {
+        return defaultAdminPassword;
+    }
+
+    public boolean isDefaultAdminPasswordSet() {
+        return defaultAdminPasswordSet;
     }
 
     public String getBlackDuckProviderUrl() {

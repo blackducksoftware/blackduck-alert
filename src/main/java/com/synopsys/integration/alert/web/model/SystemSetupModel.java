@@ -26,6 +26,9 @@ package com.synopsys.integration.alert.web.model;
 import com.synopsys.integration.alert.common.annotation.SensitiveField;
 
 public class SystemSetupModel extends MaskedModel {
+    @SensitiveField
+    private String defaultAdminPassword;
+    private boolean defaultAdminPasswordSet;
     private String blackDuckProviderUrl;
     private Integer blackDuckConnectionTimeout;
     @SensitiveField
@@ -49,23 +52,29 @@ public class SystemSetupModel extends MaskedModel {
 
     }
 
-    public static final SystemSetupModel of(final String blackDuckProviderUrl, final Integer blackDuckConnectionTimeout, final String blackDuckApiToken, final boolean blackDuckApiTokenSet,
+    public static final SystemSetupModel of(final String defaultAdminPassword, final boolean defaultAdminPasswordSet, final String blackDuckProviderUrl, final Integer blackDuckConnectionTimeout, final String blackDuckApiToken,
+        final boolean blackDuckApiTokenSet,
         final String globalEncryptionPassword, final boolean globalEncryptionPasswordSet, final String globalEncryptionSalt, final boolean globalEncryptionSaltSet,
         final String proxyHost, final String proxyPort, final String proxyUsername, final String proxyPassword, final boolean proxyPasswordSet) {
-        return new SystemSetupModel(blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet, globalEncryptionPassword, globalEncryptionPasswordSet, globalEncryptionSalt, globalEncryptionSaltSet, proxyHost,
+        return new SystemSetupModel(defaultAdminPassword, defaultAdminPasswordSet, blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet, globalEncryptionPassword, globalEncryptionPasswordSet,
+            globalEncryptionSalt,
+            globalEncryptionSaltSet, proxyHost,
             proxyPort, proxyUsername, proxyPassword, proxyPasswordSet);
     }
 
-    public static final SystemSetupModel of(final String blackDuckProviderUrl, final Integer blackDuckConnectionTimeout, final boolean blackDuckApiTokenSet,
+    public static final SystemSetupModel of(final boolean defaultAdminPasswordSet, final String blackDuckProviderUrl, final Integer blackDuckConnectionTimeout, final boolean blackDuckApiTokenSet,
         final boolean globalEncryptionPasswordSet, final boolean globalEncryptionSaltSet,
         final String proxyHost, final String proxyPort, final String proxyUsername, final boolean proxyPasswordSet) {
-        return new SystemSetupModel(blackDuckProviderUrl, blackDuckConnectionTimeout, null, blackDuckApiTokenSet, null, globalEncryptionPasswordSet, null, globalEncryptionSaltSet, proxyHost,
+        return new SystemSetupModel(null, defaultAdminPasswordSet, blackDuckProviderUrl, blackDuckConnectionTimeout, null, blackDuckApiTokenSet, null, globalEncryptionPasswordSet, null, globalEncryptionSaltSet, proxyHost,
             proxyPort, proxyUsername, null, proxyPasswordSet);
     }
 
-    private SystemSetupModel(final String blackDuckProviderUrl, final Integer blackDuckConnectionTimeout, final String blackDuckApiToken, final boolean blackDuckApiTokenSet,
+    private SystemSetupModel(final String defaultAdminPassword, final boolean defaultAdminPasswordSet, final String blackDuckProviderUrl, final Integer blackDuckConnectionTimeout, final String blackDuckApiToken,
+        final boolean blackDuckApiTokenSet,
         final String globalEncryptionPassword, final boolean globalEncryptionPasswordSet, final String globalEncryptionSalt, final boolean globalEncryptionSaltSet,
         final String proxyHost, final String proxyPort, final String proxyUsername, final String proxyPassword, final boolean proxyPasswordSet) {
+        this.defaultAdminPassword = defaultAdminPassword;
+        this.defaultAdminPasswordSet = defaultAdminPasswordSet;
         this.blackDuckProviderUrl = blackDuckProviderUrl;
         this.blackDuckConnectionTimeout = blackDuckConnectionTimeout;
         this.blackDuckApiToken = blackDuckApiToken;
@@ -79,6 +88,14 @@ public class SystemSetupModel extends MaskedModel {
         this.proxyUsername = proxyUsername;
         this.proxyPassword = proxyPassword;
         this.proxyPasswordSet = proxyPasswordSet;
+    }
+
+    public String getDefaultAdminPassword() {
+        return defaultAdminPassword;
+    }
+
+    public boolean isDefaultAdminPasswordSet() {
+        return defaultAdminPasswordSet;
     }
 
     public String getBlackDuckProviderUrl() {

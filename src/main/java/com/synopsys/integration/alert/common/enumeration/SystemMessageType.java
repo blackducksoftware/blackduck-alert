@@ -24,6 +24,7 @@
 package com.synopsys.integration.alert.common.enumeration;
 
 public enum SystemMessageType {
+    DEFAULT_ADMIN_USER_ERROR,
     ENCRYPTION_CONFIGURATION_ERROR,
     BLACKDUCK_PROVIDER_URL_MISSING,
     BLACKDUCK_PROVIDER_CONNECTIVITY,
