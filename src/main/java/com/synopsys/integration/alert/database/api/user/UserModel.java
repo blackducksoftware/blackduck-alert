@@ -36,7 +36,8 @@ public class UserModel {
     private final List<GrantedAuthority> roles;
 
     public static final UserModel of(final String userName, final String password, final Collection<String> roles) {
-        final List<GrantedAuthority> roleAuthorities = roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+        // Spring requires the roles to start with ROLE_
+        final List<GrantedAuthority> roleAuthorities = roles.stream().map(role -> "ROLE_" + role).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
         return new UserModel(userName, password, roleAuthorities);
     }
 
