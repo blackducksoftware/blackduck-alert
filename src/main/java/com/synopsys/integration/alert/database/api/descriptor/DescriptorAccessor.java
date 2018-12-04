@@ -113,13 +113,14 @@ public class DescriptorAccessor {
         return false;
     }
 
-    public List<DescriptorFieldModel> getFieldsForDescriptorId(final Long descriptorId) throws AlertDatabaseConstraintException {
-        findDescriptorById(descriptorId);
-        return descriptorFieldRepository
-                       .findByDescriptorId(descriptorId)
-                       .stream()
-                       .map(entity -> new DescriptorFieldModel(entity.getKey(), entity.getSensitive()))
-                       .collect(Collectors.toList());
+    public List<DescriptorFieldModel> getFieldsForDescriptor(final String descriptorName) throws AlertDatabaseConstraintException {
+        final RegisteredDescriptorEntity descriptor = findDescriptorByName(descriptorName);
+        return getFieldsForDescriptorId(descriptor.getId());
+    }
+
+    public List<DescriptorFieldModel> getFieldsForDescriptorById(final Long descriptorId) throws AlertDatabaseConstraintException {
+        final RegisteredDescriptorEntity descriptor = findDescriptorById(descriptorId);
+        return getFieldsForDescriptorId(descriptor.getId());
     }
 
     public DescriptorFieldModel addDescriptorField(final Long descriptorId, final DescriptorFieldModel descriptorField) throws AlertDatabaseConstraintException {
@@ -138,14 +139,17 @@ public class DescriptorAccessor {
         return new DescriptorFieldModel(createdDescriptorFieldEntity.getKey(), createdDescriptorFieldEntity.getSensitive());
     }
 
-    public DescriptorFieldModel updateDescriptorField(final Long descriptorId, final DescriptorFieldModel descriptorField) throws AlertDatabaseConstraintException {
+    public DescriptorFieldModel updateDescriptorFieldKey(final Long descriptorId, final String oldKey, final String newKey) throws AlertDatabaseConstraintException {
         // The following method will verify the descriptor exists, otherwise throw an exception:
         findDescriptorById(descriptorId);
-        if (descriptorField == null) {
-            throw new AlertDatabaseConstraintException("The descriptor field cannot be null");
+        if (StringUtils.isEmpty(oldKey)) {
+            throw new AlertDatabaseConstraintException("The old field key cannot be empty");
         }
-        final DescriptorFieldEntity foundDescriptorFieldEntity = findFieldByKey(descriptorId, descriptorField.getKey());
-        final DescriptorFieldEntity descriptorFieldEntityToUpdate = new DescriptorFieldEntity(descriptorId, descriptorField.getKey(), descriptorField.getSensitive());
+        if (StringUtils.isEmpty(newKey)) {
+            throw new AlertDatabaseConstraintException("The new field key cannot be empty");
+        }
+        final DescriptorFieldEntity foundDescriptorFieldEntity = findFieldByKey(descriptorId, oldKey);
+        final DescriptorFieldEntity descriptorFieldEntityToUpdate = new DescriptorFieldEntity(descriptorId, newKey, foundDescriptorFieldEntity.getSensitive());
         descriptorFieldEntityToUpdate.setId(foundDescriptorFieldEntity.getId());
         final DescriptorFieldEntity savedDescriptorFieldEntity = descriptorFieldRepository.save(descriptorFieldEntityToUpdate);
         return new DescriptorFieldModel(savedDescriptorFieldEntity.getKey(), savedDescriptorFieldEntity.getSensitive());
@@ -180,6 +184,15 @@ public class DescriptorAccessor {
         }
     }
 
+    private RegisteredDescriptorEntity findDescriptorByName(final String name) throws AlertDatabaseConstraintException {
+        if (StringUtils.isEmpty(name)) {
+            throw new AlertDatabaseConstraintException("Descriptor name cannot be empty");
+        }
+        return registeredDescriptorRepository
+                       .findFirstByName(name)
+                       .orElseThrow(() -> new AlertDatabaseConstraintException("A descriptor with that name did not exist"));
+    }
+
     private RegisteredDescriptorEntity findDescriptorById(final Long id) throws AlertDatabaseConstraintException {
         if (id == null) {
             throw new AlertDatabaseConstraintException("The descriptor id cannot be null");
@@ -187,6 +200,14 @@ public class DescriptorAccessor {
         return registeredDescriptorRepository
                        .findById(id)
                        .orElseThrow(() -> new AlertDatabaseConstraintException("A descriptor with that id did not exist"));
+    }
+
+    private List<DescriptorFieldModel> getFieldsForDescriptorId(final Long descriptorId) {
+        return descriptorFieldRepository
+                       .findByDescriptorId(descriptorId)
+                       .stream()
+                       .map(entity -> new DescriptorFieldModel(entity.getKey(), entity.getSensitive()))
+                       .collect(Collectors.toList());
     }
 
     private DescriptorFieldEntity findFieldByKey(final Long descriptorId, final String key) throws AlertDatabaseConstraintException {
