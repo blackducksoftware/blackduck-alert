@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.database.api.descriptor;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -33,7 +34,6 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
 
     @Autowired
     private DescriptorAccessor descriptorAccessor;
-
     @Autowired
     private RegisteredDescriptorRepository registeredDescriptorRepository;
     @Autowired
@@ -191,19 +191,28 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
 
     @Test
     public void updateConfigurationTest() throws AlertDatabaseConstraintException {
-        final ConfigurationModel createdModel = configurationAccessor.createEmptyConfiguration(DESCRIPTOR_NAME);
-        assertEquals(0, createdModel.getCopyOfFieldList().size());
+        final String initialValue = "initial value";
+        final ConfigurationFieldModel originalField = ConfigurationFieldModel.create(FIELD_KEY_INSENSITIVE);
+        originalField.setFieldValue(initialValue);
 
-        final String testValue = "test value";
-        final ConfigurationFieldModel fieldToAdd = ConfigurationFieldModel.create(FIELD_KEY_INSENSITIVE);
-        fieldToAdd.setFieldValue(testValue);
+        final ConfigurationModel createdModel = configurationAccessor.createConfiguration(DESCRIPTOR_NAME, Arrays.asList(originalField));
+        final List<ConfigurationFieldModel> copyOfFieldList = createdModel.getCopyOfFieldList();
+        assertEquals(1, copyOfFieldList.size());
+        final Optional<String> optionalValue = copyOfFieldList.get(0).getFieldValue();
+        assertTrue(optionalValue.isPresent());
+        assertEquals(initialValue, optionalValue.get());
 
-        final ConfigurationModel updatedModel = configurationAccessor.updateConfiguration(createdModel.getConfigurationId(), Arrays.asList(fieldToAdd));
+        final String additionalValue = "additional value";
+        final ConfigurationFieldModel newFieldWithSameKey = ConfigurationFieldModel.create(FIELD_KEY_INSENSITIVE);
+        newFieldWithSameKey.setFieldValue(additionalValue);
+
+        final ConfigurationModel updatedModel = configurationAccessor.updateConfiguration(createdModel.getConfigurationId(), Arrays.asList(originalField, newFieldWithSameKey));
         final List<ConfigurationFieldModel> configuredFields = updatedModel.getCopyOfFieldList();
         assertEquals(1, configuredFields.size());
         final ConfigurationFieldModel configuredField = configuredFields.get(0);
-        assertEquals(fieldToAdd, configuredField);
-        assertEquals(fieldToAdd.getFieldValue().get(), configuredField.getFieldValue().get());
+        assertEquals(originalField, configuredField);
+        assertTrue(configuredField.getFieldValues().contains(initialValue));
+        assertTrue(configuredField.getFieldValues().contains(additionalValue));
     }
 
     @Test
@@ -224,6 +233,18 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
             fail("Expected exception to be thrown");
         } catch (final AlertDatabaseConstraintException e) {
             assertEquals("A config with that id did not exist", e.getMessage());
+        }
+    }
+
+    @Test
+    public void updateConfigurationWithInvalidFieldKeyTest() {
+        try {
+            final ConfigurationModel configurationModel = configurationAccessor.createEmptyConfiguration(DESCRIPTOR_NAME);
+            final ConfigurationFieldModel field = ConfigurationFieldModel.create(null);
+            configurationAccessor.updateConfiguration(configurationModel.getConfigurationId(), Arrays.asList(field));
+            fail("Expected exception to be thrown");
+        } catch (final AlertDatabaseConstraintException e) {
+            assertEquals("Field key cannot be empty", e.getMessage());
         }
     }
 
@@ -254,6 +275,15 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
         } catch (final AlertDatabaseConstraintException e) {
             assertEquals("The config id cannot be null", e.getMessage());
         }
+    }
+
+    @Test
+    public void configurationModelTest() throws AlertDatabaseConstraintException {
+        final ConfigurationModel configurationModel = configurationAccessor.createEmptyConfiguration(DESCRIPTOR_NAME);
+        assertNotNull(configurationModel.getConfigurationId());
+        assertNotNull(configurationModel.getDescriptorId());
+        assertNotNull(configurationModel.getCopyOfFieldList());
+        assertNotNull(configurationModel.getCopyOfKeyToFieldMap());
     }
 
     private void createConfigWithEmptyDescriptorNameTestHelper(final String descriptorName) {

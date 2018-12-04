@@ -270,8 +270,9 @@ public class ConfigurationAccessor {
                 final ConfigurationFieldModel oldConfigField = configuredFields.get(fieldKey);
                 final List<String> values = combine(oldConfigField, configFieldModel);
                 oldConfigField.setFieldValues(values);
+            } else {
+                configuredFields.put(fieldKey, configFieldModel);
             }
-            configuredFields.put(fieldKey, configFieldModel);
         }
 
         private List<String> combine(final ConfigurationFieldModel first, final ConfigurationFieldModel second) {
