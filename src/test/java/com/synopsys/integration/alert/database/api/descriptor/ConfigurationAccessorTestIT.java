@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.api.descriptor.ConfigurationAccessor.ConfigurationModel;
 import com.synopsys.integration.alert.database.entity.descriptor.DescriptorConfigEntity;
 import com.synopsys.integration.alert.database.repository.descriptor.DescriptorConfigRepository;
@@ -42,12 +43,14 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
     private DescriptorConfigRepository descriptorConfigsRepository;
     @Autowired
     private FieldValueRepository fieldValueRepository;
+    @Autowired
+    private EncryptionUtility encryptionUtility;
 
     private ConfigurationAccessor configurationAccessor;
 
     @Before
     public void init() throws AlertDatabaseConstraintException {
-        configurationAccessor = new ConfigurationAccessor(registeredDescriptorRepository, descriptorFieldRepository, descriptorConfigsRepository, fieldValueRepository);
+        configurationAccessor = new ConfigurationAccessor(registeredDescriptorRepository, descriptorFieldRepository, descriptorConfigsRepository, fieldValueRepository, encryptionUtility);
         descriptorAccessor.registerDescriptor(DESCRIPTOR_NAME, DESCRIPTOR_TYPE, Arrays.asList(DESCRIPTOR_FIELD_INSENSITIVE, DESCRIPTOR_FIELD_SENSITIVE));
     }
 
