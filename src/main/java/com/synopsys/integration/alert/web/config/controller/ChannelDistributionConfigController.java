@@ -45,7 +45,6 @@ import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionA
 import com.synopsys.integration.alert.common.enumeration.ActionApiType;
 import com.synopsys.integration.alert.web.channel.actions.ChannelDistributionConfigActions;
 import com.synopsys.integration.alert.web.config.controller.handler.ConfigControllerHandler;
-import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.web.model.Config;
 
 @RestController
@@ -57,7 +56,7 @@ public class ChannelDistributionConfigController extends TestableConfigControlle
     @Autowired
     public ChannelDistributionConfigController(final DescriptorMap descriptorMap, final ContentConverter contentConverter, final ChannelDistributionConfigActions channelDistributionConfigActions) {
         this.descriptorMap = descriptorMap;
-        this.controllerHandler = new ConfigControllerHandler(contentConverter, channelDistributionConfigActions);
+        controllerHandler = new ConfigControllerHandler(contentConverter, channelDistributionConfigActions);
     }
 
     @GetMapping()

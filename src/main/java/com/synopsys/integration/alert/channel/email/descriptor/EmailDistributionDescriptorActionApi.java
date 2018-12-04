@@ -35,14 +35,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.ChannelDistributionDescriptorActionApi;
-import com.synopsys.integration.alert.database.channel.email.EmailDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.alert.web.channel.model.EmailDistributionConfig;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
-import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 
 @Component
@@ -51,21 +49,19 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
     private final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
 
     @Autowired
-    public EmailDistributionDescriptorActionApi(final EmailDistributionTypeConverter databaseContentConverter, final EmailDistributionRepositoryAccessor repositoryAccessor, final EmailGroupChannel emailGroupChannel,
+    public EmailDistributionDescriptorActionApi(final EmailGroupChannel emailGroupChannel,
         final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor) {
-        super(databaseContentConverter, repositoryAccessor, emailGroupChannel);
+        super(emailGroupChannel);
         this.emailGroupChannel = emailGroupChannel;
         this.blackDuckProjectRepositoryAccessor = blackDuckProjectRepositoryAccessor;
     }
 
     @Override
-    public void validateConfig(final Config restModel, final Map<String, String> fieldErrors) {
+    public void validateConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
     }
 
     @Override
-    public TestConfigModel createTestConfigModel(final Config config, final String destination) throws AlertFieldException {
-        final EmailDistributionConfig emailDistributionConfig = (EmailDistributionConfig) config;
-
+    public TestConfigModel createTestConfigModel(final FieldAccessor fieldAccessor, final String destination) throws AlertFieldException {
         final Set<String> emailAddresses = new HashSet<>();
         Set<BlackDuckProjectEntity> blackDuckProjectEntities = null;
         if (BooleanUtils.toBoolean(emailDistributionConfig.getFilterByProject())) {

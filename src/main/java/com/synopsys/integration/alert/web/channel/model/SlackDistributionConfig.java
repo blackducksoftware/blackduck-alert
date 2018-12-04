@@ -25,8 +25,6 @@ package com.synopsys.integration.alert.web.channel.model;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
-
 public class SlackDistributionConfig extends CommonDistributionConfig {
     private String webhook;
     private String channelUsername;

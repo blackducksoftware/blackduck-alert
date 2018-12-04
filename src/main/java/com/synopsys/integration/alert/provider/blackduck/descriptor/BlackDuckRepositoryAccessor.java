@@ -28,7 +28,6 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
-import com.synopsys.integration.alert.database.RepositoryAccessor;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 
 @Component

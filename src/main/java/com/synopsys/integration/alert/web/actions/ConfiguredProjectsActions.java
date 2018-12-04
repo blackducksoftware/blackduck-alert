@@ -33,7 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.ConfiguredProjectEntity;
 import com.synopsys.integration.alert.database.entity.repository.ConfiguredProjectsRepository;
 import com.synopsys.integration.alert.database.relation.DistributionProjectRelation;

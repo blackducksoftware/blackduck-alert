@@ -26,7 +26,6 @@ import com.synopsys.integration.alert.database.channel.JobConfigReader;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.web.channel.model.EmailDistributionConfig;
-import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.workflow.filter.NotificationFilter;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 

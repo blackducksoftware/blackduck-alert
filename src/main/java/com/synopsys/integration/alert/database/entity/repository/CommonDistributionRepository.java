@@ -25,8 +25,6 @@ package com.synopsys.integration.alert.database.entity.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
-
 public interface CommonDistributionRepository extends JpaRepository<CommonDistributionConfigEntity, Long> {
     CommonDistributionConfigEntity findByDistributionConfigIdAndDistributionType(final Long distributionConfigId, final String distributionType);
 

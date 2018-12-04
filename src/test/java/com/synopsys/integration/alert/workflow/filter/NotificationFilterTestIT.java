@@ -19,7 +19,6 @@ import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionRepository;
-import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.ConfiguredProjectEntity;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;

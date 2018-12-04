@@ -22,7 +22,6 @@ import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.database.entity.channel.DistributionChannelConfigEntity;
 import com.synopsys.integration.alert.database.entity.channel.GlobalChannelConfigEntity;
-import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 
 public class DistributionChannelManagerTestIT<G extends GlobalChannelConfigEntity, D extends DistributionChannelConfigEntity, R extends CommonDistributionConfig> extends AlertIntegrationTest {
 

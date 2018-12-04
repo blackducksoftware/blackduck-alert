@@ -30,25 +30,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.ChannelDistributionDescriptorActionApi;
-import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionRepositoryAccessor;
-import com.synopsys.integration.alert.web.channel.model.HipChatDistributionConfig;
-import com.synopsys.integration.alert.web.model.Config;
 
 @Component
 public class HipChatDistributionDescriptorActionApi extends ChannelDistributionDescriptorActionApi {
 
     @Autowired
-    public HipChatDistributionDescriptorActionApi(final HipChatDistributionTypeConverter databaseContentConverter, final HipChatDistributionRepositoryAccessor repositoryAccessor, final HipChatChannel hipChatChannel) {
-        super(databaseContentConverter, repositoryAccessor, hipChatChannel);
+    public HipChatDistributionDescriptorActionApi(final HipChatChannel hipChatChannel) {
+        super(hipChatChannel);
     }
 
     @Override
-    public void validateConfig(final Config restModel, final Map<String, String> fieldErrors) {
-        final HipChatDistributionConfig hipChatRestModel = (HipChatDistributionConfig) restModel;
-        if (StringUtils.isBlank(hipChatRestModel.getRoomId())) {
+    public void validateConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
+        final String roomId = fieldAccessor.getString(HipChatDistributionUIConfig.KEY_ROOM_ID);
+        if (StringUtils.isBlank(roomId)) {
             fieldErrors.put("roomId", "A Room Id is required.");
-        } else if (!StringUtils.isNumeric(hipChatRestModel.getRoomId())) {
+        } else if (!StringUtils.isNumeric(roomId)) {
             fieldErrors.put("roomId", "Room Id must be an integer value");
         }
     }

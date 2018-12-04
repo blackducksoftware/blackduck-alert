@@ -32,14 +32,12 @@ import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributi
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.database.channel.slack.SlackDistributionConfigEntity;
 import com.synopsys.integration.alert.database.channel.slack.SlackDistributionRepositoryAccessor;
-import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.synopsys.integration.alert.database.entity.repository.NotificationTypeRepository;
 import com.synopsys.integration.alert.database.relation.DistributionNotificationTypeRelation;
 import com.synopsys.integration.alert.database.relation.repository.DistributionNotificationTypeRepository;
-import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.workflow.processor.MessageContentAggregator;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
@@ -77,11 +75,11 @@ public class NotificationToChannelEventConverterTest extends AlertIntegrationTes
         final DatabaseEntity emailEntity = emailDistributionRepositoryAccessor.saveEntity(emailGroupDistributionConfigEntity);
 
         CommonDistributionConfigEntity slackCommonDistributionConfig = new CommonDistributionConfigEntity(slackEntity.getId(), SlackChannel.COMPONENT_NAME, "Slack Config", "provider_blackduck", FrequencyType.REAL_TIME, false,
-                "", FormatType.DEFAULT);
+            "", FormatType.DEFAULT);
         CommonDistributionConfigEntity hipChatCommonDistributionConfig = new CommonDistributionConfigEntity(hipChatEntity.getId(), HipChatChannel.COMPONENT_NAME, "HipChat Config", "provider_blackduck", FrequencyType.REAL_TIME, false,
-                "", FormatType.DEFAULT);
+            "", FormatType.DEFAULT);
         CommonDistributionConfigEntity emailCommonDistributionConfig = new CommonDistributionConfigEntity(emailEntity.getId(), EmailGroupChannel.COMPONENT_NAME, "Email Config", "provider_blackduck", FrequencyType.REAL_TIME, false,
-                "", FormatType.DEFAULT);
+            "", FormatType.DEFAULT);
 
         slackCommonDistributionConfig = commonDistributionRepository.save(slackCommonDistributionConfig);
         hipChatCommonDistributionConfig = commonDistributionRepository.save(hipChatCommonDistributionConfig);

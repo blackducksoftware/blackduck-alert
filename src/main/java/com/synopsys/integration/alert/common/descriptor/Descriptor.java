@@ -27,14 +27,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
 import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ActionApiType;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
@@ -127,34 +125,6 @@ public abstract class Descriptor {
 
     public boolean hasUIConfigForType(final ActionApiType actionApiType) {
         return uiConfigs.containsKey(actionApiType);
-    }
-
-    public Optional<? extends DatabaseEntity> readEntity(final ActionApiType actionApiType, final long id) {
-        return getRestApi(actionApiType).readEntity(id);
-    }
-
-    public List<? extends DatabaseEntity> readEntities(final ActionApiType actionApiType) {
-        return getRestApi(actionApiType).readEntities();
-    }
-
-    public DatabaseEntity saveEntity(final ActionApiType actionApiType, final DatabaseEntity entity) {
-        return getRestApi(actionApiType).saveEntity(entity);
-    }
-
-    public void deleteEntity(final ActionApiType actionApiType, final long id) {
-        getRestApi(actionApiType).deleteEntity(id);
-    }
-
-    public DatabaseEntity populateEntityFromConfig(final ActionApiType actionApiType, final Config config) {
-        return getRestApi(actionApiType).populateEntityFromConfig(config);
-    }
-
-    public Config populateConfigFromEntity(final ActionApiType actionApiType, final DatabaseEntity entity) {
-        return getRestApi(actionApiType).populateConfigFromEntity(entity);
-    }
-
-    public Config getConfigFromJson(final ActionApiType actionApiType, final String json) {
-        return getRestApi(actionApiType).getConfigFromJson(json);
     }
 
     public void validateConfig(final ActionApiType actionApiType, final Config config, final Map<String, String> fieldErrors) {

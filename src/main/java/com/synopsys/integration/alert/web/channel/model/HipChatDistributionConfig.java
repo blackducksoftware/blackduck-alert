@@ -25,8 +25,6 @@ package com.synopsys.integration.alert.web.channel.model;
 
 import java.util.List;
 
-import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
-
 public class HipChatDistributionConfig extends CommonDistributionConfig {
     private String roomId;
     private boolean notify;
