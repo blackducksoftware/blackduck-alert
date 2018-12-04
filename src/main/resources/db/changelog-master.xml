@@ -14,10 +14,10 @@
         </sql>
     </changeSet>
 
-    <include file="changelog/alert/changelog-1.0.0.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/alert/changelog-1.1.0.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/alert/changelog-2.0.0.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/alert/changelog-3.0.0.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/alert/changelog-3.1.0.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/alert/changelog-4.0.0.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/alert/1.0.0/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/alert/1.1.0/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/alert/2.0.0/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/alert/3.0.0/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/alert/3.1.0/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/alert/4.0.0/changelog.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
