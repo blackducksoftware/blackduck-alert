@@ -16,7 +16,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Optional;
 
 import org.junit.Before;
@@ -33,7 +32,6 @@ import com.synopsys.integration.alert.TestProperties;
 import com.synopsys.integration.alert.TestPropertyKey;
 import com.synopsys.integration.alert.database.api.user.UserAccessor;
 import com.synopsys.integration.alert.database.api.user.UserModel;
-import com.synopsys.integration.alert.database.user.UserEntity;
 import com.synopsys.integration.alert.database.user.UserRepository;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
 import com.synopsys.integration.test.annotation.HubConnectionTest;
@@ -96,10 +94,6 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
         assertFalse(model.hasRole("ADMIN"));
         assertTrue(model.getRoles().isEmpty());
 
-        final Optional<UserEntity> userEntity = userRepository.findByUserName(userName);
-        userEntity.ifPresent(entity -> {
-            userAccessor.assignRoles(entity.getUserName(), Collections.emptySet());
-            userRepository.delete(entity);
-        });
+        userAccessor.deleteUser(userName);
     }
 }
