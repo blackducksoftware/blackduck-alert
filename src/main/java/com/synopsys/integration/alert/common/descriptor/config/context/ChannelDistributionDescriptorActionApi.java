@@ -21,10 +21,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config;
+package com.synopsys.integration.alert.common.descriptor.config.context;
 
 import com.synopsys.integration.alert.channel.DistributionChannel;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
+import com.synopsys.integration.alert.common.descriptor.config.StartupComponent;
+import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -43,7 +45,8 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
 
     @Override
     public void testConfig(final TestConfigModel testConfigModel) throws IntegrationException {
-        final DistributionEvent event = createChannelTestEvent(testConfigModel.getCommonDistributionConfiguration());
+        final FieldModel fieldModel = testConfigModel.getFieldModel();
+        final DistributionEvent event = createChannelTestEvent(fieldModel);
         distributionChannel.sendMessage(event);
     }
 }

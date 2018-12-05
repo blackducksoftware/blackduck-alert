@@ -29,16 +29,17 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
-import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
-import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.ui.UIComponent;
+import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 
 @Component
 public class EmailDistributionUIConfig extends UIConfig {
-    public static final String KEY_SUBJECT_LINE = "channel.email.subject.line";
-    public static final String KEY_PROJECT_OWNER_ONLY = "channel.email.project.owner.only";
+    public static final String KEY_SUBJECT_LINE = "subject.line";
+    public static final String KEY_PROJECT_OWNER_ONLY = "project.owner.only";
+    public static final String KEY_EMAIL_ADDRESSES = "email.addresses";
 
     @Override
     public UIComponent generateUIComponent() {

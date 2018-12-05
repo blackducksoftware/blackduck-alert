@@ -29,14 +29,18 @@ import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
+import com.synopsys.integration.alert.database.api.descriptor.ConfigurationAccessor;
+import com.synopsys.integration.alert.database.api.descriptor.ConfigurationAccessor.ConfigurationModel;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckProviderUIConfig;
 import com.synopsys.integration.blackduck.configuration.HubServerConfig;
 import com.synopsys.integration.blackduck.configuration.HubServerConfigBuilder;
 import com.synopsys.integration.blackduck.rest.BlackduckRestConnection;
@@ -48,8 +52,9 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 @Component
 public class BlackDuckProperties {
     public static final int DEFAULT_TIMEOUT = 300;
-    private final GlobalBlackDuckRepository globalBlackDuckRepository;
     private final AlertProperties alertProperties;
+    private final ConfigurationAccessor configurationAccessor;
+    private final Logger classLogger = LoggerFactory.getLogger(getClass());
 
     // the blackduck product hasn't renamed their environment variables from hub to blackduck
     // need to keep hub in the name until
@@ -60,19 +65,21 @@ public class BlackDuckProperties {
     private String publicBlackDuckWebserverPort;
 
     @Autowired
-    public BlackDuckProperties(final GlobalBlackDuckRepository globalBlackDuckRepository, final AlertProperties alertProperties) {
-        this.globalBlackDuckRepository = globalBlackDuckRepository;
+    public BlackDuckProperties(final AlertProperties alertProperties, final ConfigurationAccessor configurationAccessor) {
         this.alertProperties = alertProperties;
+        this.configurationAccessor = configurationAccessor;
     }
 
     public Optional<String> getBlackDuckUrl() {
-        final Optional<GlobalBlackDuckConfigEntity> optionalGlobalBlackDuckConfigEntity = getBlackDuckConfig();
+        final Optional<ConfigurationModel> optionalGlobalBlackDuckConfigEntity = getBlackDuckConfig();
         if (optionalGlobalBlackDuckConfigEntity.isPresent()) {
-            final GlobalBlackDuckConfigEntity blackDuckConfigEntity = optionalGlobalBlackDuckConfigEntity.get();
-            if (StringUtils.isBlank(blackDuckConfigEntity.getBlackDuckUrl())) {
+            final ConfigurationModel blackDuckConfigEntity = optionalGlobalBlackDuckConfigEntity.get();
+            final FieldAccessor fieldAccessor = new FieldAccessor(blackDuckConfigEntity.getCopyOfKeyToFieldMap());
+            final String url = fieldAccessor.getString(BlackDuckProviderUIConfig.KEY_BLACKDUCK_URL);
+            if (StringUtils.isBlank(url)) {
                 return Optional.empty();
             } else {
-                return Optional.of(blackDuckConfigEntity.getBlackDuckUrl());
+                return Optional.of(url);
             }
         }
         return Optional.empty();
@@ -94,22 +101,29 @@ public class BlackDuckProperties {
     }
 
     public Integer getBlackDuckTimeout() {
-        final Optional<GlobalBlackDuckConfigEntity> optionalGlobalBlackDuckConfigEntity = getBlackDuckConfig();
+        final Optional<ConfigurationModel> optionalGlobalBlackDuckConfigEntity = getBlackDuckConfig();
         if (optionalGlobalBlackDuckConfigEntity.isPresent()) {
-            final GlobalBlackDuckConfigEntity blackDuckConfigEntity = optionalGlobalBlackDuckConfigEntity.get();
-            if (blackDuckConfigEntity.getBlackDuckTimeout() == null) {
+            final ConfigurationModel blackDuckConfigEntity = optionalGlobalBlackDuckConfigEntity.get();
+            final FieldAccessor fieldAccessor = new FieldAccessor(blackDuckConfigEntity.getCopyOfKeyToFieldMap());
+            final Integer timeout = fieldAccessor.getInteger(BlackDuckProviderUIConfig.KEY_BLACKDUCK_TIMEOUT);
+            if (timeout == null) {
                 return DEFAULT_TIMEOUT;
             } else {
-                return optionalGlobalBlackDuckConfigEntity.get().getBlackDuckTimeout();
+                return timeout;
             }
         }
         return DEFAULT_TIMEOUT;
     }
 
-    public Optional<GlobalBlackDuckConfigEntity> getBlackDuckConfig() {
-        final List<GlobalBlackDuckConfigEntity> configs = globalBlackDuckRepository.findAll();
-        if (configs != null && !configs.isEmpty()) {
-            return Optional.of(configs.get(0));
+    public Optional<ConfigurationModel> getBlackDuckConfig() {
+        List<ConfigurationModel> configurations = null;
+        try {
+            configurations = configurationAccessor.getConfigurationsByName(BlackDuckProvider.COMPONENT_NAME);
+        } catch (final AlertDatabaseConstraintException e) {
+            classLogger.error("Problem connecting to DB.");
+        }
+        if (null != configurations && !configurations.isEmpty()) {
+            return Optional.of(configurations.get(0));
         }
         return Optional.empty();
     }
@@ -150,13 +164,16 @@ public class BlackDuckProperties {
     }
 
     public Optional<HubServerConfig> createBlackDuckServerConfig(final IntLogger logger) throws AlertException {
-        final Optional<GlobalBlackDuckConfigEntity> optionalGlobalBlackDuckConfigEntity = getBlackDuckConfig();
+        final Optional<ConfigurationModel> optionalGlobalBlackDuckConfigEntity = getBlackDuckConfig();
         if (optionalGlobalBlackDuckConfigEntity.isPresent()) {
-            final GlobalBlackDuckConfigEntity globalHubConfigEntity = optionalGlobalBlackDuckConfigEntity.get();
-            if (globalHubConfigEntity.getBlackDuckTimeout() == null || globalHubConfigEntity.getBlackDuckApiKey() == null) {
+            final ConfigurationModel globalHubConfigEntity = optionalGlobalBlackDuckConfigEntity.get();
+            final FieldAccessor fieldAccessor = new FieldAccessor(globalHubConfigEntity.getCopyOfKeyToFieldMap());
+            final Integer timeout = fieldAccessor.getInteger(BlackDuckProviderUIConfig.KEY_BLACKDUCK_TIMEOUT);
+            final String apiKey = fieldAccessor.getString(BlackDuckProviderUIConfig.KEY_BLACKDUCK_API_KEY);
+            if (timeout == null || apiKey == null) {
                 throw new AlertException("Global config settings can not be null.");
             }
-            return Optional.of(createBlackDuckServerConfig(logger, globalHubConfigEntity.getBlackDuckTimeout(), globalHubConfigEntity.getBlackDuckApiKey()));
+            return Optional.of(createBlackDuckServerConfig(logger, timeout, apiKey));
         }
         return Optional.empty();
     }

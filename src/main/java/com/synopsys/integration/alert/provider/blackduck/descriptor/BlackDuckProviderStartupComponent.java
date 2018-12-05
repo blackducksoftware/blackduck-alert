@@ -30,9 +30,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.StartupComponent;
 import com.synopsys.integration.alert.database.entity.EntityPropertyMapper;
-import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckConfig;
 import com.synopsys.integration.alert.workflow.startup.AlertStartupProperty;
 
 @Component

@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config;
+package com.synopsys.integration.alert.common.descriptor.config.ui;
 
 import java.util.List;
 
@@ -33,8 +33,8 @@ public class UIComponent extends Stringable {
     private final String urlName;
     private final String descriptorName;
     private final String fontAwesomeIcon;
-    private final List<ConfigField> fields;
     private final boolean automaticallyGenerateUI;
+    private List<ConfigField> fields;
 
     public UIComponent(final String label, final String urlName, final String descriptorName, final String fontAwesomeIcon, final List<ConfigField> fields) {
         this(label, urlName, descriptorName, fontAwesomeIcon, true, fields);
@@ -73,4 +73,7 @@ public class UIComponent extends Stringable {
         return fields;
     }
 
+    public void setFields(final List<ConfigField> fields) {
+        this.fields = fields;
+    }
 }

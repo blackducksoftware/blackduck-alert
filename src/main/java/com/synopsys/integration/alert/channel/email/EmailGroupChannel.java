@@ -63,7 +63,6 @@ import com.synopsys.integration.exception.IntegrationException;
 //FIXME fix emails with either their own table or reference their own hidden fields
 @Component(value = EmailGroupChannel.COMPONENT_NAME)
 public class EmailGroupChannel extends DistributionChannel {
-    public static final String KEY_EMAIL_ADDRESSES = "channel.email.addresses";
     public final static String COMPONENT_NAME = "channel_email";
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -194,7 +193,7 @@ public class EmailGroupChannel extends DistributionChannel {
         return currentProjectName.matches(projectNamePattern);
     }
 
-    public boolean doesProjectNameMatchAConfiguredProject(final String currentProjectName, final List<String> configuredProjectNames) {
+    public boolean doesProjectNameMatchAConfiguredProject(final String currentProjectName, final Set<String> configuredProjectNames) {
         return configuredProjectNames.contains(currentProjectName);
     }
 

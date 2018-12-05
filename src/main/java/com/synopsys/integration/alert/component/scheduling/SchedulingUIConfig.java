@@ -25,12 +25,17 @@ package com.synopsys.integration.alert.component.scheduling;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.config.CustomUIComponent;
-import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
-import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.CustomUIComponent;
+import com.synopsys.integration.alert.common.descriptor.config.ui.UIComponent;
+import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 
 @Component
 public class SchedulingUIConfig extends UIConfig {
+    public static final String KEY_ACCUMULATOR_NEXT_RUN = "accumulator.next.run";
+    public static final String KEY_DAILY_DIGEST_HOUR_OF_DAY = "daily.digest.hour";
+    public static final String KEY_DAILY_DIGEST_NEXT_RUN = "daily.digest.next.run";
+    public static final String KEY_PURGE_DATA_FREQUENCY_DAYS = "purge.data.frequency";
+    public static final String KEY_PURGE_DATA_NEXT_RUN = "purge.data.next.run";
 
     @Override
     public UIComponent generateUIComponent() {

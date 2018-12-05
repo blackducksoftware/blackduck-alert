@@ -21,9 +21,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.scheduling;
+package com.synopsys.integration.alert.common.descriptor.config.ui;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.Collections;
 
-public interface SchedulingRepository extends JpaRepository<SchedulingConfigEntity, Long> {
+public class CustomUIComponent extends UIComponent {
+    private String uiComponentName;
+
+    public CustomUIComponent(final String label, final String urlName, final String descriptorName, final String fontAwesomeIcon, final String uiComponentName) {
+        super(label, urlName, descriptorName, fontAwesomeIcon, false, Collections.emptyList());
+        this.uiComponentName = uiComponentName;
+    }
+
+    public String getUiComponentName() {
+        return uiComponentName;
+    }
+
+    public void setUiComponentName(final String uiComponentName) {
+        this.uiComponentName = uiComponentName;
+    }
+
 }

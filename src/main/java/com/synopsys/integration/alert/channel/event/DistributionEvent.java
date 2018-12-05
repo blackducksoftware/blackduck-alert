@@ -29,15 +29,21 @@ import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 
 public class DistributionEvent extends ContentEvent {
     private final FieldAccessor fieldAccessor;
+    private final String configId;
     private Long auditEntryId;
 
-    public DistributionEvent(final String destination, final String createdAt, final String provider, final String formatType, final AggregateMessageContent content, final FieldAccessor fieldAccessor) {
+    public DistributionEvent(final String configId, final String destination, final String createdAt, final String provider, final String formatType, final AggregateMessageContent content, final FieldAccessor fieldAccessor) {
         super(destination, createdAt, provider, formatType, content);
         this.fieldAccessor = fieldAccessor;
+        this.configId = configId;
     }
 
     public FieldAccessor getFieldAccessor() {
         return fieldAccessor;
+    }
+
+    public String getConfigId() {
+        return configId;
     }
 
     public Long getAuditEntryId() {

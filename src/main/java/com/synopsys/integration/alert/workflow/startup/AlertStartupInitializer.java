@@ -41,6 +41,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.StartupComponent;
+import com.synopsys.integration.alert.database.api.descriptor.ConfigurationAccessor;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.alert.workflow.PropertyInitializer;
@@ -53,14 +54,16 @@ public class AlertStartupInitializer {
     private final PropertyInitializer propertyInitializer;
     private final DescriptorMap descriptorMap;
     private final List<AlertStartupProperty> alertStartupProperties;
+    private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
     public AlertStartupInitializer(final PropertyInitializer propertyInitializer, final DescriptorMap descriptorMap, final Environment environment,
-        final ConversionService conversionService) {
+        final ConversionService conversionService, final ConfigurationAccessor configurationAccessor) {
         this.propertyInitializer = propertyInitializer;
         this.descriptorMap = descriptorMap;
         this.environment = environment;
         this.conversionService = conversionService;
+        this.configurationAccessor = configurationAccessor;
         alertStartupProperties = new ArrayList<>(50);
     }
 

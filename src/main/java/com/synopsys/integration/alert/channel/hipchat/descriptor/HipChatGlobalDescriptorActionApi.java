@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
-import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -40,8 +40,7 @@ public class HipChatGlobalDescriptorActionApi extends DescriptorActionApi {
     private final HipChatChannel hipChatChannel;
 
     @Autowired
-    public HipChatGlobalDescriptorActionApi(final HipChatChannel hipChatChannel,
-        final HipChatStartupComponent hipChatStartupComponent) {
+    public HipChatGlobalDescriptorActionApi(final HipChatChannel hipChatChannel, final HipChatStartupComponent hipChatStartupComponent) {
         super(hipChatStartupComponent);
         this.hipChatChannel = hipChatChannel;
     }

@@ -25,24 +25,21 @@ package com.synopsys.integration.alert.web.model;
 
 import java.util.Optional;
 
-import com.synopsys.integration.alert.common.configuration.CommonDistributionConfiguration;
-
 public class TestConfigModel {
-    private final CommonDistributionConfiguration commonDistributionConfiguration;
     private final String destination;
+    private final FieldModel fieldModel;
 
-    public TestConfigModel(final CommonDistributionConfiguration commonDistributionConfiguration) {
-        this.commonDistributionConfiguration = commonDistributionConfiguration;
-        destination = null;
+    public TestConfigModel(final FieldModel fieldModel) {
+        this(fieldModel, null);
     }
 
-    public TestConfigModel(final CommonDistributionConfiguration commonDistributionConfiguration, final String destination) {
-        this.commonDistributionConfiguration = commonDistributionConfiguration;
+    public TestConfigModel(final FieldModel fieldModel, final String destination) {
+        this.fieldModel = fieldModel;
         this.destination = destination;
     }
 
-    public CommonDistributionConfiguration getCommonDistributionConfiguration() {
-        return commonDistributionConfiguration;
+    public FieldModel getFieldModel() {
+        return fieldModel;
     }
 
     public Optional<String> getDestination() {

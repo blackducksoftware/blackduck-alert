@@ -26,22 +26,29 @@ package com.synopsys.integration.alert.channel.slack.descriptor;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
-import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
-import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
+import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.UIComponent;
 
 @Component
-public class SlackUIConfig extends UIConfig {
-    public static final String KEY_WEBHOOK = "channel.slack.webhook";
-    public static final String KEY_CHANNEL_NAME = "channel.slack.channel.name";
-    public static final String KEY_CHANNEL_USERNAME = "channel.slack.channel.username";
+public class SlackUIConfig extends CommonDistributionUIConfig {
+    public static final String KEY_WEBHOOK = "webhook";
+    public static final String KEY_CHANNEL_NAME = "channel.name";
+    public static final String KEY_CHANNEL_USERNAME = "channel.username";
+
+    @Autowired
+    public SlackUIConfig(final DescriptorMap descriptorMap) {
+        super(descriptorMap);
+    }
 
     @Override
-    public UIComponent generateUIComponent() {
+    public UIComponent createUIComponent() {
         return new UIComponent("Slack", "slack", SlackChannel.COMPONENT_NAME, "slack", setupFields());
     }
 

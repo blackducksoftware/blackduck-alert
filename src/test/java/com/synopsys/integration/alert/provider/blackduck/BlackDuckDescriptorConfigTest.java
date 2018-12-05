@@ -12,14 +12,10 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckProviderDescriptorActionApi;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.mock.MockGlobalBlackDuckEntity;
 import com.synopsys.integration.alert.provider.blackduck.mock.MockGlobalBlackDuckRestModel;
 import com.synopsys.integration.alert.web.model.Config;
-import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckConfig;
 
 // TODO Make these tests more useful once provider descriptors are fully implemented
 public class BlackDuckDescriptorConfigTest {
