@@ -134,16 +134,16 @@ class Details extends Component {
                 <Modal.Header closeButton>
                     <Modal.Title>
                         <div className="notificationTitlePiece">
-                            {this.props.providerNameFormat(this.props.currentEntry.notificationProviderName)}
+                            {this.props.providerNameFormat(this.props.currentEntry.provider)}
                         </div>
                         <div className="notificationTitlePiece">
                             {this.props.notificationTypeFormat(this.props.currentEntry.notificationType)}
                         </div>
                         <div className="notificationTitlePiece">
-                            {this.props.currentEntry.timeCreated}
+                            {this.props.currentEntry.createdAt}
                         </div>
                         <div className="notificationTitlePiece">
-                            {this.props.statusFormat(this.props.currentEntry.status)}
+                            {this.props.statusFormat(this.props.currentEntry.overallStatus)}
                         </div>
                     </Modal.Title>
                 </Modal.Header>

@@ -73,18 +73,24 @@ public class NotificationManager {
         this.jobConfigReader = jobConfigReader;
     }
 
+    public NotificationContent saveNotification(final NotificationContent notification) {
+        return notificationContentRepository.save(notification);
+    }
+
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public Page<NotificationContent> findAll(final PageRequest pageRequest) {
+    public Page<NotificationContent> findAll(final PageRequest pageRequest, final boolean onlyShowSentNotifications) {
+        if (onlyShowSentNotifications) {
+            return notificationContentRepository.findAllSentNotifications(pageRequest);
+        }
         return notificationContentRepository.findAll(pageRequest);
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public Page<NotificationContent> findAllWithSearch(final String searchTerm, final PageRequest pageRequest, final Integer maxSize) {
+    public Page<NotificationContent> findAllWithSearch(final String searchTerm, final PageRequest pageRequest, final Integer maxSize, final boolean onlyShowSentNotifications) {
+        //TODO address this in the future when we have a database expert, this should be done with a database query
         final String lcSearchTerm = searchTerm.toLowerCase(Locale.ENGLISH);
         final List<NotificationContent> matchingNotifications = new ArrayList<>(maxSize);
-
-        final PageRequest currentPageRequest = PageRequest.of(0, Integer.MAX_VALUE, pageRequest.getSort());
-        final Page<NotificationContent> notificationsPage = notificationContentRepository.findAll(currentPageRequest);
+        final Page<NotificationContent> notificationsPage = findAll(pageRequest, onlyShowSentNotifications);
         final List<NotificationContent> notificationContents = notificationsPage.getContent();
         for (final NotificationContent notificationContent : notificationContents) {
             if (doesStringMatch(notificationContent.getContent(), lcSearchTerm)

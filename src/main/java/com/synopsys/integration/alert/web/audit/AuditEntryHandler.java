@@ -47,8 +47,8 @@ public class AuditEntryHandler extends ControllerHandler {
         this.auditEntryActions = auditEntryActions;
     }
 
-    public AlertPagedModel<AuditEntryModel> get(final Integer pageNumber, final Integer pageSize, final String searchTerm, final String sortField, final String sortOrder) {
-        return auditEntryActions.get(pageNumber, pageSize, searchTerm, sortField, sortOrder);
+    public AlertPagedModel<AuditEntryModel> get(final Integer pageNumber, final Integer pageSize, final String searchTerm, final String sortField, final String sortOrder, final boolean onlyShowSentNotifications) {
+        return auditEntryActions.get(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications);
     }
 
     public AuditEntryModel get(final Long id) {
