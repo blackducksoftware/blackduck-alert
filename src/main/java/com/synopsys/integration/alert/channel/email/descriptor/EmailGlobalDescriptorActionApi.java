@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
-import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -48,10 +48,10 @@ public class EmailGlobalDescriptorActionApi extends DescriptorActionApi {
 
     // TODO Global email config doesn't validate properly or give any indication that saving was successful
     @Override
-    public void validateConfig(FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
-        String port = fieldAccessor.getString(EmailGlobalUIConfig.KEY_FROM);
-        String connectionTimeout = fieldAccessor.getString(EmailGlobalUIConfig.KEY_CONNECTION_TIMEOUT);
-        String timeout = fieldAccessor.getString(EmailGlobalUIConfig.KEY_TIMEOUT);
+    public void validateConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
+        final String port = fieldAccessor.getString(EmailGlobalUIConfig.KEY_FROM);
+        final String connectionTimeout = fieldAccessor.getString(EmailGlobalUIConfig.KEY_CONNECTION_TIMEOUT);
+        final String timeout = fieldAccessor.getString(EmailGlobalUIConfig.KEY_TIMEOUT);
 
         if (StringUtils.isNotBlank(port) && !StringUtils.isNumeric(port)) {
             fieldErrors.put("mailSmtpPort", NOT_AN_INTEGER);

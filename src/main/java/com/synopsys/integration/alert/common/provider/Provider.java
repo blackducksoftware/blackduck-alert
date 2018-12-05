@@ -28,12 +28,19 @@ import java.util.Set;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 
 public abstract class Provider {
+    private final String name;
+
+    public Provider(final String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
 
     public abstract void initialize();
 
     public abstract void destroy();
-
-    public abstract String getName();
 
     public abstract Set<ProviderContentType> getProviderContentTypes();
 

@@ -23,6 +23,8 @@
  */
 package com.synopsys.integration.alert.workflow.startup;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -36,13 +38,18 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.provider.Provider;
-import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
-import com.synopsys.integration.alert.database.scheduling.SchedulingConfigEntity;
-import com.synopsys.integration.alert.database.scheduling.SchedulingRepository;
+import com.synopsys.integration.alert.component.scheduling.SchedulingDescriptor;
+import com.synopsys.integration.alert.component.scheduling.SchedulingUIConfig;
+import com.synopsys.integration.alert.database.api.descriptor.ConfigurationAccessor;
+import com.synopsys.integration.alert.database.api.descriptor.ConfigurationAccessor.ConfigurationModel;
+import com.synopsys.integration.alert.database.api.descriptor.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckProviderUIConfig;
 import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
@@ -52,7 +59,6 @@ import com.synopsys.integration.alert.workflow.scheduled.frequency.OnDemandTask;
 public class StartupManager {
     private final Logger logger = LoggerFactory.getLogger(StartupManager.class);
 
-    private final SchedulingRepository schedulingRepository;
     private final AlertProperties alertProperties;
     private final BlackDuckProperties blackDuckProperties;
     private final DailyTask dailyTask;
@@ -63,6 +69,7 @@ public class StartupManager {
     private final List<ProviderDescriptor> providerDescriptorList;
     private final SystemStatusUtility systemStatusUtility;
     private final SystemValidator systemValidator;
+    private final ConfigurationAccessor configurationAccessor;
 
     @Value("${logging.level.com.blackducksoftware.integration:}")
     private String loggingLevel;
@@ -93,20 +100,20 @@ public class StartupManager {
     private String trustStoreType;
 
     @Autowired
-    public StartupManager(final SchedulingRepository schedulingRepository, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
+    public StartupManager(final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
         final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer,
-        final List<ProviderDescriptor> providerDescriptorList, final SystemStatusUtility systemStatusUtility, final SystemValidator systemValidator) {
-        this.schedulingRepository = schedulingRepository;
+        final List<ProviderDescriptor> providerDescriptorList, final SystemStatusUtility systemStatusUtility, final SystemValidator systemValidator, final ConfigurationAccessor configurationAccessor) {
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
         this.dailyTask = dailyTask;
         this.onDemandTask = onDemandTask;
         this.purgeTask = purgeTask;
-        this.phoneHomeTask = phoneHometask;
+        phoneHomeTask = phoneHometask;
         this.alertStartupInitializer = alertStartupInitializer;
         this.providerDescriptorList = providerDescriptorList;
         this.systemStatusUtility = systemStatusUtility;
         this.systemValidator = systemValidator;
+        this.configurationAccessor = configurationAccessor;
     }
 
     @Transactional
@@ -146,11 +153,12 @@ public class StartupManager {
         logger.info("BlackDuck URL:                 {}", blackDuckProperties.getBlackDuckUrl().orElse(""));
         logger.info("BlackDuck Webserver Host:                 {}", blackDuckProperties.getPublicBlackDuckWebserverHost().orElse(""));
         logger.info("BlackDuck Webserver Port:                 {}", blackDuckProperties.getPublicBlackDuckWebserverPort().orElse(""));
-        final Optional<GlobalBlackDuckConfigEntity> optionalGlobalBlackDuckConfigEntity = blackDuckProperties.getBlackDuckConfig();
+        final Optional<ConfigurationModel> optionalGlobalBlackDuckConfigEntity = blackDuckProperties.getBlackDuckConfig();
         if (optionalGlobalBlackDuckConfigEntity.isPresent()) {
-            final GlobalBlackDuckConfigEntity globalBlackDuckConfigEntity = optionalGlobalBlackDuckConfigEntity.get();
+            final ConfigurationModel globalBlackDuckConfigEntity = optionalGlobalBlackDuckConfigEntity.get();
+            final FieldAccessor fieldAccessor = new FieldAccessor(globalBlackDuckConfigEntity.getCopyOfKeyToFieldMap());
             logger.info("BlackDuck API Token:           **********");
-            logger.info("BlackDuck Timeout:             {}", globalBlackDuckConfigEntity.getBlackDuckTimeout());
+            logger.info("BlackDuck Timeout:             {}", fieldAccessor.getInteger(BlackDuckProviderUIConfig.KEY_BLACKDUCK_TIMEOUT));
         }
         logger.info("----------------------------------------");
     }
@@ -166,19 +174,33 @@ public class StartupManager {
 
     @Transactional
     public void initializeCronJobs() {
-        final List<SchedulingConfigEntity> globalSchedulingConfigs = schedulingRepository.findAll();
+        List<ConfigurationModel> schedulingConfigs;
+        try {
+            schedulingConfigs = configurationAccessor.getConfigurationsByName(SchedulingDescriptor.SCHEDULING_COMPONENT);
+        } catch (final AlertDatabaseConstraintException e) {
+            logger.error("Error connecting to DB", e);
+            schedulingConfigs = Collections.emptyList();
+        }
         String dailyDigestHourOfDay = null;
         String purgeDataFrequencyDays = null;
-        if (!globalSchedulingConfigs.isEmpty() && globalSchedulingConfigs.get(0) != null) {
-            final SchedulingConfigEntity globalSchedulingConfig = globalSchedulingConfigs.get(0);
-            dailyDigestHourOfDay = globalSchedulingConfig.getDailyDigestHourOfDay();
-            purgeDataFrequencyDays = globalSchedulingConfig.getPurgeDataFrequencyDays();
+        if (!schedulingConfigs.isEmpty() && schedulingConfigs.get(0) != null) {
+            final ConfigurationModel globalSchedulingConfig = schedulingConfigs.get(0);
+            final FieldAccessor fieldAccessor = new FieldAccessor(globalSchedulingConfig.getCopyOfKeyToFieldMap());
+            dailyDigestHourOfDay = fieldAccessor.getString(SchedulingUIConfig.KEY_DAILY_DIGEST_HOUR_OF_DAY);
+            purgeDataFrequencyDays = fieldAccessor.getString(SchedulingUIConfig.KEY_PURGE_DATA_FREQUENCY_DAYS);
         } else {
             dailyDigestHourOfDay = "0";
             purgeDataFrequencyDays = "3";
-            final SchedulingConfigEntity globalSchedulingConfig = new SchedulingConfigEntity(dailyDigestHourOfDay, purgeDataFrequencyDays);
-            final SchedulingConfigEntity savedGlobalSchedulingConfig = schedulingRepository.save(globalSchedulingConfig);
-            logger.info(savedGlobalSchedulingConfig.toString());
+            final ConfigurationFieldModel hourOfDayField = ConfigurationFieldModel.create(SchedulingUIConfig.KEY_DAILY_DIGEST_HOUR_OF_DAY);
+            hourOfDayField.setFieldValue(dailyDigestHourOfDay);
+            final ConfigurationFieldModel purgeFrequencyField = ConfigurationFieldModel.create(SchedulingUIConfig.KEY_PURGE_DATA_FREQUENCY_DAYS);
+            purgeFrequencyField.setFieldValue(purgeDataFrequencyDays);
+            try {
+                final ConfigurationModel schedulingModel = configurationAccessor.createConfiguration(SchedulingDescriptor.SCHEDULING_COMPONENT, Arrays.asList(hourOfDayField, purgeFrequencyField));
+                logger.info("Saved scheduling to DB: {}", schedulingModel.toString());
+            } catch (final AlertDatabaseConstraintException e) {
+                logger.error("Error saving to DB", e);
+            }
         }
         scheduleTaskCrons(dailyDigestHourOfDay, purgeDataFrequencyDays);
         CompletableFuture.supplyAsync(this::purgeOldData);

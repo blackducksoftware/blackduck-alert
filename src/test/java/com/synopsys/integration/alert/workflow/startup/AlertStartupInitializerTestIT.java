@@ -21,7 +21,7 @@ import com.synopsys.integration.alert.channel.email.descriptor.EmailGlobalStartu
 import com.synopsys.integration.alert.channel.email.mock.MockEmailGlobalEntity;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
-import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalRepository;
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalRepositoryAccessor;
 import com.synopsys.integration.alert.database.entity.EntityPropertyMapper;

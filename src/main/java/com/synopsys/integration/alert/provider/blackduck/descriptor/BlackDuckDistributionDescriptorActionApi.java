@@ -28,20 +28,20 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
-import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 
 @Component
 public class BlackDuckDistributionDescriptorActionApi extends DescriptorActionApi {
 
     @Autowired
-    public BlackDuckDistributionDescriptorActionApi(final BlackDuckTypeConverter typeConverter, final BlackDuckRepositoryAccessor repositoryAccessor) {
-        super(typeConverter, repositoryAccessor);
+    public BlackDuckDistributionDescriptorActionApi() {
+        super();
     }
 
     @Override
-    public void validateConfig(final Config restModel, final Map<String, String> fieldErrors) {
+    public void validateConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
 
     }
 

@@ -4,20 +4,14 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.database.api.descriptor.ConfigurationAccessor.ConfigurationModel;
 
-public class CommonDistributionConfiguration {
-    public static final String KEY_NAME = "channel.common.name";
-    public static final String KEY_CHANNEL_NAME = "channel.common.channel.name";
-    public static final String KEY_PROVIDER_NAME = "channel.common.provider.name";
-    public static final String KEY_FREQUENCY = "channel.common.frequency";
-    public static final String KEY_FORMAT_TYPE = "channel.common.format.type";
-    public static final String KEY_NOTIFICATION_TYPES = "channel.common.notification.types";
-    public static final String KEY_FILTER_BY_PROJECT = "channel.common.filter.by.project";
+public class CommonDistributionConfiguration extends Configuration {
 
-    private final Long id;
     private final String name;
     private final String channelName;
     private final String providerName;
@@ -26,21 +20,27 @@ public class CommonDistributionConfiguration {
     private final Set<String> notificationTypes;
     // FIXME this field is here temporarily as there is some tight coupling to the BD provider when filtering (NotificationFilter).
     private final Boolean filterByProject;
+    // FIXME this field is here temporarily as there is some tight coupling to the BD provider.
+    private final String projectNamePattern;
     private final FieldAccessor fieldAccessor;
+    // FIXME this field is here temporarily as there is some tight coupling to the BD provider.
+    private final Set<String> configuredProject;
 
     public CommonDistributionConfiguration(final ConfigurationModel configurationModel) {
-        fieldAccessor = new FieldAccessor(configurationModel.getCopyOfKeyToFieldMap());
+        super(configurationModel);
 
-        id = configurationModel.getConfigurationId();
-        name = fieldAccessor.getString(KEY_NAME);
-        channelName = fieldAccessor.getString(KEY_CHANNEL_NAME);
-        providerName = fieldAccessor.getString(KEY_PROVIDER_NAME);
-        notificationTypes = fieldAccessor.getAllStrings(KEY_NOTIFICATION_TYPES).stream().collect(Collectors.toSet());
-        frequencyType = fieldAccessor.getEnum(KEY_FREQUENCY, FrequencyType.class);
-        formatType = fieldAccessor.getEnum(KEY_FORMAT_TYPE, FormatType.class);
-        filterByProject = fieldAccessor.getBoolean(KEY_FILTER_BY_PROJECT);
+        name = getFieldAccessor().getString(CommonDistributionUIConfig.KEY_NAME);
+        channelName = getFieldAccessor().getString(CommonDistributionUIConfig.KEY_CHANNEL_NAME);
+        providerName = getFieldAccessor().getString(CommonDistributionUIConfig.KEY_PROVIDER_NAME);
+        notificationTypes = getFieldAccessor().getAllStrings(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES).stream().collect(Collectors.toSet());
+        frequencyType = getFieldAccessor().getEnum(CommonDistributionUIConfig.KEY_FREQUENCY, FrequencyType.class);
+        formatType = getFieldAccessor().getEnum(ProviderDistributionUIConfig.KEY_FORMAT_TYPE, FormatType.class);
+        filterByProject = getFieldAccessor().getBoolean(CommonDistributionUIConfig.KEY_FILTER_BY_PROJECT);
+        projectNamePattern = getFieldAccessor().getString(CommonDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
+        configuredProject = getFieldAccessor().getAllStrings(CommonDistributionUIConfig.KEY_CONFIGURED_PROJECT).stream().collect(Collectors.toSet());
     }
 
+    @Override
     public Long getId() {
         return id;
     }
@@ -73,7 +73,12 @@ public class CommonDistributionConfiguration {
         return filterByProject;
     }
 
-    public FieldAccessor getFieldAccessor() {
-        return fieldAccessor;
+    public String getProjectNamePattern() {
+        return projectNamePattern;
     }
+
+    public Set<String> getConfiguredProject() {
+        return configuredProject;
+    }
+
 }

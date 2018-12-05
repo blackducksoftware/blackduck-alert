@@ -51,6 +51,7 @@ public class BlackDuckProvider extends Provider {
 
     @Autowired
     public BlackDuckProvider(final BlackDuckAccumulator accumulatorTask, final ProjectSyncTask projectSyncTask) {
+        super(BlackDuckProvider.COMPONENT_NAME);
         this.accumulatorTask = accumulatorTask;
         this.projectSyncTask = projectSyncTask;
     }
@@ -67,11 +68,6 @@ public class BlackDuckProvider extends Provider {
         logger.info("Destroying provider...");
         accumulatorTask.scheduleExecution(BlackDuckAccumulator.STOP_SCHEDULE_EXPRESSION);
         projectSyncTask.scheduleExecution(BlackDuckAccumulator.STOP_SCHEDULE_EXPRESSION);
-    }
-
-    @Override
-    public String getName() {
-        return BlackDuckProvider.COMPONENT_NAME;
     }
 
     @Override

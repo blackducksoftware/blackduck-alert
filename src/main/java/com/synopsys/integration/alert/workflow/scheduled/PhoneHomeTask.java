@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -40,7 +41,10 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.AboutReader;
-import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
+import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.database.api.descriptor.ConfigurationAccessor;
+import com.synopsys.integration.alert.database.api.descriptor.ConfigurationAccessor.ConfigurationModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.blackduck.rest.BlackduckRestConnection;
 import com.synopsys.integration.blackduck.service.HubServicesFactory;
@@ -55,14 +59,16 @@ public class PhoneHomeTask extends ScheduledTask {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final BlackDuckProperties blackDuckProperties;
     private final AboutReader aboutReader;
-    private final CommonDistributionRepository commonDistributionRepository;
+    private final ConfigurationAccessor configurationAccessor;
+    private final DescriptorMap descriptorMap;
 
     @Autowired
-    public PhoneHomeTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final AboutReader aboutReader, final CommonDistributionRepository commonDistributionRepository) {
+    public PhoneHomeTask(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties, final AboutReader aboutReader, final ConfigurationAccessor configurationAccessor, final DescriptorMap descriptorMap) {
         super(taskScheduler, TASK_NAME);
         this.blackDuckProperties = blackDuckProperties;
         this.aboutReader = aboutReader;
-        this.commonDistributionRepository = commonDistributionRepository;
+        this.configurationAccessor = configurationAccessor;
+        this.descriptorMap = descriptorMap;
     }
 
     @Override
@@ -119,15 +125,14 @@ public class PhoneHomeTask extends ScheduledTask {
     }
 
     private Map<String, Integer> getChannelMetaData() {
-        final List<CommonDistributionConfigEntity> commonConfigList = commonDistributionRepository.findAll();
+        final Set<String> descriptorNames = descriptorMap.getDescriptorMap().keySet();
         final Map<String, Integer> createdSupportedChannels = new HashMap<>();
-        for (final CommonDistributionConfigEntity commonConfigEntity : commonConfigList) {
-            final String supportedChannel = commonConfigEntity.getDistributionType();
-            if (createdSupportedChannels.containsKey(supportedChannel)) {
-                final int count = createdSupportedChannels.get(supportedChannel);
-                createdSupportedChannels.put(supportedChannel, count + 1);
-            } else {
-                createdSupportedChannels.put(supportedChannel, 1);
+        for (final String name : descriptorNames) {
+            try {
+                final List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationsByName(name);
+                createdSupportedChannels.put(name, configurationModels.size());
+            } catch (final AlertDatabaseConstraintException e) {
+                logger.debug("Error reading from DB when phoning home.");
             }
         }
 

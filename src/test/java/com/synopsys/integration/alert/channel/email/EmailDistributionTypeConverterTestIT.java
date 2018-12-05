@@ -11,7 +11,6 @@ import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.database.channel.email.EmailGroupDistributionConfigEntity;
 import com.synopsys.integration.alert.database.channel.email.EmailGroupDistributionRepository;
-import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.synopsys.integration.alert.web.channel.model.EmailDistributionConfig;
 import com.synopsys.integration.alert.web.model.Config;
 

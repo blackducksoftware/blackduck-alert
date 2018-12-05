@@ -28,13 +28,5 @@ public enum ActionApiType {
     CHANNEL_DISTRIBUTION_CONFIG,
     PROVIDER_CONFIG,
     PROVIDER_DISTRIBUTION_CONFIG,
-    COMPONENT_CONFIG;
-
-    public static final ActionApiType getRestApiType(final String restApiTypeName) {
-        try {
-            return valueOf(restApiTypeName);
-        } catch (final IllegalArgumentException ex) {
-            return null;
-        }
-    }
+    COMPONENT_CONFIG
 }

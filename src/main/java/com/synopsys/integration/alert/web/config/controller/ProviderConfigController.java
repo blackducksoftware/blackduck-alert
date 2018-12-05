@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
-import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.common.enumeration.ActionApiType;
 import com.synopsys.integration.alert.web.config.actions.SingleEntityConfigActions;
 import com.synopsys.integration.alert.web.config.controller.handler.ConfigControllerHandler;

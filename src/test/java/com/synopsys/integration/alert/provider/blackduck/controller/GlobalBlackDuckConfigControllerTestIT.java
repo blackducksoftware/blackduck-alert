@@ -7,7 +7,6 @@ import com.synopsys.integration.alert.TestPropertyKey;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.mock.MockGlobalBlackDuckEntity;
 import com.synopsys.integration.alert.provider.blackduck.mock.MockGlobalBlackDuckRestModel;
 import com.synopsys.integration.alert.web.controller.GlobalControllerTest;

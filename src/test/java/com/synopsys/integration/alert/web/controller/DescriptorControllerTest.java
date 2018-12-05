@@ -26,7 +26,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
-import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
+import com.synopsys.integration.alert.common.descriptor.config.ui.UIComponent;
 import com.synopsys.integration.alert.common.enumeration.ActionApiType;
 
 public class DescriptorControllerTest extends AlertIntegrationTest {

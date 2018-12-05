@@ -31,7 +31,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
-import com.synopsys.integration.alert.common.descriptor.config.ChannelDistributionDescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.config.context.ChannelDistributionDescriptorActionApi;
 
 @Component
 public class SlackDistributionDescriptorActionApi extends ChannelDistributionDescriptorActionApi {

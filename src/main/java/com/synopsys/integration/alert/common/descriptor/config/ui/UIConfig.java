@@ -21,16 +21,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.entity.channel;
+package com.synopsys.integration.alert.common.descriptor.config.ui;
 
-import javax.persistence.MappedSuperclass;
+public abstract class UIConfig {
 
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
-
-@MappedSuperclass
-public abstract class GlobalChannelConfigEntity extends DatabaseEntity {
-    public GlobalChannelConfigEntity() {
-        // JPA requires default constructor definitions
-    }
-
+    public abstract UIComponent generateUIComponent();
 }

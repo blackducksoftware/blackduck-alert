@@ -25,8 +25,9 @@ package com.synopsys.integration.alert.common.descriptor;
 
 import javax.jms.MessageListener;
 
-import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
-import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 
 public abstract class ChannelDescriptor extends Descriptor {
@@ -37,17 +38,17 @@ public abstract class ChannelDescriptor extends Descriptor {
         super(name, DescriptorType.CHANNEL);
         this.destinationName = destinationName;
         this.channelListener = channelListener;
-        addChannelDistributionRestApi(distributionDescriptorActionApi);
+        addChannelDistributionActionApi(distributionDescriptorActionApi);
     }
 
-    public ChannelDescriptor(final String name, final String destinationName, final MessageListener channelListener, final DescriptorActionApi distributionDescriptorActionApi, final UIConfig distributionUIConfig) {
+    public ChannelDescriptor(final String name, final String destinationName, final MessageListener channelListener, final DescriptorActionApi distributionDescriptorActionApi, final CommonDistributionUIConfig distributionUIConfig) {
         super(name, DescriptorType.CHANNEL);
         this.destinationName = destinationName;
         this.channelListener = channelListener;
         addChannelDistributionUiConfigs(distributionDescriptorActionApi, distributionUIConfig);
     }
 
-    public ChannelDescriptor(final String name, final String destinationName, final MessageListener channelListener, final DescriptorActionApi distributionDescriptorActionApi, final UIConfig distributionUIConfig,
+    public ChannelDescriptor(final String name, final String destinationName, final MessageListener channelListener, final DescriptorActionApi distributionDescriptorActionApi, final CommonDistributionUIConfig distributionUIConfig,
         final DescriptorActionApi globalDescriptorActionApi, final UIConfig globalUIConfig) {
         this(name, destinationName, channelListener, distributionDescriptorActionApi, distributionUIConfig);
         addGlobalUiConfigs(globalDescriptorActionApi, globalUIConfig);

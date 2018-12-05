@@ -26,24 +26,31 @@ package com.synopsys.integration.alert.channel.hipchat.descriptor;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
-import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
-import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
+import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.UIComponent;
 
 @Component
-public class HipChatDistributionUIConfig extends UIConfig {
+public class HipChatDistributionUIConfig extends CommonDistributionUIConfig {
     public static final String KEY_ROOM_ID = "channel.hipchat.room.id";
     public static final String KEY_NOTIFY = "channel.hipchat.notify";
     public static final String KEY_COLOR = "channel.hipchat.color";
 
+    @Autowired
+    public HipChatDistributionUIConfig(final DescriptorMap descriptorMap) {
+        super(descriptorMap);
+    }
+
     @Override
-    public UIComponent generateUIComponent() {
+    public UIComponent createUIComponent() {
         return new UIComponent("HipChat", "hipchat", HipChatChannel.COMPONENT_NAME, "comments", setupFields());
     }
 

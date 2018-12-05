@@ -39,10 +39,10 @@ import com.synopsys.integration.alert.database.audit.AuditUtility;
 public class ChannelTemplateManager {
     private final JmsTemplate jmsTemplate;
     private final AuditUtility auditUtility;
-    private ContentConverter contentConverter;
+    private final ContentConverter contentConverter;
 
     @Autowired
-    public ChannelTemplateManager(ContentConverter contentConverter, final AuditUtility auditUtility, final JmsTemplate jmsTemplate) {
+    public ChannelTemplateManager(final ContentConverter contentConverter, final AuditUtility auditUtility, final JmsTemplate jmsTemplate) {
         this.contentConverter = contentConverter;
         this.auditUtility = auditUtility;
         this.jmsTemplate = jmsTemplate;
@@ -60,8 +60,8 @@ public class ChannelTemplateManager {
         final String destination = event.getDestination();
         if (event instanceof DistributionEvent) {
             final DistributionEvent distributionEvent = (DistributionEvent) event;
-            String commonIdString = distributionEvent.getCommonDistributionConfig().getId();
-            Long commonId = contentConverter.getLongValue(commonIdString);
+            final String commonIdString = distributionEvent.getConfigId();
+            final Long commonId = contentConverter.getLongValue(commonIdString);
             final Long auditEntryId = auditUtility.createAuditEntry(distributionEvent.getAuditEntryId(), commonId, distributionEvent.getContent());
             distributionEvent.setAuditEntryId(auditEntryId);
             final String jsonMessage = contentConverter.getJsonString(distributionEvent);
