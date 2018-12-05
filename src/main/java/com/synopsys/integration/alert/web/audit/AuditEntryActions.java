@@ -28,6 +28,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -85,11 +86,11 @@ public class AuditEntryActions {
     }
 
     public AlertPagedModel<AuditEntryModel> get() {
-        return get(null, null, null, null, null);
+        return get(null, null, null, null, null, false);
     }
 
-    public AlertPagedModel<AuditEntryModel> get(final Integer pageNumber, final Integer pageSize, final String searchTerm, final String sortField, final String sortOrder) {
-        final Page<NotificationContent> auditPage = queryForNotifications(sortField, sortOrder, searchTerm, pageSize);
+    public AlertPagedModel<AuditEntryModel> get(final Integer pageNumber, final Integer pageSize, final String searchTerm, final String sortField, final String sortOrder, final boolean onlyShowSentNotifications) {
+        final Page<NotificationContent> auditPage = queryForNotifications(sortField, sortOrder, searchTerm, pageSize, onlyShowSentNotifications);
         final List<AuditEntryModel> auditEntries = createRestModels(auditPage.getContent(), sortField, sortOrder);
         List<AuditEntryModel> pagedAuditEntries = auditEntries;
         int totalPages = 1;
@@ -151,13 +152,13 @@ public class AuditEntryActions {
         return get();
     }
 
-    private Page<NotificationContent> queryForNotifications(final String sortField, final String sortOrder, final String searchTerm, final Integer pageSize) {
+    private Page<NotificationContent> queryForNotifications(final String sortField, final String sortOrder, final String searchTerm, final Integer pageSize, final boolean onlyShowSentNotifications) {
         final PageRequest pageRequest = notificationManager.getPageRequestForNotifications(sortField, sortOrder);
         final Page<NotificationContent> auditPage;
         if (StringUtils.isNotBlank(searchTerm)) {
-            auditPage = notificationManager.findAllWithSearch(searchTerm, pageRequest, pageSize);
+            auditPage = notificationManager.findAllWithSearch(searchTerm, pageRequest, pageSize, onlyShowSentNotifications);
         } else {
-            auditPage = notificationManager.findAll(pageRequest);
+            auditPage = notificationManager.findAll(pageRequest, onlyShowSentNotifications);
         }
         return auditPage;
     }
@@ -165,24 +166,36 @@ public class AuditEntryActions {
     private List<AuditEntryModel> createRestModels(final List<NotificationContent> notificationContentEntries, final String sortField, final String sortOrder) {
         final List<AuditEntryModel> auditEntryModels = notificationContentEntries.stream().map(this::createRestModel).collect(Collectors.toList());
         if (StringUtils.isBlank(sortField) || sortField.equalsIgnoreCase("lastSent") || sortField.equalsIgnoreCase("overallStatus")) {
+            //TODO address this in the future when we have a database expert, this should be done with a database query when we are retrieving the data not after the fact
             boolean ascendingOrder = false;
             if (StringUtils.isNotBlank(sortOrder) && Sort.Direction.ASC.name().equalsIgnoreCase(sortOrder)) {
                 ascendingOrder = true;
             }
             Comparator comparator;
             if (StringUtils.isBlank(sortField) || sortField.equalsIgnoreCase("lastSent")) {
-                comparator = Comparator.comparing(AuditEntryModel::getLastSent, Comparator.nullsLast(String::compareTo));
+                final Function<AuditEntryModel, Date> function = (auditEntryModel) -> {
+                    Date date = null;
+                    if (StringUtils.isNotBlank(auditEntryModel.getLastSent())) {
+                        date = notificationContentConverter.parseDateString(auditEntryModel.getLastSent());
+                    }
+                    return date;
+                };
+                Comparator<Date> dateComparator = new Comparator<Date>() {
+                    @Override
+                    public int compare(final Date date1, final Date date2) {
+                        return date1.compareTo(date2);
+                    }
+                };
+                // the Date.compareTo method result the reverse of what we want for the descending order
+                dateComparator = dateComparator.reversed();
+                comparator = Comparator.comparing(function, Comparator.nullsFirst(dateComparator));
             } else {
                 comparator = Comparator.comparing(AuditEntryModel::getOverallStatus, Comparator.nullsLast(String::compareTo));
             }
             if (ascendingOrder) {
                 comparator = comparator.reversed();
             }
-            try {
-                auditEntryModels.sort(comparator);
-            } catch (final NullPointerException e) {
-                logger.info("WOAH");
-            }
+            auditEntryModels.sort(comparator);
         }
         return auditEntryModels;
     }
@@ -211,7 +224,6 @@ public class AuditEntryActions {
             String status = null;
             if (auditEntryEntity.getStatus() != null) {
                 status = auditEntryEntity.getStatus().getDisplayName();
-
                 if (auditEntryEntity.getStatus() == AuditEntryStatus.FAILURE) {
                     overallStatus = status;
                 } else if (null == overallStatus || (AuditEntryStatus.SUCCESS.getDisplayName().equals(overallStatus) && !AuditEntryStatus.SUCCESS.equals(status))) {

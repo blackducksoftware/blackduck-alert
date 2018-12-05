@@ -11,6 +11,7 @@ import NotificationTypeLegend from '../../common/NotificationTypeLegend';
 import '../../../../css/audit.scss';
 import {logout} from '../../../store/actions/session';
 import AuditDetails from "./Details";
+import CheckboxInput from "../../../field/input/CheckboxInput";
 
 class Index extends Component {
     constructor(props) {
@@ -23,6 +24,7 @@ class Index extends Component {
             searchTerm: '',
             sortField: 'lastSent',
             sortOrder: 'desc',
+            onlyShowSentNotifications: true,
             currentRowSelected: {},
             showDetailModal: false
         };
@@ -38,6 +40,7 @@ class Index extends Component {
         this.createCustomButtonGroup = this.createCustomButtonGroup.bind(this);
         this.refreshAuditEntries = this.refreshAuditEntries.bind(this);
         this.reloadAuditEntries = this.reloadAuditEntries.bind(this);
+        this.onOnlyShowSentNotificationsChange = this.onOnlyShowSentNotificationsChange.bind(this);
         this.onSizePerPageListChange = this.onSizePerPageListChange.bind(this);
         this.onPageChange = this.onPageChange.bind(this);
         this.onSearchChange = this.onSearchChange.bind(this);
@@ -48,7 +51,7 @@ class Index extends Component {
     }
 
     componentDidMount() {
-        this.props.getAuditData(this.state.currentPage, this.state.currentPageSize, this.state.searchTerm, this.state.sortField, this.state.sortOrder);
+        this.props.getAuditData(this.state.currentPage, this.state.currentPageSize, this.state.searchTerm, this.state.sortField, this.state.sortOrder, this.state.onlyShowSentNotifications);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -197,11 +200,11 @@ class Index extends Component {
     }
 
     refreshAuditEntries() {
-        this.reloadAuditEntries(this.state.currentPage, this.state.currentPageSize, this.state.searchTerm);
+        this.reloadAuditEntries(this.state.currentPage, this.state.currentPageSize, this.state.searchTerm, this.state.sortField, this.state.sortOrder, this.state.onlyShowSentNotifications);
     }
 
 
-    reloadAuditEntries(currentPage, sizePerPage, searchTerm, sortField, sortOrder) {
+    reloadAuditEntries(currentPage, sizePerPage, searchTerm, sortField, sortOrder, onlyShowSentNotifications) {
         this.setState({
             message: 'Loading...',
             inProgress: true
@@ -239,7 +242,15 @@ class Index extends Component {
         } else if (this.state.sortOrder) {
             sortingOrder = this.state.sortOrder;
         }
-        this.props.getAuditData(page, size, term, sortingField, sortingOrder);
+
+        var sentNotificationsOnly = false;
+        if (null != onlyShowSentNotifications || undefined != onlyShowSentNotifications) {
+            sentNotificationsOnly = onlyShowSentNotifications;
+        } else if (this.state.onlyShowSentNotifications) {
+            sentNotificationsOnly = this.state.onlyShowSentNotifications;
+        }
+
+        this.props.getAuditData(page, size, term, sortingField, sortingOrder, sentNotificationsOnly);
     }
 
     cancelRowSelect() {
@@ -264,6 +275,14 @@ class Index extends Component {
                 </div>}
             </ButtonGroup>
         );
+    }
+
+    onOnlyShowSentNotificationsChange({target}) {
+        const value = target.checked;
+        this.setState({
+            onlyShowSentNotifications: value
+        });
+        this.reloadAuditEntries(null, null, null, null, null, value);
     }
 
     onSizePerPageListChange(sizePerPage) {
@@ -345,6 +364,15 @@ class Index extends Component {
                     <small className="pull-right">
                         <AutoRefresh startAutoReload={this.startAutoReload} cancelAutoReload={this.cancelAutoReload}/>
                     </small>
+                    <small className="pull-right">
+                        <CheckboxInput
+                            id="showSentNotificationsID"
+                            label="Only show sent notifications"
+                            name="onlyShowSentNotifications"
+                            value={this.state.onlyShowSentNotifications}
+                            onChange={this.onOnlyShowSentNotificationsChange}
+                        />
+                    </small>
                 </h1>
                 <div>
                     <AuditDetails handleClose={this.handleCloseDetails} show={this.state.showDetailModal} currentEntry={this.state.currentRowSelected} providerNameFormat={this.providerColumnDataFormat}
@@ -409,7 +437,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    getAuditData: (pageNumber, pageSize, searchTerm, sortField, sortOrder) => dispatch(getAuditData(pageNumber, pageSize, searchTerm, sortField, sortOrder)),
+    getAuditData: (pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications) => dispatch(getAuditData(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications)),
     logout: () => dispatch(logout())
 });
 

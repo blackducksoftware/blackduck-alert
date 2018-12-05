@@ -26,6 +26,8 @@ package com.synopsys.integration.alert.database.entity.repository;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -37,5 +39,8 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
 
     @Query("SELECT entity FROM NotificationContent entity WHERE entity.createdAt < ?1 ORDER BY created_at, provider_creation_time asc")
     List<NotificationContent> findByCreatedAtBefore(final Date date);
+
+    @Query(value = "SELECT entity FROM NotificationContent entity WHERE entity.id IN (SELECT notificationId FROM entity.auditNotificationRelations WHERE entity.id = notificationId)")
+    Page<NotificationContent> findAllSentNotifications(final Pageable pageable);
 
 }
