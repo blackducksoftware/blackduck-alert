@@ -23,7 +23,9 @@
  */
 package com.synopsys.integration.alert.database.api.user;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +33,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -80,19 +81,22 @@ public class UserAccessor {
     private UserModel createModel(final UserEntity user) {
         final List<UserRoleRelation> roleRelations = userRoleRepository.findAllByUserId(user.getId());
         final List<Long> roleIdsForUser = roleRelations.stream().map(UserRoleRelation::getRoleId).collect(Collectors.toList());
-        final List<String> rolesForUser = roleRepository.getRoleNames(roleIdsForUser);
+        final Set<String> rolesForUser = new LinkedHashSet<>(roleRepository.getRoleNames(roleIdsForUser));
         return UserModel.of(user.getUserName(), user.getPassword(), rolesForUser);
     }
 
     @Transactional
     public UserModel addOrUpdateUser(final UserModel user) {
-        final UserEntity userEntity = new UserEntity(user.getName(), defaultPasswordEncoder.encode(user.getPassword()));
-        final List<String> roleNames = user.getRoles().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
-        final List<RoleEntity> roleEntities = roleRepository.findRoleEntitiesByRoleName(roleNames);
+        return addOrUpdateUser(user, false);
+    }
+
+    @Transactional
+    public UserModel addOrUpdateUser(final UserModel user, final boolean passwordEncoded) {
+        final String password = (passwordEncoded ? user.getPassword() : defaultPasswordEncoder.encode(user.getPassword()));
+        final UserEntity userEntity = new UserEntity(user.getName(), password);
+        final Collection<String> roles = user.getRoles();
+        final List<RoleEntity> roleEntities = roleRepository.findRoleEntitiesByRoleName(roles);
         final List<UserRoleRelation> roleRelations = new LinkedList<>();
-        for (final RoleEntity role : roleEntities) {
-            roleRelations.add(new UserRoleRelation(userEntity.getId(), role.getId()));
-        }
 
         final Optional<UserEntity> existingUser = userRepository.findByUserName(user.getName());
         if (existingUser.isPresent()) {
@@ -100,23 +104,29 @@ public class UserAccessor {
             userEntity.setId(userId);
             userRoleRepository.deleteAllByUserId(userId);
         }
+
+        for (final RoleEntity role : roleEntities) {
+            roleRelations.add(new UserRoleRelation(userEntity.getId(), role.getId()));
+        }
+
         userRoleRepository.saveAll(roleRelations);
         return createModel(userRepository.save(userEntity));
     }
 
     @Transactional
     public UserModel addUser(final String userName, final String password) {
-        final List<String> emptyRoles = Collections.emptyList();
-        return addOrUpdateUser(UserModel.of(userName, password, emptyRoles));
+        return addOrUpdateUser(UserModel.of(userName, password, Collections.emptySet()));
     }
 
     @Transactional
-    public UserModel assignRoles(final String username, final Set<String> roles) {
+    public boolean assignRoles(final String username, final Set<String> roles) {
         final Optional<UserEntity> entity = userRepository.findByUserName(username);
+        boolean assigned = false;
         if (entity.isPresent()) {
-            return addOrUpdateUser(UserModel.of(entity.get().getUserName(), entity.get().getPassword(), roles));
+            final UserModel model = addOrUpdateUser(UserModel.of(entity.get().getUserName(), entity.get().getPassword(), roles));
+            assigned = model.getName().equals(username) && model.getRoles().size() == roles.size();
         }
-        return createModel(entity.get());
+        return assigned;
     }
 
     @Transactional
@@ -130,5 +140,14 @@ public class UserAccessor {
         } else {
             return false;
         }
+    }
+
+    @Transactional
+    public void deleteUser(final String userName) {
+        final Optional<UserEntity> userEntity = userRepository.findByUserName(userName);
+        userEntity.ifPresent(entity -> {
+            assignRoles(entity.getUserName(), Collections.emptySet());
+            userRepository.delete(entity);
+        });
     }
 }

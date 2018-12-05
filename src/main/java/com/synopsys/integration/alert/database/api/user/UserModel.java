@@ -24,28 +24,25 @@
 package com.synopsys.integration.alert.database.api.user;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-public class UserModel {
+import com.synopsys.integration.util.Stringable;
+
+public class UserModel extends Stringable {
+    public static final String ROLE_PREFIX = "ROLE_";
     private final String name;
     private final String password;
-    private final List<GrantedAuthority> roles;
+    private final Set<String> roles;
 
-    public static final UserModel of(final String userName, final String password, final Collection<String> roles) {
-        // Spring requires the roles to start with ROLE_
-        final List<GrantedAuthority> roleAuthorities = roles.stream().map(role -> "ROLE_" + role).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
-        return new UserModel(userName, password, roleAuthorities);
-    }
-
-    public static final UserModel of(final String userName, final String password, final List<GrantedAuthority> roles) {
+    public static final UserModel of(final String userName, final String password, final Set<String> roles) {
         return new UserModel(userName, password, roles);
     }
 
-    private UserModel(final String name, final String password, final List<GrantedAuthority> roles) {
+    private UserModel(final String name, final String password, final Set<String> roles) {
         this.name = name;
         this.password = password;
         this.roles = roles;
@@ -59,11 +56,16 @@ public class UserModel {
         return password;
     }
 
-    public List<GrantedAuthority> getRoles() {
+    public Collection<String> getRoles() {
         return roles;
     }
 
+    public Collection<GrantedAuthority> getRoleAuthorities() {
+        // Spring requires the roles to start with ROLE_
+        return roles.stream().map(role -> ROLE_PREFIX + role).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+    }
+
     public boolean hasRole(final String role) {
-        return roles.stream().map(GrantedAuthority::getAuthority).anyMatch(role::equals);
+        return roles.contains(role);
     }
 }

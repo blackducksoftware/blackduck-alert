@@ -177,6 +177,7 @@ public class SystemValidatorTest {
         testAlertProperties.setAlertProxyUsername("AUser");
         testAlertProperties.setAlertProxyPassword("aPassword");
         final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(testAlertProperties);
+        testGlobalProperties.setHubTimeout(1);
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);

@@ -24,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
 import com.google.gson.Gson;
@@ -95,5 +96,43 @@ public class LoginHandlerTest {
 
         final ResponseEntity<String> response = loginHandler.userLogin(request, httpResponse, null);
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    }
+
+    @Test
+    public void userLoginWithBadCredentialsTest() throws Exception {
+        final LoginActions loginActions = Mockito.mock(LoginActions.class);
+        final Gson gson = new Gson();
+        final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
+        final LoginHandler loginHandler = new LoginHandler(contentConverter, loginActions, csrfTokenRepository);
+
+        final HttpServletRequest request = new MockHttpServletRequest();
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session = null;
+        }
+        Mockito.when(loginActions.authenticateUser(Mockito.any())).thenThrow(new BadCredentialsException("Bad credentials test"));
+        final HttpServletResponse httpResponse = new MockHttpServletResponse();
+
+        final ResponseEntity<String> response = loginHandler.userLogin(request, httpResponse, null);
+        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+    }
+
+    @Test
+    public void userLoginWithExceptionTest() throws Exception {
+        final LoginActions loginActions = Mockito.mock(LoginActions.class);
+        final Gson gson = new Gson();
+        final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
+        final LoginHandler loginHandler = new LoginHandler(contentConverter, loginActions, csrfTokenRepository);
+
+        final HttpServletRequest request = new MockHttpServletRequest();
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session = null;
+        }
+        Mockito.when(loginActions.authenticateUser(Mockito.any())).thenThrow(new IllegalArgumentException("Test exception for catch all"));
+        final HttpServletResponse httpResponse = new MockHttpServletResponse();
+
+        final ResponseEntity<String> response = loginHandler.userLogin(request, httpResponse, null);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 }
