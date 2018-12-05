@@ -48,19 +48,19 @@ public class JsonField<T> extends Stringable {
     }
 
     public static JsonField<Long> createLongField(final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label) {
-        return new JsonField<Long>(new TypeRef<List<Long>>() {}, jsonPath, fieldName, contentIdentifier, label);
+        return new JsonField<>(new TypeRef<List<Long>>() {}, jsonPath, fieldName, contentIdentifier, label);
     }
 
     public static JsonField<String> createStringField(final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label) {
-        return new JsonField<String>(new TypeRef<List<String>>() {}, jsonPath, fieldName, contentIdentifier, label);
+        return new JsonField<>(new TypeRef<List<String>>() {}, jsonPath, fieldName, contentIdentifier, label);
     }
 
     public static JsonField<String> createStringField(final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label, final List<JsonPath> configNameMappings) {
-        return new JsonField<String>(new TypeRef<List<String>>() {}, jsonPath, fieldName, contentIdentifier, label, configNameMappings);
+        return new JsonField<>(new TypeRef<List<String>>() {}, jsonPath, fieldName, contentIdentifier, label, configNameMappings);
     }
 
     public static JsonPath createJsonPath(final String pattern, final String... fields) {
-        return JsonPath.compile(String.format(pattern, fields));
+        return JsonPath.compile(String.format(pattern, (Object[]) fields));
     }
 
     protected JsonField(final TypeRef<?> typeRef, final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label) {
