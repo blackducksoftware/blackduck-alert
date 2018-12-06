@@ -14,10 +14,14 @@
             <column autoIncrement="true" name="ID" type="BIGINT(19)">
                 <constraints primaryKey="true" primaryKeyName="USER_KEY"/>
             </column>
-            <column name="USERNAME" type="VARCHAR(255)">
-                <constraints foreignKeyName="USER_NAME_FOREIGN_KEY" unique="true" uniqueConstraintName="CONSTRAINT_USER_NAME_UNIQUE"/>
+            <column name="USERNAME" type="VARCHAR(2048)">
+                <constraints unique="true" uniqueConstraintName="CONSTRAINT_USER_NAME_UNIQUE"/>
             </column>
-            <column name="PASSWORD" type="VARCHAR(255)"/>
+            <column name="PASSWORD" type="VARCHAR(2048)"/>
+            <column name="EXPIRED" type="BOOLEAN" defaultValue="false"/>
+            <column name="LOCKED" type="BOOLEAN" defaultValue="false"/>
+            <column name="PASSWORD_EXPIRED" type="BOOLEAN" defaultValue="false"/>
+            <column name="ENABLED" type="BOOLEAN" defaultValue="true"/>
         </createTable>
     </changeSet>
     <changeSet author="psantos" id="1543502711058-3">
@@ -29,6 +33,26 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="USER_ROLES"
+                baseColumnNames="USER_ID"
+                constraintName="FK_USER_ID"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="USERS"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="USER_ROLES"
+                baseColumnNames="ROLE_ID"
+                constraintName="FK_ROLE_ID"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="ROLES"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
     </changeSet>
     <changeSet author="psantos" id="1543502711058-4">
         <insert tableName="ROLES" schemaName="ALERT">

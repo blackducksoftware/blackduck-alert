@@ -94,9 +94,7 @@ public class SystemValidator {
         final boolean valid;
         if (userModel.isPresent()) {
             valid = StringUtils.isNotBlank(userModel.get().getPassword());
-            if (valid) {
-
-            } else {
+            if (!valid) {
                 final String errorMessage = "Default admin user password missing";
                 fieldErrors.put("defaultAdminPassword", errorMessage);
                 systemMessageUtility.addSystemMessage(errorMessage, SystemMessageSeverity.ERROR, SystemMessageType.DEFAULT_ADMIN_USER_ERROR);

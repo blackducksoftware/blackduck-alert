@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import com.synopsys.integration.alert.database.user.UserEntity;
 import com.synopsys.integration.util.Stringable;
 
 public class UserModel extends Stringable {
@@ -37,15 +38,27 @@ public class UserModel extends Stringable {
     private final String name;
     private final String password;
     private final Set<String> roles;
+    private final boolean expired;
+    private final boolean locked;
+    private final boolean passwordExpired;
+    private final boolean enabled;
 
-    public static final UserModel of(final String userName, final String password, final Set<String> roles) {
-        return new UserModel(userName, password, roles);
+    public static final UserModel of(final UserEntity userEntity, final Set<String> roles) {
+        return new UserModel(userEntity.getUserName(), userEntity.getPassword(), roles, userEntity.isExpired(), userEntity.isLocked(), userEntity.isPasswordExpired(), userEntity.isEnabled());
     }
 
-    private UserModel(final String name, final String password, final Set<String> roles) {
+    public static final UserModel of(final String userName, final String password, final Set<String> roles) {
+        return new UserModel(userName, password, roles, false, false, false, true);
+    }
+
+    public UserModel(final String name, final String password, final Set<String> roles, final boolean expired, final boolean locked, final boolean passwordExpired, final boolean enabled) {
         this.name = name;
         this.password = password;
         this.roles = roles;
+        this.expired = expired;
+        this.locked = locked;
+        this.passwordExpired = passwordExpired;
+        this.enabled = enabled;
     }
 
     public String getName() {
@@ -67,5 +80,21 @@ public class UserModel extends Stringable {
 
     public boolean hasRole(final String role) {
         return roles.contains(role);
+    }
+
+    public boolean isExpired() {
+        return expired;
+    }
+
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public boolean isPasswordExpired() {
+        return passwordExpired;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 }
