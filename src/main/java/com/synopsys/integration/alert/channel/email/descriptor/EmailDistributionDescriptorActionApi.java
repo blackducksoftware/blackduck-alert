@@ -36,9 +36,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
-import com.synopsys.integration.alert.common.configuration.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.context.ChannelDistributionDescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
@@ -68,12 +68,12 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
         final Set<String> emailAddresses = new HashSet<>();
         Set<BlackDuckProjectEntity> blackDuckProjectEntities = null;
 
-        final Optional<String> filterByProject = fieldModel.getValue(CommonDistributionConfiguration.KEY_FILTER_BY_PROJECT);
-        final Optional<String> providerName = fieldModel.getValue(CommonDistributionConfiguration.KEY_PROVIDER_NAME);
+        final Optional<String> filterByProject = fieldModel.getValue(CommonDistributionUIConfig.KEY_FILTER_BY_PROJECT);
+        final Optional<String> providerName = fieldModel.getValue(CommonDistributionUIConfig.KEY_PROVIDER_NAME);
 
         if (filterByProject.isPresent() && BooleanUtils.toBoolean(filterByProject.get())) {
-            final Set<String> configuredProjects = fieldModel.getValues(CommonDistributionConfiguration.KEY_CONFIGURED_PROJECT).stream().collect(Collectors.toSet());
-            final Optional<String> projectNamePattern = fieldModel.getValue(CommonDistributionConfiguration.KEY_PROJECT_NAME_PATTERN);
+            final Set<String> configuredProjects = fieldModel.getValues(CommonDistributionUIConfig.KEY_CONFIGURED_PROJECT).stream().collect(Collectors.toSet());
+            final Optional<String> projectNamePattern = fieldModel.getValue(CommonDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
             blackDuckProjectEntities = blackDuckProjectRepositoryAccessor.readEntities()
                                            .stream()
                                            .map(databaseEntity -> (BlackDuckProjectEntity) databaseEntity)

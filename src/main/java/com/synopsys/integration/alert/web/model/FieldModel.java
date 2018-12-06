@@ -4,6 +4,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+import com.synopsys.integration.alert.database.api.descriptor.ConfigurationFieldModel;
 
 public class FieldModel extends Config {
     private final Map<String, Collection<String>> keyToValues;
@@ -16,20 +20,34 @@ public class FieldModel extends Config {
         return keyToValues;
     }
 
-    public Optional<String> getValue(String key) {
+    public Optional<String> getValue(final String key) {
         return keyToValues.get(key).stream().findFirst();
     }
 
-    public Collection<String> getValues(String key) {
+    public Collection<String> getValues(final String key) {
         return keyToValues.get(key);
     }
 
-    public void putString(String key, String value) {
+    public void putString(final String key, final String value) {
         putStrings(key, Arrays.asList(value));
     }
 
-    public void putStrings(String key, Collection<String> values) {
+    public void putStrings(final String key, final Collection<String> values) {
         keyToValues.put(key, values);
+    }
+
+    public FieldAccessor convertToFieldAccessor() {
+        final Map<String, ConfigurationFieldModel> fields = keyToValues
+                                                                .entrySet()
+                                                                .stream()
+                                                                .collect(Collectors.toMap(Map.Entry::getKey, entry -> createConfigurationFieldModel(entry.getKey(), entry.getValue())));
+        return new FieldAccessor(fields);
+    }
+
+    private ConfigurationFieldModel createConfigurationFieldModel(final String key, final Collection<String> values) {
+        final ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(key);
+        configurationFieldModel.setFieldValues(values);
+        return configurationFieldModel;
     }
 
 }
