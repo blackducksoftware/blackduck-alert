@@ -20,8 +20,8 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.api.descriptor.ConfigurationAccessor.ConfigurationModel;
 import com.synopsys.integration.alert.database.entity.descriptor.DescriptorConfigEntity;
+import com.synopsys.integration.alert.database.repository.descriptor.DefinedFieldRepository;
 import com.synopsys.integration.alert.database.repository.descriptor.DescriptorConfigRepository;
-import com.synopsys.integration.alert.database.repository.descriptor.DescriptorFieldRepository;
 import com.synopsys.integration.alert.database.repository.descriptor.FieldValueRepository;
 import com.synopsys.integration.alert.database.repository.descriptor.RegisteredDescriptorRepository;
 
@@ -30,15 +30,15 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
     public static final String DESCRIPTOR_TYPE = "Test Component";
     public static final String FIELD_KEY_INSENSITIVE = "testInsensitiveField";
     public static final String FIELD_KEY_SENSITIVE = "testSensitiveField";
-    public static final DescriptorFieldModel DESCRIPTOR_FIELD_INSENSITIVE = new DescriptorFieldModel(FIELD_KEY_INSENSITIVE, Boolean.FALSE);
-    public static final DescriptorFieldModel DESCRIPTOR_FIELD_SENSITIVE = new DescriptorFieldModel(FIELD_KEY_SENSITIVE, Boolean.TRUE);
+    public static final DefinedFieldModel DESCRIPTOR_FIELD_INSENSITIVE = new DefinedFieldModel(FIELD_KEY_INSENSITIVE, Boolean.FALSE);
+    public static final DefinedFieldModel DESCRIPTOR_FIELD_SENSITIVE = new DefinedFieldModel(FIELD_KEY_SENSITIVE, Boolean.TRUE);
 
     @Autowired
     private DescriptorAccessor descriptorAccessor;
     @Autowired
     private RegisteredDescriptorRepository registeredDescriptorRepository;
     @Autowired
-    private DescriptorFieldRepository descriptorFieldRepository;
+    private DefinedFieldRepository definedFieldRepository;
     @Autowired
     private DescriptorConfigRepository descriptorConfigsRepository;
     @Autowired
@@ -50,7 +50,7 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
 
     @Before
     public void init() throws AlertDatabaseConstraintException {
-        configurationAccessor = new ConfigurationAccessor(registeredDescriptorRepository, descriptorFieldRepository, descriptorConfigsRepository, fieldValueRepository, encryptionUtility);
+        configurationAccessor = new ConfigurationAccessor(registeredDescriptorRepository, definedFieldRepository, descriptorConfigsRepository, fieldValueRepository, encryptionUtility);
         descriptorAccessor.registerDescriptor(DESCRIPTOR_NAME, DESCRIPTOR_TYPE, Arrays.asList(DESCRIPTOR_FIELD_INSENSITIVE, DESCRIPTOR_FIELD_SENSITIVE));
     }
 
@@ -59,7 +59,7 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
         descriptorAccessor.unregisterDescriptor(DESCRIPTOR_NAME);
 
         registeredDescriptorRepository.deleteAll();
-        descriptorFieldRepository.deleteAll();
+        definedFieldRepository.deleteAll();
         descriptorConfigsRepository.deleteAll();
         fieldValueRepository.deleteAll();
     }
@@ -109,7 +109,7 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
         configurationAccessor.createConfiguration(DESCRIPTOR_NAME, Arrays.asList(configField1));
         configurationAccessor.createConfiguration(DESCRIPTOR_NAME, Arrays.asList(configField2));
 
-        final List<ConfigurationModel> configurationsForDescriptor = configurationAccessor.getConfigurationsByName(DESCRIPTOR_NAME);
+        final List<ConfigurationModel> configurationsForDescriptor = configurationAccessor.getConfigurationsByDescriptorName(DESCRIPTOR_NAME);
         assertEquals(2, configurationsForDescriptor.size());
     }
 
@@ -137,8 +137,8 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
     public void getConfigurationsByTypeTest() throws AlertDatabaseConstraintException {
         final String descriptorName2 = DESCRIPTOR_NAME + "2";
         final String descriptorType2 = DESCRIPTOR_TYPE + "2";
-        final DescriptorFieldModel descriptorFieldModel = new DescriptorFieldModel(FIELD_KEY_SENSITIVE, Boolean.TRUE);
-        descriptorAccessor.registerDescriptor(descriptorName2, descriptorType2, Collections.singletonList(descriptorFieldModel));
+        final DefinedFieldModel definedFieldModel = new DefinedFieldModel(FIELD_KEY_SENSITIVE, Boolean.TRUE);
+        descriptorAccessor.registerDescriptor(descriptorName2, descriptorType2, Collections.singletonList(definedFieldModel));
 
         final String value1 = "value 1";
         final String value2 = "value 2";
@@ -300,7 +300,7 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
 
     private void getConfigByNameWithEmptyDescriptorNameTestHelper(final String descriptorName) {
         try {
-            configurationAccessor.getConfigurationsByName(descriptorName);
+            configurationAccessor.getConfigurationsByDescriptorName(descriptorName);
             fail("Expected exception to be thrown");
         } catch (final AlertDatabaseConstraintException e) {
             assertEquals("Descriptor name cannot be empty", e.getMessage());
