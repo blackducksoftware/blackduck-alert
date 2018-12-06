@@ -38,4 +38,6 @@ public class RegisteredDescriptorRepositoryTestIT extends AlertIntegrationTest {
         final RegisteredDescriptorEntity foundEntity = foundEntityOptional.get();
         assertEquals(entity1.getName(), foundEntity.getName());
     }
+
+    // TODO onDeleteCascadeTest
 }
