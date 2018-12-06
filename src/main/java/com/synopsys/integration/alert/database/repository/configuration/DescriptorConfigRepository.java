@@ -21,24 +21,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.api.descriptor;
+package com.synopsys.integration.alert.database.repository.configuration;
 
-import com.synopsys.integration.util.Stringable;
+import java.util.List;
 
-public class DescriptorFieldModel extends Stringable {
-    private final String key;
-    private final Boolean sensitive;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Component;
 
-    public DescriptorFieldModel(final String key, final Boolean sensitive) {
-        this.key = key;
-        this.sensitive = sensitive;
-    }
+import com.synopsys.integration.alert.database.entity.descriptor.DescriptorConfigEntity;
 
-    public String getKey() {
-        return key;
-    }
-
-    public Boolean getSensitive() {
-        return sensitive;
-    }
+@Component
+public interface DescriptorConfigRepository extends JpaRepository<DescriptorConfigEntity, Long> {
+    List<DescriptorConfigEntity> findByDescriptorId(final Long descriptorId);
 }
