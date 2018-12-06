@@ -43,7 +43,7 @@ public class StringEncryptionConverter implements AttributeConverter<String, Str
     }
 
     @Autowired
-    public void setEncryptionUtility(final EncryptionUtility encryptionUtility) {
+    public static void setEncryptionUtility(final EncryptionUtility encryptionUtility) {
         StringEncryptionConverter.encryptionUtility = encryptionUtility;
     }
 
