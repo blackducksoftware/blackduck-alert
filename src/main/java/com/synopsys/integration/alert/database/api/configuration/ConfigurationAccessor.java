@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.api.descriptor;
+package com.synopsys.integration.alert.database.api.configuration;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,11 +46,11 @@ import com.synopsys.integration.alert.database.entity.descriptor.DefinedFieldEnt
 import com.synopsys.integration.alert.database.entity.descriptor.DescriptorConfigEntity;
 import com.synopsys.integration.alert.database.entity.descriptor.FieldValueEntity;
 import com.synopsys.integration.alert.database.entity.descriptor.RegisteredDescriptorEntity;
-import com.synopsys.integration.alert.database.repository.descriptor.ConfigContextRepository;
-import com.synopsys.integration.alert.database.repository.descriptor.DefinedFieldRepository;
-import com.synopsys.integration.alert.database.repository.descriptor.DescriptorConfigRepository;
-import com.synopsys.integration.alert.database.repository.descriptor.FieldValueRepository;
-import com.synopsys.integration.alert.database.repository.descriptor.RegisteredDescriptorRepository;
+import com.synopsys.integration.alert.database.repository.configuration.ConfigContextRepository;
+import com.synopsys.integration.alert.database.repository.configuration.DefinedFieldRepository;
+import com.synopsys.integration.alert.database.repository.configuration.DescriptorConfigRepository;
+import com.synopsys.integration.alert.database.repository.configuration.FieldValueRepository;
+import com.synopsys.integration.alert.database.repository.configuration.RegisteredDescriptorRepository;
 import com.synopsys.integration.util.Stringable;
 
 @Component

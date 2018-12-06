@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.repository.descriptor;
+package com.synopsys.integration.alert.repository.configuration;
 
 import static org.junit.Assert.assertEquals;
 
@@ -15,12 +15,12 @@ import com.synopsys.integration.alert.database.entity.descriptor.DescriptorConfi
 import com.synopsys.integration.alert.database.entity.descriptor.DescriptorFieldRelation;
 import com.synopsys.integration.alert.database.entity.descriptor.FieldValueEntity;
 import com.synopsys.integration.alert.database.entity.descriptor.RegisteredDescriptorEntity;
-import com.synopsys.integration.alert.database.repository.descriptor.ConfigContextRepository;
-import com.synopsys.integration.alert.database.repository.descriptor.DefinedFieldRepository;
-import com.synopsys.integration.alert.database.repository.descriptor.DescriptorConfigRepository;
-import com.synopsys.integration.alert.database.repository.descriptor.DescriptorFieldRepository;
-import com.synopsys.integration.alert.database.repository.descriptor.FieldValueRepository;
-import com.synopsys.integration.alert.database.repository.descriptor.RegisteredDescriptorRepository;
+import com.synopsys.integration.alert.database.repository.configuration.ConfigContextRepository;
+import com.synopsys.integration.alert.database.repository.configuration.DefinedFieldRepository;
+import com.synopsys.integration.alert.database.repository.configuration.DescriptorConfigRepository;
+import com.synopsys.integration.alert.database.repository.configuration.DescriptorFieldRepository;
+import com.synopsys.integration.alert.database.repository.configuration.FieldValueRepository;
+import com.synopsys.integration.alert.database.repository.configuration.RegisteredDescriptorRepository;
 
 public class FieldValueRepositoryTestIT extends AlertIntegrationTest {
     public static final String DESCRIPTOR_NAME = "Test Descriptor";

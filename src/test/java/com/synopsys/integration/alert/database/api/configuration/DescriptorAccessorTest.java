@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.database.api.descriptor;
+package com.synopsys.integration.alert.database.api.configuration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -17,12 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.database.api.descriptor.DescriptorAccessor.RegisteredDescriptorModel;
-import com.synopsys.integration.alert.database.repository.descriptor.ConfigContextRepository;
-import com.synopsys.integration.alert.database.repository.descriptor.DefinedFieldRepository;
-import com.synopsys.integration.alert.database.repository.descriptor.DescriptorFieldRepository;
-import com.synopsys.integration.alert.database.repository.descriptor.FieldContextRepository;
-import com.synopsys.integration.alert.database.repository.descriptor.RegisteredDescriptorRepository;
+import com.synopsys.integration.alert.database.api.configuration.DescriptorAccessor.RegisteredDescriptorModel;
+import com.synopsys.integration.alert.database.repository.configuration.ConfigContextRepository;
+import com.synopsys.integration.alert.database.repository.configuration.DefinedFieldRepository;
+import com.synopsys.integration.alert.database.repository.configuration.DescriptorFieldRepository;
+import com.synopsys.integration.alert.database.repository.configuration.FieldContextRepository;
+import com.synopsys.integration.alert.database.repository.configuration.RegisteredDescriptorRepository;
 
 public class DescriptorAccessorTest extends AlertIntegrationTest {
     public static final String DESCRIPTOR_NAME = "Test Descriptor";

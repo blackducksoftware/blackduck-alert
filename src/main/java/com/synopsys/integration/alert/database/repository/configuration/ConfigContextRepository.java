@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.database.repository.descriptor;
+package com.synopsys.integration.alert.database.repository.configuration;
 
 import java.util.Optional;
 
