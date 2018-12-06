@@ -120,7 +120,7 @@ public class ConfigurationAccessor {
                 if (configuredField.isSet()) {
                     final DefinedFieldEntity associatedField = definedFieldRepository
                                                                        .findFirstByKey(fieldKey)
-                                                                       .orElseThrow(() -> new AlertDatabaseConstraintException("The config is attempting to set a field not associated with its descriptor"));
+                                                                       .orElseThrow(() -> new AlertDatabaseConstraintException("A field with the provided key did not exist: " + fieldKey));
                     for (final String value : configuredField.getFieldValues()) {
                         final FieldValueEntity newFieldValueEntity = new FieldValueEntity(createdConfig.getConfigurationId(), associatedField.getId(), encrypt(value, configuredField.isSensitive()));
                         fieldValueRepository.save(newFieldValueEntity);
@@ -139,27 +139,25 @@ public class ConfigurationAccessor {
         if (descriptorConfigId == null) {
             throw new AlertDatabaseConstraintException("The config id cannot be null");
         }
-        final Optional<DescriptorConfigEntity> optionalDescriptorConfigEntity = descriptorConfigsRepository.findById(descriptorConfigId);
-        if (optionalDescriptorConfigEntity.isPresent()) {
-            final DescriptorConfigEntity descriptorConfigEntity = optionalDescriptorConfigEntity.get();
-            final List<FieldValueEntity> oldValues = fieldValueRepository.findByConfigId(descriptorConfigEntity.getDescriptorId());
-            fieldValueRepository.deleteAll(oldValues);
+        final DescriptorConfigEntity descriptorConfigEntity = descriptorConfigsRepository
+                                                                      .findById(descriptorConfigId)
+                                                                      .orElseThrow(() -> new AlertDatabaseConstraintException("A config with that id did not exist"));
+        final List<FieldValueEntity> oldValues = fieldValueRepository.findByConfigId(descriptorConfigEntity.getDescriptorId());
+        fieldValueRepository.deleteAll(oldValues);
 
-            final String configContext = getContextById(descriptorConfigEntity.getContextId());
-            final ConfigurationModel updatedConfig = new ConfigurationModel(descriptorConfigEntity.getDescriptorId(), descriptorConfigEntity.getId(), configContext);
-            if (configuredFields != null && !configuredFields.isEmpty()) {
-                for (final ConfigurationFieldModel configFieldModel : configuredFields) {
-                    final Long fieldId = getFieldIdOrThrowException(configFieldModel.getFieldKey());
-                    for (final String value : configFieldModel.getFieldValues()) {
-                        final FieldValueEntity newFieldValue = new FieldValueEntity(descriptorConfigId, fieldId, encrypt(value, configFieldModel.isSensitive()));
-                        fieldValueRepository.save(newFieldValue);
-                    }
-                    updatedConfig.put(configFieldModel);
+        final String configContext = getContextById(descriptorConfigEntity.getContextId());
+        final ConfigurationModel updatedConfig = new ConfigurationModel(descriptorConfigEntity.getDescriptorId(), descriptorConfigEntity.getId(), configContext);
+        if (configuredFields != null && !configuredFields.isEmpty()) {
+            for (final ConfigurationFieldModel configFieldModel : configuredFields) {
+                final Long fieldId = getFieldIdOrThrowException(configFieldModel.getFieldKey());
+                for (final String value : configFieldModel.getFieldValues()) {
+                    final FieldValueEntity newFieldValue = new FieldValueEntity(descriptorConfigId, fieldId, encrypt(value, configFieldModel.isSensitive()));
+                    fieldValueRepository.save(newFieldValue);
                 }
+                updatedConfig.put(configFieldModel);
             }
-            return updatedConfig;
         }
-        throw new AlertDatabaseConstraintException("A config with that id did not exist");
+        return updatedConfig;
     }
 
     public void deleteConfiguration(final ConfigurationModel configModel) throws AlertDatabaseConstraintException {
@@ -197,12 +195,7 @@ public class ConfigurationAccessor {
                                                                   .findById(fieldValueEntity.getFieldId())
                                                                   .orElseThrow(() -> new AlertDatabaseConstraintException("Field id cannot be null"));
             final String fieldKey = definedFieldEntity.getKey();
-            final ConfigurationFieldModel fieldModel;
-            if (definedFieldEntity.getSensitive()) {
-                fieldModel = ConfigurationFieldModel.createSensitive(fieldKey);
-            } else {
-                fieldModel = ConfigurationFieldModel.create(fieldKey);
-            }
+            final ConfigurationFieldModel fieldModel = definedFieldEntity.getSensitive() ? ConfigurationFieldModel.createSensitive(fieldKey) : ConfigurationFieldModel.create(fieldKey);
             final String decryptedValue = decrypt(fieldValueEntity.getValue(), fieldModel.isSensitive());
             fieldModel.setFieldValue(decryptedValue);
             newModel.put(fieldModel);

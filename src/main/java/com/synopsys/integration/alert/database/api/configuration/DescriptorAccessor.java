@@ -165,20 +165,17 @@ public class DescriptorAccessor {
     /**
      * @return true if the descriptor field was present
      */
-    public boolean deleteDescriptorField(final Long descriptorId, final DefinedFieldModel descriptorField) throws AlertDatabaseConstraintException {
+    public boolean deleteDefinedField(final DefinedFieldModel descriptorField) throws AlertDatabaseConstraintException {
         if (descriptorField == null) {
             throw new AlertDatabaseConstraintException("Cannot delete a null object from the database");
         }
-        return deleteDescriptorField(descriptorId, descriptorField.getKey());
+        return deleteDefinedField(descriptorField.getKey());
     }
 
     /**
      * @return true if a field with that key was present
      */
-    public boolean deleteDescriptorField(final Long descriptorId, final String fieldKey) throws AlertDatabaseConstraintException {
-        if (descriptorId == null) {
-            throw new AlertDatabaseConstraintException("The descriptor id cannot be null");
-        }
+    public boolean deleteDefinedField(final String fieldKey) throws AlertDatabaseConstraintException {
         if (StringUtils.isEmpty(fieldKey)) {
             throw new AlertDatabaseConstraintException("The field key cannot be empty");
         }
