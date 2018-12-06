@@ -34,16 +34,22 @@ import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 public class DescriptorConfigEntity extends DatabaseEntity {
     @Column(name = "DESCRIPTOR_ID")
     private Long descriptorId;
+    // TODO @Column(name = "CONTEXT_ID")
+    private Long contextId;
 
     public DescriptorConfigEntity() {
         // JPA requires default constructor definitions
     }
 
-    public DescriptorConfigEntity(final Long descriptorId) {
+    public DescriptorConfigEntity(final Long descriptorId, final Long contextId) {
         this.descriptorId = descriptorId;
     }
 
     public Long getDescriptorId() {
         return descriptorId;
+    }
+
+    public Long getContextId() {
+        return contextId;
     }
 }

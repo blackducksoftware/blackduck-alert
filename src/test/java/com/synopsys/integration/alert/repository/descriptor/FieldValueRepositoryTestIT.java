@@ -9,12 +9,12 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.AlertIntegrationTest;
+import com.synopsys.integration.alert.database.entity.descriptor.DefinedFieldEntity;
 import com.synopsys.integration.alert.database.entity.descriptor.DescriptorConfigEntity;
-import com.synopsys.integration.alert.database.entity.descriptor.DescriptorFieldEntity;
 import com.synopsys.integration.alert.database.entity.descriptor.FieldValueEntity;
 import com.synopsys.integration.alert.database.entity.descriptor.RegisteredDescriptorEntity;
+import com.synopsys.integration.alert.database.repository.descriptor.DefinedFieldRepository;
 import com.synopsys.integration.alert.database.repository.descriptor.DescriptorConfigRepository;
-import com.synopsys.integration.alert.database.repository.descriptor.DescriptorFieldRepository;
 import com.synopsys.integration.alert.database.repository.descriptor.FieldValueRepository;
 import com.synopsys.integration.alert.database.repository.descriptor.RegisteredDescriptorRepository;
 
@@ -25,7 +25,7 @@ public class FieldValueRepositoryTestIT extends AlertIntegrationTest {
     @Autowired
     private RegisteredDescriptorRepository registeredDescriptorRepository;
     @Autowired
-    private DescriptorFieldRepository descriptorFieldRepository;
+    private DefinedFieldRepository definedFieldRepository;
     @Autowired
     private DescriptorConfigRepository descriptorConfigRepository;
     @Autowired
@@ -34,7 +34,7 @@ public class FieldValueRepositoryTestIT extends AlertIntegrationTest {
     @After
     public void cleanup() {
         registeredDescriptorRepository.deleteAll();
-        descriptorFieldRepository.deleteAll();
+        definedFieldRepository.deleteAll();
         descriptorConfigRepository.deleteAll();
         fieldValueRepository.deleteAll();
     }
@@ -44,15 +44,15 @@ public class FieldValueRepositoryTestIT extends AlertIntegrationTest {
         final RegisteredDescriptorEntity descriptorEntity = new RegisteredDescriptorEntity(DESCRIPTOR_NAME, DESCRIPTOR_TYPE);
         final RegisteredDescriptorEntity savedDescriptorEntity = registeredDescriptorRepository.save(descriptorEntity);
 
-        final DescriptorFieldEntity descriptorFieldEntity1 = new DescriptorFieldEntity(savedDescriptorEntity.getId(), "fieldKey1", Boolean.FALSE);
-        final DescriptorFieldEntity descriptorFieldEntity2 = new DescriptorFieldEntity(savedDescriptorEntity.getId(), "fieldKey2", Boolean.FALSE);
-        final DescriptorFieldEntity descriptorFieldEntity3 = new DescriptorFieldEntity(savedDescriptorEntity.getId(), "fieldKey3", Boolean.FALSE);
-        final DescriptorFieldEntity descriptorFieldEntity4 = new DescriptorFieldEntity(savedDescriptorEntity.getId(), "fieldKey4", Boolean.FALSE);
-        final DescriptorFieldEntity savedEntity1 = descriptorFieldRepository.save(descriptorFieldEntity1);
-        final DescriptorFieldEntity savedEntity2 = descriptorFieldRepository.save(descriptorFieldEntity2);
-        final DescriptorFieldEntity savedEntity3 = descriptorFieldRepository.save(descriptorFieldEntity3);
-        final DescriptorFieldEntity savedEntity4 = descriptorFieldRepository.save(descriptorFieldEntity4);
-        assertEquals(4, descriptorFieldRepository.findAll().size());
+        final DefinedFieldEntity definedFieldEntity1 = new DefinedFieldEntity(savedDescriptorEntity.getId(), "fieldKey1", Boolean.FALSE);
+        final DefinedFieldEntity definedFieldEntity2 = new DefinedFieldEntity(savedDescriptorEntity.getId(), "fieldKey2", Boolean.FALSE);
+        final DefinedFieldEntity definedFieldEntity3 = new DefinedFieldEntity(savedDescriptorEntity.getId(), "fieldKey3", Boolean.FALSE);
+        final DefinedFieldEntity definedFieldEntity4 = new DefinedFieldEntity(savedDescriptorEntity.getId(), "fieldKey4", Boolean.FALSE);
+        final DefinedFieldEntity savedEntity1 = definedFieldRepository.save(definedFieldEntity1);
+        final DefinedFieldEntity savedEntity2 = definedFieldRepository.save(definedFieldEntity2);
+        final DefinedFieldEntity savedEntity3 = definedFieldRepository.save(definedFieldEntity3);
+        final DefinedFieldEntity savedEntity4 = definedFieldRepository.save(definedFieldEntity4);
+        assertEquals(4, definedFieldRepository.findAll().size());
 
         final DescriptorConfigEntity descriptorConfigEntity1 = new DescriptorConfigEntity(savedDescriptorEntity.getId());
         final DescriptorConfigEntity descriptorConfigEntity2 = new DescriptorConfigEntity(savedDescriptorEntity.getId());
@@ -82,15 +82,15 @@ public class FieldValueRepositoryTestIT extends AlertIntegrationTest {
         final RegisteredDescriptorEntity descriptorEntity = new RegisteredDescriptorEntity(DESCRIPTOR_NAME, DESCRIPTOR_TYPE);
         final RegisteredDescriptorEntity savedDescriptorEntity = registeredDescriptorRepository.save(descriptorEntity);
 
-        final DescriptorFieldEntity descriptorFieldEntity1 = new DescriptorFieldEntity(savedDescriptorEntity.getId(), "fieldKey1", Boolean.FALSE);
-        final DescriptorFieldEntity descriptorFieldEntity2 = new DescriptorFieldEntity(savedDescriptorEntity.getId(), "fieldKey2", Boolean.FALSE);
-        final DescriptorFieldEntity descriptorFieldEntity3 = new DescriptorFieldEntity(savedDescriptorEntity.getId(), "fieldKey3", Boolean.FALSE);
-        final DescriptorFieldEntity descriptorFieldEntity4 = new DescriptorFieldEntity(savedDescriptorEntity.getId(), "fieldKey4", Boolean.FALSE);
-        final DescriptorFieldEntity savedEntity1 = descriptorFieldRepository.save(descriptorFieldEntity1);
-        final DescriptorFieldEntity savedEntity2 = descriptorFieldRepository.save(descriptorFieldEntity2);
-        final DescriptorFieldEntity savedEntity3 = descriptorFieldRepository.save(descriptorFieldEntity3);
-        final DescriptorFieldEntity savedEntity4 = descriptorFieldRepository.save(descriptorFieldEntity4);
-        assertEquals(4, descriptorFieldRepository.findAll().size());
+        final DefinedFieldEntity definedFieldEntity1 = new DefinedFieldEntity(savedDescriptorEntity.getId(), "fieldKey1", Boolean.FALSE);
+        final DefinedFieldEntity definedFieldEntity2 = new DefinedFieldEntity(savedDescriptorEntity.getId(), "fieldKey2", Boolean.FALSE);
+        final DefinedFieldEntity definedFieldEntity3 = new DefinedFieldEntity(savedDescriptorEntity.getId(), "fieldKey3", Boolean.FALSE);
+        final DefinedFieldEntity definedFieldEntity4 = new DefinedFieldEntity(savedDescriptorEntity.getId(), "fieldKey4", Boolean.FALSE);
+        final DefinedFieldEntity savedEntity1 = definedFieldRepository.save(definedFieldEntity1);
+        final DefinedFieldEntity savedEntity2 = definedFieldRepository.save(definedFieldEntity2);
+        final DefinedFieldEntity savedEntity3 = definedFieldRepository.save(definedFieldEntity3);
+        final DefinedFieldEntity savedEntity4 = definedFieldRepository.save(definedFieldEntity4);
+        assertEquals(4, definedFieldRepository.findAll().size());
 
         final DescriptorConfigEntity descriptorConfigEntity1 = new DescriptorConfigEntity(savedDescriptorEntity.getId());
         final DescriptorConfigEntity descriptorConfigEntity2 = new DescriptorConfigEntity(savedDescriptorEntity.getId());
@@ -116,8 +116,8 @@ public class FieldValueRepositoryTestIT extends AlertIntegrationTest {
         assertEquals(2, fieldValueRepository.findAll().size());
 
         // Delete a descriptor field (deletes 3)
-        descriptorFieldRepository.deleteById(savedEntity3.getId());
-        descriptorFieldRepository.flush();
+        definedFieldRepository.deleteById(savedEntity3.getId());
+        definedFieldRepository.flush();
         assertEquals(1, fieldValueRepository.findAll().size());
 
         // Delete a descriptor (deletes 4)
