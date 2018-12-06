@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.repository.descriptor;
+package com.synopsys.integration.alert.repository.configuration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.database.entity.descriptor.DefinedFieldEntity;
-import com.synopsys.integration.alert.database.repository.descriptor.DefinedFieldRepository;
-import com.synopsys.integration.alert.database.repository.descriptor.RegisteredDescriptorRepository;
+import com.synopsys.integration.alert.database.repository.configuration.DefinedFieldRepository;
+import com.synopsys.integration.alert.database.repository.configuration.RegisteredDescriptorRepository;
 
 public class DefinedFieldRepositoryTestIT extends AlertIntegrationTest {
     public static final String FIELD_KEY_1 = "Test Key 1";

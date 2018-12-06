@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.repository.descriptor;
+package com.synopsys.integration.alert.repository.configuration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.database.entity.descriptor.RegisteredDescriptorEntity;
-import com.synopsys.integration.alert.database.repository.descriptor.RegisteredDescriptorRepository;
+import com.synopsys.integration.alert.database.repository.configuration.RegisteredDescriptorRepository;
 
 public class RegisteredDescriptorRepositoryTestIT extends AlertIntegrationTest {
     public static final String DESCRIPTOR_NAME_1 = "name1";
