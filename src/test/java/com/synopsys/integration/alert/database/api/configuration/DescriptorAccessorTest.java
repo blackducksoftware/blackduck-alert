@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.database.api.descriptor;
+package com.synopsys.integration.alert.database.api.configuration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -17,36 +17,47 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.database.api.descriptor.DescriptorAccessor.RegisteredDescriptorModel;
-import com.synopsys.integration.alert.database.repository.descriptor.DescriptorFieldRepository;
-import com.synopsys.integration.alert.database.repository.descriptor.RegisteredDescriptorRepository;
+import com.synopsys.integration.alert.database.api.configuration.DescriptorAccessor.RegisteredDescriptorModel;
+import com.synopsys.integration.alert.database.repository.configuration.ConfigContextRepository;
+import com.synopsys.integration.alert.database.repository.configuration.DefinedFieldRepository;
+import com.synopsys.integration.alert.database.repository.configuration.DescriptorFieldRepository;
+import com.synopsys.integration.alert.database.repository.configuration.FieldContextRepository;
+import com.synopsys.integration.alert.database.repository.configuration.RegisteredDescriptorRepository;
 
 public class DescriptorAccessorTest extends AlertIntegrationTest {
     public static final String DESCRIPTOR_NAME = "Test Descriptor";
-    public static final String DESCRIPTOR_TYPE = "Test Component";
 
     @Autowired
     private RegisteredDescriptorRepository registeredDescriptorRepository;
     @Autowired
     private DescriptorFieldRepository descriptorFieldRepository;
+    @Autowired
+    private DefinedFieldRepository definedFieldRepository;
+    @Autowired
+    private FieldContextRepository fieldContextRepository;
+    @Autowired
+    private ConfigContextRepository configContextRepository;
 
     private DescriptorAccessor descriptorAccessor;
 
     @Before
     public void init() {
-        descriptorAccessor = new DescriptorAccessor(registeredDescriptorRepository, descriptorFieldRepository);
+        descriptorAccessor = new DescriptorAccessor(registeredDescriptorRepository, descriptorFieldRepository, definedFieldRepository, fieldContextRepository, configContextRepository);
     }
 
     @After
     public void cleanup() {
         registeredDescriptorRepository.deleteAll();
         descriptorFieldRepository.deleteAll();
+        definedFieldRepository.deleteAll();
+        fieldContextRepository.deleteAll();
+        configContextRepository.deleteAll();
     }
 
     @Test
     public void registerAndGetAllDescriptorsTest() throws AlertDatabaseConstraintException {
-        descriptorAccessor.registerDescriptorWithoutFields(DESCRIPTOR_NAME, DESCRIPTOR_TYPE);
-        descriptorAccessor.registerDescriptorWithoutFields(DESCRIPTOR_NAME + "2", DESCRIPTOR_TYPE + "2");
+        descriptorAccessor.registerDescriptorWithoutFields(DESCRIPTOR_NAME);
+        descriptorAccessor.registerDescriptorWithoutFields(DESCRIPTOR_NAME + "2");
         assertEquals(2, registeredDescriptorRepository.findAll().size());
 
         final List<RegisteredDescriptorModel> registeredDescriptors = descriptorAccessor.getRegisteredDescriptors();
@@ -55,32 +66,31 @@ public class DescriptorAccessorTest extends AlertIntegrationTest {
 
     @Test
     public void registerAndGetDescriptorTest() throws AlertDatabaseConstraintException {
-        descriptorAccessor.registerDescriptorWithoutFields(DESCRIPTOR_NAME, DESCRIPTOR_TYPE);
+        descriptorAccessor.registerDescriptorWithoutFields(DESCRIPTOR_NAME);
         final RegisteredDescriptorModel registeredDescriptorModel = descriptorAccessor
                                                                             .getRegisteredDescriptorByName(DESCRIPTOR_NAME)
                                                                             .orElseThrow(() -> new AlertDatabaseConstraintException("This descriptor should exist"));
         assertNotNull(registeredDescriptorModel.getId());
         assertEquals(DESCRIPTOR_NAME, registeredDescriptorModel.getName());
-        assertEquals(DESCRIPTOR_TYPE, registeredDescriptorModel.getType());
     }
 
     @Test
     public void registerDescriptorWithFieldsTest() throws AlertDatabaseConstraintException {
         final String field1Key = "field1";
         final String field2Key = "field2";
-        final DescriptorFieldModel field1 = new DescriptorFieldModel(field1Key, Boolean.FALSE);
-        final DescriptorFieldModel field2 = new DescriptorFieldModel(field2Key, Boolean.TRUE);
+        final DefinedFieldModel field1 = new DefinedFieldModel(field1Key, ConfigContextEnum.DISTRIBUTION, Boolean.FALSE);
+        final DefinedFieldModel field2 = new DefinedFieldModel(field2Key, ConfigContextEnum.DISTRIBUTION, Boolean.TRUE);
 
-        descriptorAccessor.registerDescriptor(DESCRIPTOR_NAME, DESCRIPTOR_TYPE, Arrays.asList(field1, field2));
+        descriptorAccessor.registerDescriptor(DESCRIPTOR_NAME, Arrays.asList(field1, field2));
         assertEquals(1, registeredDescriptorRepository.findAll().size());
-        assertEquals(2, descriptorFieldRepository.findAll().size());
+        assertEquals(2, definedFieldRepository.findAll().size());
     }
 
     @Test
     public void registerDescriptorThatAlreadyExistsTest() throws AlertDatabaseConstraintException {
-        final boolean initialResult = descriptorAccessor.registerDescriptorWithoutFields(DESCRIPTOR_NAME, DESCRIPTOR_TYPE);
+        final boolean initialResult = descriptorAccessor.registerDescriptorWithoutFields(DESCRIPTOR_NAME);
         assertTrue(initialResult);
-        final boolean reAddResult = descriptorAccessor.registerDescriptorWithoutFields(DESCRIPTOR_NAME, DESCRIPTOR_TYPE);
+        final boolean reAddResult = descriptorAccessor.registerDescriptorWithoutFields(DESCRIPTOR_NAME);
         assertFalse(reAddResult);
     }
 
@@ -92,7 +102,7 @@ public class DescriptorAccessorTest extends AlertIntegrationTest {
 
     @Test
     public void unregisterDescriptorTest() throws AlertDatabaseConstraintException {
-        descriptorAccessor.registerDescriptorWithoutFields(DESCRIPTOR_NAME, DESCRIPTOR_TYPE);
+        descriptorAccessor.registerDescriptorWithoutFields(DESCRIPTOR_NAME);
         assertEquals(1, registeredDescriptorRepository.findAll().size());
 
         descriptorAccessor.unregisterDescriptor(DESCRIPTOR_NAME);
@@ -115,10 +125,10 @@ public class DescriptorAccessorTest extends AlertIntegrationTest {
     public void getFieldsForDescriptorTest() throws AlertDatabaseConstraintException {
         final String field1Key = "field1";
         final String field2Key = "field2";
-        final DescriptorFieldModel field1 = new DescriptorFieldModel(field1Key, Boolean.FALSE);
-        final DescriptorFieldModel field2 = new DescriptorFieldModel(field2Key, Boolean.TRUE);
-        descriptorAccessor.registerDescriptor(DESCRIPTOR_NAME, DESCRIPTOR_TYPE, Arrays.asList(field1, field2));
-        final List<DescriptorFieldModel> descriptorFields = descriptorAccessor.getFieldsForDescriptor(DESCRIPTOR_NAME);
+        final DefinedFieldModel field1 = new DefinedFieldModel(field1Key, ConfigContextEnum.DISTRIBUTION, Boolean.FALSE);
+        final DefinedFieldModel field2 = new DefinedFieldModel(field2Key, ConfigContextEnum.DISTRIBUTION, Boolean.TRUE);
+        descriptorAccessor.registerDescriptor(DESCRIPTOR_NAME, Arrays.asList(field1, field2));
+        final List<DefinedFieldModel> descriptorFields = descriptorAccessor.getFieldsForDescriptor(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION);
         assertEquals(2, descriptorFields.size());
         assertTrue(descriptorFields.contains(field1));
         assertTrue(descriptorFields.contains(field2));
@@ -128,11 +138,11 @@ public class DescriptorAccessorTest extends AlertIntegrationTest {
     public void getFieldsForDescriptorByIdTest() throws AlertDatabaseConstraintException {
         final String field1Key = "field1";
         final String field2Key = "field2";
-        final DescriptorFieldModel field1 = new DescriptorFieldModel(field1Key, Boolean.FALSE);
-        final DescriptorFieldModel field2 = new DescriptorFieldModel(field2Key, Boolean.TRUE);
-        descriptorAccessor.registerDescriptor(DESCRIPTOR_NAME, DESCRIPTOR_TYPE, Arrays.asList(field1, field2));
+        final DefinedFieldModel field1 = new DefinedFieldModel(field1Key, ConfigContextEnum.DISTRIBUTION, Boolean.FALSE);
+        final DefinedFieldModel field2 = new DefinedFieldModel(field2Key, ConfigContextEnum.DISTRIBUTION, Boolean.TRUE);
+        descriptorAccessor.registerDescriptor(DESCRIPTOR_NAME, Arrays.asList(field1, field2));
         final RegisteredDescriptorModel registeredDescriptorModel = descriptorAccessor.getRegisteredDescriptorByName(DESCRIPTOR_NAME).orElseThrow(() -> new AlertDatabaseConstraintException("This descriptor should exist"));
-        final List<DescriptorFieldModel> descriptorFields = descriptorAccessor.getFieldsForDescriptorById(registeredDescriptorModel.getId());
+        final List<DefinedFieldModel> descriptorFields = descriptorAccessor.getFieldsForDescriptorById(registeredDescriptorModel.getId(), ConfigContextEnum.DISTRIBUTION);
         assertEquals(2, descriptorFields.size());
         assertTrue(descriptorFields.contains(field1));
         assertTrue(descriptorFields.contains(field2));
@@ -149,13 +159,13 @@ public class DescriptorAccessorTest extends AlertIntegrationTest {
         final String invalidDescriptorName = "-- INVALID DESCRIPTOR NAME --";
         final Long invalidDescriptorId = Long.MAX_VALUE;
         try {
-            descriptorAccessor.getFieldsForDescriptor(invalidDescriptorName);
+            descriptorAccessor.getFieldsForDescriptor(invalidDescriptorName, ConfigContextEnum.DISTRIBUTION);
             fail("Expected exception to be thrown");
         } catch (final AlertDatabaseConstraintException e) {
             assertEquals("A descriptor with that name did not exist", e.getMessage());
         }
         try {
-            descriptorAccessor.getFieldsForDescriptorById(invalidDescriptorId);
+            descriptorAccessor.getFieldsForDescriptorById(invalidDescriptorId, ConfigContextEnum.DISTRIBUTION);
             fail("Expected exception to be thrown");
         } catch (final AlertDatabaseConstraintException e) {
             assertEquals("A descriptor with that id did not exist", e.getMessage());
@@ -165,25 +175,25 @@ public class DescriptorAccessorTest extends AlertIntegrationTest {
     @Test
     public void addDescriptorFieldTest() throws AlertDatabaseConstraintException {
         final String field1Key = "field1";
-        final DescriptorFieldModel field1 = new DescriptorFieldModel(field1Key, Boolean.FALSE);
-        descriptorAccessor.registerDescriptor(DESCRIPTOR_NAME, DESCRIPTOR_TYPE, Arrays.asList(field1));
+        final DefinedFieldModel field1 = new DefinedFieldModel(field1Key, ConfigContextEnum.DISTRIBUTION, Boolean.FALSE);
+        descriptorAccessor.registerDescriptor(DESCRIPTOR_NAME, Arrays.asList(field1));
         final RegisteredDescriptorModel registeredDescriptorModel = descriptorAccessor.getRegisteredDescriptorByName(DESCRIPTOR_NAME).orElseThrow(() -> new AlertDatabaseConstraintException("This descriptor should exist"));
 
-        final List<DescriptorFieldModel> initialFields = descriptorAccessor.getFieldsForDescriptor(DESCRIPTOR_NAME);
+        final List<DefinedFieldModel> initialFields = descriptorAccessor.getFieldsForDescriptor(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION);
         assertEquals(1, initialFields.size());
 
         final String field2Key = "field2";
-        final DescriptorFieldModel field2 = new DescriptorFieldModel(field2Key, Boolean.TRUE);
+        final DefinedFieldModel field2 = new DefinedFieldModel(field2Key, ConfigContextEnum.DISTRIBUTION, Boolean.TRUE);
         descriptorAccessor.addDescriptorField(registeredDescriptorModel.getId(), field2);
 
-        final List<DescriptorFieldModel> fieldsAfterAdd = descriptorAccessor.getFieldsForDescriptor(DESCRIPTOR_NAME);
+        final List<DefinedFieldModel> fieldsAfterAdd = descriptorAccessor.getFieldsForDescriptor(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION);
         assertEquals(2, fieldsAfterAdd.size());
     }
 
     @Test
     public void addNullDescriptorFieldTest() {
         try {
-            descriptorAccessor.registerDescriptorWithoutFields(DESCRIPTOR_NAME, DESCRIPTOR_TYPE);
+            descriptorAccessor.registerDescriptorWithoutFields(DESCRIPTOR_NAME);
             final RegisteredDescriptorModel registeredDescriptorModel = descriptorAccessor.getRegisteredDescriptorByName(DESCRIPTOR_NAME).orElseThrow(() -> new AlertDatabaseConstraintException("This descriptor should exist"));
             descriptorAccessor.addDescriptorField(registeredDescriptorModel.getId(), null);
             fail("Expected exception to be thrown");
@@ -196,8 +206,8 @@ public class DescriptorAccessorTest extends AlertIntegrationTest {
     public void addDescriptorFieldThatAlreadyExistsTest() {
         try {
             final String field1Key = "field1";
-            final DescriptorFieldModel field1 = new DescriptorFieldModel(field1Key, Boolean.FALSE);
-            descriptorAccessor.registerDescriptor(DESCRIPTOR_NAME, DESCRIPTOR_TYPE, Arrays.asList(field1));
+            final DefinedFieldModel field1 = new DefinedFieldModel(field1Key, ConfigContextEnum.DISTRIBUTION, Boolean.FALSE);
+            descriptorAccessor.registerDescriptor(DESCRIPTOR_NAME, Arrays.asList(field1));
             final RegisteredDescriptorModel registeredDescriptorModel = descriptorAccessor.getRegisteredDescriptorByName(DESCRIPTOR_NAME).orElseThrow(() -> new AlertDatabaseConstraintException("This descriptor should exist"));
 
             descriptorAccessor.addDescriptorField(registeredDescriptorModel.getId(), field1);
@@ -208,24 +218,24 @@ public class DescriptorAccessorTest extends AlertIntegrationTest {
     }
 
     @Test
-    public void updateDescriptorFieldTest() throws AlertDatabaseConstraintException {
+    public void updateFieldKeyTest() throws AlertDatabaseConstraintException {
         final String field1Key = "field1";
-        final DescriptorFieldModel field1 = new DescriptorFieldModel(field1Key, Boolean.FALSE);
-        descriptorAccessor.registerDescriptor(DESCRIPTOR_NAME, DESCRIPTOR_TYPE, Arrays.asList(field1));
+        final DefinedFieldModel field1 = new DefinedFieldModel(field1Key, ConfigContextEnum.DISTRIBUTION, Boolean.FALSE);
+        descriptorAccessor.registerDescriptor(DESCRIPTOR_NAME, Arrays.asList(field1));
         final RegisteredDescriptorModel registeredDescriptorModel = descriptorAccessor.getRegisteredDescriptorByName(DESCRIPTOR_NAME).orElseThrow(() -> new AlertDatabaseConstraintException("This descriptor should exist"));
 
-        final List<DescriptorFieldModel> initialFields = descriptorAccessor.getFieldsForDescriptor(DESCRIPTOR_NAME);
+        final List<DefinedFieldModel> initialFields = descriptorAccessor.getFieldsForDescriptor(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION);
         assertEquals(1, initialFields.size());
 
         final String newKey = "newFieldKey";
-        descriptorAccessor.updateDescriptorFieldKey(registeredDescriptorModel.getId(), field1Key, newKey);
+        descriptorAccessor.updateFieldKey(field1Key, newKey);
 
     }
 
     @Test
-    public void updateDescriptorFieldWithEmptyTest() throws AlertDatabaseConstraintException {
-        updateDescriptorFieldWithEmptyTestHelper(null);
-        updateDescriptorFieldWithEmptyTestHelper("");
+    public void updateFieldKeyWithEmptyTest() throws AlertDatabaseConstraintException {
+        updateFieldKeyWithEmptyTestHelper(null);
+        updateFieldKeyWithEmptyTestHelper("");
     }
 
     @Test
@@ -237,13 +247,13 @@ public class DescriptorAccessorTest extends AlertIntegrationTest {
             assertEquals("The descriptor id cannot be null", e.getMessage());
         }
         try {
-            descriptorAccessor.updateDescriptorFieldKey(null, null, null);
+            descriptorAccessor.updateFieldKey(null, null);
             fail("Expected exception to be thrown");
         } catch (final AlertDatabaseConstraintException e) {
             assertEquals("The descriptor id cannot be null", e.getMessage());
         }
         try {
-            descriptorAccessor.deleteDescriptorField(null, Mockito.mock(DescriptorFieldModel.class));
+            descriptorAccessor.deleteDescriptorField(null, Mockito.mock(DefinedFieldModel.class));
             fail("Expected exception to be thrown");
         } catch (final AlertDatabaseConstraintException e) {
             assertEquals("The descriptor id cannot be null", e.getMessage());
@@ -258,19 +268,19 @@ public class DescriptorAccessorTest extends AlertIntegrationTest {
 
     @Test
     public void deleteDescriptorFieldByModelTest() throws AlertDatabaseConstraintException {
-        final DescriptorFieldModel field1 = new DescriptorFieldModel("field1", Boolean.FALSE);
-        descriptorAccessor.registerDescriptor(DESCRIPTOR_NAME, DESCRIPTOR_TYPE, Arrays.asList(field1));
+        final DefinedFieldModel field1 = new DefinedFieldModel("field1", ConfigContextEnum.DISTRIBUTION, Boolean.FALSE);
+        descriptorAccessor.registerDescriptor(DESCRIPTOR_NAME, Arrays.asList(field1));
         final RegisteredDescriptorModel registeredDescriptorModel = descriptorAccessor.getRegisteredDescriptorByName(DESCRIPTOR_NAME).orElseThrow(() -> new AlertDatabaseConstraintException("This descriptor should exist"));
-        assertEquals(1, descriptorFieldRepository.findAll().size());
+        assertEquals(1, definedFieldRepository.findAll().size());
 
         descriptorAccessor.deleteDescriptorField(registeredDescriptorModel.getId(), field1);
-        assertEquals(0, descriptorFieldRepository.findAll().size());
+        assertEquals(0, definedFieldRepository.findAll().size());
     }
 
     @Test
     public void deleteNullDescriptorFieldTest() {
         try {
-            descriptorAccessor.deleteDescriptorField(null, (DescriptorFieldModel) null);
+            descriptorAccessor.deleteDescriptorField(null, (DefinedFieldModel) null);
             fail("Expected exception to be thrown");
         } catch (final AlertDatabaseConstraintException e) {
             assertEquals("Cannot delete a null object from the database", e.getMessage());
@@ -280,19 +290,19 @@ public class DescriptorAccessorTest extends AlertIntegrationTest {
     @Test
     public void deleteDescriptorFieldByKeyTest() throws AlertDatabaseConstraintException {
         final String field1Key = "field1";
-        final DescriptorFieldModel field1 = new DescriptorFieldModel("field1", Boolean.FALSE);
-        descriptorAccessor.registerDescriptor(DESCRIPTOR_NAME, DESCRIPTOR_TYPE, Arrays.asList(field1));
+        final DefinedFieldModel field1 = new DefinedFieldModel("field1", ConfigContextEnum.DISTRIBUTION, Boolean.FALSE);
+        descriptorAccessor.registerDescriptor(DESCRIPTOR_NAME, Arrays.asList(field1));
         final RegisteredDescriptorModel registeredDescriptorModel = descriptorAccessor.getRegisteredDescriptorByName(DESCRIPTOR_NAME).orElseThrow(() -> new AlertDatabaseConstraintException("This descriptor should exist"));
-        assertEquals(1, descriptorFieldRepository.findAll().size());
+        assertEquals(1, definedFieldRepository.findAll().size());
 
         descriptorAccessor.deleteDescriptorField(registeredDescriptorModel.getId(), field1Key);
-        assertEquals(0, descriptorFieldRepository.findAll().size());
+        assertEquals(0, definedFieldRepository.findAll().size());
     }
 
     @Test
     public void deleteDescriptorFieldWithEmptyKeyTest() throws AlertDatabaseConstraintException {
-        final DescriptorFieldModel field1 = new DescriptorFieldModel("field1", Boolean.FALSE);
-        descriptorAccessor.registerDescriptor(DESCRIPTOR_NAME, DESCRIPTOR_TYPE, Arrays.asList(field1));
+        final DefinedFieldModel field1 = new DefinedFieldModel("field1", ConfigContextEnum.DISTRIBUTION, Boolean.FALSE);
+        descriptorAccessor.registerDescriptor(DESCRIPTOR_NAME, Arrays.asList(field1));
         final RegisteredDescriptorModel registeredDescriptorModel = descriptorAccessor.getRegisteredDescriptorByName(DESCRIPTOR_NAME).orElseThrow(() -> new AlertDatabaseConstraintException("This descriptor should exist"));
         deleteDescriptorFieldWithEmptyKeyTestHelper(registeredDescriptorModel.getId(), null);
         deleteDescriptorFieldWithEmptyKeyTestHelper(registeredDescriptorModel.getId(), "");
@@ -302,8 +312,8 @@ public class DescriptorAccessorTest extends AlertIntegrationTest {
     public void deleteDescriptorFieldWithInvalidKeyTest() throws AlertDatabaseConstraintException {
         final String field1Key = "field1";
         final String invalidFieldKey = " -- INVALID FIELD KEY -- ";
-        final DescriptorFieldModel field1 = new DescriptorFieldModel(field1Key, Boolean.FALSE);
-        descriptorAccessor.registerDescriptor(DESCRIPTOR_NAME, DESCRIPTOR_TYPE, Arrays.asList(field1));
+        final DefinedFieldModel field1 = new DefinedFieldModel(field1Key, ConfigContextEnum.DISTRIBUTION, Boolean.FALSE);
+        descriptorAccessor.registerDescriptor(DESCRIPTOR_NAME, Arrays.asList(field1));
         final RegisteredDescriptorModel registeredDescriptorModel = descriptorAccessor.getRegisteredDescriptorByName(DESCRIPTOR_NAME).orElseThrow(() -> new AlertDatabaseConstraintException("This descriptor should exist"));
 
         final boolean validResult = descriptorAccessor.deleteDescriptorField(registeredDescriptorModel.getId(), field1Key);
@@ -315,7 +325,7 @@ public class DescriptorAccessorTest extends AlertIntegrationTest {
 
     private void getRegisteredDescriptorByNameTestHelper(final String descriptorName) {
         try {
-            descriptorAccessor.registerDescriptorWithoutFields(descriptorName, DESCRIPTOR_TYPE);
+            descriptorAccessor.registerDescriptorWithoutFields(descriptorName);
             fail("Expected exception to be thrown");
         } catch (final AlertDatabaseConstraintException e) {
             assertEquals("Descriptor name cannot be empty", e.getMessage());
@@ -340,26 +350,26 @@ public class DescriptorAccessorTest extends AlertIntegrationTest {
 
     private void getFieldsForDescriptorWithEmptyArgsTestHelper(final String descriptorName) {
         try {
-            descriptorAccessor.getFieldsForDescriptor(descriptorName);
+            descriptorAccessor.getFieldsForDescriptor(descriptorName, ConfigContextEnum.DISTRIBUTION);
             fail("Expected exception to be thrown");
         } catch (final AlertDatabaseConstraintException e) {
             assertEquals("Descriptor name cannot be empty", e.getMessage());
         }
     }
 
-    private void updateDescriptorFieldWithEmptyTestHelper(final String keyString) throws AlertDatabaseConstraintException {
+    private void updateFieldKeyWithEmptyTestHelper(final String keyString) throws AlertDatabaseConstraintException {
         final String fieldKey = "key";
-        final DescriptorFieldModel field = new DescriptorFieldModel(fieldKey, Boolean.FALSE);
-        descriptorAccessor.registerDescriptor(DESCRIPTOR_NAME, DESCRIPTOR_TYPE, Arrays.asList(field));
-        final RegisteredDescriptorModel registeredDescriptorModel = descriptorAccessor.getRegisteredDescriptorByName(DESCRIPTOR_NAME).orElseThrow(() -> new AlertDatabaseConstraintException("This descriptor should exist"));
+        final DefinedFieldModel field = new DefinedFieldModel(fieldKey, ConfigContextEnum.DISTRIBUTION, Boolean.FALSE);
+        descriptorAccessor.registerDescriptor(DESCRIPTOR_NAME, Arrays.asList(field));
+        descriptorAccessor.getRegisteredDescriptorByName(DESCRIPTOR_NAME).orElseThrow(() -> new AlertDatabaseConstraintException("This descriptor should exist"));
         try {
-            descriptorAccessor.updateDescriptorFieldKey(registeredDescriptorModel.getId(), keyString, null);
+            descriptorAccessor.updateFieldKey(keyString, null);
             fail("Expected exception to be thrown");
         } catch (final AlertDatabaseConstraintException e) {
             assertEquals("The old field key cannot be empty", e.getMessage());
         }
         try {
-            descriptorAccessor.updateDescriptorFieldKey(registeredDescriptorModel.getId(), fieldKey, keyString);
+            descriptorAccessor.updateFieldKey(fieldKey, keyString);
             fail("Expected exception to be thrown");
         } catch (final AlertDatabaseConstraintException e) {
             assertEquals("The new field key cannot be empty", e.getMessage());

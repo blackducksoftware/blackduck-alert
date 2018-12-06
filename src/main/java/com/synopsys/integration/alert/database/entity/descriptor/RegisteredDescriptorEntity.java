@@ -34,23 +34,16 @@ import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 public class RegisteredDescriptorEntity extends DatabaseEntity {
     @Column(name = "NAME")
     private String name;
-    @Column(name = "TYPE")
-    private String type;
 
     public RegisteredDescriptorEntity() {
         // JPA requires default constructor definitions
     }
 
-    public RegisteredDescriptorEntity(final String name, final String type) {
+    public RegisteredDescriptorEntity(final String name) {
         this.name = name;
-        this.type = type;
     }
 
     public String getName() {
         return name;
-    }
-
-    public String getType() {
-        return type;
     }
 }
