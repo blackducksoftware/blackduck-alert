@@ -26,17 +26,22 @@ package com.synopsys.integration.alert.provider.blackduck.collector;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.jayway.jsonpath.TypeRef;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.field.JsonField;
 import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.common.model.CategoryKey;
@@ -48,6 +53,8 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderConten
 import com.synopsys.integration.alert.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.alert.workflow.filter.field.JsonFieldAccessor;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.notification.content.ComponentVersionStatus;
+import com.synopsys.integration.blackduck.notification.content.PolicyInfo;
 
 @Component
 @Scope("prototype")
@@ -62,6 +69,59 @@ public class BlackDuckPolicyMessageContentCollector extends MessageContentCollec
 
     @Override
     protected void addCategoryItems(final List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final NotificationContent notificationContent) {
+        if (notificationContent.getNotificationType().equals("POLICY_OVERRIDE")) {
+            processPolicyOverride(categoryItems, jsonFieldAccessor, notificationFields, notificationContent);
+        } else {
+            processPolicy(categoryItems, jsonFieldAccessor, notificationFields, notificationContent);
+        }
+    }
+
+    private void processPolicy(final List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final NotificationContent notificationContent) {
+        final List<JsonField<PolicyInfo>> policyFields = getFieldsOfType(notificationFields, new TypeRef<PolicyInfo>() {});
+        final List<JsonField<ComponentVersionStatus>> componentFields = getFieldsOfType(notificationFields, new TypeRef<PolicyInfo>() {});
+        try {
+            final List<PolicyInfo> policyItems = getFieldValueObjectsByLabel(jsonFieldAccessor, policyFields, BlackDuckProviderContentTypes.LABEL_POLICY_INFO_LIST);
+            final List<ComponentVersionStatus> componentVersionStatuses = getFieldValueObjectsByLabel(jsonFieldAccessor, componentFields, BlackDuckProviderContentTypes.LABEL_COMPONENT_VERSION_STATUS);
+            final Map<String, SortedSet<LinkableItem>> policyItemMap = new TreeMap<>();
+
+            for (final ComponentVersionStatus versionStatus : componentVersionStatuses) {
+                for (final String policyUrl : versionStatus.policies) {
+                    final SortedSet<LinkableItem> componentItems;
+                    if (policyItemMap.containsKey(policyUrl)) {
+                        componentItems = policyItemMap.get(policyUrl);
+                    } else {
+                        componentItems = new TreeSet<>();
+                        policyItemMap.put(policyUrl, new TreeSet<>());
+                    }
+                    if (StringUtils.isNotBlank(versionStatus.componentName)) {
+                        componentItems.add(new LinkableItem(BlackDuckProviderContentTypes.LABEL_COMPONENT_NAME, versionStatus.componentName));
+                    }
+                    if (StringUtils.isNotBlank(versionStatus.componentVersionName)) {
+                        componentItems.add(new LinkableItem(BlackDuckProviderContentTypes.LABEL_COMPONENT_VERSION_NAME, versionStatus.componentVersionName));
+                    }
+                }
+            }
+
+            final ItemOperation operation;
+            try {
+                operation = getOperationFromNotification(notificationContent);
+            } catch (final IllegalArgumentException e) {
+                logger.error("Unrecognized notification type", e);
+                return;
+            }
+            for (final PolicyInfo policyItem : policyItems) {
+                final String policyUrl = policyItem.policy;
+                final String policyName = policyItem.policyName;
+                final LinkableItem policyLinkableItem = new LinkableItem(BlackDuckProviderContentTypes.LABEL_POLICY_NAME, policyName);
+                final SortedSet<LinkableItem> applicableItems = policyItemMap.get(policyUrl);
+                addApplicableItems(categoryItems, notificationContent.getId(), policyLinkableItem, policyUrl, operation, Optional.empty(), applicableItems);
+            }
+        } catch (final AlertException ex) {
+            logger.error("Mishandled the expected type of a notification field", ex);
+        }
+    }
+
+    private void processPolicyOverride(final List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final NotificationContent notificationContent) {
         final List<JsonField<String>> categoryFields = getStringFields(notificationFields);
         final List<LinkableItem> policyItems = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_POLICY_NAME);
         final List<LinkableItem> componentItems = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_COMPONENT_NAME);

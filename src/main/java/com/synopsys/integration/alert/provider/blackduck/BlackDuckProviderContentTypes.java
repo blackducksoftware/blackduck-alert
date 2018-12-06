@@ -39,6 +39,8 @@ import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
 import com.synopsys.integration.alert.common.field.JsonField;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
+import com.synopsys.integration.blackduck.notification.content.ComponentVersionStatus;
+import com.synopsys.integration.blackduck.notification.content.PolicyInfo;
 import com.synopsys.integration.blackduck.notification.content.VulnerabilitySourceQualifiedId;
 
 public class BlackDuckProviderContentTypes {
@@ -78,8 +80,10 @@ public class BlackDuckProviderContentTypes {
     public static final String JSON_FIELD_DELETED_VULNERABILITY_IDS = "deletedVulnerabilityIds[*]";
 
     // labels
+    public static final String LABEL_COMPONENT_VERSION_STATUS = "Component Version Status";
     public static final String LABEL_COMPONENT_NAME = "Component";
     public static final String LABEL_COMPONENT_VERSION_NAME = "Component Version";
+    public static final String LABEL_POLICY_INFO_LIST = "Policy Infos";
     public static final String LABEL_POLICY_NAME = "Policy";
     public static final String LABEL_PROJECT_NAME = "Project";
     public static final String LABEL_PROJECT_VERSION_NAME = "Project Version";
@@ -127,6 +131,7 @@ public class BlackDuckProviderContentTypes {
             createStringField(createJsonPath("$.%s.%s", JSON_FIELD_CONTENT, JSON_FIELD_LAST_NAME), JSON_FIELD_LAST_NAME, FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_OVERRIDE_LAST_NAME),
             createStringField(createJsonPath("$.%s.%s.%s", JSON_FIELD_CONTENT, JSON_FIELD_POLICY_INFOS, JSON_FIELD_POLICY_NAME), JSON_FIELD_POLICY_NAME, FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_NAME),
             createStringField(createJsonPath("$.%s.%s.%s", JSON_FIELD_CONTENT, JSON_FIELD_POLICY_INFOS, JSON_FIELD_POLICY), JSON_FIELD_POLICY, FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_NAME + JsonField.LABEL_URL_SUFFIX)
+
         )
     );
     private static final Type VULNERABILITY_TYPE = new TypeToken<VulnerabilitySourceQualifiedId>() {}.getType();
@@ -158,15 +163,9 @@ public class BlackDuckProviderContentTypes {
             Arrays.asList(createJsonPath("$.%s", CONFIG_MAPPING_CONFIGURED_PROJECTS), createJsonPath("$.%s", CONFIG_MAPPING_PROJECT_NAME_PATTERN))),
         createStringField(createJsonPath("$.%s.%s", JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_VERSION_NAME), JSON_FIELD_PROJECT_VERSION_NAME, FieldContentIdentifier.SUB_TOPIC, LABEL_PROJECT_VERSION_NAME),
         createStringField(createJsonPath("$.%s.%s", JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_VERSION), JSON_FIELD_PROJECT_VERSION, FieldContentIdentifier.SUB_TOPIC_URL, LABEL_PROJECT_VERSION_NAME + JsonField.LABEL_URL_SUFFIX),
-        createStringField(createJsonPath("$.%s.%s.%s", JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_VERSION_STATUSES, JSON_FIELD_COMPONENT_NAME), JSON_FIELD_COMPONENT_NAME, FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_NAME),
-        createStringField(createJsonPath("$.%s.%s.%s", JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_VERSION_STATUSES, JSON_FIELD_COMPONENT), JSON_FIELD_COMPONENT, FieldContentIdentifier.CATEGORY_ITEM,
-            LABEL_COMPONENT_NAME + JsonField.LABEL_URL_SUFFIX),
-        createStringField(createJsonPath("$.%s.%s.%s", JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_VERSION_STATUSES, JSON_FIELD_COMPONENT_VERSION_NAME), JSON_FIELD_COMPONENT_VERSION_NAME, FieldContentIdentifier.CATEGORY_ITEM,
-            LABEL_COMPONENT_VERSION_NAME),
-        createStringField(createJsonPath("$.%s.%s.%s", JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_VERSION_STATUSES, JSON_FIELD_COMPONENT_VERSION), JSON_FIELD_COMPONENT_VERSION, FieldContentIdentifier.CATEGORY_ITEM,
-            LABEL_COMPONENT_VERSION_NAME + JsonField.LABEL_URL_SUFFIX),
-        createStringField(createJsonPath("$.%s.%s.%s", JSON_FIELD_CONTENT, JSON_FIELD_POLICY_INFOS, JSON_FIELD_POLICY_NAME), JSON_FIELD_POLICY_NAME, FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_NAME),
-        createStringField(createJsonPath("$.%s.%s.%s", JSON_FIELD_CONTENT, JSON_FIELD_POLICY_INFOS, JSON_FIELD_POLICY), JSON_FIELD_POLICY, FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_NAME + JsonField.LABEL_URL_SUFFIX)
+        createObjectField(createJsonPath("$.%s", JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_VERSION_STATUSES), JSON_FIELD_COMPONENT_VERSION_STATUSES, FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_VERSION_STATUS,
+            new TypeRef<List<ComponentVersionStatus>>() {}),
+        createObjectField(createJsonPath("$.%s", JSON_FIELD_CONTENT, JSON_FIELD_POLICY_INFOS), JSON_FIELD_POLICY_INFOS, FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_INFO_LIST, new TypeRef<List<PolicyInfo>>() {})
     );
     public static final ProviderContentType RULE_VIOLATION = new ProviderContentType(
         NotificationType.RULE_VIOLATION.name(),
