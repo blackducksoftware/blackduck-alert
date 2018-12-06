@@ -40,7 +40,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.DistributionChannel;
-import com.synopsys.integration.alert.channel.email.descriptor.EmailGlobalUIConfig;
+import com.synopsys.integration.alert.channel.email.descriptor.EmailDistributionUIConfig;
 import com.synopsys.integration.alert.channel.email.template.EmailTarget;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.AlertProperties;
@@ -56,7 +56,6 @@ import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuck
 import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelation;
 import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelationRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.web.channel.model.EmailGlobalConfig;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -89,40 +88,41 @@ public class EmailGroupChannel extends DistributionChannel {
     public void sendMessage(final DistributionEvent event) throws IntegrationException {
         final FieldAccessor fieldAccessor = event.getFieldAccessor();
 
-        final String host = fieldAccessor.getString(EmailGlobalUIConfig.KEY_HOST);
-        final String from = fieldAccessor.getString(EmailGlobalUIConfig.KEY_FROM);
+        final String host = fieldAccessor.getString(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey());
+        final String from = fieldAccessor.getString(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey());
 
         if (!isValidGlobalConfigEntity(host, from)) {
             throw new AlertException("ERROR: Missing global config.");
         }
 
-        final Set<String> emailAddresses = populateEmails(emailDistributionConfig, event.getContent().getValue());
-        emailDistributionConfig.setEmailAddresses(emailAddresses);
-        final EmailProperties emailProperties = new EmailProperties(globalConfigEntity);
-        sendMessage(emailProperties, emailDistributionConfig.getEmailAddresses(), emailDistributionConfig.getEmailSubjectLine(), event.getProvider(), event.getFormatType(), event.getContent(), "ProjectName");
+        Set<String> emailAddresses = fieldAccessor.getAllStrings(EmailDistributionUIConfig.KEY_EMAIL_ADDRESSES).stream().collect(Collectors.toSet());
+        final Boolean filterByProject = fieldAccessor.getBoolean(EmailDistributionUIConfig.KEY_PROJECT_OWNER_ONLY);
+        emailAddresses = populateEmails(emailAddresses, event.getContent().getValue(), filterByProject);
+        final EmailProperties emailProperties = new EmailProperties(fieldAccessor);
+        final String subjectLine = fieldAccessor.getString(EmailDistributionUIConfig.KEY_SUBJECT_LINE);
+        sendMessage(emailProperties, emailAddresses, subjectLine, event.getProvider(), event.getFormatType(), event.getContent(), "ProjectName");
     }
 
-    private Set<String> populateEmails(final String projectName) {
-        Set<String> emailAddresses = emailDistributionConfig.getEmailAddresses();
+    private Set<String> populateEmails(Set<String> emailAddresses, final String projectName, final boolean projectOwnerOnly) {
         if (null != emailAddresses && !emailAddresses.isEmpty()) {
             return emailAddresses;
         }
         final BlackDuckProjectEntity projectEntity = blackDuckProjectRepositoryAccessor.findByName(projectName);
-        emailAddresses = getEmailAddressesForProject(projectEntity, emailDistributionConfig.getProjectOwnerOnly());
+        emailAddresses = getEmailAddressesForProject(projectEntity, projectOwnerOnly);
         if (emailAddresses.isEmpty()) {
             logger.error("Could not find any email addresses for project: {}", projectName);
         }
         return emailAddresses;
     }
 
-    @Override
     public String testGlobalConfig(final TestConfigModel testConfig) throws IntegrationException {
         Set<String> emailAddresses = null;
         final String testEmailAddress = testConfig.getDestination().orElse(null);
         if (StringUtils.isNotBlank(testEmailAddress)) {
             emailAddresses = Collections.singleton(testEmailAddress);
         }
-        final EmailProperties emailProperties = new EmailProperties((EmailGlobalConfig) testConfig.getRestModel());
+        final FieldAccessor fieldAccessor = testConfig.getFieldModel().convertToFieldAccessor();
+        final EmailProperties emailProperties = new EmailProperties(fieldAccessor);
         final AggregateMessageContent messageContent = new AggregateMessageContent("Message Content", "Test from Alert", Collections.emptyList());
         sendMessage(emailProperties, emailAddresses, "Test from Alert", "Global Configuration", "", messageContent, "N/A");
         return "Success!";

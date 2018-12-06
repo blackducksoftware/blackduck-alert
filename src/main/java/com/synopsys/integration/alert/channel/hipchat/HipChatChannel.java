@@ -71,12 +71,7 @@ public class HipChatChannel extends RestDistributionChannel {
     @Autowired
     public HipChatChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditUtility auditUtility,
         final ChannelRestConnectionFactory channelRestConnectionFactory) {
-        super(gson, alertProperties, blackDuckProperties, auditUtility, channelRestConnectionFactory);
-    }
-
-    @Override
-    public String getDistributionType() {
-        return HipChatChannel.COMPONENT_NAME;
+        super(HipChatChannel.COMPONENT_NAME, gson, alertProperties, blackDuckProperties, auditUtility, channelRestConnectionFactory);
     }
 
     @Override
@@ -86,9 +81,8 @@ public class HipChatChannel extends RestDistributionChannel {
         return getConfiguredApiUrl(hostServer);
     }
 
-    @Override
     public String testGlobalConfig(final TestConfigModel testConfig) throws IntegrationException {
-        final FieldAccessor fieldAccessor = testConfig.getFieldAccessor();
+        final FieldAccessor fieldAccessor = testConfig.getFieldModel().convertToFieldAccessor();
         final String apiKey = fieldAccessor.getString(HipChatGlobalUIConfig.KEY_API_KEY);
         final String hostServer = fieldAccessor.getString(HipChatGlobalUIConfig.KEY_HOST_SERVER);
         final String configuredApiUrl = getConfiguredApiUrl(hostServer);
