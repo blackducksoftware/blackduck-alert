@@ -22,7 +22,6 @@ public class CommonDistributionConfiguration extends Configuration {
     private final Boolean filterByProject;
     // FIXME this field is here temporarily as there is some tight coupling to the BD provider.
     private final String projectNamePattern;
-    private final FieldAccessor fieldAccessor;
     // FIXME this field is here temporarily as there is some tight coupling to the BD provider.
     private final Set<String> configuredProject;
 
@@ -38,11 +37,6 @@ public class CommonDistributionConfiguration extends Configuration {
         filterByProject = getFieldAccessor().getBoolean(CommonDistributionUIConfig.KEY_FILTER_BY_PROJECT);
         projectNamePattern = getFieldAccessor().getString(CommonDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
         configuredProject = getFieldAccessor().getAllStrings(CommonDistributionUIConfig.KEY_CONFIGURED_PROJECT).stream().collect(Collectors.toSet());
-    }
-
-    @Override
-    public Long getId() {
-        return id;
     }
 
     public String getName() {
