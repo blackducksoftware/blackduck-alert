@@ -52,25 +52,23 @@ public class UserPrincipal implements UserDetails {
         return userModel.getName();
     }
 
-    // TODO implement these features into the database for a user.
-
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return !userModel.isExpired();
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return !userModel.isLocked();
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
+        return !userModel.isPasswordExpired();
     }
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return userModel.isEnabled();
     }
 }

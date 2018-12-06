@@ -36,6 +36,14 @@ public class UserEntity extends DatabaseEntity {
     private String userName;
     @Column(name = "password")
     private String password;
+    @Column(name = "expired")
+    private boolean expired;
+    @Column(name = "locked")
+    private boolean locked;
+    @Column(name = "password_expired")
+    private boolean passwordExpired;
+    @Column(name = "enabled")
+    private boolean enabled;
 
     public UserEntity() {
         // JPA requires default constructor definitions
@@ -44,6 +52,19 @@ public class UserEntity extends DatabaseEntity {
     public UserEntity(final String userName, final String password) {
         this.userName = userName;
         this.password = password;
+        this.expired = false;
+        this.locked = false;
+        this.passwordExpired = false;
+        this.enabled = true;
+    }
+
+    public UserEntity(final String userName, final String password, final boolean expired, final boolean locked, final boolean passwordExpired, final boolean enabled) {
+        this.userName = userName;
+        this.password = password;
+        this.expired = expired;
+        this.locked = locked;
+        this.passwordExpired = passwordExpired;
+        this.enabled = enabled;
     }
 
     public String getUserName() {
@@ -52,5 +73,21 @@ public class UserEntity extends DatabaseEntity {
 
     public String getPassword() {
         return password;
+    }
+
+    public boolean isExpired() {
+        return expired;
+    }
+
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public boolean isPasswordExpired() {
+        return passwordExpired;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 }

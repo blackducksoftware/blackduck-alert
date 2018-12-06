@@ -45,6 +45,7 @@ import com.synopsys.integration.alert.database.user.UserEntity;
 import com.synopsys.integration.alert.database.user.UserRepository;
 
 @Component
+@Transactional
 public class UserAccessor {
     public static final String DEFAULT_ADMIN_USER = "sysadmin";
     private final UserRepository userRepository;
@@ -60,22 +61,13 @@ public class UserAccessor {
         this.defaultPasswordEncoder = defaultPasswordEncoder;
     }
 
-    @Transactional
     public List<UserModel> getUsers() {
         final List<UserEntity> userList = userRepository.findAll();
         return userList.stream().map(this::createModel).collect(Collectors.toList());
     }
 
-    @Transactional
     public Optional<UserModel> getUser(final String username) {
-        final Optional<UserModel> userResult;
-        final Optional<UserEntity> entity = userRepository.findByUserName(username);
-        if (entity.isPresent()) {
-            userResult = Optional.ofNullable(createModel(entity.get()));
-        } else {
-            userResult = Optional.empty();
-        }
-        return userResult;
+        return userRepository.findByUserName(username).map(this::createModel);
     }
 
     private UserModel createModel(final UserEntity user) {
@@ -85,12 +77,10 @@ public class UserAccessor {
         return UserModel.of(user.getUserName(), user.getPassword(), rolesForUser);
     }
 
-    @Transactional
     public UserModel addOrUpdateUser(final UserModel user) {
         return addOrUpdateUser(user, false);
     }
 
-    @Transactional
     public UserModel addOrUpdateUser(final UserModel user, final boolean passwordEncoded) {
         final String password = (passwordEncoded ? user.getPassword() : defaultPasswordEncoder.encode(user.getPassword()));
         final UserEntity userEntity = new UserEntity(user.getName(), password);
@@ -113,12 +103,10 @@ public class UserAccessor {
         return createModel(userRepository.save(userEntity));
     }
 
-    @Transactional
     public UserModel addUser(final String userName, final String password) {
         return addOrUpdateUser(UserModel.of(userName, password, Collections.emptySet()));
     }
 
-    @Transactional
     public boolean assignRoles(final String username, final Set<String> roles) {
         final Optional<UserEntity> entity = userRepository.findByUserName(username);
         boolean assigned = false;
@@ -129,7 +117,6 @@ public class UserAccessor {
         return assigned;
     }
 
-    @Transactional
     public boolean changeUserPassword(final String username, final String newPassword) {
         final Optional<UserEntity> entity = userRepository.findByUserName(username);
         if (entity.isPresent()) {
@@ -142,7 +129,6 @@ public class UserAccessor {
         }
     }
 
-    @Transactional
     public void deleteUser(final String userName) {
         final Optional<UserEntity> userEntity = userRepository.findByUserName(userName);
         userEntity.ifPresent(entity -> {
