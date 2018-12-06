@@ -113,7 +113,6 @@ public class AlertStartupInitializer {
     public boolean setRestModelValue(final String value, final Config globalRestModel, final AlertStartupProperty property)
         throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         if (StringUtils.isNotBlank(value)) {
-            logger.debug("Found the value: {}", value);
             final Field declaredField = globalRestModel.getClass().getDeclaredField(property.getFieldName());
             final boolean accessible = declaredField.isAccessible();
             if (conversionService.canConvert(String.class, declaredField.getType())) {
