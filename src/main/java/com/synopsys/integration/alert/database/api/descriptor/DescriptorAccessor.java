@@ -274,6 +274,7 @@ public class DescriptorAccessor {
                        .orElseThrow(() -> new AlertDatabaseConstraintException("A descriptor with that id did not exist"));
     }
 
+    // TODO implement a join
     private List<DefinedFieldModel> getFieldsForDescriptorId(final Long descriptorId, final ConfigContextEnum context) throws AlertDatabaseConstraintException {
         final Set<Long> fieldIds = descriptorFieldRepository
                                            .findByDescriptorId(descriptorId)
