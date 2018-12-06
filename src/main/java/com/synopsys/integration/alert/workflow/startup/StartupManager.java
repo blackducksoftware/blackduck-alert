@@ -38,9 +38,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.provider.Provider;
+import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.synopsys.integration.alert.database.scheduling.SchedulingConfigEntity;
 import com.synopsys.integration.alert.database.scheduling.SchedulingRepository;
+import com.synopsys.integration.alert.database.security.StringEncryptionConverter;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
@@ -63,6 +65,7 @@ public class StartupManager {
     private final List<ProviderDescriptor> providerDescriptorList;
     private final SystemStatusUtility systemStatusUtility;
     private final SystemValidator systemValidator;
+    private final EncryptionUtility encryptionUtility;
 
     @Value("${logging.level.com.blackducksoftware.integration:}")
     private String loggingLevel;
@@ -95,7 +98,7 @@ public class StartupManager {
     @Autowired
     public StartupManager(final SchedulingRepository schedulingRepository, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
         final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer,
-        final List<ProviderDescriptor> providerDescriptorList, final SystemStatusUtility systemStatusUtility, final SystemValidator systemValidator) {
+        final List<ProviderDescriptor> providerDescriptorList, final SystemStatusUtility systemStatusUtility, final SystemValidator systemValidator, final EncryptionUtility encryptionUtility) {
         this.schedulingRepository = schedulingRepository;
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
@@ -107,6 +110,7 @@ public class StartupManager {
         this.providerDescriptorList = providerDescriptorList;
         this.systemStatusUtility = systemStatusUtility;
         this.systemValidator = systemValidator;
+        this.encryptionUtility = encryptionUtility;
     }
 
     @Transactional
@@ -123,6 +127,8 @@ public class StartupManager {
 
     public void initializeChannelPropertyManagers() {
         try {
+            // manually wire the encryption utility.
+            StringEncryptionConverter.setEncryptionUtility(encryptionUtility);
             alertStartupInitializer.initializeConfigs();
         } catch (final Exception e) {
             logger.error("Error inserting startup values", e);
