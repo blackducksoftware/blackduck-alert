@@ -22,12 +22,13 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.TestAlertProperties;
 import com.synopsys.integration.alert.TestBlackDuckProperties;
 import com.synopsys.integration.alert.TestPropertyKey;
+import com.synopsys.integration.alert.TestTags;
 import com.synopsys.integration.alert.channel.ChannelTest;
 import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
@@ -37,12 +38,12 @@ import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuc
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.request.Request;
-import com.synopsys.integration.test.annotation.ExternalConnectionTest;
 
 public class SlackChannelTestIT extends ChannelTest {
 
     @Test
-    @Category(ExternalConnectionTest.class)
+    @Tag(TestTags.DEFAULT_INTEGRATION)
+    @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     public void sendMessageTestIT() throws IOException, IntegrationException {
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final GlobalBlackDuckRepository mockedGlobalRepository = Mockito.mock(GlobalBlackDuckRepository.class);
@@ -77,7 +78,7 @@ public class SlackChannelTestIT extends ChannelTest {
         }
 
         event = new SlackChannelEvent(null, null, null, null,
-            null, "ChannelUsername", "Webhook", "");
+                null, "ChannelUsername", "Webhook", "");
         try {
             request = slackChannel.createRequests(null, event);
             fail();
@@ -94,7 +95,7 @@ public class SlackChannelTestIT extends ChannelTest {
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, Collections.emptyList());
 
         final SlackChannelEvent event = new SlackChannelEvent(RestConstants.formatDate(new Date()), "provider", "FORMAT",
-            content, new Long(0), "ChannelUsername", "Webhook", "ChannelName");
+                content, new Long(0), "ChannelUsername", "Webhook", "ChannelName");
 
         final SlackChannel spySlackChannel = Mockito.spy(slackChannel);
         final List<Request> request = spySlackChannel.createRequests(null, event);

@@ -20,7 +20,7 @@ import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,13 +30,13 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.TestProperties;
 import com.synopsys.integration.alert.TestPropertyKey;
+import com.synopsys.integration.alert.TestTags;
 import com.synopsys.integration.alert.database.api.user.UserAccessor;
 import com.synopsys.integration.alert.database.api.user.UserModel;
 import com.synopsys.integration.alert.database.user.UserRepository;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
-import com.synopsys.integration.test.annotation.HubConnectionTest;
 
-@Category(HubConnectionTest.class)
+@Tag(TestTags.CUSTOM_BLACKDUCK_CONNECTION)
 public class LoginActionsTestIT extends AlertIntegrationTest {
     private final Logger logger = LoggerFactory.getLogger(LoginActionsTestIT.class);
     private final MockLoginRestModel mockLoginRestModel = new MockLoginRestModel();
