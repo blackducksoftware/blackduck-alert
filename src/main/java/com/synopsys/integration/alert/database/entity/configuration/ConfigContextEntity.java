@@ -1,13 +1,15 @@
-package com.synopsys.integration.alert.database.entity.descriptor;
+package com.synopsys.integration.alert.database.entity.configuration;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 
 @Entity
-// TODO @Table(schema = "ALERT", name = "CONFIG_CONTEXTS")
+@Table(schema = "ALERT", name = "CONFIG_CONTEXTS")
 public class ConfigContextEntity extends DatabaseEntity {
-    // TODO @Column(name = "CONTEXT")
+    @Column(name = "CONTEXT")
     private String context;
 
     public ConfigContextEntity() {

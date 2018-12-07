@@ -28,7 +28,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.database.entity.descriptor.DefinedFieldEntity;
+import com.synopsys.integration.alert.database.entity.configuration.DefinedFieldEntity;
 
 @Component
 public interface DefinedFieldRepository extends JpaRepository<DefinedFieldEntity, Long> {

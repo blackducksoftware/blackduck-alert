@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.database.entity.descriptor.FieldContextRelation;
+import com.synopsys.integration.alert.database.entity.configuration.FieldContextRelation;
 import com.synopsys.integration.alert.database.relation.key.FieldContextRelationPK;
 
 @Component

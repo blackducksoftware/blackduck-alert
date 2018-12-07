@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.database.entity.descriptor.ConfigContextEntity;
+import com.synopsys.integration.alert.database.entity.configuration.ConfigContextEntity;
 
 @Component
 public interface ConfigContextRepository extends JpaRepository<ConfigContextEntity, Long> {

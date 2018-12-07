@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.entity.descriptor;
+package com.synopsys.integration.alert.database.entity.configuration;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -30,26 +30,34 @@ import javax.persistence.Table;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 
 @Entity
-@Table(schema = "ALERT", name = "DESCRIPTOR_CONFIGS")
-public class DescriptorConfigEntity extends DatabaseEntity {
-    @Column(name = "DESCRIPTOR_ID")
-    private Long descriptorId;
-    // TODO @Column(name = "CONTEXT_ID")
-    private Long contextId;
+@Table(schema = "ALERT", name = "FIELD_VALUES")
+public class FieldValueEntity extends DatabaseEntity {
+    @Column(name = "CONFIG_ID")
+    private Long configId;
+    @Column(name = "FIELD_ID")
+    private Long fieldId;
+    @Column(name = "FIELD_VALUE")
+    private String value;
 
-    public DescriptorConfigEntity() {
+    public FieldValueEntity() {
         // JPA requires default constructor definitions
     }
 
-    public DescriptorConfigEntity(final Long descriptorId, final Long contextId) {
-        this.descriptorId = descriptorId;
+    public FieldValueEntity(final Long configId, final Long fieldId, final String value) {
+        this.configId = configId;
+        this.fieldId = fieldId;
+        this.value = value;
     }
 
-    public Long getDescriptorId() {
-        return descriptorId;
+    public Long getConfigId() {
+        return configId;
     }
 
-    public Long getContextId() {
-        return contextId;
+    public Long getFieldId() {
+        return fieldId;
+    }
+
+    public String getValue() {
+        return value;
     }
 }

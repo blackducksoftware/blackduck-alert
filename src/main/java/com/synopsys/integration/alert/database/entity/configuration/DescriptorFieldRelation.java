@@ -1,15 +1,23 @@
-package com.synopsys.integration.alert.database.entity.descriptor;
+package com.synopsys.integration.alert.database.entity.configuration;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Table;
 
 import com.synopsys.integration.alert.database.relation.DatabaseRelation;
+import com.synopsys.integration.alert.database.relation.key.DescriptorFieldRelationPK;
 
 @Entity
-// TODO @Table(schema = "ALERT", name = "DESCRIPTOR_FIELDS")
+@IdClass(DescriptorFieldRelationPK.class)
+@Table(schema = "ALERT", name = "DESCRIPTOR_FIELDS")
 public class DescriptorFieldRelation extends DatabaseRelation {
-    // TODO @Column(name = "DESCRIPTOR_ID")
+    @Id
+    @Column(name = "DESCRIPTOR_ID")
     public Long descriptorId;
-    // TODO @Column(name = "FIELD_ID")
+    @Id
+    @Column(name = "FIELD_ID")
     public Long fieldId;
 
     public DescriptorFieldRelation() {

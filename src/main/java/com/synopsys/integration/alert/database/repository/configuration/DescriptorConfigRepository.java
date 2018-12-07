@@ -28,7 +28,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.database.entity.descriptor.DescriptorConfigEntity;
+import com.synopsys.integration.alert.database.entity.configuration.DescriptorConfigEntity;
 
 @Component
 public interface DescriptorConfigRepository extends JpaRepository<DescriptorConfigEntity, Long> {

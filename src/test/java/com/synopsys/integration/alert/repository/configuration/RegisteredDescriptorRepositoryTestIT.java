@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.AlertIntegrationTest;
-import com.synopsys.integration.alert.database.entity.descriptor.RegisteredDescriptorEntity;
+import com.synopsys.integration.alert.database.entity.configuration.RegisteredDescriptorEntity;
 import com.synopsys.integration.alert.database.repository.configuration.RegisteredDescriptorRepository;
 
 public class RegisteredDescriptorRepositoryTestIT extends AlertIntegrationTest {
