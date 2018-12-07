@@ -42,8 +42,7 @@ public class EmailGlobalDescriptorActionApi extends DescriptorActionApi {
     private final EmailGroupChannel emailGroupChannel;
 
     @Autowired
-    public EmailGlobalDescriptorActionApi(final EmailGlobalStartupComponent startupComponent, final EmailGroupChannel emailGroupChannel) {
-        super(startupComponent);
+    public EmailGlobalDescriptorActionApi(final EmailGroupChannel emailGroupChannel) {
         this.emailGroupChannel = emailGroupChannel;
     }
 

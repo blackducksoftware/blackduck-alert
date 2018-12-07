@@ -17,16 +17,13 @@ import org.springframework.core.env.Environment;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailGlobalDescriptorActionApi;
-import com.synopsys.integration.alert.channel.email.descriptor.EmailGlobalStartupComponent;
 import com.synopsys.integration.alert.channel.email.mock.MockEmailGlobalEntity;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalRepository;
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalRepositoryAccessor;
-import com.synopsys.integration.alert.database.entity.EntityPropertyMapper;
 import com.synopsys.integration.alert.web.channel.model.EmailGlobalConfig;
-import com.synopsys.integration.alert.workflow.PropertyInitializer;
 
 public class AlertStartupInitializerTestIT {
 

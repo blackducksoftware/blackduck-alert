@@ -39,13 +39,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+import com.synopsys.integration.alert.common.database.FieldConfigurationAccessor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.component.scheduling.SchedulingDescriptor;
 import com.synopsys.integration.alert.component.scheduling.SchedulingUIConfig;
-import com.synopsys.integration.alert.database.api.descriptor.ConfigurationAccessor;
-import com.synopsys.integration.alert.database.api.descriptor.ConfigurationAccessor.ConfigurationModel;
+import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
 import com.synopsys.integration.alert.database.api.descriptor.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -69,7 +69,7 @@ public class StartupManager {
     private final List<ProviderDescriptor> providerDescriptorList;
     private final SystemStatusUtility systemStatusUtility;
     private final SystemValidator systemValidator;
-    private final ConfigurationAccessor configurationAccessor;
+    private final FieldConfigurationAccessor configurationAccessor;
 
     @Value("${logging.level.com.blackducksoftware.integration:}")
     private String loggingLevel;
@@ -102,7 +102,7 @@ public class StartupManager {
     @Autowired
     public StartupManager(final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
         final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer,
-        final List<ProviderDescriptor> providerDescriptorList, final SystemStatusUtility systemStatusUtility, final SystemValidator systemValidator, final ConfigurationAccessor configurationAccessor) {
+        final List<ProviderDescriptor> providerDescriptorList, final SystemStatusUtility systemStatusUtility, final SystemValidator systemValidator, final FieldConfigurationAccessor configurationAccessor) {
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
         this.dailyTask = dailyTask;
@@ -130,7 +130,7 @@ public class StartupManager {
 
     public void initializeChannelPropertyManagers() {
         try {
-            alertStartupInitializer.initializeConfigs();
+            alertStartupInitializer.initializeConfigs(true);
         } catch (final Exception e) {
             logger.error("Error inserting startup values", e);
         }

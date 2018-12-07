@@ -30,7 +30,6 @@ import java.util.Map;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.configuration.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
-import com.synopsys.integration.alert.common.descriptor.config.StartupComponent;
 import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
@@ -42,23 +41,6 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
 
 public abstract class DescriptorActionApi {
-    private final StartupComponent startupComponent;
-
-    public DescriptorActionApi() {
-        this(null);
-    }
-
-    public DescriptorActionApi(final StartupComponent startupComponent) {
-        this.startupComponent = startupComponent;
-    }
-
-    public StartupComponent getStartupComponent() {
-        return startupComponent;
-    }
-
-    public boolean hasStartupProperties() {
-        return getStartupComponent() != null;
-    }
 
     public abstract void validateConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors);
 
