@@ -36,10 +36,10 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+import com.synopsys.integration.alert.common.database.FieldConfigurationAccessor;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.database.api.descriptor.ConfigurationAccessor;
-import com.synopsys.integration.alert.database.api.descriptor.ConfigurationAccessor.ConfigurationModel;
+import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckProviderUIConfig;
 import com.synopsys.integration.blackduck.configuration.HubServerConfig;
 import com.synopsys.integration.blackduck.configuration.HubServerConfigBuilder;
@@ -53,7 +53,7 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 public class BlackDuckProperties {
     public static final int DEFAULT_TIMEOUT = 300;
     private final AlertProperties alertProperties;
-    private final ConfigurationAccessor configurationAccessor;
+    private final FieldConfigurationAccessor configurationAccessor;
     private final Logger classLogger = LoggerFactory.getLogger(getClass());
 
     // the blackduck product hasn't renamed their environment variables from hub to blackduck
@@ -65,7 +65,7 @@ public class BlackDuckProperties {
     private String publicBlackDuckWebserverPort;
 
     @Autowired
-    public BlackDuckProperties(final AlertProperties alertProperties, final ConfigurationAccessor configurationAccessor) {
+    public BlackDuckProperties(final AlertProperties alertProperties, final FieldConfigurationAccessor configurationAccessor) {
         this.alertProperties = alertProperties;
         this.configurationAccessor = configurationAccessor;
     }
@@ -118,7 +118,7 @@ public class BlackDuckProperties {
     public Optional<ConfigurationModel> getBlackDuckConfig() {
         List<ConfigurationModel> configurations = null;
         try {
-            configurations = configurationAccessor.getConfigurationsByName(BlackDuckProvider.COMPONENT_NAME);
+            configurations = configurationAccessor.getConfigurationsByDescriptorName(BlackDuckProvider.COMPONENT_NAME);
         } catch (final AlertDatabaseConstraintException e) {
             classLogger.error("Problem connecting to DB.");
         }

@@ -68,13 +68,6 @@ public class DescriptorMap {
         return descriptorMapping;
     }
 
-    public List<DescriptorActionApi> getStartupRestApis() {
-        return restApis
-                   .stream()
-                   .filter(DescriptorActionApi::hasStartupProperties)
-                   .collect(Collectors.toList());
-    }
-
     public List<UIComponent> getDistributionUIConfigs() {
         return getUIComponents(ActionApiType.CHANNEL_DISTRIBUTION_CONFIG);
     }

@@ -5,6 +5,10 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
+    <!-- To generate unique ids in changesets go here: https://currentmillis.com/
+        Use the timestamp as the prefix and a step number separated by hyphen
+        i.e. 1543953433190-1, 1543953433190-2, etc...
+    -->
     <changeSet id="create_alert_schema-1" author="psantos">
         <sql dbms="h2"
              endDelimiter="\nGO"
@@ -14,10 +18,10 @@
         </sql>
     </changeSet>
 
-    <include file="changelog/alert/changelog-1.0.0.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/alert/changelog-1.1.0.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/alert/changelog-2.0.0.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/alert/changelog-3.0.0.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/alert/changelog-3.1.0.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/alert/changelog-4.0.0.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/alert/1.0.0/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/alert/1.1.0/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/alert/2.0.0/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/alert/3.0.0/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/alert/3.1.0/changelog.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/alert/4.0.0/changelog.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

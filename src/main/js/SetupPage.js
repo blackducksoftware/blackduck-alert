@@ -3,7 +3,6 @@ import React, {Component} from "react";
 import SubmitButton from "./field/input/SubmitButton";
 import TextInput from "./field/input/TextInput";
 import PasswordInput from "./field/input/PasswordInput";
-import NumberInput from "./field/input/NumberInput";
 import PropTypes from "prop-types";
 import {saveSystemSetup} from "./store/actions/system"
 
@@ -14,6 +13,8 @@ class SetupPage extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.state = {
             setupData: {
+                defaultAdminPassword: '',
+                defaultAdminPasswordSet: false,
                 globalEncryptionPassword: '',
                 globalEncryptionPasswordSet: false,
                 globalEncryptionSalt: '',
@@ -34,6 +35,8 @@ class SetupPage extends Component {
     componentWillReceiveProps(nextProps) {
         if (nextProps.updateStatus === 'FETCHED' && this.props.updateStatus != nextProps.updateStatus) {
             const newState = Object.assign({}, this.state.setupData, {
+                defaultAdminPassword: nextProps.currentSetupData.defaultAdminPassword || '',
+                defaultAdminPasswordSet: nextProps.currentSetupData.defaultAdminPasswordSet || false,
                 globalEncryptionPassword: nextProps.currentSetupData.globalEncryptionPassword || '',
                 globalEncryptionPasswordSet: nextProps.currentSetupData.globalEncryptionPasswordSet || false,
                 globalEncryptionSalt: nextProps.currentSetupData.globalEncryptionSalt || '',
@@ -77,6 +80,17 @@ class SetupPage extends Component {
                         <form method="POST" className="form-horizontal loginForm" onSubmit={this.handleSubmit}>
                             <div className="form-group">
                                 <div className="col-sm-12">
+                                    <h2>Default Admin Configuration</h2>
+                                    <PasswordInput
+                                        id="defaultAdminPassword"
+                                        label="Password"
+                                        name="defaultAdminPassword"
+                                        value={this.state.setupData.defaultAdminPassword}
+                                        isSet={this.state.setupData.defaultAdminPasswordSet}
+                                        onChange={this.handleChange}
+                                        errorName="defaultAdminPasswordError"
+                                        errorValue={this.props.fieldErrors.defaultAdminPassword}
+                                    />
                                     <h2>Encryption Configuration</h2>
                                     <PasswordInput
                                         id="encryptionPassword"
@@ -98,24 +112,6 @@ class SetupPage extends Component {
                                         errorName="globalEncryptionSaltError"
                                         errorValue={this.props.fieldErrors.globalEncryptionSaltError}
                                     />
-                                </div>
-                                <div className="form-group">
-                                    <div className="col-sm-12">
-                                        <h2>BlackDuck Configuration</h2>
-                                        <TextInput
-                                            id="blackDuckProviderUrl"
-                                            label="Url"
-                                            name="blackDuckProviderUrl"
-                                            value={this.state.setupData.blackDuckProviderUrl}
-                                            onChange={this.handleChange}
-                                            errorName="blackDuckProviderUrlError"
-                                            errorValue={this.props.fieldErrors.blackDuckProviderUrlError}
-                                        />
-                                        <PasswordInput id="blackDuckConfigurationApiToken" label="API Token" name="blackDuckApiToken" value={this.state.setupData.blackDuckApiToken} isSet={this.state.setupData.blackDuckApiTokenSet}
-                                                       onChange={this.handleChange}
-                                                       errorMessage={this.props.fieldErrors.apiKey || this.props.fieldErrors.blackDuckApiToken}/>
-                                        <NumberInput id="blackDuckConfigurationTimeout" label="Timeout" name="blackDuckConnectionTimeout" value={this.state.setupData.blackDuckConnectionTimeout} onChange={this.handleChange}/>
-                                    </div>
                                 </div>
                                 <div className="form-group">
                                     <div className="col-sm-12">

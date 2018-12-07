@@ -21,43 +21,41 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.entity.descriptor;
+package com.synopsys.integration.alert.database.relation;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+import com.synopsys.integration.alert.database.relation.key.UserRoleRelationPK;
 
 @Entity
-@Table(schema = "ALERT", name = "FIELD_VALUES")
-public class FieldValueEntity extends DatabaseEntity {
-    @Column(name = "CONFIG_ID")
-    private Long configId;
-    @Column(name = "FIELD_ID")
-    private Long fieldId;
-    @Column(name = "FIELD_VALUE")
-    private String value;
+@IdClass(UserRoleRelationPK.class)
+@Table(schema = "alert", name = "user_roles")
+public class UserRoleRelation extends DatabaseRelation {
+    @Id
+    @Column(name = "user_id")
+    private Long userId;
 
-    public FieldValueEntity() {
-        // JPA requires default constructor definitions
+    @Id
+    @Column(name = "role_id")
+    private Long roleId;
+
+    public UserRoleRelation() {
     }
 
-    public FieldValueEntity(final Long configId, final Long fieldId, final String value) {
-        this.configId = configId;
-        this.fieldId = fieldId;
-        this.value = value;
+    public UserRoleRelation(final Long userId, final Long roleId) {
+        this.userId = userId;
+        this.roleId = roleId;
     }
 
-    public Long getConfigId() {
-        return configId;
+    public Long getUserId() {
+        return userId;
     }
 
-    public Long getFieldId() {
-        return fieldId;
-    }
-
-    public String getValue() {
-        return value;
+    public Long getRoleId() {
+        return roleId;
     }
 }

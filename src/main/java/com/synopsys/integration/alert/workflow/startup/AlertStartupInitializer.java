@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -81,10 +80,11 @@ public class AlertStartupInitializer {
             }
             if (!newConfiguration.isEmpty()) {
                 final Set<ConfigurationFieldModel> fieldModels = createConfigurationFieldModels(newConfiguration);
-                final Optional<ConfigurationModel> foundConfigurationModel = fieldConfigurationAccessor.getConfigurationByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
-                if (foundConfigurationModel.isPresent() && overwriteCurrentConfig) {
+                final List<ConfigurationModel> foundConfigurationModel = fieldConfigurationAccessor.getConfigurationByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
+                if (!foundConfigurationModel.isEmpty() && overwriteCurrentConfig) {
                     if (overwriteCurrentConfig) {
-                        fieldConfigurationAccessor.updateConfiguration(foundConfigurationModel.get().getConfigurationId(), fieldModels);
+                        final ConfigurationModel configurationModel = foundConfigurationModel.get(0);
+                        fieldConfigurationAccessor.updateConfiguration(configurationModel.getConfigurationId(), fieldModels);
                     }
                 } else {
                     fieldConfigurationAccessor.createConfiguration(descriptorName, ConfigContextEnum.GLOBAL, fieldModels);

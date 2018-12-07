@@ -18,7 +18,7 @@ import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
-import com.synopsys.integration.alert.database.entity.descriptor.DescriptorConfigEntity;
+import com.synopsys.integration.alert.database.entity.configuration.DescriptorConfigEntity;
 import com.synopsys.integration.alert.database.repository.configuration.ConfigContextRepository;
 import com.synopsys.integration.alert.database.repository.configuration.DefinedFieldRepository;
 import com.synopsys.integration.alert.database.repository.configuration.DescriptorConfigRepository;
@@ -59,10 +59,11 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
     public void cleanup() throws AlertDatabaseConstraintException {
         descriptorAccessor.unregisterDescriptor(DESCRIPTOR_NAME);
 
-        registeredDescriptorRepository.deleteAll();
-        definedFieldRepository.deleteAll();
-        descriptorConfigsRepository.deleteAll();
-        fieldValueRepository.deleteAll();
+        registeredDescriptorRepository.deleteAllInBatch();
+        definedFieldRepository.deleteAllInBatch();
+        configContextRepository.deleteAllInBatch();
+        descriptorConfigsRepository.deleteAllInBatch();
+        // No need to delete relations as they will be deleted by the tables they reference (CASCADE)
     }
 
     @Test

@@ -90,7 +90,7 @@ public class SystemActions {
 
     public SystemSetupModel getCurrentSystemSetup() {
         final RequiredSystemConfiguration systemConfiguration = systemInitializer.getCurrentSystemSetup();
-        return SystemSetupModel.of(systemConfiguration.getBlackDuckProviderUrl(),
+        return SystemSetupModel.of(systemConfiguration.isDefaultAdminPasswordSet(), systemConfiguration.getBlackDuckProviderUrl(),
             systemConfiguration.getBlackDuckConnectionTimeout(),
             StringUtils.isNotBlank(systemConfiguration.getBlackDuckApiToken()),
             systemConfiguration.isGlobalEncryptionPasswordSet(),
@@ -102,7 +102,9 @@ public class SystemActions {
     }
 
     public SystemSetupModel saveRequiredInformation(final SystemSetupModel requiredSystemConfiguration, final Map<String, String> fieldErrors) {
-        final RequiredSystemConfiguration configToSave = new RequiredSystemConfiguration(requiredSystemConfiguration.getBlackDuckProviderUrl(),
+        final RequiredSystemConfiguration configToSave = new RequiredSystemConfiguration(requiredSystemConfiguration.getDefaultAdminPassword(),
+            requiredSystemConfiguration.isDefaultAdminPasswordSet(),
+            requiredSystemConfiguration.getBlackDuckProviderUrl(),
             requiredSystemConfiguration.getBlackDuckConnectionTimeout(),
             requiredSystemConfiguration.getBlackDuckApiToken(),
             requiredSystemConfiguration.getGlobalEncryptionPassword(),

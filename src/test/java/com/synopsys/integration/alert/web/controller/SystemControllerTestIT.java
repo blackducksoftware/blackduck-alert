@@ -70,6 +70,8 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     @Test
     public void testPostInitialSystemSetup() throws Exception {
         final TestProperties testProperties = new TestProperties();
+        final String defaultAdminPassword = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PASSWORD);
+        final boolean defaultAdminPasswordSet = false;
         final String blackDuckProviderUrl = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL);
         final Integer blackDuckConnectionTimeout = 300;
         final String blackDuckApiToken = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY);
@@ -84,7 +86,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
         final String proxyPassword = "";
         final boolean proxyPasswordSet = false;
 
-        final SystemSetupModel configuration = SystemSetupModel.of(blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet,
+        final SystemSetupModel configuration = SystemSetupModel.of(defaultAdminPassword, defaultAdminPasswordSet, blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet,
             globalEncryptionPassword, isGlobalEncryptionPasswordSet, globalEncryptionSalt, isGlobalEncryptionSaltSet,
             proxyHost, proxyPort, proxyUsername, proxyPassword, proxyPasswordSet);
 

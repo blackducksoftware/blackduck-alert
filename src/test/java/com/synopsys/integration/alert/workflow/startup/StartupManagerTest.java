@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.OutputLogger;
 import com.synopsys.integration.alert.TestAlertProperties;
 import com.synopsys.integration.alert.TestBlackDuckProperties;
+import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.scheduling.SchedulingConfigEntity;
 import com.synopsys.integration.alert.database.scheduling.SchedulingRepository;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
@@ -46,7 +47,8 @@ public class StartupManagerTest {
         testAlertProperties.setAlertProxyPassword("not_blank_data");
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
-        final StartupManager startupManager = new StartupManager(null, testAlertProperties, mockTestGlobalProperties, null, null, null, null, null, null, systemStatusUtility, systemValidator);
+        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        final StartupManager startupManager = new StartupManager(null, testAlertProperties, mockTestGlobalProperties, null, null, null, null, null, null, systemStatusUtility, systemValidator, encryptionUtility);
 
         startupManager.logConfiguration();
         assertTrue(outputLogger.isLineContainingText("Alert Proxy Authenticated: true"));
@@ -73,8 +75,10 @@ public class StartupManagerTest {
         Mockito.when(schedulingRepository.save(Mockito.any(SchedulingConfigEntity.class))).thenReturn(entity);
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
+        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
 
-        final StartupManager startupManager = new StartupManager(schedulingRepository, testAlertProperties, null, dailyTask, onDemandTask, purgeTask, phoneHomeTask, null, Collections.emptyList(), systemStatusUtility, systemValidator);
+        final StartupManager startupManager = new StartupManager(schedulingRepository, testAlertProperties, null, dailyTask, onDemandTask, purgeTask, phoneHomeTask, null, Collections.emptyList(), systemStatusUtility, systemValidator,
+            encryptionUtility);
 
         startupManager.initializeCronJobs();
 

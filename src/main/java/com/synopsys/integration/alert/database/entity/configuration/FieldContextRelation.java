@@ -21,26 +21,41 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.email.template;
+package com.synopsys.integration.alert.database.entity.configuration;
 
-import java.util.Date;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Table;
 
-public class DateRange {
+import com.synopsys.integration.alert.database.relation.key.FieldContextRelationPK;
 
-    private final Date start;
+@Entity
+@IdClass(FieldContextRelationPK.class)
+@Table(schema = "ALERT", name = "FIELD_CONTEXTS")
+public class FieldContextRelation {
+    @Id
+    @Column(name = "FIELD_ID")
+    private Long fieldId;
+    @Id
+    @Column(name = "CONTEXT_ID")
+    private Long contextId;
 
-    private final Date end;
-
-    public DateRange(final Date start, final Date end) {
-        this.start = start;
-        this.end = end;
+    public FieldContextRelation() {
+        // JPA requires default constructor definitions
     }
 
-    public Date getStart() {
-        return start;
+    public FieldContextRelation(final Long fieldId, final Long contextId) {
+        this.fieldId = fieldId;
+        this.contextId = contextId;
     }
 
-    public Date getEnd() {
-        return end;
+    public Long getFieldId() {
+        return fieldId;
+    }
+
+    public Long getContextId() {
+        return contextId;
     }
 }

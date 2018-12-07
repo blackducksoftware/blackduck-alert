@@ -2,7 +2,6 @@ package com.synopsys.integration.alert.common.database;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.database.api.configuration.ConfigContextEnum;
@@ -17,7 +16,7 @@ public interface FieldConfigurationAccessor {
 
     List<ConfigurationModel> getConfigurationsByDescriptorName(String descriptorName) throws AlertDatabaseConstraintException;
 
-    Optional<ConfigurationModel> getConfigurationByDescriptorNameAndContext(String descriptorName, ConfigContextEnum context);
+    List<ConfigurationModel> getConfigurationByDescriptorNameAndContext(String descriptorName, ConfigContextEnum context) throws AlertDatabaseConstraintException;
 
     ConfigurationModel createEmptyConfiguration(String descriptorName, ConfigContextEnum context) throws AlertDatabaseConstraintException;
 
@@ -28,5 +27,7 @@ public interface FieldConfigurationAccessor {
     void deleteConfiguration(final ConfigurationModel configModel) throws AlertDatabaseConstraintException;
 
     void deleteConfiguration(final Long descriptorConfigId) throws AlertDatabaseConstraintException;
+
+    // TODO find a place for a method to pass a map of Strings to be immiediately converted to a new config
 
 }
