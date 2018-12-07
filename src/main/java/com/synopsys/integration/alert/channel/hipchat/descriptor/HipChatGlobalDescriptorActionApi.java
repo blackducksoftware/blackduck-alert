@@ -40,8 +40,7 @@ public class HipChatGlobalDescriptorActionApi extends DescriptorActionApi {
     private final HipChatChannel hipChatChannel;
 
     @Autowired
-    public HipChatGlobalDescriptorActionApi(final HipChatChannel hipChatChannel, final HipChatStartupComponent hipChatStartupComponent) {
-        super(hipChatStartupComponent);
+    public HipChatGlobalDescriptorActionApi(final HipChatChannel hipChatChannel) {
         this.hipChatChannel = hipChatChannel;
     }
 

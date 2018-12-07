@@ -26,7 +26,6 @@ package com.synopsys.integration.alert.component.scheduling;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
@@ -37,15 +36,10 @@ import com.synopsys.integration.exception.IntegrationException;
 @Component
 public class SchedulingDescriptorActionApi extends DescriptorActionApi {
 
-    @Autowired
-    public SchedulingDescriptorActionApi(final SchedulingStartupComponent schedulingStartupComponent) {
-        super(schedulingStartupComponent);
-    }
-
     @Override
     public void validateConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
         final String dailyDigestHourOfDay = fieldAccessor.getString(SchedulingUIConfig.KEY_DAILY_DIGEST_HOUR_OF_DAY);
-        String purgeDataFrequency = fieldAccessor.getString(SchedulingUIConfig.KEY_PURGE_DATA_FREQUENCY_DAYS);
+        final String purgeDataFrequency = fieldAccessor.getString(SchedulingUIConfig.KEY_PURGE_DATA_FREQUENCY_DAYS);
 
         if (StringUtils.isNotBlank(dailyDigestHourOfDay)) {
             if (!StringUtils.isNumeric(dailyDigestHourOfDay)) {

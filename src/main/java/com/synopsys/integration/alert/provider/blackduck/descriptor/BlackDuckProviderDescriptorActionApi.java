@@ -60,8 +60,7 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
     private final BlackDuckProperties blackDuckProperties;
 
     @Autowired
-    public BlackDuckProviderDescriptorActionApi(final BlackDuckProviderStartupComponent startupComponent, final BlackDuckProperties blackDuckProperties) {
-        super(startupComponent);
+    public BlackDuckProviderDescriptorActionApi(final BlackDuckProperties blackDuckProperties) {
         this.blackDuckProperties = blackDuckProperties;
     }
 

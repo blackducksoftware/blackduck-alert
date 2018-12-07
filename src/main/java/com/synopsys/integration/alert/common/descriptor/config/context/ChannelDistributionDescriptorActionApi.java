@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.common.descriptor.config.context;
 
 import com.synopsys.integration.alert.channel.DistributionChannel;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
-import com.synopsys.integration.alert.common.descriptor.config.StartupComponent;
 import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
@@ -34,12 +33,6 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
     private final DistributionChannel distributionChannel;
 
     public ChannelDistributionDescriptorActionApi(final DistributionChannel distributionChannel) {
-        super();
-        this.distributionChannel = distributionChannel;
-    }
-
-    public ChannelDistributionDescriptorActionApi(final DistributionChannel distributionChannel, final StartupComponent startupComponent) {
-        super(startupComponent);
         this.distributionChannel = distributionChannel;
     }
 
