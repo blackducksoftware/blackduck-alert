@@ -99,7 +99,7 @@ public class EncryptionUtility {
 
     private String getPassword() {
         final Optional<String> passwordFromEnvironment = alertProperties.getAlertEncryptionPassword();
-        return passwordFromEnvironment.orElse(getPasswordFromFile());
+        return passwordFromEnvironment.orElseGet(this::getPasswordFromFile);
     }
 
     private String getPasswordFromFile() {
@@ -118,7 +118,7 @@ public class EncryptionUtility {
 
     private String getGlobalSalt() {
         final Optional<String> saltFromEnvironment = alertProperties.getAlertEncryptionGlobalSalt();
-        return saltFromEnvironment.orElse(getGlobalSaltFromFile());
+        return saltFromEnvironment.orElseGet(this::getGlobalSaltFromFile);
     }
 
     private String getGlobalSaltFromFile() {
