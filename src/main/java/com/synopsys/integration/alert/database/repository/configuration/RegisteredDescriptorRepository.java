@@ -21,19 +21,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.repository.descriptor;
+package com.synopsys.integration.alert.database.repository.configuration;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.database.entity.descriptor.DescriptorFieldEntity;
+import com.synopsys.integration.alert.database.entity.configuration.RegisteredDescriptorEntity;
 
 @Component
-public interface DescriptorFieldRepository extends JpaRepository<DescriptorFieldEntity, Long> {
-    Optional<DescriptorFieldEntity> findFirstByDescriptorIdAndKey(final Long descriptorId, final String fieldKey);
-
-    List<DescriptorFieldEntity> findByDescriptorId(final Long descriptorId);
+public interface RegisteredDescriptorRepository extends JpaRepository<RegisteredDescriptorEntity, Long> {
+    Optional<RegisteredDescriptorEntity> findFirstByName(final String descriptorName);
 }

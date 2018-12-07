@@ -21,36 +21,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.entity.descriptor;
+package com.synopsys.integration.alert.database.api.configuration;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import java.util.Collection;
+import java.util.Collections;
 
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+import com.synopsys.integration.util.Stringable;
 
-@Entity
-@Table(schema = "ALERT", name = "DESCRIPTOR_FIELDS")
-public class DescriptorFieldEntity extends DatabaseEntity {
-    @Column(name = "DESCRIPTOR_ID", nullable = false)
-    private Long descriptorId;
-    @Column(name = "SOURCE_KEY")
-    private String key;
-    @Column(name = "SENSITIVE")
-    private Boolean sensitive;
+public class DefinedFieldModel extends Stringable {
+    private final String key;
+    private final Collection<ConfigContextEnum> contexts;
+    private final Boolean sensitive;
 
-    public DescriptorFieldEntity() {
-        // JPA requires default constructor definitions
-    }
-
-    public DescriptorFieldEntity(final Long descriptorId, final String key, final Boolean sensitive) {
-        this.descriptorId = descriptorId;
+    public DefinedFieldModel(final String key, final ConfigContextEnum context, final Boolean sensitive) {
         this.key = key;
+        this.contexts = Collections.singleton(context);
         this.sensitive = sensitive;
     }
 
-    public Long getDescriptorId() {
-        return descriptorId;
+    public DefinedFieldModel(final String key, final Collection<ConfigContextEnum> contexts, final Boolean sensitive) {
+        this.key = key;
+        this.contexts = contexts;
+        this.sensitive = sensitive;
     }
 
     public String getKey() {
@@ -59,5 +51,9 @@ public class DescriptorFieldEntity extends DatabaseEntity {
 
     public Boolean getSensitive() {
         return sensitive;
+    }
+
+    public Collection<ConfigContextEnum> getContexts() {
+        return contexts;
     }
 }

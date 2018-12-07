@@ -21,29 +21,42 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.entity.descriptor;
+package com.synopsys.integration.alert.database.entity.configuration;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+import com.synopsys.integration.alert.database.relation.DatabaseRelation;
+import com.synopsys.integration.alert.database.relation.key.DescriptorFieldRelationPK;
 
 @Entity
-@Table(schema = "ALERT", name = "DESCRIPTOR_CONFIGS")
-public class DescriptorConfigEntity extends DatabaseEntity {
+@IdClass(DescriptorFieldRelationPK.class)
+@Table(schema = "ALERT", name = "DESCRIPTOR_FIELDS")
+public class DescriptorFieldRelation extends DatabaseRelation {
+    @Id
     @Column(name = "DESCRIPTOR_ID")
-    private Long descriptorId;
+    public Long descriptorId;
+    @Id
+    @Column(name = "FIELD_ID")
+    public Long fieldId;
 
-    public DescriptorConfigEntity() {
+    public DescriptorFieldRelation() {
         // JPA requires default constructor definitions
     }
 
-    public DescriptorConfigEntity(final Long descriptorId) {
+    public DescriptorFieldRelation(final Long descriptorId, final Long fieldId) {
         this.descriptorId = descriptorId;
+        this.fieldId = fieldId;
     }
 
     public Long getDescriptorId() {
         return descriptorId;
+    }
+
+    public Long getFieldId() {
+        return fieldId;
     }
 }

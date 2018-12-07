@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.api.descriptor;
+package com.synopsys.integration.alert.database.api.configuration;
 
 import java.util.Collection;
 import java.util.Collections;

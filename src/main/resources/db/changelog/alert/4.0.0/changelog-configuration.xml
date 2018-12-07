@@ -6,15 +6,13 @@
                 <constraints primaryKey="true" primaryKeyName="REGISTERED_DESCRIPTORS_KEY"/>
             </column>
             <column name="NAME" type="VARCHAR(255)"/>
-            <column name="TYPE" type="VARCHAR(31)"/>
         </createTable>
     </changeSet>
     <changeSet author="gkillough" id="1543499878547-2">
-        <createTable tableName="DESCRIPTOR_FIELDS" schemaName="ALERT">
+        <createTable tableName="DEFINED_FIELDS" schemaName="ALERT">
             <column name="ID" type="BIGINT(19)" autoIncrement="true">
-                <constraints primaryKey="true" primaryKeyName="DESCRIPTOR_FIELDS_KEY"/>
+                <constraints primaryKey="true" primaryKeyName="DEFINED_FIELDS_KEY"/>
             </column>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)"/>
             <column name="SOURCE_KEY" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
@@ -22,36 +20,117 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+    </changeSet>
+    <changeSet author="gkillough" id="1543499878547-3">
+        <createTable tableName="DESCRIPTOR_FIELDS" schemaName="ALERT">
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FIELD_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS"
+                columnNames="DESCRIPTOR_ID, FIELD_ID"
+                constraintName="DESCRIPTOR_FIELDS_KEY"
+        />
         <addForeignKeyConstraint
                 baseTableSchemaName="ALERT"
                 baseTableName="DESCRIPTOR_FIELDS"
                 baseColumnNames="DESCRIPTOR_ID"
-                constraintName="FK_DESCRIPTOR_FIELD"
+                constraintName="FK_FIELD_DESCRIPTOR"
                 referencedTableSchemaName="ALERT"
                 referencedTableName="REGISTERED_DESCRIPTORS"
                 referencedColumnNames="ID"
                 onDelete="CASCADE"
         />
-    </changeSet>
-    <changeSet author="gkillough" id="1543499878547-3">
-        <createTable tableName="DESCRIPTOR_CONFIGS" schemaName="ALERT">
-            <column name="ID" type="BIGINT(19)" autoIncrement="true">
-                <constraints primaryKey="true" primaryKeyName="DESCRIPTOR_CONFIGS_KEY"/>
-            </column>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)"/>
-        </createTable>
         <addForeignKeyConstraint
                 baseTableSchemaName="ALERT"
-                baseTableName="DESCRIPTOR_CONFIGS"
-                baseColumnNames="DESCRIPTOR_ID"
-                constraintName="FK_DESCRIPTOR_CONFIG"
+                baseTableName="DESCRIPTOR_FIELDS"
+                baseColumnNames="FIELD_ID"
+                constraintName="FK_DESCRIPTOR_FIELD"
                 referencedTableSchemaName="ALERT"
-                referencedTableName="REGISTERED_DESCRIPTORS"
+                referencedTableName="DEFINED_FIELDS"
                 referencedColumnNames="ID"
                 onDelete="CASCADE"
         />
     </changeSet>
     <changeSet author="gkillough" id="1543499878547-4">
+        <createTable tableName="CONFIG_CONTEXTS" schemaName="ALERT">
+            <column name="ID" type="BIGINT(19)" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="CONFIG_CONTEXTS_KEY"/>
+            </column>
+            <column name="CONTEXT" type="VARCHAR(31)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="gkillough" id="1543499878547-5">
+        <createTable tableName="FIELD_CONTEXTS" schemaName="ALERT">
+            <column name="FIELD_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CONTEXT_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS"
+                columnNames="FIELD_ID, CONTEXT_ID"
+                constraintName="FIELD_CONTEXTS_KEY"
+        />
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="FIELD_CONTEXTS"
+                baseColumnNames="FIELD_ID"
+                constraintName="FK_CONTEXT_FIELD"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="DEFINED_FIELDS"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="FIELD_CONTEXTS"
+                baseColumnNames="CONTEXT_ID"
+                constraintName="FK_FIELD_CONTEXT"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="CONFIG_CONTEXTS"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
+    </changeSet>
+    <changeSet author="gkillough" id="1543499878547-6">
+        <createTable tableName="DESCRIPTOR_CONFIGS" schemaName="ALERT">
+            <column name="ID" type="BIGINT(19)" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="DESCRIPTOR_CONFIGS_KEY"/>
+            </column>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)"/>
+        </createTable>
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="DESCRIPTOR_CONFIGS"
+                baseColumnNames="DESCRIPTOR_ID"
+                constraintName="FK_CONFIG_DESCRIPTOR"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="REGISTERED_DESCRIPTORS"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="DESCRIPTOR_CONFIGS"
+                baseColumnNames="CONTEXT_ID"
+                constraintName="FK_CONFIG_CONTEXT"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="CONFIG_CONTEXTS"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
+    </changeSet>
+    <changeSet author="gkillough" id="1543499878547-7">
         <createTable tableName="FIELD_VALUES" schemaName="ALERT">
             <column name="ID" type="BIGINT(19)" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="CONFIG_VALUES_KEY"/>
@@ -64,7 +143,7 @@
                 baseTableSchemaName="ALERT"
                 baseTableName="FIELD_VALUES"
                 baseColumnNames="CONFIG_ID"
-                constraintName="FK_CONFIG_VALUE"
+                constraintName="FK_DESCRIPTOR_CONFIG_VALUE"
                 referencedTableSchemaName="ALERT"
                 referencedTableName="DESCRIPTOR_CONFIGS"
                 referencedColumnNames="ID"
@@ -74,9 +153,9 @@
                 baseTableSchemaName="ALERT"
                 baseTableName="FIELD_VALUES"
                 baseColumnNames="FIELD_ID"
-                constraintName="FK_DESCRIPTOR_FIELD_VALUE"
+                constraintName="FK_DEFINED_FIELD_VALUE"
                 referencedTableSchemaName="ALERT"
-                referencedTableName="DESCRIPTOR_FIELDS"
+                referencedTableName="DEFINED_FIELDS"
                 referencedColumnNames="ID"
                 onDelete="CASCADE"
         />
