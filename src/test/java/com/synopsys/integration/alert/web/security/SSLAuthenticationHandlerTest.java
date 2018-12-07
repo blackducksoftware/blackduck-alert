@@ -15,7 +15,7 @@ public class SSLAuthenticationHandlerTest {
     class PublicSSLAuthenticationHandler extends SSLAuthenticationHandler {
 
         public PublicSSLAuthenticationHandler() {
-            super(new HttpSessionCsrfTokenRepository());
+            super(new HttpSessionCsrfTokenRepository(), new HttpPathManager());
         }
 
         public void callConfigure(final HttpSecurity http) throws Exception {
