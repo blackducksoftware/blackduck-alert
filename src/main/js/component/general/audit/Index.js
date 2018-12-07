@@ -149,7 +149,7 @@ class Index extends Component {
         } else if (cell === 'Failure') {
             statusClass = 'statusFailure';
         }
-        return <div className={statusClass} aria-hidden>{cell}</div>;
+        return (<div className={statusClass} aria-hidden>{cell}</div>);
     }
 
     notificationTypeDataFormat(cell) {
@@ -261,9 +261,9 @@ class Index extends Component {
 
     resendButton(cell, row) {
         if (row.content) {
-            return <RefreshTableCellFormatter handleButtonClicked={this.onResendClick} currentRowSelected={row} buttonText="Re-send"/>;
+            return (<RefreshTableCellFormatter handleButtonClicked={this.onResendClick} currentRowSelected={row} buttonText="Re-send"/>);
         } else {
-            return <div className="editJobButtonDisabled"><span className="fa fa-refresh"/></div>
+            return (<div className="editJobButtonDisabled"><span className="fa fa-refresh"/></div>);
         }
     }
 
@@ -324,8 +324,7 @@ class Index extends Component {
         this.reloadAuditEntries(null, null, null, sortName, sortOrder)
     }
 
-    onRowClick(row, columnIndex, rowIndex, e) {
-        console.log("Clicked on column " + columnIndex);
+    onRowClick(row) {
         this.setState({currentRowSelected: row, showDetailModal: true});
     }
 
@@ -340,8 +339,6 @@ class Index extends Component {
             btnGroup: this.createCustomButtonGroup,
             noDataText: 'No events',
             clearSearch: true,
-            expandBy: 'column',
-            expandRowBgColor: '#e8e8e8',
             sizePerPage: this.state.currentPageSize,
             page: this.state.currentPage,
             // We need all of these onChange methods because the table is using the remote option
@@ -396,7 +393,7 @@ class Index extends Component {
                         <TableHeaderColumn dataField="createdAt" dataSort columnTitle columnClassName="tableCell">Time Retrieved</TableHeaderColumn>
                         <TableHeaderColumn dataField="lastSent" dataSort columnTitle columnClassName="tableCell">Last Sent</TableHeaderColumn>
                         <TableHeaderColumn dataField="overallStatus" dataSort columnClassName="tableCell" dataFormat={this.statusColumnDataFormat}>Status</TableHeaderColumn>
-                        <TableHeaderColumn dataField="" width="48" expandable={false} columnClassName="tableCell" dataFormat={this.resendButton}/>
+                        <TableHeaderColumn width="48" columnClassName="tableCell" dataFormat={this.resendButton}></TableHeaderColumn>
                         <TableHeaderColumn dataField="id" isKey hidden>Notification Id</TableHeaderColumn>
                     </BootstrapTable>
 

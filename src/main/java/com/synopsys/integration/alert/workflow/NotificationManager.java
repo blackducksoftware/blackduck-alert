@@ -87,6 +87,8 @@ public class NotificationManager {
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public Page<NotificationContent> findAllWithSearch(final String searchTerm, final PageRequest pageRequest, final Integer maxSize, final boolean onlyShowSentNotifications) {
+        //        final Page<NotificationContent> notificationContentPage = notificationContentRepository.findMatching(searchTerm, pageRequest);
+
         //TODO address this in the future when we have a database expert, this should be done with a database query
         final String lcSearchTerm = searchTerm.toLowerCase(Locale.ENGLISH);
         final List<NotificationContent> matchingNotifications = new ArrayList<>(maxSize);
@@ -97,26 +99,20 @@ public class NotificationManager {
                     || doesStringMatch(notificationContent.getProvider(), lcSearchTerm)
                     || doesStringMatch(notificationContent.getNotificationType(), lcSearchTerm)
                     || doesStringMatch(notificationContentConverter.getContentConverter().getStringValue(notificationContent.getCreatedAt()), lcSearchTerm)) {
-                if (!matchingNotifications.add(notificationContent)) {
-                    break;
-                }
+                matchingNotifications.add(notificationContent);
             } else {
                 final List<AuditEntryEntity> auditEntryEntities = getAuditEntries(notificationContent);
                 for (final AuditEntryEntity auditEntryEntity : auditEntryEntities) {
                     if (doesStringMatch(auditEntryEntity.getStatus().getDisplayName(), lcSearchTerm)
                             || doesStringMatch(notificationContentConverter.getContentConverter().getStringValue(auditEntryEntity.getTimeLastSent()), lcSearchTerm)) {
-                        if (!matchingNotifications.add(notificationContent)) {
-                            break;
-                        }
+                        matchingNotifications.add(notificationContent);
                     } else {
                         final Optional<? extends CommonDistributionConfig> optionalCommonDistributionConfig = jobConfigReader.getPopulatedConfig(auditEntryEntity.getCommonConfigId());
                         if (optionalCommonDistributionConfig.isPresent()) {
                             final CommonDistributionConfig commonDistributionConfig = optionalCommonDistributionConfig.get();
                             if (doesStringMatch(commonDistributionConfig.getName(), lcSearchTerm)
                                     || doesStringMatch(commonDistributionConfig.getDistributionType(), lcSearchTerm)) {
-                                if (!matchingNotifications.add(notificationContent)) {
-                                    break;
-                                }
+                                matchingNotifications.add(notificationContent);
                             }
                         }
                     }

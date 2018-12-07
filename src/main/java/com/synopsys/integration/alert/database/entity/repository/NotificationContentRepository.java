@@ -43,4 +43,17 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
     @Query(value = "SELECT entity FROM NotificationContent entity WHERE entity.id IN (SELECT notificationId FROM entity.auditNotificationRelations WHERE entity.id = notificationId)")
     Page<NotificationContent> findAllSentNotifications(final Pageable pageable);
 
+    //    @Query(value = "SELECT entity FROM NotificationContent entity WHERE LOWER(?1) LIKE LOWER(entity.provider)  OR "
+    //                       + "LOWER(?1) LIKE LOWER(entity.notificationType)  OR "
+    //                       + "LOWER(?1) LIKE LOWER(entity.content)  OR "
+    //                       + "LOWER(?1) LIKE LOWER(entity.createdAt)  OR "
+    //                       + "entity.id IN (SELECT relation FROM entity.auditNotificationRelations relation WHERE entity.id = relation.notificationId AND  relation.auditEntryId IN "
+    //                       + "(SELECT audit FROM relation.auditEntryEntity audit WHERE relation.auditEntryId = audit.id AND "
+    //                       + "LOWER(?1) LIKE LOWER(audit.timeLastSent)  OR  "
+    //                       + "LOWER(?1) LIKE LOWER(audit.status)  OR audit.commonConfigId IN "
+    //                       + "(SELECT commonConfig FROM audit.commonDistributionConfigEntity commonConfig WHERE audit.commonConfigId = commonConfig.id AND "
+    //                       + "LOWER(?1) LIKE LOWER(commonConfig.name)  OR "
+    //                       + "LOWER(?1) LIKE LOWER(commonConfig.distributionType)  "
+    //                       + "))) ")
+    //    Page<NotificationContent> findMatching(String searchTerm, final Pageable pageable);
 }

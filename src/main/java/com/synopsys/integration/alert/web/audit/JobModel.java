@@ -27,6 +27,7 @@ import com.synopsys.integration.alert.web.model.Config;
 
 public class JobModel extends Config {
 
+    private String configId;
     private String name;
     private String eventType;
     private String timeAuditCreated;
@@ -38,8 +39,9 @@ public class JobModel extends Config {
     public JobModel() {
     }
 
-    public JobModel(final String id, final String name, final String eventType, final String timeAuditCreated, final String timeLastSent, final String status, final String errorMessage, final String errorStackTrace) {
+    public JobModel(final String id, final String configId, final String name, final String eventType, final String timeAuditCreated, final String timeLastSent, final String status, final String errorMessage, final String errorStackTrace) {
         super(id);
+        this.configId = configId;
         this.name = name;
         this.eventType = eventType;
         this.timeAuditCreated = timeAuditCreated;
@@ -47,6 +49,10 @@ public class JobModel extends Config {
         this.status = status;
         this.errorMessage = errorMessage;
         this.errorStackTrace = errorStackTrace;
+    }
+
+    public String getConfigId() {
+        return configId;
     }
 
     public String getName() {
