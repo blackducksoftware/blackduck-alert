@@ -31,6 +31,7 @@ import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -69,7 +70,7 @@ public class BlackDuckPolicyMessageContentCollector extends MessageContentCollec
 
     @Override
     protected void addCategoryItems(final List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final NotificationContent notificationContent) {
-        if (notificationContent.getNotificationType().equals("POLICY_OVERRIDE")) {
+        if (NotificationType.POLICY_OVERRIDE.name().equals(notificationContent.getNotificationType())) {
             processPolicyOverride(categoryItems, jsonFieldAccessor, notificationFields, notificationContent);
         } else {
             processPolicy(categoryItems, jsonFieldAccessor, notificationFields, notificationContent);
@@ -82,43 +83,47 @@ public class BlackDuckPolicyMessageContentCollector extends MessageContentCollec
         try {
             final List<PolicyInfo> policyItems = getFieldValueObjectsByLabel(jsonFieldAccessor, policyFields, BlackDuckProviderContentTypes.LABEL_POLICY_INFO_LIST);
             final List<ComponentVersionStatus> componentVersionStatuses = getFieldValueObjectsByLabel(jsonFieldAccessor, componentFields, BlackDuckProviderContentTypes.LABEL_COMPONENT_VERSION_STATUS);
-            final Map<String, SortedSet<LinkableItem>> policyItemMap = new TreeMap<>();
+            final Map<String, SortedSet<LinkableItem>> policyItemMap = mapPolicyToComponents(componentVersionStatuses);
 
-            for (final ComponentVersionStatus versionStatus : componentVersionStatuses) {
-                for (final String policyUrl : versionStatus.policies) {
-                    final SortedSet<LinkableItem> componentItems;
-                    if (policyItemMap.containsKey(policyUrl)) {
-                        componentItems = policyItemMap.get(policyUrl);
-                    } else {
-                        componentItems = new TreeSet<>();
-                        policyItemMap.put(policyUrl, componentItems);
-                    }
-                    if (StringUtils.isNotBlank(versionStatus.componentName)) {
-                        componentItems.add(new LinkableItem(BlackDuckProviderContentTypes.LABEL_COMPONENT_NAME, versionStatus.componentName));
-                    }
-                    if (StringUtils.isNotBlank(versionStatus.componentVersionName)) {
-                        componentItems.add(new LinkableItem(BlackDuckProviderContentTypes.LABEL_COMPONENT_VERSION_NAME, versionStatus.componentVersionName));
-                    }
-                }
-            }
-
-            final ItemOperation operation;
-            try {
-                operation = getOperationFromNotification(notificationContent);
-            } catch (final IllegalArgumentException e) {
-                logger.error("Unrecognized notification type", e);
+            final ItemOperation operation = getOperationFromNotification(notificationContent);
+            if (operation == null) {
                 return;
             }
             for (final PolicyInfo policyItem : policyItems) {
                 final String policyUrl = policyItem.policy;
                 final String policyName = policyItem.policyName;
-                final LinkableItem policyLinkableItem = new LinkableItem(BlackDuckProviderContentTypes.LABEL_POLICY_NAME, policyName);
+                final LinkableItem policyLinkableItem = new LinkableItem(BlackDuckProviderContentTypes.LABEL_POLICY_NAME, policyName, policyUrl);
                 final SortedSet<LinkableItem> applicableItems = policyItemMap.get(policyUrl);
-                addApplicableItems(categoryItems, notificationContent.getId(), policyLinkableItem, policyUrl, operation, Optional.empty(), applicableItems);
+                addApplicableItems(categoryItems, notificationContent.getId(), policyLinkableItem, policyUrl, operation, applicableItems);
             }
         } catch (final AlertException ex) {
             logger.error("Mishandled the expected type of a notification field", ex);
         }
+    }
+
+    private Map<String, SortedSet<LinkableItem>> mapPolicyToComponents(final List<ComponentVersionStatus> componentVersionStatuses) {
+        final Map<String, SortedSet<LinkableItem>> policyItemMap = new TreeMap<>();
+
+        for (final ComponentVersionStatus versionStatus : componentVersionStatuses) {
+            for (final String policyUrl : versionStatus.policies) {
+                final SortedSet<LinkableItem> componentItems;
+                if (policyItemMap.containsKey(policyUrl)) {
+                    componentItems = policyItemMap.get(policyUrl);
+                } else {
+                    componentItems = new TreeSet<>();
+                    policyItemMap.put(policyUrl, componentItems);
+                }
+
+                if (StringUtils.isNotBlank(versionStatus.componentName)) {
+                    componentItems.add(new LinkableItem(BlackDuckProviderContentTypes.LABEL_COMPONENT_NAME, versionStatus.componentName, versionStatus.component));
+                }
+
+                if (StringUtils.isNotBlank(versionStatus.componentVersionName)) {
+                    componentItems.add(new LinkableItem(BlackDuckProviderContentTypes.LABEL_COMPONENT_VERSION_NAME, versionStatus.componentVersionName, versionStatus.componentVersion));
+                }
+            }
+        }
+        return policyItemMap;
     }
 
     private void processPolicyOverride(final List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final NotificationContent notificationContent) {
@@ -132,47 +137,48 @@ public class BlackDuckPolicyMessageContentCollector extends MessageContentCollec
         applicableItems.addAll(componentItems);
         applicableItems.addAll(componentVersionItems);
 
-        Optional<LinkableItem> combinedNameItem = Optional.empty();
         if (firstName.isPresent() && lastName.isPresent()) {
             final String value = String.format("%s %s", firstName.get().getValue(), lastName.get().getValue());
-            combinedNameItem = Optional.of(new LinkableItem(BlackDuckProviderContentTypes.LABEL_POLICY_OVERRIDE_BY, value));
+            applicableItems.add(new LinkableItem(BlackDuckProviderContentTypes.LABEL_POLICY_OVERRIDE_BY, value));
         }
 
-        final ItemOperation operation;
-        try {
-            operation = getOperationFromNotification(notificationContent);
-        } catch (final IllegalArgumentException e) {
-            logger.error("Unrecognized notification type", e);
+        final ItemOperation operation = getOperationFromNotification(notificationContent);
+        if (operation == null) {
             return;
         }
+
         for (final LinkableItem policyItem : policyItems) {
             final String policyUrl = policyItem.getUrl().orElse("");
-            addApplicableItems(categoryItems, notificationContent.getId(), policyItem, policyUrl, operation, combinedNameItem, applicableItems);
+            addApplicableItems(categoryItems, notificationContent.getId(), policyItem, policyUrl, operation, applicableItems);
         }
     }
 
-    protected ItemOperation getOperationFromNotification(final NotificationContent notificationContent) {
+    private ItemOperation getOperationFromNotification(final NotificationContent notificationContent) {
+        final ItemOperation operation;
         final String notificationType = notificationContent.getNotificationType();
         if (NotificationType.RULE_VIOLATION_CLEARED.name().equals(notificationType)) {
-            return ItemOperation.DELETE;
+            operation = ItemOperation.DELETE;
         } else if (NotificationType.RULE_VIOLATION.name().equals(notificationType)) {
-            return ItemOperation.ADD;
+            operation = ItemOperation.ADD;
         } else if (NotificationType.POLICY_OVERRIDE.name().equals(notificationType)) {
-            return ItemOperation.DELETE;
+            operation = ItemOperation.DELETE;
+        } else {
+            operation = null;
         }
-        throw new IllegalArgumentException(String.format("The notification type '%s' is not valid for this collector.", notificationType));
+        logger.error("Unrecognized notification type: The notification type '{}' is not valid for this collector.", notificationType);
+        return operation;
     }
 
-    private void addApplicableItems(final List<CategoryItem> categoryItems, final Long notificationId, final LinkableItem policyItem, final String policyUrl, final ItemOperation operation,
-        final Optional<LinkableItem> nameItem, final SortedSet<LinkableItem> applicableItems) {
+    private void addApplicableItems(final List<CategoryItem> categoryItems, final Long notificationId, final LinkableItem policyItem, final String policyUrl, final ItemOperation operation, final SortedSet<LinkableItem> applicableItems) {
+        final List<String> keyItems = applicableItems.stream().map(LinkableItem::getValue).collect(Collectors.toList());
+        String[] keyArray = new String[keyItems.size() + 1];
+        keyArray = keyItems.toArray(keyArray);
+        keyArray[keyArray.length - 1] = policyUrl;
+        final CategoryKey categoryKey = CategoryKey.from(CATEGORY_TYPE, keyArray);
+
         for (final LinkableItem item : applicableItems) {
-            final CategoryKey categoryKey = CategoryKey.from(CATEGORY_TYPE, policyUrl);
             final SortedSet<LinkableItem> linkableItems;
-            if (nameItem.isPresent()) {
-                linkableItems = createLinkableItemSet(policyItem, item, nameItem.get());
-            } else {
-                linkableItems = createLinkableItemSet(policyItem, item);
-            }
+            linkableItems = createLinkableItemSet(policyItem, item);
             addItem(categoryItems, new CategoryItem(categoryKey, operation, notificationId, linkableItems));
         }
     }
