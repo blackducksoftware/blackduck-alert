@@ -78,6 +78,11 @@ public class BlackDuckPolicyMessageContentCollector extends MessageContentCollec
     }
 
     private void processPolicy(final List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final NotificationContent notificationContent) {
+        final ItemOperation operation = getOperationFromNotification(notificationContent);
+        if (operation == null) {
+            return;
+        }
+
         final List<JsonField<PolicyInfo>> policyFields = getFieldsOfType(notificationFields, new TypeRef<PolicyInfo>() {});
         final List<JsonField<ComponentVersionStatus>> componentFields = getFieldsOfType(notificationFields, new TypeRef<ComponentVersionStatus>() {});
         try {
@@ -85,16 +90,14 @@ public class BlackDuckPolicyMessageContentCollector extends MessageContentCollec
             final List<ComponentVersionStatus> componentVersionStatuses = getFieldValueObjectsByLabel(jsonFieldAccessor, componentFields, BlackDuckProviderContentTypes.LABEL_COMPONENT_VERSION_STATUS);
             final Map<String, SortedSet<LinkableItem>> policyItemMap = mapPolicyToComponents(componentVersionStatuses);
 
-            final ItemOperation operation = getOperationFromNotification(notificationContent);
-            if (operation == null) {
-                return;
-            }
             for (final PolicyInfo policyItem : policyItems) {
                 final String policyUrl = policyItem.policy;
                 final String policyName = policyItem.policyName;
                 final LinkableItem policyLinkableItem = new LinkableItem(BlackDuckProviderContentTypes.LABEL_POLICY_NAME, policyName, policyUrl);
-                final SortedSet<LinkableItem> applicableItems = policyItemMap.get(policyUrl);
-                addApplicableItems(categoryItems, notificationContent.getId(), policyLinkableItem, policyUrl, operation, applicableItems);
+                if (policyItemMap.containsKey(policyUrl)) {
+                    final SortedSet<LinkableItem> applicableItems = policyItemMap.get(policyUrl);
+                    addApplicableItems(categoryItems, notificationContent.getId(), policyLinkableItem, policyUrl, operation, applicableItems);
+                }
             }
         } catch (final AlertException ex) {
             logger.error("Mishandled the expected type of a notification field", ex);
@@ -127,6 +130,11 @@ public class BlackDuckPolicyMessageContentCollector extends MessageContentCollec
     }
 
     private void processPolicyOverride(final List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final NotificationContent notificationContent) {
+        final ItemOperation operation = getOperationFromNotification(notificationContent);
+        if (operation == null) {
+            return;
+        }
+
         final List<JsonField<String>> categoryFields = getStringFields(notificationFields);
         final List<LinkableItem> policyItems = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_POLICY_NAME);
         final List<LinkableItem> componentItems = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_COMPONENT_NAME);
@@ -140,11 +148,6 @@ public class BlackDuckPolicyMessageContentCollector extends MessageContentCollec
         if (firstName.isPresent() && lastName.isPresent()) {
             final String value = String.format("%s %s", firstName.get().getValue(), lastName.get().getValue());
             applicableItems.add(new LinkableItem(BlackDuckProviderContentTypes.LABEL_POLICY_OVERRIDE_BY, value));
-        }
-
-        final ItemOperation operation = getOperationFromNotification(notificationContent);
-        if (operation == null) {
-            return;
         }
 
         for (final LinkableItem policyItem : policyItems) {
