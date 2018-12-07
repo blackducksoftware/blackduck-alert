@@ -21,36 +21,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.entity.descriptor;
+package com.synopsys.integration.alert.database.repository.configuration;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import java.util.Optional;
 
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Component;
 
-@Entity
-@Table(schema = "ALERT", name = "REGISTERED_DESCRIPTORS")
-public class RegisteredDescriptorEntity extends DatabaseEntity {
-    @Column(name = "NAME")
-    private String name;
-    @Column(name = "TYPE")
-    private String type;
+import com.synopsys.integration.alert.database.entity.configuration.DefinedFieldEntity;
 
-    public RegisteredDescriptorEntity() {
-        // JPA requires default constructor definitions
-    }
-
-    public RegisteredDescriptorEntity(final String name, final String type) {
-        this.name = name;
-        this.type = type;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getType() {
-        return type;
-    }
+@Component
+public interface DefinedFieldRepository extends JpaRepository<DefinedFieldEntity, Long> {
+    Optional<DefinedFieldEntity> findFirstByKey(final String fieldKey);
 }
