@@ -31,53 +31,23 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
-import com.synopsys.integration.alert.web.controller.BaseController;
-
 @EnableWebSecurity
 @Configuration
 @Profile("ssl")
 public class SSLAuthenticationHandler extends WebSecurityConfigurerAdapter {
-
     private final HttpSessionCsrfTokenRepository csrfTokenRepository;
+    private final HttpPathManager httpPathManager;
 
     @Autowired
-    public SSLAuthenticationHandler(final HttpSessionCsrfTokenRepository csrfTokenRepository) {
+    public SSLAuthenticationHandler(final HttpSessionCsrfTokenRepository csrfTokenRepository, final HttpPathManager httpPathManager) {
         this.csrfTokenRepository = csrfTokenRepository;
+        this.httpPathManager = httpPathManager;
     }
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
-        final String[] allowedPaths = {
-            "/",
-            "/#",
-            "/favicon.ico",
-            "/fonts/**",
-            "/js/bundle.js",
-            "/js/bundle.js.map",
-            "/css/style.css",
-            "index.html",
-            BaseController.BASE_PATH + "/login",
-            BaseController.BASE_PATH + "/logout",
-            BaseController.BASE_PATH + "/about",
-            BaseController.BASE_PATH + "/system/messages/latest",
-            BaseController.BASE_PATH + "/system/setup/initial"
-        };
-
-        final String[] csrfIgnoredPaths = {
-            "/",
-            "/#",
-            "/favicon.ico",
-            "/fonts/**",
-            "/js/bundle.js",
-            "/js/bundle.js.map",
-            "/css/style.css",
-            "index.html",
-            BaseController.BASE_PATH + "/login",
-            BaseController.BASE_PATH + "/verify",
-            BaseController.BASE_PATH + "/about",
-            BaseController.BASE_PATH + "/system/messages/latest",
-            BaseController.BASE_PATH + "/system/setup/initial"
-        };
+        final String[] allowedPaths = httpPathManager.getAllowedPaths();
+        final String[] csrfIgnoredPaths = httpPathManager.getCsrfIgnoredPaths();
 
         http.requiresChannel().anyRequest().requiresSecure()
             .and().csrf().csrfTokenRepository(csrfTokenRepository).ignoringAntMatchers(csrfIgnoredPaths)

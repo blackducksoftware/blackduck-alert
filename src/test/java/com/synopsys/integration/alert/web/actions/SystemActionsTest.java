@@ -93,6 +93,8 @@ public class SystemActionsTest {
     @Test
     public void testGetCurrentSystemSetup() {
         final SystemActions systemActions = new SystemActions(systemStatusUtility, systemMessageUtility, systemInitializer);
+        final String defaultAdminPassword = "defaultPassword";
+        final boolean defaultAdminPasswordSet = true;
         final String blackDuckProviderUrl = "url";
         final Integer blackDuckConnectionTimeout = 100;
         final String blackDuckApiToken = "token";
@@ -105,7 +107,7 @@ public class SystemActionsTest {
         final String proxyUsername = "username";
         final String proxyPassword = "password";
 
-        final RequiredSystemConfiguration expected = new RequiredSystemConfiguration(blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken,
+        final RequiredSystemConfiguration expected = new RequiredSystemConfiguration(defaultAdminPassword, defaultAdminPasswordSet, blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken,
             globalEncryptionPassword, isGlobalEncryptionPasswordSet, globalEncryptionSalt, isGlobalEncryptionSaltSet,
             proxyHost, proxyPort, proxyUsername, proxyPassword);
 
@@ -131,7 +133,8 @@ public class SystemActionsTest {
     @Test
     public void testSaveRequiredInformation() {
         final SystemActions systemActions = new SystemActions(systemStatusUtility, systemMessageUtility, systemInitializer);
-
+        final String defaultAdminPassword = "defaultPassword";
+        final boolean defaultAdminPasswordSet = true;
         final String blackDuckProviderUrl = "url";
         final Integer blackDuckConnectionTimeout = 100;
         final String blackDuckApiToken = "token";
@@ -146,7 +149,7 @@ public class SystemActionsTest {
         final String proxyPassword = "password";
         final boolean proxyPasswordSet = true;
 
-        final SystemSetupModel configuration = SystemSetupModel.of(blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet,
+        final SystemSetupModel configuration = SystemSetupModel.of(defaultAdminPassword, defaultAdminPasswordSet, blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet,
             globalEncryptionPassword, isGlobalEncryptionPasswordSet, globalEncryptionSalt, isGlobalEncryptionSaltSet,
             proxyHost, proxyPort, proxyUsername, proxyPassword, proxyPasswordSet);
 
