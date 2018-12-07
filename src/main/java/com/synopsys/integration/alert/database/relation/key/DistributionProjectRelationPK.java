@@ -25,8 +25,8 @@ package com.synopsys.integration.alert.database.relation.key;
 
 import java.io.Serializable;
 
-@SuppressWarnings("serial")
 public class DistributionProjectRelationPK implements Serializable {
+    private static final long serialVersionUID = -3003966307592045026L;
     private Long commonDistributionConfigId;
     private Long projectId;
 

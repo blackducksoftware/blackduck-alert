@@ -25,8 +25,8 @@ package com.synopsys.integration.alert.database.provider.blackduck.data.relation
 
 import java.io.Serializable;
 
-@SuppressWarnings("serial")
 public class UserProjectRelationPK implements Serializable {
+    private static final long serialVersionUID = 2978750766498759769L;
     private Long blackDuckUserId;
     private Long blackDuckProjectId;
 

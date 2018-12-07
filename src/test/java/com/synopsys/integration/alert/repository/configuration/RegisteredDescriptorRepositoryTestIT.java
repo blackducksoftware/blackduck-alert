@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.AlertIntegrationTest;
-import com.synopsys.integration.alert.database.entity.descriptor.RegisteredDescriptorEntity;
+import com.synopsys.integration.alert.database.entity.configuration.RegisteredDescriptorEntity;
 import com.synopsys.integration.alert.database.repository.configuration.RegisteredDescriptorRepository;
 
 public class RegisteredDescriptorRepositoryTestIT extends AlertIntegrationTest {
@@ -38,4 +38,6 @@ public class RegisteredDescriptorRepositoryTestIT extends AlertIntegrationTest {
         final RegisteredDescriptorEntity foundEntity = foundEntityOptional.get();
         assertEquals(entity1.getName(), foundEntity.getName());
     }
+
+    // TODO onDeleteCascadeTest
 }

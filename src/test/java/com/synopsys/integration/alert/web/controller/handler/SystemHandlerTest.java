@@ -119,6 +119,8 @@ public class SystemHandlerTest {
 
     @Test
     public void testSaveWithErrors() {
+        final String defaultAdminPassword = "defaultPassword";
+        final boolean defaultAdminPasswordSet = true;
         final String blackDuckProviderUrl = "url";
         final Integer blackDuckConnectionTimeout = 100;
         final String blackDuckApiToken = "token";
@@ -133,7 +135,7 @@ public class SystemHandlerTest {
         final String proxyPassword = "password";
         final boolean proxyPasswordSet = true;
 
-        final SystemSetupModel model = SystemSetupModel.of(blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet,
+        final SystemSetupModel model = SystemSetupModel.of(defaultAdminPassword, defaultAdminPasswordSet, blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet,
             globalEncryptionPassword, isGlobalEncryptionPasswordSet, globalEncryptionSalt, isGlobalEncryptionSaltSet,
             proxyHost, proxyPort, proxyUsername, proxyPassword, proxyPasswordSet);
         Mockito.when(systemActions.isSystemInitialized()).thenReturn(Boolean.FALSE);
@@ -152,6 +154,8 @@ public class SystemHandlerTest {
 
     @Test
     public void testSave() {
+        final String defaultAdminPassword = "defaultPassword";
+        final boolean defaultAdminPasswordSet = true;
         final String blackDuckProviderUrl = "url";
         final Integer blackDuckConnectionTimeout = 100;
         final String blackDuckApiToken = "token";
@@ -166,7 +170,7 @@ public class SystemHandlerTest {
         final String proxyPassword = "password";
         final boolean proxyPasswordSet = true;
 
-        final SystemSetupModel model = SystemSetupModel.of(blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet,
+        final SystemSetupModel model = SystemSetupModel.of(defaultAdminPassword, defaultAdminPasswordSet, blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet,
             globalEncryptionPassword, isGlobalEncryptionPasswordSet, globalEncryptionSalt, isGlobalEncryptionSaltSet,
             proxyHost, proxyPort, proxyUsername, proxyPassword, proxyPasswordSet);
         Mockito.when(systemActions.isSystemInitialized()).thenReturn(Boolean.FALSE);

@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.EnumUtils;
 
-import com.synopsys.integration.alert.database.api.descriptor.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.ConfigurationFieldModel;
 
 public class FieldAccessor {
     private final Map<String, ConfigurationFieldModel> fields;
@@ -40,11 +40,6 @@ public class FieldAccessor {
     public <T extends Enum<T>> T getEnum(final String key, final Class<T> enumClass) {
         final String enumString = getString(key);
         return EnumUtils.getEnum(enumClass, enumString);
-    }
-
-    public void setValue(final String key, final Object value) {
-        final ConfigurationFieldModel field = fields.get(key);
-        field.setFieldValue(value.toString());
     }
 
 }

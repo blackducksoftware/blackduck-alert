@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.entity.descriptor;
+package com.synopsys.integration.alert.database.entity.configuration;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -30,26 +30,20 @@ import javax.persistence.Table;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 
 @Entity
-@Table(schema = "ALERT", name = "DESCRIPTOR_CONFIGS")
-public class DescriptorConfigEntity extends DatabaseEntity {
-    @Column(name = "DESCRIPTOR_ID")
-    private Long descriptorId;
-    // TODO @Column(name = "CONTEXT_ID")
-    private Long contextId;
+@Table(schema = "ALERT", name = "REGISTERED_DESCRIPTORS")
+public class RegisteredDescriptorEntity extends DatabaseEntity {
+    @Column(name = "NAME")
+    private String name;
 
-    public DescriptorConfigEntity() {
+    public RegisteredDescriptorEntity() {
         // JPA requires default constructor definitions
     }
 
-    public DescriptorConfigEntity(final Long descriptorId, final Long contextId) {
-        this.descriptorId = descriptorId;
+    public RegisteredDescriptorEntity(final String name) {
+        this.name = name;
     }
 
-    public Long getDescriptorId() {
-        return descriptorId;
-    }
-
-    public Long getContextId() {
-        return contextId;
+    public String getName() {
+        return name;
     }
 }

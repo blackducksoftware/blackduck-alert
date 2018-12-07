@@ -1,13 +1,13 @@
 package com.synopsys.integration.alert.component.scheduling;
 
 import com.synopsys.integration.alert.common.configuration.Configuration;
-import com.synopsys.integration.alert.database.api.descriptor.ConfigurationAccessor.ConfigurationModel;
+import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
 
 public class SchedulingConfiguration extends Configuration {
-    private String dailyDigestHourOfDay;
-    private String dataFrequencyDays;
+    private final String dailyDigestHourOfDay;
+    private final String dataFrequencyDays;
 
-    public SchedulingConfiguration(ConfigurationModel configurationModel) {
+    public SchedulingConfiguration(final ConfigurationModel configurationModel) {
         super(configurationModel);
 
         dailyDigestHourOfDay = getFieldAccessor().getString(SchedulingUIConfig.KEY_DAILY_DIGEST_HOUR_OF_DAY);

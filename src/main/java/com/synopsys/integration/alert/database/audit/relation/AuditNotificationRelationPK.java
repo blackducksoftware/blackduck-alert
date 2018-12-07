@@ -25,8 +25,8 @@ package com.synopsys.integration.alert.database.audit.relation;
 
 import java.io.Serializable;
 
-@SuppressWarnings("serial")
 public class AuditNotificationRelationPK implements Serializable {
+    private static final long serialVersionUID = -9015966905838645720L;
     private Long auditEntryId;
     private Long notificationId;
 

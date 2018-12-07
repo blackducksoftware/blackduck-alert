@@ -1,6 +1,6 @@
 package com.synopsys.integration.alert.common.configuration;
 
-import com.synopsys.integration.alert.database.api.descriptor.ConfigurationAccessor.ConfigurationModel;
+import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
 
 public class Configuration {
     private final Long id;

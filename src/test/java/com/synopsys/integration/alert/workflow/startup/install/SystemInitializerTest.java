@@ -12,6 +12,7 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
+import com.synopsys.integration.alert.database.api.user.UserAccessor;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.workflow.startup.SystemValidator;
 
@@ -21,6 +22,7 @@ public class SystemInitializerTest {
     private GlobalBlackDuckRepository globalBlackDuckRepository;
     private EncryptionUtility encryptionUtility;
     private SystemValidator systemValidator;
+    private UserAccessor userAccessor;
 
     @Before
     public void initialize() {
@@ -29,11 +31,13 @@ public class SystemInitializerTest {
         globalBlackDuckRepository = Mockito.mock(GlobalBlackDuckRepository.class);
         encryptionUtility = Mockito.mock(EncryptionUtility.class);
         systemValidator = Mockito.mock(SystemValidator.class);
+        userAccessor = Mockito.mock(UserAccessor.class);
+
     }
 
     @Test
     public void testIsInitiailzed() {
-        final SystemInitializer systemInitializer = new SystemInitializer(systemStatusUtility, alertProperties, globalBlackDuckRepository, encryptionUtility, systemValidator);
+        final SystemInitializer systemInitializer = new SystemInitializer(systemStatusUtility, alertProperties, globalBlackDuckRepository, encryptionUtility, systemValidator, userAccessor);
 
         assertFalse(systemInitializer.isSystemInitialized());
         Mockito.when(systemStatusUtility.isSystemInitialized()).thenReturn(Boolean.TRUE);
@@ -48,7 +52,7 @@ public class SystemInitializerTest {
         final GlobalBlackDuckConfigEntity entity = new GlobalBlackDuckConfigEntity(timeout, apiToken, url);
         Mockito.when(globalBlackDuckRepository.findAll()).thenReturn(Collections.singletonList(entity));
 
-        final SystemInitializer systemInitializer = new SystemInitializer(systemStatusUtility, alertProperties, globalBlackDuckRepository, encryptionUtility, systemValidator);
+        final SystemInitializer systemInitializer = new SystemInitializer(systemStatusUtility, alertProperties, globalBlackDuckRepository, encryptionUtility, systemValidator, userAccessor);
 
         systemInitializer.getCurrentSystemSetup();
 
@@ -63,6 +67,8 @@ public class SystemInitializerTest {
 
     @Test
     public void testSaveEncryptionException() throws Exception {
+        final String defaultAdminPassword = "defaultPassword";
+        final boolean defaultAdminPasswordSet = true;
         final String blackDuckProviderUrl = "url";
         final Integer blackDuckConnectionTimeout = 100;
         final String blackDuckApiToken = "token";
@@ -75,13 +81,13 @@ public class SystemInitializerTest {
         final String proxyUsername = "username";
         final String proxyPassword = "password";
 
-        final RequiredSystemConfiguration configuration = new RequiredSystemConfiguration(blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken,
+        final RequiredSystemConfiguration configuration = new RequiredSystemConfiguration(defaultAdminPassword, defaultAdminPasswordSet, blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken,
             globalEncryptionPassword, isGlobalEncryptionPasswordSet, globalEncryptionSalt, isGlobalEncryptionSaltSet,
             proxyHost, proxyPort, proxyUsername, proxyPassword);
 
         Mockito.doThrow(new IllegalArgumentException("bad credentials")).when(encryptionUtility).updateEncryptionFields(Mockito.anyString(), Mockito.anyString());
 
-        final SystemInitializer systemInitializer = new SystemInitializer(systemStatusUtility, alertProperties, globalBlackDuckRepository, encryptionUtility, systemValidator);
+        final SystemInitializer systemInitializer = new SystemInitializer(systemStatusUtility, alertProperties, globalBlackDuckRepository, encryptionUtility, systemValidator, userAccessor);
         systemInitializer.updateRequiredConfiguration(configuration, new HashMap<>());
         Mockito.verify(encryptionUtility).updateEncryptionFields(Mockito.anyString(), Mockito.anyString());
     }
@@ -94,7 +100,8 @@ public class SystemInitializerTest {
         final GlobalBlackDuckConfigEntity entity = new GlobalBlackDuckConfigEntity(timeout, apiToken, url);
         entity.setId(999L);
         Mockito.when(globalBlackDuckRepository.findAll()).thenReturn(Collections.singletonList(entity));
-
+        final String defaultAdminPassword = "defaultPassword";
+        final boolean defaultAdminPasswordSet = true;
         final String blackDuckProviderUrl = "url";
         final Integer blackDuckConnectionTimeout = 100;
         final String blackDuckApiToken = "token";
@@ -107,13 +114,14 @@ public class SystemInitializerTest {
         final String proxyUsername = "username";
         final String proxyPassword = "password";
 
-        final RequiredSystemConfiguration configuration = new RequiredSystemConfiguration(blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken,
+        final RequiredSystemConfiguration configuration = new RequiredSystemConfiguration(defaultAdminPassword, defaultAdminPasswordSet, blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken,
             globalEncryptionPassword, isGlobalEncryptionPasswordSet, globalEncryptionSalt, isGlobalEncryptionSaltSet,
             proxyHost, proxyPort, proxyUsername, proxyPassword);
 
-        final SystemInitializer systemInitializer = new SystemInitializer(systemStatusUtility, alertProperties, globalBlackDuckRepository, encryptionUtility, systemValidator);
+        final SystemInitializer systemInitializer = new SystemInitializer(systemStatusUtility, alertProperties, globalBlackDuckRepository, encryptionUtility, systemValidator, userAccessor);
         systemInitializer.updateRequiredConfiguration(configuration, new HashMap<>());
 
+        Mockito.verify(userAccessor).changeUserPassword(Mockito.anyString(), Mockito.anyString());
         Mockito.verify(alertProperties).setAlertProxyHost(Mockito.anyString());
         Mockito.verify(alertProperties).setAlertProxyPort(Mockito.anyString());
         Mockito.verify(alertProperties).setAlertProxyPassword(Mockito.anyString());

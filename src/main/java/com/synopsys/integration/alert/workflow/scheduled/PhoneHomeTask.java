@@ -43,8 +43,8 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.AboutReader;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.database.api.descriptor.ConfigurationAccessor;
-import com.synopsys.integration.alert.database.api.descriptor.ConfigurationAccessor.ConfigurationModel;
+import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor;
+import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.blackduck.rest.BlackduckRestConnection;
 import com.synopsys.integration.blackduck.service.HubServicesFactory;
@@ -129,7 +129,7 @@ public class PhoneHomeTask extends ScheduledTask {
         final Map<String, Integer> createdSupportedChannels = new HashMap<>();
         for (final String name : descriptorNames) {
             try {
-                final List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationsByName(name);
+                final List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationsByDescriptorName(name);
                 createdSupportedChannels.put(name, configurationModels.size());
             } catch (final AlertDatabaseConstraintException e) {
                 logger.debug("Error reading from DB when phoning home.");
