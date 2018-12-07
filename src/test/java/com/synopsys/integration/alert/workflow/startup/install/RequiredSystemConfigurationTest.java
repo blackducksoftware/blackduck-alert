@@ -10,6 +10,7 @@ public class RequiredSystemConfigurationTest {
 
     @Test
     public void testEncryptionAlreadySet() {
+        final boolean defaultAdminPasswordSet = true;
         final String blackDuckProviderUrl = "url";
         final Integer blackDuckConnectionTimeout = 100;
         final String blackDuckApiToken = "token";
@@ -20,10 +21,11 @@ public class RequiredSystemConfigurationTest {
         final String proxyUsername = "username";
         final String proxyPassword = "password";
 
-        final RequiredSystemConfiguration configuration = new RequiredSystemConfiguration(blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken,
+        final RequiredSystemConfiguration configuration = new RequiredSystemConfiguration(defaultAdminPasswordSet, blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken,
             isGlobalEncryptionPasswordSet, isGlobalEncryptionSaltSet,
             proxyHost, proxyPort, proxyUsername, proxyPassword);
 
+        assertTrue(configuration.isDefaultAdminPasswordSet());
         assertEquals(blackDuckProviderUrl, configuration.getBlackDuckProviderUrl());
         assertEquals(blackDuckConnectionTimeout, configuration.getBlackDuckConnectionTimeout());
         assertEquals(blackDuckApiToken, configuration.getBlackDuckApiToken());
@@ -39,6 +41,8 @@ public class RequiredSystemConfigurationTest {
 
     @Test
     public void testFullConstructor() {
+        final String defaultAdminPassword = "defaultPassword";
+        final boolean defaultAdminPasswordSet = true;
         final String blackDuckProviderUrl = "url";
         final Integer blackDuckConnectionTimeout = 100;
         final String blackDuckApiToken = "token";
@@ -51,10 +55,11 @@ public class RequiredSystemConfigurationTest {
         final String proxyUsername = "username";
         final String proxyPassword = "password";
 
-        final RequiredSystemConfiguration configuration = new RequiredSystemConfiguration(blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken,
+        final RequiredSystemConfiguration configuration = new RequiredSystemConfiguration(defaultAdminPassword, defaultAdminPasswordSet, blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken,
             globalEncryptionPassword, isGlobalEncryptionPasswordSet, globalEncryptionSalt, isGlobalEncryptionSaltSet,
             proxyHost, proxyPort, proxyUsername, proxyPassword);
 
+        assertTrue(configuration.isDefaultAdminPasswordSet());
         assertEquals(blackDuckProviderUrl, configuration.getBlackDuckProviderUrl());
         assertEquals(blackDuckConnectionTimeout, configuration.getBlackDuckConnectionTimeout());
         assertEquals(blackDuckApiToken, configuration.getBlackDuckApiToken());

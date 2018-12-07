@@ -72,5 +72,4 @@ public class LoginControllerTestIT extends AlertIntegrationTest {
         request.contentType(contentType);
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
-
 }
