@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import NumberInput from '../../field/input/NumberInput';
 import PasswordInput from '../../field/input/PasswordInput';
 import ReadOnlyField from '../../field/ReadOnlyField';
+import TextInput from '../../field/input/TextInput';
 import ConfigButtons from '../common/ConfigButtons';
 
 import {getConfig, testConfig, updateConfig} from '../../store/actions/config';
@@ -88,9 +89,13 @@ class BlackDuckConfiguration extends React.Component {
 
                 <form className="form-horizontal" onSubmit={this.handleSubmit}>
                     <div>
-                        <ReadOnlyField label="Url" name="blackDuckUrl" value={this.state.blackDuckUrl}
-                                       errorName="blackDuckUrlError"
-                                       errorValue={this.props.fieldErrors.blackDuckUrl}/>
+                        <TextInput id="blackDuckUrl"
+                                   label="Url"
+                                   name="blackDuckUrl"
+                                   value={this.state.blackDuckUrl}
+                                   onChange={this.handleChange}
+                                   errorName="blackDuckUrlError"
+                                   errorValue={this.props.fieldErrors.blackDuckUrl}/>
                         <PasswordInput id="blackDuckConfigurationApiToken" label="API Token" name="blackDuckApiKey" value={this.state.blackDuckApiKey} isSet={this.state.blackDuckApiKeyIsSet} onChange={this.handleChange}
                                        errorMessage={this.props.fieldErrors.apiKey || this.props.fieldErrors.blackDuckApiKey}/>
                         <NumberInput id="blackDuckConfigurationTimeout" label="Timeout" name="blackDuckTimeout" value={this.state.blackDuckTimeout} onChange={this.handleChange}/>

@@ -21,32 +21,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.relation.key;
+package com.synopsys.integration.alert.database.user;
 
-import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
 
-public class DistributionNotificationTypeRelationPK implements Serializable {
-    private static final long serialVersionUID = 8164991480684683756L;
-    private Long commonDistributionConfigId;
-    private String notificationType;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
-    public DistributionNotificationTypeRelationPK() {
-        // JPA requires default constructor definitions
-    }
+public interface RoleRepository extends JpaRepository<RoleEntity, Long> {
 
-    public Long getCommonDistributionConfigId() {
-        return commonDistributionConfigId;
-    }
+    @Query("SELECT entity.roleName FROM RoleEntity entity WHERE entity.id IN (?1)")
+    List<String> getRoleNames(final List<Long> roleIds);
 
-    public void setCommonDistributionConfigId(final Long commonDistributionConfigId) {
-        this.commonDistributionConfigId = commonDistributionConfigId;
-    }
-
-    public String getNotificationType() {
-        return notificationType;
-    }
-
-    public void setNotificationType(final String notificationType) {
-        this.notificationType = notificationType;
-    }
+    @Query("SELECT entity FROM RoleEntity entity WHERE entity.roleName IN (?1)")
+    List<RoleEntity> findRoleEntitiesByRoleName(final Collection<String> roleIds);
 }

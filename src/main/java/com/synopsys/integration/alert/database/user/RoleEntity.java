@@ -21,32 +21,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.relation.key;
+package com.synopsys.integration.alert.database.user;
 
-import java.io.Serializable;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-public class DistributionNotificationTypeRelationPK implements Serializable {
-    private static final long serialVersionUID = 8164991480684683756L;
-    private Long commonDistributionConfigId;
-    private String notificationType;
+import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 
-    public DistributionNotificationTypeRelationPK() {
+@Entity
+@Table(schema = "alert", name = "roles")
+public class RoleEntity extends DatabaseEntity {
+    @Column(name = "rolename")
+    private String roleName;
+
+    public RoleEntity() {
         // JPA requires default constructor definitions
     }
 
-    public Long getCommonDistributionConfigId() {
-        return commonDistributionConfigId;
+    public RoleEntity(final String roleName) {
+        this.roleName = roleName;
     }
 
-    public void setCommonDistributionConfigId(final Long commonDistributionConfigId) {
-        this.commonDistributionConfigId = commonDistributionConfigId;
-    }
-
-    public String getNotificationType() {
-        return notificationType;
-    }
-
-    public void setNotificationType(final String notificationType) {
-        this.notificationType = notificationType;
+    public String getRoleName() {
+        return roleName;
     }
 }

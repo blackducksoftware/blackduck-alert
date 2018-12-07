@@ -25,28 +25,28 @@ package com.synopsys.integration.alert.database.relation.key;
 
 import java.io.Serializable;
 
-public class DistributionNotificationTypeRelationPK implements Serializable {
-    private static final long serialVersionUID = 8164991480684683756L;
-    private Long commonDistributionConfigId;
-    private String notificationType;
+public class UserRoleRelationPK implements Serializable {
+    private static final long serialVersionUID = 1857555560045339402L;
+    private Long userId;
+    private Long roleId;
 
-    public DistributionNotificationTypeRelationPK() {
+    public UserRoleRelationPK() {
         // JPA requires default constructor definitions
     }
 
-    public Long getCommonDistributionConfigId() {
-        return commonDistributionConfigId;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setCommonDistributionConfigId(final Long commonDistributionConfigId) {
-        this.commonDistributionConfigId = commonDistributionConfigId;
+    public void setUserId(final Long userId) {
+        this.userId = userId;
     }
 
-    public String getNotificationType() {
-        return notificationType;
+    public Long getRoleId() {
+        return roleId;
     }
 
-    public void setNotificationType(final String notificationType) {
-        this.notificationType = notificationType;
+    public void setRoleId(final Long roleId) {
+        this.roleId = roleId;
     }
 }
