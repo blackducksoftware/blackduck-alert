@@ -48,7 +48,7 @@ public class BlackDuckPolicyMessageContentCollectorTest {
     @Test
     public void insertMultipleAndVerifyCorrectNumberOfCategoryItemsTest() throws Exception {
         final String topicName = "example";
-        final int numberOfRulesCleared = 3;
+        final int numberOfRulesCleared = 4;
         final int numberOfPoliciesOverriden = 1;
         final int policyOverlap = 1;
 
