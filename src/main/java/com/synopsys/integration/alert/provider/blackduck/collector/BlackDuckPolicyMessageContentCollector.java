@@ -78,7 +78,7 @@ public class BlackDuckPolicyMessageContentCollector extends MessageContentCollec
 
     private void processPolicy(final List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final NotificationContent notificationContent) {
         final List<JsonField<PolicyInfo>> policyFields = getFieldsOfType(notificationFields, new TypeRef<PolicyInfo>() {});
-        final List<JsonField<ComponentVersionStatus>> componentFields = getFieldsOfType(notificationFields, new TypeRef<PolicyInfo>() {});
+        final List<JsonField<ComponentVersionStatus>> componentFields = getFieldsOfType(notificationFields, new TypeRef<ComponentVersionStatus>() {});
         try {
             final List<PolicyInfo> policyItems = getFieldValueObjectsByLabel(jsonFieldAccessor, policyFields, BlackDuckProviderContentTypes.LABEL_POLICY_INFO_LIST);
             final List<ComponentVersionStatus> componentVersionStatuses = getFieldValueObjectsByLabel(jsonFieldAccessor, componentFields, BlackDuckProviderContentTypes.LABEL_COMPONENT_VERSION_STATUS);
@@ -91,7 +91,7 @@ public class BlackDuckPolicyMessageContentCollector extends MessageContentCollec
                         componentItems = policyItemMap.get(policyUrl);
                     } else {
                         componentItems = new TreeSet<>();
-                        policyItemMap.put(policyUrl, new TreeSet<>());
+                        policyItemMap.put(policyUrl, componentItems);
                     }
                     if (StringUtils.isNotBlank(versionStatus.componentName)) {
                         componentItems.add(new LinkableItem(BlackDuckProviderContentTypes.LABEL_COMPONENT_NAME, versionStatus.componentName));
