@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.SortedSet;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
@@ -18,15 +19,16 @@ import org.springframework.core.io.ClassPathResource;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
+import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.CategoryItem;
+import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.common.workflow.processor.DefaultMessageContentProcessor;
 import com.synopsys.integration.alert.common.workflow.processor.DigestMessageContentProcessor;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.workflow.filter.field.JsonExtractor;
-import com.synopsys.integration.alert.workflow.filter.field.JsonFieldAccessor;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 public class BlackDuckPolicyViolationMessageContentCollectorTest {
@@ -37,6 +39,12 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
     public void insertRuleViolationClearedNotificationTest() throws Exception {
         final BlackDuckPolicyMessageContentCollector collector = createPolicyViolationCollector();
         runSingleTest(collector, "json/policyRuleClearedNotification.json", NotificationType.RULE_VIOLATION_CLEARED);
+    }
+
+    @Test
+    public void insertRuleViolationNotificationTest() throws Exception {
+        final BlackDuckPolicyMessageContentCollector collector = createPolicyViolationCollector();
+        runSingleTest(collector, "json/policyRuleClearedNotification.json", NotificationType.RULE_VIOLATION);
     }
 
     @Test
@@ -70,13 +78,22 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
     }
 
     @Test
+    public void testOperationCircuitBreaker() throws Exception {
+        final String ruleContent = getNotificationContentFromFile("json/notification01.json");
+        final NotificationContent n0 = createNotification(ruleContent, NotificationType.BOM_EDIT);
+        final BlackDuckPolicyMessageContentCollector collector = createPolicyViolationCollector();
+        collector.insert(n0);
+        Assert.assertEquals(0, collector.collect(FormatType.DEFAULT).size());
+    }
+
+    @Test
     public void insertionExceptionTest() throws Exception {
         final BlackDuckPolicyViolationMessageContentCollector collector = createPolicyViolationCollector();
         final BlackDuckPolicyViolationMessageContentCollector spiedCollector = Mockito.spy(collector);
         final String overrideContent = getNotificationContentFromFile("json/policyOverrideNotification.json");
         final NotificationContent n0 = createNotification(overrideContent, NotificationType.POLICY_OVERRIDE);
         Mockito.doThrow(new IllegalArgumentException("Insertion Error Exception Test")).when(spiedCollector)
-            .addCategoryItems(Mockito.anyList(), Mockito.any(JsonFieldAccessor.class), Mockito.anyList(), Mockito.any(NotificationContent.class));
+            .addApplicableItems(Mockito.anyList(), Mockito.anyLong(), Mockito.any(LinkableItem.class), Mockito.anyString(), Mockito.any(ItemOperation.class), Mockito.any(SortedSet.class));
         spiedCollector.insert(n0);
         final List<AggregateMessageContent> contentList = spiedCollector.collect(FormatType.DEFAULT);
         assertTrue(contentList.isEmpty());

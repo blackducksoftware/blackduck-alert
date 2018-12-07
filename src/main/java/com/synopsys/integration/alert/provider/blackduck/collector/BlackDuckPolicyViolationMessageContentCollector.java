@@ -75,8 +75,6 @@ public class BlackDuckPolicyViolationMessageContentCollector extends BlackDuckPo
             operation = ItemOperation.DELETE;
         } else if (NotificationType.RULE_VIOLATION.name().equals(notificationType)) {
             operation = ItemOperation.ADD;
-        } else if (NotificationType.POLICY_OVERRIDE.name().equals(notificationType)) {
-            operation = ItemOperation.DELETE;
         } else {
             operation = null;
         }
