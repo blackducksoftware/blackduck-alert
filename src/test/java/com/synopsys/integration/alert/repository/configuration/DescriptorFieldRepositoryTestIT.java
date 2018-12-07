@@ -9,9 +9,9 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.AlertIntegrationTest;
-import com.synopsys.integration.alert.database.entity.descriptor.DefinedFieldEntity;
-import com.synopsys.integration.alert.database.entity.descriptor.DescriptorFieldRelation;
-import com.synopsys.integration.alert.database.entity.descriptor.RegisteredDescriptorEntity;
+import com.synopsys.integration.alert.database.entity.configuration.DefinedFieldEntity;
+import com.synopsys.integration.alert.database.entity.configuration.DescriptorFieldRelation;
+import com.synopsys.integration.alert.database.entity.configuration.RegisteredDescriptorEntity;
 import com.synopsys.integration.alert.database.repository.configuration.DefinedFieldRepository;
 import com.synopsys.integration.alert.database.repository.configuration.DescriptorFieldRepository;
 import com.synopsys.integration.alert.database.repository.configuration.RegisteredDescriptorRepository;

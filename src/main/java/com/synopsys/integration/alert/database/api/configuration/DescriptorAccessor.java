@@ -37,11 +37,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.database.entity.descriptor.ConfigContextEntity;
-import com.synopsys.integration.alert.database.entity.descriptor.DefinedFieldEntity;
-import com.synopsys.integration.alert.database.entity.descriptor.DescriptorFieldRelation;
-import com.synopsys.integration.alert.database.entity.descriptor.FieldContextRelation;
-import com.synopsys.integration.alert.database.entity.descriptor.RegisteredDescriptorEntity;
+import com.synopsys.integration.alert.database.entity.configuration.ConfigContextEntity;
+import com.synopsys.integration.alert.database.entity.configuration.DefinedFieldEntity;
+import com.synopsys.integration.alert.database.entity.configuration.DescriptorFieldRelation;
+import com.synopsys.integration.alert.database.entity.configuration.FieldContextRelation;
+import com.synopsys.integration.alert.database.entity.configuration.RegisteredDescriptorEntity;
 import com.synopsys.integration.alert.database.repository.configuration.ConfigContextRepository;
 import com.synopsys.integration.alert.database.repository.configuration.DefinedFieldRepository;
 import com.synopsys.integration.alert.database.repository.configuration.DescriptorFieldRepository;

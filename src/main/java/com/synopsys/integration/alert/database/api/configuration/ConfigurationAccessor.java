@@ -41,11 +41,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.synopsys.integration.alert.database.entity.descriptor.ConfigContextEntity;
-import com.synopsys.integration.alert.database.entity.descriptor.DefinedFieldEntity;
-import com.synopsys.integration.alert.database.entity.descriptor.DescriptorConfigEntity;
-import com.synopsys.integration.alert.database.entity.descriptor.FieldValueEntity;
-import com.synopsys.integration.alert.database.entity.descriptor.RegisteredDescriptorEntity;
+import com.synopsys.integration.alert.database.entity.configuration.ConfigContextEntity;
+import com.synopsys.integration.alert.database.entity.configuration.DefinedFieldEntity;
+import com.synopsys.integration.alert.database.entity.configuration.DescriptorConfigEntity;
+import com.synopsys.integration.alert.database.entity.configuration.FieldValueEntity;
+import com.synopsys.integration.alert.database.entity.configuration.RegisteredDescriptorEntity;
 import com.synopsys.integration.alert.database.repository.configuration.ConfigContextRepository;
 import com.synopsys.integration.alert.database.repository.configuration.DefinedFieldRepository;
 import com.synopsys.integration.alert.database.repository.configuration.DescriptorConfigRepository;

@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.entity.descriptor;
+package com.synopsys.integration.alert.database.entity.configuration;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -30,20 +30,27 @@ import javax.persistence.Table;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 
 @Entity
-@Table(schema = "ALERT", name = "REGISTERED_DESCRIPTORS")
-public class RegisteredDescriptorEntity extends DatabaseEntity {
-    @Column(name = "NAME")
-    private String name;
+@Table(schema = "ALERT", name = "DEFINED_FIELDS")
+public class DefinedFieldEntity extends DatabaseEntity {
+    @Column(name = "SOURCE_KEY")
+    private String key;
+    @Column(name = "SENSITIVE")
+    private Boolean sensitive;
 
-    public RegisteredDescriptorEntity() {
+    public DefinedFieldEntity() {
         // JPA requires default constructor definitions
     }
 
-    public RegisteredDescriptorEntity(final String name) {
-        this.name = name;
+    public DefinedFieldEntity(final String key, final Boolean sensitive) {
+        this.key = key;
+        this.sensitive = sensitive;
     }
 
-    public String getName() {
-        return name;
+    public String getKey() {
+        return key;
+    }
+
+    public Boolean getSensitive() {
+        return sensitive;
     }
 }

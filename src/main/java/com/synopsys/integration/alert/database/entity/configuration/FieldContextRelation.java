@@ -1,13 +1,22 @@
-package com.synopsys.integration.alert.database.entity.descriptor;
+package com.synopsys.integration.alert.database.entity.configuration;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.Table;
+
+import com.synopsys.integration.alert.database.relation.key.FieldContextRelationPK;
 
 @Entity
-// TODO @Table(schema = "ALERT", name = "FIELD_CONTEXTS")
+@IdClass(FieldContextRelationPK.class)
+@Table(schema = "ALERT", name = "FIELD_CONTEXTS")
 public class FieldContextRelation {
-    // TODO @Column(name = "FIELD_ID")
+    @Id
+    @Column(name = "FIELD_ID")
     private Long fieldId;
-    // TODO @Column(name = "CONTEXT_ID")
+    @Id
+    @Column(name = "CONTEXT_ID")
     private Long contextId;
 
     public FieldContextRelation() {
