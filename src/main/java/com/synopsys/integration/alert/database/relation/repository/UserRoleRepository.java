@@ -21,32 +21,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.relation.key;
+package com.synopsys.integration.alert.database.relation.repository;
 
-import java.io.Serializable;
+import java.util.List;
 
-public class DistributionNotificationTypeRelationPK implements Serializable {
-    private static final long serialVersionUID = 8164991480684683756L;
-    private Long commonDistributionConfigId;
-    private String notificationType;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-    public DistributionNotificationTypeRelationPK() {
-        // JPA requires default constructor definitions
-    }
+import com.synopsys.integration.alert.database.relation.UserRoleRelation;
+import com.synopsys.integration.alert.database.relation.key.UserRoleRelationPK;
 
-    public Long getCommonDistributionConfigId() {
-        return commonDistributionConfigId;
-    }
+public interface UserRoleRepository extends JpaRepository<UserRoleRelation, UserRoleRelationPK> {
 
-    public void setCommonDistributionConfigId(final Long commonDistributionConfigId) {
-        this.commonDistributionConfigId = commonDistributionConfigId;
-    }
+    // find all role ids for a user
+    List<UserRoleRelation> findAllByUserId(final Long userId);
 
-    public String getNotificationType() {
-        return notificationType;
-    }
+    // find all user ids for a role
+    List<UserRoleRelation> findAllByRoleId(final Long roleId);
 
-    public void setNotificationType(final String notificationType) {
-        this.notificationType = notificationType;
-    }
+    // delete the relations by user id
+    void deleteAllByUserId(final Long userId);
 }

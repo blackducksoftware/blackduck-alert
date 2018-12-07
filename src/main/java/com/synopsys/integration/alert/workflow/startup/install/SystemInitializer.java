@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
+import com.synopsys.integration.alert.database.api.user.UserAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
@@ -49,15 +51,17 @@ public class SystemInitializer {
     private final GlobalBlackDuckRepository globalBlackDuckRepository;
     private final EncryptionUtility encryptionUtility;
     private final SystemValidator systemValidator;
+    private final UserAccessor userAccessor;
 
     @Autowired
     public SystemInitializer(final SystemStatusUtility systemStatusUtility, final AlertProperties alertProperties, final GlobalBlackDuckRepository globalBlackDuckRepository, final EncryptionUtility encryptionUtility,
-        final SystemValidator systemValidator) {
+        final SystemValidator systemValidator, final UserAccessor userAccessor) {
         this.systemStatusUtility = systemStatusUtility;
         this.alertProperties = alertProperties;
         this.globalBlackDuckRepository = globalBlackDuckRepository;
         this.encryptionUtility = encryptionUtility;
         this.systemValidator = systemValidator;
+        this.userAccessor = userAccessor;
     }
 
     public boolean isSystemInitialized() {
@@ -81,7 +85,9 @@ public class SystemInitializer {
             blackDuckApiToken = blackDuckEntity.getBlackDuckApiKey();
         }
 
-        return new RequiredSystemConfiguration(blackDuckUrl,
+        return new RequiredSystemConfiguration(
+            true,
+            blackDuckUrl,
             blackDuckConnectionTimeout,
             blackDuckApiToken,
             encryptionUtility.isPasswordSet(),
@@ -136,5 +142,8 @@ public class SystemInitializer {
             blackDuckConfigToSave.setId(blackDuckConfigEntity.get().getId());
         }
         globalBlackDuckRepository.save(blackDuckConfigToSave);
+        if (StringUtils.isNotBlank(requiredSystemConfiguration.getDefaultAdminPassword())) {
+            userAccessor.changeUserPassword(UserAccessor.DEFAULT_ADMIN_USER, requiredSystemConfiguration.getDefaultAdminPassword());
+        }
     }
 }
