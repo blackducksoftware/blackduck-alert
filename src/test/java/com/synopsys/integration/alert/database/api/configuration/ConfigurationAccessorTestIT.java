@@ -59,10 +59,11 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
     public void cleanup() throws AlertDatabaseConstraintException {
         descriptorAccessor.unregisterDescriptor(DESCRIPTOR_NAME);
 
-        registeredDescriptorRepository.deleteAll();
-        definedFieldRepository.deleteAll();
-        descriptorConfigsRepository.deleteAll();
-        fieldValueRepository.deleteAll();
+        registeredDescriptorRepository.deleteAllInBatch();
+        definedFieldRepository.deleteAllInBatch();
+        configContextRepository.deleteAllInBatch();
+        descriptorConfigsRepository.deleteAllInBatch();
+        // No need to delete relations as they will be deleted by the tables they reference (CASCADE)
     }
 
     @Test

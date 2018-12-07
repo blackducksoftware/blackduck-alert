@@ -62,7 +62,7 @@ public class DescriptorFieldRepositoryTestIT extends AlertIntegrationTest {
         assertEquals(2, foundList1.size());
 
         // Should find a relation to field 1
-        final List<DescriptorFieldRelation> foundList2 = descriptorFieldRepository.findByDescriptorId(savedRegisteredDescriptorEntity1.getId());
+        final List<DescriptorFieldRelation> foundList2 = descriptorFieldRepository.findByDescriptorId(savedRegisteredDescriptorEntity2.getId());
         assertEquals(1, foundList2.size());
     }
 

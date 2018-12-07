@@ -65,7 +65,7 @@ public class DefinedFieldRepositoryTestIT extends AlertIntegrationTest {
         descriptorFieldRepository.save(descriptorFieldRelation);
         assertEquals(1, descriptorFieldRepository.findAll().size());
 
-        definedFieldRepository.deleteById(savedRegisteredDescriptorEntity.getId());
+        definedFieldRepository.deleteById(savedDefinedFieldEntity.getId());
         definedFieldRepository.flush();
         assertEquals(0, descriptorFieldRepository.findAll().size());
     }

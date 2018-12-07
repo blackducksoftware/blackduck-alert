@@ -55,7 +55,7 @@ public class FieldContextRepositoryTestIT extends AlertIntegrationTest {
         fieldContextRepository.save(fieldContextRelation1);
         fieldContextRepository.save(fieldContextRelation2);
         fieldContextRepository.save(fieldContextRelation3);
-        assertEquals(3, configContextRepository.findAll().size());
+        assertEquals(3, fieldContextRepository.findAll().size());
 
         final List<FieldContextRelation> foundList1 = fieldContextRepository.findByContextId(savedContextEntity1.getId());
         assertEquals(2, foundList1.size());
@@ -84,12 +84,12 @@ public class FieldContextRepositoryTestIT extends AlertIntegrationTest {
         fieldContextRepository.save(fieldContextRelation1);
         fieldContextRepository.save(fieldContextRelation2);
         fieldContextRepository.save(fieldContextRelation3);
-        assertEquals(3, configContextRepository.findAll().size());
+        assertEquals(3, fieldContextRepository.findAll().size());
 
         final List<FieldContextRelation> foundList1 = fieldContextRepository.findByFieldId(savedFieldEntity1.getId());
         assertEquals(2, foundList1.size());
 
-        final List<FieldContextRelation> foundList2 = fieldContextRepository.findByContextId(savedFieldEntity2.getId());
+        final List<FieldContextRelation> foundList2 = fieldContextRepository.findByFieldId(savedFieldEntity2.getId());
         assertEquals(1, foundList2.size());
     }
 }
