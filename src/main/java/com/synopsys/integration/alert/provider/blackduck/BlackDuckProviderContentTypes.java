@@ -163,9 +163,9 @@ public class BlackDuckProviderContentTypes {
             Arrays.asList(createJsonPath("$.%s", CONFIG_MAPPING_CONFIGURED_PROJECTS), createJsonPath("$.%s", CONFIG_MAPPING_PROJECT_NAME_PATTERN))),
         createStringField(createJsonPath("$.%s.%s", JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_VERSION_NAME), JSON_FIELD_PROJECT_VERSION_NAME, FieldContentIdentifier.SUB_TOPIC, LABEL_PROJECT_VERSION_NAME),
         createStringField(createJsonPath("$.%s.%s", JSON_FIELD_CONTENT, JSON_FIELD_PROJECT_VERSION), JSON_FIELD_PROJECT_VERSION, FieldContentIdentifier.SUB_TOPIC_URL, LABEL_PROJECT_VERSION_NAME + JsonField.LABEL_URL_SUFFIX),
-        createObjectField(createJsonPath("$.%s", JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_VERSION_STATUSES), JSON_FIELD_COMPONENT_VERSION_STATUSES, FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_VERSION_STATUS,
+        createObjectField(createJsonPath("$.%s.%s", JSON_FIELD_CONTENT, JSON_FIELD_COMPONENT_VERSION_STATUSES), JSON_FIELD_COMPONENT_VERSION_STATUSES, FieldContentIdentifier.CATEGORY_ITEM, LABEL_COMPONENT_VERSION_STATUS,
             new TypeRef<List<ComponentVersionStatus>>() {}),
-        createObjectField(createJsonPath("$.%s", JSON_FIELD_CONTENT, JSON_FIELD_POLICY_INFOS), JSON_FIELD_POLICY_INFOS, FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_INFO_LIST, new TypeRef<List<PolicyInfo>>() {})
+        createObjectField(createJsonPath("$.%s.%s", JSON_FIELD_CONTENT, JSON_FIELD_POLICY_INFOS), JSON_FIELD_POLICY_INFOS, FieldContentIdentifier.CATEGORY_ITEM, LABEL_POLICY_INFO_LIST, new TypeRef<List<PolicyInfo>>() {})
     );
     public static final ProviderContentType RULE_VIOLATION = new ProviderContentType(
         NotificationType.RULE_VIOLATION.name(),
