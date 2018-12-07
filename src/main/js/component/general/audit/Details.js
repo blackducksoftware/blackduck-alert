@@ -113,7 +113,7 @@ class Details extends Component {
 
     render() {
         const jobTableOptions = {
-            defaultSortName: 'timeCreated',
+            defaultSortName: 'timeLastSent',
             defaultSortOrder: 'desc',
             btnGroup: this.createCustomButtonGroup,
             noDataText: 'No events',
@@ -171,7 +171,8 @@ class Details extends Component {
                                         <TableHeaderColumn dataField="timeLastSent" dataSort columnTitle columnClassName="tableCell">Time Last Sent</TableHeaderColumn>
                                         <TableHeaderColumn dataField="status" dataSort columnClassName="tableCell" dataFormat={this.statusColumnDataFormat}>Status</TableHeaderColumn>
                                         <TableHeaderColumn dataField="" width="48" expandable={false} columnClassName="tableCell" dataFormat={this.resendButton}/>
-                                        <TableHeaderColumn dataField="id" isKey hidden>Job Id</TableHeaderColumn>
+                                        <TableHeaderColumn dataField="configId" hidden>Job Id</TableHeaderColumn>
+                                        <TableHeaderColumn dataField="id" isKey hidden>Audit Id</TableHeaderColumn>
                                     </BootstrapTable>
                                 </div>
                             </Tab>

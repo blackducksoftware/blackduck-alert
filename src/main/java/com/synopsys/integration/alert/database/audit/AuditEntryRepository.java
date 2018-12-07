@@ -24,12 +24,17 @@
 package com.synopsys.integration.alert.database.audit;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 public interface AuditEntryRepository extends JpaRepository<AuditEntryEntity, Long> {
     AuditEntryEntity findFirstByCommonConfigIdOrderByTimeLastSentDesc(final Long commonConfigId);
 
     List<AuditEntryEntity> findByCommonConfigId(final Long commonConfigId);
+
+    @Query(value = "SELECT entity FROM AuditEntryEntity entity JOIN entity.auditNotificationRelations relation ON entity.id = relation.auditEntryId WHERE entity.commonConfigId = ?2 AND relation.notificationContent.id = ?1")
+    Optional<AuditEntryEntity> findMatchingAudit(Long notificationId, Long commonConfigId);
 
 }
