@@ -42,6 +42,7 @@ import com.synopsys.integration.alert.database.entity.configuration.DefinedField
 import com.synopsys.integration.alert.database.entity.configuration.DescriptorFieldRelation;
 import com.synopsys.integration.alert.database.entity.configuration.FieldContextRelation;
 import com.synopsys.integration.alert.database.entity.configuration.RegisteredDescriptorEntity;
+import com.synopsys.integration.alert.database.relation.key.DescriptorFieldRelationPK;
 import com.synopsys.integration.alert.database.repository.configuration.ConfigContextRepository;
 import com.synopsys.integration.alert.database.repository.configuration.DefinedFieldRepository;
 import com.synopsys.integration.alert.database.repository.configuration.DescriptorFieldRepository;
@@ -146,7 +147,7 @@ public class DescriptorAccessor {
         return descriptorField;
     }
 
-    public DefinedFieldModel updateFieldKey(final String oldKey, final String newKey) throws AlertDatabaseConstraintException {
+    public DefinedFieldModel updateDefinedFieldKey(final String oldKey, final String newKey) throws AlertDatabaseConstraintException {
         if (StringUtils.isEmpty(oldKey)) {
             throw new AlertDatabaseConstraintException("The old field key cannot be empty");
         }
@@ -160,6 +161,41 @@ public class DescriptorAccessor {
 
         final Set<ConfigContextEnum> contextEnums = getContextsForFieldId(savedDefinedFieldEntity.getId());
         return new DefinedFieldModel(savedDefinedFieldEntity.getKey(), contextEnums, savedDefinedFieldEntity.getSensitive());
+    }
+
+    /**
+     * @return true if the descriptor field was present
+     */
+    public boolean removeDescriptorField(final Long descriptorId, final DefinedFieldModel descriptorField) throws AlertDatabaseConstraintException {
+        final RegisteredDescriptorEntity descriptor = findDescriptorById(descriptorId);
+        if (descriptorField == null) {
+            throw new AlertDatabaseConstraintException("The descriptor field cannot be null");
+        }
+
+        if (StringUtils.isEmpty(descriptorField.getKey())) {
+            throw new AlertDatabaseConstraintException("The field key cannot be empty");
+        }
+        final DefinedFieldEntity definedFieldEntity;
+        try {
+            definedFieldEntity = findFieldByKey(descriptorField.getKey());
+        } catch (final AlertDatabaseConstraintException e) {
+            return false;
+        }
+        final Long fieldId = definedFieldEntity.getId();
+        final DescriptorFieldRelationPK relationPK = new DescriptorFieldRelationPK(descriptor.getId(), fieldId);
+        final Optional<DescriptorFieldRelation> optionalDescriptorFieldRelation = descriptorFieldRepository.findById(relationPK);
+        if (optionalDescriptorFieldRelation.isPresent()) {
+            final DescriptorFieldRelation descriptorFieldRelation = optionalDescriptorFieldRelation.get();
+            descriptorFieldRepository.delete(descriptorFieldRelation);
+            final boolean fieldIsNotConfiguredForAnyDescriptors = descriptorFieldRepository
+                                                                          .findByFieldId(fieldId)
+                                                                          .isEmpty();
+            if (fieldIsNotConfiguredForAnyDescriptors) {
+                definedFieldRepository.deleteById(fieldId);
+            }
+            return true;
+        }
+        return false;
     }
 
     /**

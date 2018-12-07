@@ -63,6 +63,6 @@ public class ConfigContextTestIT extends AlertIntegrationTest {
 
         configContextRepository.deleteById(savedConfigContextEntity.getId());
         configContextRepository.flush();
-        assertEquals(0, descriptorConfigRepository);
+        assertEquals(0, descriptorConfigRepository.findAll().size());
     }
 }
