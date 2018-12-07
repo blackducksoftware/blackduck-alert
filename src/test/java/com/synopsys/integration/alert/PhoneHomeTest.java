@@ -8,7 +8,7 @@ import java.util.Optional;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,18 +24,18 @@ import com.synopsys.integration.alert.mock.entity.MockCommonDistributionEntity;
 import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
 import com.synopsys.integration.blackduck.rest.BlackduckRestConnection;
 import com.synopsys.integration.blackduck.service.HubServicesFactory;
+import com.synopsys.integration.log.LogLevel;
+import com.synopsys.integration.log.PrintStreamIntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.phonehome.PhoneHomeCallable;
 import com.synopsys.integration.phonehome.PhoneHomeRequestBody;
-import com.synopsys.integration.test.annotation.HubConnectionTest;
-import com.synopsys.integration.test.tool.TestLogger;
 
 public class PhoneHomeTest {
 
     private static final Logger logger = LoggerFactory.getLogger(PhoneHomeTest.class);
 
     @Test
-    @Category(HubConnectionTest.class)
+    @Tag(TestTags.CUSTOM_BLACKDUCK_CONNECTION)
     public void testProductVersion() throws AlertException, IOException {
         final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(new TestAlertProperties());
         final CommonDistributionRepository commonDistributionRepository = Mockito.mock(CommonDistributionRepository.class);
@@ -45,7 +45,7 @@ public class PhoneHomeTest {
         Mockito.when(aboutReader.getProductVersion()).thenReturn(productVersion);
         final PhoneHomeTask phoneHome = new PhoneHomeTask(null, globalProperties, aboutReader, commonDistributionRepository);
 
-        try (final BlackduckRestConnection restConnection = globalProperties.createRestConnection(new TestLogger()).get()) {
+        try (final BlackduckRestConnection restConnection = globalProperties.createRestConnection(new PrintStreamIntLogger(System.out, LogLevel.INFO)).get()) {
             final HubServicesFactory hubServicesFactory = globalProperties.createBlackDuckServicesFactory(restConnection, new Slf4jIntLogger(logger));
             final Optional<PhoneHomeCallable> callable = phoneHome.createPhoneHomeCallable(hubServicesFactory);
             if (callable.isPresent()) {
@@ -70,7 +70,7 @@ public class PhoneHomeTest {
         final String productVersion = "test";
         Mockito.when(aboutReader.getProductVersion()).thenReturn(productVersion);
         final PhoneHomeTask phoneHome = new PhoneHomeTask(null, globalProperties, aboutReader, commonDistributionRepository);
-        try (final BlackduckRestConnection restConnection = globalProperties.createRestConnection(new TestLogger()).get()) {
+        try (final BlackduckRestConnection restConnection = globalProperties.createRestConnection(new PrintStreamIntLogger(System.out, LogLevel.INFO)).get()) {
             final HubServicesFactory hubServicesFactory = globalProperties.createBlackDuckServicesFactory(restConnection, new Slf4jIntLogger(logger));
             final Optional<PhoneHomeCallable> callable = phoneHome.createPhoneHomeCallable(hubServicesFactory);
             if (callable.isPresent()) {
