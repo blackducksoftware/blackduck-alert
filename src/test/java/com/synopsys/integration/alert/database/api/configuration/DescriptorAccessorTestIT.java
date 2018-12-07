@@ -23,7 +23,7 @@ import com.synopsys.integration.alert.database.repository.configuration.Descript
 import com.synopsys.integration.alert.database.repository.configuration.FieldContextRepository;
 import com.synopsys.integration.alert.database.repository.configuration.RegisteredDescriptorRepository;
 
-public class DescriptorAccessorTest extends AlertIntegrationTest {
+public class DescriptorAccessorTestIT extends AlertIntegrationTest {
     public static final String DESCRIPTOR_NAME = "Test Descriptor";
 
     @Autowired
