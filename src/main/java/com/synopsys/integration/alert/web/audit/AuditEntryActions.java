@@ -129,8 +129,6 @@ public class AuditEntryActions {
     }
 
     public AlertPagedModel<AuditEntryModel> resendNotification(final Long notificationdId, final Long commonConfigId) throws IntegrationException {
-        //TODO remove log
-        logger.error("Resending notification {} with job id {}", notificationdId, commonConfigId);
         final Optional<NotificationContent> notificationContentOptional = notificationManager.findById(notificationdId);
         if (!notificationContentOptional.isPresent()) {
             throw new AlertNotificationPurgedException("No notification with this id exists.");
@@ -153,15 +151,11 @@ public class AuditEntryActions {
         }
         distributionEvents.forEach(event -> {
             final Long commonDistributionId = event.getCommonDistributionConfigId();
-            //TODO remove log
-            logger.error("Re-sending notification event  {} with job id {}", notificationContent.getId(), commonDistributionId);
             Long auditId = null;
             final Optional<AuditEntryEntity> auditEntryEntity = auditEntryRepository.findMatchingAudit(notificationContent.getId(), commonDistributionId);
             final Map<Long, Long> notificationIdToAuditId = new HashMap<>();
             if (auditEntryEntity.isPresent()) {
                 auditId = auditEntryEntity.get().getId();
-                //TODO remove log
-                logger.error("Re-sending notification event with auditId {}", auditId);
             }
             notificationIdToAuditId.put(notificationContent.getId(), auditId);
             event.setNotificationIdToAuditId(notificationIdToAuditId);
