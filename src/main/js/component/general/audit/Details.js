@@ -36,18 +36,6 @@ class Details extends Component {
         return (defaultValue);
     }
 
-    statusColumnDataFormat(cell) {
-        let statusClass = '';
-        if (cell === 'Pending') {
-            statusClass = 'statusPending';
-        } else if (cell === 'Success') {
-            statusClass = 'statusSuccess';
-        } else if (cell === 'Failure') {
-            statusClass = 'statusFailure';
-        }
-        return <div className={statusClass} aria-hidden>{cell}</div>;
-    }
-
     expandComponent(row) {
         let errorMessage = null;
         if (row.errorMessage) {
@@ -63,52 +51,11 @@ class Details extends Component {
 
     onResendClick(currentRowSelected) {
         const currentEntry = currentRowSelected || this.state.currentRowSelected;
-
-        this.setState({
-            message: 'Sending...',
-            inProgress: true
-        });
-
-        const resendUrl = `/alert/api/audit/${currentEntry.id}/resend`;
-        const {csrfToken} = this.props;
-
-        fetch(resendUrl, {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
-            }
-        }).then((response) => {
-            this.setState({
-                message: 'Completed',
-                inProgress: false
-            });
-            if (!response.ok) {
-                switch (response.status) {
-                    case 401:
-                    case 403:
-                        this.props.logout();
-                        return response.json().then((json) => {
-                            this.setState({message: json.message});
-                        });
-                }
-            }
-            return response.json().then((json) => {
-                setTimeout(function () {
-                    this.setState({message: ''});
-                }.bind(this), 3000);
-                this.setEntriesFromArray(JSON.parse(json.message));
-            });
-        }).catch(console.error);
+        this.props.resendNotification(this.props.currentEntry.id, currentEntry.configId)
     }
 
     resendButton(cell, row) {
-        if (row.content) {
-            return <RefreshTableCellFormatter handleButtonClicked={this.onResendClick} currentRowSelected={row} buttonText="Re-send"/>;
-        } else {
-            return <div className="editJobButtonDisabled"><span className="fa fa-refresh"/></div>
-        }
+        return (<RefreshTableCellFormatter handleButtonClicked={this.onResendClick} currentRowSelected={row} buttonText="Re-send"/>);
     }
 
     render() {
@@ -169,7 +116,7 @@ class Details extends Component {
                                         <TableHeaderColumn dataField="name" dataSort columnTitle columnClassName="tableCell">Distribution Job</TableHeaderColumn>
                                         <TableHeaderColumn dataField="eventType" dataSort columnClassName="tableCell" dataFormat={this.getEventType}>Event Type</TableHeaderColumn>
                                         <TableHeaderColumn dataField="timeLastSent" dataSort columnTitle columnClassName="tableCell">Time Last Sent</TableHeaderColumn>
-                                        <TableHeaderColumn dataField="status" dataSort columnClassName="tableCell" dataFormat={this.statusColumnDataFormat}>Status</TableHeaderColumn>
+                                        <TableHeaderColumn dataField="status" dataSort columnClassName="tableCell" dataFormat={this.props.statusFormat}>Status</TableHeaderColumn>
                                         <TableHeaderColumn dataField="" width="48" expandable={false} columnClassName="tableCell" dataFormat={this.resendButton}/>
                                         <TableHeaderColumn dataField="configId" hidden>Job Id</TableHeaderColumn>
                                         <TableHeaderColumn dataField="id" isKey hidden>Audit Id</TableHeaderColumn>

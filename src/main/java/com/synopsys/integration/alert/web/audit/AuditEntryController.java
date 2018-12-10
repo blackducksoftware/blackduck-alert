@@ -58,8 +58,8 @@ public class AuditEntryController extends BaseController {
     }
 
     @PostMapping(value = "/{id}/resend")
-    public ResponseEntity<String> post(@PathVariable(value = "id") final Long id) {
-        return auditEntryHandler.resendNotification(id);
+    public ResponseEntity<String> post(@PathVariable(value = "id") final Long notificationdId, @RequestParam(value = "commonConfigId", required = false) final Long commonConfigId) {
+        return auditEntryHandler.resendNotification(notificationdId, commonConfigId);
     }
 
 }
