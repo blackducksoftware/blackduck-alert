@@ -64,14 +64,9 @@ public class ChannelTemplateManager {
         final String destination = event.getDestination();
         if (event instanceof DistributionEvent) {
             final DistributionEvent distributionEvent = (DistributionEvent) event;
-            logger.error("Sending {} notifications", distributionEvent.getContent().getCategoryItemList().size());
 
             final Map<Long, Long> notificationIdToAuditId = auditUtility.createAuditEntry(distributionEvent.getNotificationIdToAuditId(), distributionEvent.getCommonDistributionConfigId(), distributionEvent.getContent());
             distributionEvent.setNotificationIdToAuditId(notificationIdToAuditId);
-            //TODO delete this logging stream
-            notificationIdToAuditId.entrySet().stream().forEach(longLongEntry -> {
-                logger.error("Sending event notification {} to audit {} with job {}", longLongEntry.getKey(), longLongEntry.getValue(), distributionEvent.getCommonDistributionConfigId());
-            });
             final String jsonMessage = gson.toJson(distributionEvent);
             jmsTemplate.convertAndSend(destination, jsonMessage);
         } else {

@@ -28,6 +28,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -38,7 +40,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
-import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
 
 @Component
@@ -56,10 +57,12 @@ public class AuditUtility {
     @Transactional
     public Map<Long, Long> createAuditEntry(final Map<Long, Long> existingNotificationIdToAuditId, final Long commonDistributionId, final AggregateMessageContent content) {
         final Map<Long, Long> notificationIdToAuditId = new HashMap<>();
-        for (final CategoryItem item : content.getCategoryItemList()) {
+        final Set<Long> notificationIds = content.getCategoryItemList().stream()
+                                              .map(item -> item.getNotificationId())
+                                              .collect(Collectors.toSet());
+        for (final Long notificationId : notificationIds) {
             AuditEntryEntity auditEntryEntity = new AuditEntryEntity(commonDistributionId, new Date(System.currentTimeMillis()), null, null, null, null);
 
-            final Long notificationId = item.getNotificationId();
             if (null != existingNotificationIdToAuditId && !existingNotificationIdToAuditId.isEmpty()) {
                 final Long auditEntryId = existingNotificationIdToAuditId.get(notificationId);
                 if (null != auditEntryId) {
@@ -91,8 +94,6 @@ public class AuditUtility {
                 auditEntryEntity.setErrorStackTrace(null);
                 auditEntryEntity.setTimeLastSent(new Date(System.currentTimeMillis()));
                 auditEntryRepository.save(auditEntryEntity);
-                //TODO remove log
-                logger.error("Successful Audit entry id {}, time {}", auditEntryId, auditEntryEntity.getTimeLastSent());
             } catch (final Exception e) {
                 logger.error(e.getMessage(), e);
             }
