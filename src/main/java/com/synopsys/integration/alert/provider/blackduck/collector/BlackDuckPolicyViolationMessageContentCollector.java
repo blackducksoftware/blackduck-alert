@@ -100,8 +100,9 @@ public class BlackDuckPolicyViolationMessageContentCollector extends BlackDuckPo
             operation = ItemOperation.ADD;
         } else {
             operation = null;
+            logger.error("Unrecognized notification type: The notification type '{}' is not valid for this collector.", notificationType);
         }
-        logger.error("Unrecognized notification type: The notification type '{}' is not valid for this collector.", notificationType);
+
         return operation;
     }
 
