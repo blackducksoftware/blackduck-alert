@@ -31,6 +31,7 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.web.controller.handler.ControllerHandler;
+import com.synopsys.integration.alert.web.exception.AlertJobMissingException;
 import com.synopsys.integration.alert.web.exception.AlertNotificationPurgedException;
 import com.synopsys.integration.alert.web.model.AlertPagedModel;
 import com.synopsys.integration.exception.IntegrationException;
@@ -55,15 +56,17 @@ public class AuditEntryHandler extends ControllerHandler {
         return auditEntryActions.get(id);
     }
 
-    public ResponseEntity<String> resendNotification(final Long id) {
+    public ResponseEntity<String> resendNotification(final Long notificationdId, final Long commonConfigId) {
         AlertPagedModel<AuditEntryModel> auditEntries = null;
         try {
-            auditEntries = auditEntryActions.resendNotification(id);
-            return createResponse(HttpStatus.OK, id, gson.toJson(auditEntries));
+            auditEntries = auditEntryActions.resendNotification(notificationdId, commonConfigId);
+            return createResponse(HttpStatus.OK, notificationdId, gson.toJson(auditEntries));
         } catch (final AlertNotificationPurgedException e) {
-            return createResponse(HttpStatus.GONE, id, e.getMessage());
+            return createResponse(HttpStatus.GONE, notificationdId, e.getMessage());
+        } catch (final AlertJobMissingException e) {
+            return createResponse(HttpStatus.GONE, commonConfigId, e.getMessage());
         } catch (final IntegrationException e) {
-            return createResponse(HttpStatus.BAD_REQUEST, id, e.getMessage());
+            return createResponse(HttpStatus.BAD_REQUEST, notificationdId, e.getMessage());
         }
     }
 

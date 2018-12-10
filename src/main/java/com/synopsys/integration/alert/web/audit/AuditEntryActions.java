@@ -27,7 +27,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -45,13 +47,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.synopsys.integration.alert.channel.ChannelTemplateManager;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
 import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.channel.JobConfigReader;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
+import com.synopsys.integration.alert.web.exception.AlertJobMissingException;
+import com.synopsys.integration.alert.web.exception.AlertNotificationPurgedException;
 import com.synopsys.integration.alert.web.model.AlertPagedModel;
 import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.web.model.NotificationConfig;
@@ -125,55 +128,46 @@ public class AuditEntryActions {
         return null;
     }
 
-    public AlertPagedModel<AuditEntryModel> resendNotification(final Long notificationdId) throws IntegrationException {
-        //TODO specific Job resend
+    public AlertPagedModel<AuditEntryModel> resendNotification(final Long notificationdId, final Long commonConfigId) throws IntegrationException {
+        //TODO remove log
+        logger.error("Resending notification {} with job id {}", notificationdId, commonConfigId);
         final Optional<NotificationContent> notificationContentOptional = notificationManager.findById(notificationdId);
         if (!notificationContentOptional.isPresent()) {
-            throw new AlertException("No notification with the provided id exists.");
+            throw new AlertNotificationPurgedException("No notification with this id exists.");
         }
         final NotificationContent notificationContent = notificationContentOptional.get();
-        final List<DistributionEvent> distributionEvents = notificationProcessor.processNotifications(Arrays.asList(notificationContent));
+        List<DistributionEvent> distributionEvents = null;
+        if (null != commonConfigId && 0 <= commonConfigId) {
+            final Optional<? extends CommonDistributionConfig> commonDistributionConfig = jobConfigReader.getPopulatedConfig(commonConfigId);
+            if (!commonDistributionConfig.isPresent()) {
+                logger.warn("The Distribution Job with Id {} could not be found. This notification could not be sent");
+                throw new AlertJobMissingException("The Distribution Job with this id could not be found.");
+            } else {
+                distributionEvents = notificationProcessor.processNotifications(commonDistributionConfig.get(), Arrays.asList(notificationContent));
+            }
+        } else {
+            distributionEvents = notificationProcessor.processNotifications(Arrays.asList(notificationContent));
+        }
         if (distributionEvents.isEmpty()) {
             logger.warn("This notification could not be sent. Make sure you have a Distribution Job configured to handle this notification.");
         }
         distributionEvents.forEach(event -> {
             final Long commonDistributionId = event.getCommonDistributionConfigId();
+            //TODO remove log
+            logger.error("Re-sending notification event  {} with job id {}", notificationContent.getId(), commonDistributionId);
             Long auditId = null;
             final Optional<AuditEntryEntity> auditEntryEntity = auditEntryRepository.findMatchingAudit(notificationContent.getId(), commonDistributionId);
+            final Map<Long, Long> notificationIdToAuditId = new HashMap<>();
             if (auditEntryEntity.isPresent()) {
                 auditId = auditEntryEntity.get().getId();
+                //TODO remove log
+                logger.error("Re-sending notification event with auditId {}", auditId);
             }
-            event.setAuditEntryId(auditId);
+            notificationIdToAuditId.put(notificationContent.getId(), auditId);
+            event.setNotificationIdToAuditId(notificationIdToAuditId);
             channelTemplateManager.sendEvent(event);
         });
         return get();
-        //
-        //        //TODO id is for notificationContent
-        //        //TODO specific Job resend
-        //        final Optional<AuditEntryEntity> auditEntryEntityOptional = auditEntryRepository.findById(id);
-        //        if (!auditEntryEntityOptional.isPresent()) {
-        //            throw new AlertException("No audit entry with the provided id exists.");
-        //        }
-        //
-        //        final AuditEntryEntity auditEntryEntity = auditEntryEntityOptional.get();
-        //        final List<AuditNotificationRelation> relations = auditNotificationRepository.findByAuditEntryId(auditEntryEntity.getId());
-        //        final List<Long> notificationIds = relations.stream().map(AuditNotificationRelation::getNotificationId).collect(Collectors.toList());
-        //        final List<NotificationContent> notifications = notificationManager.findByIds(notificationIds);
-        //        final Long commonConfigId = auditEntryEntity.getCommonConfigId();
-        //        final Optional<? extends CommonDistributionConfig> optionalCommonConfig = jobConfigReader.getPopulatedConfig(commonConfigId);
-        //        if (notifications == null || notifications.isEmpty()) {
-        //            throw new AlertNotificationPurgedException("The notification for this entry was purged. To edit the purge schedule, please see the Scheduling Configuration.");
-        //        }
-        //        if (!optionalCommonConfig.isPresent()) {
-        //            throw new AlertException("The job for this entry was deleted, can not re-send this entry.");
-        //        }
-        //        final CommonDistributionConfig commonConfig = optionalCommonConfig.get();
-        //        final List<DistributionEvent> distributionEvents = notificationProcessor.processNotifications(commonConfig, notifications);
-        //        distributionEvents.forEach(event -> {
-        //            event.setAuditEntryId(auditEntryEntity.getId());
-        //            channelTemplateManager.sendEvent(event);
-        //        });
-        //        return get();
     }
 
     private Page<NotificationContent> queryForNotifications(final String sortField, final String sortOrder, final String searchTerm, final Integer pageSize, final boolean onlyShowSentNotifications) {

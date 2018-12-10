@@ -34,6 +34,7 @@ class Index extends Component {
         this.setEntriesFromArray = this.setEntriesFromArray.bind(this);
         this.resendButton = this.resendButton.bind(this);
         this.onResendClick = this.onResendClick.bind(this);
+        this.resendNotification = this.resendNotification.bind(this);
         this.cancelRowSelect = this.cancelRowSelect.bind(this);
         this.onStatusFailureClick = this.onStatusFailureClick.bind(this);
         this.statusColumnDataFormat = this.statusColumnDataFormat.bind(this);
@@ -71,13 +72,20 @@ class Index extends Component {
 
     onResendClick(currentRowSelected) {
         const currentEntry = currentRowSelected || this.state.currentRowSelected;
+        this.resendNotification(currentEntry.id);
+    }
 
+    resendNotification(notificationId, commonConfigId) {
         this.setState({
             message: 'Sending...',
             inProgress: true
         });
 
-        const resendUrl = `/alert/api/audit/${currentEntry.id}/resend`;
+        let resendUrl = `/alert/api/audit/${notificationId}/resend`;
+        if (commonConfigId) {
+            resendUrl = resendUrl + `?commonConfigId=${commonConfigId}`;
+        }
+
         const {csrfToken} = this.props;
 
         fetch(resendUrl, {
@@ -372,8 +380,8 @@ class Index extends Component {
                     </small>
                 </h1>
                 <div>
-                    <AuditDetails handleClose={this.handleCloseDetails} show={this.state.showDetailModal} currentEntry={this.state.currentRowSelected} providerNameFormat={this.providerColumnDataFormat}
-                                  notificationTypeFormat={this.notificationTypeDataFormat} statusFormat={this.statusColumnDataFormat}/>
+                    <AuditDetails handleClose={this.handleCloseDetails} show={this.state.showDetailModal} currentEntry={this.state.currentRowSelected} resendNotification={this.resendNotification}
+                                  providerNameFormat={this.providerColumnDataFormat} notificationTypeFormat={this.notificationTypeDataFormat} statusFormat={this.statusColumnDataFormat}/>
                     <BootstrapTable
                         version="4"
                         trClassName={this.trClassFormat}

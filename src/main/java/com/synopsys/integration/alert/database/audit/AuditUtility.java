@@ -23,7 +23,10 @@
  */
 package com.synopsys.integration.alert.database.audit;
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -51,27 +54,32 @@ public class AuditUtility {
     }
 
     @Transactional
-    public Long createAuditEntry(final Long auditEntryId, final Long commonDistributionId, final AggregateMessageContent content) {
-        AuditEntryEntity auditEntryEntity = new AuditEntryEntity(commonDistributionId, new Date(System.currentTimeMillis()), null, null, null, null);
-
-        if (null != auditEntryId) {
-            auditEntryEntity = auditEntryRepository.findById(auditEntryId).orElse(auditEntryEntity);
-        }
-
-        auditEntryEntity.setStatus(AuditEntryStatus.PENDING);
-        final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);
-
+    public Map<Long, Long> createAuditEntry(final Map<Long, Long> existingNotificationIdToAuditId, final Long commonDistributionId, final AggregateMessageContent content) {
+        final Map<Long, Long> notificationIdToAuditId = new HashMap<>();
         for (final CategoryItem item : content.getCategoryItemList()) {
-            final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), item.getNotificationId());
+            AuditEntryEntity auditEntryEntity = new AuditEntryEntity(commonDistributionId, new Date(System.currentTimeMillis()), null, null, null, null);
+
+            final Long notificationId = item.getNotificationId();
+            if (null != existingNotificationIdToAuditId && !existingNotificationIdToAuditId.isEmpty()) {
+                final Long auditEntryId = existingNotificationIdToAuditId.get(notificationId);
+                if (null != auditEntryId) {
+                    auditEntryEntity = auditEntryRepository.findById(auditEntryId).orElse(auditEntryEntity);
+                }
+            }
+
+            auditEntryEntity.setStatus(AuditEntryStatus.PENDING);
+            final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);
+            notificationIdToAuditId.put(notificationId, savedAuditEntryEntity.getId());
+            final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), notificationId);
             auditNotificationRepository.save(auditNotificationRelation);
         }
 
-        return savedAuditEntryEntity.getId();
+        return notificationIdToAuditId;
     }
 
     @Transactional
-    public void setAuditEntrySuccess(final Long auditEntryId) {
-        if (auditEntryId != null) {
+    public void setAuditEntrySuccess(final Collection<Long> auditEntryIds) {
+        for (final Long auditEntryId : auditEntryIds) {
             try {
                 final Optional<AuditEntryEntity> auditEntryEntityOptional = auditEntryRepository.findById(auditEntryId);
                 if (!auditEntryEntityOptional.isPresent()) {
@@ -83,6 +91,8 @@ public class AuditUtility {
                 auditEntryEntity.setErrorStackTrace(null);
                 auditEntryEntity.setTimeLastSent(new Date(System.currentTimeMillis()));
                 auditEntryRepository.save(auditEntryEntity);
+                //TODO remove log
+                logger.error("Successful Audit entry id {}, time {}", auditEntryId, auditEntryEntity.getTimeLastSent());
             } catch (final Exception e) {
                 logger.error(e.getMessage(), e);
             }
@@ -90,8 +100,8 @@ public class AuditUtility {
     }
 
     @Transactional
-    public void setAuditEntryFailure(final Long auditEntryId, final String errorMessage, final Throwable t) {
-        if (auditEntryId != null) {
+    public void setAuditEntryFailure(final Collection<Long> auditEntryIds, final String errorMessage, final Throwable t) {
+        for (final Long auditEntryId : auditEntryIds) {
             try {
                 final Optional<AuditEntryEntity> auditEntryEntityOptional = auditEntryRepository.findById(auditEntryId);
                 if (!auditEntryEntityOptional.isPresent()) {
