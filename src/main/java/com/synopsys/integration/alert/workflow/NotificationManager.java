@@ -91,7 +91,6 @@ public class NotificationManager {
         if (onlyShowSentNotifications) {
             return notificationContentRepository.findMatchingSentNotification(lcSearchTerm, pageRequest);
         } else {
-            // FIXME ONLY Showing sent notifications
             return notificationContentRepository.findMatchingNotification(lcSearchTerm, pageRequest);
         }
     }
