@@ -26,6 +26,7 @@ package com.synopsys.integration.alert.channel.hipchat;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -95,7 +96,8 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
         final HipChatGlobalConfig hipChatGlobalConfig = (HipChatGlobalConfig) restModel;
         final String configuredApiUrl = getConfiguredApiUrl(hipChatGlobalConfig.getHostServer());
 
-        try (final RestConnection restConnection = getChannelRestConnectionFactory().createUnauthenticatedRestConnection(configuredApiUrl)) {
+        try {
+            final RestConnection restConnection = getChannelRestConnectionFactory().createRestConnection();
             final String testResult = testApiKeyAndApiUrlConnection(restConnection, configuredApiUrl, hipChatGlobalConfig.getApiKey());
             final Integer parsedRoomId;
             try {
@@ -110,7 +112,7 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
             final Request testRequest = createRequest(hipChatGlobalConfig.getHostServer(), hipChatGlobalConfig.getApiKey(), event, htmlMessage);
             sendMessageRequest(restConnection, testRequest, "test");
             return testResult;
-        } catch (final IOException ex) {
+        } catch (final Exception ex) {
             throw new AlertException("Connection error: see logs for more information.");
         }
     }
@@ -142,7 +144,7 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
         try {
             final String url = configuredApiUrl + "/v2/room/*/notification";
             final Map<String, Set<String>> queryParameters = new HashMap<>();
-            queryParameters.put("auth_test", new HashSet<>(Arrays.asList("true")));
+            queryParameters.put("auth_test", new HashSet<>(Collections.singleton("true")));
 
             final Map<String, String> requestHeaders = new HashMap<>();
             requestHeaders.put("Authorization", "Bearer " + apiKey);

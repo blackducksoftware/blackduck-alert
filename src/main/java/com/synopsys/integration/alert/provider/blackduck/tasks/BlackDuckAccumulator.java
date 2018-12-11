@@ -52,9 +52,9 @@ import com.synopsys.integration.blackduck.api.generated.view.NotificationView;
 import com.synopsys.integration.blackduck.notification.CommonNotificationView;
 import com.synopsys.integration.blackduck.notification.CommonNotificationViewResults;
 import com.synopsys.integration.blackduck.notification.content.detail.NotificationContentDetailFactory;
-import com.synopsys.integration.blackduck.rest.BlackduckRestConnection;
+import com.synopsys.integration.blackduck.rest.BlackDuckRestConnection;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.CommonNotificationService;
-import com.synopsys.integration.blackduck.service.HubServicesFactory;
 import com.synopsys.integration.blackduck.service.NotificationService;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.RestConstants;
@@ -73,7 +73,7 @@ public class BlackDuckAccumulator extends ScheduledTask {
 
     @Autowired
     public BlackDuckAccumulator(final TaskScheduler taskScheduler, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
-        final NotificationManager notificationManager, final FilePersistenceUtil filePersistenceUtil) {
+            final NotificationManager notificationManager, final FilePersistenceUtil filePersistenceUtil) {
         super(taskScheduler, "blackduck-accumulator-task");
         this.blackDuckProperties = blackDuckProperties;
         this.notificationManager = notificationManager;
@@ -175,17 +175,18 @@ public class BlackDuckAccumulator extends ScheduledTask {
     }
 
     protected Optional<CommonNotificationViewResults> read(final DateRange dateRange) {
-        final Optional<BlackduckRestConnection> optionalConnection = blackDuckProperties.createRestConnectionAndLogErrors(logger);
+        final Optional<BlackDuckRestConnection> optionalConnection = blackDuckProperties.createRestConnectionAndLogErrors(logger);
         if (optionalConnection.isPresent()) {
-            try (final BlackduckRestConnection restConnection = optionalConnection.get()) {
+            try {
+                final BlackDuckRestConnection restConnection = optionalConnection.get();
                 if (restConnection != null) {
-                    final HubServicesFactory hubServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(restConnection, new Slf4jIntLogger(logger));
+                    final BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(restConnection, new Slf4jIntLogger(logger));
                     final Date startDate = dateRange.getStart();
                     final Date endDate = dateRange.getEnd();
                     logger.info("Accumulating Notifications Between {} and {} ", RestConstants.formatDate(startDate), RestConstants.formatDate(endDate));
-                    final NotificationService notificationService = hubServicesFactory.createNotificationService();
-                    final NotificationContentDetailFactory notificationContentDetailFactory = new NotificationContentDetailFactory(hubServicesFactory.getGson(), HubServicesFactory.createDefaultJsonParser());
-                    final CommonNotificationService commonNotificationService = hubServicesFactory.createCommonNotificationService(notificationContentDetailFactory, true);
+                    final NotificationService notificationService = blackDuckServicesFactory.createNotificationService();
+                    final NotificationContentDetailFactory notificationContentDetailFactory = new NotificationContentDetailFactory(blackDuckServicesFactory.getGson());
+                    final CommonNotificationService commonNotificationService = blackDuckServicesFactory.createCommonNotificationService(notificationContentDetailFactory, true);
                     // TODO change this code to only use the notification audit and return a different type.  No longer
                     final List<NotificationView> notificationViewList = notificationService.getAllNotifications(startDate, endDate);
                     final List<CommonNotificationView> commonNotificationViews = commonNotificationService.getCommonNotifications(notificationViewList);
@@ -215,7 +216,7 @@ public class BlackDuckAccumulator extends ScheduledTask {
         final Date providerCreationTime = commonNotificationView.getCreatedAt();
         final String provider = BlackDuckProvider.COMPONENT_NAME;
         final String notificationType = commonNotificationView.getType().name();
-        final String jsonContent = commonNotificationView.json;
+        final String jsonContent = commonNotificationView.getJson();
         final NotificationContent content = new NotificationContent(createdAt, provider, providerCreationTime, notificationType, jsonContent);
         return content;
     }

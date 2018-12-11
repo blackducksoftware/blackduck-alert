@@ -19,9 +19,9 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.blackduck.configuration.HubServerConfig;
-import com.synopsys.integration.blackduck.rest.BlackduckRestConnection;
-import com.synopsys.integration.blackduck.service.HubServicesFactory;
+import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
+import com.synopsys.integration.blackduck.rest.BlackDuckRestConnection;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.log.IntLogger;
 
 public class TestBlackDuckProperties extends BlackDuckProperties {
@@ -71,7 +71,7 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
     }
 
     @Override
-    public Optional<BlackduckRestConnection> createRestConnection(final IntLogger intLogger) throws AlertException {
+    public Optional<BlackDuckRestConnection> createRestConnection(final IntLogger intLogger) throws AlertException {
         testAlertProperties.setAlertTrustCertificate(true);
         return super.createRestConnection(intLogger);
     }
@@ -79,24 +79,24 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
     @Override
     public Optional<GlobalBlackDuckConfigEntity> getBlackDuckConfig() {
         return Optional.of(new GlobalBlackDuckConfigEntity(Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT)), testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY),
-            testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL)));
+                testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL)));
     }
 
     @Override
-    public HubServerConfig createBlackDuckServerConfig(final IntLogger logger, final int blackDuckTimeout, final String blackDuckUsername, final String blackDuckPassword) throws AlertException {
+    public BlackDuckServerConfig createBlackDuckServerConfig(final IntLogger logger, final int blackDuckTimeout, final String blackDuckUsername, final String blackDuckPassword) throws AlertException {
         return createHubServerConfigWithCredentials(logger);
     }
 
-    public HubServerConfig createHubServerConfigWithCredentials(final IntLogger logger) throws NumberFormatException, AlertException {
+    public BlackDuckServerConfig createHubServerConfigWithCredentials(final IntLogger logger) throws NumberFormatException, AlertException {
         return super.createBlackDuckServerConfig(logger, Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT)), testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_USERNAME),
-            testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PASSWORD));
+                testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PASSWORD));
     }
 
-    public HubServicesFactory createHubServicesFactoryWithCredential(final IntLogger logger) throws Exception {
+    public BlackDuckServicesFactory createHubServicesFactoryWithCredential(final IntLogger logger) throws Exception {
         testAlertProperties.setAlertTrustCertificate(true);
-        final HubServerConfig blackDuckServerConfig = createHubServerConfigWithCredentials(logger);
-        final BlackduckRestConnection restConnection = blackDuckServerConfig.createCredentialsRestConnection(logger);
-        return new HubServicesFactory(HubServicesFactory.createDefaultGson(), HubServicesFactory.createDefaultJsonParser(), restConnection, logger);
+        final BlackDuckServerConfig blackDuckServerConfig = createHubServerConfigWithCredentials(logger);
+        final BlackDuckRestConnection restConnection = blackDuckServerConfig.createCredentialsRestConnection(logger);
+        return new BlackDuckServicesFactory(BlackDuckServicesFactory.createDefaultGson(), BlackDuckServicesFactory.createDefaultObjectMapper(), restConnection, logger);
     }
 
 }

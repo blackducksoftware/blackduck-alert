@@ -130,7 +130,7 @@ public class RestDistributionChannelTest extends ChannelTest {
     public void testSendGenericRequestThrowInegrationException() throws Exception {
         final Request request = createRequest();
         final RestConnection restConnection = Mockito.mock(RestConnection.class);
-        Mockito.when(restConnection.executeRequest(request)).thenThrow(new IntegrationException());
+        Mockito.when(restConnection.execute(request)).thenThrow(new IntegrationException());
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final BlackDuckProperties blackDuckProperties = new TestBlackDuckProperties(testAlertProperties);
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties);
