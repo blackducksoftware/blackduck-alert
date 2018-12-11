@@ -32,6 +32,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -144,6 +145,8 @@ public class NotificationManager {
     }
 
     public PageRequest getPageRequestForNotifications(final Integer pageNumber, final Integer pageSize, final String sortField, final String sortOrder) {
+        final Integer page = ObjectUtils.defaultIfNull(pageNumber, 0);
+        final Integer size = ObjectUtils.defaultIfNull(pageNumber, Integer.MAX_VALUE);
         boolean sortQuery = false;
         String sortingField = "createdAt";
         // We can only modify the query for the fields that exist in NotificationContent
@@ -161,7 +164,7 @@ public class NotificationManager {
                 sortingOrder = Sort.Direction.ASC;
             }
         }
-        return PageRequest.of(pageNumber, pageSize, new Sort(sortingOrder, sortingField));
+        return PageRequest.of(page, size, new Sort(sortingOrder, sortingField));
     }
 
 }

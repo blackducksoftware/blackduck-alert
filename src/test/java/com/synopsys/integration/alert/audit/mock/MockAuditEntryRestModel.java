@@ -1,73 +1,54 @@
 package com.synopsys.integration.alert.audit.mock;
 
+import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.mock.model.MockRestModelUtil;
 import com.synopsys.integration.alert.web.audit.AuditEntryModel;
+import com.synopsys.integration.alert.web.audit.JobModel;
 import com.synopsys.integration.alert.web.model.NotificationConfig;
 
 public class MockAuditEntryRestModel extends MockRestModelUtil<AuditEntryModel> {
-    private final String name;
-    private final String eventType;
-    private final String timeCreated;
     private final String timeLastSent;
-    private final String status;
+    private final String overallStatus;
     private final NotificationConfig notification;
-    private final String errorMessage;
-    private final String errorStackTrace;
+    private final List<JobModel> jobModels;
     private final String id;
 
     public MockAuditEntryRestModel() {
-        this("name", "eventType", new Date(400).toString(), new Date(500).toString(), AuditEntryStatus.SUCCESS.name(), new NotificationConfig(), "errorMessage", "errorStackTrace", "1");
+        this("1", new Date(500).toString(), AuditEntryStatus.SUCCESS.name(), new NotificationConfig(), Arrays.asList(new JobModel()));
     }
 
-    private MockAuditEntryRestModel(final String name, final String eventType, final String timeCreated, final String timeLastSent, final String status, final NotificationConfig notification, final String errorMessage,
-        final String errorStackTrace, final String id) {
+    private MockAuditEntryRestModel(final String id, final String timeLastSent, final String overallStatus, final NotificationConfig notification, final List<JobModel> jobModels) {
         super();
-        this.name = name;
-        this.eventType = eventType;
-        this.timeCreated = timeCreated;
-        this.timeLastSent = timeLastSent;
-        this.status = status;
-        this.notification = notification;
-        this.errorMessage = errorMessage;
-        this.errorStackTrace = errorStackTrace;
         this.id = id;
+        this.timeLastSent = timeLastSent;
+        this.overallStatus = overallStatus;
+        this.notification = notification;
+        this.jobModels = jobModels;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getEventType() {
-        return eventType;
-    }
-
-    public String getTimeCreated() {
-        return timeCreated;
-    }
-
-    public String getTimeLastSent() {
-        return timeLastSent;
-    }
-
-    public String getStatus() {
-        return status;
+    public String getOverallStatus() {
+        return overallStatus;
     }
 
     public NotificationConfig getNotification() {
         return notification;
     }
 
-    public String getErrorMessage() {
-        return errorMessage;
+    public List<JobModel> getJobModels() {
+        return jobModels;
     }
 
-    public String getErrorStackTrace() {
-        return errorStackTrace;
+    public String getTimeLastSent() {
+        return timeLastSent;
     }
 
     @Override
@@ -77,7 +58,7 @@ public class MockAuditEntryRestModel extends MockRestModelUtil<AuditEntryModel> 
 
     @Override
     public AuditEntryModel createRestModel() {
-        return new AuditEntryModel(id, name, eventType, timeCreated, timeLastSent, status, errorMessage, errorStackTrace, notification);
+        return new AuditEntryModel(id, notification, jobModels, overallStatus, timeLastSent);
     }
 
     @Override
@@ -89,18 +70,17 @@ public class MockAuditEntryRestModel extends MockRestModelUtil<AuditEntryModel> 
     public String getRestModelJson() {
         final JsonObject json = new JsonObject();
         json.addProperty("id", id);
-        json.addProperty("name", name);
-        json.addProperty("eventType", eventType);
-        json.addProperty("timeCreated", timeCreated);
-        json.addProperty("timeLastSent", timeLastSent);
-        json.addProperty("status", status);
-        json.addProperty("errorStackTrace", errorStackTrace);
-        json.addProperty("errorMessage", errorMessage);
+        json.addProperty("overallStatus", overallStatus);
+        json.addProperty("lastSent", timeLastSent);
 
         final Gson gson = new Gson();
         final JsonObject notificationJson = gson.toJsonTree(notification).getAsJsonObject();
-
         json.add("notification", notificationJson);
+
+        final Type listType = new TypeToken<List<JobModel>>() {}.getType();
+        final JsonArray jobModelJson = gson.toJsonTree(jobModels, listType).getAsJsonArray();
+        json.add("jobs", jobModelJson);
+
         return json.toString();
     }
 
