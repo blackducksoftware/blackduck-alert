@@ -46,8 +46,9 @@ import com.synopsys.integration.alert.database.api.user.UserModel;
 import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.blackduck.service.model.HubServerVerifier;
+import com.synopsys.integration.blackduck.service.model.BlackDuckServerVerifier;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.rest.credentials.CredentialsBuilder;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.rest.proxy.ProxyInfoBuilder;
 
@@ -63,7 +64,7 @@ public class SystemValidator {
 
     @Autowired
     public SystemValidator(final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final EncryptionUtility encryptionUtility, final SystemStatusUtility systemStatusUtility,
-        final SystemMessageUtility systemMessageUtility, final UserAccessor userAccessor) {
+            final SystemMessageUtility systemMessageUtility, final UserAccessor userAccessor) {
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
         this.encryptionUtility = encryptionUtility;
@@ -142,7 +143,7 @@ public class SystemValidator {
         logger.info("Validating BlackDuck Provider...");
         boolean valid = true;
         try {
-            final HubServerVerifier verifier = new HubServerVerifier();
+            final BlackDuckServerVerifier verifier = new BlackDuckServerVerifier();
             final ProxyInfoBuilder proxyBuilder = createProxyInfoBuilder();
             final ProxyInfo proxyInfo = proxyBuilder.build();
             final Optional<String> blackDuckUrlOptional = blackDuckProperties.getBlackDuckUrl();
@@ -165,7 +166,7 @@ public class SystemValidator {
                     logger.warn("  -> BlackDuck Provider Using localhost because PUBLIC_BLACKDUCK_WEBSERVER_HOST environment variable is set to {}", blackDuckWebServerHost);
                     systemMessageUtility.addSystemMessage("BlackDuck Provider Using localhost", SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST);
                 }
-                verifier.verifyIsHubServer(blackDuckUrl, proxyInfo, trustCertificate, timeout);
+                verifier.verifyIsBlackDuckServer(blackDuckUrl, proxyInfo, trustCertificate, timeout);
                 logger.info("  -> BlackDuck Provider Valid!");
             }
         } catch (final MalformedURLException | IntegrationException ex) {
@@ -195,12 +196,14 @@ public class SystemValidator {
         if (alertProxyPort.isPresent()) {
             proxyBuilder.setPort(NumberUtils.toInt(alertProxyPort.get()));
         }
+        final CredentialsBuilder credentialsBuilder = new CredentialsBuilder();
         if (alertProxyUsername.isPresent()) {
-            proxyBuilder.setUsername(alertProxyUsername.get());
+            credentialsBuilder.setUsername(alertProxyUsername.get());
         }
         if (alertProxyPassword.isPresent()) {
-            proxyBuilder.setPassword(alertProxyPassword.get());
+            credentialsBuilder.setPassword(alertProxyPassword.get());
         }
+        proxyBuilder.setCredentials(credentialsBuilder.build());
         return proxyBuilder;
     }
 }

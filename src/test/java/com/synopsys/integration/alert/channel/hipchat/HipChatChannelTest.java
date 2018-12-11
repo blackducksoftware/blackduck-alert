@@ -17,8 +17,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -48,7 +46,7 @@ import com.synopsys.integration.log.LogLevel;
 import com.synopsys.integration.log.PrintStreamIntLogger;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.connection.RestConnection;
-import com.synopsys.integration.rest.connection.UnauthenticatedRestConnection;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.rest.request.Request;
 
 public class HipChatChannelTest extends ChannelTest {
@@ -127,7 +125,7 @@ public class HipChatChannelTest extends ChannelTest {
         final ChannelRestConnectionFactory restFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, null, null, null, null, restFactory);
 
-        Mockito.when(restFactory.createUnauthenticatedRestConnection(Mockito.anyString())).thenReturn(null);
+        Mockito.when(restFactory.createRestConnection()).thenReturn(null);
 
         try {
             hipChatChannel.testGlobalConfig(new TestConfigModel(null));
@@ -152,7 +150,7 @@ public class HipChatChannelTest extends ChannelTest {
         final ChannelRestConnectionFactory restFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, null, null, null, null, restFactory);
 
-        Mockito.when(restFactory.createUnauthenticatedRestConnection(Mockito.anyString())).thenReturn(null);
+        Mockito.when(restFactory.createRestConnection()).thenReturn(null);
 
         try {
             final Config config = hipChatMockUtil.createEmptyGlobalConfig();
@@ -186,8 +184,9 @@ public class HipChatChannelTest extends ChannelTest {
         final ChannelRestConnectionFactory restFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, null, null, null, null, restFactory);
 
-        try (final RestConnection restConnection = new UnauthenticatedRestConnection(new PrintStreamIntLogger(System.out, LogLevel.INFO), new URL("http://google.com"), 100, null)) {
-            Mockito.when(restFactory.createUnauthenticatedRestConnection(Mockito.anyString())).thenReturn(restConnection);
+        try {
+            final RestConnection restConnection = new RestConnection(new PrintStreamIntLogger(System.out, LogLevel.INFO), 100, true, ProxyInfo.NO_PROXY_INFO);
+            Mockito.when(restFactory.createRestConnection()).thenReturn(restConnection);
 
             hipChatMockUtil.setApiKey("garbage");
             try {
@@ -196,34 +195,10 @@ public class HipChatChannelTest extends ChannelTest {
             } catch (final IntegrationException ex) {
                 assertTrue(ex.getMessage().contains("Invalid API key: "));
             }
-        } catch (final IOException e) {
+        } catch (final Exception e) {
             Assert.fail();
             e.printStackTrace();
         }
-    }
-
-    @Test
-    public void testGlobalConfigThrowsExceptionTest() throws IntegrationException, MalformedURLException {
-        final ChannelRestConnectionFactory restFactory = Mockito.mock(ChannelRestConnectionFactory.class);
-        final HipChatChannel hipChatChannel = new HipChatChannel(gson, null, null, null, null, restFactory);
-
-        try (final RestConnection restConnection = new UnauthenticatedRestConnection(new PrintStreamIntLogger(System.out, LogLevel.INFO), new URL("http://google.com"), 100, null)) {
-            final RestConnection mockRestConnection = Mockito.spy(restConnection);
-            Mockito.doThrow(new IntegrationException("Mock exception")).when(mockRestConnection).connect();
-            Mockito.when(restFactory.createUnauthenticatedRestConnection(Mockito.anyString())).thenReturn(mockRestConnection);
-
-            hipChatMockUtil.setApiKey("apiKey");
-            try {
-                final Config config = hipChatMockUtil.createGlobalConfig();
-                hipChatChannel.testGlobalConfig(new TestConfigModel(config));
-            } catch (final IntegrationException ex) {
-                assertEquals("Invalid API key: Mock exception", ex.getMessage());
-            }
-        } catch (final IOException e) {
-            Assert.fail();
-            e.printStackTrace();
-        }
-
     }
 
     @Test

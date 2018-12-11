@@ -23,7 +23,6 @@
  */
 package com.synopsys.integration.alert.channel.rest;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -63,12 +62,13 @@ public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntit
     @Override
     public void sendMessage(final E event) throws IntegrationException {
         final G globalConfig = getGlobalConfigEntity();
-        try (final RestConnection restConnection = channelRestConnectionFactory.createUnauthenticatedRestConnection(getApiUrl(globalConfig))) {
+        try {
+            final RestConnection restConnection = channelRestConnectionFactory.createRestConnection();
             final List<Request> requests = createRequests(globalConfig, event);
             for (final Request request : requests) {
                 sendMessageRequest(restConnection, request, event.getDestination());
             }
-        } catch (final IOException ex) {
+        } catch (final Exception ex) {
             throw new AlertException(ex);
         }
     }
@@ -99,7 +99,7 @@ public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntit
 
     public Response sendGenericRequest(final RestConnection restConnection, final Request request) throws IntegrationException {
         try {
-            final Response response = restConnection.executeRequest(request);
+            final Response response = restConnection.execute(request);
             logger.trace("Response: " + response.toString());
             return response;
         } catch (final Exception generalException) {
