@@ -36,7 +36,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
+import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+import com.synopsys.integration.alert.common.database.FieldConfigurationAccessor;
+import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.context.ChannelDistributionDescriptorActionApi;
 import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectEntity;
@@ -44,6 +47,7 @@ import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuck
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.FieldModel;
+import com.synopsys.integration.alert.web.model.FieldValueModel;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 
 @Component
@@ -52,15 +56,16 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
     private final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
 
     @Autowired
-    public EmailDistributionDescriptorActionApi(final EmailGroupChannel emailGroupChannel,
+    public EmailDistributionDescriptorActionApi(final EmailGroupChannel emailGroupChannel, final FieldConfigurationAccessor configurationAccessor, final ContentConverter contentConverter, final DescriptorMap descriptorMap,
         final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor) {
-        super(emailGroupChannel);
+        super(emailGroupChannel, configurationAccessor, contentConverter, descriptorMap);
         this.emailGroupChannel = emailGroupChannel;
         this.blackDuckProjectRepositoryAccessor = blackDuckProjectRepositoryAccessor;
     }
 
     @Override
-    public void validateConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
+    public void validateChannelConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
+
     }
 
     @Override
@@ -68,12 +73,12 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
         final Set<String> emailAddresses = new HashSet<>();
         Set<BlackDuckProjectEntity> blackDuckProjectEntities = null;
 
-        final Optional<String> filterByProject = fieldModel.getValue(CommonDistributionUIConfig.KEY_FILTER_BY_PROJECT);
-        final Optional<String> providerName = fieldModel.getValue(CommonDistributionUIConfig.KEY_PROVIDER_NAME);
+        final Optional<String> filterByProject = fieldModel.getField(CommonDistributionUIConfig.KEY_FILTER_BY_PROJECT).getValue();
+        final Optional<String> providerName = fieldModel.getField(CommonDistributionUIConfig.KEY_PROVIDER_NAME).getValue();
 
         if (filterByProject.isPresent() && BooleanUtils.toBoolean(filterByProject.get())) {
-            final Set<String> configuredProjects = fieldModel.getValues(CommonDistributionUIConfig.KEY_CONFIGURED_PROJECT).stream().collect(Collectors.toSet());
-            final Optional<String> projectNamePattern = fieldModel.getValue(CommonDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
+            final Set<String> configuredProjects = fieldModel.getField(CommonDistributionUIConfig.KEY_CONFIGURED_PROJECT).getValues().stream().collect(Collectors.toSet());
+            final Optional<String> projectNamePattern = fieldModel.getField(CommonDistributionUIConfig.KEY_PROJECT_NAME_PATTERN).getValue();
             blackDuckProjectEntities = blackDuckProjectRepositoryAccessor.readEntities()
                                            .stream()
                                            .map(databaseEntity -> (BlackDuckProjectEntity) databaseEntity)
@@ -88,7 +93,7 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
 
         }
         if (null != blackDuckProjectEntities) {
-            final Optional<String> projectOwnerOnlyOptional = fieldModel.getValue(EmailDistributionUIConfig.KEY_PROJECT_OWNER_ONLY);
+            final Optional<String> projectOwnerOnlyOptional = fieldModel.getField(EmailDistributionUIConfig.KEY_PROJECT_OWNER_ONLY).getValue();
             final Boolean projectOwnerOnly = Boolean.parseBoolean(projectOwnerOnlyOptional.orElse("false"));
             final Set<String> projectsWithoutEmails = new HashSet<>();
             blackDuckProjectEntities
@@ -114,7 +119,8 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
             }
         }
 
-        fieldModel.putStrings(EmailDistributionUIConfig.KEY_EMAIL_ADDRESSES, emailAddresses);
+        final FieldValueModel fieldValueModel = new FieldValueModel(emailAddresses, true);
+        fieldModel.putField(EmailDistributionUIConfig.KEY_EMAIL_ADDRESSES, fieldValueModel);
         return super.createTestConfigModel(fieldModel, destination);
     }
 }

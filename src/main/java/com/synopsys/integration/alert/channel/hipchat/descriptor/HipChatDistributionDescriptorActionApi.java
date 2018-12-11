@@ -30,19 +30,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
+import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+import com.synopsys.integration.alert.common.database.FieldConfigurationAccessor;
+import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.context.ChannelDistributionDescriptorActionApi;
 
 @Component
 public class HipChatDistributionDescriptorActionApi extends ChannelDistributionDescriptorActionApi {
 
     @Autowired
-    public HipChatDistributionDescriptorActionApi(final HipChatChannel hipChatChannel) {
-        super(hipChatChannel);
+    public HipChatDistributionDescriptorActionApi(final HipChatChannel hipChatChannel, final FieldConfigurationAccessor configurationAccessor, final ContentConverter contentConverter, final DescriptorMap descriptorMap) {
+        super(hipChatChannel, configurationAccessor, contentConverter, descriptorMap);
     }
 
     @Override
-    public void validateConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
+    public void validateChannelConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
         final String roomId = fieldAccessor.getString(HipChatDistributionUIConfig.KEY_ROOM_ID);
         if (StringUtils.isBlank(roomId)) {
             fieldErrors.put("roomId", "A Room Id is required.");

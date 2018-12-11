@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.EnumUtils;
@@ -74,7 +75,7 @@ public class DescriptorConfigActions {
     }
 
     public boolean doesConfigExist(final Long id) throws AlertException {
-        return id != null && !configurationAccessor.getConfigurationById(id).isEmpty();
+        return id != null && !configurationAccessor.getConfigurationById(id).isPresent();
     }
 
     public List<FieldModel> getConfigs(final ConfigContextEnum context, final String descriptorName) throws AlertException {
@@ -91,9 +92,9 @@ public class DescriptorConfigActions {
     }
 
     public FieldModel getConfigById(final Long id) throws AlertException {
-        final List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationById(id);
-        if (!configurationModels.isEmpty()) {
-            final ConfigurationModel configurationModel = configurationModels.get(0);
+        final Optional<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationById(id);
+        if (!configurationModels.isPresent()) {
+            final ConfigurationModel configurationModel = configurationModels.get();
             if (configurationModel != null) {
                 return convertToFieldModel(configurationModel);
             }
@@ -107,11 +108,20 @@ public class DescriptorConfigActions {
 
     public void deleteConfig(final Long id) throws AlertException {
         if (id != null) {
-            configurationAccessor.deleteConfiguration(id);
+            final Optional<ConfigurationModel> configuration = configurationAccessor.getConfigurationById(id);
+            if (!configuration.isPresent()) {
+                final ConfigurationModel configurationModel = configuration.get();
+                final FieldModel fieldModel = convertToFieldModel(configurationModel);
+                final DescriptorActionApi descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
+                descriptorActionApi.deleteConfig(fieldModel);
+                configurationAccessor.deleteConfiguration(id);
+            }
         }
     }
 
     public ConfigurationModel saveConfig(final FieldModel fieldModel, final ConfigContextEnum context) throws AlertException {
+        final DescriptorActionApi descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
+        descriptorActionApi.saveConfig(fieldModel);
         final String descriptorName = fieldModel.getDescriptorName();
         final Map<String, ConfigurationFieldModel> configurationFieldModelMap = fieldModel.convertToConfigurationFieldModelMap();
         return configurationAccessor.createConfiguration(descriptorName, context, configurationFieldModelMap.values());
@@ -134,6 +144,8 @@ public class DescriptorConfigActions {
     }
 
     public ConfigurationModel updateConfig(final FieldModel fieldModel) throws AlertException {
+        final DescriptorActionApi descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
+        descriptorActionApi.updateConfig(fieldModel);
         final String id = fieldModel.getId();
         if (fieldModel != null && StringUtils.isNotBlank(id)) {
             final Long longId = contentConverter.getLongValue(id);
@@ -147,9 +159,9 @@ public class DescriptorConfigActions {
 
     public ConfigurationModel getSavedEntity(final Long id) throws AlertException {
         if (null != id) {
-            final List<ConfigurationModel> configuration = configurationAccessor.getConfigurationById(id);
-            if (!configuration.isEmpty()) {
-                return configuration.get(0);
+            final Optional<ConfigurationModel> configuration = configurationAccessor.getConfigurationById(id);
+            if (!configuration.isPresent()) {
+                return configuration.get();
             }
         }
         return null;
@@ -190,14 +202,18 @@ public class DescriptorConfigActions {
         fields.put(key, fieldValueModel);
     }
 
-    private DescriptorActionApi retrieveDescriptorActionApi(final FieldModel fieldModel) {
-        final ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, fieldModel.getContext());
+    private DescriptorActionApi retrieveDescriptorActionApi(final String context, final String descriptorName) {
+        final ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
 
         if (descriptorContext != null) {
-            final Descriptor descriptor = descriptorMap.getDescriptor(fieldModel.getDescriptorName());
+            final Descriptor descriptor = descriptorMap.getDescriptor(descriptorName);
             return descriptor.getRestApi(descriptorContext);
         }
         return null;
+    }
+
+    private DescriptorActionApi retrieveDescriptorActionApi(final FieldModel fieldModel) {
+        return retrieveDescriptorActionApi(fieldModel.getContext(), fieldModel.getDescriptorName());
     }
 
 }

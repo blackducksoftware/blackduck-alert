@@ -57,6 +57,17 @@ public abstract class DescriptorActionApi {
     public AggregateMessageContent createTestNotificationContent() {
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         return new AggregateMessageContent("testTopic", "Alert Test Message", null, subTopic, Collections.emptyList());
+    }
+
+    public void updateConfig(final FieldModel fieldModel) {
+
+    }
+
+    public void saveConfig(final FieldModel fieldModel) {
+
+    }
+
+    public void deleteConfig(final FieldModel fieldModel) {
 
     }
 

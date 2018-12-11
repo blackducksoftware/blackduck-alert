@@ -30,19 +30,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
+import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+import com.synopsys.integration.alert.common.database.FieldConfigurationAccessor;
+import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.context.ChannelDistributionDescriptorActionApi;
 
 @Component
 public class SlackDistributionDescriptorActionApi extends ChannelDistributionDescriptorActionApi {
 
     @Autowired
-    public SlackDistributionDescriptorActionApi(final SlackChannel slackChannel) {
-        super(slackChannel);
+    public SlackDistributionDescriptorActionApi(final SlackChannel slackChannel, final FieldConfigurationAccessor configurationAccessor, final ContentConverter contentConverter, final DescriptorMap desriptorMap) {
+        super(slackChannel, configurationAccessor, contentConverter, desriptorMap);
     }
 
     @Override
-    public void validateConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
+    public void validateChannelConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
         final String webhook = fieldAccessor.getString(SlackUIConfig.KEY_WEBHOOK);
         final String channelName = fieldAccessor.getString(SlackUIConfig.KEY_CHANNEL_NAME);
         if (StringUtils.isBlank(webhook)) {
