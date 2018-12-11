@@ -31,28 +31,33 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentCollector;
-import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckLicenseLimitMessageContentCollector;
-import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyMessageContentCollector;
-import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckVulnerabilityMessageContentCollector;
+import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckLicenseLimitCollector;
+import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyOverrideCollector;
+import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyViolationCollector;
+import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckVulnerabilityCollector;
 
 @Component
 public class BlackDuckTopicCollectorFactory {
-    private final ObjectFactory<BlackDuckVulnerabilityMessageContentCollector> vulnerabilityTopicCollectorFactory;
-    private final ObjectFactory<BlackDuckPolicyMessageContentCollector> policyTopicCollectorFactory;
-    private final ObjectFactory<BlackDuckLicenseLimitMessageContentCollector> licenseLimitTopicCollectorFactory;
+    private final ObjectFactory<BlackDuckVulnerabilityCollector> vulnerabilityTopicCollectorFactory;
+    private final ObjectFactory<BlackDuckPolicyViolationCollector> policyViolationTopicCollectorFactory;
+    private final ObjectFactory<BlackDuckPolicyOverrideCollector> policyOverrideTopicCollectorFactory;
+    private final ObjectFactory<BlackDuckLicenseLimitCollector> licenseLimitTopicCollectorFactory;
 
     @Autowired
-    public BlackDuckTopicCollectorFactory(final ObjectFactory<BlackDuckVulnerabilityMessageContentCollector> vulnerabilityTopicCollectorFactory, final ObjectFactory<BlackDuckPolicyMessageContentCollector> policyTopicCollectorFactory,
-        final ObjectFactory<BlackDuckLicenseLimitMessageContentCollector> licenseLimitTopicCollectorFactory) {
+    public BlackDuckTopicCollectorFactory(final ObjectFactory<BlackDuckVulnerabilityCollector> vulnerabilityTopicCollectorFactory,
+        final ObjectFactory<BlackDuckPolicyViolationCollector> policyViolationTopicCollectorFactory, final ObjectFactory<BlackDuckPolicyOverrideCollector> policyOverrideTopicCollectorFactory,
+        final ObjectFactory<BlackDuckLicenseLimitCollector> licenseLimitTopicCollectorFactory) {
         this.vulnerabilityTopicCollectorFactory = vulnerabilityTopicCollectorFactory;
-        this.policyTopicCollectorFactory = policyTopicCollectorFactory;
+        this.policyViolationTopicCollectorFactory = policyViolationTopicCollectorFactory;
+        this.policyOverrideTopicCollectorFactory = policyOverrideTopicCollectorFactory;
         this.licenseLimitTopicCollectorFactory = licenseLimitTopicCollectorFactory;
     }
 
     public Set<MessageContentCollector> createTopicCollectors() {
         final Set<MessageContentCollector> collectorSet = new HashSet<>();
         collectorSet.add(vulnerabilityTopicCollectorFactory.getObject());
-        collectorSet.add(policyTopicCollectorFactory.getObject());
+        collectorSet.add(policyViolationTopicCollectorFactory.getObject());
+        collectorSet.add(policyOverrideTopicCollectorFactory.getObject());
         collectorSet.add(licenseLimitTopicCollectorFactory.getObject());
         return collectorSet;
     }
