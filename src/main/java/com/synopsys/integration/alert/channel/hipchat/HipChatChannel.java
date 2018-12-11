@@ -153,14 +153,17 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
             // TODO test if this string is still needed
             // The {"message":"test"} is required to avoid a BAD_REQUEST (OkHttp issue: #854)
             final Request request = createPostMessageRequest(url, requestHeaders, queryParameters, "{\"message\":\"test\"}");
-            final Response response = sendGenericRequest(restConnection, request);
-            if (200 <= response.getStatusCode() && response.getStatusCode() < 400) {
-                return "API key is valid.";
+            try (final Response response = sendGenericRequest(restConnection, request)) {
+                if (200 <= response.getStatusCode() && response.getStatusCode() < 400) {
+                    return "API key is valid.";
+                }
+                throw new AlertException("Invalid API key: " + response.getStatusMessage());
+            } catch (final IOException ioException) {
+                throw new AlertException(ioException.getMessage(), ioException);
             }
-            throw new AlertException("Invalid API key: " + response.getStatusMessage());
-        } catch (final IntegrationException e) {
-            logger.error("Unable to create a response", e);
-            throw new AlertException("Invalid API key: " + e.getMessage());
+        } catch (final IntegrationException integrationException) {
+            logger.error("Unable to create a response", integrationException);
+            throw new AlertException("Invalid API key: " + integrationException.getMessage());
         }
     }
 
