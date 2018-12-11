@@ -35,18 +35,18 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.configuration.CommonDistributionConfiguration;
+import com.synopsys.integration.alert.common.database.FieldConfigurationAccessor;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.database.api.descriptor.ConfigurationAccessor;
-import com.synopsys.integration.alert.database.api.descriptor.ConfigurationAccessor.ConfigurationModel;
+import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
 
 @Component
 public class JobConfigReader {
-    private final ConfigurationAccessor configurationAccessor;
+    private final FieldConfigurationAccessor configurationAccessor;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    public JobConfigReader(final ConfigurationAccessor configurationAccessor) {
+    public JobConfigReader(final FieldConfigurationAccessor configurationAccessor) {
         this.configurationAccessor = configurationAccessor;
     }
 
@@ -54,7 +54,7 @@ public class JobConfigReader {
     public List<CommonDistributionConfiguration> getPopulatedConfigs() {
         final String descriptorType = DescriptorType.CHANNEL.name();
         try {
-            final List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationsByType(descriptorType);
+            final List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationsByDescriptorType(descriptorType);
             return configurationModels.stream()
                        .map(configurationModel -> new CommonDistributionConfiguration(configurationModel))
                        .collect(Collectors.toList());

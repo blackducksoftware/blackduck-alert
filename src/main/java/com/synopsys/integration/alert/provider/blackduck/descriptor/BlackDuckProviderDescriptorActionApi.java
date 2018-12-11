@@ -86,9 +86,9 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
 
         final FieldModel fieldModel = testConfig.getFieldModel();
 
-        final String apiToken = fieldModel.getValue(BlackDuckProviderUIConfig.KEY_BLACKDUCK_API_KEY).orElse("");
-        final String url = fieldModel.getValue(BlackDuckProviderUIConfig.KEY_BLACKDUCK_URL).orElse("");
-        final String timeout = fieldModel.getValue(BlackDuckProviderUIConfig.KEY_BLACKDUCK_TIMEOUT).orElse("");
+        final String apiToken = fieldModel.getField(BlackDuckProviderUIConfig.KEY_BLACKDUCK_API_KEY).getValue().orElse("");
+        final String url = fieldModel.getField(BlackDuckProviderUIConfig.KEY_BLACKDUCK_URL).getValue().orElse("");
+        final String timeout = fieldModel.getField(BlackDuckProviderUIConfig.KEY_BLACKDUCK_TIMEOUT).getValue().orElse("");
 
         final HubServerConfigBuilder blackDuckServerConfigBuilder = blackDuckProperties.createServerConfigBuilderWithoutAuthentication(intLogger, NumberUtils.toInt(timeout, 300));
         blackDuckServerConfigBuilder.setApiToken(apiToken);

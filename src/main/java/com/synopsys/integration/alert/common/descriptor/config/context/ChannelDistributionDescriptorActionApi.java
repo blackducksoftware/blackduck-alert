@@ -39,8 +39,11 @@ import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.database.FieldConfigurationAccessor;
+import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
@@ -55,11 +58,13 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
     private final FieldConfigurationAccessor configurationAccessor;
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final ContentConverter contentConverter;
+    private final DescriptorMap descriptorMap;
 
-    public ChannelDistributionDescriptorActionApi(final DistributionChannel distributionChannel, final FieldConfigurationAccessor configurationAccessor, final ContentConverter contentConverter) {
+    public ChannelDistributionDescriptorActionApi(final DistributionChannel distributionChannel, final FieldConfigurationAccessor configurationAccessor, final ContentConverter contentConverter, final DescriptorMap descriptorMap) {
         this.distributionChannel = distributionChannel;
         this.configurationAccessor = configurationAccessor;
         this.contentConverter = contentConverter;
+        this.descriptorMap = descriptorMap;
     }
 
     @Override
@@ -142,5 +147,26 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
         }
 
         validateChannelConfig(fieldAccessor, fieldErrors);
+    }
+
+    @Override
+    public void saveConfig(final FieldModel fieldModel) {
+        DescriptorActionApi providerActionApi = getProviderActionApi(fieldModel);
+        providerActionApi.saveConfig(fieldModel);
+        super.saveConfig(fieldModel);
+    }
+
+    @Override
+    public void deleteConfig(final FieldModel fieldModel) {
+        final DescriptorActionApi descriptorActionApi = getProviderActionApi(fieldModel);
+        descriptorActionApi.deleteConfig(fieldModel);
+        super.deleteConfig(fieldModel);
+    }
+
+    private DescriptorActionApi getProviderActionApi(FieldModel fieldModel) {
+        final FieldAccessor fieldAccessor = fieldModel.convertToFieldAccessor();
+        final String providerName = fieldAccessor.getString(CommonDistributionUIConfig.KEY_PROVIDER_NAME);
+        ProviderDescriptor providerDescriptor = descriptorMap.getProviderDescriptor(providerName);
+        return providerDescriptor.getRestApi(ConfigContextEnum.DISTRIBUTION);
     }
 }
