@@ -11,28 +11,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentCollector;
-import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckLicenseLimitMessageContentCollector;
-import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyMessageContentCollector;
-import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckVulnerabilityMessageContentCollector;
+import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckLicenseLimitCollector;
+import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyOverrideCollector;
+import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyViolationCollector;
+import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckVulnerabilityCollector;
 
 public class BlackDuckMessageContentCollectorFactoryTest extends AlertIntegrationTest {
 
     @Autowired
-    private ObjectFactory<BlackDuckVulnerabilityMessageContentCollector> vulnerabilityTopicCollectorFactory;
+    private ObjectFactory<BlackDuckVulnerabilityCollector> vulnerabilityTopicCollectorFactory;
     @Autowired
-    private ObjectFactory<BlackDuckPolicyMessageContentCollector> policyTopicCollectorFactory;
+    private ObjectFactory<BlackDuckPolicyViolationCollector> policyViolationTopicCollectorFactory;
     @Autowired
-    private ObjectFactory<BlackDuckLicenseLimitMessageContentCollector> licenseTopicCollectorFactory;
+    private ObjectFactory<BlackDuckPolicyOverrideCollector> policyOverrideTopicCollectorFactory;
+    @Autowired
+    private ObjectFactory<BlackDuckLicenseLimitCollector> licenseTopicCollectorFactory;
 
     @Test
     public void testCollectorCreation() {
-        final BlackDuckTopicCollectorFactory topicCollectorFactory = new BlackDuckTopicCollectorFactory(vulnerabilityTopicCollectorFactory, policyTopicCollectorFactory, licenseTopicCollectorFactory);
+        final BlackDuckTopicCollectorFactory topicCollectorFactory = new BlackDuckTopicCollectorFactory(vulnerabilityTopicCollectorFactory, policyViolationTopicCollectorFactory, policyOverrideTopicCollectorFactory,
+            licenseTopicCollectorFactory);
         final Set<MessageContentCollector> messageContentCollectorSet = topicCollectorFactory.createTopicCollectors();
         assertFalse(messageContentCollectorSet.isEmpty());
-        assertEquals(3, messageContentCollectorSet.size());
+        assertEquals(4, messageContentCollectorSet.size());
         final Set<MessageContentCollector> differentReferenceMessageContentCollectorSet = topicCollectorFactory.createTopicCollectors();
         assertFalse(differentReferenceMessageContentCollectorSet.isEmpty());
-        assertEquals(3, differentReferenceMessageContentCollectorSet.size());
+        assertEquals(4, differentReferenceMessageContentCollectorSet.size());
 
         // make sure they are different object references since MessageContentCollector does implement equals or hashcode which is ok. we want different instances.
         assertFalse(messageContentCollectorSet.equals(differentReferenceMessageContentCollectorSet));
