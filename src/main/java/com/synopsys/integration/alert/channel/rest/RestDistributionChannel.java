@@ -55,7 +55,7 @@ public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntit
     private final ChannelRestConnectionFactory channelRestConnectionFactory;
 
     public RestDistributionChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditUtility auditUtility, final JpaRepository<G, Long> globalRepository,
-            final Class eventClass, final ChannelRestConnectionFactory channelRestConnectionFactory) {
+        final Class eventClass, final ChannelRestConnectionFactory channelRestConnectionFactory) {
         super(gson, alertProperties, blackDuckProperties, auditUtility, globalRepository, eventClass);
         this.channelRestConnectionFactory = channelRestConnectionFactory;
     }
@@ -63,8 +63,8 @@ public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntit
     @Override
     public void sendMessage(final E event) throws IntegrationException {
         final G globalConfig = getGlobalConfigEntity();
+        final List<Request> requests = createRequests(globalConfig, event);
         try (final RestConnection restConnection = channelRestConnectionFactory.createUnauthenticatedRestConnection(getApiUrl(globalConfig))) {
-            final List<Request> requests = createRequests(globalConfig, event);
             for (final Request request : requests) {
                 sendMessageRequest(restConnection, request, event.getDestination());
             }
