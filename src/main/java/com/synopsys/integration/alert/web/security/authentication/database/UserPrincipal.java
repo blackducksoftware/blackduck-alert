@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.security.authentication;
+package com.synopsys.integration.alert.web.security.authentication.database;
 
 import java.util.Collection;
 
