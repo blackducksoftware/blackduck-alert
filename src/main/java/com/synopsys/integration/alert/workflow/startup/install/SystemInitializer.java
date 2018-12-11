@@ -41,7 +41,7 @@ import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.database.FieldConfigurationAccessor;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.synopsys.integration.alert.database.api.configuration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.user.UserAccessor;

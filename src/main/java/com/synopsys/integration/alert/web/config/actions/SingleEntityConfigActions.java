@@ -51,7 +51,7 @@ public class SingleEntityConfigActions extends DescriptorConfigActions {
         final List<? extends DatabaseEntity> globalConfigs = descriptor.readEntities();
         if (globalConfigs.size() == 1) {
             try {
-                restModel = updateEntityWithSavedEntity(restModel, globalConfigs.get(0));
+                restModel = updateConfigurationWithSavedConfiguration(restModel, globalConfigs.get(0));
             } catch (final AlertException e) {
                 return "Error updating config.";
             }
@@ -66,7 +66,7 @@ public class SingleEntityConfigActions extends DescriptorConfigActions {
         if (globalConfigs.size() == 1) {
             globalConfig = globalConfigs.get(0);
         }
-        updateEntityWithSavedEntity(testConfig.getRestModel(), globalConfig);
+        updateConfigurationWithSavedConfiguration(testConfig.getRestModel(), globalConfig);
         return super.testConfig(testConfig, descriptor);
     }
 

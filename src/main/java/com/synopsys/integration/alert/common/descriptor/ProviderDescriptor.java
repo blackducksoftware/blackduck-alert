@@ -42,8 +42,8 @@ public abstract class ProviderDescriptor extends Descriptor {
         @NotNull final Provider provider) {
         super(provider.getName(), DescriptorType.PROVIDER);
         this.provider = provider;
-        addProviderUiConfigs(providerDescriptorActionApi, providerUiConfig);
-        addProviderDistributionUiConfigs(distributionDescriptorActionApi, distributionUIConfig);
+        addGlobalUiConfig(providerDescriptorActionApi, providerUiConfig);
+        addDistributionUiConfig(distributionDescriptorActionApi, distributionUIConfig);
     }
 
     public Provider getProvider() {

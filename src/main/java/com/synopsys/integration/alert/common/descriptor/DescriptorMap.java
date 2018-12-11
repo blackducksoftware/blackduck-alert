@@ -34,7 +34,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIComponent;
-import com.synopsys.integration.alert.common.enumeration.ActionApiType;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 
 @Component
@@ -55,36 +55,15 @@ public class DescriptorMap {
         componentDescriptorMap = initDescriptorMap(componentDescriptors);
     }
 
-    private <D extends Descriptor> Map<String, D> initDescriptorMap(final List<D> descriptorList) throws AlertException {
-        final Map<String, D> descriptorMapping = new HashMap<>(descriptorList.size());
-        for (final D descriptor : descriptorList) {
-            final String descriptorName = descriptor.getName();
-            if (descriptorMap.containsKey(descriptorName)) {
-                throw new AlertException("Found duplicate descriptor name of: " + descriptorName);
-            }
-            descriptorMap.put(descriptorName, descriptor);
-            descriptorMapping.put(descriptorName, descriptor);
-        }
-        return descriptorMapping;
-    }
-
     public List<UIComponent> getDistributionUIConfigs() {
-        return getUIComponents(ActionApiType.CHANNEL_DISTRIBUTION_CONFIG);
+        return getUIComponents(ConfigContextEnum.DISTRIBUTION);
     }
 
     public List<UIComponent> getGlobalUIConfigs() {
-        return getUIComponents(ActionApiType.CHANNEL_GLOBAL_CONFIG);
+        return getUIComponents(ConfigContextEnum.GLOBAL);
     }
 
-    public List<UIComponent> getProviderUIConfigs() {
-        return getUIComponents(ActionApiType.PROVIDER_CONFIG);
-    }
-
-    public List<UIComponent> getComponentUIConfigs() {
-        return getUIComponents(ActionApiType.COMPONENT_CONFIG);
-    }
-
-    public List<UIComponent> getUIComponents(final ActionApiType configType) {
+    public List<UIComponent> getUIComponents(final ConfigContextEnum configType) {
         return descriptorMap.values()
                    .stream()
                    .filter(descriptor -> descriptor.hasUIConfigForType(configType))
@@ -93,7 +72,7 @@ public class DescriptorMap {
     }
 
     public List<UIComponent> getAllUIComponents() {
-        return Arrays.stream(ActionApiType.values())
+        return Arrays.stream(ConfigContextEnum.values())
                    .flatMap(type -> getUIComponents(type).stream())
                    .collect(Collectors.toList());
     }
@@ -132,5 +111,18 @@ public class DescriptorMap {
 
     public Map<String, ComponentDescriptor> getComponentDescriptorMap() {
         return componentDescriptorMap;
+    }
+
+    private <D extends Descriptor> Map<String, D> initDescriptorMap(final List<D> descriptorList) throws AlertException {
+        final Map<String, D> descriptorMapping = new HashMap<>(descriptorList.size());
+        for (final D descriptor : descriptorList) {
+            final String descriptorName = descriptor.getName();
+            if (descriptorMap.containsKey(descriptorName)) {
+                throw new AlertException("Found duplicate descriptor name of: " + descriptorName);
+            }
+            descriptorMap.put(descriptorName, descriptor);
+            descriptorMapping.put(descriptorName, descriptor);
+        }
+        return descriptorMapping;
     }
 }

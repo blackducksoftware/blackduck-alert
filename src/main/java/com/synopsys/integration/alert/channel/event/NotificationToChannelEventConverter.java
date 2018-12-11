@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.configuration.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
-import com.synopsys.integration.alert.common.enumeration.ActionApiType;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 
 @Component
@@ -63,6 +63,6 @@ public class NotificationToChannelEventConverter {
     }
 
     private DistributionEvent createChannelEvent(final CommonDistributionConfiguration config, final AggregateMessageContent messageContent) {
-        return descriptorMap.getChannelDescriptor(config.getChannelName()).getRestApi(ActionApiType.CHANNEL_DISTRIBUTION_CONFIG).createChannelEvent(config, messageContent);
+        return descriptorMap.getChannelDescriptor(config.getChannelName()).getRestApi(ConfigContextEnum.DISTRIBUTION).createChannelEvent(config, messageContent);
     }
 }

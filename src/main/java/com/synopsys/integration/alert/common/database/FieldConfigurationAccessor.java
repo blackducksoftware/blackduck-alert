@@ -3,8 +3,8 @@ package com.synopsys.integration.alert.common.database;
 import java.util.Collection;
 import java.util.List;
 
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.database.api.configuration.ConfigContextEnum;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationFieldModel;
 

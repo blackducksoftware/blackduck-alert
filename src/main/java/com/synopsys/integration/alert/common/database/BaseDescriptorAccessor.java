@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.database.api.configuration.ConfigContextEnum;
 import com.synopsys.integration.alert.database.api.configuration.DefinedFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.DescriptorAccessor.RegisteredDescriptorModel;
 

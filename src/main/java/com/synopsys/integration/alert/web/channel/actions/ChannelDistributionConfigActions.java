@@ -71,25 +71,6 @@ public class ChannelDistributionConfigActions extends DescriptorConfigActions {
         return restModels;
     }
 
-    private void addAuditEntryInfoToRestModels(final List<? extends Config> configs) {
-        for (final Config config : configs) {
-            addAuditEntryInfoToRestModel((CommonDistributionConfig) config);
-        }
-    }
-
-    private void addAuditEntryInfoToRestModel(final CommonDistributionConfig restModel) {
-        String lastRan = "Unknown";
-        String status = "Unknown";
-        final Long id = getContentConverter().getLongValue(restModel.getId());
-        final AuditEntryEntity lastRanEntry = auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(id);
-        if (lastRanEntry != null) {
-            lastRan = getContentConverter().getStringValue(lastRanEntry.getTimeLastSent());
-            status = lastRanEntry.getStatus().getDisplayName();
-        }
-        restModel.setLastRan(lastRan);
-        restModel.setStatus(status);
-    }
-
     @Override
     public DatabaseEntity saveConfig(final Config config, final DescriptorActionApi descriptor) {
         if (config != null) {
@@ -114,15 +95,6 @@ public class ChannelDistributionConfigActions extends DescriptorConfigActions {
         }
     }
 
-    private void deleteAuditEntries(final Long configID) {
-        final List<AuditEntryEntity> auditEntryList = auditEntryRepository.findByCommonConfigId(configID);
-        auditEntryList.forEach((auditEntry) -> {
-            final List<AuditNotificationRelation> relationList = auditNotificationRepository.findByAuditEntryId(auditEntry.getId());
-            auditNotificationRepository.deleteAll(relationList);
-        });
-        auditEntryRepository.deleteAll(auditEntryList);
-    }
-
     @Override
     public DatabaseEntity updateConfig(final Config config, final DescriptorActionApi descriptor) throws AlertException {
         return saveConfig(config, descriptor);
@@ -133,6 +105,35 @@ public class ChannelDistributionConfigActions extends DescriptorConfigActions {
         final CommonDistributionConfig commonConfig = (CommonDistributionConfig) config;
         commonDistributionConfigActions.validateCommonConfig(commonConfig, fieldErrors);
         return super.validateConfig(commonConfig, descriptor, fieldErrors);
+    }
+
+    // TODO Move all audit stuff out of ConfigActions and open an additional endpoint for UI to retrieve Audit info when it wants it.
+    private void addAuditEntryInfoToRestModels(final List<? extends Config> configs) {
+        for (final Config config : configs) {
+            addAuditEntryInfoToRestModel((CommonDistributionConfig) config);
+        }
+    }
+
+    private void addAuditEntryInfoToRestModel(final CommonDistributionConfig restModel) {
+        String lastRan = "Unknown";
+        String status = "Unknown";
+        final Long id = getContentConverter().getLongValue(restModel.getId());
+        final AuditEntryEntity lastRanEntry = auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(id);
+        if (lastRanEntry != null) {
+            lastRan = getContentConverter().getStringValue(lastRanEntry.getTimeLastSent());
+            status = lastRanEntry.getStatus().getDisplayName();
+        }
+        restModel.setLastRan(lastRan);
+        restModel.setStatus(status);
+    }
+
+    private void deleteAuditEntries(final Long configID) {
+        final List<AuditEntryEntity> auditEntryList = auditEntryRepository.findByCommonConfigId(configID);
+        auditEntryList.forEach((auditEntry) -> {
+            final List<AuditNotificationRelation> relationList = auditNotificationRepository.findByAuditEntryId(auditEntry.getId());
+            auditNotificationRepository.deleteAll(relationList);
+        });
+        auditEntryRepository.deleteAll(auditEntryList);
     }
 
 }

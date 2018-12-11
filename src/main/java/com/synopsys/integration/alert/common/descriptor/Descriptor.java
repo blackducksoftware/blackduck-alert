@@ -31,10 +31,8 @@ import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
-import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
-import com.synopsys.integration.alert.common.enumeration.ActionApiType;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
@@ -42,8 +40,8 @@ import com.synopsys.integration.exception.IntegrationException;
 public abstract class Descriptor {
     private final String name;
     private final DescriptorType type;
-    private final Map<ActionApiType, DescriptorActionApi> restApis;
-    private final Map<ActionApiType, UIConfig> uiConfigs;
+    private final Map<ConfigContextEnum, DescriptorActionApi> restApis;
+    private final Map<ConfigContextEnum, UIConfig> uiConfigs;
 
     public Descriptor(final String name, final DescriptorType type) {
         this.name = name;
@@ -60,56 +58,29 @@ public abstract class Descriptor {
         return type;
     }
 
-    public void addProviderActionApi(final DescriptorActionApi descriptorActionApi) {
-        restApis.put(ActionApiType.PROVIDER_CONFIG, descriptorActionApi);
-    }
-
     public void addGlobalActionApi(final DescriptorActionApi descriptorActionApi) {
-        restApis.put(ActionApiType.CHANNEL_GLOBAL_CONFIG, descriptorActionApi);
+        restApis.put(ConfigContextEnum.GLOBAL, descriptorActionApi);
     }
 
     public void addChannelDistributionActionApi(final DescriptorActionApi descriptorActionApi) {
-        restApis.put(ActionApiType.CHANNEL_DISTRIBUTION_CONFIG, descriptorActionApi);
+        restApis.put(ConfigContextEnum.DISTRIBUTION, descriptorActionApi);
     }
 
-    public void addProviderDistributionActionApi(final DescriptorActionApi descriptorActionApi) {
-        restApis.put(ActionApiType.PROVIDER_DISTRIBUTION_CONFIG, descriptorActionApi);
-    }
-
-    public void addComponentActionApi(final DescriptorActionApi descriptorActionApi) {
-        restApis.put(ActionApiType.COMPONENT_CONFIG, descriptorActionApi);
-    }
-
-    public void addProviderUiConfigs(final DescriptorActionApi descriptorActionApi, final UIConfig uiConfig) {
-        uiConfigs.put(ActionApiType.PROVIDER_CONFIG, uiConfig);
-        addProviderActionApi(descriptorActionApi);
-    }
-
-    public void addGlobalUiConfigs(final DescriptorActionApi descriptorActionApi, final UIConfig uiConfig) {
-        uiConfigs.put(ActionApiType.CHANNEL_GLOBAL_CONFIG, uiConfig);
+    public void addGlobalUiConfig(final DescriptorActionApi descriptorActionApi, final UIConfig uiConfig) {
+        uiConfigs.put(ConfigContextEnum.GLOBAL, uiConfig);
         addGlobalActionApi(descriptorActionApi);
     }
 
-    public void addChannelDistributionUiConfigs(final DescriptorActionApi descriptorActionApi, final CommonDistributionUIConfig uiConfig) {
-        uiConfigs.put(ActionApiType.CHANNEL_DISTRIBUTION_CONFIG, uiConfig);
+    public void addDistributionUiConfig(final DescriptorActionApi descriptorActionApi, final UIConfig uiConfig) {
+        uiConfigs.put(ConfigContextEnum.DISTRIBUTION, uiConfig);
         addChannelDistributionActionApi(descriptorActionApi);
     }
 
-    public void addProviderDistributionUiConfigs(final DescriptorActionApi descriptorActionApi, final ProviderDistributionUIConfig uiConfig) {
-        uiConfigs.put(ActionApiType.PROVIDER_DISTRIBUTION_CONFIG, uiConfig);
-        addProviderDistributionActionApi(descriptorActionApi);
-    }
-
-    public void addComponentUiConfigs(final DescriptorActionApi descriptorActionApi, final UIConfig uiConfig) {
-        uiConfigs.put(ActionApiType.COMPONENT_CONFIG, uiConfig);
-        addComponentActionApi(descriptorActionApi);
-    }
-
-    public DescriptorActionApi getRestApi(final ActionApiType actionApiType) {
+    public DescriptorActionApi getRestApi(final ConfigContextEnum actionApiType) {
         return restApis.get(actionApiType);
     }
 
-    public UIConfig getUIConfig(final ActionApiType actionApiType) {
+    public UIConfig getUIConfig(final ConfigContextEnum actionApiType) {
         return uiConfigs.get(actionApiType);
     }
 
@@ -125,15 +96,15 @@ public abstract class Descriptor {
         return uiConfigs.size() > 0;
     }
 
-    public boolean hasUIConfigForType(final ActionApiType actionApiType) {
+    public boolean hasUIConfigForType(final ConfigContextEnum actionApiType) {
         return uiConfigs.containsKey(actionApiType);
     }
 
-    public void validateConfig(final ActionApiType actionApiType, final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
+    public void validateConfig(final ConfigContextEnum actionApiType, final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
         getRestApi(actionApiType).validateConfig(fieldAccessor, fieldErrors);
     }
 
-    public void testConfig(final ActionApiType actionApiType, final TestConfigModel testConfig) throws IntegrationException {
+    public void testConfig(final ConfigContextEnum actionApiType, final TestConfigModel testConfig) throws IntegrationException {
         getRestApi(actionApiType).testConfig(testConfig);
     }
 
