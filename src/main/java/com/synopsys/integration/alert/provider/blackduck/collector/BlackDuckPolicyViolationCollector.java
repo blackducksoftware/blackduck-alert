@@ -54,11 +54,11 @@ import com.synopsys.integration.blackduck.notification.content.PolicyInfo;
 
 @Component
 @Scope("prototype")
-public class BlackDuckPolicyViolationMessageContentCollector extends BlackDuckPolicyMessageContentCollector {
+public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    public BlackDuckPolicyViolationMessageContentCollector(final JsonExtractor jsonExtractor,
+    public BlackDuckPolicyViolationCollector(final JsonExtractor jsonExtractor,
         final List<MessageContentProcessor> messageContentProcessorList) {
         super(jsonExtractor, messageContentProcessorList, Arrays.asList(BlackDuckProviderContentTypes.RULE_VIOLATION, BlackDuckProviderContentTypes.RULE_VIOLATION_CLEARED));
     }
