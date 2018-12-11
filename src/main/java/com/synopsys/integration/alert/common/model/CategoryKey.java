@@ -24,6 +24,7 @@
 package com.synopsys.integration.alert.common.model;
 
 import java.util.Arrays;
+import java.util.List;
 
 import com.synopsys.integration.util.Stringable;
 
@@ -39,6 +40,12 @@ public final class CategoryKey extends Stringable {
     public static final CategoryKey from(final String type, final String... keyComponentArray) {
         Arrays.sort(keyComponentArray);
         return new CategoryKey(type, String.join("_", keyComponentArray));
+    }
+
+    public static final CategoryKey from(final String type, final List<String> keyComponentList) {
+        String[] keyArray = new String[keyComponentList.size()];
+        keyArray = keyComponentList.toArray(keyArray);
+        return from(type, keyArray);
     }
 
     public String getType() {

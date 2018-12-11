@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,11 +51,8 @@ public abstract class BlackDuckPolicyMessageContentCollector extends MessageCont
     }
 
     protected void addApplicableItems(final List<CategoryItem> categoryItems, final Long notificationId, final LinkableItem policyItem, final String policyUrl, final ItemOperation operation, final SortedSet<LinkableItem> applicableItems) {
-        final List<String> keyItems = applicableItems.stream().map(LinkableItem::getValue).collect(Collectors.toList());
-        String[] keyArray = new String[keyItems.size() + 1];
-        keyArray = keyItems.toArray(keyArray);
-        keyArray[keyArray.length - 1] = policyUrl;
-        final CategoryKey categoryKey = CategoryKey.from(CATEGORY_TYPE, keyArray);
+        final List<String> keyItems = Stream.concat(applicableItems.stream().map(LinkableItem::getValue), Stream.of(policyUrl)).collect(Collectors.toList());
+        final CategoryKey categoryKey = CategoryKey.from(CATEGORY_TYPE, keyItems);
 
         for (final LinkableItem item : applicableItems) {
             final SortedSet<LinkableItem> linkableItems;
