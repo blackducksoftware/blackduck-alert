@@ -26,6 +26,7 @@ package com.synopsys.integration.alert.channel.slack;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -59,7 +60,8 @@ public class SlackChannel extends RestDistributionChannel<GlobalChannelConfigEnt
     private static final Map<String, String> SLACK_CHARACTER_ENCODING_MAP;
 
     static {
-        SLACK_CHARACTER_ENCODING_MAP = new HashMap<>();
+        // Insertion order matters, so '&' must always be inserted first.
+        SLACK_CHARACTER_ENCODING_MAP = new LinkedHashMap<>();
         SLACK_CHARACTER_ENCODING_MAP.put("&", "&amp;");
         SLACK_CHARACTER_ENCODING_MAP.put("<", "&lt;");
         SLACK_CHARACTER_ENCODING_MAP.put(">", "&gt;");
@@ -179,7 +181,7 @@ public class SlackChannel extends RestDistributionChannel<GlobalChannelConfigEnt
     private String createSlackString(final String unencodedString) {
         String newString = unencodedString;
         for (final Map.Entry<String, String> mapping : SLACK_CHARACTER_ENCODING_MAP.entrySet()) {
-            newString = unencodedString.replace(mapping.getKey(), mapping.getValue());
+            newString = newString.replace(mapping.getKey(), mapping.getValue());
         }
         return newString;
     }

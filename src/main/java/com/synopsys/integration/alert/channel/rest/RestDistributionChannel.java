@@ -23,6 +23,7 @@
  */
 package com.synopsys.integration.alert.channel.rest;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -91,20 +92,22 @@ public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntit
 
     public void sendMessageRequest(final RestConnection restConnection, final Request request, final String messageType) throws IntegrationException {
         logger.info("Attempting to send a {} message...", messageType);
-        final Response response = sendGenericRequest(restConnection, request);
-        if (response.getStatusCode() >= 200 && response.getStatusCode() < 400) {
-            logger.info("Successfully sent a {} message!", messageType);
+        try (final Response response = sendGenericRequest(restConnection, request)) {
+            if (response.getStatusCode() >= 200 && response.getStatusCode() < 400) {
+                logger.info("Successfully sent a {} message!", messageType);
+            }
+        } catch (final IOException e) {
+            throw new AlertException(e.getMessage(), e);
         }
     }
 
     public Response sendGenericRequest(final RestConnection restConnection, final Request request) throws IntegrationException {
-        try {
-            final Response response = restConnection.execute(request);
+        try (final Response response = restConnection.execute(request)) {
             logger.trace("Response: " + response.toString());
             return response;
-        } catch (final Exception generalException) {
-            logger.error("Error sending request", generalException);
-            throw new AlertException(generalException.getMessage());
+        } catch (final Exception e) {
+            logger.error("Error sending request", e);
+            throw new AlertException(e.getMessage(), e);
         }
     }
 
