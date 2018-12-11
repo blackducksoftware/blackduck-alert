@@ -1,10 +1,13 @@
 package com.synopsys.integration.alert.database.audit;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertFalse;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.TreeSet;
 
@@ -27,16 +30,20 @@ public class AuditUtilityTest {
         final AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
         final AuditUtility auditUtility = new AuditUtility(auditEntryRepository, auditNotificationRepository);
         final AggregateMessageContent content = createMessageContent();
-        final AuditEntryEntity savedAuditEntryEntity = new AuditEntryEntity(1L, new Date(), new Date(), AuditEntryStatus.SUCCESS, null, null);
+        final AuditEntryEntity savedAuditEntryEntity = new AuditEntryEntity(1L, new Date(), new Date(), AuditEntryStatus.SUCCESS.toString(), null, null);
         savedAuditEntryEntity.setId(10L);
         Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(savedAuditEntryEntity));
         mockAuditRepositorySave(auditEntryRepository, savedAuditEntryEntity);
 
-        final Long auditEntryId = auditUtility.createAuditEntry(10L, 1L, content);
-        assertEquals(savedAuditEntryEntity.getId(), auditEntryId);
-        assertEquals(AuditEntryStatus.PENDING, savedAuditEntryEntity.getStatus());
+        final Map<Long, Long> existingNotificationIdToAuditId = new HashMap<>();
+        existingNotificationIdToAuditId.put(1L, 10L);
+        final Map<Long, Long> savedNotificationIdToAuditId = auditUtility.createAuditEntry(existingNotificationIdToAuditId, 1L, content);
+        assertFalse(savedNotificationIdToAuditId.isEmpty());
+        assertEquals(2, savedNotificationIdToAuditId.size());
+        assertEquals(savedAuditEntryEntity.getId(), savedNotificationIdToAuditId.get(1L));
+        assertEquals(AuditEntryStatus.PENDING.toString(), savedAuditEntryEntity.getStatus());
         Mockito.verify(auditEntryRepository).findById(Mockito.anyLong());
-        Mockito.verify(auditNotificationRepository, Mockito.times(content.getCategoryItemList().size())).save(Mockito.any(AuditNotificationRelation.class));
+        Mockito.verify(auditNotificationRepository, Mockito.times(2)).save(Mockito.any(AuditNotificationRelation.class));
     }
 
     @Test
@@ -45,22 +52,23 @@ public class AuditUtilityTest {
         final AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
         final AuditUtility auditUtility = new AuditUtility(auditEntryRepository, auditNotificationRepository);
         final AggregateMessageContent content = createMessageContent();
-        final AuditEntryEntity savedAuditEntryEntity = new AuditEntryEntity(1L, new Date(), new Date(), AuditEntryStatus.SUCCESS, null, null);
+        final AuditEntryEntity savedAuditEntryEntity = new AuditEntryEntity(1L, new Date(), new Date(), AuditEntryStatus.SUCCESS.toString(), null, null);
         savedAuditEntryEntity.setId(10L);
 
         mockAuditRepositorySave(auditEntryRepository, savedAuditEntryEntity);
-        final Long auditEntryId = auditUtility.createAuditEntry(null, 1L, content);
-        assertNotNull(auditEntryId);
-        assertEquals(savedAuditEntryEntity.getId(), auditEntryId);
-        assertEquals(AuditEntryStatus.PENDING, savedAuditEntryEntity.getStatus());
+        final Map<Long, Long> savedNotificationIdToAuditId = auditUtility.createAuditEntry(null, 1L, content);
+        assertFalse(savedNotificationIdToAuditId.isEmpty());
+        assertEquals(2, savedNotificationIdToAuditId.size());
+        assertEquals(savedAuditEntryEntity.getId(), savedNotificationIdToAuditId.values().iterator().next());
+        assertEquals(AuditEntryStatus.PENDING.toString(), savedAuditEntryEntity.getStatus());
         Mockito.verify(auditEntryRepository, Mockito.times(0)).findById(Mockito.anyLong());
-        Mockito.verify(auditNotificationRepository, Mockito.times(content.getCategoryItemList().size())).save(Mockito.any(AuditNotificationRelation.class));
+        Mockito.verify(auditNotificationRepository, Mockito.times(2)).save(Mockito.any(AuditNotificationRelation.class));
     }
 
     @Test
     public void setAuditEntrySuccessCatchExceptionTest() {
         final AuditUtility auditUtility = new AuditUtility(null, null);
-        auditUtility.setAuditEntrySuccess(1L);
+        auditUtility.setAuditEntrySuccess(Arrays.asList(1L));
     }
 
     @Test
@@ -68,34 +76,34 @@ public class AuditUtilityTest {
         final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         final AuditUtility auditUtility = new AuditUtility(auditEntryRepository, null);
 
-        final AuditEntryEntity entity = new AuditEntryEntity(1L, new Date(System.currentTimeMillis() - 1000), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS, null, null);
+        final AuditEntryEntity entity = new AuditEntryEntity(1L, new Date(System.currentTimeMillis() - 1000), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS.toString(), null, null);
         entity.setId(1L);
         Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(entity));
         Mockito.when(auditEntryRepository.save(entity)).thenReturn(entity);
 
-        auditUtility.setAuditEntrySuccess(null);
-        auditUtility.setAuditEntrySuccess(entity.getId());
-        assertEquals(AuditEntryStatus.SUCCESS, entity.getStatus());
+        auditUtility.setAuditEntrySuccess(Collections.emptyList());
+        auditUtility.setAuditEntrySuccess(Arrays.asList(entity.getId()));
+        assertEquals(AuditEntryStatus.SUCCESS.toString(), entity.getStatus());
     }
 
     @Test
     public void setAuditEntryFailureCatchExceptionTest() {
         final AuditUtility auditUtility = new AuditUtility(null, null);
-        auditUtility.setAuditEntryFailure(1L, null, null);
+        auditUtility.setAuditEntryFailure(Arrays.asList(1L), null, null);
     }
 
     @Test
     public void setAuditEntryFailureTest() {
         final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         final AuditUtility auditUtility = new AuditUtility(auditEntryRepository, null);
-        final AuditEntryEntity entity = new AuditEntryEntity(1L, new Date(System.currentTimeMillis() - 1000), new Date(System.currentTimeMillis()), AuditEntryStatus.FAILURE, null, null);
+        final AuditEntryEntity entity = new AuditEntryEntity(1L, new Date(System.currentTimeMillis() - 1000), new Date(System.currentTimeMillis()), AuditEntryStatus.FAILURE.toString(), null, null);
         entity.setId(1L);
         Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(entity));
         Mockito.when(auditEntryRepository.save(entity)).thenReturn(entity);
 
-        auditUtility.setAuditEntryFailure(null, null, null);
-        auditUtility.setAuditEntryFailure(entity.getId(), "error", new Exception());
-        assertEquals(AuditEntryStatus.FAILURE, entity.getStatus());
+        auditUtility.setAuditEntryFailure(Collections.emptyList(), null, null);
+        auditUtility.setAuditEntryFailure(Arrays.asList(entity.getId()), "error", new Exception());
+        assertEquals(AuditEntryStatus.FAILURE.toString(), entity.getStatus());
         assertEquals("error", entity.getErrorMessage());
     }
 

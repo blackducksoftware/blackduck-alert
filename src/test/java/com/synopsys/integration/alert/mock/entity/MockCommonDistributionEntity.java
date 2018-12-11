@@ -5,6 +5,7 @@ import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 
 public class MockCommonDistributionEntity extends MockEntityUtil<CommonDistributionConfigEntity> {
     private Long distributionConfigId;
@@ -18,7 +19,7 @@ public class MockCommonDistributionEntity extends MockEntityUtil<CommonDistribut
     private FormatType formatType;
 
     public MockCommonDistributionEntity() {
-        this(1L, HipChatChannel.COMPONENT_NAME.toString(), "Name", "provider_blackduck", FrequencyType.REAL_TIME, FormatType.DEFAULT, true, "", 2L);
+        this(1L, HipChatChannel.COMPONENT_NAME.toString(), "Name", BlackDuckProvider.COMPONENT_NAME, FrequencyType.REAL_TIME, FormatType.DEFAULT, true, "example", 2L);
     }
 
     private MockCommonDistributionEntity(final Long distributionConfigId, final String distributionType, final String name, final String providerName, final FrequencyType frequency, final FormatType formatType,

@@ -21,26 +21,20 @@ public class AuditEntryRestModelTest extends RestModelTest<AuditEntryModel> {
 
     @Override
     public void assertRestModelFieldsNull(final AuditEntryModel restModel) {
-        assertNull(restModel.getErrorMessage());
-        assertNull(restModel.getErrorStackTrace());
-        assertNull(restModel.getEventType());
-        assertNull(restModel.getName());
         assertNull(restModel.getNotification());
-        assertNull(restModel.getStatus());
-        assertNull(restModel.getTimeCreated());
-        assertNull(restModel.getTimeLastSent());
+        assertNull(restModel.getJobs());
+        assertNull(restModel.getOverallStatus());
+        assertNull(restModel.getLastSent());
+        assertNull(restModel.getId());
     }
 
     @Override
     public void assertRestModelFieldsFull(final AuditEntryModel restModel) {
-        assertEquals(getMockUtil().getErrorMessage(), restModel.getErrorMessage());
-        assertEquals(getMockUtil().getErrorStackTrace(), restModel.getErrorStackTrace());
-        assertEquals(getMockUtil().getEventType(), restModel.getEventType());
-        assertEquals(getMockUtil().getName(), restModel.getName());
         assertEquals(getMockUtil().getNotification(), restModel.getNotification());
-        assertEquals(getMockUtil().getStatus(), restModel.getStatus());
-        assertEquals(getMockUtil().getTimeCreated(), restModel.getTimeCreated());
-        assertEquals(getMockUtil().getTimeLastSent(), restModel.getTimeLastSent());
+        assertEquals(getMockUtil().getJobModels(), restModel.getJobs());
+        assertEquals(getMockUtil().getOverallStatus(), restModel.getOverallStatus());
+        assertEquals(getMockUtil().getTimeLastSent(), restModel.getLastSent());
+        assertEquals(getMockUtil().getId().toString(), restModel.getId());
     }
 
 }
