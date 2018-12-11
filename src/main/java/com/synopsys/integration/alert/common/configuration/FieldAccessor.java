@@ -15,7 +15,7 @@ public class FieldAccessor {
     }
 
     public Long getLong(final String key) {
-        final String value = fields.get(key).getFieldValue().orElse("-1");
+        final String value = fields.get(key).getFieldValue().orElse("");
         return Long.parseLong(value);
     }
 

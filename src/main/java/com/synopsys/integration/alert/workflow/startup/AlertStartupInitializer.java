@@ -40,8 +40,8 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.database.FieldConfigurationAccessor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.database.api.configuration.ConfigContextEnum;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.DefinedFieldModel;
@@ -93,6 +93,10 @@ public class AlertStartupInitializer {
         }
     }
 
+    public Set<String> getAlertPropertyNameSet() {
+        return alertStartupFields;
+    }
+
     private Set<ConfigurationFieldModel> createConfigurationFieldModels(final Map<String, String> fields) {
         return fields.entrySet()
                    .stream()
@@ -118,9 +122,5 @@ public class AlertStartupInitializer {
             value = environment.getProperty(propertyKey);
         }
         return value;
-    }
-
-    public Set<String> getAlertPropertyNameSet() {
-        return alertStartupFields;
     }
 }

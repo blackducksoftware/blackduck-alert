@@ -25,35 +25,53 @@ package com.synopsys.integration.alert.web.config.controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.web.config.controller.handler.ConfigControllerHandler;
 import com.synopsys.integration.alert.web.controller.BaseController;
-import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.alert.web.model.FieldModel;
 
 @RequestMapping(ConfigController.CONFIGURATION_PATH)
-public abstract class ConfigController extends BaseController {
+public class ConfigController extends BaseController {
     public static final String CONFIGURATION_PATH = BaseController.BASE_PATH + "/configuration";
-    public static final String PROVIDER_CONFIG = CONFIGURATION_PATH + "/provider";
-    public static final String CHANNEL_CONFIG = CONFIGURATION_PATH + "/channel";
-    public static final String COMPONENT_CONFIG = CONFIGURATION_PATH + "/component";
 
-    @GetMapping
-    public abstract List<? extends Config> getConfig(final Long id, final String descriptorName);
+    private final ConfigControllerHandler controllerHandler;
 
-    @PostMapping
-    public abstract ResponseEntity<String> postConfig(final String config, final String descriptorName);
+    @Autowired
+    public ConfigController(final ConfigControllerHandler controllerHandler) {
+        this.controllerHandler = controllerHandler;
+    }
 
-    @PutMapping
-    public abstract ResponseEntity<String> putConfig(final String config, final String descriptorName);
+    public List<FieldModel> getConfigs(final @RequestParam ConfigContextEnum context, @RequestParam(required = false) final String descriptorName) {
+        return controllerHandler.getConfigs(context, descriptorName);
+    }
 
-    @PostMapping(value = "/validate")
-    public abstract ResponseEntity<String> validateConfig(final String config, final String descriptorName);
+    public FieldModel getConfig(final Long id) {
+        return controllerHandler.getConfig(id);
+    }
 
-    @DeleteMapping
-    public abstract ResponseEntity<String> deleteConfig(final Long id, final String descriptorName);
+    public ResponseEntity<String> postConfig(@RequestBody(required = false) final FieldModel restModel, @RequestParam final ConfigContextEnum context) {
+        return controllerHandler.postConfig(restModel, context);
+    }
+
+    public ResponseEntity<String> putConfig(@RequestBody(required = false) final FieldModel restModel) {
+        return controllerHandler.putConfig(restModel);
+    }
+
+    public ResponseEntity<String> validateConfig(@RequestBody(required = false) final FieldModel restModel) {
+        return controllerHandler.validateConfig(restModel);
+    }
+
+    public ResponseEntity<String> deleteConfig(final Long id) {
+        return controllerHandler.deleteConfig(id);
+    }
+
+    public ResponseEntity<String> testConfig(@RequestBody(required = false) final FieldModel restModel, @RequestParam(required = false) final String destination) {
+        return controllerHandler.testConfig(restModel);
+    }
 }

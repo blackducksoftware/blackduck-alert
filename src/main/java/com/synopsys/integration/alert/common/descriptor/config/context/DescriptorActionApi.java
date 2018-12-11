@@ -30,8 +30,6 @@ import java.util.Map;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.configuration.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
-import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
@@ -54,18 +52,6 @@ public abstract class DescriptorActionApi {
         return new DistributionEvent(commmonDistributionConfig.getId().toString(), commmonDistributionConfig.getChannelName(), RestConstants.formatDate(new Date()), commmonDistributionConfig.getProviderName(),
             commmonDistributionConfig.getFormatType().name(), messageContent,
             commmonDistributionConfig.getFieldAccessor());
-    }
-
-    public DistributionEvent createChannelTestEvent(final FieldModel fieldModel) {
-        final AggregateMessageContent messageContent = createTestNotificationContent();
-
-        final String channelName = fieldModel.getValue(CommonDistributionUIConfig.KEY_CHANNEL_NAME).orElse("");
-        final String providerName = fieldModel.getValue(CommonDistributionUIConfig.KEY_PROVIDER_NAME).orElse("");
-        final String formatType = fieldModel.getValue(ProviderDistributionUIConfig.KEY_FORMAT_TYPE).orElse("");
-
-        final FieldAccessor fieldAccessor = fieldModel.convertToFieldAccessor();
-
-        return new DistributionEvent(fieldModel.getId(), channelName, RestConstants.formatDate(new Date()), providerName, formatType, messageContent, fieldAccessor);
     }
 
     public AggregateMessageContent createTestNotificationContent() {

@@ -39,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.entity.configuration.ConfigContextEntity;
@@ -65,7 +66,7 @@ public class ConfigurationAccessor {
 
     @Autowired
     public ConfigurationAccessor(final RegisteredDescriptorRepository registeredDescriptorRepository, final DefinedFieldRepository definedFieldRepository,
-            final DescriptorConfigRepository descriptorConfigsRepository, final ConfigContextRepository configContextRepository, final FieldValueRepository fieldValueRepository, final EncryptionUtility encryptionUtility) {
+        final DescriptorConfigRepository descriptorConfigsRepository, final ConfigContextRepository configContextRepository, final FieldValueRepository fieldValueRepository, final EncryptionUtility encryptionUtility) {
         this.registeredDescriptorRepository = registeredDescriptorRepository;
         this.definedFieldRepository = definedFieldRepository;
         this.descriptorConfigsRepository = descriptorConfigsRepository;
@@ -119,8 +120,8 @@ public class ConfigurationAccessor {
                 final String fieldKey = configuredField.getFieldKey();
                 if (configuredField.isSet()) {
                     final DefinedFieldEntity associatedField = definedFieldRepository
-                                                                       .findFirstByKey(fieldKey)
-                                                                       .orElseThrow(() -> new AlertDatabaseConstraintException("A field with the provided key did not exist: " + fieldKey));
+                                                                   .findFirstByKey(fieldKey)
+                                                                   .orElseThrow(() -> new AlertDatabaseConstraintException("A field with the provided key did not exist: " + fieldKey));
                     for (final String value : configuredField.getFieldValues()) {
                         final FieldValueEntity newFieldValueEntity = new FieldValueEntity(createdConfig.getConfigurationId(), associatedField.getId(), encrypt(value, configuredField.isSensitive()));
                         fieldValueRepository.save(newFieldValueEntity);
@@ -140,8 +141,8 @@ public class ConfigurationAccessor {
             throw new AlertDatabaseConstraintException("The config id cannot be null");
         }
         final DescriptorConfigEntity descriptorConfigEntity = descriptorConfigsRepository
-                                                                      .findById(descriptorConfigId)
-                                                                      .orElseThrow(() -> new AlertDatabaseConstraintException("A config with that id did not exist"));
+                                                                  .findById(descriptorConfigId)
+                                                                  .orElseThrow(() -> new AlertDatabaseConstraintException("A config with that id did not exist"));
         final List<FieldValueEntity> oldValues = fieldValueRepository.findByConfigId(descriptorConfigEntity.getDescriptorId());
         fieldValueRepository.deleteAll(oldValues);
 
@@ -192,8 +193,8 @@ public class ConfigurationAccessor {
         final List<FieldValueEntity> fieldValueEntities = fieldValueRepository.findByConfigId(configId);
         for (final FieldValueEntity fieldValueEntity : fieldValueEntities) {
             final DefinedFieldEntity definedFieldEntity = definedFieldRepository
-                                                                  .findById(fieldValueEntity.getFieldId())
-                                                                  .orElseThrow(() -> new AlertDatabaseConstraintException("Field id cannot be null"));
+                                                              .findById(fieldValueEntity.getFieldId())
+                                                              .orElseThrow(() -> new AlertDatabaseConstraintException("Field id cannot be null"));
             final String fieldKey = definedFieldEntity.getKey();
             final ConfigurationFieldModel fieldModel = definedFieldEntity.getSensitive() ? ConfigurationFieldModel.createSensitive(fieldKey) : ConfigurationFieldModel.create(fieldKey);
             final String decryptedValue = decrypt(fieldValueEntity.getValue(), fieldModel.isSensitive());
@@ -218,16 +219,16 @@ public class ConfigurationAccessor {
             throw new AlertDatabaseConstraintException("Context cannot be null");
         }
         return configContextRepository
-                       .findFirstByContext(context.name())
-                       .map(ConfigContextEntity::getId)
-                       .orElseThrow(() -> new AlertDatabaseConstraintException("That context does not exist"));
+                   .findFirstByContext(context.name())
+                   .map(ConfigContextEntity::getId)
+                   .orElseThrow(() -> new AlertDatabaseConstraintException("That context does not exist"));
     }
 
     private String getContextById(final Long contextId) throws AlertDatabaseConstraintException {
         return configContextRepository
-                       .findById(contextId)
-                       .map(ConfigContextEntity::getContext)
-                       .orElseThrow(() -> new AlertDatabaseConstraintException("No context with that id exists"));
+                   .findById(contextId)
+                   .map(ConfigContextEntity::getContext)
+                   .orElseThrow(() -> new AlertDatabaseConstraintException("No context with that id exists"));
     }
 
     private Long getFieldIdOrThrowException(final String fieldKey) throws AlertDatabaseConstraintException {
@@ -235,9 +236,9 @@ public class ConfigurationAccessor {
             throw new AlertDatabaseConstraintException("Field key cannot be empty");
         }
         return definedFieldRepository
-                       .findFirstByKey(fieldKey)
-                       .map(DefinedFieldEntity::getId)
-                       .orElseThrow(() -> new AlertDatabaseConstraintException("A field with that key did not exist"));
+                   .findFirstByKey(fieldKey)
+                   .map(DefinedFieldEntity::getId)
+                   .orElseThrow(() -> new AlertDatabaseConstraintException("A field with that key did not exist"));
     }
 
     private String encrypt(final String value, final Boolean shouldEncrypt) {
@@ -265,10 +266,10 @@ public class ConfigurationAccessor {
         }
 
         private ConfigurationModel(final Long registeredDescriptorId, final Long descriptorConfigId, final ConfigContextEnum context) {
-            this.descriptorId = registeredDescriptorId;
-            this.configurationId = descriptorConfigId;
+            descriptorId = registeredDescriptorId;
+            configurationId = descriptorConfigId;
             this.context = context;
-            this.configuredFields = new HashMap<>();
+            configuredFields = new HashMap<>();
         }
 
         public Long getDescriptorId() {

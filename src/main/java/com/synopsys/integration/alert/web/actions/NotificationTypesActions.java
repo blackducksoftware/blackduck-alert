@@ -59,8 +59,8 @@ public class NotificationTypesActions {
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public List<String> getNotificationTypes(final CommonDistributionConfigEntity commonEntity) {
-        final List<DistributionNotificationTypeRelation> foundRelations = distributionNotificationTypeRepository.findByCommonDistributionConfigId(commonEntity.getId());
+    public List<String> getNotificationTypes(final Long configId) {
+        final List<DistributionNotificationTypeRelation> foundRelations = distributionNotificationTypeRepository.findByCommonDistributionConfigId(configId);
         return foundRelations.stream().map(DistributionNotificationTypeRelation::getNotificationType).collect(Collectors.toList());
 
     }

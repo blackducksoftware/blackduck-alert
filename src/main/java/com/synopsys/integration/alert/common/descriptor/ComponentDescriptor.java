@@ -31,7 +31,7 @@ public class ComponentDescriptor extends Descriptor {
 
     public ComponentDescriptor(final String name, final DescriptorActionApi componentDescriptorActionApi, final UIConfig componentUIConfig) {
         super(name, DescriptorType.COMPONENT);
-        addComponentUiConfigs(componentDescriptorActionApi, componentUIConfig);
+        addGlobalUiConfig(componentDescriptorActionApi, componentUIConfig);
     }
 
 }
