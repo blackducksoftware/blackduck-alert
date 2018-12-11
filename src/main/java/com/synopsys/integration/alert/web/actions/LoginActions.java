@@ -23,8 +23,6 @@
  */
 package com.synopsys.integration.alert.web.actions;
 
-import java.util.Collections;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,24 +31,52 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.web.model.LoginConfig;
+import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
 
 @Component
 public class LoginActions {
     private static final Logger logger = LoggerFactory.getLogger(LoginActions.class);
     private final DaoAuthenticationProvider alertDatabaseAuthProvider;
+    private final LdapManager ldapManager;
 
     @Autowired
-    public LoginActions(final DaoAuthenticationProvider alertDatabaseAuthProvider) {
+    public LoginActions(final DaoAuthenticationProvider alertDatabaseAuthProvider, final LdapManager ldapManager) {
         this.alertDatabaseAuthProvider = alertDatabaseAuthProvider;
+        this.ldapManager = ldapManager;
     }
 
     public boolean authenticateUser(final LoginConfig loginConfig) throws BadCredentialsException {
-        final Authentication pendingAuthentication = new UsernamePasswordAuthenticationToken(loginConfig.getBlackDuckUsername(), loginConfig.getBlackDuckPassword(), Collections.emptyList());
-        final Authentication authentication = alertDatabaseAuthProvider.authenticate(pendingAuthentication);
+        Authentication authentication;
+        authentication = performLdapAuthentication(loginConfig);
+        if (!authentication.isAuthenticated()) {
+            authentication = performDatabaseAuthentication(loginConfig);
+        }
         SecurityContextHolder.getContext().setAuthentication(authentication);
         return authentication.isAuthenticated();
+    }
+
+    private Authentication performDatabaseAuthentication(final LoginConfig loginConfig) {
+        final Authentication pendingAuthentication = createUsernamePasswordAuthToken(loginConfig);
+        return alertDatabaseAuthProvider.authenticate(pendingAuthentication);
+    }
+
+    private Authentication performLdapAuthentication(final LoginConfig loginConfig) {
+        final Authentication pendingAuthentication = createUsernamePasswordAuthToken(loginConfig);
+        final Authentication result;
+        if (ldapManager.isLdapEnabled()) {
+            final LdapAuthenticationProvider authenticationProvider = ldapManager.getAuthenticationProvider();
+            result = authenticationProvider.authenticate(pendingAuthentication);
+        } else {
+            result = pendingAuthentication;
+        }
+        return result;
+    }
+
+    private UsernamePasswordAuthenticationToken createUsernamePasswordAuthToken(final LoginConfig loginConfig) {
+        return new UsernamePasswordAuthenticationToken(loginConfig.getBlackDuckUsername(), loginConfig.getBlackDuckPassword());
     }
 }
