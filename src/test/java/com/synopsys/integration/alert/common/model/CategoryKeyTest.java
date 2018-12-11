@@ -2,6 +2,9 @@ package com.synopsys.integration.alert.common.model;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Test;
 
 public class CategoryKeyTest {
@@ -36,5 +39,18 @@ public class CategoryKeyTest {
 
         assertEquals(type, categoryKey.getType());
         assertEquals(expectedKey, categoryKey.getKey());
+    }
+
+    @Test
+    public void testFromTypeAndComponentsList() {
+        final String type = "categoryType";
+        final String part1 = "categoryKeyPartPreSorted1";
+        final String part2 = "categoryKeyPartPreSorted2";
+        final CategoryKey categoryKeyFromArray = CategoryKey.from(type, part2, part1);
+        final List<String> componentList = Arrays.asList(part1, part2);
+        final CategoryKey categoryKey = CategoryKey.from(type, componentList);
+
+        assertEquals(type, categoryKey.getType());
+        assertEquals(categoryKeyFromArray.getKey(), categoryKey.getKey());
     }
 }

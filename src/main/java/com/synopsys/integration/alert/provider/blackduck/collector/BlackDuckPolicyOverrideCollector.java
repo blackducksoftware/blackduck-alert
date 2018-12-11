@@ -21,7 +21,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package com.synopsys.integration.alert.provider.blackduck.collector;
 
 import java.util.Arrays;
@@ -39,29 +38,27 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.field.JsonField;
 import com.synopsys.integration.alert.common.model.CategoryItem;
-import com.synopsys.integration.alert.common.model.CategoryKey;
 import com.synopsys.integration.alert.common.model.LinkableItem;
-import com.synopsys.integration.alert.common.workflow.processor.MessageContentCollector;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProviderContentTypes;
 import com.synopsys.integration.alert.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.alert.workflow.filter.field.JsonFieldAccessor;
-import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 @Component
 @Scope("prototype")
-public class BlackDuckPolicyMessageContentCollector extends MessageContentCollector {
-    public static final String CATEGORY_TYPE = "policy";
+public class BlackDuckPolicyOverrideCollector extends BlackDuckPolicyCollector {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    public BlackDuckPolicyMessageContentCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList) {
-        super(jsonExtractor, messageContentProcessorList, Arrays.asList(BlackDuckProviderContentTypes.POLICY_OVERRIDE, BlackDuckProviderContentTypes.RULE_VIOLATION, BlackDuckProviderContentTypes.RULE_VIOLATION_CLEARED));
+    public BlackDuckPolicyOverrideCollector(final JsonExtractor jsonExtractor,
+        final List<MessageContentProcessor> messageContentProcessorList) {
+        super(jsonExtractor, messageContentProcessorList, Arrays.asList(BlackDuckProviderContentTypes.POLICY_OVERRIDE));
     }
 
     @Override
     protected void addCategoryItems(final List<CategoryItem> categoryItems, final JsonFieldAccessor jsonFieldAccessor, final List<JsonField<?>> notificationFields, final NotificationContent notificationContent) {
+        final ItemOperation operation = ItemOperation.DELETE;
         final List<JsonField<String>> categoryFields = getStringFields(notificationFields);
         final List<LinkableItem> policyItems = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_POLICY_NAME);
         final List<LinkableItem> componentItems = getLinkableItemsByLabel(jsonFieldAccessor, categoryFields, BlackDuckProviderContentTypes.LABEL_COMPONENT_NAME);
@@ -72,48 +69,14 @@ public class BlackDuckPolicyMessageContentCollector extends MessageContentCollec
         applicableItems.addAll(componentItems);
         applicableItems.addAll(componentVersionItems);
 
-        Optional<LinkableItem> combinedNameItem = Optional.empty();
         if (firstName.isPresent() && lastName.isPresent()) {
             final String value = String.format("%s %s", firstName.get().getValue(), lastName.get().getValue());
-            combinedNameItem = Optional.of(new LinkableItem(BlackDuckProviderContentTypes.LABEL_POLICY_OVERRIDE_BY, value));
+            applicableItems.add(new LinkableItem(BlackDuckProviderContentTypes.LABEL_POLICY_OVERRIDE_BY, value));
         }
 
-        final ItemOperation operation;
-        try {
-            operation = getOperationFromNotification(notificationContent);
-        } catch (final IllegalArgumentException e) {
-            logger.error("Unrecognized notification type", e);
-            return;
-        }
         for (final LinkableItem policyItem : policyItems) {
             final String policyUrl = policyItem.getUrl().orElse("");
-            addApplicableItems(categoryItems, notificationContent.getId(), policyItem, policyUrl, operation, combinedNameItem, applicableItems);
-        }
-    }
-
-    protected ItemOperation getOperationFromNotification(final NotificationContent notificationContent) {
-        final String notificationType = notificationContent.getNotificationType();
-        if (NotificationType.RULE_VIOLATION_CLEARED.name().equals(notificationType)) {
-            return ItemOperation.DELETE;
-        } else if (NotificationType.RULE_VIOLATION.name().equals(notificationType)) {
-            return ItemOperation.ADD;
-        } else if (NotificationType.POLICY_OVERRIDE.name().equals(notificationType)) {
-            return ItemOperation.DELETE;
-        }
-        throw new IllegalArgumentException(String.format("The notification type '%s' is not valid for this collector.", notificationType));
-    }
-
-    private void addApplicableItems(final List<CategoryItem> categoryItems, final Long notificationId, final LinkableItem policyItem, final String policyUrl, final ItemOperation operation,
-        final Optional<LinkableItem> nameItem, final SortedSet<LinkableItem> applicableItems) {
-        for (final LinkableItem item : applicableItems) {
-            final CategoryKey categoryKey = CategoryKey.from(CATEGORY_TYPE, policyUrl);
-            final SortedSet<LinkableItem> linkableItems;
-            if (nameItem.isPresent()) {
-                linkableItems = createLinkableItemSet(policyItem, item, nameItem.get());
-            } else {
-                linkableItems = createLinkableItemSet(policyItem, item);
-            }
-            addItem(categoryItems, new CategoryItem(categoryKey, operation, notificationId, linkableItems));
+            addApplicableItems(categoryItems, notificationContent.getId(), policyItem, policyUrl, operation, applicableItems);
         }
     }
 }
