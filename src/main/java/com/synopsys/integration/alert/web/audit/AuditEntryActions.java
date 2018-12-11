@@ -93,27 +93,9 @@ public class AuditEntryActions {
     }
 
     public AlertPagedModel<AuditEntryModel> get(final Integer pageNumber, final Integer pageSize, final String searchTerm, final String sortField, final String sortOrder, final boolean onlyShowSentNotifications) {
-        final Page<NotificationContent> auditPage = queryForNotifications(sortField, sortOrder, searchTerm, pageSize, onlyShowSentNotifications);
+        final Page<NotificationContent> auditPage = queryForNotifications(sortField, sortOrder, searchTerm, pageNumber, pageSize, onlyShowSentNotifications);
         final List<AuditEntryModel> auditEntries = createRestModels(auditPage.getContent(), sortField, sortOrder);
-        List<AuditEntryModel> pagedAuditEntries = auditEntries;
-        int totalPages = 1;
-        int pageNumberResponse = 1;
-        if (null != pageSize && !auditEntries.isEmpty()) {
-            pagedAuditEntries = new ArrayList<>();
-            final int pageStart = pageNumber * pageSize;
-            final int pageEnd = pageStart + pageSize;
-            for (int i = 0; i < auditEntries.size(); i++) {
-                if (i >= pageStart && i < pageEnd) {
-                    pageNumberResponse = pageNumber;
-                    pagedAuditEntries.add(auditEntries.get(i));
-                }
-            }
-            final int count = auditEntries.size();
-            final double division = (double) count / (double) pageSize;
-            final double ceiling = Math.ceil(division);
-            totalPages = (int) Math.round(ceiling);
-        }
-        final AlertPagedModel<AuditEntryModel> pagedRestModel = new AlertPagedModel<>(totalPages, pageNumberResponse, pagedAuditEntries.size(), pagedAuditEntries);
+        final AlertPagedModel<AuditEntryModel> pagedRestModel = new AlertPagedModel<>(auditPage.getTotalPages(), auditPage.getNumber(), auditEntries.size(), auditEntries);
         logger.debug("Paged Audit Entry Rest Model: {}", pagedRestModel);
         return pagedRestModel;
     }
@@ -164,11 +146,11 @@ public class AuditEntryActions {
         return get();
     }
 
-    private Page<NotificationContent> queryForNotifications(final String sortField, final String sortOrder, final String searchTerm, final Integer pageSize, final boolean onlyShowSentNotifications) {
-        final PageRequest pageRequest = notificationManager.getPageRequestForNotifications(sortField, sortOrder);
+    private Page<NotificationContent> queryForNotifications(final String sortField, final String sortOrder, final String searchTerm, final Integer pageNumber, final Integer pageSize, final boolean onlyShowSentNotifications) {
+        final PageRequest pageRequest = notificationManager.getPageRequestForNotifications(pageNumber, pageSize, sortField, sortOrder);
         final Page<NotificationContent> auditPage;
         if (StringUtils.isNotBlank(searchTerm)) {
-            auditPage = notificationManager.findAllWithSearch(searchTerm, pageRequest, pageSize, onlyShowSentNotifications);
+            auditPage = notificationManager.findAllWithSearch(searchTerm, pageRequest, onlyShowSentNotifications);
         } else {
             auditPage = notificationManager.findAll(pageRequest, onlyShowSentNotifications);
         }
@@ -178,7 +160,7 @@ public class AuditEntryActions {
     private List<AuditEntryModel> createRestModels(final List<NotificationContent> notificationContentEntries, final String sortField, final String sortOrder) {
         final List<AuditEntryModel> auditEntryModels = notificationContentEntries.stream().map(this::createRestModel).collect(Collectors.toList());
         if (StringUtils.isBlank(sortField) || sortField.equalsIgnoreCase("lastSent") || sortField.equalsIgnoreCase("overallStatus")) {
-            //TODO address this in the future when we have a database expert, this should be done with a database query when we are retrieving the data not after the fact
+            // We do this sorting here because lastSent is not a field in the NotificationContent entity and overallStatus is not stored in the database
             boolean ascendingOrder = false;
             if (StringUtils.isNotBlank(sortOrder) && Sort.Direction.ASC.name().equalsIgnoreCase(sortOrder)) {
                 ascendingOrder = true;
@@ -217,7 +199,7 @@ public class AuditEntryActions {
         final List<Long> auditEntryIds = relations.stream().map(AuditNotificationRelation::getAuditEntryId).collect(Collectors.toList());
         final List<AuditEntryEntity> auditEntryEntities = auditEntryRepository.findAllById(auditEntryIds);
 
-        String overallStatus = null;
+        AuditEntryStatus overallStatus = null;
         String lastSent = null;
         Date lastSentDate = null;
         final List<JobModel> jobModels = new ArrayList<>();
@@ -233,14 +215,10 @@ public class AuditEntryActions {
             final String timeCreated = notificationContentConverter.getContentConverter().getStringValue(auditEntryEntity.getTimeCreated());
             final String timeLastSent = notificationContentConverter.getContentConverter().getStringValue(auditEntryEntity.getTimeLastSent());
 
-            String status = null;
+            AuditEntryStatus status = null;
             if (auditEntryEntity.getStatus() != null) {
-                status = auditEntryEntity.getStatus().getDisplayName();
-                if (auditEntryEntity.getStatus() == AuditEntryStatus.FAILURE) {
-                    overallStatus = status;
-                } else if (null == overallStatus || (AuditEntryStatus.SUCCESS.getDisplayName().equals(overallStatus) && !AuditEntryStatus.SUCCESS.equals(status))) {
-                    overallStatus = status;
-                }
+                status = AuditEntryStatus.valueOf(auditEntryEntity.getStatus());
+                overallStatus = getWorstStatus(overallStatus, status);
             }
 
             final String errorMessage = auditEntryEntity.getErrorMessage();
@@ -254,11 +232,27 @@ public class AuditEntryActions {
                 eventType = commonConfig.get().getDistributionType();
             }
 
-            jobModels.add(new JobModel(id, configId, distributionConfigName, eventType, timeCreated, timeLastSent, status, errorMessage, errorStackTrace));
+            jobModels.add(new JobModel(id, configId, distributionConfigName, eventType, timeCreated, timeLastSent, status.getDisplayName(), errorMessage, errorStackTrace));
         }
         final String id = notificationContentConverter.getContentConverter().getStringValue(notificationContentEntry.getId());
         final NotificationConfig notificationConfig = (NotificationConfig) notificationContentConverter.populateConfigFromEntity(notificationContentEntry);
 
-        return new AuditEntryModel(id, notificationConfig, jobModels, overallStatus, lastSent);
+        String overallStatusDisplayName = null;
+        if (null != overallStatus) {
+            overallStatusDisplayName = overallStatus.getDisplayName();
+        }
+        return new AuditEntryModel(id, notificationConfig, jobModels, overallStatusDisplayName, lastSent);
+    }
+
+    private AuditEntryStatus getWorstStatus(final AuditEntryStatus overallStatus, final AuditEntryStatus currentStatus) {
+        AuditEntryStatus newOverallStatus = overallStatus;
+        if (currentStatus != null) {
+            if (currentStatus == AuditEntryStatus.FAILURE) {
+                newOverallStatus = currentStatus;
+            } else if (null == overallStatus || (AuditEntryStatus.SUCCESS == overallStatus && AuditEntryStatus.SUCCESS != currentStatus)) {
+                newOverallStatus = currentStatus;
+            }
+        }
+        return newOverallStatus;
     }
 }

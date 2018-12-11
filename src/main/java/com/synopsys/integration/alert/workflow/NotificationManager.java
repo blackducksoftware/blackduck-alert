@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.workflow;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -34,10 +33,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
@@ -51,12 +51,12 @@ import com.synopsys.integration.alert.database.audit.relation.AuditNotificationR
 import com.synopsys.integration.alert.database.channel.JobConfigReader;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.entity.repository.NotificationContentRepository;
-import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.web.model.NotificationContentConverter;
 
 @Component
 @Transactional
 public class NotificationManager {
+    private final Logger logger = LoggerFactory.getLogger(NotificationManager.class);
     private final NotificationContentRepository notificationContentRepository;
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
@@ -86,57 +86,14 @@ public class NotificationManager {
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public Page<NotificationContent> findAllWithSearch(final String searchTerm, final PageRequest pageRequest, final Integer maxSize, final boolean onlyShowSentNotifications) {
-        //        final Page<NotificationContent> notificationContentPage = notificationContentRepository.findMatching(searchTerm, pageRequest);
-
-        //TODO address this in the future when we have a database expert, this should be done with a database query
+    public Page<NotificationContent> findAllWithSearch(final String searchTerm, final PageRequest pageRequest, final boolean onlyShowSentNotifications) {
         final String lcSearchTerm = searchTerm.toLowerCase(Locale.ENGLISH);
-        final List<NotificationContent> matchingNotifications = new ArrayList<>(maxSize);
-        final Page<NotificationContent> notificationsPage = findAll(pageRequest, onlyShowSentNotifications);
-        final List<NotificationContent> notificationContents = notificationsPage.getContent();
-        for (final NotificationContent notificationContent : notificationContents) {
-            if (doesStringMatch(notificationContent.getContent(), lcSearchTerm)
-                    || doesStringMatch(notificationContent.getProvider(), lcSearchTerm)
-                    || doesStringMatch(notificationContent.getNotificationType(), lcSearchTerm)
-                    || doesStringMatch(notificationContentConverter.getContentConverter().getStringValue(notificationContent.getCreatedAt()), lcSearchTerm)) {
-                matchingNotifications.add(notificationContent);
-            } else {
-                final List<AuditEntryEntity> auditEntryEntities = getAuditEntries(notificationContent);
-                for (final AuditEntryEntity auditEntryEntity : auditEntryEntities) {
-                    if (doesStringMatch(auditEntryEntity.getStatus().getDisplayName(), lcSearchTerm)
-                            || doesStringMatch(notificationContentConverter.getContentConverter().getStringValue(auditEntryEntity.getTimeLastSent()), lcSearchTerm)) {
-                        matchingNotifications.add(notificationContent);
-                    } else {
-                        final Optional<? extends CommonDistributionConfig> optionalCommonDistributionConfig = jobConfigReader.getPopulatedConfig(auditEntryEntity.getCommonConfigId());
-                        if (optionalCommonDistributionConfig.isPresent()) {
-                            final CommonDistributionConfig commonDistributionConfig = optionalCommonDistributionConfig.get();
-                            if (doesStringMatch(commonDistributionConfig.getName(), lcSearchTerm)
-                                    || doesStringMatch(commonDistributionConfig.getDistributionType(), lcSearchTerm)) {
-                                matchingNotifications.add(notificationContent);
-                            }
-                        }
-                    }
-                }
-            }
+        if (onlyShowSentNotifications) {
+            return notificationContentRepository.findMatchingSentNotification(lcSearchTerm, pageRequest);
+        } else {
+            // FIXME ONLY Showing sent notifications
+            return notificationContentRepository.findMatchingNotification(lcSearchTerm, pageRequest);
         }
-
-        return new PageImpl<>(matchingNotifications, pageRequest, matchingNotifications.size());
-    }
-
-    private boolean doesStringMatch(final String valueToCheck, final String searchTerm) {
-        if (StringUtils.isNotBlank(valueToCheck) && valueToCheck.toLowerCase(Locale.ENGLISH).contains(searchTerm)) {
-            return true;
-        }
-        return false;
-    }
-
-    private List<AuditEntryEntity> getAuditEntries(final NotificationContent notificationContent) {
-        return auditNotificationRepository.findByNotificationId(notificationContent.getId())
-                   .stream()
-                   .map(relation -> auditEntryRepository.findById(relation.getAuditEntryId()))
-                   .filter(optional -> optional.isPresent())
-                   .map(optional -> optional.get())
-                   .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
@@ -187,7 +144,7 @@ public class NotificationManager {
 
     }
 
-    public PageRequest getPageRequestForNotifications(final String sortField, final String sortOrder) {
+    public PageRequest getPageRequestForNotifications(final Integer pageNumber, final Integer pageSize, final String sortField, final String sortOrder) {
         boolean sortQuery = false;
         String sortingField = "createdAt";
         // We can only modify the query for the fields that exist in NotificationContent
@@ -205,7 +162,7 @@ public class NotificationManager {
                 sortingOrder = Sort.Direction.ASC;
             }
         }
-        return PageRequest.of(0, Integer.MAX_VALUE, new Sort(sortingOrder, sortingField));
+        return PageRequest.of(pageNumber, pageSize, new Sort(sortingOrder, sortingField));
     }
 
 }
