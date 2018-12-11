@@ -70,7 +70,7 @@ public class AuditUtility {
                 }
             }
 
-            auditEntryEntity.setStatus(AuditEntryStatus.PENDING);
+            auditEntryEntity.setStatus(AuditEntryStatus.PENDING.toString());
             final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);
             notificationIdToAuditId.put(notificationId, savedAuditEntryEntity.getId());
             final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), notificationId);
@@ -89,7 +89,7 @@ public class AuditUtility {
                     logger.error("Could not find the audit entry {} to set the success status.", auditEntryId);
                 }
                 final AuditEntryEntity auditEntryEntity = auditEntryEntityOptional.orElse(new AuditEntryEntity());
-                auditEntryEntity.setStatus(AuditEntryStatus.SUCCESS);
+                auditEntryEntity.setStatus(AuditEntryStatus.SUCCESS.toString());
                 auditEntryEntity.setErrorMessage(null);
                 auditEntryEntity.setErrorStackTrace(null);
                 auditEntryEntity.setTimeLastSent(new Date(System.currentTimeMillis()));
@@ -110,7 +110,7 @@ public class AuditUtility {
                 }
                 final AuditEntryEntity auditEntryEntity = auditEntryEntityOptional.orElse(new AuditEntryEntity());
                 auditEntryEntity.setId(auditEntryId);
-                auditEntryEntity.setStatus(AuditEntryStatus.FAILURE);
+                auditEntryEntity.setStatus(AuditEntryStatus.FAILURE.toString());
                 auditEntryEntity.setErrorMessage(errorMessage);
                 final String[] rootCause = ExceptionUtils.getRootCauseStackTrace(t);
                 String exceptionStackTrace = "";

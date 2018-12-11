@@ -38,7 +38,6 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Type;
 
-import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
@@ -60,7 +59,7 @@ public class AuditEntryEntity extends DatabaseEntity {
     private Date timeLastSent;
 
     @Column(name = "status")
-    private AuditEntryStatus status;
+    private String status;
 
     @Column(name = "error_message")
     private String errorMessage;
@@ -82,7 +81,7 @@ public class AuditEntryEntity extends DatabaseEntity {
         // JPA requires default constructor definitions
     }
 
-    public AuditEntryEntity(final Long commonConfigId, final Date timeCreated, final Date timeLastSent, final AuditEntryStatus status, final String errorMessage, final String errorStackTrace) {
+    public AuditEntryEntity(final Long commonConfigId, final Date timeCreated, final Date timeLastSent, final String status, final String errorMessage, final String errorStackTrace) {
         this.commonConfigId = commonConfigId;
         this.timeCreated = timeCreated;
         this.timeLastSent = timeLastSent;
@@ -107,11 +106,11 @@ public class AuditEntryEntity extends DatabaseEntity {
         this.timeLastSent = timeLastSent;
     }
 
-    public AuditEntryStatus getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(final AuditEntryStatus status) {
+    public void setStatus(final String status) {
         this.status = status;
     }
 

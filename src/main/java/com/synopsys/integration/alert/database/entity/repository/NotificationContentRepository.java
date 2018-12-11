@@ -30,6 +30,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 
@@ -43,17 +44,30 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
     @Query(value = "SELECT entity FROM NotificationContent entity WHERE entity.id IN (SELECT notificationId FROM entity.auditNotificationRelations WHERE entity.id = notificationId)")
     Page<NotificationContent> findAllSentNotifications(final Pageable pageable);
 
-    //    @Query(value = "SELECT entity FROM NotificationContent entity WHERE LOWER(?1) LIKE LOWER(entity.provider)  OR "
-    //                       + "LOWER(?1) LIKE LOWER(entity.notificationType)  OR "
-    //                       + "LOWER(?1) LIKE LOWER(entity.content)  OR "
-    //                       + "LOWER(?1) LIKE LOWER(entity.createdAt)  OR "
-    //                       + "entity.id IN (SELECT relation FROM entity.auditNotificationRelations relation WHERE entity.id = relation.notificationId AND  relation.auditEntryId IN "
-    //                       + "(SELECT audit FROM relation.auditEntryEntity audit WHERE relation.auditEntryId = audit.id AND "
-    //                       + "LOWER(?1) LIKE LOWER(audit.timeLastSent)  OR  "
-    //                       + "LOWER(?1) LIKE LOWER(audit.status)  OR audit.commonConfigId IN "
-    //                       + "(SELECT commonConfig FROM audit.commonDistributionConfigEntity commonConfig WHERE audit.commonConfigId = commonConfig.id AND "
-    //                       + "LOWER(?1) LIKE LOWER(commonConfig.name)  OR "
-    //                       + "LOWER(?1) LIKE LOWER(commonConfig.distributionType)  "
-    //                       + "))) ")
-    //    Page<NotificationContent> findMatching(String searchTerm, final Pageable pageable);
+    @Query(value = "SELECT entity FROM NotificationContent entity LEFT JOIN entity.auditNotificationRelations relation ON entity.id = relation.notificationId "
+                       + "LEFT JOIN relation.auditEntryEntity auditEntry ON auditEntry.id = relation.auditEntryId "
+                       + "LEFT JOIN auditEntry.commonDistributionConfigEntity commonConfig ON auditEntry.commonConfigId = commonConfig.id "
+                       + "WHERE LOWER(entity.provider) LIKE %:searchTerm% OR "
+                       + "LOWER(entity.notificationType) LIKE %:searchTerm% OR "
+                       + "LOWER(entity.content) LIKE %:searchTerm% OR "
+                       + "LOWER(entity.createdAt) LIKE %:searchTerm% OR "
+                       + "LOWER(auditEntry.timeLastSent) LIKE %:searchTerm% OR "
+                       + "LOWER(auditEntry.status) LIKE %:searchTerm% OR "
+                       + "LOWER(commonConfig.name) LIKE %:searchTerm% OR "
+                       + "LOWER(commonConfig.distributionType) LIKE %:searchTerm%")
+    Page<NotificationContent> findMatchingNotification(@Param("searchTerm") String searchTerm, final Pageable pageable);
+
+    @Query(value = "SELECT entity FROM NotificationContent entity LEFT JOIN entity.auditNotificationRelations relation ON entity.id = relation.notificationId "
+                       + "LEFT JOIN relation.auditEntryEntity auditEntry ON auditEntry.id = relation.auditEntryId "
+                       + "LEFT JOIN auditEntry.commonDistributionConfigEntity commonConfig ON auditEntry.commonConfigId = commonConfig.id "
+                       + "WHERE entity.id IN (SELECT notificationId FROM entity.auditNotificationRelations WHERE entity.id = notificationId) AND "
+                       + "(LOWER(entity.provider) LIKE %:searchTerm% OR "
+                       + "LOWER(entity.notificationType) LIKE %:searchTerm% OR "
+                       + "LOWER(entity.content) LIKE %:searchTerm% OR "
+                       + "LOWER(entity.createdAt) LIKE %:searchTerm% OR "
+                       + "LOWER(auditEntry.timeLastSent) LIKE %:searchTerm% OR "
+                       + "LOWER(auditEntry.status) LIKE %:searchTerm% OR "
+                       + "LOWER(commonConfig.name) LIKE %:searchTerm% OR "
+                       + "LOWER(commonConfig.distributionType) LIKE %:searchTerm%)")
+    Page<NotificationContent> findMatchingSentNotification(@Param("searchTerm") String searchTerm, final Pageable pageable);
 }
