@@ -21,7 +21,7 @@ import com.synopsys.integration.blackduck.api.enumeration.LicenseLimitType;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.notification.content.LicenseLimitNotificationContent;
 
-public class BlackDuckLicenseLimitMessageContentCollectorTest {
+public class BlackDuckLicenseLimitCollectorTest {
     private final Gson gson = new Gson();
     private final JsonExtractor jsonExtractor = new JsonExtractor(gson);
     private final List<MessageContentProcessor> messageContentProcessorList = Arrays.asList(new DefaultMessageContentProcessor(), new DigestMessageContentProcessor());
@@ -29,7 +29,7 @@ public class BlackDuckLicenseLimitMessageContentCollectorTest {
     @Test
     public void addCategoryItemsTest() {
         final JsonExtractor jsonExtractor = new JsonExtractor(gson);
-        final BlackDuckLicenseLimitMessageContentCollector collector = new BlackDuckLicenseLimitMessageContentCollector(jsonExtractor, messageContentProcessorList);
+        final BlackDuckLicenseLimitCollector collector = new BlackDuckLicenseLimitCollector(jsonExtractor, messageContentProcessorList);
         final NotificationContent notification = getNotificationContent();
 
         collector.insert(notification);

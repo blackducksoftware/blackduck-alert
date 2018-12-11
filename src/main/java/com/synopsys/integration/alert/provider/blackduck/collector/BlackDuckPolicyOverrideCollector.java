@@ -47,11 +47,11 @@ import com.synopsys.integration.alert.workflow.filter.field.JsonFieldAccessor;
 
 @Component
 @Scope("prototype")
-public class BlackDuckPolicyOverrideMessageContentCollector extends BlackDuckPolicyMessageContentCollector {
+public class BlackDuckPolicyOverrideCollector extends BlackDuckPolicyCollector {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    public BlackDuckPolicyOverrideMessageContentCollector(final JsonExtractor jsonExtractor,
+    public BlackDuckPolicyOverrideCollector(final JsonExtractor jsonExtractor,
         final List<MessageContentProcessor> messageContentProcessorList) {
         super(jsonExtractor, messageContentProcessorList, Arrays.asList(BlackDuckProviderContentTypes.POLICY_OVERRIDE));
     }

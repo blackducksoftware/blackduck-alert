@@ -42,11 +42,11 @@ import com.synopsys.integration.alert.common.workflow.processor.MessageContentCo
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentProcessor;
 import com.synopsys.integration.alert.workflow.filter.field.JsonExtractor;
 
-public abstract class BlackDuckPolicyMessageContentCollector extends MessageContentCollector {
+public abstract class BlackDuckPolicyCollector extends MessageContentCollector {
     public static final String CATEGORY_TYPE = "policy";
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public BlackDuckPolicyMessageContentCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList, final Collection<ProviderContentType> contentTypes) {
+    public BlackDuckPolicyCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList, final Collection<ProviderContentType> contentTypes) {
         super(jsonExtractor, messageContentProcessorList, contentTypes);
     }
 

@@ -34,7 +34,7 @@ public class BlackDuckPolicyOverrideMessageContentCollectorTest {
 
     @Test
     public void insertPolicyOverrideNotificationTest() throws Exception {
-        final BlackDuckPolicyMessageContentCollector collector = createCollector();
+        final BlackDuckPolicyCollector collector = createCollector();
         runSingleTest(collector, "json/policyOverrideNotification.json", NotificationType.POLICY_OVERRIDE);
     }
 
@@ -56,7 +56,7 @@ public class BlackDuckPolicyOverrideMessageContentCollectorTest {
         final NotificationContent n1 = createNotification(overrideContent, NotificationType.POLICY_OVERRIDE);
         final NotificationContent n2 = createNotification(overrideContent, NotificationType.POLICY_OVERRIDE);
 
-        final BlackDuckPolicyMessageContentCollector collector = createCollector();
+        final BlackDuckPolicyCollector collector = createCollector();
 
         int categoryCount = 1;
         // add 1 item for the policy override name linkable items
@@ -74,8 +74,8 @@ public class BlackDuckPolicyOverrideMessageContentCollectorTest {
 
     @Test
     public void insertionExceptionTest() throws Exception {
-        final BlackDuckPolicyOverrideMessageContentCollector collector = createCollector();
-        final BlackDuckPolicyOverrideMessageContentCollector spiedCollector = Mockito.spy(collector);
+        final BlackDuckPolicyOverrideCollector collector = createCollector();
+        final BlackDuckPolicyOverrideCollector spiedCollector = Mockito.spy(collector);
         final String overrideContent = getNotificationContentFromFile("json/policyOverrideNotification.json");
         final NotificationContent n0 = createNotification(overrideContent, NotificationType.POLICY_OVERRIDE);
         Mockito.doThrow(new IllegalArgumentException("Insertion Error Exception Test")).when(spiedCollector)
@@ -87,20 +87,20 @@ public class BlackDuckPolicyOverrideMessageContentCollectorTest {
 
     @Test
     public void collectEmptyMapTest() {
-        final BlackDuckPolicyMessageContentCollector collector = createCollector();
-        final BlackDuckPolicyMessageContentCollector spiedCollector = Mockito.spy(collector);
+        final BlackDuckPolicyCollector collector = createCollector();
+        final BlackDuckPolicyCollector spiedCollector = Mockito.spy(collector);
         final List<AggregateMessageContent> contentList = spiedCollector.collect(FormatType.DEFAULT);
         assertTrue(contentList.isEmpty());
     }
 
-    private void runSingleTest(final BlackDuckPolicyMessageContentCollector collector, final String notificationJsonFileName, final NotificationType notificationType) throws Exception {
+    private void runSingleTest(final BlackDuckPolicyCollector collector, final String notificationJsonFileName, final NotificationType notificationType) throws Exception {
         final String content = getNotificationContentFromFile("json/policyRuleClearedNotification.json");
         final NotificationContent notificationContent = createNotification(content, notificationType);
         test(collector, notificationContent);
     }
 
-    private BlackDuckPolicyOverrideMessageContentCollector createCollector() {
-        return new BlackDuckPolicyOverrideMessageContentCollector(jsonExtractor, messageContentProcessorList);
+    private BlackDuckPolicyOverrideCollector createCollector() {
+        return new BlackDuckPolicyOverrideCollector(jsonExtractor, messageContentProcessorList);
     }
 
     private String getNotificationContentFromFile(final String notificationJsonFileName) throws Exception {
@@ -114,7 +114,7 @@ public class BlackDuckPolicyOverrideMessageContentCollectorTest {
         return new NotificationContent(creationDate, BlackDuckProvider.COMPONENT_NAME, creationDate, type.name(), notificationContent);
     }
 
-    private void test(final BlackDuckPolicyMessageContentCollector collector, final NotificationContent notification) {
+    private void test(final BlackDuckPolicyCollector collector, final NotificationContent notification) {
         collector.insert(notification);
         final List<AggregateMessageContent> aggregateMessageContentList = collector.collect(FormatType.DEFAULT);
         assertFalse(aggregateMessageContentList.isEmpty());

@@ -37,13 +37,13 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
 
     @Test
     public void insertRuleViolationClearedNotificationTest() throws Exception {
-        final BlackDuckPolicyMessageContentCollector collector = createPolicyViolationCollector();
+        final BlackDuckPolicyCollector collector = createPolicyViolationCollector();
         runSingleTest(collector, "json/policyRuleClearedNotification.json", NotificationType.RULE_VIOLATION_CLEARED);
     }
 
     @Test
     public void insertRuleViolationNotificationTest() throws Exception {
-        final BlackDuckPolicyMessageContentCollector collector = createPolicyViolationCollector();
+        final BlackDuckPolicyCollector collector = createPolicyViolationCollector();
         runSingleTest(collector, "json/policyRuleClearedNotification.json", NotificationType.RULE_VIOLATION);
     }
 
@@ -63,7 +63,7 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
         final NotificationContent n0 = createNotification(ruleContent, NotificationType.RULE_VIOLATION_CLEARED);
         final NotificationContent n1 = createNotification(ruleContent, NotificationType.RULE_VIOLATION_CLEARED);
 
-        final BlackDuckPolicyMessageContentCollector collector = createPolicyViolationCollector();
+        final BlackDuckPolicyCollector collector = createPolicyViolationCollector();
 
         int categoryCount = numberOfRulesCleared;
         // add 1 item for the policy override name linkable items
@@ -81,15 +81,15 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
     public void testOperationCircuitBreaker() throws Exception {
         final String ruleContent = getNotificationContentFromFile("json/notification01.json");
         final NotificationContent n0 = createNotification(ruleContent, NotificationType.BOM_EDIT);
-        final BlackDuckPolicyMessageContentCollector collector = createPolicyViolationCollector();
+        final BlackDuckPolicyCollector collector = createPolicyViolationCollector();
         collector.insert(n0);
         Assert.assertEquals(0, collector.collect(FormatType.DEFAULT).size());
     }
 
     @Test
     public void insertionExceptionTest() throws Exception {
-        final BlackDuckPolicyViolationMessageContentCollector collector = createPolicyViolationCollector();
-        final BlackDuckPolicyViolationMessageContentCollector spiedCollector = Mockito.spy(collector);
+        final BlackDuckPolicyViolationCollector collector = createPolicyViolationCollector();
+        final BlackDuckPolicyViolationCollector spiedCollector = Mockito.spy(collector);
         final String overrideContent = getNotificationContentFromFile("json/policyOverrideNotification.json");
         final NotificationContent n0 = createNotification(overrideContent, NotificationType.POLICY_OVERRIDE);
         Mockito.doThrow(new IllegalArgumentException("Insertion Error Exception Test")).when(spiedCollector)
@@ -101,20 +101,20 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
 
     @Test
     public void collectEmptyMapTest() {
-        final BlackDuckPolicyMessageContentCollector collector = createPolicyViolationCollector();
-        final BlackDuckPolicyMessageContentCollector spiedCollector = Mockito.spy(collector);
+        final BlackDuckPolicyCollector collector = createPolicyViolationCollector();
+        final BlackDuckPolicyCollector spiedCollector = Mockito.spy(collector);
         final List<AggregateMessageContent> contentList = spiedCollector.collect(FormatType.DEFAULT);
         assertTrue(contentList.isEmpty());
     }
 
-    private void runSingleTest(final BlackDuckPolicyMessageContentCollector collector, final String notificationJsonFileName, final NotificationType notificationType) throws Exception {
+    private void runSingleTest(final BlackDuckPolicyCollector collector, final String notificationJsonFileName, final NotificationType notificationType) throws Exception {
         final String content = getNotificationContentFromFile("json/policyRuleClearedNotification.json");
         final NotificationContent notificationContent = createNotification(content, notificationType);
         test(collector, notificationContent);
     }
 
-    private BlackDuckPolicyViolationMessageContentCollector createPolicyViolationCollector() {
-        return new BlackDuckPolicyViolationMessageContentCollector(jsonExtractor, messageContentProcessorList);
+    private BlackDuckPolicyViolationCollector createPolicyViolationCollector() {
+        return new BlackDuckPolicyViolationCollector(jsonExtractor, messageContentProcessorList);
     }
 
     private String getNotificationContentFromFile(final String notificationJsonFileName) throws Exception {
@@ -128,13 +128,13 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
         return new NotificationContent(creationDate, BlackDuckProvider.COMPONENT_NAME, creationDate, type.name(), notificationContent);
     }
 
-    private void test(final BlackDuckPolicyMessageContentCollector collector, final NotificationContent notification) {
+    private void test(final BlackDuckPolicyCollector collector, final NotificationContent notification) {
         collector.insert(notification);
         final List<AggregateMessageContent> aggregateMessageContentList = collector.collect(FormatType.DEFAULT);
         assertFalse(aggregateMessageContentList.isEmpty());
     }
 
-    public static final void insertAndAssertCountsOnTopic(final BlackDuckPolicyMessageContentCollector collector, final NotificationContent notification, final String topicName, final int expectedCategoryItemsCount,
+    public static final void insertAndAssertCountsOnTopic(final BlackDuckPolicyCollector collector, final NotificationContent notification, final String topicName, final int expectedCategoryItemsCount,
         final int expectedLinkableItemsCount) {
         collector.insert(notification);
         final AggregateMessageContent content = collector.collect(FormatType.DEFAULT).stream().filter(topicContent -> topicName.equals(topicContent.getValue())).findFirst().orElse(null);
