@@ -24,10 +24,13 @@
 package com.synopsys.integration.alert.workflow.startup;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -39,9 +42,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
-import com.synopsys.integration.alert.common.database.FieldConfigurationAccessor;
+import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
+import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
@@ -50,6 +56,8 @@ import com.synopsys.integration.alert.component.scheduling.SchedulingDescriptor;
 import com.synopsys.integration.alert.component.scheduling.SchedulingUIConfig;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.DefinedFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.DescriptorAccessor.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.database.security.StringEncryptionConverter;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -73,8 +81,10 @@ public class StartupManager {
     private final List<ProviderDescriptor> providerDescriptorList;
     private final SystemStatusUtility systemStatusUtility;
     private final SystemValidator systemValidator;
-    private final FieldConfigurationAccessor configurationAccessor;
+    private final BaseConfigurationAccessor configurationAccessor;
     private final EncryptionUtility encryptionUtility;
+    private final List<Descriptor> allDescriptors;
+    private final BaseDescriptorAccessor descriptorAccessor;
 
     @Value("${logging.level.com.blackducksoftware.integration:}")
     private String loggingLevel;
@@ -107,8 +117,8 @@ public class StartupManager {
     @Autowired
     public StartupManager(final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
         final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer,
-        final List<ProviderDescriptor> providerDescriptorList, final SystemStatusUtility systemStatusUtility, final SystemValidator systemValidator, final FieldConfigurationAccessor configurationAccessor,
-        final EncryptionUtility encryptionUtility) {
+        final List<ProviderDescriptor> providerDescriptorList, final SystemStatusUtility systemStatusUtility, final SystemValidator systemValidator, final BaseConfigurationAccessor configurationAccessor,
+        final EncryptionUtility encryptionUtility, final List<Descriptor> allDescriptors, final BaseDescriptorAccessor descriptorAccessor) {
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
         this.dailyTask = dailyTask;
@@ -121,12 +131,15 @@ public class StartupManager {
         this.systemValidator = systemValidator;
         this.configurationAccessor = configurationAccessor;
         this.encryptionUtility = encryptionUtility;
+        this.allDescriptors = allDescriptors;
+        this.descriptorAccessor = descriptorAccessor;
     }
 
     @Transactional
     public void startup() {
         logger.info("Alert Starting...");
         systemStatusUtility.startupOccurred();
+        registerDescriptors();
         initializeChannelPropertyManagers();
         validate();
         logConfiguration();
@@ -261,5 +274,26 @@ public class StartupManager {
 
     public String getLoggingLevel() {
         return loggingLevel;
+    }
+
+    public void registerDescriptors() {
+        try {
+            final Set<String> registeredDescriptors = descriptorAccessor
+                                                          .getRegisteredDescriptors()
+                                                          .stream()
+                                                          .map(RegisteredDescriptorModel::getName)
+                                                          .collect(Collectors.toSet());
+            final List<Descriptor> missingDescriptors = allDescriptors.stream()
+                                                            .filter(descriptor -> !registeredDescriptors.contains(descriptor.getName()))
+                                                            .collect(Collectors.toList());
+            for (final Descriptor descriptor : missingDescriptors) {
+                final Collection<DefinedFieldModel> fieldModels = descriptor.createAllDefinedFields();
+                final String descriptorName = descriptor.getName();
+                final DescriptorType descriptorType = descriptor.getType();
+                descriptorAccessor.registerDescriptor(descriptorName, descriptorType, fieldModels);
+            }
+        } catch (final AlertDatabaseConstraintException e) {
+            logger.error("Error registering descriptors.");
+        }
     }
 }

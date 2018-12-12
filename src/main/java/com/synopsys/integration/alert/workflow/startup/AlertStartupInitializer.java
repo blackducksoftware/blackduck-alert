@@ -37,8 +37,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
-import com.synopsys.integration.alert.common.database.FieldConfigurationAccessor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -53,10 +53,10 @@ public class AlertStartupInitializer {
     private final DescriptorMap descriptorMap;
     private final Set<String> alertStartupFields;
     private final BaseDescriptorAccessor descriptorAccessor;
-    private final FieldConfigurationAccessor fieldConfigurationAccessor;
+    private final BaseConfigurationAccessor fieldConfigurationAccessor;
 
     @Autowired
-    public AlertStartupInitializer(final DescriptorMap descriptorMap, final Environment environment, final BaseDescriptorAccessor descriptorAccessor, final FieldConfigurationAccessor fieldConfigurationAccessor) {
+    public AlertStartupInitializer(final DescriptorMap descriptorMap, final Environment environment, final BaseDescriptorAccessor descriptorAccessor, final BaseConfigurationAccessor fieldConfigurationAccessor) {
         this.descriptorMap = descriptorMap;
         this.environment = environment;
         this.descriptorAccessor = descriptorAccessor;

@@ -38,10 +38,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
-import com.synopsys.integration.alert.common.database.FieldConfigurationAccessor;
+import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.user.UserAccessor;
@@ -58,11 +58,11 @@ public class SystemInitializer {
     private final EncryptionUtility encryptionUtility;
     private final SystemValidator systemValidator;
     private final UserAccessor userAccessor;
-    private final FieldConfigurationAccessor configurationAccessor;
+    private final BaseConfigurationAccessor configurationAccessor;
 
     @Autowired
     public SystemInitializer(final SystemStatusUtility systemStatusUtility, final AlertProperties alertProperties, final EncryptionUtility encryptionUtility,
-        final SystemValidator systemValidator, final UserAccessor userAccessor, final FieldConfigurationAccessor configurationAccessor) {
+        final SystemValidator systemValidator, final UserAccessor userAccessor, final BaseConfigurationAccessor configurationAccessor) {
         this.systemStatusUtility = systemStatusUtility;
         this.alertProperties = alertProperties;
         this.encryptionUtility = encryptionUtility;

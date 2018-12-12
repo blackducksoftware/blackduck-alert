@@ -23,17 +23,22 @@
  */
 package com.synopsys.integration.alert.common.descriptor;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
+import com.synopsys.integration.alert.database.api.configuration.DefinedFieldModel;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -92,6 +97,10 @@ public abstract class Descriptor {
         }
     }
 
+    public Set<ConfigContextEnum> getAppliedUIContexts() {
+        return uiConfigs.keySet();
+    }
+
     public boolean hasUIConfigs() {
         return uiConfigs.size() > 0;
     }
@@ -108,4 +117,18 @@ public abstract class Descriptor {
         getRestApi(actionApiType).testConfig(testConfig);
     }
 
+    public Collection<DefinedFieldModel> createAllDefinedFields() {
+        final Set<ConfigContextEnum> appliedUIContexts = getAppliedUIContexts();
+        final List<DefinedFieldModel> fieldModels = new ArrayList<>();
+        for (final ConfigContextEnum context : appliedUIContexts) {
+            final UIConfig uiConfig = getUIConfig(context);
+            final List<ConfigField> fields = uiConfig.generateUIComponent().getFields();
+            for (final ConfigField field : fields) {
+                final String key = field.getKey();
+                final boolean isSensitive = field.isSensitive();
+                fieldModels.add(new DefinedFieldModel(key, context, isSensitive));
+            }
+        }
+        return fieldModels;
+    }
 }
