@@ -24,6 +24,7 @@
 package com.synopsys.integration.alert.channel;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
@@ -62,8 +63,8 @@ public class ChannelTemplateManager {
             final DistributionEvent distributionEvent = (DistributionEvent) event;
             final String commonIdString = distributionEvent.getConfigId();
             final Long commonId = contentConverter.getLongValue(commonIdString);
-            final Long auditEntryId = auditUtility.createAuditEntry(distributionEvent.getAuditEntryId(), commonId, distributionEvent.getContent());
-            distributionEvent.setAuditEntryId(auditEntryId);
+            final Map<Long, Long> notificationIdToAuditId = auditUtility.createAuditEntry(distributionEvent.getNotificationIdToAuditId(), commonId, distributionEvent.getContent());
+            distributionEvent.setNotificationIdToAuditId(notificationIdToAuditId);
             final String jsonMessage = contentConverter.getJsonString(distributionEvent);
             jmsTemplate.convertAndSend(destination, jsonMessage);
         } else {

@@ -60,6 +60,18 @@ public class MessageContentAggregator {
         this.notificationFilter = notificationFilter;
     }
 
+    public Map<CommonDistributionConfiguration, List<AggregateMessageContent>> processNotifications(final Collection<NotificationContent> notificationList) {
+        if (notificationList.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        final List<CommonDistributionConfiguration> distributionConfigs = jobConfigReader.getPopulatedConfigs();
+        if (distributionConfigs.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        return processNotifications(distributionConfigs, notificationList);
+    }
+
     public Map<CommonDistributionConfiguration, List<AggregateMessageContent>> processNotifications(final FrequencyType frequency, final Collection<NotificationContent> notificationList) {
         if (notificationList.isEmpty()) {
             return Collections.emptyMap();

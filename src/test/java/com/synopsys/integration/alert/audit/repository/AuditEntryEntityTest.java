@@ -29,7 +29,7 @@ public class AuditEntryEntityTest extends EntityTest<AuditEntryEntity> {
         assertEquals(getMockUtil().getCommonConfigId(), entity.getCommonConfigId());
         assertEquals(getMockUtil().getErrorMessage(), entity.getErrorMessage());
         assertEquals(getMockUtil().getErrorStackTrace(), entity.getErrorStackTrace());
-        assertEquals(getMockUtil().getStatus(), entity.getStatus());
+        assertEquals(getMockUtil().getStatus().toString(), entity.getStatus());
         assertEquals(getMockUtil().getTimeCreated(), entity.getTimeCreated());
         assertEquals(getMockUtil().getTimeLastSent(), entity.getTimeLastSent());
     }

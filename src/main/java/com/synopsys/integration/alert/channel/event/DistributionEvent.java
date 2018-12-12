@@ -23,6 +23,11 @@
  */
 package com.synopsys.integration.alert.channel.event;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.event.ContentEvent;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
@@ -30,7 +35,7 @@ import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 public class DistributionEvent extends ContentEvent {
     private final FieldAccessor fieldAccessor;
     private final String configId;
-    private Long auditEntryId;
+    private Map<Long, Long> notificationIdToAuditId;
 
     public DistributionEvent(final String configId, final String destination, final String createdAt, final String provider, final String formatType, final AggregateMessageContent content, final FieldAccessor fieldAccessor) {
         super(destination, createdAt, provider, formatType, content);
@@ -46,12 +51,22 @@ public class DistributionEvent extends ContentEvent {
         return configId;
     }
 
-    public Long getAuditEntryId() {
-        return auditEntryId;
+    public Map<Long, Long> getNotificationIdToAuditId() {
+        return notificationIdToAuditId;
     }
 
-    public void setAuditEntryId(final Long auditEntryId) {
-        this.auditEntryId = auditEntryId;
+    public void setNotificationIdToAuditId(final Map<Long, Long> notificationIdToAuditId) {
+        this.notificationIdToAuditId = notificationIdToAuditId;
     }
 
+    public Set<Long> getAuditIds() {
+        if (null != notificationIdToAuditId && !notificationIdToAuditId.isEmpty()) {
+            return notificationIdToAuditId.entrySet()
+                       .stream()
+                       .filter(entry -> null != entry.getValue())
+                       .map(entry -> entry.getValue())
+                       .collect(Collectors.toSet());
+        }
+        return Collections.emptySet();
+    }
 }

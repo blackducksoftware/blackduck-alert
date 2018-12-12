@@ -35,21 +35,21 @@ function auditDataFetchError(message) {
     }
 }
 
-function createPagedQueryURL(pageNumber, pageSize, searchTerm, sortField, sortOrder) {
+function createPagedQueryURL(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications) {
     // server side is 0 based but UI paging component starts with 1
     const pageNumberParameter = pageNumber - 1;
-    return `${FETCH_URL}?pageNumber=${pageNumberParameter}&pageSize=${pageSize}&searchTerm=${searchTerm}&sortField=${sortField}&sortOrder=${sortOrder}`;
+    return `${FETCH_URL}?pageNumber=${pageNumberParameter}&pageSize=${pageSize}&searchTerm=${searchTerm}&sortField=${sortField}&sortOrder=${sortOrder}&onlyShowSentNotifications=${onlyShowSentNotifications}`;
 }
 
 /**
  * Fetching Audit Data
  * @returns {function(*)}
  */
-export function getAuditData(pageNumber, pageSize, searchTerm, sortField, sortOrder) {
+export function getAuditData(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications) {
     return (dispatch, getState) => {
         dispatch(fetchingAuditData());
         const {csrfToken} = getState().session;
-        const fetchUrl = createPagedQueryURL(pageNumber, pageSize, searchTerm, sortField, sortOrder);
+        const fetchUrl = createPagedQueryURL(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications);
         fetch(fetchUrl, {
             credentials: 'same-origin',
             headers: {

@@ -48,6 +48,12 @@ public class NotificationProcessor {
         this.notificationToEventConverter = notificationToEventConverter;
     }
 
+    public List<DistributionEvent> processNotifications(final List<NotificationContent> notificationList) {
+        final Map<CommonDistributionConfiguration, List<AggregateMessageContent>> messageContentList = messageContentAggregator.processNotifications(notificationList);
+        final List<DistributionEvent> notificationEvents = notificationToEventConverter.convertToEvents(messageContentList);
+        return notificationEvents;
+    }
+
     public List<DistributionEvent> processNotifications(final FrequencyType frequencyType, final List<NotificationContent> notificationList) {
         final Map<CommonDistributionConfiguration, List<AggregateMessageContent>> messageContentList = messageContentAggregator.processNotifications(frequencyType, notificationList);
         final List<DistributionEvent> notificationEvents = notificationToEventConverter.convertToEvents(messageContentList);

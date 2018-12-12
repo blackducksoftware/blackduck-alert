@@ -18,10 +18,12 @@ plugins {
     id 'org.springframework.boot' version '2.0.3.RELEASE'
     id 'application'
     id 'com.moowork.node' version '1.2.0'
+    id 'com.jfrog.artifactory' version '4.8.1'
 }
 
 version = '4.0.0-SNAPSHOT'
 
+apply plugin: 'maven-publish'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'com.blackducksoftware.integration.solution'
 apply plugin: 'com.bmuschko.docker-remote-api'
@@ -240,6 +242,22 @@ task dockerLogin(type: Exec) {
 
 task pushImage(type: Exec, dependsOn: [buildDockerImage]) {
     commandLine "docker", "push", "blackducksoftware/${project.name}:${project.version}"
+}
+
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            def artifactName = "${buildDir}/distributions/${project.name}-${project.version}-deployment.zip"
+            artifact(artifactName)
+        }
+    }
+}
+
+artifactory {
+    publish {
+        defaults { publications('mavenJava') }
+    }
 }
 
 task all(dependsOn: [build, createDeploymentZip, dockerLogin, buildDockerImage, pushImage]) {
