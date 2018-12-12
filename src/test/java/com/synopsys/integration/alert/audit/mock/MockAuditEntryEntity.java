@@ -90,7 +90,7 @@ public class MockAuditEntryEntity extends MockEntityUtil<AuditEntryEntity> {
 
     @Override
     public AuditEntryEntity createEntity() {
-        final AuditEntryEntity entity = new AuditEntryEntity(commonConfigId, timeCreated, timeLastSent, status, errorMessage, errorStackTrace);
+        final AuditEntryEntity entity = new AuditEntryEntity(commonConfigId, timeCreated, timeLastSent, status.toString(), errorMessage, errorStackTrace);
         entity.setId(id);
         entity.setErrorMessage(errorMessage);
         entity.setErrorStackTrace(errorStackTrace);
@@ -110,7 +110,7 @@ public class MockAuditEntryEntity extends MockEntityUtil<AuditEntryEntity> {
         json.addProperty("commonConfigId", commonConfigId);
         json.addProperty("timeCreated", timeCreated.toLocaleString());
         json.addProperty("timeLastSent", timeLastSent.toLocaleString());
-        json.addProperty("status", status.name());
+        json.addProperty("status", status.toString());
         json.addProperty("errorMessage", errorMessage);
         json.addProperty("errorStackTrace", errorStackTrace);
         json.addProperty("id", id);

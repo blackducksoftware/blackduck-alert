@@ -80,13 +80,13 @@ public abstract class DistributionChannel extends MessageReceiver {
     public void sendAuditedMessage(final DistributionEvent event) throws IntegrationException {
         try {
             sendMessage(event);
-            auditUtility.setAuditEntrySuccess(event.getAuditEntryId());
+            auditUtility.setAuditEntrySuccess(event.getAuditIds());
         } catch (final IntegrationRestException irex) {
-            auditUtility.setAuditEntryFailure(event.getAuditEntryId(), irex.getMessage(), irex);
+            auditUtility.setAuditEntryFailure(event.getAuditIds(), irex.getMessage(), irex);
             logger.error("{} : {}", irex.getHttpStatusCode(), irex.getHttpStatusMessage());
             throw new AlertException(irex.getMessage());
         } catch (final Exception e) {
-            auditUtility.setAuditEntryFailure(event.getAuditEntryId(), e.getMessage(), e);
+            auditUtility.setAuditEntryFailure(event.getAuditIds(), e.getMessage(), e);
             throw new AlertException(e.getMessage());
         }
     }

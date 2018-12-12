@@ -43,7 +43,7 @@ public class DateRange {
     }
 
     public static final Date createCurrentDateTimestamp() {
-        ZonedDateTime zonedDateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
+        final ZonedDateTime zonedDateTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
         return Date.from(zonedDateTime.toInstant());
     }
 

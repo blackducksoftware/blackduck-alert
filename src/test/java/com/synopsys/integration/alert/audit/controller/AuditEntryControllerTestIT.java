@@ -114,7 +114,8 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
         AuditEntryEntity auditEntity = mockAuditEntity.createEntity();
         auditEntity = auditEntryRepository.save(auditEntity);
         auditNotificationRepository.save(new AuditNotificationRelation(auditEntity.getId(), notificationEntity.getId()));
-        final String resendUrl = auditUrl + "/" + String.valueOf(auditEntity.getId()) + "/" + "/resend";
+
+        final String resendUrl = auditUrl + "/" + String.valueOf(notificationEntity.getId()) + "/" + "/resend";
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(resendUrl)
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
