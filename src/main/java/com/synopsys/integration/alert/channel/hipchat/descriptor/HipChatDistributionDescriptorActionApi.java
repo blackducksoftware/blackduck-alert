@@ -23,6 +23,7 @@
  */
 package com.synopsys.integration.alert.channel.hipchat.descriptor;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -33,15 +34,15 @@ import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.database.FieldConfigurationAccessor;
-import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.context.ChannelDistributionDescriptorActionApi;
 
 @Component
 public class HipChatDistributionDescriptorActionApi extends ChannelDistributionDescriptorActionApi {
 
     @Autowired
-    public HipChatDistributionDescriptorActionApi(final HipChatChannel hipChatChannel, final FieldConfigurationAccessor configurationAccessor, final ContentConverter contentConverter, final DescriptorMap descriptorMap) {
-        super(hipChatChannel, configurationAccessor, contentConverter, descriptorMap);
+    public HipChatDistributionDescriptorActionApi(final HipChatChannel hipChatChannel, final FieldConfigurationAccessor configurationAccessor, final ContentConverter contentConverter, final List<ProviderDescriptor> providerDescriptors) {
+        super(hipChatChannel, configurationAccessor, contentConverter, providerDescriptors);
     }
 
     @Override

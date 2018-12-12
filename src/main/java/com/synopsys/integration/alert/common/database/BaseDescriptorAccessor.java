@@ -38,6 +38,8 @@ public interface BaseDescriptorAccessor {
 
     Optional<RegisteredDescriptorModel> getRegisteredDescriptorByName(final String descriptorName) throws AlertDatabaseConstraintException;
 
+    List<RegisteredDescriptorModel> getRegisteredDescriptorsByType(String descriptorType) throws AlertDatabaseConstraintException;
+
     Optional<RegisteredDescriptorModel> getRegisteredDescriptorById(final Long descriptorId) throws AlertDatabaseConstraintException;
 
     boolean registerDescriptorWithoutFields(final String descriptorName) throws AlertDatabaseConstraintException;
