@@ -248,7 +248,7 @@ task pushImage(type: Exec, dependsOn: [buildDockerImage]) {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            def artifactName = "${buildDir}/libs/${project.name}-${project.version}-deployment.zip"
+            def artifactName = "${buildDir}/distributions/${project.name}-${project.version}-deployment.zip"
             artifact(artifactName)
         }
     }
