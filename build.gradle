@@ -247,7 +247,6 @@ publishing {
         mavenJava(MavenPublication) {
             def artifactName = "${buildDir}/distributions/${project.name}-${project.version}-deployment.zip"
             artifact(artifactName)
-            artifact jar
         }
     }
 }
