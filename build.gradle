@@ -242,6 +242,22 @@ task pushImage(type: Exec, dependsOn: [buildDockerImage]) {
     commandLine "docker", "push", "blackducksoftware/${project.name}:${project.version}"
 }
 
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            def artifactName = "${buildDir}/libs/${project.name}-${project.version}-deployment.zip"
+            artifact(artifactName)
+        }
+    }
+}
+
+artifactory {
+    publish {
+        defaults { publications('mavenJava') }
+    }
+}
+
 task all(dependsOn: [build, createDeploymentZip, dockerLogin, buildDockerImage, pushImage]) {
     dockerLogin.mustRunAfter build
     buildDockerImage.mustRunAfter dockerLogin
