@@ -51,7 +51,7 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, E
     private final BlackDuckProperties blackDuckProperties;
 
     public DistributionChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditUtility auditUtility, final JpaRepository<G, Long> globalRepository,
-            final Class eventClass) {
+        final Class eventClass) {
         super(gson, eventClass);
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
@@ -98,13 +98,13 @@ public abstract class DistributionChannel<G extends GlobalChannelConfigEntity, E
     public void sendAuditedMessage(final E event) throws IntegrationException {
         try {
             sendMessage(event);
-            auditUtility.setAuditEntrySuccess(event.getAuditEntryId());
+            auditUtility.setAuditEntrySuccess(event.getAuditIds());
         } catch (final IntegrationRestException irex) {
-            auditUtility.setAuditEntryFailure(event.getAuditEntryId(), irex.getMessage(), irex);
+            auditUtility.setAuditEntryFailure(event.getAuditIds(), irex.getMessage(), irex);
             logger.error("{} : {}", irex.getHttpStatusCode(), irex.getHttpStatusMessage());
             throw new AlertException(irex.getMessage());
         } catch (final Exception e) {
-            auditUtility.setAuditEntryFailure(event.getAuditEntryId(), e.getMessage(), e);
+            auditUtility.setAuditEntryFailure(event.getAuditIds(), e.getMessage(), e);
             throw new AlertException(e.getMessage());
         }
     }

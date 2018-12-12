@@ -12,8 +12,11 @@
 package com.synopsys.integration.alert.audit.controller;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 
 import org.junit.Before;
@@ -35,12 +38,16 @@ import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEn
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.synopsys.integration.alert.database.entity.repository.NotificationContentRepository;
+import com.synopsys.integration.alert.database.relation.DistributionNotificationTypeRelation;
+import com.synopsys.integration.alert.database.relation.repository.DistributionNotificationTypeRepository;
 import com.synopsys.integration.alert.mock.entity.MockCommonDistributionEntity;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
-import com.synopsys.integration.alert.web.audit.AuditEntryConfig;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.web.audit.AuditEntryHandler;
+import com.synopsys.integration.alert.web.audit.AuditEntryModel;
 import com.synopsys.integration.alert.web.model.AlertPagedModel;
 import com.synopsys.integration.alert.web.model.NotificationConfig;
+import com.synopsys.integration.util.ResourceUtil;
 
 public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
 
@@ -54,6 +61,8 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     private NotificationContentRepository notificationContentRepository;
     @Autowired
     private CommonDistributionRepository commonDistributionRepository;
+    @Autowired
+    private DistributionNotificationTypeRepository distributionNotificationTypeRepository;
     @Autowired
     private HipChatDistributionRepository hipChatDistributionRepository;
 
@@ -70,6 +79,8 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         final MockNotificationContent mockNotification = new MockNotificationContent();
         final NotificationContent savedNotificationEntity = notificationContentRepository.save(mockNotification.createEntity());
 
+        notificationContentRepository.save(new MockNotificationContent(new Date(System.currentTimeMillis()), "provider", new Date(System.currentTimeMillis()), "notificationType", "{}", 234L).createEntity());
+
         final MockCommonDistributionEntity mockDistributionConfig = new MockCommonDistributionEntity();
         final CommonDistributionConfigEntity commonDistributionConfigEntity = mockDistributionConfig.createEntity();
 
@@ -78,31 +89,38 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         commonDistributionConfigEntity.setDistributionConfigId(hipChatDistributionConfigEntity.getId());
 
         final CommonDistributionConfigEntity savedConfigEntity = commonDistributionRepository.save(commonDistributionConfigEntity);
-        final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository
-                                                           .save(new AuditEntryEntity(savedConfigEntity.getId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS, null, null));
+        final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(
+            new AuditEntryEntity(savedConfigEntity.getId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS.toString(), null, null));
 
         auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
 
-        final AlertPagedModel<AuditEntryConfig> auditEntries = auditEntryHandler.get(null, null, null, null, null);
-        assertEquals(1, auditEntries.getTotalPages());
+        AlertPagedModel<AuditEntryModel> auditEntries = auditEntryHandler.get(null, null, null, null, null, true);
+        assertEquals(1, auditEntries.getContent().size());
 
-        final AuditEntryConfig auditEntry = auditEntryHandler.get(savedAuditEntryEntity.getId());
+        final AuditEntryModel auditEntry = auditEntryHandler.get(savedNotificationEntity.getId());
         assertNotNull(auditEntry);
         assertEquals(auditEntry, auditEntries.getContent().get(0));
 
-        assertEquals(savedAuditEntryEntity.getId().toString(), auditEntry.getId());
-        assertEquals(savedConfigEntity.getDistributionType(), auditEntry.getEventType());
-        assertEquals(savedConfigEntity.getName(), auditEntry.getName());
+        assertEquals(savedNotificationEntity.getId().toString(), auditEntry.getId());
+        assertFalse(auditEntry.getJobs().isEmpty());
+        assertTrue(1 == auditEntry.getJobs().size());
+        assertEquals(savedConfigEntity.getDistributionType(), auditEntry.getJobs().get(0).getEventType());
+        assertEquals(savedConfigEntity.getName(), auditEntry.getJobs().get(0).getName());
 
         final NotificationConfig notification = auditEntry.getNotification();
         assertEquals(savedNotificationEntity.getCreatedAt().toString(), notification.getCreatedAt());
         assertEquals(savedNotificationEntity.getNotificationType(), notification.getNotificationType());
         assertNotNull(notification.getContent());
+
+        auditEntries = auditEntryHandler.get(null, null, null, null, null, false);
+        assertEquals(2, auditEntries.getContent().size());
     }
 
     @Test
-    public void resendNotificationTestIt() {
-        final MockNotificationContent mockNotification = new MockNotificationContent();
+    public void resendNotificationTestIt() throws Exception {
+        final String content = ResourceUtil.getResourceAsString(this.getClass(), "/json/policyOverrideNotification.json", StandardCharsets.UTF_8);
+
+        final MockNotificationContent mockNotification = new MockNotificationContent(new java.util.Date(), BlackDuckProvider.COMPONENT_NAME, new java.util.Date(), "POLICY_OVERRIDE", content, 1L);
 
         final MockCommonDistributionEntity mockDistributionConfig = new MockCommonDistributionEntity();
         final CommonDistributionConfigEntity commonDistributionConfigEntity = mockDistributionConfig.createEntity();
@@ -113,33 +131,29 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
 
         final CommonDistributionConfigEntity savedConfigEntity = commonDistributionRepository.save(commonDistributionConfigEntity);
 
+        distributionNotificationTypeRepository.save(new DistributionNotificationTypeRelation(savedConfigEntity.getId(), "POLICY_OVERRIDE"));
+
         final NotificationContent savedNotificationEntity = notificationContentRepository.save(mockNotification.createEntity());
+
         final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository
-                                                           .save(new AuditEntryEntity(savedConfigEntity.getId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS, null, null));
+                                                           .save(new AuditEntryEntity(savedConfigEntity.getId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS.toString(), null, null));
 
-        final AuditEntryEntity badAuditEntryEntity_1 = auditEntryRepository.save(new AuditEntryEntity(-1L, new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.FAILURE, "Failed: stuff happened", ""));
         auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
-        final AuditEntryEntity badAuditEntryEntity_2 = auditEntryRepository
-                                                           .save(new AuditEntryEntity(savedConfigEntity.getId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.FAILURE,
-                                                               "Failed: stuff happened",
-                                                               ""));
-        final AuditEntryEntity badAuditEntryEntityBoth = auditEntryRepository
-                                                             .save(new AuditEntryEntity(-1L, new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.FAILURE, "Failed: stuff happened", ""));
 
-        final ResponseEntity<String> invalidIdResponse = auditEntryHandler.resendNotification(-1L);
-        assertEquals(HttpStatus.BAD_REQUEST, invalidIdResponse.getStatusCode());
+        final ResponseEntity<String> invalidIdResponse = auditEntryHandler.resendNotification(-1L, null);
+        assertEquals(HttpStatus.GONE, invalidIdResponse.getStatusCode());
 
-        final ResponseEntity<String> invalidReferenceResponse_1 = auditEntryHandler.resendNotification(badAuditEntryEntity_1.getId());
-        assertEquals(HttpStatus.GONE, invalidReferenceResponse_1.getStatusCode());
-
-        final ResponseEntity<String> invalidReferenceResponse_2 = auditEntryHandler.resendNotification(badAuditEntryEntity_2.getId());
-        assertEquals(HttpStatus.GONE, invalidReferenceResponse_2.getStatusCode());
-
-        final ResponseEntity<String> invalidReferenceResponseBoth = auditEntryHandler.resendNotification(badAuditEntryEntityBoth.getId());
-        assertEquals(HttpStatus.GONE, invalidReferenceResponseBoth.getStatusCode());
-
-        final ResponseEntity<String> validResponse = auditEntryHandler.resendNotification(savedAuditEntryEntity.getId());
+        final ResponseEntity<String> validResponse = auditEntryHandler.resendNotification(savedNotificationEntity.getId(), null);
         assertEquals(HttpStatus.OK, validResponse.getStatusCode());
+
+        final ResponseEntity<String> invalidJobResponse = auditEntryHandler.resendNotification(savedNotificationEntity.getId(), -1L);
+        assertEquals(HttpStatus.GONE, invalidJobResponse.getStatusCode());
+
+        final ResponseEntity<String> invalidReferenceResponse_1 = auditEntryHandler.resendNotification(savedNotificationEntity.getId(), null);
+        assertEquals(HttpStatus.OK, invalidReferenceResponse_1.getStatusCode());
+
+        final ResponseEntity<String> validJobSpecificResend = auditEntryHandler.resendNotification(savedNotificationEntity.getId(), savedConfigEntity.getId());
+        assertEquals(HttpStatus.OK, validJobSpecificResend.getStatusCode());
     }
 
 }

@@ -23,6 +23,7 @@
  */
 package com.synopsys.integration.alert.web.audit;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,20 +47,20 @@ public class AuditEntryController extends BaseController {
     }
 
     @GetMapping
-    public AlertPagedModel<AuditEntryConfig> get(@RequestParam(value = "pageNumber", required = false) final Integer pageNumber, @RequestParam(value = "pageSize", required = false) final Integer pageSize,
-    @RequestParam(value = "searchTerm", required = false) final String searchTerm, @RequestParam(value = "sortField", required = false) final String sortField,
-    @RequestParam(value = "sortOrder", required = false) final String sortOrder) {
-        return auditEntryHandler.get(pageNumber, pageSize, searchTerm, sortField, sortOrder);
+    public AlertPagedModel<AuditEntryModel> get(@RequestParam(value = "pageNumber", required = false) final Integer pageNumber, @RequestParam(value = "pageSize", required = false) final Integer pageSize,
+        @RequestParam(value = "searchTerm", required = false) final String searchTerm, @RequestParam(value = "sortField", required = false) final String sortField,
+        @RequestParam(value = "sortOrder", required = false) final String sortOrder, @RequestParam(value = "onlyShowSentNotifications", required = false) final Boolean onlyShowSentNotifications) {
+        return auditEntryHandler.get(pageNumber, pageSize, searchTerm, sortField, sortOrder, BooleanUtils.toBoolean(onlyShowSentNotifications));
     }
 
     @GetMapping(value = "/{id}")
-    public AuditEntryConfig get(@PathVariable(value = "id") final Long id) {
+    public AuditEntryModel get(@PathVariable(value = "id") final Long id) {
         return auditEntryHandler.get(id);
     }
 
     @PostMapping(value = "/{id}/resend")
-    public ResponseEntity<String> post(@PathVariable(value = "id") final Long id) {
-        return auditEntryHandler.resendNotification(id);
+    public ResponseEntity<String> post(@PathVariable(value = "id") final Long notificationdId, @RequestParam(value = "commonConfigId", required = false) final Long commonConfigId) {
+        return auditEntryHandler.resendNotification(notificationdId, commonConfigId);
     }
 
 }
