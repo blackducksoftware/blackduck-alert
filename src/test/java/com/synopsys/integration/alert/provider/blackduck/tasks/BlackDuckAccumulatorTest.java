@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -210,9 +209,9 @@ public class BlackDuckAccumulatorTest {
         notificationView.createdAt = new Date();
         notificationView.contentType = "content_type";
         notificationView.type = NotificationType.RULE_VIOLATION;
-        final List<NotificationView> notificationViewList = Arrays.asList(notificationView);
+        final List<NotificationView> notificationViewList = Collections.singletonList(notificationView);
         final CommonNotificationView commonNotificationView = new CommonNotificationView(notificationView);
-        final List<CommonNotificationView> commonViewList = Arrays.asList(commonNotificationView);
+        final List<CommonNotificationView> commonViewList = Collections.singletonList(commonNotificationView);
         final CommonNotificationViewResults viewResults = new CommonNotificationViewResults(commonViewList, Optional.of(notificationView.createdAt), Optional.of(RestConstants.formatDate(notificationView.createdAt)));
 
         final BlackDuckProperties mockedBlackDuckProperties = Mockito.mock(BlackDuckProperties.class);
@@ -256,9 +255,9 @@ public class BlackDuckAccumulatorTest {
         notificationView.createdAt = new Date();
         notificationView.contentType = "content_type";
         notificationView.type = NotificationType.RULE_VIOLATION;
-        final List<NotificationView> notificationViewList = Arrays.asList(notificationView);
+        final List<NotificationView> notificationViewList = Collections.singletonList(notificationView);
         final CommonNotificationView commonNotificationView = new CommonNotificationView(notificationView);
-        final List<CommonNotificationView> commonViewList = Arrays.asList(commonNotificationView);
+        final List<CommonNotificationView> commonViewList = Collections.singletonList(commonNotificationView);
         final CommonNotificationViewResults viewResults = new CommonNotificationViewResults(commonViewList, Optional.of(notificationView.createdAt), Optional.of(RestConstants.formatDate(notificationView.createdAt)));
 
         final BlackDuckProperties mockedBlackDuckProperties = Mockito.mock(BlackDuckProperties.class);
@@ -290,7 +289,7 @@ public class BlackDuckAccumulatorTest {
         notificationView.createdAt = new Date();
         notificationView.contentType = "content_type";
         notificationView.type = NotificationType.RULE_VIOLATION;
-        final List<NotificationView> notificationViewList = Arrays.asList(notificationView);
+        final List<NotificationView> notificationViewList = Collections.singletonList(notificationView);
         final List<CommonNotificationView> commonViewList = Collections.emptyList();
         final CommonNotificationViewResults viewResults = new CommonNotificationViewResults(commonViewList, Optional.of(notificationView.createdAt), Optional.of(RestConstants.formatDate(notificationView.createdAt)));
 
@@ -346,7 +345,7 @@ public class BlackDuckAccumulatorTest {
         notificationView.type = NotificationType.RULE_VIOLATION;
         notificationView.json = "{ content: \"content is here...\"}";
         final CommonNotificationView commonNotificationView = new CommonNotificationView(notificationView);
-        final List<CommonNotificationView> viewList = Arrays.asList(commonNotificationView);
+        final List<CommonNotificationView> viewList = Collections.singletonList(commonNotificationView);
         final CommonNotificationViewResults notificationResults = new CommonNotificationViewResults(viewList, Optional.of(new Date()), Optional.of(RestConstants.formatDate(new Date())));
         final List<NotificationContent> notificationContentList = notificationAccumulator.process(notificationResults);
         assertFalse(notificationContentList.isEmpty());
@@ -366,7 +365,7 @@ public class BlackDuckAccumulatorTest {
         final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, testBlackDuckProperties, notificationManager, filePersistenceUtil);
         final Date creationDate = new Date();
         final NotificationContent content = new MockNotificationContent(creationDate, "BlackDuck", creationDate, "NotificationType", "{content: \"content is here\"}", null).createEntity();
-        final List<NotificationContent> notificationContentList = Arrays.asList(content);
+        final List<NotificationContent> notificationContentList = Collections.singletonList(content);
         notificationAccumulator.write(notificationContentList);
 
         Mockito.verify(notificationManager, Mockito.times(notificationContentList.size())).saveNotification(Mockito.any());

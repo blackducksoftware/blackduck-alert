@@ -1,7 +1,7 @@
 package com.synopsys.integration.alert.audit.mock;
 
 import java.lang.reflect.Type;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -23,7 +23,7 @@ public class MockAuditEntryRestModel extends MockRestModelUtil<AuditEntryModel> 
     private final String id;
 
     public MockAuditEntryRestModel() {
-        this("1", new Date(500).toString(), AuditEntryStatus.SUCCESS.name(), new NotificationConfig(), Arrays.asList(new JobModel()));
+        this("1", new Date(500).toString(), AuditEntryStatus.SUCCESS.name(), new NotificationConfig(), Collections.singletonList(new JobModel()));
     }
 
     private MockAuditEntryRestModel(final String id, final String timeLastSent, final String overallStatus, final NotificationConfig notification, final List<JobModel> jobModels) {
