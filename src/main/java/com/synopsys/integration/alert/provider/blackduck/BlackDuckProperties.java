@@ -36,7 +36,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
-import com.synopsys.integration.alert.common.database.FieldConfigurationAccessor;
+import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
@@ -53,7 +53,7 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 public class BlackDuckProperties {
     public static final int DEFAULT_TIMEOUT = 300;
     private final AlertProperties alertProperties;
-    private final FieldConfigurationAccessor configurationAccessor;
+    private final BaseConfigurationAccessor configurationAccessor;
     private final Logger classLogger = LoggerFactory.getLogger(getClass());
 
     // the blackduck product hasn't renamed their environment variables from hub to blackduck
@@ -65,7 +65,7 @@ public class BlackDuckProperties {
     private String publicBlackDuckWebserverPort;
 
     @Autowired
-    public BlackDuckProperties(final AlertProperties alertProperties, final FieldConfigurationAccessor configurationAccessor) {
+    public BlackDuckProperties(final AlertProperties alertProperties, final BaseConfigurationAccessor configurationAccessor) {
         this.alertProperties = alertProperties;
         this.configurationAccessor = configurationAccessor;
     }
@@ -91,13 +91,6 @@ public class BlackDuckProperties {
 
     public Optional<String> getPublicBlackDuckWebserverPort() {
         return getOptionalString(publicBlackDuckWebserverPort);
-    }
-
-    private Optional<String> getOptionalString(final String value) {
-        if (StringUtils.isNotBlank(value)) {
-            return Optional.of(value);
-        }
-        return Optional.empty();
     }
 
     public Integer getBlackDuckTimeout() {
@@ -209,6 +202,13 @@ public class BlackDuckProperties {
         blackDuckServerConfigBuilder.setUrl(getBlackDuckUrl().orElse(""));
 
         return blackDuckServerConfigBuilder;
+    }
+
+    private Optional<String> getOptionalString(final String value) {
+        if (StringUtils.isNotBlank(value)) {
+            return Optional.of(value);
+        }
+        return Optional.empty();
     }
 
     private Properties getBlackDuckProperties() {
