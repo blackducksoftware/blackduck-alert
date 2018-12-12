@@ -4,10 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.synopsys.integration.alert.audit.mock.MockAuditEntryRestModel;
-import com.synopsys.integration.alert.web.audit.AuditEntryConfig;
+import com.synopsys.integration.alert.web.audit.AuditEntryModel;
 import com.synopsys.integration.alert.web.model.RestModelTest;
 
-public class AuditEntryRestModelTest extends RestModelTest<AuditEntryConfig> {
+public class AuditEntryRestModelTest extends RestModelTest<AuditEntryModel> {
 
     @Override
     public MockAuditEntryRestModel getMockUtil() {
@@ -15,32 +15,26 @@ public class AuditEntryRestModelTest extends RestModelTest<AuditEntryConfig> {
     }
 
     @Override
-    public Class<AuditEntryConfig> getRestModelClass() {
-        return AuditEntryConfig.class;
+    public Class<AuditEntryModel> getRestModelClass() {
+        return AuditEntryModel.class;
     }
 
     @Override
-    public void assertRestModelFieldsNull(final AuditEntryConfig restModel) {
-        assertNull(restModel.getErrorMessage());
-        assertNull(restModel.getErrorStackTrace());
-        assertNull(restModel.getEventType());
-        assertNull(restModel.getName());
+    public void assertRestModelFieldsNull(final AuditEntryModel restModel) {
         assertNull(restModel.getNotification());
-        assertNull(restModel.getStatus());
-        assertNull(restModel.getTimeCreated());
-        assertNull(restModel.getTimeLastSent());
+        assertNull(restModel.getJobs());
+        assertNull(restModel.getOverallStatus());
+        assertNull(restModel.getLastSent());
+        assertNull(restModel.getId());
     }
 
     @Override
-    public void assertRestModelFieldsFull(final AuditEntryConfig restModel) {
-        assertEquals(getMockUtil().getErrorMessage(), restModel.getErrorMessage());
-        assertEquals(getMockUtil().getErrorStackTrace(), restModel.getErrorStackTrace());
-        assertEquals(getMockUtil().getEventType(), restModel.getEventType());
-        assertEquals(getMockUtil().getName(), restModel.getName());
+    public void assertRestModelFieldsFull(final AuditEntryModel restModel) {
         assertEquals(getMockUtil().getNotification(), restModel.getNotification());
-        assertEquals(getMockUtil().getStatus(), restModel.getStatus());
-        assertEquals(getMockUtil().getTimeCreated(), restModel.getTimeCreated());
-        assertEquals(getMockUtil().getTimeLastSent(), restModel.getTimeLastSent());
+        assertEquals(getMockUtil().getJobModels(), restModel.getJobs());
+        assertEquals(getMockUtil().getOverallStatus(), restModel.getOverallStatus());
+        assertEquals(getMockUtil().getTimeLastSent(), restModel.getLastSent());
+        assertEquals(getMockUtil().getId().toString(), restModel.getId());
     }
 
 }

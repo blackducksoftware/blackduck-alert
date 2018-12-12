@@ -24,7 +24,10 @@
 package com.synopsys.integration.alert.channel;
 
 import java.util.List;
+import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
@@ -37,6 +40,7 @@ import com.synopsys.integration.alert.database.audit.AuditUtility;
 
 @Component
 public class ChannelTemplateManager {
+    private static final Logger logger = LoggerFactory.getLogger(ChannelTemplateManager.class);
     private final Gson gson;
     private final JmsTemplate jmsTemplate;
     private final AuditUtility auditUtility;
@@ -60,8 +64,9 @@ public class ChannelTemplateManager {
         final String destination = event.getDestination();
         if (event instanceof DistributionEvent) {
             final DistributionEvent distributionEvent = (DistributionEvent) event;
-            final Long auditEntryId = auditUtility.createAuditEntry(distributionEvent.getAuditEntryId(), distributionEvent.getCommonDistributionConfigId(), distributionEvent.getContent());
-            distributionEvent.setAuditEntryId(auditEntryId);
+
+            final Map<Long, Long> notificationIdToAuditId = auditUtility.createAuditEntry(distributionEvent.getNotificationIdToAuditId(), distributionEvent.getCommonDistributionConfigId(), distributionEvent.getContent());
+            distributionEvent.setNotificationIdToAuditId(notificationIdToAuditId);
             final String jsonMessage = gson.toJson(distributionEvent);
             jmsTemplate.convertAndSend(destination, jsonMessage);
         } else {

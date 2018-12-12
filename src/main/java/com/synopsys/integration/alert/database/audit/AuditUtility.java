@@ -23,8 +23,13 @@
  */
 package com.synopsys.integration.alert.database.audit;
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
@@ -35,7 +40,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
-import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
 
 @Component
@@ -51,34 +55,41 @@ public class AuditUtility {
     }
 
     @Transactional
-    public Long createAuditEntry(final Long auditEntryId, final Long commonDistributionId, final AggregateMessageContent content) {
-        AuditEntryEntity auditEntryEntity = new AuditEntryEntity(commonDistributionId, new Date(System.currentTimeMillis()), null, null, null, null);
+    public Map<Long, Long> createAuditEntry(final Map<Long, Long> existingNotificationIdToAuditId, final Long commonDistributionId, final AggregateMessageContent content) {
+        final Map<Long, Long> notificationIdToAuditId = new HashMap<>();
+        final Set<Long> notificationIds = content.getCategoryItemList().stream()
+                                              .map(item -> item.getNotificationId())
+                                              .collect(Collectors.toSet());
+        for (final Long notificationId : notificationIds) {
+            AuditEntryEntity auditEntryEntity = new AuditEntryEntity(commonDistributionId, new Date(System.currentTimeMillis()), null, null, null, null);
 
-        if (null != auditEntryId) {
-            auditEntryEntity = auditEntryRepository.findById(auditEntryId).orElse(auditEntryEntity);
-        }
+            if (null != existingNotificationIdToAuditId && !existingNotificationIdToAuditId.isEmpty()) {
+                final Long auditEntryId = existingNotificationIdToAuditId.get(notificationId);
+                if (null != auditEntryId) {
+                    auditEntryEntity = auditEntryRepository.findById(auditEntryId).orElse(auditEntryEntity);
+                }
+            }
 
-        auditEntryEntity.setStatus(AuditEntryStatus.PENDING);
-        final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);
-
-        for (final CategoryItem item : content.getCategoryItemList()) {
-            final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), item.getNotificationId());
+            auditEntryEntity.setStatus(AuditEntryStatus.PENDING.toString());
+            final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);
+            notificationIdToAuditId.put(notificationId, savedAuditEntryEntity.getId());
+            final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), notificationId);
             auditNotificationRepository.save(auditNotificationRelation);
         }
 
-        return savedAuditEntryEntity.getId();
+        return notificationIdToAuditId;
     }
 
     @Transactional
-    public void setAuditEntrySuccess(final Long auditEntryId) {
-        if (auditEntryId != null) {
+    public void setAuditEntrySuccess(final Collection<Long> auditEntryIds) {
+        for (final Long auditEntryId : auditEntryIds) {
             try {
                 final Optional<AuditEntryEntity> auditEntryEntityOptional = auditEntryRepository.findById(auditEntryId);
                 if (!auditEntryEntityOptional.isPresent()) {
                     logger.error("Could not find the audit entry {} to set the success status.", auditEntryId);
                 }
                 final AuditEntryEntity auditEntryEntity = auditEntryEntityOptional.orElse(new AuditEntryEntity());
-                auditEntryEntity.setStatus(AuditEntryStatus.SUCCESS);
+                auditEntryEntity.setStatus(AuditEntryStatus.SUCCESS.toString());
                 auditEntryEntity.setErrorMessage(null);
                 auditEntryEntity.setErrorStackTrace(null);
                 auditEntryEntity.setTimeLastSent(new Date(System.currentTimeMillis()));
@@ -90,8 +101,8 @@ public class AuditUtility {
     }
 
     @Transactional
-    public void setAuditEntryFailure(final Long auditEntryId, final String errorMessage, final Throwable t) {
-        if (auditEntryId != null) {
+    public void setAuditEntryFailure(final Collection<Long> auditEntryIds, final String errorMessage, final Throwable t) {
+        for (final Long auditEntryId : auditEntryIds) {
             try {
                 final Optional<AuditEntryEntity> auditEntryEntityOptional = auditEntryRepository.findById(auditEntryId);
                 if (!auditEntryEntityOptional.isPresent()) {
@@ -99,7 +110,7 @@ public class AuditUtility {
                 }
                 final AuditEntryEntity auditEntryEntity = auditEntryEntityOptional.orElse(new AuditEntryEntity());
                 auditEntryEntity.setId(auditEntryId);
-                auditEntryEntity.setStatus(AuditEntryStatus.FAILURE);
+                auditEntryEntity.setStatus(AuditEntryStatus.FAILURE.toString());
                 auditEntryEntity.setErrorMessage(errorMessage);
                 final String[] rootCause = ExceptionUtils.getRootCauseStackTrace(t);
                 String exceptionStackTrace = "";

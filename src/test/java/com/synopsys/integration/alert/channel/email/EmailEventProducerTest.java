@@ -49,7 +49,7 @@ public class EmailEventProducerTest {
             content, commonDistributionConfigId, Collections.emptySet(), subjectLine);
 
         final EmailChannelEvent event = emailEventProducer.createChannelEvent(emailDistributionConfig, content);
-        assertEquals(expected.getAuditEntryId(), event.getAuditEntryId());
+        assertEquals(expected.getNotificationIdToAuditId(), event.getNotificationIdToAuditId());
         assertEquals(expected.getDestination(), event.getDestination());
         assertEquals(expected.getProvider(), event.getProvider());
         assertEquals(expected.getFormatType(), event.getFormatType());
@@ -95,7 +95,7 @@ public class EmailEventProducerTest {
             content, commonDistributionConfigId, new HashSet<>(Arrays.asList(email1, email2)), subjectLine);
 
         final EmailChannelEvent event = emailEventProducer.createChannelEvent(emailDistributionConfig, content);
-        assertEquals(expected.getAuditEntryId(), event.getAuditEntryId());
+        assertEquals(expected.getNotificationIdToAuditId(), event.getNotificationIdToAuditId());
         assertEquals(expected.getDestination(), event.getDestination());
         assertEquals(expected.getProvider(), event.getProvider());
         assertEquals(expected.getContent(), event.getContent());
@@ -127,7 +127,7 @@ public class EmailEventProducerTest {
             "REAL_TIME", "false", "", subjectLine, "", false, Collections.emptyList(), Collections.emptyList(), "DEFAULT");
 
         final EmailChannelEvent testEvent = emailEventProducer.createChannelTestEvent(emailDistributionConfig);
-        assertEquals(expectedTest.getAuditEntryId(), testEvent.getAuditEntryId());
+        assertEquals(expectedTest.getNotificationIdToAuditId(), testEvent.getNotificationIdToAuditId());
         assertEquals(expectedTest.getDestination(), testEvent.getDestination());
         assertEquals(expectedTest.getProvider(), testEvent.getProvider());
         assertEquals(expectedTest.getContent(), testEvent.getContent());
@@ -177,7 +177,7 @@ public class EmailEventProducerTest {
             "REAL_TIME", "false", "", subjectLine, "", false, Collections.emptyList(), Collections.emptyList(), "DEFAULT");
 
         final EmailChannelEvent testEvent = emailEventProducer.createChannelTestEvent(emailDistributionConfig);
-        assertEquals(expectedTest.getAuditEntryId(), testEvent.getAuditEntryId());
+        assertEquals(expectedTest.getNotificationIdToAuditId(), testEvent.getNotificationIdToAuditId());
         assertEquals(expectedTest.getDestination(), testEvent.getDestination());
         assertEquals(expectedTest.getProvider(), testEvent.getProvider());
         assertEquals(expectedTest.getContent(), testEvent.getContent());
@@ -231,7 +231,7 @@ public class EmailEventProducerTest {
             "REAL_TIME", "true", "", subjectLine, "", false, Arrays.asList(project1, project2), Collections.emptyList(), "DEFAULT");
 
         final EmailChannelEvent testEvent = emailEventProducer.createChannelTestEvent(emailDistributionConfig);
-        assertEquals(expectedTest.getAuditEntryId(), testEvent.getAuditEntryId());
+        assertEquals(expectedTest.getNotificationIdToAuditId(), testEvent.getNotificationIdToAuditId());
         assertEquals(expectedTest.getDestination(), testEvent.getDestination());
         assertEquals(expectedTest.getProvider(), testEvent.getProvider());
         assertEquals(expectedTest.getContent(), testEvent.getContent());

@@ -23,34 +23,36 @@
  */
 package com.synopsys.integration.alert.web.audit;
 
-import com.synopsys.integration.alert.web.model.NotificationConfig;
 import com.synopsys.integration.alert.web.model.Config;
 
-public class AuditEntryConfig extends Config {
+public class JobModel extends Config {
 
+    private String configId;
     private String name;
     private String eventType;
-    private String timeCreated;
+    private String timeAuditCreated;
     private String timeLastSent;
     private String status;
-    private NotificationConfig notification;
     private String errorMessage;
     private String errorStackTrace;
 
-    public AuditEntryConfig() {
+    public JobModel() {
     }
 
-    public AuditEntryConfig(final String id, final String name, final String eventType, final String timeCreated, final String timeLastSent, final String status, final String errorMessage, final String errorStackTrace,
-            final NotificationConfig notification) {
+    public JobModel(final String id, final String configId, final String name, final String eventType, final String timeAuditCreated, final String timeLastSent, final String status, final String errorMessage, final String errorStackTrace) {
         super(id);
+        this.configId = configId;
         this.name = name;
         this.eventType = eventType;
-        this.timeCreated = timeCreated;
+        this.timeAuditCreated = timeAuditCreated;
         this.timeLastSent = timeLastSent;
         this.status = status;
-        this.notification = notification;
         this.errorMessage = errorMessage;
         this.errorStackTrace = errorStackTrace;
+    }
+
+    public String getConfigId() {
+        return configId;
     }
 
     public String getName() {
@@ -61,8 +63,8 @@ public class AuditEntryConfig extends Config {
         return eventType;
     }
 
-    public String getTimeCreated() {
-        return timeCreated;
+    public String getTimeAuditCreated() {
+        return timeAuditCreated;
     }
 
     public String getTimeLastSent() {
@@ -71,10 +73,6 @@ public class AuditEntryConfig extends Config {
 
     public String getStatus() {
         return status;
-    }
-
-    public NotificationConfig getNotification() {
-        return notification;
     }
 
     public String getErrorMessage() {
