@@ -22,6 +22,7 @@ plugins {
 
 version = '4.0.0-SNAPSHOT'
 
+apply plugin: 'maven-publish'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'com.blackducksoftware.integration.solution'
 apply plugin: 'com.bmuschko.docker-remote-api'
