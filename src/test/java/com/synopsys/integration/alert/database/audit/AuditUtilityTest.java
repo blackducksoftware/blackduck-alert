@@ -68,7 +68,7 @@ public class AuditUtilityTest {
     @Test
     public void setAuditEntrySuccessCatchExceptionTest() {
         final AuditUtility auditUtility = new AuditUtility(null, null);
-        auditUtility.setAuditEntrySuccess(Arrays.asList(1L));
+        auditUtility.setAuditEntrySuccess(Collections.singletonList(1L));
     }
 
     @Test
@@ -82,14 +82,14 @@ public class AuditUtilityTest {
         Mockito.when(auditEntryRepository.save(entity)).thenReturn(entity);
 
         auditUtility.setAuditEntrySuccess(Collections.emptyList());
-        auditUtility.setAuditEntrySuccess(Arrays.asList(entity.getId()));
+        auditUtility.setAuditEntrySuccess(Collections.singletonList(entity.getId()));
         assertEquals(AuditEntryStatus.SUCCESS.toString(), entity.getStatus());
     }
 
     @Test
     public void setAuditEntryFailureCatchExceptionTest() {
         final AuditUtility auditUtility = new AuditUtility(null, null);
-        auditUtility.setAuditEntryFailure(Arrays.asList(1L), null, null);
+        auditUtility.setAuditEntryFailure(Collections.singletonList(1L), null, null);
     }
 
     @Test
@@ -102,7 +102,7 @@ public class AuditUtilityTest {
         Mockito.when(auditEntryRepository.save(entity)).thenReturn(entity);
 
         auditUtility.setAuditEntryFailure(Collections.emptyList(), null, null);
-        auditUtility.setAuditEntryFailure(Arrays.asList(entity.getId()), "error", new Exception());
+        auditUtility.setAuditEntryFailure(Collections.singletonList(entity.getId()), "error", new Exception());
         assertEquals(AuditEntryStatus.FAILURE.toString(), entity.getStatus());
         assertEquals("error", entity.getErrorMessage());
     }
@@ -117,7 +117,7 @@ public class AuditUtilityTest {
         final LinkableItem linkableItem5 = new LinkableItem(nameKey, "Other Value", "https://google.com");
 
         final CategoryItem categoryItem1 = new CategoryItem(CategoryKey.from("TYPE", "data1", "data2"), ItemOperation.ADD, 1L, new TreeSet<>(Arrays.asList(linkableItem1, linkableItem2)));
-        final CategoryItem categoryItem2 = new CategoryItem(CategoryKey.from("TYPE", "data1", "data2"), ItemOperation.UPDATE, 2L, new TreeSet<>(Arrays.asList(linkableItem2)));
+        final CategoryItem categoryItem2 = new CategoryItem(CategoryKey.from("TYPE", "data1", "data2"), ItemOperation.UPDATE, 2L, new TreeSet<>(Collections.singletonList(linkableItem2)));
         final CategoryItem categoryItem3 = new CategoryItem(CategoryKey.from("TYPE", "data1", "data2"), ItemOperation.DELETE, 1L, new TreeSet<>(Arrays.asList(linkableItem3, linkableItem4, linkableItem5)));
         final LinkableItem subTopic = new LinkableItem("Sub Topic", "Sub Topic Value", "https://google.com");
         return new AggregateMessageContent("Topic", "audit utility test", "https://google.com", subTopic, Arrays.asList(categoryItem1, categoryItem2, categoryItem3));
