@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
-import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
+import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
@@ -45,8 +45,8 @@ public class HipChatDistributionUIConfig extends CommonDistributionUIConfig {
     public static final String KEY_COLOR = "channel.hipchat.color";
 
     @Autowired
-    public HipChatDistributionUIConfig(final DescriptorMap descriptorMap) {
-        super(descriptorMap);
+    public HipChatDistributionUIConfig(final BaseDescriptorAccessor descriptorAccessor) {
+        super(descriptorAccessor);
     }
 
     @Override

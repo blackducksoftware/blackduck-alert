@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
-import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
+import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
@@ -43,8 +43,8 @@ public class SlackUIConfig extends CommonDistributionUIConfig {
     public static final String KEY_CHANNEL_USERNAME = "channel.username";
 
     @Autowired
-    public SlackUIConfig(final DescriptorMap descriptorMap) {
-        super(descriptorMap);
+    public SlackUIConfig(final BaseDescriptorAccessor descriptorAccessor) {
+        super(descriptorAccessor);
     }
 
     @Override

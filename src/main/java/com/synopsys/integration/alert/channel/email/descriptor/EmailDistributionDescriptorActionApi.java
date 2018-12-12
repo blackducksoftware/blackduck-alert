@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.channel.email.descriptor;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -39,7 +40,7 @@ import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.database.FieldConfigurationAccessor;
-import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.context.ChannelDistributionDescriptorActionApi;
 import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectEntity;
@@ -56,9 +57,9 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
     private final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
 
     @Autowired
-    public EmailDistributionDescriptorActionApi(final EmailGroupChannel emailGroupChannel, final FieldConfigurationAccessor configurationAccessor, final ContentConverter contentConverter, final DescriptorMap descriptorMap,
+    public EmailDistributionDescriptorActionApi(final EmailGroupChannel emailGroupChannel, final FieldConfigurationAccessor configurationAccessor, final ContentConverter contentConverter, final List<ProviderDescriptor> providerDescriptors,
         final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor) {
-        super(emailGroupChannel, configurationAccessor, contentConverter, descriptorMap);
+        super(emailGroupChannel, configurationAccessor, contentConverter, providerDescriptors);
         this.emailGroupChannel = emailGroupChannel;
         this.blackDuckProjectRepositoryAccessor = blackDuckProjectRepositoryAccessor;
     }

@@ -23,6 +23,7 @@
  */
 package com.synopsys.integration.alert.channel.slack.descriptor;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -33,15 +34,15 @@ import com.synopsys.integration.alert.channel.slack.SlackChannel;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.database.FieldConfigurationAccessor;
-import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.context.ChannelDistributionDescriptorActionApi;
 
 @Component
 public class SlackDistributionDescriptorActionApi extends ChannelDistributionDescriptorActionApi {
 
     @Autowired
-    public SlackDistributionDescriptorActionApi(final SlackChannel slackChannel, final FieldConfigurationAccessor configurationAccessor, final ContentConverter contentConverter, final DescriptorMap desriptorMap) {
-        super(slackChannel, configurationAccessor, contentConverter, desriptorMap);
+    public SlackDistributionDescriptorActionApi(final SlackChannel slackChannel, final FieldConfigurationAccessor configurationAccessor, final ContentConverter contentConverter, final List<ProviderDescriptor> providerDescriptors) {
+        super(slackChannel, configurationAccessor, contentConverter, providerDescriptors);
     }
 
     @Override

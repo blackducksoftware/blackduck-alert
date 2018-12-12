@@ -24,15 +24,18 @@
 package com.synopsys.integration.alert.common.descriptor.config.ui;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
+import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
+import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 
 public abstract class CommonDistributionUIConfig extends CommonFieldUIConfig {
     public static final String KEY_NAME = "channel.common.name";
@@ -46,9 +49,10 @@ public abstract class CommonDistributionUIConfig extends CommonFieldUIConfig {
     private final Set<String> channelDescriptors;
     private final Set<String> providerDescriptors;
 
-    public CommonDistributionUIConfig(final DescriptorMap descriptorMap) {
-        channelDescriptors = descriptorMap.getChannelDescriptorMap().keySet();
-        providerDescriptors = descriptorMap.getProviderDescriptorMap().keySet();
+    public CommonDistributionUIConfig(final BaseDescriptorAccessor descriptorAccessor) {
+        channelDescriptors = findDescriptorNames(descriptorAccessor, DescriptorType.CHANNEL);
+        providerDescriptors = findDescriptorNames(descriptorAccessor, DescriptorType.PROVIDER);
+
     }
 
     @Override
@@ -59,5 +63,15 @@ public abstract class CommonDistributionUIConfig extends CommonFieldUIConfig {
         final ConfigField providerName = new SelectConfigField(KEY_PROVIDER_NAME, "Provider Type", true, false, providerDescriptors);
 
         return Arrays.asList(name, channelName, frequency, providerName);
+    }
+
+    private Set<String> findDescriptorNames(final BaseDescriptorAccessor descriptorAccessor, final DescriptorType descriptorType) {
+        try {
+            return descriptorAccessor.getRegisteredDescriptorsByType(descriptorType.name()).stream()
+                       .map(registeredDescriptorModel -> registeredDescriptorModel.getName())
+                       .collect(Collectors.toSet());
+        } catch (final AlertDatabaseConstraintException e) {
+            return Collections.emptySet();
+        }
     }
 }
