@@ -1,8 +1,30 @@
+/**
+ * blackduck-alert
+ *
+ * Copyright (C) 2018 Black Duck Software, Inc.
+ * http://www.blackducksoftware.com/
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package com.synopsys.integration.alert.web.security.authentication.ldap;
 
-import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ldap.core.support.DigestMd5DirContextAuthenticationStrategy;
 import org.springframework.ldap.core.support.DirContextAuthenticationStrategy;
 import org.springframework.ldap.core.support.LdapContextSource;
@@ -16,17 +38,24 @@ import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopul
 import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.LdapProperties;
+
 @Component
 public class LdapManager {
     private LdapContextSource contextSource;
     private LdapAuthenticationProvider authenticationProvider;
-    private LdapConfiguration currentConfiguration;
+    private LdapProperties currentConfiguration;
+
+    @Autowired
+    public LdapManager(final LdapProperties ldapProperties) {
+        updateConfiguration(ldapProperties);
+    }
 
     public boolean isLdapEnabled() {
         return currentConfiguration == null ? false : currentConfiguration.isEnabled();
     }
 
-    public LdapConfiguration getCurrentConfiguration() {
+    public LdapProperties getCurrentConfiguration() {
         return currentConfiguration;
     }
 
@@ -34,13 +63,15 @@ public class LdapManager {
         return authenticationProvider;
     }
 
-    public void updateConfiguration(final LdapConfiguration configuration) {
+    public void updateConfiguration(final LdapProperties configuration) {
         this.currentConfiguration = configuration;
-        updateContext();
+        if (currentConfiguration.isEnabled()) {
+            updateContext();
+        }
     }
 
     public void updateContext() {
-        final LdapConfiguration configuration = getCurrentConfiguration();
+        final LdapProperties configuration = getCurrentConfiguration();
         final LdapContextSource ldapContextSource = new LdapContextSource();
         ldapContextSource.setUrl(configuration.getServer());
         ldapContextSource.setUserDn(configuration.getManagerDN());
@@ -52,13 +83,13 @@ public class LdapManager {
         updateAuthenticationProvider();
     }
 
-    private DirContextAuthenticationStrategy createAuthenticationStrategy(final LdapConfiguration configuration) {
+    private DirContextAuthenticationStrategy createAuthenticationStrategy(final LdapProperties configuration) {
         final String authenticationType = configuration.getAuthenticationType();
         DirContextAuthenticationStrategy strategy = null;
         if (StringUtils.isNotBlank(authenticationType)) {
-            if (authenticationType.equals("digest")) {
+            if ("digest".equals(authenticationType)) {
                 strategy = new DigestMd5DirContextAuthenticationStrategy();
-            } else if (authenticationType.equals("simple")) {
+            } else if ("simple".equals(authenticationType)) {
                 strategy = new SimpleDirContextAuthenticationStrategy();
             }
         }
@@ -75,8 +106,8 @@ public class LdapManager {
     private LdapAuthenticator createAuthenticator() {
         final BindAuthenticator authenticator = new BindAuthenticator(contextSource);
         authenticator.setUserSearch(createLdapUserSearch(contextSource));
-        authenticator.setUserDnPatterns(createUserDnPatterns());
-        authenticator.setUserAttributes(createUserAttributes());
+        authenticator.setUserDnPatterns(currentConfiguration.getUserDNPatternArray());
+        authenticator.setUserAttributes(currentConfiguration.getUserAttributeArray());
         return authenticator;
     }
 
@@ -89,28 +120,11 @@ public class LdapManager {
     }
 
     private LdapUserSearch createLdapUserSearch(final LdapContextSource contextSource) {
-        final LdapConfiguration configuration = getCurrentConfiguration();
+        final LdapProperties configuration = getCurrentConfiguration();
         LdapUserSearch userSearch = null;
         if (StringUtils.isNotBlank(configuration.getUserSearchFilter())) {
             userSearch = new FilterBasedLdapUserSearch(configuration.getUserSearchBase(), configuration.getUserSearchFilter(), contextSource);
         }
         return userSearch;
-    }
-
-    private String[] createUserDnPatterns() {
-        return createArray(currentConfiguration.getUserDNPatterns());
-    }
-
-    private String[] createUserAttributes() {
-        return createArray(currentConfiguration.getUserAttributes());
-    }
-
-    private String[] createArray(final Set<String> setToConvert) {
-        String[] patterns = null;
-        if (setToConvert != null) {
-            patterns = new String[setToConvert.size()];
-            patterns = setToConvert.toArray(patterns);
-        }
-        return patterns;
     }
 }

@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.database.api.user.UserAccessor;
 import com.synopsys.integration.alert.database.api.user.UserModel;
 import com.synopsys.integration.alert.database.user.UserRepository;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
+import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
 import com.synopsys.integration.test.annotation.HubConnectionTest;
 
 @Category(HubConnectionTest.class)
@@ -48,6 +49,8 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private LdapManager ldapManager;
 
     @Before
     public void init() throws IOException {
@@ -58,7 +61,7 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
 
     @Test
     public void authenticateUserTestIT() {
-        final LoginActions loginActions = new LoginActions(alertDatabaseAuthProvider);
+        final LoginActions loginActions = new LoginActions(alertDatabaseAuthProvider, ldapManager);
         final boolean userAuthenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel());
 
         assertTrue(userAuthenticated);
@@ -67,7 +70,7 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
     @Test
     public void testAuthenticateUserFailIT() throws IOException {
         mockLoginRestModel.setBlackDuckUsername(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_ACTIVE_USER));
-        final LoginActions loginActions = new LoginActions(alertDatabaseAuthProvider);
+        final LoginActions loginActions = new LoginActions(alertDatabaseAuthProvider, ldapManager);
         final MockLoginRestModel badRestModel = new MockLoginRestModel();
         badRestModel.setBlackDuckPassword("badpassword");
         try {
@@ -83,7 +86,7 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
         // add a user test then delete a user.
         final String userName = properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_ACTIVE_USER);
         mockLoginRestModel.setBlackDuckUsername(userName);
-        final LoginActions loginActions = new LoginActions(alertDatabaseAuthProvider);
+        final LoginActions loginActions = new LoginActions(alertDatabaseAuthProvider, ldapManager);
         userAccessor.addUser(userName, mockLoginRestModel.getBlackDuckPassword());
         final boolean userAuthenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel());
 
