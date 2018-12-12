@@ -23,8 +23,6 @@
  */
 package com.synopsys.integration.alert.channel.rest;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Optional;
 
 import org.apache.commons.lang3.math.NumberUtils;
@@ -37,8 +35,9 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.connection.RestConnection;
-import com.synopsys.integration.rest.credentials.CredentialsBuilder;
+import com.synopsys.integration.rest.credentials.Credentials;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
+import com.synopsys.integration.rest.proxy.ProxyInfoBuilder;
 
 @Component
 public class ChannelRestConnectionFactory {
@@ -61,30 +60,23 @@ public class ChannelRestConnectionFactory {
         return new RestConnection(intLogger, timeout, alertTrustCertificate.orElse(Boolean.FALSE), proxyInfo);
     }
 
-    private URL getUrlFromString(final String apiUrl) {
-        URL url = null;
-        try {
-            url = new URL(apiUrl);
-        } catch (final MalformedURLException e) {
-            logger.error("Problem generating the URL: " + apiUrl, e);
-        }
-        return url;
-    }
-
     private ProxyInfo createProxyInfo() {
         final Optional<String> alertProxyHost = alertProperties.getAlertProxyHost();
         final Optional<String> alertProxyPort = alertProperties.getAlertProxyPort();
         final Optional<String> alertProxyUsername = alertProperties.getAlertProxyUsername();
         final Optional<String> alertProxyPassword = alertProperties.getAlertProxyPassword();
-        if (alertProxyHost.isPresent() && alertProxyPort.isPresent()) {
-            final CredentialsBuilder credentialsBuilder = new CredentialsBuilder();
-            if (alertProxyUsername.isPresent() && alertProxyPassword.isPresent()) {
-                credentialsBuilder.setUsername(alertProxyUsername.get());
-                credentialsBuilder.setPassword(alertProxyPassword.get());
-            }
-            return new ProxyInfo(alertProxyHost.get(), NumberUtils.toInt(alertProxyPort.get()), credentialsBuilder.build(), null, null);
+
+        final ProxyInfoBuilder proxyInfoBuilder = new ProxyInfoBuilder();
+        if (alertProxyHost.isPresent()) {
+            proxyInfoBuilder.setHost(alertProxyHost.get());
         }
-        return ProxyInfo.NO_PROXY_INFO;
+        if (alertProxyPort.isPresent()) {
+            proxyInfoBuilder.setPort(NumberUtils.toInt(alertProxyPort.get()));
+        }
+        if (alertProxyUsername.isPresent() && alertProxyPassword.isPresent()) {
+            proxyInfoBuilder.setCredentials(new Credentials(alertProxyUsername.get(), alertProxyPassword.get()));
+        }
+        return proxyInfoBuilder.build();
     }
 
 }

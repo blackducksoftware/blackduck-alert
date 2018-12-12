@@ -57,6 +57,7 @@ import com.synopsys.integration.alert.web.channel.model.HipChatGlobalConfig;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.connection.RestConnection;
 import com.synopsys.integration.rest.request.Request;
 import com.synopsys.integration.rest.request.Response;
@@ -96,25 +97,21 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
         final HipChatGlobalConfig hipChatGlobalConfig = (HipChatGlobalConfig) restModel;
         final String configuredApiUrl = getConfiguredApiUrl(hipChatGlobalConfig.getHostServer());
 
+        final RestConnection restConnection = getChannelRestConnectionFactory().createRestConnection();
+        final String testResult = testApiKeyAndApiUrlConnection(restConnection, configuredApiUrl, hipChatGlobalConfig.getApiKey());
+        final Integer parsedRoomId;
         try {
-            final RestConnection restConnection = getChannelRestConnectionFactory().createRestConnection();
-            final String testResult = testApiKeyAndApiUrlConnection(restConnection, configuredApiUrl, hipChatGlobalConfig.getApiKey());
-            final Integer parsedRoomId;
-            try {
-                final String testRoomId = testConfig.getDestination().orElse(null);
-                parsedRoomId = Integer.valueOf(testRoomId);
-            } catch (final NumberFormatException e) {
-                throw new AlertException("The provided room id is an invalid number.");
-            }
-
-            final HipChatChannelEvent event = new HipChatChannelEvent(null, null, null, null, null, parsedRoomId, Boolean.TRUE, "red");
-            final String htmlMessage = "This is a test message sent by Alert.";
-            final Request testRequest = createRequest(hipChatGlobalConfig.getHostServer(), hipChatGlobalConfig.getApiKey(), event, htmlMessage);
-            sendMessageRequest(restConnection, testRequest, "test");
-            return testResult;
-        } catch (final Exception ex) {
-            throw new AlertException("Connection error: see logs for more information.");
+            final String testRoomId = testConfig.getDestination().orElse(null);
+            parsedRoomId = Integer.valueOf(testRoomId);
+        } catch (final NumberFormatException e) {
+            throw new AlertException("The provided room id is an invalid number.");
         }
+
+        final HipChatChannelEvent event = new HipChatChannelEvent(null, null, null, null, null, parsedRoomId, Boolean.TRUE, "red");
+        final String htmlMessage = "This is a test message sent by Alert.";
+        final Request testRequest = createRequest(hipChatGlobalConfig.getHostServer(), hipChatGlobalConfig.getApiKey(), event, htmlMessage);
+        sendMessageRequest(restConnection, testRequest, "test");
+        return testResult;
     }
 
     @Override
@@ -150,11 +147,9 @@ public class HipChatChannel extends RestDistributionChannel<HipChatGlobalConfigE
             requestHeaders.put("Authorization", "Bearer " + apiKey);
             requestHeaders.put("Content-Type", "application/json");
 
-            // TODO test if this string is still needed
-            // The {"message":"test"} is required to avoid a BAD_REQUEST (OkHttp issue: #854)
-            final Request request = createPostMessageRequest(url, requestHeaders, queryParameters, "{\"message\":\"test\"}");
+            final Request request = createPostMessageRequest(url, requestHeaders, queryParameters);
             try (final Response response = sendGenericRequest(restConnection, request)) {
-                if (200 <= response.getStatusCode() && response.getStatusCode() < 400) {
+                if (RestConstants.OK_200 <= response.getStatusCode() && response.getStatusCode() < RestConstants.BAD_REQUEST_400) {
                     return "API key is valid.";
                 }
                 throw new AlertException("Invalid API key: " + response.getStatusMessage());

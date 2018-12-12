@@ -43,7 +43,7 @@ import com.synopsys.integration.alert.database.entity.channel.GlobalChannelConfi
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpMethod;
-import com.synopsys.integration.rest.body.BodyContent;
+import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.body.StringBodyContent;
 import com.synopsys.integration.rest.connection.RestConnection;
 import com.synopsys.integration.rest.request.Request;
@@ -75,25 +75,28 @@ public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntit
     }
 
     public Request createPostMessageRequest(final String url, final Map<String, String> headers, final String jsonString) {
-        Request.Builder requestBuilder = new Request.Builder();
-        final BodyContent bodyContent = new StringBodyContent(jsonString);
-        requestBuilder = requestBuilder.method(HttpMethod.POST).uri(url).additionalHeaders(headers).bodyContent(bodyContent);
-        final Request request = requestBuilder.build();
-        return request;
+        return createPostMessageRequest(url, headers, null, jsonString);
+    }
+
+    public Request createPostMessageRequest(final String url, final Map<String, String> headers, final Map<String, Set<String>> queryParameters) {
+        return createPostMessageRequest(url, headers, queryParameters, null);
     }
 
     public Request createPostMessageRequest(final String url, final Map<String, String> headers, final Map<String, Set<String>> queryParameters, final String jsonString) {
-        Request.Builder requestBuilder = new Request.Builder();
-        final BodyContent bodyContent = new StringBodyContent(jsonString);
-        requestBuilder = requestBuilder.method(HttpMethod.POST).uri(url).additionalHeaders(headers).queryParameters(queryParameters).bodyContent(bodyContent);
-        final Request request = requestBuilder.build();
-        return request;
+        final Request.Builder requestBuilder = new Request.Builder().method(HttpMethod.POST).uri(url).additionalHeaders(headers);
+        if (queryParameters != null && !queryParameters.isEmpty()) {
+            requestBuilder.queryParameters(queryParameters);
+        }
+        if (jsonString != null) {
+            requestBuilder.bodyContent(new StringBodyContent(jsonString));
+        }
+        return requestBuilder.build();
     }
 
     public void sendMessageRequest(final RestConnection restConnection, final Request request, final String messageType) throws IntegrationException {
         logger.info("Attempting to send a {} message...", messageType);
         try (final Response response = sendGenericRequest(restConnection, request)) {
-            if (response.getStatusCode() >= 200 && response.getStatusCode() < 400) {
+            if (RestConstants.OK_200 <= response.getStatusCode() && response.getStatusCode() < RestConstants.BAD_REQUEST_400) {
                 logger.info("Successfully sent a {} message!", messageType);
             }
         } catch (final IOException e) {

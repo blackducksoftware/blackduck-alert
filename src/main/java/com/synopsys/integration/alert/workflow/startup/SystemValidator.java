@@ -144,8 +144,7 @@ public class SystemValidator {
         boolean valid = true;
         try {
             final BlackDuckServerVerifier verifier = new BlackDuckServerVerifier();
-            final ProxyInfoBuilder proxyBuilder = createProxyInfoBuilder();
-            final ProxyInfo proxyInfo = proxyBuilder.build();
+            final ProxyInfo proxyInfo = createProxyInfo();
             final Optional<String> blackDuckUrlOptional = blackDuckProperties.getBlackDuckUrl();
             if (!blackDuckUrlOptional.isPresent()) {
                 logger.error("  -> BlackDuck Provider Invalid; cause: Black Duck URL missing...");
@@ -184,12 +183,13 @@ public class SystemValidator {
         return true;
     }
 
-    private ProxyInfoBuilder createProxyInfoBuilder() {
-        final ProxyInfoBuilder proxyBuilder = new ProxyInfoBuilder();
+    private ProxyInfo createProxyInfo() {
         final Optional<String> alertProxyHost = alertProperties.getAlertProxyHost();
         final Optional<String> alertProxyPort = alertProperties.getAlertProxyPort();
         final Optional<String> alertProxyUsername = alertProperties.getAlertProxyUsername();
         final Optional<String> alertProxyPassword = alertProperties.getAlertProxyPassword();
+
+        final ProxyInfoBuilder proxyBuilder = new ProxyInfoBuilder();
         if (alertProxyHost.isPresent()) {
             proxyBuilder.setHost(alertProxyHost.get());
         }
@@ -204,6 +204,6 @@ public class SystemValidator {
             credentialsBuilder.setPassword(alertProxyPassword.get());
         }
         proxyBuilder.setCredentials(credentialsBuilder.build());
-        return proxyBuilder;
+        return proxyBuilder.build();
     }
 }

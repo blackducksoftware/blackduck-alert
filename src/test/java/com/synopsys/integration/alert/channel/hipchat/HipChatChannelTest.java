@@ -155,7 +155,7 @@ public class HipChatChannelTest extends ChannelTest {
         try {
             final Config config = hipChatMockUtil.createEmptyGlobalConfig();
             hipChatChannel.testGlobalConfig(new TestConfigModel(config));
-            fail();
+            fail("Expected exception to be thrown");
         } catch (final IntegrationException ex) {
             assertEquals("Invalid API key: API key not provided", ex.getMessage());
         }
