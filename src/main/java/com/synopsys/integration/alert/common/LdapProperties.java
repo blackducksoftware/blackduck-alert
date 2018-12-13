@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class LdapProperties {
+    //TODO: this class will be removed once the field database is in place. A setup component descriptor will define these as fields.
     @Value("${alert.ldap.enabled:}")
     private String enabled;
     @Value("${alert.ldap.server:}")
