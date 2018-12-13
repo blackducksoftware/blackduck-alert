@@ -104,12 +104,19 @@
   width: 100%;
 }
 
-.tableScrollableBody {
+.tableScrollableBody, .auditTableScrollableBody {
   position: relative;
   overflow-y: scroll !important;
   overflow-x: hidden;
-  height: 55vh !important;
   width: 100%;
+}
+
+.tableScrollableBody {
+  height: 55vh !important;
+}
+
+.auditTableScrollableBody {
+  height: 50vh !important;
 }
 
 .expandableContainer {
@@ -118,13 +125,6 @@
   background-color: white;
   overflow-y: scroll !important;
   padding-top: 15px;
-}
-
-.auditDetailsTableBody {
-  position: relative;
-  overflow-y: scroll !important;
-  overflow-x: hidden;
-  height: 150px !important;
 }
 
 .iconTableRow {
@@ -158,6 +158,11 @@
   padding: 15px;
 }
 
-.stackTraceContainer {
+.textArea, .auditContentTextArea {
   width: 100%;
 }
+
+.auditContentTextArea {
+  height: 50vh !important;
+}
+

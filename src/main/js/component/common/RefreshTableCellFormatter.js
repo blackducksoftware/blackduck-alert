@@ -1,16 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const RefreshTableCellFormatter = ({ handleButtonClicked, currentRowSelected }) => (
+const RefreshTableCellFormatter = ({handleButtonClicked, currentRowSelected}) => (
     <button
         className="btn btn-link editJobButton"
         type="button"
         title="Refresh"
-        onClick={() => {
+        onClick={(e) => {
+            e.stopPropagation();
             handleButtonClicked(currentRowSelected);
         }}
     >
-        <span className="fa fa-refresh" />
+        <span className="fa fa-refresh"/>
     </button>
 );
 

@@ -23,8 +23,13 @@
  */
 package com.synopsys.integration.alert.web.model;
 
-import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -35,6 +40,8 @@ import com.synopsys.integration.alert.database.entity.NotificationContent;
 
 @Component
 public class NotificationContentConverter extends TypeConverter {
+    private final Logger logger = LoggerFactory.getLogger(NotificationContentConverter.class);
+    public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
 
     @Autowired
     public NotificationContentConverter(final ContentConverter contentConverter) {
@@ -49,8 +56,8 @@ public class NotificationContentConverter extends TypeConverter {
     @Override
     public DatabaseEntity populateEntityFromConfig(final Config restModel) {
         final NotificationConfig notificationConfig = (NotificationConfig) restModel;
-        final Date createdAt = getContentConverter().getValue(notificationConfig.getCreatedAt(), Date.class);
-        final Date providerCreationTime = getContentConverter().getValue(notificationConfig.getProviderCreationTime(), Date.class);
+        final Date createdAt = parseDateString(notificationConfig.getCreatedAt());
+        final Date providerCreationTime = parseDateString(notificationConfig.getProviderCreationTime());
         final NotificationContent notificationEntity = new NotificationContent(createdAt, notificationConfig.getProvider(), providerCreationTime, notificationConfig.getNotificationType(), notificationConfig.getContent());
         addIdToEntityPK(notificationConfig.getId(), notificationEntity);
         return notificationEntity;
@@ -65,6 +72,18 @@ public class NotificationContentConverter extends TypeConverter {
         final NotificationConfig notificationConfig = new NotificationConfig(id, createdAt, notificationEntity.getProvider(), providerCreationTime, notificationEntity.getNotificationType(),
             notificationEntity.getContent());
         return notificationConfig;
+    }
+
+    public Date parseDateString(final String dateString) {
+        final SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date date = null;
+        try {
+            date = sdf.parse(dateString);
+        } catch (final ParseException e) {
+            logger.error(e.toString());
+        }
+        return date;
     }
 
 }

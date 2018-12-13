@@ -48,7 +48,7 @@ import com.synopsys.integration.rest.connection.RestConnection;
 public class BlackDuckAccumulatorTest {
 
     private File testAccumulatorParent;
-    private TestAlertProperties testAlertProperties;
+
     private TestBlackDuckProperties testBlackDuckProperties;
     private NotificationManager notificationManager;
     private TaskScheduler taskScheduler;
@@ -60,7 +60,7 @@ public class BlackDuckAccumulatorTest {
         testAccumulatorParent.mkdirs();
         System.out.println(testAccumulatorParent.getCanonicalPath());
 
-        testAlertProperties = new TestAlertProperties();
+        final TestAlertProperties testAlertProperties = new TestAlertProperties();
         testAlertProperties.setAlertConfigHome(testAccumulatorParent.getCanonicalPath());
         testBlackDuckProperties = new TestBlackDuckProperties(testAlertProperties);
 
@@ -79,7 +79,7 @@ public class BlackDuckAccumulatorTest {
     }
 
     private BlackDuckAccumulator createAccumulator(final BlackDuckProperties blackDuckProperties) {
-        return new BlackDuckAccumulator(taskScheduler, testAlertProperties, blackDuckProperties, notificationManager, filePersistenceUtil);
+        return new BlackDuckAccumulator(taskScheduler, blackDuckProperties, notificationManager, filePersistenceUtil);
     }
 
     @Test
@@ -155,7 +155,7 @@ public class BlackDuckAccumulatorTest {
 
     @Test
     public void testRun() {
-        final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, testAlertProperties, testBlackDuckProperties, notificationManager, filePersistenceUtil);
+        final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, testBlackDuckProperties, notificationManager, filePersistenceUtil);
         final BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
         spiedAccumulator.run();
         Mockito.verify(spiedAccumulator).accumulate(Mockito.any());
@@ -163,7 +163,7 @@ public class BlackDuckAccumulatorTest {
 
     @Test
     public void testAccumulate() throws Exception {
-        final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, testAlertProperties, testBlackDuckProperties, notificationManager, filePersistenceUtil);
+        final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, testBlackDuckProperties, notificationManager, filePersistenceUtil);
         final BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
         spiedAccumulator.accumulate();
         assertTrue(filePersistenceUtil.exists(spiedAccumulator.getSearchRangeFileName()));
@@ -175,7 +175,7 @@ public class BlackDuckAccumulatorTest {
 
     @Test
     public void testAccumulateException() throws Exception {
-        final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, testAlertProperties, testBlackDuckProperties, notificationManager, filePersistenceUtil);
+        final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, testBlackDuckProperties, notificationManager, filePersistenceUtil);
         final BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
         Mockito.doThrow(new IOException("can't write last search file")).when(spiedAccumulator).saveNextSearchStart(Mockito.anyString());
         spiedAccumulator.accumulate();
@@ -187,7 +187,7 @@ public class BlackDuckAccumulatorTest {
 
     @Test
     public void testAccumulateGetNextRunHasValue() throws Exception {
-        final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, testAlertProperties, testBlackDuckProperties, notificationManager, filePersistenceUtil);
+        final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, testBlackDuckProperties, notificationManager, filePersistenceUtil);
         final BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
         Mockito.when(spiedAccumulator.getMillisecondsToNextRun()).thenReturn(Optional.of(Long.MAX_VALUE));
         spiedAccumulator.accumulate();
@@ -206,7 +206,6 @@ public class BlackDuckAccumulatorTest {
         final NotificationService notificationService = Mockito.mock(NotificationService.class);
         final CommonNotificationService commonNotificationService = Mockito.mock(CommonNotificationService.class);
         final NotificationView notificationView = new NotificationView();
-
         notificationView.setCreatedAt(new Date());
         notificationView.setContentType("content_type");
         notificationView.setType(NotificationType.RULE_VIOLATION);
@@ -226,7 +225,7 @@ public class BlackDuckAccumulatorTest {
         Mockito.doReturn(commonViewList).when(commonNotificationService).getCommonNotifications(notificationViewList);
         Mockito.doReturn(viewResults).when(commonNotificationService).getCommonNotificationViewResults(commonViewList);
 
-        final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, testAlertProperties, mockedBlackDuckProperties, notificationManager, filePersistenceUtil);
+        final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, mockedBlackDuckProperties, notificationManager, filePersistenceUtil);
         final BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
         final DateRange dateRange = spiedAccumulator.createDateRange(spiedAccumulator.getSearchRangeFileName());
         spiedAccumulator.accumulate(dateRange);
@@ -238,7 +237,7 @@ public class BlackDuckAccumulatorTest {
 
     @Test
     public void testAccumulateNextRunEmpty() {
-        final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, testAlertProperties, testBlackDuckProperties, notificationManager, filePersistenceUtil);
+        final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, testBlackDuckProperties, notificationManager, filePersistenceUtil);
         final BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
         spiedAccumulator.accumulate();
         Mockito.verify(spiedAccumulator).getMillisecondsToNextRun();
@@ -252,7 +251,6 @@ public class BlackDuckAccumulatorTest {
         final BlackDuckService blackDuckService = Mockito.mock(BlackDuckService.class);
         final CommonNotificationService commonNotificationService = Mockito.mock(CommonNotificationService.class);
         final NotificationView notificationView = new NotificationView();
-
         notificationView.setCreatedAt(new Date());
         notificationView.setContentType("content_type");
         notificationView.setType(NotificationType.RULE_VIOLATION);
@@ -286,7 +284,6 @@ public class BlackDuckAccumulatorTest {
         final BlackDuckService blackDuckService = Mockito.mock(BlackDuckService.class);
         final CommonNotificationService commonNotificationService = Mockito.mock(CommonNotificationService.class);
         final NotificationView notificationView = new NotificationView();
-
         notificationView.setCreatedAt(new Date());
         notificationView.setContentType("content_type");
         notificationView.setType(NotificationType.RULE_VIOLATION);
@@ -346,7 +343,7 @@ public class BlackDuckAccumulatorTest {
         notificationView.setType(NotificationType.RULE_VIOLATION);
         notificationView.setJson("{ content: \"content is here...\"}");
         final CommonNotificationView commonNotificationView = new CommonNotificationView(notificationView);
-        final List<CommonNotificationView> viewList = Arrays.asList(commonNotificationView);
+        final List<CommonNotificationView> viewList = Collections.singletonList(commonNotificationView);
         final CommonNotificationViewResults notificationResults = new CommonNotificationViewResults(viewList, Optional.of(new Date()), Optional.of(RestConstants.formatDate(new Date())));
         final List<NotificationContent> notificationContentList = notificationAccumulator.process(notificationResults);
         assertFalse(notificationContentList.isEmpty());
@@ -363,10 +360,10 @@ public class BlackDuckAccumulatorTest {
 
     @Test
     public void testWrite() {
-        final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, testAlertProperties, testBlackDuckProperties, notificationManager, filePersistenceUtil);
+        final BlackDuckAccumulator notificationAccumulator = new BlackDuckAccumulator(taskScheduler, testBlackDuckProperties, notificationManager, filePersistenceUtil);
         final Date creationDate = new Date();
         final NotificationContent content = new MockNotificationContent(creationDate, "BlackDuck", creationDate, "NotificationType", "{content: \"content is here\"}", null).createEntity();
-        final List<NotificationContent> notificationContentList = Arrays.asList(content);
+        final List<NotificationContent> notificationContentList = Collections.singletonList(content);
         notificationAccumulator.write(notificationContentList);
 
         Mockito.verify(notificationManager, Mockito.times(notificationContentList.size())).saveNotification(Mockito.any());

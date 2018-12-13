@@ -45,6 +45,7 @@ public class BlackDuckProviderTest {
         final ProjectSyncTask projectSyncTask = Mockito.mock(ProjectSyncTask.class);
         final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask);
         final Set<String> expectedNotificationTypes = new LinkedHashSet<>();
+        expectedNotificationTypes.add(NotificationType.LICENSE_LIMIT.name());
         expectedNotificationTypes.add(NotificationType.POLICY_OVERRIDE.name());
         expectedNotificationTypes.add(NotificationType.RULE_VIOLATION.name());
         expectedNotificationTypes.add(NotificationType.RULE_VIOLATION_CLEARED.name());

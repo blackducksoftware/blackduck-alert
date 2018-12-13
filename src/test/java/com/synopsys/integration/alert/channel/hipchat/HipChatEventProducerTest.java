@@ -39,7 +39,7 @@ public class HipChatEventProducerTest {
             distributionType, "Test HipChat Job", providerName, "REAL_TIME", "FALSE", "", Collections.emptyList(), Collections.emptyList(), formatType);
 
         final HipChatChannelEvent event = hipChatEventProducer.createChannelEvent(hipChatDistributionConfig, content);
-        assertEquals(expected.getAuditEntryId(), event.getAuditEntryId());
+        assertEquals(expected.getNotificationIdToAuditId(), event.getNotificationIdToAuditId());
         assertEquals(expected.getDestination(), event.getDestination());
         assertEquals(expected.getProvider(), event.getProvider());
         assertEquals(expected.getFormatType(), event.getFormatType());
@@ -56,7 +56,7 @@ public class HipChatEventProducerTest {
             distributionType, "Test HipChat Job", providerName, "REAL_TIME", "FALSE", "", Collections.emptyList(), Collections.emptyList(), "DEFAULT");
 
         final HipChatChannelEvent testEvent = hipChatEventProducer.createChannelTestEvent(hipChatDistributionConfig);
-        assertEquals(expectedTest.getAuditEntryId(), testEvent.getAuditEntryId());
+        assertEquals(expectedTest.getNotificationIdToAuditId(), testEvent.getNotificationIdToAuditId());
         assertEquals(expectedTest.getDestination(), testEvent.getDestination());
         assertEquals(expectedTest.getProvider(), testEvent.getProvider());
         assertEquals(expectedTest.getContent(), testEvent.getContent());

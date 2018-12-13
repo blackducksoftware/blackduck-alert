@@ -38,7 +38,7 @@ public class SlackEventProducerTest {
             providerName, "REAL_TIME", "FALSE", "", Collections.emptyList(), Collections.emptyList(), formatType);
 
         final SlackChannelEvent event = slackEventProducer.createChannelEvent(slackDistributionConfig, content);
-        assertEquals(expected.getAuditEntryId(), event.getAuditEntryId());
+        assertEquals(expected.getNotificationIdToAuditId(), event.getNotificationIdToAuditId());
         assertEquals(expected.getDestination(), event.getDestination());
         assertEquals(expected.getProvider(), event.getProvider());
         assertEquals(expected.getFormatType(), event.getFormatType());
@@ -56,7 +56,7 @@ public class SlackEventProducerTest {
             "REAL_TIME", "FALSE", "", Collections.emptyList(), Collections.emptyList(), "DEFAULT");
 
         final SlackChannelEvent testEvent = slackEventProducer.createChannelTestEvent(slackDistributionConfig);
-        assertEquals(expectedTest.getAuditEntryId(), testEvent.getAuditEntryId());
+        assertEquals(expectedTest.getNotificationIdToAuditId(), testEvent.getNotificationIdToAuditId());
         assertEquals(expectedTest.getDestination(), testEvent.getDestination());
         assertEquals(expectedTest.getProvider(), testEvent.getProvider());
         assertEquals(expectedTest.getContent(), testEvent.getContent());
