@@ -60,17 +60,21 @@ public class LoginActions {
     }
 
     private Authentication performDatabaseAuthentication(final LoginConfig loginConfig) {
+        logger.info("Attempting database authentication...");
         final Authentication pendingAuthentication = createUsernamePasswordAuthToken(loginConfig);
         return alertDatabaseAuthProvider.authenticate(pendingAuthentication);
     }
 
     private Authentication performLdapAuthentication(final LoginConfig loginConfig) {
+        logger.info("Checking ldap based authentication...");
         final Authentication pendingAuthentication = createUsernamePasswordAuthToken(loginConfig);
         final Authentication result;
         if (ldapManager.isLdapEnabled()) {
+            logger.info("LDAP authentication enabled");
             final LdapAuthenticationProvider authenticationProvider = ldapManager.getAuthenticationProvider();
             result = authenticationProvider.authenticate(pendingAuthentication);
         } else {
+            logger.info("LDAP authentication disabled");
             result = pendingAuthentication;
         }
         return result;

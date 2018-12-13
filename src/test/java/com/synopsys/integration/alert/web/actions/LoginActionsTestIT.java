@@ -20,11 +20,14 @@ import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 
 import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.TestProperties;
@@ -101,4 +104,20 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
 
         userAccessor.deleteUser(userName);
     }
+
+    @Test
+    public void testAuthenticationLDAPUserIT() {
+        final Authentication authentication = Mockito.mock(Authentication.class);
+        Mockito.when(authentication.isAuthenticated()).thenReturn(true);
+        final LdapAuthenticationProvider ldapAuthenticationProvider = Mockito.mock(LdapAuthenticationProvider.class);
+        Mockito.when(ldapAuthenticationProvider.authenticate(Mockito.any(Authentication.class))).thenReturn(authentication);
+        final LdapManager mockLdapManager = Mockito.mock(LdapManager.class);
+        Mockito.when(mockLdapManager.isLdapEnabled()).thenReturn(true);
+        Mockito.when(mockLdapManager.getAuthenticationProvider()).thenReturn(ldapAuthenticationProvider);
+
+        final LoginActions loginActions = new LoginActions(alertDatabaseAuthProvider, mockLdapManager);
+        final boolean authenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel());
+        assertTrue(authenticated);
+    }
+
 }
