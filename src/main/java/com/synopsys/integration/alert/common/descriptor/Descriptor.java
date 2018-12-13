@@ -23,27 +23,30 @@
  */
 package com.synopsys.integration.alert.common.descriptor;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
-import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
-import com.synopsys.integration.alert.common.enumeration.ActionApiType;
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
-import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.alert.database.api.configuration.DefinedFieldModel;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class Descriptor {
     private final String name;
     private final DescriptorType type;
-    private final Map<ActionApiType, DescriptorActionApi> restApis;
-    private final Map<ActionApiType, UIConfig> uiConfigs;
+    private final Map<ConfigContextEnum, DescriptorActionApi> restApis;
+    private final Map<ConfigContextEnum, UIConfig> uiConfigs;
 
     public Descriptor(final String name, final DescriptorType type) {
         this.name = name;
@@ -60,56 +63,29 @@ public abstract class Descriptor {
         return type;
     }
 
-    public void addProviderRestApi(final DescriptorActionApi descriptorActionApi) {
-        restApis.put(ActionApiType.PROVIDER_CONFIG, descriptorActionApi);
+    public void addGlobalActionApi(final DescriptorActionApi descriptorActionApi) {
+        restApis.put(ConfigContextEnum.GLOBAL, descriptorActionApi);
     }
 
-    public void addGlobalRestApi(final DescriptorActionApi descriptorActionApi) {
-        restApis.put(ActionApiType.CHANNEL_GLOBAL_CONFIG, descriptorActionApi);
+    public void addDistributionActionApi(final DescriptorActionApi descriptorActionApi) {
+        restApis.put(ConfigContextEnum.DISTRIBUTION, descriptorActionApi);
     }
 
-    public void addChannelDistributionRestApi(final DescriptorActionApi descriptorActionApi) {
-        restApis.put(ActionApiType.CHANNEL_DISTRIBUTION_CONFIG, descriptorActionApi);
+    public void addGlobalUiConfig(final DescriptorActionApi descriptorActionApi, final UIConfig uiConfig) {
+        uiConfigs.put(ConfigContextEnum.GLOBAL, uiConfig);
+        addGlobalActionApi(descriptorActionApi);
     }
 
-    public void addProviderDistributionRestApi(final DescriptorActionApi descriptorActionApi) {
-        restApis.put(ActionApiType.PROVIDER_DISTRIBUTION_CONFIG, descriptorActionApi);
+    public void addDistributionUiConfig(final DescriptorActionApi descriptorActionApi, final UIConfig uiConfig) {
+        uiConfigs.put(ConfigContextEnum.DISTRIBUTION, uiConfig);
+        addDistributionActionApi(descriptorActionApi);
     }
 
-    public void addComponentRestApi(final DescriptorActionApi descriptorActionApi) {
-        restApis.put(ActionApiType.COMPONENT_CONFIG, descriptorActionApi);
-    }
-
-    public void addProviderUiConfigs(final DescriptorActionApi descriptorActionApi, final UIConfig uiConfig) {
-        uiConfigs.put(ActionApiType.PROVIDER_CONFIG, uiConfig);
-        addProviderRestApi(descriptorActionApi);
-    }
-
-    public void addGlobalUiConfigs(final DescriptorActionApi descriptorActionApi, final UIConfig uiConfig) {
-        uiConfigs.put(ActionApiType.CHANNEL_GLOBAL_CONFIG, uiConfig);
-        addGlobalRestApi(descriptorActionApi);
-    }
-
-    public void addChannelDistributionUiConfigs(final DescriptorActionApi descriptorActionApi, final UIConfig uiConfig) {
-        uiConfigs.put(ActionApiType.CHANNEL_DISTRIBUTION_CONFIG, uiConfig);
-        addChannelDistributionRestApi(descriptorActionApi);
-    }
-
-    public void addProviderDistributionUiConfigs(final DescriptorActionApi descriptorActionApi, final UIConfig uiConfig) {
-        uiConfigs.put(ActionApiType.PROVIDER_DISTRIBUTION_CONFIG, uiConfig);
-        addProviderDistributionRestApi(descriptorActionApi);
-    }
-
-    public void addComponentUiConfigs(final DescriptorActionApi descriptorActionApi, final UIConfig uiConfig) {
-        uiConfigs.put(ActionApiType.COMPONENT_CONFIG, uiConfig);
-        addComponentRestApi(descriptorActionApi);
-    }
-
-    public DescriptorActionApi getRestApi(final ActionApiType actionApiType) {
+    public DescriptorActionApi getRestApi(final ConfigContextEnum actionApiType) {
         return restApis.get(actionApiType);
     }
 
-    public UIConfig getUIConfig(final ActionApiType actionApiType) {
+    public UIConfig getUIConfig(final ConfigContextEnum actionApiType) {
         return uiConfigs.get(actionApiType);
     }
 
@@ -121,48 +97,38 @@ public abstract class Descriptor {
         }
     }
 
+    public Set<ConfigContextEnum> getAppliedUIContexts() {
+        return uiConfigs.keySet();
+    }
+
     public boolean hasUIConfigs() {
         return uiConfigs.size() > 0;
     }
 
-    public boolean hasUIConfigForType(final ActionApiType actionApiType) {
+    public boolean hasUIConfigForType(final ConfigContextEnum actionApiType) {
         return uiConfigs.containsKey(actionApiType);
     }
 
-    public Optional<? extends DatabaseEntity> readEntity(final ActionApiType actionApiType, final long id) {
-        return getRestApi(actionApiType).readEntity(id);
+    public void validateConfig(final ConfigContextEnum actionApiType, final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
+        getRestApi(actionApiType).validateConfig(fieldAccessor, fieldErrors);
     }
 
-    public List<? extends DatabaseEntity> readEntities(final ActionApiType actionApiType) {
-        return getRestApi(actionApiType).readEntities();
-    }
-
-    public DatabaseEntity saveEntity(final ActionApiType actionApiType, final DatabaseEntity entity) {
-        return getRestApi(actionApiType).saveEntity(entity);
-    }
-
-    public void deleteEntity(final ActionApiType actionApiType, final long id) {
-        getRestApi(actionApiType).deleteEntity(id);
-    }
-
-    public DatabaseEntity populateEntityFromConfig(final ActionApiType actionApiType, final Config config) {
-        return getRestApi(actionApiType).populateEntityFromConfig(config);
-    }
-
-    public Config populateConfigFromEntity(final ActionApiType actionApiType, final DatabaseEntity entity) {
-        return getRestApi(actionApiType).populateConfigFromEntity(entity);
-    }
-
-    public Config getConfigFromJson(final ActionApiType actionApiType, final String json) {
-        return getRestApi(actionApiType).getConfigFromJson(json);
-    }
-
-    public void validateConfig(final ActionApiType actionApiType, final Config config, final Map<String, String> fieldErrors) {
-        getRestApi(actionApiType).validateConfig(config, fieldErrors);
-    }
-
-    public void testConfig(final ActionApiType actionApiType, final TestConfigModel testConfig) throws IntegrationException {
+    public void testConfig(final ConfigContextEnum actionApiType, final TestConfigModel testConfig) throws IntegrationException {
         getRestApi(actionApiType).testConfig(testConfig);
     }
 
+    public Collection<DefinedFieldModel> createAllDefinedFields() {
+        final Set<ConfigContextEnum> appliedUIContexts = getAppliedUIContexts();
+        final List<DefinedFieldModel> fieldModels = new ArrayList<>();
+        for (final ConfigContextEnum context : appliedUIContexts) {
+            final UIConfig uiConfig = getUIConfig(context);
+            final List<ConfigField> fields = uiConfig.generateUIComponent().getFields();
+            for (final ConfigField field : fields) {
+                final String key = field.getKey();
+                final boolean isSensitive = field.isSensitive();
+                fieldModels.add(new DefinedFieldModel(key, context, isSensitive));
+            }
+        }
+        return fieldModels;
+    }
 }

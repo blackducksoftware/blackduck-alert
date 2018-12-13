@@ -14,8 +14,6 @@ import com.synopsys.integration.alert.channel.email.mock.MockEmailRestModel;
 import com.synopsys.integration.alert.database.channel.email.EmailDistributionRepositoryAccessor;
 import com.synopsys.integration.alert.database.channel.email.EmailGlobalRepositoryAccessor;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserEntity;
@@ -23,7 +21,6 @@ import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuck
 import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelation;
 import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelationRepositoryAccessor;
 import com.synopsys.integration.alert.web.controller.ControllerTest;
-import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 
 public class EmailChannelDistributionControllerTestIT extends ControllerTest {
     @Autowired
@@ -57,8 +54,8 @@ public class EmailChannelDistributionControllerTestIT extends ControllerTest {
         userProjectRelationRepositoryAccessor.deleteAndSaveAll(new HashSet<>(Arrays.asList(userProjectRelation1, userProjectRelation2, userProjectRelation3, userProjectRelation4)));
 
         final GlobalBlackDuckConfigEntity blackDuckConfigEntity = new GlobalBlackDuckConfigEntity(300,
-                testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY),
-                testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
+            testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY),
+            testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
         globalBlackDuckRepository.deleteAll();
         globalBlackDuckRepository.save(blackDuckConfigEntity);
     }

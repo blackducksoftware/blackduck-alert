@@ -14,9 +14,6 @@ import org.springframework.core.convert.support.DefaultConversionService;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
-import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
-import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 
 public class CommonDistributionConfigActionsTest {
 

@@ -23,7 +23,6 @@ import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.mock.NotificationTypeMockUtils;
 import com.synopsys.integration.alert.mock.ProjectMockUtils;
-import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 public class MockCommonDistributionRestModel extends MockRestModelUtil<CommonDistributionConfig> {

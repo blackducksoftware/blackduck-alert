@@ -29,19 +29,21 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
-import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
-import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.ui.UIComponent;
+import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.FieldGroup;
 
 @Component
 public class HipChatGlobalUIConfig extends UIConfig {
+    public static final String KEY_API_KEY = "api.key";
+    public static final String KEY_HOST_SERVER = "host.server";
 
     public List<ConfigField> setupFields() {
-        final ConfigField apiKey = new PasswordConfigField("apiKey", "Api Key", true);
-        final ConfigField hostServer = new TextInputConfigField("hostServer", "Host Server", false, false, FieldGroup.ADVANCED);
+        final ConfigField apiKey = new PasswordConfigField(KEY_API_KEY, "Api Key", true);
+        final ConfigField hostServer = new TextInputConfigField(KEY_HOST_SERVER, "Host Server", false, false, FieldGroup.ADVANCED);
         return Arrays.asList(apiKey, hostServer);
     }
 

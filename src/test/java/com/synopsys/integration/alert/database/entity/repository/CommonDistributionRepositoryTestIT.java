@@ -22,7 +22,6 @@ import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 
 public class CommonDistributionRepositoryTestIT extends AlertIntegrationTest {
     @Autowired

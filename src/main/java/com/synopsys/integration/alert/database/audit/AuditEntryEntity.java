@@ -39,8 +39,8 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.Type;
 
 import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
-import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+import com.synopsys.integration.alert.database.entity.configuration.DescriptorConfigEntity;
 
 @Entity
 @Table(schema = "alert", name = "audit_entries")
@@ -75,7 +75,7 @@ public class AuditEntryEntity extends DatabaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "common_config_id", insertable = false, updatable = false)
-    private CommonDistributionConfigEntity commonDistributionConfigEntity;
+    private DescriptorConfigEntity commonDistributionConfigEntity;
 
     public AuditEntryEntity() {
         // JPA requires default constructor definitions
@@ -134,7 +134,7 @@ public class AuditEntryEntity extends DatabaseEntity {
         return auditNotificationRelations;
     }
 
-    public CommonDistributionConfigEntity getCommonDistributionConfigEntity() {
+    public DescriptorConfigEntity getCommonDistributionConfigEntity() {
         return commonDistributionConfigEntity;
     }
 }

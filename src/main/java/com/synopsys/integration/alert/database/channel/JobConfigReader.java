@@ -23,66 +23,58 @@
  */
 package com.synopsys.integration.alert.database.channel;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
-import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
-import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
-import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
+import com.synopsys.integration.alert.common.configuration.CommonDistributionConfiguration;
+import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.enumeration.DescriptorType;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
 
 @Component
 public class JobConfigReader {
-    private final CommonDistributionRepository commonDistributionRepository;
-    private final DescriptorMap descriptorMap;
+    private final BaseConfigurationAccessor configurationAccessor;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    public JobConfigReader(final CommonDistributionRepository commonDistributionRepository, final DescriptorMap descriptorMap) {
-        this.commonDistributionRepository = commonDistributionRepository;
-        this.descriptorMap = descriptorMap;
+    public JobConfigReader(final BaseConfigurationAccessor configurationAccessor) {
+        this.configurationAccessor = configurationAccessor;
     }
 
     @Transactional
-    public List<? extends CommonDistributionConfig> getPopulatedConfigs() {
-        final List<CommonDistributionConfigEntity> foundEntities = commonDistributionRepository.findAll();
-
-        final List<? extends CommonDistributionConfig> configs = foundEntities
-                                                                         .stream()
-                                                                         .map(entity -> {
-                                                                             final Optional<? extends CommonDistributionConfig> optionalCommonDistributionConfig = getJobConfig(entity.getDistributionConfigId(), entity.getDistributionType());
-                                                                             if (optionalCommonDistributionConfig.isPresent()) {
-                                                                                 return optionalCommonDistributionConfig.get();
-                                                                             }
-                                                                             return null;
-                                                                         })
-                                                                         .filter(commonDistributionConfig -> null != commonDistributionConfig)
-                                                                         .collect(Collectors.toList());
-
-        return configs;
+    public List<CommonDistributionConfiguration> getPopulatedConfigs() {
+        try {
+            final List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationsByDescriptorType(DescriptorType.CHANNEL);
+            return configurationModels.stream()
+                       .map(configurationModel -> new CommonDistributionConfiguration(configurationModel))
+                       .collect(Collectors.toList());
+        } catch (final AlertDatabaseConstraintException e) {
+            logger.error("Was not able to retrieve configurations", e);
+            return Collections.emptyList();
+        }
     }
 
     @Transactional
-    public Optional<? extends CommonDistributionConfig> getPopulatedConfig(final Long configId) {
+    public Optional<CommonDistributionConfiguration> getPopulatedConfig(final Long configId) {
         if (null == configId) {
             return Optional.empty();
         }
-        final Optional<CommonDistributionConfigEntity> foundEntity = commonDistributionRepository.findById(configId);
-        if (foundEntity.isPresent()) {
-            final CommonDistributionConfigEntity configEntity = foundEntity.get();
-            return getJobConfig(configEntity.getDistributionConfigId(), configEntity.getDistributionType());
-        } else {
+
+        try {
+            final ConfigurationModel configurationModel = configurationAccessor.getConfigurationById(configId).orElse(null);
+            return Optional.ofNullable(new CommonDistributionConfiguration(configurationModel));
+        } catch (final AlertDatabaseConstraintException e) {
             return Optional.empty();
         }
-    }
-
-    private Optional<? extends CommonDistributionConfig> getJobConfig(final Long distributionConfigId, final String distributionType) {
-        final Optional<? extends CommonDistributionConfig> optionalConfig = descriptorMap.getChannelDescriptor(distributionType).getChannelDistributionRepositoryAccessor().getJobConfig(distributionConfigId);
-        return optionalConfig;
     }
 
 }

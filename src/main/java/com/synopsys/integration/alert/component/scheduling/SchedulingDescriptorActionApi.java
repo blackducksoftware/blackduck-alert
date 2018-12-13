@@ -26,32 +26,26 @@ package com.synopsys.integration.alert.component.scheduling;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
-import com.synopsys.integration.alert.database.scheduling.SchedulingRepositoryAccessor;
-import com.synopsys.integration.alert.web.component.scheduling.SchedulingConfig;
-import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class SchedulingDescriptorActionApi extends DescriptorActionApi {
 
-    @Autowired
-    public SchedulingDescriptorActionApi(final SchedulingTypeConverter typeConverter, final SchedulingRepositoryAccessor repositoryAccessor, final SchedulingStartupComponent schedulingStartupComponent) {
-        super(typeConverter, repositoryAccessor, schedulingStartupComponent);
-    }
-
     @Override
-    public void validateConfig(final Config config, final Map<String, String> fieldErrors) {
-        final SchedulingConfig schedulingConfig = (SchedulingConfig) config;
-        if (StringUtils.isNotBlank(schedulingConfig.getDailyDigestHourOfDay())) {
-            if (!StringUtils.isNumeric(schedulingConfig.getDailyDigestHourOfDay())) {
+    public void validateConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
+        final String dailyDigestHourOfDay = fieldAccessor.getString(SchedulingUIConfig.KEY_DAILY_DIGEST_HOUR_OF_DAY).orElse(null);
+        final String purgeDataFrequency = fieldAccessor.getString(SchedulingUIConfig.KEY_PURGE_DATA_FREQUENCY_DAYS).orElse(null);
+
+        if (StringUtils.isNotBlank(dailyDigestHourOfDay)) {
+            if (!StringUtils.isNumeric(dailyDigestHourOfDay)) {
                 fieldErrors.put("dailyDigestHourOfDay", "Must be a number between 0 and 23");
             } else {
-                final Integer integer = Integer.valueOf(schedulingConfig.getDailyDigestHourOfDay());
+                final Integer integer = Integer.valueOf(dailyDigestHourOfDay);
                 if (integer > 23) {
                     fieldErrors.put("dailyDigestHourOfDay", "Must be a number less than 24");
                 }
@@ -60,11 +54,11 @@ public class SchedulingDescriptorActionApi extends DescriptorActionApi {
             fieldErrors.put("dailyDigestHourOfDay", "Must be a number between 0 and 23");
         }
 
-        if (StringUtils.isNotBlank(schedulingConfig.getPurgeDataFrequencyDays())) {
-            if (!StringUtils.isNumeric(schedulingConfig.getPurgeDataFrequencyDays())) {
+        if (StringUtils.isNotBlank(purgeDataFrequency)) {
+            if (!StringUtils.isNumeric(purgeDataFrequency)) {
                 fieldErrors.put("purgeDataFrequencyDays", "Must be a number between 1 and 7");
             } else {
-                final Integer integer = Integer.valueOf(schedulingConfig.getPurgeDataFrequencyDays());
+                final Integer integer = Integer.valueOf(purgeDataFrequency);
                 if (integer > 8) {
                     fieldErrors.put("purgeDataFrequencyDays", "Must be a number less than 8");
                 }

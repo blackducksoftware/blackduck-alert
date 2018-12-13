@@ -13,7 +13,6 @@ package com.synopsys.integration.alert.provider.blackduck.mock;
 
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.mock.MockGlobalRestModelUtil;
-import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckConfig;
 
 public class MockGlobalBlackDuckRestModel extends MockGlobalRestModelUtil<BlackDuckConfig> {
     private String blackDuckUrl;
@@ -32,13 +31,13 @@ public class MockGlobalBlackDuckRestModel extends MockGlobalRestModelUtil<BlackD
 
     public MockGlobalBlackDuckRestModel() {
         this("BlackDuckUrl", "444", "BlackDuckUsername", "BlackDuckPassword", "BlackDuckApiKey############################################################", false, "BlackDuckProxyHost", "555", "BlackDuckProxyUsername",
-                "BlackDuckProxyPassword", true, "true", "1");
+            "BlackDuckProxyPassword", true, "true", "1");
     }
 
     private MockGlobalBlackDuckRestModel(final String blackDuckUrl, final String blackDuckTimeout, final String blackDuckUsername, final String blackDuckPassword, final String blackDuckApiKey, final boolean blackDuckApiKeyIsSet,
-            final String blackDuckProxyHost,
-            final String blackDuckProxyPort,
-            final String blackDuckProxyUsername, final String blackDuckProxyPassword, final boolean blackDuckProxyPasswordIsSet, final String blackDuckAlwaysTrustCertificate, final String id) {
+        final String blackDuckProxyHost,
+        final String blackDuckProxyPort,
+        final String blackDuckProxyUsername, final String blackDuckProxyPassword, final boolean blackDuckProxyPasswordIsSet, final String blackDuckAlwaysTrustCertificate, final String id) {
         this.blackDuckUrl = blackDuckUrl;
         this.blackDuckTimeout = blackDuckTimeout;
         this.blackDuckUsername = blackDuckUsername;
@@ -62,36 +61,72 @@ public class MockGlobalBlackDuckRestModel extends MockGlobalRestModelUtil<BlackD
         return blackDuckTimeout;
     }
 
+    public void setBlackDuckTimeout(final String blackDuckTimeout) {
+        this.blackDuckTimeout = blackDuckTimeout;
+    }
+
     public String getBlackDuckUsername() {
         return blackDuckUsername;
+    }
+
+    public void setBlackDuckUsername(final String blackDuckUsername) {
+        this.blackDuckUsername = blackDuckUsername;
     }
 
     public String getBlackDuckPassword() {
         return blackDuckPassword;
     }
 
+    public void setBlackDuckPassword(final String blackDuckPassword) {
+        this.blackDuckPassword = blackDuckPassword;
+    }
+
     public String getBlackDuckApiKey() {
         return blackDuckApiKey;
+    }
+
+    public void setBlackDuckApiKey(final String blackDuckApiKey) {
+        this.blackDuckApiKey = blackDuckApiKey;
     }
 
     public String getBlackDuckProxyHost() {
         return blackDuckProxyHost;
     }
 
+    public void setBlackDuckProxyHost(final String blackDuckProxyHost) {
+        this.blackDuckProxyHost = blackDuckProxyHost;
+    }
+
     public String getBlackDuckProxyPort() {
         return blackDuckProxyPort;
+    }
+
+    public void setBlackDuckProxyPort(final String blackDuckProxyPort) {
+        this.blackDuckProxyPort = blackDuckProxyPort;
     }
 
     public String getBlackDuckProxyUsername() {
         return blackDuckProxyUsername;
     }
 
+    public void setBlackDuckProxyUsername(final String blackDuckProxyUsername) {
+        this.blackDuckProxyUsername = blackDuckProxyUsername;
+    }
+
     public String getBlackDuckProxyPassword() {
         return blackDuckProxyPassword;
     }
 
+    public void setBlackDuckProxyPassword(final String blackDuckProxyPassword) {
+        this.blackDuckProxyPassword = blackDuckProxyPassword;
+    }
+
     public String getBlackDuckAlwaysTrustCertificate() {
         return blackDuckAlwaysTrustCertificate;
+    }
+
+    public void setBlackDuckAlwaysTrustCertificate(final String blackDuckAlwaysTrustCertificate) {
+        this.blackDuckAlwaysTrustCertificate = blackDuckAlwaysTrustCertificate;
     }
 
     public boolean isBlackDuckApiKeyIsSet() {
@@ -114,40 +149,9 @@ public class MockGlobalBlackDuckRestModel extends MockGlobalRestModelUtil<BlackD
         this.blackDuckUrl = blackDuckUrl;
     }
 
-    public void setBlackDuckTimeout(final String blackDuckTimeout) {
-        this.blackDuckTimeout = blackDuckTimeout;
-    }
-
-    public void setBlackDuckUsername(final String blackDuckUsername) {
-        this.blackDuckUsername = blackDuckUsername;
-    }
-
-    public void setBlackDuckPassword(final String blackDuckPassword) {
-        this.blackDuckPassword = blackDuckPassword;
-    }
-
-    public void setBlackDuckApiKey(final String blackDuckApiKey) {
-        this.blackDuckApiKey = blackDuckApiKey;
-    }
-
-    public void setBlackDuckProxyHost(final String blackDuckProxyHost) {
-        this.blackDuckProxyHost = blackDuckProxyHost;
-    }
-
-    public void setBlackDuckProxyPort(final String blackDuckProxyPort) {
-        this.blackDuckProxyPort = blackDuckProxyPort;
-    }
-
-    public void setBlackDuckProxyUsername(final String blackDuckProxyUsername) {
-        this.blackDuckProxyUsername = blackDuckProxyUsername;
-    }
-
-    public void setBlackDuckProxyPassword(final String blackDuckProxyPassword) {
-        this.blackDuckProxyPassword = blackDuckProxyPassword;
-    }
-
-    public void setBlackDuckAlwaysTrustCertificate(final String blackDuckAlwaysTrustCertificate) {
-        this.blackDuckAlwaysTrustCertificate = blackDuckAlwaysTrustCertificate;
+    @Override
+    public Long getId() {
+        return Long.valueOf(id);
     }
 
     public void setId(final String id) {
@@ -155,15 +159,10 @@ public class MockGlobalBlackDuckRestModel extends MockGlobalRestModelUtil<BlackD
     }
 
     @Override
-    public Long getId() {
-        return Long.valueOf(id);
-    }
-
-    @Override
     public BlackDuckConfig createGlobalRestModel() {
         final BlackDuckConfig restModel = new BlackDuckConfig(id, blackDuckUrl, blackDuckTimeout, blackDuckApiKey, blackDuckApiKeyIsSet, blackDuckProxyHost, blackDuckProxyPort, blackDuckProxyUsername, blackDuckProxyPassword,
-                blackDuckProxyPasswordIsSet,
-                blackDuckAlwaysTrustCertificate);
+            blackDuckProxyPasswordIsSet,
+            blackDuckAlwaysTrustCertificate);
         return restModel;
     }
 

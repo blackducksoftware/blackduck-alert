@@ -20,12 +20,8 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.TestProperties;
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.database.RepositoryAccessor;
-import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
-import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.synopsys.integration.alert.mock.entity.MockCommonDistributionEntity;
-import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 
 public abstract class ControllerTest extends AlertIntegrationTest {
     protected final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
