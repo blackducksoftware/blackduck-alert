@@ -19,8 +19,6 @@ import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.TestProperties;
 import com.synopsys.integration.alert.TestPropertyKey;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 

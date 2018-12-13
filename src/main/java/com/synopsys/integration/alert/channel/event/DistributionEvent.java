@@ -28,24 +28,35 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.event.ContentEvent;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 
-public abstract class DistributionEvent extends ContentEvent {
-    private final Long commonDistributionConfigId;
+public class DistributionEvent extends ContentEvent {
+    private final FieldAccessor fieldAccessor;
+    private final String configId;
     private Map<Long, Long> notificationIdToAuditId;
 
-    public DistributionEvent(final String destination, final String createdAt, final String provider, final String formatType, final AggregateMessageContent content, final Long commonDistributionConfigId) {
+    public DistributionEvent(final String configId, final String destination, final String createdAt, final String provider, final String formatType, final AggregateMessageContent content, final FieldAccessor fieldAccessor) {
         super(destination, createdAt, provider, formatType, content);
-        this.commonDistributionConfigId = commonDistributionConfigId;
+        this.fieldAccessor = fieldAccessor;
+        this.configId = configId;
     }
 
-    public Long getCommonDistributionConfigId() {
-        return commonDistributionConfigId;
+    public FieldAccessor getFieldAccessor() {
+        return fieldAccessor;
+    }
+
+    public String getConfigId() {
+        return configId;
     }
 
     public Map<Long, Long> getNotificationIdToAuditId() {
         return notificationIdToAuditId;
+    }
+
+    public void setNotificationIdToAuditId(final Map<Long, Long> notificationIdToAuditId) {
+        this.notificationIdToAuditId = notificationIdToAuditId;
     }
 
     public Set<Long> getAuditIds() {
@@ -57,9 +68,5 @@ public abstract class DistributionEvent extends ContentEvent {
                        .collect(Collectors.toSet());
         }
         return Collections.emptySet();
-    }
-
-    public void setNotificationIdToAuditId(final Map<Long, Long> notificationIdToAuditId) {
-        this.notificationIdToAuditId = notificationIdToAuditId;
     }
 }

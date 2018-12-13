@@ -4,16 +4,15 @@ import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 
 public class MockCommonDistributionEntity extends MockEntityUtil<CommonDistributionConfigEntity> {
+    private final String projectNamePattern;
     private Long distributionConfigId;
     private String distributionType;
     private String name;
     private FrequencyType frequency;
     private Boolean filterByProject;
-    private final String projectNamePattern;
     private Long id;
     private String providerName;
     private FormatType formatType;

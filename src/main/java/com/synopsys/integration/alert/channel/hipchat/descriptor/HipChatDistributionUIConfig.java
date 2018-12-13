@@ -29,15 +29,18 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
-import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
-import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.ui.UIComponent;
+import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 
 @Component
 public class HipChatDistributionUIConfig extends UIConfig {
+    public static final String KEY_ROOM_ID = "channel.hipchat.room.id";
+    public static final String KEY_NOTIFY = "channel.hipchat.notify";
+    public static final String KEY_COLOR = "channel.hipchat.color";
 
     @Override
     public UIComponent generateUIComponent() {
@@ -45,9 +48,9 @@ public class HipChatDistributionUIConfig extends UIConfig {
     }
 
     public List<ConfigField> setupFields() {
-        final ConfigField roomId = new NumberConfigField("roomId", "Room Id", true, false);
-        final ConfigField notify = new CheckboxConfigField("notify", "Notify", false, false);
-        final ConfigField color = new SelectConfigField("color", "Color", false, false, Arrays.asList("Yellow", "Green", "Red", "Purple", "Gray", "Random"));
+        final ConfigField roomId = new NumberConfigField(KEY_ROOM_ID, "Room Id", true, false);
+        final ConfigField notify = new CheckboxConfigField(KEY_NOTIFY, "Notify", false, false);
+        final ConfigField color = new SelectConfigField(KEY_COLOR, "Color", false, false, Arrays.asList("Yellow", "Green", "Red", "Purple", "Gray", "Random"));
         return Arrays.asList(roomId, notify, color);
     }
 }

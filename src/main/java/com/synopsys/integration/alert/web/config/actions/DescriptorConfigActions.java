@@ -23,217 +23,197 @@
  */
 package com.synopsys.integration.alert.web.config.actions;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.common.annotation.SensitiveFieldFinder;
-import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
-import com.synopsys.integration.alert.common.descriptor.config.TypeConverter;
+import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
+import com.synopsys.integration.alert.common.descriptor.Descriptor;
+import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
+import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.database.RepositoryAccessor;
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
+import com.synopsys.integration.alert.database.api.configuration.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.DescriptorAccessor.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
-import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.alert.web.model.FieldModel;
+import com.synopsys.integration.alert.web.model.FieldValueModel;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
+@Component
 public class DescriptorConfigActions {
     private final ContentConverter contentConverter;
+    private final BaseConfigurationAccessor configurationAccessor;
+    private final BaseDescriptorAccessor descriptorAccessor;
+    private final DescriptorMap descriptorMap;
 
-    public DescriptorConfigActions(final ContentConverter contentConverter) {
+    @Autowired
+    public DescriptorConfigActions(final ContentConverter contentConverter, final BaseConfigurationAccessor configurationAccessor, final BaseDescriptorAccessor descriptorAccessor, final DescriptorMap descriptorMap) {
         this.contentConverter = contentConverter;
+        this.configurationAccessor = configurationAccessor;
+        this.descriptorAccessor = descriptorAccessor;
+        this.descriptorMap = descriptorMap;
     }
 
-    public boolean doesConfigExist(final String id, final DescriptorActionApi descriptorActionApi) {
-        return doesConfigExist(contentConverter.getLongValue(id), descriptorActionApi);
+    public boolean doesConfigExist(final String id) throws AlertException {
+        return doesConfigExist(contentConverter.getLongValue(id));
     }
 
-    public boolean doesConfigExist(final Long id, final DescriptorActionApi descriptorActionApi) {
-        return id != null && descriptorActionApi.readEntity(id).isPresent();
+    public boolean doesConfigExist(final Long id) throws AlertException {
+        return id != null && !configurationAccessor.getConfigurationById(id).isPresent();
     }
 
-    public List<? extends Config> getConfig(final Long id, final DescriptorActionApi descriptorActionApi) throws AlertException {
-        if (id != null) {
-            final Config config = getConfigById(id, descriptorActionApi);
-            if (config != null) {
-                return Arrays.asList(config);
-            }
-            return Collections.emptyList();
-        }
-        return getConfigs(descriptorActionApi);
-    }
-
-    public Config getConfigById(final Long id, final DescriptorActionApi descriptorActionApi) throws AlertException {
-        final Optional<? extends DatabaseEntity> foundEntity = descriptorActionApi.readEntity(id);
-        if (foundEntity.isPresent()) {
-            final Config restModel = descriptorActionApi.populateConfigFromEntity(foundEntity.get());
-            if (restModel != null) {
-                final Config maskedRestModel = maskRestModel(restModel);
-                return maskedRestModel;
+    public List<FieldModel> getConfigs(final ConfigContextEnum context, final String descriptorName) throws AlertException {
+        final List<FieldModel> fields = new ArrayList<>();
+        if (context != null && StringUtils.isNotBlank(descriptorName)) {
+            final List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationByDescriptorNameAndContext(descriptorName, context);
+            if (configurationModels != null) {
+                for (final ConfigurationModel configurationModel : configurationModels) {
+                    fields.add(convertToFieldModel(configurationModel));
+                }
             }
         }
-        return null;
+        return fields;
     }
 
-    public List<? extends Config> getConfigs(final DescriptorActionApi descriptorActionApi) throws AlertException {
-        final List<? extends DatabaseEntity> databaseEntities = descriptorActionApi.readEntities();
-        final List<Config> restModels = getConvertedRestModels(databaseEntities, descriptorActionApi.getTypeConverter());
-        return maskRestModels(restModels);
-    }
-
-    public void deleteConfig(final String id, final DescriptorActionApi descriptorActionApi) {
-        deleteConfig(contentConverter.getLongValue(id), descriptorActionApi);
-    }
-
-    public void deleteConfig(final Long id, final DescriptorActionApi descriptorActionApi) {
-        if (id != null) {
-            descriptorActionApi.deleteEntity(id);
-        }
-    }
-
-    public DatabaseEntity saveConfig(final Config config, final DescriptorActionApi descriptorActionApi) {
-        if (config != null) {
-            final DatabaseEntity createdEntity = descriptorActionApi.populateEntityFromConfig(config);
-            if (createdEntity != null) {
-                final DatabaseEntity savedEntity = descriptorActionApi.saveEntity(createdEntity);
-                return savedEntity;
+    public FieldModel getConfigById(final Long id) throws AlertException {
+        final Optional<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationById(id);
+        if (!configurationModels.isPresent()) {
+            final ConfigurationModel configurationModel = configurationModels.get();
+            if (configurationModel != null) {
+                return convertToFieldModel(configurationModel);
             }
         }
         return null;
     }
 
-    public String validateConfig(final Config config, final DescriptorActionApi descriptorActionApi, final Map<String, String> fieldErrors) throws AlertFieldException {
-        descriptorActionApi.validateConfig(config, fieldErrors);
+    public void deleteConfig(final String id) throws AlertException {
+        deleteConfig(contentConverter.getLongValue(id));
+    }
+
+    public void deleteConfig(final Long id) throws AlertException {
+        if (id != null) {
+            final Optional<ConfigurationModel> configuration = configurationAccessor.getConfigurationById(id);
+            if (!configuration.isPresent()) {
+                final ConfigurationModel configurationModel = configuration.get();
+                final FieldModel fieldModel = convertToFieldModel(configurationModel);
+                final DescriptorActionApi descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
+                descriptorActionApi.deleteConfig(fieldModel);
+                configurationAccessor.deleteConfiguration(id);
+            }
+        }
+    }
+
+    public ConfigurationModel saveConfig(final FieldModel fieldModel, final ConfigContextEnum context) throws AlertException {
+        final DescriptorActionApi descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
+        descriptorActionApi.saveConfig(fieldModel);
+        final String descriptorName = fieldModel.getDescriptorName();
+        final Map<String, ConfigurationFieldModel> configurationFieldModelMap = fieldModel.convertToConfigurationFieldModelMap();
+        return configurationAccessor.createConfiguration(descriptorName, context, configurationFieldModelMap.values());
+    }
+
+    public String validateConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) throws AlertFieldException {
+        final DescriptorActionApi descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
+        descriptorActionApi.validateConfig(fieldModel.convertToFieldAccessor(), fieldErrors);
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }
         return "Valid";
     }
 
-    public String testConfig(final TestConfigModel testConfig, final DescriptorActionApi descriptorActionApi) throws IntegrationException {
+    public String testConfig(final FieldModel restModel, final String destination) throws IntegrationException {
+        final DescriptorActionApi descriptorActionApi = retrieveDescriptorActionApi(restModel);
+        final TestConfigModel testConfig = descriptorActionApi.createTestConfigModel(restModel, destination);
         descriptorActionApi.testConfig(testConfig);
         return "Successfully sent test message.";
     }
 
-    public DatabaseEntity updateConfig(final Config config, final DescriptorActionApi descriptorActionApi) throws AlertException {
-        if (config != null && StringUtils.isNotBlank(config.getId())) {
-            try {
-                DatabaseEntity createdEntity = descriptorActionApi.populateEntityFromConfig(config);
-                final DatabaseEntity savedEntity = getSavedEntity(config.getId(), descriptorActionApi.getRepositoryAccessor());
-                createdEntity = updateEntityWithSavedEntity(createdEntity, savedEntity);
-                if (createdEntity != null) {
-                    final DatabaseEntity updatedEntity = descriptorActionApi.saveEntity(createdEntity);
-                    return updatedEntity;
-                }
-            } catch (final Exception e) {
-                throw new AlertException(e.getMessage(), e);
-            }
-        }
-        return null;
-    }
-
-    public DatabaseEntity getSavedEntity(final String id, final RepositoryAccessor repositoryAccessor) throws AlertException {
-        if (StringUtils.isNotBlank(id)) {
+    public ConfigurationModel updateConfig(final FieldModel fieldModel) throws AlertException {
+        final DescriptorActionApi descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
+        descriptorActionApi.updateConfig(fieldModel);
+        final String id = fieldModel.getId();
+        if (fieldModel != null && StringUtils.isNotBlank(id)) {
             final Long longId = contentConverter.getLongValue(id);
-            final Optional<? extends DatabaseEntity> savedConfig = repositoryAccessor.readEntity(longId);
-            if (savedConfig.isPresent()) {
-                return savedConfig.get();
+            final ConfigurationModel configurationModel = getSavedEntity(longId);
+            final Map<String, ConfigurationFieldModel> fieldModels = fieldModel.convertToConfigurationFieldModelMap();
+            final Collection<ConfigurationFieldModel> updatedFields = updateConfigurationWithSavedConfiguration(fieldModels, configurationModel.getCopyOfFieldList());
+            return configurationAccessor.updateConfiguration(longId, updatedFields);
+        }
+        return null;
+    }
+
+    public ConfigurationModel getSavedEntity(final Long id) throws AlertException {
+        if (null != id) {
+            final Optional<ConfigurationModel> configuration = configurationAccessor.getConfigurationById(id);
+            if (!configuration.isPresent()) {
+                return configuration.get();
             }
         }
         return null;
     }
 
-    public <T> T updateEntityWithSavedEntity(final T entity, final DatabaseEntity savedEntity) throws AlertException {
-        if (savedEntity == null) {
-            return entity;
-        }
-        try {
-            final Class<?> newConfigClass = entity.getClass();
-
-            final Set<Field> sensitiveFields = SensitiveFieldFinder.findSensitiveFields(newConfigClass);
-            for (final Field field : sensitiveFields) {
-                field.setAccessible(true);
-                final Object value = field.get(entity);
-                if (value == null || StringUtils.isBlank(value.toString())) {
-                    if (savedEntity != null) {
-                        final Class<?> savedConfigClass = savedEntity.getClass();
-                        Field savedField = null;
-                        try {
-                            savedField = savedConfigClass.getDeclaredField(field.getName());
-                        } catch (final NoSuchFieldException e) {
-                            continue;
-                        }
-                        savedField.setAccessible(true);
-                        final String savedValue = (String) savedField.get(savedEntity);
-                        field.set(entity, savedValue);
-                    }
-                }
+    public Collection<ConfigurationFieldModel> updateConfigurationWithSavedConfiguration(final Map<String, ConfigurationFieldModel> newConfiguration, final Collection<ConfigurationFieldModel> savedConfiguration) throws AlertException {
+        final Collection<ConfigurationFieldModel> sensitiveFields = savedConfiguration.stream().filter(fieldModel -> fieldModel.isSensitive()).collect(Collectors.toSet());
+        for (final ConfigurationFieldModel fieldModel : sensitiveFields) {
+            final String key = fieldModel.getFieldKey();
+            if (newConfiguration.containsKey(key)) {
+                final ConfigurationFieldModel newFieldModel = newConfiguration.get(key);
+                newFieldModel.setFieldValues(fieldModel.getFieldValues());
             }
-        } catch (final SecurityException | IllegalArgumentException | IllegalAccessException e) {
-            throw new AlertException(e.getMessage(), e);
         }
-
-        return entity;
+        return newConfiguration.values();
     }
 
-    public ContentConverter getContentConverter() {
-        return contentConverter;
+    private FieldModel convertToFieldModel(final ConfigurationModel configurationModel) throws AlertDatabaseConstraintException {
+        final Long configId = configurationModel.getConfigurationId();
+        final RegisteredDescriptorModel descriptor = descriptorAccessor.getRegisteredDescriptorById(configurationModel.getDescriptorId())
+                                                         .orElseThrow(() -> new AlertDatabaseConstraintException("Expected to find registered descriptor but none was found."));
+        final String descriptorName = descriptor.getName();
+        final Map<String, FieldValueModel> fields = new HashMap<>();
+        for (final ConfigurationFieldModel fieldModel : configurationModel.getCopyOfFieldList()) {
+            populateAndSecureFields(fieldModel, fields);
+        }
+
+        return new FieldModel(configId.toString(), descriptorName, configurationModel.getDescriptorContext().name(), fields);
     }
 
-    private List<Config> getConvertedRestModels(final List<? extends DatabaseEntity> entities, final TypeConverter typeConverter) throws AlertException {
-        final List<Config> restModels = new ArrayList<>(entities.size());
-        for (final DatabaseEntity entity : entities) {
-            restModels.add(typeConverter.populateConfigFromEntity(entity));
+    private void populateAndSecureFields(final ConfigurationFieldModel fieldModel, final Map<String, FieldValueModel> fields) {
+        final String key = fieldModel.getFieldKey();
+        Collection<String> values = Collections.emptyList();
+        if (!fieldModel.isSensitive()) {
+            values = fieldModel.getFieldValues();
         }
-        return restModels;
+        final FieldValueModel fieldValueModel = new FieldValueModel(values, fieldModel.isSet());
+        fields.put(key, fieldValueModel);
     }
 
-    private Config maskRestModel(final Config config) throws AlertException {
-        final Class<? extends Config> restModelClass = config.getClass();
-        try {
-            final Set<Field> sensitiveFields = SensitiveFieldFinder.findSensitiveFields(restModelClass);
+    private DescriptorActionApi retrieveDescriptorActionApi(final String context, final String descriptorName) {
+        final ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
 
-            for (final Field sensitiveField : sensitiveFields) {
-                boolean isFieldSet = false;
-                sensitiveField.setAccessible(true);
-                final Object sensitiveFieldValue = sensitiveField.get(config);
-                if (sensitiveFieldValue != null) {
-                    final String sensitiveFieldString = (String) sensitiveFieldValue;
-                    if (StringUtils.isNotBlank(sensitiveFieldString)) {
-                        isFieldSet = true;
-                    }
-                }
-                sensitiveField.set(config, null);
-
-                final Field fieldIsSet = restModelClass.getDeclaredField(sensitiveField.getName() + "IsSet");
-                fieldIsSet.setAccessible(true);
-                final boolean sensitiveIsSetFieldValue = (boolean) fieldIsSet.get(config);
-                if (!sensitiveIsSetFieldValue) {
-                    fieldIsSet.setBoolean(config, isFieldSet);
-                }
-
-            }
-        } catch (final NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-            throw new AlertException(e.getMessage(), e);
+        if (descriptorContext != null) {
+            final Descriptor descriptor = descriptorMap.getDescriptor(descriptorName);
+            return descriptor.getRestApi(descriptorContext);
         }
-        return config;
+        return null;
     }
 
-    private List<Config> maskRestModels(final List<Config> restModels) throws AlertException {
-        final List<Config> maskedRestModels = new ArrayList<>();
-        for (final Config restModel : restModels) {
-            maskedRestModels.add(maskRestModel(restModel));
-        }
-        return maskedRestModels;
+    private DescriptorActionApi retrieveDescriptorActionApi(final FieldModel fieldModel) {
+        return retrieveDescriptorActionApi(fieldModel.getContext(), fieldModel.getDescriptorName());
     }
 
 }

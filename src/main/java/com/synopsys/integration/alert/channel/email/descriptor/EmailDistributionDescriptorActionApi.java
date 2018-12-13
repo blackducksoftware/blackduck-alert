@@ -23,41 +23,106 @@
  */
 package com.synopsys.integration.alert.channel.email.descriptor;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.email.EmailChannelEvent;
-import com.synopsys.integration.alert.channel.email.EmailEventProducer;
 import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
-import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
-import com.synopsys.integration.alert.database.channel.email.EmailDistributionRepositoryAccessor;
-import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
-import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
+import com.synopsys.integration.alert.common.descriptor.config.context.ChannelDistributionDescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
+import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectEntity;
+import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDistributionUIConfig;
+import com.synopsys.integration.alert.web.exception.AlertFieldException;
+import com.synopsys.integration.alert.web.model.FieldModel;
+import com.synopsys.integration.alert.web.model.FieldValueModel;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
-import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class EmailDistributionDescriptorActionApi extends DescriptorActionApi {
+public class EmailDistributionDescriptorActionApi extends ChannelDistributionDescriptorActionApi {
     private final EmailGroupChannel emailGroupChannel;
-    private final EmailEventProducer emailEventProducer;
+    private final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
 
     @Autowired
-    public EmailDistributionDescriptorActionApi(final EmailDistributionTypeConverter databaseContentConverter, final EmailDistributionRepositoryAccessor repositoryAccessor, final EmailGroupChannel emailGroupChannel,
-            final EmailEventProducer emailEventProducer) {
-        super(databaseContentConverter, repositoryAccessor);
+    public EmailDistributionDescriptorActionApi(final EmailGroupChannel emailGroupChannel, final BaseConfigurationAccessor configurationAccessor, final ContentConverter contentConverter, final List<ProviderDescriptor> providerDescriptors,
+        final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor) {
+        super(emailGroupChannel, configurationAccessor, contentConverter, providerDescriptors);
         this.emailGroupChannel = emailGroupChannel;
-        this.emailEventProducer = emailEventProducer;
+        this.blackDuckProjectRepositoryAccessor = blackDuckProjectRepositoryAccessor;
     }
 
     @Override
-    public void validateConfig(final Config restModel, final Map<String, String> fieldErrors) {
+    public void validateChannelConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
+
     }
 
     @Override
-    public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
-        final EmailChannelEvent event = emailEventProducer.createChannelTestEvent((CommonDistributionConfig) testConfig.getRestModel());
-        emailGroupChannel.sendMessage(event);
+    public TestConfigModel createTestConfigModel(final FieldModel fieldModel, final String destination) throws AlertFieldException {
+        final Set<String> emailAddresses = new HashSet<>();
+        Set<BlackDuckProjectEntity> blackDuckProjectEntities = null;
+
+        final Optional<String> filterByProject = fieldModel.getField(BlackDuckDistributionUIConfig.KEY_FILTER_BY_PROJECT).getValue();
+        final Optional<String> providerName = fieldModel.getField(CommonDistributionUIConfig.KEY_PROVIDER_NAME).getValue();
+
+        if (filterByProject.isPresent() && BooleanUtils.toBoolean(filterByProject.get())) {
+            final Set<String> configuredProjects = fieldModel.getField(BlackDuckDistributionUIConfig.KEY_CONFIGURED_PROJECT).getValues().stream().collect(Collectors.toSet());
+            final Optional<String> projectNamePattern = fieldModel.getField(BlackDuckDistributionUIConfig.KEY_PROJECT_NAME_PATTERN).getValue();
+            blackDuckProjectEntities = blackDuckProjectRepositoryAccessor.readEntities()
+                                           .stream()
+                                           .map(databaseEntity -> (BlackDuckProjectEntity) databaseEntity)
+                                           .filter(databaseEntity -> emailGroupChannel.doesProjectNameMatchThePattern(databaseEntity.getName(), projectNamePattern.orElse(""))
+                                                                         || emailGroupChannel.doesProjectNameMatchAConfiguredProject(databaseEntity.getName(), configuredProjects))
+                                           .collect(Collectors.toSet());
+        } else if (providerName.isPresent() && BlackDuckProvider.COMPONENT_NAME.equals(providerName.get())) {
+            blackDuckProjectEntities = blackDuckProjectRepositoryAccessor.readEntities()
+                                           .stream()
+                                           .map(databaseEntity -> (BlackDuckProjectEntity) databaseEntity)
+                                           .collect(Collectors.toSet());
+
+        }
+        if (null != blackDuckProjectEntities) {
+            final Optional<String> projectOwnerOnlyOptional = fieldModel.getField(EmailDistributionUIConfig.KEY_PROJECT_OWNER_ONLY).getValue();
+            final Boolean projectOwnerOnly = Boolean.parseBoolean(projectOwnerOnlyOptional.orElse("false"));
+            final Set<String> projectsWithoutEmails = new HashSet<>();
+            blackDuckProjectEntities
+                .stream()
+                .forEach(project -> {
+                    final Set<String> emailsForProject = emailGroupChannel.getEmailAddressesForProject(project, projectOwnerOnly);
+                    if (emailsForProject.isEmpty()) {
+                        projectsWithoutEmails.add(project.getName());
+                    }
+                    emailAddresses.addAll(emailsForProject);
+                });
+            if (!projectsWithoutEmails.isEmpty()) {
+                final String projects = StringUtils.join(projectsWithoutEmails, ", ");
+                final Map<String, String> fieldErrors = new HashMap<>();
+                final String errorMessage;
+                if (projectOwnerOnly) {
+                    errorMessage = String.format("Could not find Project owners for the projects: %s", projects);
+                } else {
+                    errorMessage = String.format("Could not find any email addresses for the projects: %s", projects);
+                }
+                fieldErrors.put("configuredProjects", errorMessage);
+                throw new AlertFieldException(fieldErrors);
+            }
+        }
+
+        final FieldValueModel fieldValueModel = new FieldValueModel(emailAddresses, true);
+        fieldModel.putField(EmailDistributionUIConfig.KEY_EMAIL_ADDRESSES, fieldValueModel);
+        return super.createTestConfigModel(fieldModel, destination);
     }
 }

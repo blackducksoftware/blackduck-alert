@@ -22,7 +22,6 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.TestAlertProperties;
 import com.synopsys.integration.alert.TestBlackDuckProperties;
-import com.synopsys.integration.alert.channel.email.EmailChannelEvent;
 import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
 import com.synopsys.integration.alert.channel.email.mock.MockEmailGlobalEntity;
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
@@ -67,7 +66,7 @@ public class DistributionChannelTest extends ChannelTest {
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "Distribution Channel Test", null, subTopic, Collections.emptyList());
 
         final EmailChannelEvent event = new EmailChannelEvent(RestConstants.formatDate(new Date()), "provider", "FORMAT",
-                content, 1L, Collections.emptySet(), "TEST SUBJECT LINE");
+            content, 1L, Collections.emptySet(), "TEST SUBJECT LINE");
 
         channel.handleEvent(event);
     }

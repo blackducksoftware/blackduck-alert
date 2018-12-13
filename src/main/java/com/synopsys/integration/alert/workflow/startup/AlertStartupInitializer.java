@@ -23,9 +23,8 @@
  */
 package com.synopsys.integration.alert.workflow.startup;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,102 +34,93 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
-import com.synopsys.integration.alert.common.descriptor.config.StartupComponent;
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
-import com.synopsys.integration.alert.web.model.Config;
-import com.synopsys.integration.alert.workflow.PropertyInitializer;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
+import com.synopsys.integration.alert.database.api.configuration.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.DefinedFieldModel;
 
 @Component
 public class AlertStartupInitializer {
     private final Logger logger = LoggerFactory.getLogger(AlertStartupInitializer.class);
-    private final ConversionService conversionService;
     private final Environment environment;
-    private final PropertyInitializer propertyInitializer;
     private final DescriptorMap descriptorMap;
-    private final List<AlertStartupProperty> alertStartupProperties;
+    private final Set<String> alertStartupFields;
+    private final BaseDescriptorAccessor descriptorAccessor;
+    private final BaseConfigurationAccessor fieldConfigurationAccessor;
 
     @Autowired
-    public AlertStartupInitializer(final PropertyInitializer propertyInitializer, final DescriptorMap descriptorMap, final Environment environment,
-        final ConversionService conversionService) {
-        this.propertyInitializer = propertyInitializer;
+    public AlertStartupInitializer(final DescriptorMap descriptorMap, final Environment environment, final BaseDescriptorAccessor descriptorAccessor, final BaseConfigurationAccessor fieldConfigurationAccessor) {
         this.descriptorMap = descriptorMap;
         this.environment = environment;
-        this.conversionService = conversionService;
-        alertStartupProperties = new ArrayList<>(50);
+        this.descriptorAccessor = descriptorAccessor;
+        this.fieldConfigurationAccessor = fieldConfigurationAccessor;
+        alertStartupFields = new HashSet<>();
     }
 
-    // TODO try and move this functionality to startup component and eliminate this class
-    public void initializeConfigs() throws IllegalArgumentException, SecurityException {
-        descriptorMap.getStartupRestApis().forEach(descriptor -> {
-            final StartupComponent startupComponent = descriptor.getStartupComponent();
-            final Map<String, AlertStartupProperty> startupProperties = startupComponent.getGlobalEntityPropertyMapping();
-            if (startupProperties != null && !startupProperties.isEmpty()) {
-                try {
-                    final Config restModel = startupComponent.getEmptyConfigObject();
-                    final boolean propertySet = initializeConfig(restModel, startupProperties);
-                    if (propertySet) {
-                        final DatabaseEntity entity = descriptor.getTypeConverter().populateEntityFromConfig(restModel);
-                        propertyInitializer.save(entity, descriptor.getRepositoryAccessor(), startupProperties);
+    public void initializeConfigs(final boolean overwriteCurrentConfig) throws IllegalArgumentException, SecurityException, AlertDatabaseConstraintException {
+        final Set<String> descriptorNames = descriptorMap.getDescriptorMap().keySet();
+        for (final String descriptorName : descriptorNames) {
+            final Map<String, String> newConfiguration = new HashMap<>();
+            final List<DefinedFieldModel> fieldsForDescriptor = descriptorAccessor.getFieldsForDescriptor(descriptorName, ConfigContextEnum.GLOBAL);
+            for (final DefinedFieldModel fieldModel : fieldsForDescriptor) {
+                final String key = fieldModel.getKey();
+                final String convertedKey = convertKeyToPropery(descriptorName, key);
+                final String value = getEnvironmentValue(convertedKey);
+                if (StringUtils.isNotBlank(value)) {
+                    newConfiguration.put(key, value);
+                }
+                alertStartupFields.add(convertedKey);
+            }
+            if (!newConfiguration.isEmpty()) {
+                final Set<ConfigurationFieldModel> fieldModels = createConfigurationFieldModels(newConfiguration);
+                final List<ConfigurationModel> foundConfigurationModel = fieldConfigurationAccessor.getConfigurationByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
+                if (!foundConfigurationModel.isEmpty() && overwriteCurrentConfig) {
+                    if (overwriteCurrentConfig) {
+                        final ConfigurationModel configurationModel = foundConfigurationModel.get(0);
+                        fieldConfigurationAccessor.updateConfiguration(configurationModel.getConfigurationId(), fieldModels);
                     }
-                } catch (final IllegalArgumentException | SecurityException ex) {
-                    logger.error("Error initializing property manager", ex);
+                } else {
+                    fieldConfigurationAccessor.createConfiguration(descriptorName, ConfigContextEnum.GLOBAL, fieldModels);
                 }
             }
-
-        });
-    }
-
-    private boolean initializeConfig(final Config globalRestModel, final Map<String, AlertStartupProperty> configProperties) {
-        boolean propertySet = false;
-        for (final AlertStartupProperty property : configProperties.values()) {
-            alertStartupProperties.add(property);
-            final String propertyKey = property.getPropertyKey();
-            logger.debug("Checking property key {}", propertyKey);
-            String value = System.getProperty(propertyKey);
-            if (StringUtils.isBlank(value)) {
-                logger.debug("Not found in system env, checking Spring env");
-                value = environment.getProperty(propertyKey);
-            }
-            try {
-                final boolean modelPropertySet = setRestModelValue(value, globalRestModel, property);
-                logger.debug("Model property {} set? {}", propertyKey, modelPropertySet);
-                propertySet = modelPropertySet || propertySet;
-
-            } catch (final NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException ex) {
-                logger.error("Error initializing {} ", propertyKey, ex);
-            }
         }
-
-        logger.debug("Was a Property Set for Model? {}", propertySet);
-        return propertySet;
-    }
-
-    public boolean setRestModelValue(final String value, final Config globalRestModel, final AlertStartupProperty property)
-        throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-        if (StringUtils.isNotBlank(value)) {
-            final Field declaredField = globalRestModel.getClass().getDeclaredField(property.getFieldName());
-            final boolean accessible = declaredField.isAccessible();
-            if (conversionService.canConvert(String.class, declaredField.getType())) {
-                final Object convertedObject = conversionService.convert(value, declaredField.getType());
-                declaredField.setAccessible(true);
-                declaredField.set(globalRestModel, convertedObject);
-                declaredField.setAccessible(accessible);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public List<AlertStartupProperty> getAlertStartupProperties() {
-        return alertStartupProperties;
     }
 
     public Set<String> getAlertPropertyNameSet() {
-        return alertStartupProperties.stream().map(AlertStartupProperty::getPropertyKey).collect(Collectors.toCollection(LinkedHashSet::new));
+        return alertStartupFields;
+    }
+
+    private Set<ConfigurationFieldModel> createConfigurationFieldModels(final Map<String, String> fields) {
+        return fields.entrySet()
+                   .stream()
+                   .map(entry -> createConfigurationFieldModel(entry.getKey(), entry.getValue()))
+                   .collect(Collectors.toSet());
+    }
+
+    private ConfigurationFieldModel createConfigurationFieldModel(final String key, final String value) {
+        final ConfigurationFieldModel field = ConfigurationFieldModel.create(key);
+        field.setFieldValue(value);
+        return field;
+    }
+
+    private String convertKeyToPropery(final String descriptorName, final String key) {
+        final String keyUnderscores = key.replace(".", "_");
+        return String.join("_", "alert", descriptorName, keyUnderscores).toUpperCase();
+    }
+
+    private String getEnvironmentValue(final String propertyKey) {
+        String value = System.getProperty(propertyKey);
+        if (StringUtils.isBlank(value)) {
+            logger.debug("Not found in system env, checking Spring env");
+            value = environment.getProperty(propertyKey);
+        }
+        return value;
     }
 }

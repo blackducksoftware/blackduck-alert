@@ -31,19 +31,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.common.event.AlertEvent;
+import com.synopsys.integration.alert.channel.event.DistributionEvent;
 
-public abstract class MessageReceiver<E extends AlertEvent> implements MessageListener {
+public abstract class MessageReceiver implements MessageListener {
     private final Logger logger = LoggerFactory.getLogger(MessageReceiver.class);
-    private final Class<E> clazz;
     private final Gson gson;
 
-    public MessageReceiver(final Gson gson, final Class<E> clazz) {
-        this.clazz = clazz;
+    public MessageReceiver(final Gson gson) {
         this.gson = gson;
     }
 
-    public abstract void handleEvent(E event);
+    public abstract void handleEvent(DistributionEvent event);
 
     @Override
     public void onMessage(final Message message) {
@@ -51,7 +49,7 @@ public abstract class MessageReceiver<E extends AlertEvent> implements MessageLi
             if (TextMessage.class.isAssignableFrom(message.getClass())) {
                 logger.info("Received {} event message: {}", getClass().getName(), message);
                 final TextMessage textMessage = (TextMessage) message;
-                final E event = gson.fromJson(textMessage.getText(), clazz);
+                final DistributionEvent event = gson.fromJson(textMessage.getText(), DistributionEvent.class);
                 logger.info("{} event {}", getClass().getName(), event);
                 handleEvent(event);
             }

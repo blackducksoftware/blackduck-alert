@@ -30,10 +30,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
-import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
-import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalRepositoryAccessor;
-import com.synopsys.integration.alert.web.channel.model.HipChatGlobalConfig;
-import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -42,16 +40,14 @@ public class HipChatGlobalDescriptorActionApi extends DescriptorActionApi {
     private final HipChatChannel hipChatChannel;
 
     @Autowired
-    public HipChatGlobalDescriptorActionApi(final HipChatGlobalTypeConverter databaseContentConverter, final HipChatGlobalRepositoryAccessor repositoryAccessor, final HipChatChannel hipChatChannel,
-            final HipChatStartupComponent hipChatStartupComponent) {
-        super(databaseContentConverter, repositoryAccessor, hipChatStartupComponent);
+    public HipChatGlobalDescriptorActionApi(final HipChatChannel hipChatChannel) {
         this.hipChatChannel = hipChatChannel;
     }
 
     @Override
-    public void validateConfig(final Config restModel, final Map<String, String> fieldErrors) {
-        final HipChatGlobalConfig hipChatRestModel = (HipChatGlobalConfig) restModel;
-        if (StringUtils.isBlank(hipChatRestModel.getApiKey())) {
+    public void validateConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
+        final String apiKey = fieldAccessor.getString(HipChatGlobalUIConfig.KEY_API_KEY).orElse(null);
+        if (StringUtils.isBlank(apiKey)) {
             fieldErrors.put("apiKey", "ApiKey can't be blank");
         }
     }

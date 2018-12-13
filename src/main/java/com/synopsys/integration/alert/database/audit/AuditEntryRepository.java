@@ -34,7 +34,8 @@ public interface AuditEntryRepository extends JpaRepository<AuditEntryEntity, Lo
 
     List<AuditEntryEntity> findByCommonConfigId(final Long commonConfigId);
 
-    @Query(value = "SELECT entity FROM AuditEntryEntity entity JOIN entity.auditNotificationRelations relation ON entity.id = relation.auditEntryId WHERE entity.commonConfigId = ?2 AND relation.notificationContent.id = ?1")
+    //    @Query(value = "SELECT entity FROM AuditEntryEntity entity JOIN entity.auditNotificationRelations relation ON entity.id = relation.auditEntryId WHERE entity.commonConfigId = ?2 AND relation.notificationContent.id = ?1")
+    @Query(value = "SELECT entity FROM AuditEntryEntity entity")
     Optional<AuditEntryEntity> findMatchingAudit(Long notificationId, Long commonConfigId);
 
 }

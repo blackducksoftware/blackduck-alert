@@ -38,7 +38,6 @@ import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.audit.AuditUtility;
 import com.synopsys.integration.alert.database.channel.hipchat.HipChatGlobalConfigEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;

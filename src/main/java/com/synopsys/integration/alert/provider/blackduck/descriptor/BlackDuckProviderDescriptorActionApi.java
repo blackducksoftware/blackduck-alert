@@ -33,12 +33,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
-import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
-import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckConfig;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigBuilder;
 import com.synopsys.integration.blackduck.rest.BlackDuckRestConnection;
@@ -57,22 +57,21 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
     private final BlackDuckProperties blackDuckProperties;
 
     @Autowired
-    public BlackDuckProviderDescriptorActionApi(final BlackDuckTypeConverter databaseContentConverter, final BlackDuckRepositoryAccessor repositoryAccessor, final BlackDuckProviderStartupComponent startupComponent,
-            final BlackDuckProperties blackDuckProperties) {
-        super(databaseContentConverter, repositoryAccessor, startupComponent);
+    public BlackDuckProviderDescriptorActionApi(final BlackDuckProperties blackDuckProperties) {
         this.blackDuckProperties = blackDuckProperties;
     }
 
     @Override
-    public void validateConfig(final Config config, final Map<String, String> fieldErrors) {
-        final BlackDuckConfig blackDuckConfig = (BlackDuckConfig) config;
-        if (StringUtils.isNotBlank(blackDuckConfig.getBlackDuckTimeout()) && !StringUtils.isNumeric(blackDuckConfig.getBlackDuckTimeout())) {
+    public void validateConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
+        final String timeout = fieldAccessor.getString(BlackDuckProviderUIConfig.KEY_BLACKDUCK_TIMEOUT).orElse(null);
+        final String apiKey = fieldAccessor.getString(BlackDuckProviderUIConfig.KEY_BLACKDUCK_API_KEY).orElse(null);
+        if (StringUtils.isNotBlank(timeout) && !StringUtils.isNumeric(timeout)) {
             fieldErrors.put("blackDuckTimeout", "Not an Integer.");
         }
-        if (StringUtils.isNotBlank(blackDuckConfig.getBlackDuckApiKey())) {
-            if (blackDuckConfig.getBlackDuckApiKey().length() < 64) {
+        if (StringUtils.isNotBlank(apiKey)) {
+            if (apiKey.length() < 64) {
                 fieldErrors.put("blackDuckApiKey", "Not enough characters to be a Black Duck API Key.");
-            } else if (blackDuckConfig.getBlackDuckApiKey().length() > 256) {
+            } else if (apiKey.length() > 256) {
                 fieldErrors.put("blackDuckApiKey", "Too many characters to be a Black Duck API Key.");
             }
         }
@@ -82,11 +81,12 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
     public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
         final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
 
-        final BlackDuckConfig blackDuckConfig = (BlackDuckConfig) testConfig.getRestModel();
-        final String apiToken = blackDuckConfig.getBlackDuckApiKey();
-        final String url = blackDuckConfig.getBlackDuckUrl();
+        final FieldModel fieldModel = testConfig.getFieldModel();
+        final String apiToken = fieldModel.getField(BlackDuckProviderUIConfig.KEY_BLACKDUCK_API_KEY).getValue().orElse("");
+        final String url = fieldModel.getField(BlackDuckProviderUIConfig.KEY_BLACKDUCK_URL).getValue().orElse("");
+        final String timeout = fieldModel.getField(BlackDuckProviderUIConfig.KEY_BLACKDUCK_TIMEOUT).getValue().orElse("");
 
-        final BlackDuckServerConfigBuilder blackDuckServerConfigBuilder = blackDuckProperties.createServerConfigBuilderWithoutAuthentication(intLogger, NumberUtils.toInt(blackDuckConfig.getBlackDuckTimeout(), 300));
+        final BlackDuckServerConfigBuilder blackDuckServerConfigBuilder = blackDuckProperties.createServerConfigBuilderWithoutAuthentication(intLogger, NumberUtils.toInt(timeout, 300));
         blackDuckServerConfigBuilder.setApiToken(apiToken);
         blackDuckServerConfigBuilder.setUrl(url);
 

@@ -15,7 +15,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import com.synopsys.integration.alert.database.entity.GlobalEntityTest;
-import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.synopsys.integration.alert.provider.blackduck.mock.MockGlobalBlackDuckEntity;
 
 public class GlobalHubConfigEntityTest extends GlobalEntityTest<GlobalBlackDuckConfigEntity> {

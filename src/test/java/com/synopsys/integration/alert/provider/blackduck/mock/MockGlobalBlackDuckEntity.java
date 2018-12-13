@@ -12,10 +12,8 @@
 package com.synopsys.integration.alert.provider.blackduck.mock;
 
 import com.google.gson.JsonObject;
-import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.synopsys.integration.alert.mock.MockGlobalEntityUtil;
 import com.synopsys.integration.alert.web.model.Config;
-import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckConfig;
 
 public class MockGlobalBlackDuckEntity extends MockGlobalEntityUtil<GlobalBlackDuckConfigEntity> {
     private Integer blackDuckTimeout;

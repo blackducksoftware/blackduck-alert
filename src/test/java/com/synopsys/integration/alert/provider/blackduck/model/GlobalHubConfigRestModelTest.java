@@ -11,14 +11,12 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.model;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
 import com.synopsys.integration.alert.provider.blackduck.mock.MockGlobalBlackDuckRestModel;
 import com.synopsys.integration.alert.web.model.GlobalRestModelTest;
-import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckConfig;
 
 public class GlobalHubConfigRestModelTest extends GlobalRestModelTest<BlackDuckConfig> {
 

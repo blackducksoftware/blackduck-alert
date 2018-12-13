@@ -35,15 +35,23 @@ public class RegisteredDescriptorEntity extends DatabaseEntity {
     @Column(name = "NAME")
     private String name;
 
+    @Column(name = "TYPE_ID")
+    private Long typeId;
+
     public RegisteredDescriptorEntity() {
         // JPA requires default constructor definitions
     }
 
-    public RegisteredDescriptorEntity(final String name) {
+    public RegisteredDescriptorEntity(final String name, final Long typeId) {
         this.name = name;
+        this.typeId = typeId;
     }
 
     public String getName() {
         return name;
+    }
+
+    public Long getTypeId() {
+        return typeId;
     }
 }
