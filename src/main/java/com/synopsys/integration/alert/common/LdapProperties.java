@@ -85,6 +85,10 @@ public class LdapProperties {
         this.enabled = enabled;
     }
 
+    public void setEnabled(final boolean enabled) {
+        this.enabled = String.valueOf(enabled);
+    }
+
     public String getServer() {
         return server;
     }
