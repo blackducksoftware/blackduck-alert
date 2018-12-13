@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.database.entity.configuration;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -41,9 +42,11 @@ public class FieldValueEntity extends DatabaseEntity {
     private String value;
 
     @ManyToOne
+    @JoinColumn(name = "FIELD_ID", insertable = false, updatable = false)
     private DefinedFieldEntity definedFieldEntity;
 
     @ManyToOne
+    @JoinColumn(name = "CONFIG_ID", insertable = false, updatable = false)
     private DescriptorConfigEntity descriptorConfigEntity;
 
     public FieldValueEntity() {

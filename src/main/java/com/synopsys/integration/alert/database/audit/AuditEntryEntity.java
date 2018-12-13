@@ -28,6 +28,7 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -69,9 +70,11 @@ public class AuditEntryEntity extends DatabaseEntity {
     private String errorStackTrace;
 
     @OneToMany
+    @JoinColumn(name = "audit_entry_id", insertable = false, updatable = false)
     private List<AuditNotificationRelation> auditNotificationRelations;
 
     @OneToOne
+    @JoinColumn(name = "common_config_id", insertable = false, updatable = false)
     private DescriptorConfigEntity descriptorConfigEntity;
 
     public AuditEntryEntity() {
