@@ -94,12 +94,28 @@ public class EmailProperties {
         addJavaMailOption(EmailPropertyKeys.JAVAMAIL_USERSET_KEY);
         addJavaMailOption(EmailPropertyKeys.JAVAMAIL_NOOP_STRICT_KEY);
 
-        mailSmtpPassword = fieldAccessor.getString(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey());
+        mailSmtpPassword = fieldAccessor.getString(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey()).orElse(null);
         addJavaMailOption(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY, mailSmtpPassword);
     }
 
+    public Map<String, String> getJavamailConfigProperties() {
+        return javamailConfigProperties;
+    }
+
+    public String getJavamailOption(final EmailPropertyKeys key) {
+        return getJavamailOption(key.getPropertyKey());
+    }
+
+    public String getJavamailOption(final String key) {
+        return javamailConfigProperties.get(key);
+    }
+
+    public String getMailSmtpPassword() {
+        return mailSmtpPassword;
+    }
+
     private void addJavaMailOption(EmailPropertyKeys emailPropertyKeys) {
-        addJavaMailOption(emailPropertyKeys, fieldAccessor.getString(emailPropertyKeys.getPropertyKey()));
+        addJavaMailOption(emailPropertyKeys, fieldAccessor.getString(emailPropertyKeys.getPropertyKey()).orElse(null));
     }
 
     private void addJavaMailOption(final EmailPropertyKeys emailPropertyKey, final String value) {
@@ -118,22 +134,6 @@ public class EmailProperties {
         if (value != null) {
             javamailConfigProperties.put(emailPropertyKey.getPropertyKey(), String.valueOf(value));
         }
-    }
-
-    public Map<String, String> getJavamailConfigProperties() {
-        return javamailConfigProperties;
-    }
-
-    public String getJavamailOption(final EmailPropertyKeys key) {
-        return getJavamailOption(key.getPropertyKey());
-    }
-
-    public String getJavamailOption(final String key) {
-        return javamailConfigProperties.get(key);
-    }
-
-    public String getMailSmtpPassword() {
-        return mailSmtpPassword;
     }
 
 }

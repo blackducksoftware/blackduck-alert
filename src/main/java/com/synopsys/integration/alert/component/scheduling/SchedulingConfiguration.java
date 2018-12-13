@@ -33,8 +33,8 @@ public class SchedulingConfiguration extends Configuration {
     public SchedulingConfiguration(final ConfigurationModel configurationModel) {
         super(configurationModel);
 
-        dailyDigestHourOfDay = getFieldAccessor().getString(SchedulingUIConfig.KEY_DAILY_DIGEST_HOUR_OF_DAY);
-        dataFrequencyDays = getFieldAccessor().getString(SchedulingUIConfig.KEY_PURGE_DATA_FREQUENCY_DAYS);
+        dailyDigestHourOfDay = getFieldAccessor().getString(SchedulingUIConfig.KEY_DAILY_DIGEST_HOUR_OF_DAY).orElse(null);
+        dataFrequencyDays = getFieldAccessor().getString(SchedulingUIConfig.KEY_PURGE_DATA_FREQUENCY_DAYS).orElse(null);
     }
 
     public String getDailyDigestHourOfDay() {

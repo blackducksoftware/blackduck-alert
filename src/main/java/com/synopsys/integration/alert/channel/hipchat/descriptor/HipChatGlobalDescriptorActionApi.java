@@ -46,7 +46,7 @@ public class HipChatGlobalDescriptorActionApi extends DescriptorActionApi {
 
     @Override
     public void validateConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
-        final String apiKey = fieldAccessor.getString(HipChatGlobalUIConfig.KEY_API_KEY);
+        final String apiKey = fieldAccessor.getString(HipChatGlobalUIConfig.KEY_API_KEY).orElse(null);
         if (StringUtils.isBlank(apiKey)) {
             fieldErrors.put("apiKey", "ApiKey can't be blank");
         }

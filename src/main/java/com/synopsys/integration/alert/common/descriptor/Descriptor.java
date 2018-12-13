@@ -67,7 +67,7 @@ public abstract class Descriptor {
         restApis.put(ConfigContextEnum.GLOBAL, descriptorActionApi);
     }
 
-    public void addChannelDistributionActionApi(final DescriptorActionApi descriptorActionApi) {
+    public void addDistributionActionApi(final DescriptorActionApi descriptorActionApi) {
         restApis.put(ConfigContextEnum.DISTRIBUTION, descriptorActionApi);
     }
 
@@ -78,7 +78,7 @@ public abstract class Descriptor {
 
     public void addDistributionUiConfig(final DescriptorActionApi descriptorActionApi, final UIConfig uiConfig) {
         uiConfigs.put(ConfigContextEnum.DISTRIBUTION, uiConfig);
-        addChannelDistributionActionApi(descriptorActionApi);
+        addDistributionActionApi(descriptorActionApi);
     }
 
     public DescriptorActionApi getRestApi(final ConfigContextEnum actionApiType) {

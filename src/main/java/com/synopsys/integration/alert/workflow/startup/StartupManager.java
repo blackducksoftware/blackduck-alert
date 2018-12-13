@@ -287,8 +287,9 @@ public class StartupManager {
                                                             .filter(descriptor -> !registeredDescriptors.contains(descriptor.getName()))
                                                             .collect(Collectors.toList());
             for (final Descriptor descriptor : missingDescriptors) {
-                final Collection<DefinedFieldModel> fieldModels = descriptor.createAllDefinedFields();
                 final String descriptorName = descriptor.getName();
+                logger.info("Adding descriptor '{}'", descriptorName);
+                final Collection<DefinedFieldModel> fieldModels = descriptor.createAllDefinedFields();
                 final DescriptorType descriptorType = descriptor.getType();
                 descriptorAccessor.registerDescriptor(descriptorName, descriptorType, fieldModels);
             }

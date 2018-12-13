@@ -26,29 +26,22 @@ package com.synopsys.integration.alert.channel.slack.descriptor;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
-import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIComponent;
+import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 
 @Component
-public class SlackUIConfig extends CommonDistributionUIConfig {
+public class SlackUIConfig extends UIConfig {
     public static final String KEY_WEBHOOK = "webhook";
     public static final String KEY_CHANNEL_NAME = "channel.name";
     public static final String KEY_CHANNEL_USERNAME = "channel.username";
 
-    @Autowired
-    public SlackUIConfig(final BaseDescriptorAccessor descriptorAccessor) {
-        super(descriptorAccessor);
-    }
-
     @Override
-    public UIComponent createUIComponent() {
+    public UIComponent generateUIComponent() {
         return new UIComponent("Slack", "slack", SlackChannel.COMPONENT_NAME, "slack", setupFields());
     }
 
