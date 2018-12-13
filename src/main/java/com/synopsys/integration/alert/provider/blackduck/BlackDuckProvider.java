@@ -73,8 +73,7 @@ public class BlackDuckProvider extends Provider {
     @Override
     public Set<ProviderContentType> getProviderContentTypes() {
         final Predicate<ProviderContentType> excludeBom = Predicate.isEqual(BlackDuckProviderContentTypes.BOM_EDIT);
-        final Predicate<ProviderContentType> excludeLicense = Predicate.isEqual(BlackDuckProviderContentTypes.LICENSE_LIMIT);
-        final Predicate<ProviderContentType> filterExcludedTypes = excludeBom.or(excludeLicense).negate();
+        final Predicate<ProviderContentType> filterExcludedTypes = excludeBom.negate();
         return BlackDuckProviderContentTypes.ALL.stream().filter(filterExcludedTypes).sorted(Comparator.comparing(ProviderContentType::getNotificationType)).collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
