@@ -146,7 +146,7 @@ public class NotificationManager {
 
     public PageRequest getPageRequestForNotifications(final Integer pageNumber, final Integer pageSize, final String sortField, final String sortOrder) {
         final Integer page = ObjectUtils.defaultIfNull(pageNumber, 0);
-        final Integer size = ObjectUtils.defaultIfNull(pageSize, Integer.MAX_VALUE);
+        final Integer size = ObjectUtils.defaultIfNull(pageNumber, Integer.MAX_VALUE);
         boolean sortQuery = false;
         String sortingField = "createdAt";
         // We can only modify the query for the fields that exist in NotificationContent
