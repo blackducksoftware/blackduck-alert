@@ -35,4 +35,6 @@ public interface DescriptorConfigRepository extends JpaRepository<DescriptorConf
     List<DescriptorConfigEntity> findByDescriptorId(final Long descriptorId);
 
     List<DescriptorConfigEntity> findByContextId(Long contextId);
+
+    List<DescriptorConfigEntity> findByDescriptorIdAndContextId(Long descriptorId, Long contextId);
 }

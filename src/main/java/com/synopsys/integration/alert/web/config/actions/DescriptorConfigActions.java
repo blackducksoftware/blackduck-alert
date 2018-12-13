@@ -38,8 +38,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
-import com.synopsys.integration.alert.common.database.FieldConfigurationAccessor;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
@@ -58,12 +58,12 @@ import com.synopsys.integration.exception.IntegrationException;
 @Component
 public class DescriptorConfigActions {
     private final ContentConverter contentConverter;
-    private final FieldConfigurationAccessor configurationAccessor;
+    private final BaseConfigurationAccessor configurationAccessor;
     private final BaseDescriptorAccessor descriptorAccessor;
     private final DescriptorMap descriptorMap;
 
     @Autowired
-    public DescriptorConfigActions(final ContentConverter contentConverter, final FieldConfigurationAccessor configurationAccessor, final BaseDescriptorAccessor descriptorAccessor, final DescriptorMap descriptorMap) {
+    public DescriptorConfigActions(final ContentConverter contentConverter, final BaseConfigurationAccessor configurationAccessor, final BaseDescriptorAccessor descriptorAccessor, final DescriptorMap descriptorMap) {
         this.contentConverter = contentConverter;
         this.configurationAccessor = configurationAccessor;
         this.descriptorAccessor = descriptorAccessor;

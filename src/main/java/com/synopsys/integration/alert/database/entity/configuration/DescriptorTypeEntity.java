@@ -30,28 +30,20 @@ import javax.persistence.Table;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 
 @Entity
-@Table(schema = "ALERT", name = "REGISTERED_DESCRIPTORS")
-public class RegisteredDescriptorEntity extends DatabaseEntity {
-    @Column(name = "NAME")
-    private String name;
+@Table(schema = "ALERT", name = "DESCRIPTOR_TYPES")
+public class DescriptorTypeEntity extends DatabaseEntity {
 
-    @Column(name = "TYPE_ID")
-    private Long typeId;
+    @Column(name = "TYPE")
+    private String type;
 
-    public RegisteredDescriptorEntity() {
-        // JPA requires default constructor definitions
+    public DescriptorTypeEntity() {
     }
 
-    public RegisteredDescriptorEntity(final String name, final Long typeId) {
-        this.name = name;
-        this.typeId = typeId;
+    public DescriptorTypeEntity(final String type) {
+        this.type = type;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public Long getTypeId() {
-        return typeId;
+    public String getType() {
+        return type;
     }
 }

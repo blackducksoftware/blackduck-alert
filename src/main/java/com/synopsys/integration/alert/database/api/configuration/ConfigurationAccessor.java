@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -39,7 +40,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.entity.configuration.ConfigContextEntity;
@@ -50,31 +53,35 @@ import com.synopsys.integration.alert.database.entity.configuration.RegisteredDe
 import com.synopsys.integration.alert.database.repository.configuration.ConfigContextRepository;
 import com.synopsys.integration.alert.database.repository.configuration.DefinedFieldRepository;
 import com.synopsys.integration.alert.database.repository.configuration.DescriptorConfigRepository;
+import com.synopsys.integration.alert.database.repository.configuration.DescriptorTypeRepository;
 import com.synopsys.integration.alert.database.repository.configuration.FieldValueRepository;
 import com.synopsys.integration.alert.database.repository.configuration.RegisteredDescriptorRepository;
 import com.synopsys.integration.util.Stringable;
 
 @Component
 @Transactional
-public class ConfigurationAccessor {
+public class ConfigurationAccessor implements BaseConfigurationAccessor {
     private final RegisteredDescriptorRepository registeredDescriptorRepository;
     private final DefinedFieldRepository definedFieldRepository;
     private final DescriptorConfigRepository descriptorConfigsRepository;
     private final ConfigContextRepository configContextRepository;
     private final FieldValueRepository fieldValueRepository;
     private final EncryptionUtility encryptionUtility;
+    private final DescriptorTypeRepository descriptorTypeRepository;
 
     @Autowired
-    public ConfigurationAccessor(final RegisteredDescriptorRepository registeredDescriptorRepository, final DefinedFieldRepository definedFieldRepository,
-        final DescriptorConfigRepository descriptorConfigsRepository, final ConfigContextRepository configContextRepository, final FieldValueRepository fieldValueRepository, final EncryptionUtility encryptionUtility) {
+    public ConfigurationAccessor(final RegisteredDescriptorRepository registeredDescriptorRepository, final DefinedFieldRepository definedFieldRepository, final DescriptorConfigRepository descriptorConfigsRepository,
+        final ConfigContextRepository configContextRepository, final FieldValueRepository fieldValueRepository, final EncryptionUtility encryptionUtility, final DescriptorTypeRepository descriptorTypeRepository) {
         this.registeredDescriptorRepository = registeredDescriptorRepository;
         this.definedFieldRepository = definedFieldRepository;
         this.descriptorConfigsRepository = descriptorConfigsRepository;
         this.configContextRepository = configContextRepository;
         this.fieldValueRepository = fieldValueRepository;
         this.encryptionUtility = encryptionUtility;
+        this.descriptorTypeRepository = descriptorTypeRepository;
     }
 
+    @Override
     public Optional<ConfigurationModel> getConfigurationById(final Long id) throws AlertDatabaseConstraintException {
         if (id == null) {
             throw new AlertDatabaseConstraintException("The config id cannot be null");
@@ -87,6 +94,7 @@ public class ConfigurationAccessor {
         return Optional.empty();
     }
 
+    @Override
     public List<ConfigurationModel> getConfigurationsByDescriptorName(final String descriptorName) throws AlertDatabaseConstraintException {
         if (StringUtils.isEmpty(descriptorName)) {
             throw new AlertDatabaseConstraintException("Descriptor name cannot be empty");
@@ -98,9 +106,48 @@ public class ConfigurationAccessor {
         return createConfigModels(Collections.emptyList());
     }
 
+    @Override
+    public List<ConfigurationModel> getConfigurationsByDescriptorType(final DescriptorType descriptorType) throws AlertDatabaseConstraintException {
+        if (null == descriptorType) {
+            throw new AlertDatabaseConstraintException("Descriptor type cannot be null");
+        }
+
+        final Long typeId = descriptorTypeRepository
+                                .findFirstByType(descriptorType.name())
+                                .map(descriptorTypeEntity -> descriptorTypeEntity.getId())
+                                .orElseThrow(() -> new AlertDatabaseConstraintException("Descriptor type has not been registered"));
+        final List<RegisteredDescriptorEntity> registeredDescriptorEntities = registeredDescriptorRepository.findByTypeId(typeId);
+        return createConfigModels(registeredDescriptorEntities);
+    }
+
+    // TODO change query to get Id originally
+    @Override
+    public List<ConfigurationModel> getConfigurationByDescriptorNameAndContext(final String descriptorName, final ConfigContextEnum context) throws AlertDatabaseConstraintException {
+        if (StringUtils.isBlank(descriptorName)) {
+            throw new AlertDatabaseConstraintException("Descriptor name cannot be null");
+        }
+        if (null == context) {
+            throw new AlertDatabaseConstraintException("Context cannot be null");
+        }
+
+        final Long contextId = getConfigContextIdOrThrowException(context);
+        final Long descriptorId = getDescriptorIdOrThrowException(descriptorName);
+        final Set<Long> configurationIds = descriptorConfigsRepository
+                                               .findByDescriptorIdAndContextId(descriptorId, contextId)
+                                               .stream()
+                                               .map(DescriptorConfigEntity::getId)
+                                               .collect(Collectors.toSet());
+        final List<ConfigurationModel> configurationModels = new ArrayList<>();
+        for (final Long configId : configurationIds) {
+            configurationModels.add(createConfigModel(descriptorId, configId, contextId));
+        }
+        return configurationModels;
+    }
+
     /**
      * @return the config that was created
      */
+    @Override
     public ConfigurationModel createEmptyConfiguration(final String descriptorName, final ConfigContextEnum context) throws AlertDatabaseConstraintException {
         return createConfiguration(descriptorName, context, null);
     }
@@ -108,6 +155,7 @@ public class ConfigurationAccessor {
     /**
      * @return the config that was created
      */
+    @Override
     public ConfigurationModel createConfiguration(final String descriptorName, final ConfigContextEnum context, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
         final Long descriptorId = getDescriptorIdOrThrowException(descriptorName);
         final Long configContextId = getConfigContextIdOrThrowException(context);
@@ -136,6 +184,7 @@ public class ConfigurationAccessor {
     /**
      * @return the config after update
      */
+    @Override
     public ConfigurationModel updateConfiguration(final Long descriptorConfigId, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
         if (descriptorConfigId == null) {
             throw new AlertDatabaseConstraintException("The config id cannot be null");
@@ -168,6 +217,7 @@ public class ConfigurationAccessor {
         deleteConfiguration(configModel.getConfigurationId());
     }
 
+    @Override
     public void deleteConfiguration(final Long descriptorConfigId) throws AlertDatabaseConstraintException {
         if (descriptorConfigId == null) {
             throw new AlertDatabaseConstraintException("The config id cannot be null");

@@ -23,6 +23,7 @@
  */
 package com.synopsys.integration.alert.database.repository.configuration;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -33,4 +34,6 @@ import com.synopsys.integration.alert.database.entity.configuration.RegisteredDe
 @Component
 public interface RegisteredDescriptorRepository extends JpaRepository<RegisteredDescriptorEntity, Long> {
     Optional<RegisteredDescriptorEntity> findFirstByName(final String descriptorName);
+
+    List<RegisteredDescriptorEntity> findByTypeId(Long descriptorTypeId);
 }

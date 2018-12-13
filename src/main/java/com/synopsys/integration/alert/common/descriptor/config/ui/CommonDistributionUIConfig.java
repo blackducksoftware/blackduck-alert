@@ -37,6 +37,7 @@ import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 
+// FIXME remove this class from the Hierarchy and construct the Common fields in the endpoint response like we originally did.
 public abstract class CommonDistributionUIConfig extends CommonFieldUIConfig {
     public static final String KEY_NAME = "channel.common.name";
     public static final String KEY_CHANNEL_NAME = "channel.common.channel.name";
@@ -67,7 +68,7 @@ public abstract class CommonDistributionUIConfig extends CommonFieldUIConfig {
 
     private Set<String> findDescriptorNames(final BaseDescriptorAccessor descriptorAccessor, final DescriptorType descriptorType) {
         try {
-            return descriptorAccessor.getRegisteredDescriptorsByType(descriptorType.name()).stream()
+            return descriptorAccessor.getRegisteredDescriptorsByType(descriptorType).stream()
                        .map(registeredDescriptorModel -> registeredDescriptorModel.getName())
                        .collect(Collectors.toSet());
         } catch (final AlertDatabaseConstraintException e) {
