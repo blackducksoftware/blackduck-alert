@@ -35,13 +35,16 @@ import org.springframework.data.repository.query.Param;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 
 public interface NotificationContentRepository extends JpaRepository<NotificationContent, Long> {
-    @Query("SELECT entity FROM NotificationContent entity WHERE entity.createdAt BETWEEN ?1 AND ?2 ORDER BY created_at, provider_creation_time asc")
+    //    @Query("SELECT entity FROM NotificationContent entity WHERE entity.createdAt BETWEEN ?1 AND ?2 ORDER BY created_at, provider_creation_time asc")
+    @Query(value = "SELECT entity FROM NotificationContent entity")
     List<NotificationContent> findByCreatedAtBetween(final Date startDate, final Date endDate);
 
-    @Query("SELECT entity FROM NotificationContent entity WHERE entity.createdAt < ?1 ORDER BY created_at, provider_creation_time asc")
+    //    @Query("SELECT entity FROM NotificationContent entity WHERE entity.createdAt < ?1 ORDER BY created_at, provider_creation_time asc")
+    @Query(value = "SELECT entity FROM NotificationContent entity")
     List<NotificationContent> findByCreatedAtBefore(final Date date);
 
-    @Query(value = "SELECT entity FROM NotificationContent entity WHERE entity.id IN (SELECT notificationId FROM entity.auditNotificationRelations WHERE entity.id = notificationId)")
+    //    @Query(value = "SELECT entity FROM NotificationContent entity WHERE entity.id IN (SELECT notificationId FROM entity.auditNotificationRelations WHERE entity.id = notificationId)")
+    @Query(value = "SELECT entity FROM NotificationContent entity")
     Page<NotificationContent> findAllSentNotifications(final Pageable pageable);
 
     @Query(value = "SELECT entity FROM NotificationContent entity LEFT JOIN entity.auditNotificationRelations relation ON entity.id = relation.notificationId "
