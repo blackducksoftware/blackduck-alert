@@ -30,7 +30,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -40,7 +39,7 @@ import org.hibernate.annotations.Type;
 
 import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
-import com.synopsys.integration.alert.database.entity.configuration.DescriptorConfigEntity;
+import com.synopsys.integration.alert.database.entity.configuration.FieldValueEntity;
 
 @Entity
 @Table(schema = "alert", name = "audit_entries")
@@ -73,9 +72,9 @@ public class AuditEntryEntity extends DatabaseEntity {
     @JoinColumn(name = "audit_entry_id")
     private List<AuditNotificationRelation> auditNotificationRelations;
 
-    @ManyToOne
+    @OneToMany
     @JoinColumn(name = "common_config_id", insertable = false, updatable = false)
-    private DescriptorConfigEntity commonDistributionConfigEntity;
+    private List<FieldValueEntity> fieldValueEntities;
 
     public AuditEntryEntity() {
         // JPA requires default constructor definitions
@@ -134,7 +133,7 @@ public class AuditEntryEntity extends DatabaseEntity {
         return auditNotificationRelations;
     }
 
-    public DescriptorConfigEntity getCommonDistributionConfigEntity() {
-        return commonDistributionConfigEntity;
+    public List<FieldValueEntity> getFieldValueEntities() {
+        return fieldValueEntities;
     }
 }
