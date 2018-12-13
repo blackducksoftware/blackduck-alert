@@ -15,7 +15,6 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
-import java.io.IOException;
 import java.util.Optional;
 
 import org.junit.Before;
@@ -30,6 +29,7 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.TestProperties;
 import com.synopsys.integration.alert.TestPropertyKey;
+import com.synopsys.integration.alert.common.LdapProperties;
 import com.synopsys.integration.alert.database.api.user.UserAccessor;
 import com.synopsys.integration.alert.database.api.user.UserModel;
 import com.synopsys.integration.alert.database.user.UserRepository;
@@ -53,14 +53,16 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
     private LdapManager ldapManager;
 
     @Before
-    public void init() throws IOException {
-
+    public void init() {
+        final LdapProperties ldapProperties = new LdapProperties();
+        ldapProperties.setEnabled("false");
+        ldapManager.updateConfiguration(ldapProperties);
         mockLoginRestModel.setBlackDuckUsername(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_USERNAME));
         mockLoginRestModel.setBlackDuckPassword(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PASSWORD));
     }
 
     @Test
-    public void authenticateUserTestIT() {
+    public void testAuthenticateDBUserIT() {
         final LoginActions loginActions = new LoginActions(alertDatabaseAuthProvider, ldapManager);
         final boolean userAuthenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel());
 
@@ -68,7 +70,7 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void testAuthenticateUserFailIT() throws IOException {
+    public void testAuthenticateDBUserFailIT() {
         mockLoginRestModel.setBlackDuckUsername(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_ACTIVE_USER));
         final LoginActions loginActions = new LoginActions(alertDatabaseAuthProvider, ldapManager);
         final MockLoginRestModel badRestModel = new MockLoginRestModel();
@@ -82,7 +84,7 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void testAuthenticateUserRoleFailIT() throws IOException {
+    public void testAuthenticateDBUserRoleFailIT() {
         // add a user test then delete a user.
         final String userName = properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_ACTIVE_USER);
         mockLoginRestModel.setBlackDuckUsername(userName);
