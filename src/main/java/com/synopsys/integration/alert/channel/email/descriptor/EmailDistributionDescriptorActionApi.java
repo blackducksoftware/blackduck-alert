@@ -46,6 +46,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistribu
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDistributionUIConfig;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.FieldValueModel;
@@ -74,12 +75,12 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
         final Set<String> emailAddresses = new HashSet<>();
         Set<BlackDuckProjectEntity> blackDuckProjectEntities = null;
 
-        final Optional<String> filterByProject = fieldModel.getField(CommonDistributionUIConfig.KEY_FILTER_BY_PROJECT).getValue();
+        final Optional<String> filterByProject = fieldModel.getField(BlackDuckDistributionUIConfig.KEY_FILTER_BY_PROJECT).getValue();
         final Optional<String> providerName = fieldModel.getField(CommonDistributionUIConfig.KEY_PROVIDER_NAME).getValue();
 
         if (filterByProject.isPresent() && BooleanUtils.toBoolean(filterByProject.get())) {
-            final Set<String> configuredProjects = fieldModel.getField(CommonDistributionUIConfig.KEY_CONFIGURED_PROJECT).getValues().stream().collect(Collectors.toSet());
-            final Optional<String> projectNamePattern = fieldModel.getField(CommonDistributionUIConfig.KEY_PROJECT_NAME_PATTERN).getValue();
+            final Set<String> configuredProjects = fieldModel.getField(BlackDuckDistributionUIConfig.KEY_CONFIGURED_PROJECT).getValues().stream().collect(Collectors.toSet());
+            final Optional<String> projectNamePattern = fieldModel.getField(BlackDuckDistributionUIConfig.KEY_PROJECT_NAME_PATTERN).getValue();
             blackDuckProjectEntities = blackDuckProjectRepositoryAccessor.readEntities()
                                            .stream()
                                            .map(databaseEntity -> (BlackDuckProjectEntity) databaseEntity)

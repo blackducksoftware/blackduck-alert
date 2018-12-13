@@ -47,8 +47,8 @@ public class SlackDistributionDescriptorActionApi extends ChannelDistributionDes
 
     @Override
     public void validateChannelConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
-        final String webhook = fieldAccessor.getString(SlackUIConfig.KEY_WEBHOOK);
-        final String channelName = fieldAccessor.getString(SlackUIConfig.KEY_CHANNEL_NAME);
+        final String webhook = fieldAccessor.getString(SlackUIConfig.KEY_WEBHOOK).orElse(null);
+        final String channelName = fieldAccessor.getString(SlackUIConfig.KEY_CHANNEL_NAME).orElse(null);
         if (StringUtils.isBlank(webhook)) {
             fieldErrors.put("webhook", "A webhook is required.");
         }

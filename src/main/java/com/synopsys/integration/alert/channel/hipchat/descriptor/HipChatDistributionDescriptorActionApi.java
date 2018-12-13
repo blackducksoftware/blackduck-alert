@@ -47,7 +47,7 @@ public class HipChatDistributionDescriptorActionApi extends ChannelDistributionD
 
     @Override
     public void validateChannelConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
-        final String roomId = fieldAccessor.getString(HipChatDistributionUIConfig.KEY_ROOM_ID);
+        final String roomId = fieldAccessor.getString(HipChatDistributionUIConfig.KEY_ROOM_ID).orElse(null);
         if (StringUtils.isBlank(roomId)) {
             fieldErrors.put("roomId", "A Room Id is required.");
         } else if (!StringUtils.isNumeric(roomId)) {

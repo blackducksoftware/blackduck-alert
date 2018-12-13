@@ -23,31 +23,46 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
+import java.util.Collection;
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
-import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
-import com.synopsys.integration.alert.web.model.TestConfigModel;
+import com.synopsys.integration.alert.common.descriptor.config.context.ProviderDistributionDescriptorActionApi;
 
 @Component
-public class BlackDuckDistributionDescriptorActionApi extends DescriptorActionApi {
+public class BlackDuckDistributionDescriptorActionApi extends ProviderDistributionDescriptorActionApi {
+    private final ContentConverter contentConverter;
 
     @Autowired
-    public BlackDuckDistributionDescriptorActionApi() {
-        super();
+    public BlackDuckDistributionDescriptorActionApi(final ContentConverter contentConverter) {
+        this.contentConverter = contentConverter;
     }
 
     @Override
-    public void validateConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
-
-    }
-
-    @Override
-    public void testConfig(final TestConfigModel testConfig) {
-
+    public void validateProviderDistributionConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
+        final String filterByProject = fieldAccessor.getString(BlackDuckDistributionUIConfig.KEY_FILTER_BY_PROJECT).orElse(null);
+        if (StringUtils.isNotBlank(filterByProject) && !contentConverter.isBoolean(filterByProject)) {
+            fieldErrors.put(BlackDuckDistributionUIConfig.KEY_FILTER_BY_PROJECT, "Not a Boolean.");
+        }
+        final String projectNamePattern = fieldAccessor.getString(BlackDuckDistributionUIConfig.KEY_PROJECT_NAME_PATTERN).orElse(null);
+        if (StringUtils.isNotBlank(projectNamePattern)) {
+            try {
+                Pattern.compile(projectNamePattern);
+            } catch (final PatternSyntaxException e) {
+                fieldErrors.put(BlackDuckDistributionUIConfig.KEY_PROJECT_NAME_PATTERN, "Project name pattern is not a regular expression. " + e.getMessage());
+            }
+        }
+        final Collection<String> configuredProjects = fieldAccessor.getAllStrings(BlackDuckDistributionUIConfig.KEY_CONFIGURED_PROJECT);
+        if (contentConverter.getBooleanValue(filterByProject) && (null == configuredProjects || configuredProjects.isEmpty()) && StringUtils.isBlank(projectNamePattern)) {
+            fieldErrors.put(BlackDuckDistributionUIConfig.KEY_CONFIGURED_PROJECT, "You must select at least one project.");
+        }
     }
 
     // TODO Add the Delete/update/save overrides here to customize what Blackduck does in each scenario(Modifying projects)

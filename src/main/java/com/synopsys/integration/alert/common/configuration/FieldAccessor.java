@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.common.configuration;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.EnumUtils;
 
@@ -37,32 +38,53 @@ public class FieldAccessor {
         this.fields = fields;
     }
 
-    public Long getLong(final String key) {
-        final String value = fields.get(key).getFieldValue().orElse("");
-        return Long.parseLong(value);
+    public Optional<Long> getLong(final String key) {
+        final Optional<String> value = getValue(key);
+        if (!value.isPresent()) {
+            return Optional.empty();
+        }
+        return Optional.of(Long.parseLong(value.get()));
     }
 
-    public Integer getInteger(final String key) {
-        final String value = fields.get(key).getFieldValue().orElse("");
-        return Integer.parseInt(value);
+    public Optional<Integer> getInteger(final String key) {
+        final Optional<String> value = getValue(key);
+        if (!value.isPresent()) {
+            return Optional.empty();
+        }
+        return Optional.of(Integer.parseInt(value.get()));
     }
 
-    public Boolean getBoolean(final String key) {
-        final String value = fields.get(key).getFieldValue().orElse(Boolean.FALSE.toString());
-        return Boolean.parseBoolean(value);
+    public Optional<Boolean> getBoolean(final String key) {
+        final Optional<String> value = getValue(key);
+        if (!value.isPresent()) {
+            return Optional.empty();
+        }
+        return Optional.of(Boolean.parseBoolean(value.get()));
     }
 
-    public String getString(final String key) {
-        return fields.get(key).getFieldValue().orElse("");
+    public Optional<String> getString(final String key) {
+        return getValue(key);
     }
 
     public Collection<String> getAllStrings(final String key) {
         return fields.get(key).getFieldValues();
     }
 
-    public <T extends Enum<T>> T getEnum(final String key, final Class<T> enumClass) {
-        final String enumString = getString(key);
-        return EnumUtils.getEnum(enumClass, enumString);
+    public <T extends Enum<T>> Optional<T> getEnum(final String key, final Class<T> enumClass) {
+        final Optional<String> enumString = getString(key);
+        if (!enumString.isPresent()) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(EnumUtils.getEnum(enumClass, enumString.get()));
+    }
+
+    private Optional<String> getValue(final String key) {
+        final ConfigurationFieldModel fieldModel = fields.get(key);
+        if (fieldModel == null) {
+            return Optional.empty();
+        }
+
+        return fieldModel.getFieldValue();
     }
 
 }

@@ -80,20 +80,20 @@ public class SlackChannel extends RestDistributionChannel {
     @Override
     public List<Request> createRequests(final DistributionEvent event) throws IntegrationException {
         final FieldAccessor fields = event.getFieldAccessor();
-        final String webhook = fields.getString(SlackUIConfig.KEY_WEBHOOK);
-        final String channelName = fields.getString(SlackUIConfig.KEY_CHANNEL_NAME);
-        final String channelUsername = fields.getString(SlackUIConfig.KEY_CHANNEL_USERNAME);
-        if (StringUtils.isBlank(webhook)) {
+        final Optional<String> webhook = fields.getString(SlackUIConfig.KEY_WEBHOOK);
+        final Optional<String> channelName = fields.getString(SlackUIConfig.KEY_CHANNEL_NAME);
+        final Optional<String> channelUsername = fields.getString(SlackUIConfig.KEY_CHANNEL_USERNAME);
+        if (webhook.isPresent()) {
             throw new AlertException("Missing Webhook URL");
-        } else if (StringUtils.isBlank(channelName)) {
+        } else if (channelName.isPresent()) {
             throw new AlertException("Missing channel name");
         } else {
             if (StringUtils.isBlank(event.getContent().getValue())) {
                 return Collections.emptyList();
             } else {
-                final String slackUrl = webhook;
+                final String slackUrl = webhook.get();
                 final String mrkdwnMessage = createMrkdwnMessage(event.getContent());
-                final String jsonString = getJsonString(mrkdwnMessage, channelName, channelUsername);
+                final String jsonString = getJsonString(mrkdwnMessage, channelName.get(), channelUsername.orElse(""));
 
                 final Map<String, String> requestHeaders = new HashMap<>();
                 requestHeaders.put("Content-Type", "application/json");
