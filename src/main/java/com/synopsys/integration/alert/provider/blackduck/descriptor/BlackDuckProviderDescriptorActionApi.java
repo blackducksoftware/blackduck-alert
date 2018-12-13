@@ -23,6 +23,7 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -41,8 +42,13 @@ import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckConfig;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigBuilder;
 import com.synopsys.integration.blackduck.rest.BlackDuckRestConnection;
+import com.synopsys.integration.blackduck.service.model.BlackDuckServerVerifier;
+import com.synopsys.integration.blackduck.service.model.RequestFactory;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
+import com.synopsys.integration.rest.exception.IntegrationRestException;
+import com.synopsys.integration.rest.request.Request;
+import com.synopsys.integration.rest.request.Response;
 import com.synopsys.integration.util.BuilderStatus;
 
 @Component
@@ -85,11 +91,18 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
         blackDuckServerConfigBuilder.setUrl(url);
 
         validateBlackDuckConfiguration(blackDuckServerConfigBuilder);
-        try {
-            final BlackDuckRestConnection restConnection = createRestConnection(blackDuckServerConfigBuilder);
-            // FIXME test a valid Black Duck endpoint
-        } catch (final IntegrationException ex) {
-            logger.error("Failed to close rest connection", ex);
+
+        final BlackDuckRestConnection restConnection = createRestConnection(blackDuckServerConfigBuilder);
+        final BlackDuckServerVerifier blackDuckServerVerifier = new BlackDuckServerVerifier();
+        blackDuckServerVerifier.verifyIsBlackDuckServer(restConnection.getBaseUrl(), restConnection.getProxyInfo(), restConnection.isAlwaysTrustServerCertificate(), restConnection.getTimeout());
+
+        final Request authRequest = RequestFactory.createCommonGetRequest(url);
+        try (final Response response = restConnection.execute(authRequest)) {
+            if (response.isStatusCodeError()) {
+                throw new IntegrationRestException(response.getStatusCode(), response.getStatusMessage(), response.getContentString(), "Connection error");
+            }
+        } catch (final IOException ioException) {
+            throw new IntegrationException(ioException.getMessage(), ioException);
         }
     }
 
