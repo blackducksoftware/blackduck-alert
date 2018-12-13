@@ -46,7 +46,7 @@ public class LoginControllerTestIT extends AlertIntegrationTest {
     @Before
     public void setup() {
         blackDuckRepository.deleteAll();
-        LdapProperties ldapProperties = new LdapProperties();
+        final LdapProperties ldapProperties = new LdapProperties();
         ldapProperties.setEnabled("false");
         ldapManager.updateConfiguration(ldapProperties);
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
@@ -60,7 +60,6 @@ public class LoginControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void testLogin() throws Exception {
-
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(loginUrl);
         final TestProperties testProperties = new TestProperties();
         final MockLoginRestModel mockLoginRestModel = new MockLoginRestModel();
