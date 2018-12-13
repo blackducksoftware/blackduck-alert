@@ -24,7 +24,6 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.OutputLogger;
 import com.synopsys.integration.alert.audit.mock.MockAuditEntryEntity;
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
 import com.synopsys.integration.alert.database.channel.JobConfigReader;
@@ -33,7 +32,7 @@ import com.synopsys.integration.alert.database.entity.repository.NotificationCon
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.mock.model.MockCommonDistributionRestModel;
 import com.synopsys.integration.alert.web.audit.AuditEntryActions;
-import com.synopsys.integration.alert.web.audit.AuditEntryConfig;
+import com.synopsys.integration.alert.web.audit.AuditEntryModel;
 import com.synopsys.integration.alert.web.model.AlertPagedModel;
 import com.synopsys.integration.alert.web.model.NotificationContentConverter;
 import com.synopsys.integration.alert.workflow.NotificationManager;
@@ -54,11 +53,11 @@ public class AuditEntryActionsTest {
 
     @Test
     public void testGetNull() {
-        final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
-        Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
-        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, null, null, null, null, null, null);
+        final NotificationManager notificationManager = Mockito.mock(NotificationManager.class);
+        Mockito.when(notificationManager.findById(Mockito.anyLong())).thenReturn(Optional.empty());
+        final AuditEntryActions auditEntryActions = new AuditEntryActions(null, notificationManager, null, null, null, null, null);
 
-        final AuditEntryConfig restModel = auditEntryActions.get(1L);
+        final AuditEntryModel restModel = auditEntryActions.get(1L);
         assertNull(restModel);
     }
 
@@ -72,13 +71,18 @@ public class AuditEntryActionsTest {
         final MockNotificationContent mockNotificationEntity = new MockNotificationContent();
         Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(mockAuditEntryEntity.createEmptyEntity()));
         Mockito.when(jobConfigReader.getPopulatedConfig(Mockito.anyLong())).thenReturn(null);
-        Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Arrays.asList(mockNotificationEntity.createEntity()));
-        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, auditEntryRepository, auditNotificationRepository),
+        Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Collections.singletonList(mockNotificationEntity.createEntity()));
+
+        final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
+        final NotificationContentConverter notificationContentConverter = new NotificationContentConverter(contentConverter);
+
+        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, auditEntryRepository, auditNotificationRepository, notificationContentConverter,
+            jobConfigReader),
             auditNotificationRepository, jobConfigReader, null, null, null);
 
-        AlertPagedModel<AuditEntryConfig> restModel = null;
+        AlertPagedModel<AuditEntryModel> restModel = null;
         try {
-            restModel = auditEntryActions.resendNotification(1L);
+            restModel = auditEntryActions.resendNotification(1L, null);
             fail();
         } catch (final IntegrationException e) {
         }
@@ -92,14 +96,12 @@ public class AuditEntryActionsTest {
         final int currentPage = 0;
         final int pageSize = 2;
 
-        final AuditEntryEntity entity_1 = new AuditEntryEntity();
+        final NotificationContent entity_1 = new NotificationContent();
         entity_1.setId(1L);
-        final AuditEntryEntity entity_2 = new AuditEntryEntity();
+        final NotificationContent entity_2 = new NotificationContent();
         entity_2.setId(2L);
-        final AuditEntryEntity entity_3 = new AuditEntryEntity();
-        entity_2.setId(3L);
-        final List<AuditEntryEntity> pagedEntryList = Arrays.asList(entity_1, entity_2, entity_3);
-        @SuppressWarnings("unchecked") final Page<AuditEntryEntity> pageResponse = Mockito.mock(Page.class);
+        final List<NotificationContent> pagedEntryList = Arrays.asList(entity_1, entity_2);
+        @SuppressWarnings("unchecked") final Page<NotificationContent> pageResponse = Mockito.mock(Page.class);
 
         Mockito.when(pageResponse.getContent()).thenReturn(pagedEntryList);
         Mockito.when(pageResponse.getTotalPages()).thenReturn(totalPages);
@@ -107,7 +109,11 @@ public class AuditEntryActionsTest {
         Mockito.when(pageResponse.getSize()).thenReturn(pageSize);
 
         final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
-        Mockito.when(auditEntryRepository.findAll(Mockito.any(PageRequest.class))).thenReturn(pageResponse);
+
+        final NotificationManager notificationManager = Mockito.mock(NotificationManager.class);
+        Mockito.when(notificationManager.findAll(Mockito.any(PageRequest.class), Mockito.anyBoolean())).thenReturn(pageResponse);
+        final PageRequest pageRequest = PageRequest.of(currentPage, pageSize, null);
+        Mockito.when(notificationManager.getPageRequestForNotifications(Mockito.anyInt(), Mockito.anyInt(), Mockito.any(), Mockito.any())).thenReturn(pageRequest);
 
         final NotificationContentRepository notificationRepository = Mockito.mock(NotificationContentRepository.class);
         final AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
@@ -118,18 +124,18 @@ public class AuditEntryActionsTest {
         final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
         final NotificationContentConverter notificationContentConverter = new NotificationContentConverter(contentConverter);
         Mockito.doReturn(Optional.of(mockCommonDistributionRestModel.createRestModel())).when(jobConfigReader).getPopulatedConfig(Mockito.anyLong());
-        Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Arrays.asList(notificationContent));
-        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, auditEntryRepository, auditNotificationRepository),
+        Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Collections.singletonList(notificationContent));
+        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, notificationManager,
             auditNotificationRepository, jobConfigReader, notificationContentConverter, null, null);
 
-        final AlertPagedModel<AuditEntryConfig> restModel = auditEntryActions.get(currentPage, pageSize, null, null, null);
+        final AlertPagedModel<AuditEntryModel> restModel = auditEntryActions.get(currentPage, pageSize, null, null, null, true);
         assertEquals(pageResponse.getTotalPages(), restModel.getTotalPages());
         assertEquals(pageResponse.getNumber(), restModel.getCurrentPage());
         assertEquals(pageResponse.getSize(), restModel.getPageSize());
 
         for (int index = 0; index < pageSize; index++) {
-            final AuditEntryEntity entity = pageResponse.getContent().get(index);
-            final AuditEntryConfig entryRestModel = restModel.getContent().get(index);
+            final NotificationContent entity = pageResponse.getContent().get(index);
+            final AuditEntryModel entryRestModel = restModel.getContent().get(index);
             assertEquals(String.valueOf(entity.getId()), entryRestModel.getId());
         }
     }
@@ -139,7 +145,7 @@ public class AuditEntryActionsTest {
         final int totalPages = 1;
         final int currentPage = 1;
         final int pageSize = 1;
-        @SuppressWarnings("unchecked") final Page<AuditEntryEntity> pageResponse = Mockito.mock(Page.class);
+        @SuppressWarnings("unchecked") final Page<NotificationContent> pageResponse = Mockito.mock(Page.class);
 
         Mockito.when(pageResponse.getContent()).thenReturn(Collections.emptyList());
         Mockito.when(pageResponse.getTotalPages()).thenReturn(totalPages);
@@ -147,7 +153,11 @@ public class AuditEntryActionsTest {
         Mockito.when(pageResponse.getSize()).thenReturn(0);
 
         final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
-        Mockito.when(auditEntryRepository.findAll(Mockito.any(PageRequest.class))).thenReturn(pageResponse);
+
+        final NotificationManager notificationManager = Mockito.mock(NotificationManager.class);
+        Mockito.when(notificationManager.findAll(Mockito.any(PageRequest.class), Mockito.anyBoolean())).thenReturn(pageResponse);
+        final PageRequest pageRequest = PageRequest.of(currentPage, pageSize, null);
+        Mockito.when(notificationManager.getPageRequestForNotifications(Mockito.anyInt(), Mockito.anyInt(), Mockito.any(), Mockito.any())).thenReturn(pageRequest);
 
         final NotificationContentRepository notificationRepository = Mockito.mock(NotificationContentRepository.class);
         final AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
@@ -157,11 +167,11 @@ public class AuditEntryActionsTest {
         final NotificationContentConverter notificationContentConverter = new NotificationContentConverter(contentConverter);
         final NotificationContent notificationContent = new MockNotificationContent(new Date(), "provider", new Date(), "notificationType", "{content: \"content is here...\"}", 1L).createEntity();
         Mockito.doReturn(Optional.of(mockCommonDistributionRestModel.createRestModel())).when(jobConfigReader).getPopulatedConfig(Mockito.anyLong());
-        Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Arrays.asList(notificationContent));
-        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, auditEntryRepository, auditNotificationRepository),
+        Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Collections.singletonList(notificationContent));
+        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, notificationManager,
             auditNotificationRepository, jobConfigReader, notificationContentConverter, null, null);
 
-        final AlertPagedModel<AuditEntryConfig> restModel = auditEntryActions.get(currentPage, pageSize, null, null, null);
+        final AlertPagedModel<AuditEntryModel> restModel = auditEntryActions.get(currentPage, pageSize, null, null, null, true);
         assertEquals(pageResponse.getTotalPages(), restModel.getTotalPages());
         assertEquals(pageResponse.getNumber(), restModel.getCurrentPage());
         //Assert 0 because there aren't any entries in the pageResponse content
