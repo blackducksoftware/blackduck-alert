@@ -23,13 +23,10 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.context;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -47,7 +44,6 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDistributionUIConfig;
 import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
@@ -94,7 +90,7 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
     public void validateConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
         final String descriptorName = distributionChannel.getDistributionType();
 
-        final String jobName = fieldAccessor.getString(CommonDistributionUIConfig.KEY_NAME);
+        final String jobName = fieldAccessor.getString(CommonDistributionUIConfig.KEY_NAME).orElse(null);
         if (StringUtils.isNotBlank(jobName)) {
             try {
                 final List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorName(descriptorName);
@@ -112,39 +108,11 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
         } else {
             fieldErrors.put(CommonDistributionUIConfig.KEY_NAME, "Name cannot be blank.");
         }
-        if (StringUtils.isBlank(fieldAccessor.getString(CommonDistributionUIConfig.KEY_CHANNEL_NAME))) {
+        if (StringUtils.isBlank(fieldAccessor.getString(CommonDistributionUIConfig.KEY_CHANNEL_NAME).orElse(null))) {
             fieldErrors.put(CommonDistributionUIConfig.KEY_CHANNEL_NAME, "You must choose a distribution type.");
         }
         if (StringUtils.isBlank(CommonDistributionUIConfig.KEY_PROVIDER_NAME)) {
             fieldErrors.put(CommonDistributionUIConfig.KEY_PROVIDER_NAME, "You must choose a provider.");
-        }
-        final String filterByProject = fieldAccessor.getString(CommonDistributionUIConfig.KEY_FILTER_BY_PROJECT);
-        if (StringUtils.isNotBlank(filterByProject) && !contentConverter.isBoolean(filterByProject)) {
-            fieldErrors.put(CommonDistributionUIConfig.KEY_FILTER_BY_PROJECT, "Not a Boolean.");
-        }
-        final String projectNamePattern = fieldAccessor.getString(CommonDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
-        if (StringUtils.isNotBlank(projectNamePattern)) {
-            try {
-                Pattern.compile(projectNamePattern);
-            } catch (final PatternSyntaxException e) {
-                fieldErrors.put(CommonDistributionUIConfig.KEY_PROJECT_NAME_PATTERN, "Project name pattern is not a regular expression. " + e.getMessage());
-            }
-        }
-        final Collection<String> configuredProjects = fieldAccessor.getAllStrings(CommonDistributionUIConfig.KEY_CONFIGURED_PROJECT);
-        if (contentConverter.getBooleanValue(filterByProject) && (null == configuredProjects || configuredProjects.isEmpty()) && StringUtils.isBlank(projectNamePattern)) {
-            fieldErrors.put(CommonDistributionUIConfig.KEY_CONFIGURED_PROJECT, "You must select at least one project.");
-        }
-        final String formatType = fieldAccessor.getString(BlackDuckDistributionUIConfig.KEY_FORMAT_TYPE);
-        if (StringUtils.isBlank(formatType)) {
-            fieldErrors.put(BlackDuckDistributionUIConfig.KEY_FORMAT_TYPE, "You must choose a format.");
-        }
-        final String frequency = fieldAccessor.getString(CommonDistributionUIConfig.KEY_FREQUENCY);
-        if (StringUtils.isBlank(frequency)) {
-            fieldErrors.put(CommonDistributionUIConfig.KEY_FREQUENCY, "Frequency cannot be blank.");
-        }
-        final Collection<String> notificationTypes = fieldAccessor.getAllStrings(BlackDuckDistributionUIConfig.KEY_NOTIFICATION_TYPES);
-        if (notificationTypes == null || notificationTypes.size() <= 0) {
-            fieldErrors.put(BlackDuckDistributionUIConfig.KEY_NOTIFICATION_TYPES, "Must have at least one notification type.");
         }
 
         validateChannelConfig(fieldAccessor, fieldErrors);
@@ -170,7 +138,7 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
 
     private DescriptorActionApi getProviderActionApi(final FieldModel fieldModel) {
         final FieldAccessor fieldAccessor = fieldModel.convertToFieldAccessor();
-        final String providerName = fieldAccessor.getString(CommonDistributionUIConfig.KEY_PROVIDER_NAME);
+        final String providerName = fieldAccessor.getString(CommonDistributionUIConfig.KEY_PROVIDER_NAME).orElse(null);
         final Optional<ProviderDescriptor> foundProviderDescriptor = providerDescriptors.stream()
                                                                          .filter(providerDescriptor -> providerDescriptor.getName().equals(providerName))
                                                                          .findFirst();

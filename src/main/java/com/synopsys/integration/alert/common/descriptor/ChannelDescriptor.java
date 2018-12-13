@@ -26,7 +26,6 @@ package com.synopsys.integration.alert.common.descriptor;
 import javax.jms.MessageListener;
 
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
-import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 
@@ -38,17 +37,17 @@ public abstract class ChannelDescriptor extends Descriptor {
         super(name, DescriptorType.CHANNEL);
         this.destinationName = destinationName;
         this.channelListener = channelListener;
-        addChannelDistributionActionApi(distributionDescriptorActionApi);
+        addDistributionActionApi(distributionDescriptorActionApi);
     }
 
-    public ChannelDescriptor(final String name, final String destinationName, final MessageListener channelListener, final DescriptorActionApi distributionDescriptorActionApi, final CommonDistributionUIConfig distributionUIConfig) {
+    public ChannelDescriptor(final String name, final String destinationName, final MessageListener channelListener, final DescriptorActionApi distributionDescriptorActionApi, final UIConfig distributionUIConfig) {
         super(name, DescriptorType.CHANNEL);
         this.destinationName = destinationName;
         this.channelListener = channelListener;
         addDistributionUiConfig(distributionDescriptorActionApi, distributionUIConfig);
     }
 
-    public ChannelDescriptor(final String name, final String destinationName, final MessageListener channelListener, final DescriptorActionApi distributionDescriptorActionApi, final CommonDistributionUIConfig distributionUIConfig,
+    public ChannelDescriptor(final String name, final String destinationName, final MessageListener channelListener, final DescriptorActionApi distributionDescriptorActionApi, final UIConfig distributionUIConfig,
         final DescriptorActionApi globalDescriptorActionApi, final UIConfig globalUIConfig) {
         this(name, destinationName, channelListener, distributionDescriptorActionApi, distributionUIConfig);
         addGlobalUiConfig(globalDescriptorActionApi, globalUIConfig);

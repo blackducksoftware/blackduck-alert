@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -77,21 +78,31 @@ public class HipChatChannel extends RestDistributionChannel {
     @Override
     public String getApiUrl(final DistributionEvent distributionEvent) {
         final FieldAccessor fieldAccessor = distributionEvent.getFieldAccessor();
-        final String hostServer = fieldAccessor.getString(HipChatGlobalUIConfig.KEY_HOST_SERVER);
-        return getConfiguredApiUrl(hostServer);
+        final Optional<String> hostServer = fieldAccessor.getString(HipChatGlobalUIConfig.KEY_HOST_SERVER);
+        return hostServer.orElse(HIP_CHAT_API);
     }
 
+    // TODO move channel global testing to descriptorActionApi. Goal is to only define how to send data here. Testing methods will insert appropriate values for testing
     public String testGlobalConfig(final TestConfigModel testConfig) throws IntegrationException {
         final FieldAccessor fieldAccessor = testConfig.getFieldModel().convertToFieldAccessor();
-        final String apiKey = fieldAccessor.getString(HipChatGlobalUIConfig.KEY_API_KEY);
-        final String hostServer = fieldAccessor.getString(HipChatGlobalUIConfig.KEY_HOST_SERVER);
-        final String configuredApiUrl = getConfiguredApiUrl(hostServer);
+        final Optional<String> apiKey = fieldAccessor.getString(HipChatGlobalUIConfig.KEY_API_KEY);
+        final String configuredApiUrl = fieldAccessor.getString(HipChatGlobalUIConfig.KEY_HOST_SERVER).orElse(HIP_CHAT_API);
+
+        if (!apiKey.isPresent()) {
+            throw new AlertException("ERROR: Missing global config.");
+        }
 
         try (final RestConnection restConnection = getChannelRestConnectionFactory().createUnauthenticatedRestConnection(configuredApiUrl)) {
-            final String testResult = testApiKeyAndApiUrlConnection(restConnection, configuredApiUrl, apiKey);
-            final Integer roomId = fieldAccessor.getInteger(HipChatDistributionUIConfig.KEY_ROOM_ID);
+            final String testResult = testApiKeyAndApiUrlConnection(restConnection, configuredApiUrl, apiKey.get());
+            final Integer parsedRoomId;
+            try {
+                final String testRoomId = testConfig.getDestination().orElse(null);
+                parsedRoomId = Integer.valueOf(testRoomId);
+            } catch (final NumberFormatException e) {
+                throw new AlertException("The provided room id is an invalid number.");
+            }
             final String htmlMessage = "This is a test message sent by Alert.";
-            final Request testRequest = createRequest(hostServer, apiKey, roomId, Boolean.TRUE, "red", htmlMessage);
+            final Request testRequest = createRequest(configuredApiUrl, apiKey.get(), parsedRoomId, Boolean.TRUE, "red", htmlMessage);
             sendMessageRequest(restConnection, testRequest, "test");
             return testResult;
         } catch (final IOException ex) {
@@ -102,25 +113,25 @@ public class HipChatChannel extends RestDistributionChannel {
     @Override
     public List<Request> createRequests(final DistributionEvent event) throws IntegrationException {
         final FieldAccessor fieldAccessor = event.getFieldAccessor();
-        final String apiKey = fieldAccessor.getString(HipChatGlobalUIConfig.KEY_API_KEY);
-        final String hostServer = fieldAccessor.getString(HipChatGlobalUIConfig.KEY_HOST_SERVER);
+        final Optional<String> apiKey = fieldAccessor.getString(HipChatGlobalUIConfig.KEY_API_KEY);
+        final String hostServer = fieldAccessor.getString(HipChatGlobalUIConfig.KEY_HOST_SERVER).orElse(HIP_CHAT_API);
 
-        if (!isValidGlobalConfig(apiKey)) {
+        if (!apiKey.isPresent()) {
             throw new AlertException("ERROR: Missing global config.");
         }
 
-        final Integer roomId = fieldAccessor.getInteger(HipChatDistributionUIConfig.KEY_ROOM_ID);
-        final Boolean notify = fieldAccessor.getBoolean(HipChatDistributionUIConfig.KEY_NOTIFY);
-        final String color = fieldAccessor.getString(HipChatDistributionUIConfig.KEY_COLOR);
+        final Optional<Integer> roomId = fieldAccessor.getInteger(HipChatDistributionUIConfig.KEY_ROOM_ID);
+        final Boolean notify = fieldAccessor.getBoolean(HipChatDistributionUIConfig.KEY_NOTIFY).orElse(false);
+        final String color = fieldAccessor.getString(HipChatDistributionUIConfig.KEY_COLOR).orElse("Red");
 
-        if (null == roomId) {
+        if (!roomId.isPresent()) {
             throw new AlertException("Room ID missing");
         } else {
             final String htmlMessage = createHtmlMessage(event.getContent());
             if (isChunkedMessageNeeded(htmlMessage)) {
-                return createChunkedRequestList(hostServer, apiKey, roomId, notify, color, event.getProvider(), htmlMessage);
+                return createChunkedRequestList(hostServer, apiKey.get(), roomId.get(), notify, color, event.getProvider(), htmlMessage);
             } else {
-                return Arrays.asList(createRequest(hostServer, apiKey, roomId, notify, color, htmlMessage));
+                return Arrays.asList(createRequest(hostServer, apiKey.get(), roomId.get(), notify, color, htmlMessage));
             }
         }
     }
@@ -153,13 +164,6 @@ public class HipChatChannel extends RestDistributionChannel {
             logger.error("Unable to create a response", e);
             throw new AlertException("Invalid API key: " + e.getMessage());
         }
-    }
-
-    private String getConfiguredApiUrl(final String configuredUrl) {
-        if (StringUtils.isBlank(configuredUrl)) {
-            return HIP_CHAT_API;
-        }
-        return configuredUrl.trim();
     }
 
     private boolean isValidGlobalConfig(final String apiKey) {
@@ -211,7 +215,7 @@ public class HipChatChannel extends RestDistributionChannel {
     private Request createRequest(final String hostServer, final String apiKey, final Integer roomId, final Boolean notify, final String color, final String htmlMessage) {
         final String jsonString = getJsonString(htmlMessage, AlertConstants.ALERT_APPLICATION_NAME, notify, color);
 
-        final String url = getConfiguredApiUrl(hostServer) + "/v2/room/" + roomId + "/notification";
+        final String url = hostServer + "/v2/room/" + roomId + "/notification";
 
         final Map<String, String> requestHeaders = new HashMap<>();
         requestHeaders.put("Authorization", "Bearer " + apiKey);

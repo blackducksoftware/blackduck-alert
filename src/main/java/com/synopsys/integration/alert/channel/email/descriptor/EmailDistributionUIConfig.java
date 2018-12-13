@@ -26,30 +26,23 @@ package com.synopsys.integration.alert.channel.email.descriptor;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
-import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIComponent;
+import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 
 @Component
-public class EmailDistributionUIConfig extends CommonDistributionUIConfig {
+public class EmailDistributionUIConfig extends UIConfig {
     public static final String KEY_SUBJECT_LINE = "subject.line";
     public static final String KEY_PROJECT_OWNER_ONLY = "project.owner.only";
     public static final String KEY_EMAIL_ADDRESSES = "email.addresses";
 
-    @Autowired
-    public EmailDistributionUIConfig(final BaseDescriptorAccessor descriptorAccessor) {
-        super(descriptorAccessor);
-    }
-
     @Override
-    public UIComponent createUIComponent() {
+    public UIComponent generateUIComponent() {
         return new UIComponent("Email", "email", EmailGroupChannel.COMPONENT_NAME, "envelope", setupFields());
     }
 

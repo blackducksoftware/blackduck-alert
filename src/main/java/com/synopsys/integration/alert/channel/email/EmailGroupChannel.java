@@ -88,31 +88,19 @@ public class EmailGroupChannel extends DistributionChannel {
     public void sendMessage(final DistributionEvent event) throws IntegrationException {
         final FieldAccessor fieldAccessor = event.getFieldAccessor();
 
-        final String host = fieldAccessor.getString(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey());
-        final String from = fieldAccessor.getString(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey());
+        final Optional<String> host = fieldAccessor.getString(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey());
+        final Optional<String> from = fieldAccessor.getString(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey());
 
-        if (!isValidGlobalConfigEntity(host, from)) {
+        if (!host.isPresent() || !from.isPresent()) {
             throw new AlertException("ERROR: Missing global config.");
         }
 
         Set<String> emailAddresses = fieldAccessor.getAllStrings(EmailDistributionUIConfig.KEY_EMAIL_ADDRESSES).stream().collect(Collectors.toSet());
-        final Boolean filterByProject = fieldAccessor.getBoolean(EmailDistributionUIConfig.KEY_PROJECT_OWNER_ONLY);
+        final Boolean filterByProject = fieldAccessor.getBoolean(EmailDistributionUIConfig.KEY_PROJECT_OWNER_ONLY).orElse(false);
         emailAddresses = populateEmails(emailAddresses, event.getContent().getValue(), filterByProject);
         final EmailProperties emailProperties = new EmailProperties(fieldAccessor);
-        final String subjectLine = fieldAccessor.getString(EmailDistributionUIConfig.KEY_SUBJECT_LINE);
+        final String subjectLine = fieldAccessor.getString(EmailDistributionUIConfig.KEY_SUBJECT_LINE).orElse("");
         sendMessage(emailProperties, emailAddresses, subjectLine, event.getProvider(), event.getFormatType(), event.getContent(), "ProjectName");
-    }
-
-    private Set<String> populateEmails(Set<String> emailAddresses, final String projectName, final boolean projectOwnerOnly) {
-        if (null != emailAddresses && !emailAddresses.isEmpty()) {
-            return emailAddresses;
-        }
-        final BlackDuckProjectEntity projectEntity = blackDuckProjectRepositoryAccessor.findByName(projectName);
-        emailAddresses = getEmailAddressesForProject(projectEntity, projectOwnerOnly);
-        if (emailAddresses.isEmpty()) {
-            logger.error("Could not find any email addresses for project: {}", projectName);
-        }
-        return emailAddresses;
     }
 
     public String testGlobalConfig(final TestConfigModel testConfig) throws IntegrationException {
@@ -161,10 +149,6 @@ public class EmailGroupChannel extends DistributionChannel {
         }
     }
 
-    private boolean isValidGlobalConfigEntity(final String smtpHost, final String smtpFrom) {
-        return StringUtils.isNotBlank(smtpHost) && StringUtils.isNotBlank(smtpFrom);
-    }
-
     public Set<String> getEmailAddressesForProject(final BlackDuckProjectEntity blackDuckProjectEntity, final boolean projectOwnerOnly) {
         if (null == blackDuckProjectEntity) {
             return Collections.emptySet();
@@ -195,6 +179,22 @@ public class EmailGroupChannel extends DistributionChannel {
 
     public boolean doesProjectNameMatchAConfiguredProject(final String currentProjectName, final Set<String> configuredProjectNames) {
         return configuredProjectNames.contains(currentProjectName);
+    }
+
+    private Set<String> populateEmails(Set<String> emailAddresses, final String projectName, final boolean projectOwnerOnly) {
+        if (null != emailAddresses && !emailAddresses.isEmpty()) {
+            return emailAddresses;
+        }
+        final BlackDuckProjectEntity projectEntity = blackDuckProjectRepositoryAccessor.findByName(projectName);
+        emailAddresses = getEmailAddressesForProject(projectEntity, projectOwnerOnly);
+        if (emailAddresses.isEmpty()) {
+            logger.error("Could not find any email addresses for project: {}", projectName);
+        }
+        return emailAddresses;
+    }
+
+    private boolean isValidGlobalConfigEntity(final String smtpHost, final String smtpFrom) {
+        return StringUtils.isNotBlank(smtpHost) && StringUtils.isNotBlank(smtpFrom);
     }
 
 }
