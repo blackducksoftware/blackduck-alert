@@ -9,7 +9,7 @@ import java.util.List;
 import org.json.JSONException;
 import org.junit.Test;
 
-import com.synopsys.integration.alert.web.audit.AuditEntryConfig;
+import com.synopsys.integration.alert.web.audit.AuditEntryModel;
 
 public class AlertPagedRestModelTest {
 
@@ -18,9 +18,9 @@ public class AlertPagedRestModelTest {
         final int totalPages = 0;
         final int currentPage = 0;
         final int pageSize = 0;
-        final List<AuditEntryConfig> contentList = null;
+        final List<AuditEntryModel> contentList = null;
 
-        final AlertPagedModel<AuditEntryConfig> restModel = new AlertPagedModel<>(totalPages, currentPage, pageSize, contentList);
+        final AlertPagedModel<AuditEntryModel> restModel = new AlertPagedModel<>(totalPages, currentPage, pageSize, contentList);
 
         assertEquals(totalPages, restModel.getTotalPages());
         assertEquals(currentPage, restModel.getCurrentPage());
@@ -33,12 +33,12 @@ public class AlertPagedRestModelTest {
         final int totalPages = 2;
         final int currentPage = 1;
         final int pageSize = 2;
-        final List<AuditEntryConfig> contentList = new ArrayList<>();
-        final AuditEntryConfig item = new AuditEntryConfig();
+        final List<AuditEntryModel> contentList = new ArrayList<>();
+        final AuditEntryModel item = new AuditEntryModel();
         contentList.add(item);
         contentList.add(item);
 
-        final AlertPagedModel<AuditEntryConfig> restModel = new AlertPagedModel<>(totalPages, currentPage, pageSize, contentList);
+        final AlertPagedModel<AuditEntryModel> restModel = new AlertPagedModel<>(totalPages, currentPage, pageSize, contentList);
 
         assertEquals(totalPages, restModel.getTotalPages());
         assertEquals(currentPage, restModel.getCurrentPage());

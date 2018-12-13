@@ -1,59 +1,65 @@
 .notification {
-	padding-left: 3px;
-	padding-right: 3px;
+  padding-left: 3px;
+  padding-right: 3px;
 }
 
 .highVulnerability {
-	padding-left: 3px;
-	padding-right: 3px;
-	color: #9c251f;
+  padding-left: 3px;
+  padding-right: 3px;
+  color: #9c251f;
 }
 
 .mediumVulnerability {
-	padding-left: 3px;
-	padding-right: 3px;
-	color: #e78c87;
+  padding-left: 3px;
+  padding-right: 3px;
+  color: #e78c87;
 }
 
 .lowVulnerability {
-	padding-left: 3px;
-	padding-right: 3px;
-	color: #999;
+  padding-left: 3px;
+  padding-right: 3px;
+  color: #999;
 }
 
 .vulnerability {
-	padding-left: 3px;
-	padding-right: 3px;
-	color: rgb(221, 221, 221);
+  padding-left: 3px;
+  padding-right: 3px;
+  color: rgb(221, 221, 221);
 }
 
 .policyViolationCleared {
-	padding-left: 3px;
-	padding-right: 3px;
-	color: #3c763d;
+  padding-left: 3px;
+  padding-right: 3px;
+  color: #3c763d;
 }
 
 .policyViolationOverride {
-	padding-left: 3px;
-	padding-right: 3px;
-	color: #444;
+  padding-left: 3px;
+  padding-right: 3px;
+  color: #444;
 }
 
 .policyViolation {
-	padding-left: 3px;
-	padding-right: 3px;
-	color: #a94442;
+  padding-left: 3px;
+  padding-right: 3px;
+  color: #a94442;
 }
 
 .inline {
-	display: inline-block;
+  display: inline-block;
 }
 
 .legendContainer {
-	margin-bottom: 17px;
+  margin-bottom: 17px;
 }
 
 .legendDescription {
-	display: inline-block;
-	width: 150px;
+  display: inline-block;
+  width: 150px;
+}
+
+.notificationTitlePiece {
+  display: inline-block;
+  padding-left: 6px;
+  padding-right: 6px;
 }
