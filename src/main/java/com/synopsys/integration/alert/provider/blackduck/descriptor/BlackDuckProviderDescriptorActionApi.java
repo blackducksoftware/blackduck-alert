@@ -66,8 +66,8 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
 
     @Override
     public void validateConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
-        final String timeout = fieldAccessor.getString(BlackDuckProviderUIConfig.KEY_BLACKDUCK_TIMEOUT);
-        final String apiKey = fieldAccessor.getString(BlackDuckProviderUIConfig.KEY_BLACKDUCK_API_KEY);
+        final String timeout = fieldAccessor.getString(BlackDuckProviderUIConfig.KEY_BLACKDUCK_TIMEOUT).orElse(null);
+        final String apiKey = fieldAccessor.getString(BlackDuckProviderUIConfig.KEY_BLACKDUCK_API_KEY).orElse(null);
         if (StringUtils.isNotBlank(timeout) && !StringUtils.isNumeric(timeout)) {
             fieldErrors.put("blackDuckTimeout", "Not an Integer.");
         }

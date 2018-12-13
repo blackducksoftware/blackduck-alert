@@ -88,9 +88,9 @@ public class SystemInitializer {
         if (blackDuckConfigEntity.isPresent()) {
             final ConfigurationModel blackDuckEntity = blackDuckConfigEntity.get();
             final FieldAccessor fieldAccessor = new FieldAccessor(blackDuckEntity.getCopyOfKeyToFieldMap());
-            blackDuckUrl = fieldAccessor.getString(BlackDuckProviderUIConfig.KEY_BLACKDUCK_URL);
-            blackDuckConnectionTimeout = fieldAccessor.getInteger(BlackDuckProviderUIConfig.KEY_BLACKDUCK_TIMEOUT);
-            blackDuckApiToken = fieldAccessor.getString(BlackDuckProviderUIConfig.KEY_BLACKDUCK_API_KEY);
+            blackDuckUrl = fieldAccessor.getString(BlackDuckProviderUIConfig.KEY_BLACKDUCK_URL).orElse(null);
+            blackDuckConnectionTimeout = fieldAccessor.getInteger(BlackDuckProviderUIConfig.KEY_BLACKDUCK_TIMEOUT).orElse(null);
+            blackDuckApiToken = fieldAccessor.getString(BlackDuckProviderUIConfig.KEY_BLACKDUCK_API_KEY).orElse(null);
         }
 
         return new RequiredSystemConfiguration(

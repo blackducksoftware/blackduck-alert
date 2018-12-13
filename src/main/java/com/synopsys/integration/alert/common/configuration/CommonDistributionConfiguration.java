@@ -32,6 +32,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistri
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDistributionUIConfig;
 
 public class CommonDistributionConfiguration extends Configuration {
 
@@ -51,15 +52,15 @@ public class CommonDistributionConfiguration extends Configuration {
     public CommonDistributionConfiguration(final ConfigurationModel configurationModel) {
         super(configurationModel);
 
-        name = getFieldAccessor().getString(CommonDistributionUIConfig.KEY_NAME);
-        channelName = getFieldAccessor().getString(CommonDistributionUIConfig.KEY_CHANNEL_NAME);
-        providerName = getFieldAccessor().getString(CommonDistributionUIConfig.KEY_PROVIDER_NAME);
+        name = getFieldAccessor().getString(CommonDistributionUIConfig.KEY_NAME).orElse(null);
+        channelName = getFieldAccessor().getString(CommonDistributionUIConfig.KEY_CHANNEL_NAME).orElse(null);
+        providerName = getFieldAccessor().getString(CommonDistributionUIConfig.KEY_PROVIDER_NAME).orElse(null);
         notificationTypes = getFieldAccessor().getAllStrings(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES).stream().collect(Collectors.toSet());
-        frequencyType = getFieldAccessor().getEnum(CommonDistributionUIConfig.KEY_FREQUENCY, FrequencyType.class);
-        formatType = getFieldAccessor().getEnum(ProviderDistributionUIConfig.KEY_FORMAT_TYPE, FormatType.class);
-        filterByProject = getFieldAccessor().getBoolean(CommonDistributionUIConfig.KEY_FILTER_BY_PROJECT);
-        projectNamePattern = getFieldAccessor().getString(CommonDistributionUIConfig.KEY_PROJECT_NAME_PATTERN);
-        configuredProject = getFieldAccessor().getAllStrings(CommonDistributionUIConfig.KEY_CONFIGURED_PROJECT).stream().collect(Collectors.toSet());
+        frequencyType = getFieldAccessor().getEnum(CommonDistributionUIConfig.KEY_FREQUENCY, FrequencyType.class).orElse(null);
+        formatType = getFieldAccessor().getEnum(ProviderDistributionUIConfig.KEY_FORMAT_TYPE, FormatType.class).orElse(null);
+        filterByProject = getFieldAccessor().getBoolean(BlackDuckDistributionUIConfig.KEY_FILTER_BY_PROJECT).orElse(null);
+        projectNamePattern = getFieldAccessor().getString(BlackDuckDistributionUIConfig.KEY_PROJECT_NAME_PATTERN).orElse(null);
+        configuredProject = getFieldAccessor().getAllStrings(BlackDuckDistributionUIConfig.KEY_CONFIGURED_PROJECT).stream().collect(Collectors.toSet());
     }
 
     public String getName() {
