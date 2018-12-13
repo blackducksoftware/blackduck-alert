@@ -29,7 +29,6 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -54,7 +53,6 @@ public class NotificationContent extends DatabaseEntity {
     private String content;
 
     @OneToMany
-    @JoinColumn(name = "notification_id")
     private final List<AuditNotificationRelation> auditNotificationRelations = new ArrayList<>();
 
     public NotificationContent() {
