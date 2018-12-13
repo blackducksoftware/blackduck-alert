@@ -21,20 +21,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.audit;
+package com.synopsys.integration.alert.web.exception;
 
-import java.util.List;
-import java.util.Optional;
+import com.synopsys.integration.alert.common.exception.AlertException;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+public class AlertJobMissingException extends AlertException {
+    private static final long serialVersionUID = -1163748183484212814L;
 
-public interface AuditEntryRepository extends JpaRepository<AuditEntryEntity, Long> {
-    AuditEntryEntity findFirstByCommonConfigIdOrderByTimeLastSentDesc(final Long commonConfigId);
-
-    List<AuditEntryEntity> findByCommonConfigId(final Long commonConfigId);
-
-    @Query(value = "SELECT entity FROM AuditEntryEntity entity JOIN entity.auditNotificationRelations relation ON entity.id = relation.auditEntryId WHERE entity.commonConfigId = ?2 AND relation.notificationContent.id = ?1")
-    Optional<AuditEntryEntity> findMatchingAudit(Long notificationId, Long commonConfigId);
+    public AlertJobMissingException(final String message) {
+        super(message);
+    }
 
 }

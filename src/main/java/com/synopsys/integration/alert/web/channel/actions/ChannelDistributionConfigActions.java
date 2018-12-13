@@ -32,6 +32,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
+import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
@@ -87,7 +88,7 @@ public class ChannelDistributionConfigActions extends DescriptorConfigActions {
         final AuditEntryEntity lastRanEntry = auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(id);
         if (lastRanEntry != null) {
             lastRan = getContentConverter().getStringValue(lastRanEntry.getTimeLastSent());
-            status = lastRanEntry.getStatus().getDisplayName();
+            status = AuditEntryStatus.valueOf(lastRanEntry.getStatus()).getDisplayName();
         }
         restModel.setLastRan(lastRan);
         restModel.setStatus(status);
