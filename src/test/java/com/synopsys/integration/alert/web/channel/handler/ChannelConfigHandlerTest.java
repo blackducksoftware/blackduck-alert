@@ -19,7 +19,7 @@ import com.synopsys.integration.alert.common.descriptor.config.context.Descripto
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.mock.model.MockCommonDistributionRestModel;
 import com.synopsys.integration.alert.web.channel.actions.ChannelDistributionConfigActions;
-import com.synopsys.integration.alert.web.config.controller.handler.ConfigControllerHandler;
+import com.synopsys.integration.alert.web.config.ConfigControllerHandler;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.exception.IntegrationException;
