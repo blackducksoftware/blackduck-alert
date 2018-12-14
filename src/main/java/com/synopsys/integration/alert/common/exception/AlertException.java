@@ -28,10 +28,6 @@ import com.synopsys.integration.exception.IntegrationException;
 public class AlertException extends IntegrationException {
     private static final long serialVersionUID = 7993564907680483145L;
 
-    public AlertException() {
-        super();
-    }
-
     public AlertException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
