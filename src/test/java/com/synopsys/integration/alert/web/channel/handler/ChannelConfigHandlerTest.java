@@ -50,7 +50,7 @@ public class ChannelConfigHandlerTest {
         final ConfigControllerHandler handler = new ConfigControllerHandler(contentConverter, configActions);
 
         final DescriptorActionApi descriptor = Mockito.mock(DescriptorActionApi.class);
-        Mockito.when(configActions.getConfig(Mockito.anyLong(), Mockito.any())).thenThrow(new AlertException());
+        Mockito.when(configActions.getConfig(Mockito.anyLong(), Mockito.any())).thenThrow(new AlertException("Exception"));
 
         Exception thrownException = null;
         List<? extends Config> list = null;
@@ -175,7 +175,7 @@ public class ChannelConfigHandlerTest {
         final DescriptorActionApi descriptor = Mockito.mock(DescriptorActionApi.class);
 
         Mockito.when(configActions.doesConfigExist(Mockito.anyString(), Mockito.any())).thenReturn(true);
-        Mockito.when(configActions.updateConfig(Mockito.any(), Mockito.any())).thenThrow(new AlertException());
+        Mockito.when(configActions.updateConfig(Mockito.any(), Mockito.any())).thenThrow(new AlertException("Exception"));
 
         final CommonDistributionConfig restModel = mockCommonDistributionRestModel.createRestModel();
         final ResponseEntity<String> response = handler.putConfig(restModel, descriptor);

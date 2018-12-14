@@ -15,25 +15,30 @@ import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
-import java.io.IOException;
 import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 
 import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.TestProperties;
 import com.synopsys.integration.alert.TestPropertyKey;
+import com.synopsys.integration.alert.common.LdapProperties;
+import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
 import com.synopsys.integration.alert.database.api.user.UserAccessor;
 import com.synopsys.integration.alert.database.api.user.UserModel;
 import com.synopsys.integration.alert.database.user.UserRepository;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
+import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
 import com.synopsys.integration.test.annotation.HubConnectionTest;
 
 @Category(HubConnectionTest.class)
@@ -48,26 +53,30 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private LdapManager ldapManager;
 
     @Before
-    public void init() throws IOException {
-
+    public void init() throws Exception {
+        final LdapProperties ldapProperties = new LdapProperties();
+        ldapProperties.setEnabled(false);
+        ldapManager.updateConfiguration(ldapProperties);
         mockLoginRestModel.setBlackDuckUsername(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_USERNAME));
         mockLoginRestModel.setBlackDuckPassword(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PASSWORD));
     }
 
     @Test
-    public void authenticateUserTestIT() {
-        final LoginActions loginActions = new LoginActions(alertDatabaseAuthProvider);
+    public void testAuthenticateDBUserIT() {
+        final LoginActions loginActions = new LoginActions(alertDatabaseAuthProvider, ldapManager);
         final boolean userAuthenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel());
 
         assertTrue(userAuthenticated);
     }
 
     @Test
-    public void testAuthenticateUserFailIT() throws IOException {
+    public void testAuthenticateDBUserFailIT() {
         mockLoginRestModel.setBlackDuckUsername(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_ACTIVE_USER));
-        final LoginActions loginActions = new LoginActions(alertDatabaseAuthProvider);
+        final LoginActions loginActions = new LoginActions(alertDatabaseAuthProvider, ldapManager);
         final MockLoginRestModel badRestModel = new MockLoginRestModel();
         badRestModel.setBlackDuckPassword("badpassword");
         try {
@@ -79,11 +88,11 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void testAuthenticateUserRoleFailIT() throws IOException {
+    public void testAuthenticateDBUserRoleFailIT() {
         // add a user test then delete a user.
         final String userName = properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_ACTIVE_USER);
         mockLoginRestModel.setBlackDuckUsername(userName);
-        final LoginActions loginActions = new LoginActions(alertDatabaseAuthProvider);
+        final LoginActions loginActions = new LoginActions(alertDatabaseAuthProvider, ldapManager);
         userAccessor.addUser(userName, mockLoginRestModel.getBlackDuckPassword());
         final boolean userAuthenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel());
 
@@ -96,4 +105,36 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
 
         userAccessor.deleteUser(userName);
     }
+
+    @Test
+    public void testAuthenticationLDAPUserIT() throws Exception {
+        final Authentication authentication = Mockito.mock(Authentication.class);
+        Mockito.when(authentication.isAuthenticated()).thenReturn(true);
+        final LdapAuthenticationProvider ldapAuthenticationProvider = Mockito.mock(LdapAuthenticationProvider.class);
+        Mockito.when(ldapAuthenticationProvider.authenticate(Mockito.any(Authentication.class))).thenReturn(authentication);
+        final LdapManager mockLdapManager = Mockito.mock(LdapManager.class);
+        Mockito.when(mockLdapManager.isLdapEnabled()).thenReturn(true);
+        Mockito.when(mockLdapManager.getAuthenticationProvider()).thenReturn(ldapAuthenticationProvider);
+
+        final LoginActions loginActions = new LoginActions(alertDatabaseAuthProvider, mockLdapManager);
+        final boolean authenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel());
+        assertTrue(authenticated);
+    }
+
+    @Test
+    public void testAuthenticationLDAPExceptionIT() throws Exception {
+        final Authentication authentication = Mockito.mock(Authentication.class);
+        Mockito.when(authentication.isAuthenticated()).thenReturn(true);
+        final LdapAuthenticationProvider ldapAuthenticationProvider = Mockito.mock(LdapAuthenticationProvider.class);
+        Mockito.when(ldapAuthenticationProvider.authenticate(Mockito.any(Authentication.class))).thenReturn(authentication);
+        final LdapManager mockLdapManager = Mockito.mock(LdapManager.class);
+        Mockito.when(mockLdapManager.isLdapEnabled()).thenReturn(true);
+        Mockito.when(mockLdapManager.getAuthenticationProvider()).thenThrow(new AlertLDAPConfigurationException("LDAP CONFIG EXCEPTION"));
+        final DaoAuthenticationProvider databaseProvider = Mockito.spy(alertDatabaseAuthProvider);
+        final LoginActions loginActions = new LoginActions(databaseProvider, mockLdapManager);
+        final boolean authenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel());
+        assertTrue(authenticated);
+        Mockito.verify(databaseProvider).authenticate(Mockito.any(Authentication.class));
+    }
+
 }

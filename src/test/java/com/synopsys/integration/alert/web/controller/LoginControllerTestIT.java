@@ -19,10 +19,12 @@ import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.TestProperties;
 import com.synopsys.integration.alert.TestPropertyKey;
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.LdapProperties;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
 
 public class LoginControllerTestIT extends AlertIntegrationTest {
 
@@ -37,11 +39,16 @@ public class LoginControllerTestIT extends AlertIntegrationTest {
     protected BlackDuckProperties blackDuckProperties;
     @Autowired
     protected AlertProperties alertProperties;
+    @Autowired
+    protected LdapManager ldapManager;
     private MockMvc mockMvc;
 
     @Before
-    public void setup() {
+    public void setup() throws Exception {
         blackDuckRepository.deleteAll();
+        final LdapProperties ldapProperties = new LdapProperties();
+        ldapProperties.setEnabled("false");
+        ldapManager.updateConfiguration(ldapProperties);
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
@@ -53,7 +60,6 @@ public class LoginControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void testLogin() throws Exception {
-
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(loginUrl);
         final TestProperties testProperties = new TestProperties();
         final MockLoginRestModel mockLoginRestModel = new MockLoginRestModel();
