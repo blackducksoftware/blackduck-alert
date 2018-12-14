@@ -77,8 +77,7 @@ public class AuditEntryActionsTest {
         final NotificationContentConverter notificationContentConverter = new NotificationContentConverter(contentConverter);
 
         final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, auditEntryRepository, auditNotificationRepository, notificationContentConverter,
-            jobConfigReader),
-            auditNotificationRepository, jobConfigReader, null, null, null);
+                jobConfigReader), auditNotificationRepository, jobConfigReader, null, null, null);
 
         AlertPagedModel<AuditEntryModel> restModel = null;
         try {
@@ -126,7 +125,7 @@ public class AuditEntryActionsTest {
         Mockito.doReturn(Optional.of(mockCommonDistributionRestModel.createRestModel())).when(jobConfigReader).getPopulatedConfig(Mockito.anyLong());
         Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Collections.singletonList(notificationContent));
         final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, notificationManager,
-            auditNotificationRepository, jobConfigReader, notificationContentConverter, null, null);
+                auditNotificationRepository, jobConfigReader, notificationContentConverter, null, null);
 
         final AlertPagedModel<AuditEntryModel> restModel = auditEntryActions.get(currentPage, pageSize, null, null, null, true);
         assertEquals(pageResponse.getTotalPages(), restModel.getTotalPages());
@@ -169,7 +168,7 @@ public class AuditEntryActionsTest {
         Mockito.doReturn(Optional.of(mockCommonDistributionRestModel.createRestModel())).when(jobConfigReader).getPopulatedConfig(Mockito.anyLong());
         Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Collections.singletonList(notificationContent));
         final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, notificationManager,
-            auditNotificationRepository, jobConfigReader, notificationContentConverter, null, null);
+                auditNotificationRepository, jobConfigReader, notificationContentConverter, null, null);
 
         final AlertPagedModel<AuditEntryModel> restModel = auditEntryActions.get(currentPage, pageSize, null, null, null, true);
         assertEquals(pageResponse.getTotalPages(), restModel.getTotalPages());
