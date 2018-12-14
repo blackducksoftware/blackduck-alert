@@ -64,6 +64,7 @@ public class AlertStartupInitializer {
         alertStartupFields = new HashSet<>();
     }
 
+    // TODO sort property values here
     public void initializeConfigs(final boolean overwriteCurrentConfig) throws IllegalArgumentException, SecurityException, AlertDatabaseConstraintException {
         final Set<String> descriptorNames = descriptorMap.getDescriptorMap().keySet();
         for (final String descriptorName : descriptorNames) {
@@ -81,7 +82,7 @@ public class AlertStartupInitializer {
             if (!newConfiguration.isEmpty()) {
                 final Set<ConfigurationFieldModel> fieldModels = createConfigurationFieldModels(newConfiguration);
                 final List<ConfigurationModel> foundConfigurationModel = fieldConfigurationAccessor.getConfigurationByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
-                if (!foundConfigurationModel.isEmpty() && overwriteCurrentConfig) {
+                if (!foundConfigurationModel.isEmpty()) {
                     if (overwriteCurrentConfig) {
                         final ConfigurationModel configurationModel = foundConfigurationModel.get(0);
                         fieldConfigurationAccessor.updateConfiguration(configurationModel.getConfigurationId(), fieldModels);

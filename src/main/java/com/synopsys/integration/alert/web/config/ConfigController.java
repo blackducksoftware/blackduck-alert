@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.config.controller;
+package com.synopsys.integration.alert.web.config;
 
 import java.util.List;
 
@@ -32,7 +32,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.web.config.controller.handler.ConfigControllerHandler;
 import com.synopsys.integration.alert.web.controller.BaseController;
 import com.synopsys.integration.alert.web.model.FieldModel;
 
@@ -41,6 +40,8 @@ public class ConfigController extends BaseController {
     public static final String CONFIGURATION_PATH = BaseController.BASE_PATH + "/configuration";
 
     private final ConfigControllerHandler controllerHandler;
+
+    // TODO Change the endpoint to have configuration/context/type/descriptorName/id
 
     @Autowired
     public ConfigController(final ConfigControllerHandler controllerHandler) {

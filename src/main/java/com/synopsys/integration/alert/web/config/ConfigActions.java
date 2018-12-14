@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.config.actions;
+package com.synopsys.integration.alert.web.config;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,14 +56,16 @@ import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class DescriptorConfigActions {
+public class ConfigActions {
     private final ContentConverter contentConverter;
     private final BaseConfigurationAccessor configurationAccessor;
     private final BaseDescriptorAccessor descriptorAccessor;
     private final DescriptorMap descriptorMap;
 
+    // TODO Add a new Audit controller to add audit info to distributino jobs
+
     @Autowired
-    public DescriptorConfigActions(final ContentConverter contentConverter, final BaseConfigurationAccessor configurationAccessor, final BaseDescriptorAccessor descriptorAccessor, final DescriptorMap descriptorMap) {
+    public ConfigActions(final ContentConverter contentConverter, final BaseConfigurationAccessor configurationAccessor, final BaseDescriptorAccessor descriptorAccessor, final DescriptorMap descriptorMap) {
         this.contentConverter = contentConverter;
         this.configurationAccessor = configurationAccessor;
         this.descriptorAccessor = descriptorAccessor;

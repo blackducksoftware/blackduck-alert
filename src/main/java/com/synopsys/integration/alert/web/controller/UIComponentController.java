@@ -91,6 +91,7 @@ public class UIComponentController extends BaseController {
         }
     }
 
+    // TODO split out provider and distribution endpoints
     @GetMapping("/distribution")
     public UIComponent getDistributionUIComponent(@RequestParam(value = "providerName", required = true) final String providerName, @RequestParam(value = "channelName", required = true) final String channelName) {
         if (StringUtils.isBlank(providerName) || StringUtils.isBlank(channelName)) {

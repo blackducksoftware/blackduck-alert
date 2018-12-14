@@ -36,6 +36,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 
 @Component
 public class SlackUIConfig extends UIConfig {
+    // TODO move these to the channel specifically
     public static final String KEY_WEBHOOK = "webhook";
     public static final String KEY_CHANNEL_NAME = "channel.name";
     public static final String KEY_CHANNEL_USERNAME = "channel.username";
