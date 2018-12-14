@@ -39,6 +39,7 @@ import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.LdapProperties;
+import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
 
 @Component
 public class LdapManager {
@@ -48,39 +49,49 @@ public class LdapManager {
 
     @Autowired
     public LdapManager(final LdapProperties ldapProperties) {
-        updateConfiguration(ldapProperties);
+        this.currentConfiguration = ldapProperties;
     }
 
     public boolean isLdapEnabled() {
-        return currentConfiguration == null ? false : currentConfiguration.isEnabled();
+        return currentConfiguration != null && currentConfiguration.isEnabled();
     }
 
     public LdapProperties getCurrentConfiguration() {
         return currentConfiguration;
     }
 
-    public LdapAuthenticationProvider getAuthenticationProvider() {
+    public LdapAuthenticationProvider getAuthenticationProvider() throws AlertLDAPConfigurationException {
+        if (authenticationProvider == null) {
+            updateConfiguration(currentConfiguration);
+        }
         return authenticationProvider;
     }
 
-    public void updateConfiguration(final LdapProperties configuration) {
+    public void updateConfiguration(final LdapProperties configuration) throws AlertLDAPConfigurationException {
         this.currentConfiguration = configuration;
         if (currentConfiguration.isEnabled()) {
             updateContext();
         }
     }
 
-    public void updateContext() {
+    public void updateContext() throws AlertLDAPConfigurationException {
         final LdapProperties configuration = getCurrentConfiguration();
         final LdapContextSource ldapContextSource = new LdapContextSource();
-        ldapContextSource.setUrl(configuration.getServer());
-        ldapContextSource.setUserDn(configuration.getManagerDN());
-        ldapContextSource.setPassword(configuration.getManagerPassword());
-        ldapContextSource.setReferral(configuration.getLdapReferral());
-        ldapContextSource.setAuthenticationStrategy(createAuthenticationStrategy(configuration));
-        contextSource = ldapContextSource;
-        contextSource.afterPropertiesSet();
-        updateAuthenticationProvider();
+
+        try {
+            if (StringUtils.isNotBlank(configuration.getServer())) {
+                ldapContextSource.setUrl(configuration.getServer());
+                ldapContextSource.setUserDn(configuration.getManagerDN());
+                ldapContextSource.setPassword(configuration.getManagerPassword());
+                ldapContextSource.setReferral(configuration.getLdapReferral());
+                ldapContextSource.setAuthenticationStrategy(createAuthenticationStrategy(configuration));
+            }
+            contextSource = ldapContextSource;
+            contextSource.afterPropertiesSet();
+            updateAuthenticationProvider();
+        } catch (final IllegalArgumentException ex) {
+            throw new AlertLDAPConfigurationException("Error creating LDAP Context Source", ex);
+        }
     }
 
     private DirContextAuthenticationStrategy createAuthenticationStrategy(final LdapProperties configuration) {
@@ -97,17 +108,23 @@ public class LdapManager {
         return strategy;
     }
 
-    private void updateAuthenticationProvider() {
+    private void updateAuthenticationProvider() throws AlertLDAPConfigurationException {
         final LdapAuthenticator authenticator = createAuthenticator();
         final LdapAuthoritiesPopulator authoritiesPopulator = createAuthoritiesPopulator();
         authenticationProvider = new LdapAuthenticationProvider(authenticator, authoritiesPopulator);
     }
 
-    private LdapAuthenticator createAuthenticator() {
+    private LdapAuthenticator createAuthenticator() throws AlertLDAPConfigurationException {
         final BindAuthenticator authenticator = new BindAuthenticator(contextSource);
-        authenticator.setUserSearch(createLdapUserSearch(contextSource));
-        authenticator.setUserDnPatterns(currentConfiguration.getUserDNPatternArray());
-        authenticator.setUserAttributes(currentConfiguration.getUserAttributeArray());
+        try {
+
+            authenticator.setUserSearch(createLdapUserSearch(contextSource));
+            authenticator.setUserDnPatterns(currentConfiguration.getUserDNPatternArray());
+            authenticator.setUserAttributes(currentConfiguration.getUserAttributeArray());
+            authenticator.afterPropertiesSet();
+        } catch (final Exception ex) {
+            throw new AlertLDAPConfigurationException("Error creating LDAP authenticator", ex);
+        }
         return authenticator;
     }
 

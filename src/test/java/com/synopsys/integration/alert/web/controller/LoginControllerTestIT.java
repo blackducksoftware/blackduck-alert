@@ -44,7 +44,7 @@ public class LoginControllerTestIT extends AlertIntegrationTest {
     private MockMvc mockMvc;
 
     @Before
-    public void setup() {
+    public void setup() throws Exception {
         blackDuckRepository.deleteAll();
         final LdapProperties ldapProperties = new LdapProperties();
         ldapProperties.setEnabled("false");
