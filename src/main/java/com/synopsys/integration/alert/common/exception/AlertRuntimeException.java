@@ -26,10 +26,6 @@ package com.synopsys.integration.alert.common.exception;
 public class AlertRuntimeException extends RuntimeException {
     private static final long serialVersionUID = -6181133427798683517L;
 
-    public AlertRuntimeException() {
-        super();
-    }
-
     public AlertRuntimeException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
