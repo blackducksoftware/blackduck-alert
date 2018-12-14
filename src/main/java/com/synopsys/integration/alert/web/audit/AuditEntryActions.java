@@ -24,7 +24,6 @@
 package com.synopsys.integration.alert.web.audit;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -116,21 +115,21 @@ public class AuditEntryActions {
 
     public AlertPagedModel<AuditEntryModel> resendNotification(final Long notificationdId, final Long commonConfigId) throws IntegrationException {
         final Optional<NotificationContent> notificationContentOptional = notificationManager.findById(notificationdId);
-        if (!notificationContentOptional.isPresent()) {
+        if (notificationContentOptional.isEmpty()) {
             throw new AlertNotificationPurgedException("No notification with this id exists.");
         }
         final NotificationContent notificationContent = notificationContentOptional.get();
-        List<DistributionEvent> distributionEvents = null;
+        final List<DistributionEvent> distributionEvents;
         if (null != commonConfigId) {
             final Optional<CommonDistributionConfiguration> commonDistributionConfig = jobConfigReader.getPopulatedConfig(commonConfigId);
             if (!commonDistributionConfig.isPresent()) {
                 logger.warn("The Distribution Job with Id {} could not be found. This notification could not be sent");
                 throw new AlertJobMissingException("The Distribution Job with this id could not be found.");
             } else {
-                distributionEvents = notificationProcessor.processNotifications(commonDistributionConfig.get(), Arrays.asList(notificationContent));
+                distributionEvents = notificationProcessor.processNotifications(commonDistributionConfig.get(), List.of(notificationContent));
             }
         } else {
-            distributionEvents = notificationProcessor.processNotifications(Arrays.asList(notificationContent));
+            distributionEvents = notificationProcessor.processNotifications(List.of(notificationContent));
         }
         if (distributionEvents.isEmpty()) {
             logger.warn("This notification could not be sent. Make sure you have a Distribution Job configured to handle this notification.");
@@ -250,13 +249,12 @@ public class AuditEntryActions {
 
     private AuditEntryStatus getWorstStatus(final AuditEntryStatus overallStatus, final AuditEntryStatus currentStatus) {
         AuditEntryStatus newOverallStatus = overallStatus;
-        if (currentStatus != null) {
-            if (currentStatus == AuditEntryStatus.FAILURE) {
-                newOverallStatus = currentStatus;
-            } else if (null == overallStatus || (AuditEntryStatus.SUCCESS == overallStatus && AuditEntryStatus.SUCCESS != currentStatus)) {
-                newOverallStatus = currentStatus;
-            }
+        if (currentStatus == AuditEntryStatus.FAILURE) {
+            newOverallStatus = currentStatus;
+        } else if (null == overallStatus || (AuditEntryStatus.SUCCESS == overallStatus && AuditEntryStatus.SUCCESS != currentStatus)) {
+            newOverallStatus = currentStatus;
         }
+
         return newOverallStatus;
     }
 }

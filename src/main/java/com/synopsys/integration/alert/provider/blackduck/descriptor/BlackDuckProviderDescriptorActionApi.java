@@ -68,11 +68,10 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
         if (StringUtils.isNotBlank(timeout) && !StringUtils.isNumeric(timeout)) {
             fieldErrors.put("blackDuckTimeout", "Not an Integer.");
         }
+
         if (StringUtils.isNotBlank(apiKey)) {
-            if (apiKey.length() < 64) {
-                fieldErrors.put("blackDuckApiKey", "Not enough characters to be a Black Duck API Key.");
-            } else if (apiKey.length() > 256) {
-                fieldErrors.put("blackDuckApiKey", "Too many characters to be a Black Duck API Key.");
+            if (apiKey.length() < 64 || apiKey.length() > 256) {
+                fieldErrors.put("blackDuckApiKey", "Invalid Black Duck API Key.");
             }
         }
     }

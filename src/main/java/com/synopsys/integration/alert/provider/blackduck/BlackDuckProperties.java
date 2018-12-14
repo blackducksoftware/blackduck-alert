@@ -52,6 +52,8 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 @Component
 public class BlackDuckProperties {
     public static final int DEFAULT_TIMEOUT = 300;
+
+    private final Gson gson;
     private final AlertProperties alertProperties;
     private final BaseConfigurationAccessor configurationAccessor;
     private final Logger classLogger = LoggerFactory.getLogger(getClass());
@@ -65,7 +67,8 @@ public class BlackDuckProperties {
     private String publicBlackDuckWebserverPort;
 
     @Autowired
-    public BlackDuckProperties(final AlertProperties alertProperties, final BaseConfigurationAccessor configurationAccessor) {
+    public BlackDuckProperties(final Gson gson, final AlertProperties alertProperties, final BaseConfigurationAccessor configurationAccessor) {
+        this.gson = gson;
         this.alertProperties = alertProperties;
         this.configurationAccessor = configurationAccessor;
     }
@@ -119,7 +122,6 @@ public class BlackDuckProperties {
     }
 
     public BlackDuckServicesFactory createBlackDuckServicesFactory(final BlackDuckRestConnection restConnection, final IntLogger logger) {
-        final Gson gson = BlackDuckServicesFactory.createDefaultGson();
         return new BlackDuckServicesFactory(gson, BlackDuckServicesFactory.createDefaultObjectMapper(), restConnection, logger);
     }
 

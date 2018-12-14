@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.jupiter.api.Tag;
 import org.mockito.Mockito;
 
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.TestAlertProperties;
 import com.synopsys.integration.alert.TestBlackDuckProperties;
 import com.synopsys.integration.alert.TestPropertyKey;
@@ -47,7 +48,7 @@ public class SlackChannelTestIT extends ChannelTest {
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final GlobalBlackDuckRepository mockedGlobalRepository = Mockito.mock(GlobalBlackDuckRepository.class);
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(mockedGlobalRepository, testAlertProperties, null);
+        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(new Gson(), mockedGlobalRepository, testAlertProperties, null);
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties);
         final SlackChannel slackChannel = new SlackChannel(gson, testAlertProperties, globalProperties, auditUtility, channelRestConnectionFactory);
         final String roomName = properties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME);

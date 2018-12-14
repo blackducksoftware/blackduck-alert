@@ -1,7 +1,7 @@
 ## Overview ##
 <!-- The comments following wrap around the description string for parsing during the build. Do Not Remove -->
 <!-- description-text-start -->
-This application provides the ability to send notifications from the a provider to various distribution channels.
+This application provides the ability to send notifications from a provider to various distribution channels.
 <!-- description-text-end -->
 ## Build ##
 

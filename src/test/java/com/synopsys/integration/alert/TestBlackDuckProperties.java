@@ -15,6 +15,7 @@ import java.util.Optional;
 
 import org.mockito.Mockito;
 
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
@@ -30,15 +31,15 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
     private boolean urlSet;
 
     public TestBlackDuckProperties(final TestAlertProperties alertProperties) {
-        this(Mockito.mock(GlobalBlackDuckRepository.class), alertProperties);
+        this(new Gson(), Mockito.mock(GlobalBlackDuckRepository.class), alertProperties);
     }
 
-    public TestBlackDuckProperties(final GlobalBlackDuckRepository globalHubRepository, final TestAlertProperties alertProperties) {
-        this(globalHubRepository, alertProperties, 400);
+    public TestBlackDuckProperties(final Gson gson, final GlobalBlackDuckRepository globalHubRepository, final TestAlertProperties alertProperties) {
+        this(gson, globalHubRepository, alertProperties, 400);
     }
 
-    public TestBlackDuckProperties(final GlobalBlackDuckRepository globalHubRepository, final TestAlertProperties alertProperties, final Integer blackDuckTimeout) {
-        super(globalHubRepository, alertProperties);
+    public TestBlackDuckProperties(final Gson gson, final GlobalBlackDuckRepository globalHubRepository, final TestAlertProperties alertProperties, final Integer blackDuckTimeout) {
+        super(gson, globalHubRepository, alertProperties);
         this.blackDuckTimeout = blackDuckTimeout;
         testAlertProperties = alertProperties;
         testProperties = new TestProperties();

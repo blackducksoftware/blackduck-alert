@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.junit.jupiter.api.Tag;
 import org.mockito.Mockito;
 
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.TestAlertProperties;
 import com.synopsys.integration.alert.TestBlackDuckProperties;
 import com.synopsys.integration.alert.TestPropertyKey;
@@ -56,8 +57,7 @@ public class HipChatChannelTest extends ChannelTest {
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     public void sendMessageTestIT() throws IOException, IntegrationException {
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
-        final GlobalBlackDuckRepository mockedGlobalRepository = Mockito.mock(GlobalBlackDuckRepository.class);
-        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(mockedGlobalRepository, new TestAlertProperties());
+        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(new Gson(), mockedGlobalRepository, new TestAlertProperties());
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties);
         HipChatChannel hipChatChannel = new HipChatChannel(gson, testAlertProperties, globalProperties, auditUtility, null, channelRestConnectionFactory);
@@ -102,7 +102,7 @@ public class HipChatChannelTest extends ChannelTest {
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
 
         final HipChatChannelEvent event = new HipChatChannelEvent(RestConstants.formatDate(new Date()), "provider", "FORMAT",
-                content, null, 12345, Boolean.FALSE, null);
+            content, null, 12345, Boolean.FALSE, null);
 
         final String userDir = System.getProperties().getProperty("user.dir");
         try {
@@ -205,7 +205,7 @@ public class HipChatChannelTest extends ChannelTest {
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final TestAlertProperties alertProperties = new TestAlertProperties();
         final GlobalBlackDuckRepository mockedGlobalRepository = Mockito.mock(GlobalBlackDuckRepository.class);
-        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(mockedGlobalRepository, alertProperties);
+        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(new Gson(), mockedGlobalRepository, alertProperties);
         HipChatChannel hipChatChannel = new HipChatChannel(gson, alertProperties, globalProperties, auditUtility, null, null);
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
@@ -215,7 +215,7 @@ public class HipChatChannelTest extends ChannelTest {
         final boolean notify = false;
         final String color = "random";
         final HipChatChannelEvent event = new HipChatChannelEvent(RestConstants.formatDate(new Date()), "provider", "FORMAT",
-                content, null, roomId, notify, color);
+            content, null, roomId, notify, color);
 
         hipChatChannel = Mockito.spy(hipChatChannel);
         Mockito.doReturn(new HipChatGlobalConfigEntity(properties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY), "")).when(hipChatChannel).getGlobalConfigEntity();
@@ -229,7 +229,7 @@ public class HipChatChannelTest extends ChannelTest {
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final TestAlertProperties alertProperties = new TestAlertProperties();
         final GlobalBlackDuckRepository mockedGlobalRepository = Mockito.mock(GlobalBlackDuckRepository.class);
-        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(mockedGlobalRepository, alertProperties);
+        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(new Gson(), mockedGlobalRepository, alertProperties);
         HipChatChannel hipChatChannel = new HipChatChannel(gson, alertProperties, globalProperties, auditUtility, null, null);
 
         final AggregateMessageContent messageContent = createLargeMessageContent();

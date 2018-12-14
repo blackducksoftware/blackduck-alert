@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.OutputLogger;
 import com.synopsys.integration.alert.TestAlertProperties;
 import com.synopsys.integration.alert.TestBlackDuckProperties;
@@ -123,7 +124,7 @@ public class SystemValidatorTest {
     @Test
     public void testvalidateBlackDuckProviderHubWebserverEnvironmentSet() throws IOException {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(Mockito.mock(GlobalBlackDuckRepository.class), testAlertProperties);
+        final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(new Gson(), Mockito.mock(GlobalBlackDuckRepository.class), testAlertProperties);
         final TestBlackDuckProperties spiedGlobalProperties = Mockito.spy(testGlobalProperties);
         spiedGlobalProperties.setBlackDuckUrl("https://localhost:443");
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
