@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.config.controller.handler;
+package com.synopsys.integration.alert.web.config;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -39,7 +39,6 @@ import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
-import com.synopsys.integration.alert.web.config.actions.DescriptorConfigActions;
 import com.synopsys.integration.alert.web.controller.handler.ControllerHandler;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.FieldModel;
@@ -50,10 +49,10 @@ import com.synopsys.integration.rest.exception.IntegrationRestException;
 @Component
 public class ConfigControllerHandler extends ControllerHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final DescriptorConfigActions descriptorConfigActions;
+    private final ConfigActions descriptorConfigActions;
 
     @Autowired
-    public ConfigControllerHandler(final ContentConverter contentConverter, final DescriptorConfigActions descriptorConfigActions) {
+    public ConfigControllerHandler(final ContentConverter contentConverter, final ConfigActions descriptorConfigActions) {
         super(contentConverter);
         this.descriptorConfigActions = descriptorConfigActions;
     }
