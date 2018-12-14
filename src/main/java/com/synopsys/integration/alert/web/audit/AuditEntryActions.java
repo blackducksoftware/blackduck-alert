@@ -24,7 +24,6 @@
 package com.synopsys.integration.alert.web.audit;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -123,10 +122,10 @@ public class AuditEntryActions {
                 logger.warn("The Distribution Job with Id {} could not be found. This notification could not be sent", commonConfigId);
                 throw new AlertJobMissingException("The Distribution Job with this id could not be found.");
             } else {
-                distributionEvents = notificationProcessor.processNotifications(commonDistributionConfig.get(), Arrays.asList(notificationContent));
+                distributionEvents = notificationProcessor.processNotifications(commonDistributionConfig.get(), List.of(notificationContent));
             }
         } else {
-            distributionEvents = notificationProcessor.processNotifications(Arrays.asList(notificationContent));
+            distributionEvents = notificationProcessor.processNotifications(List.of(notificationContent));
         }
         if (distributionEvents.isEmpty()) {
             logger.warn("This notification could not be sent. Make sure you have a Distribution Job configured to handle this notification.");
