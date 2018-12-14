@@ -120,7 +120,7 @@ public class AuditEntryActions {
         if (null != commonConfigId) {
             final Optional<? extends CommonDistributionConfig> commonDistributionConfig = jobConfigReader.getPopulatedConfig(commonConfigId);
             if (!commonDistributionConfig.isPresent()) {
-                logger.warn("The Distribution Job with Id {} could not be found. This notification could not be sent");
+                logger.warn("The Distribution Job with Id {} could not be found. This notification could not be sent", commonDistributionConfig.get().getId());
                 throw new AlertJobMissingException("The Distribution Job with this id could not be found.");
             } else {
                 distributionEvents = notificationProcessor.processNotifications(commonDistributionConfig.get(), Arrays.asList(notificationContent));
@@ -246,13 +246,12 @@ public class AuditEntryActions {
 
     private AuditEntryStatus getWorstStatus(final AuditEntryStatus overallStatus, final AuditEntryStatus currentStatus) {
         AuditEntryStatus newOverallStatus = overallStatus;
-        if (currentStatus != null) {
-            if (currentStatus == AuditEntryStatus.FAILURE) {
-                newOverallStatus = currentStatus;
-            } else if (null == overallStatus || (AuditEntryStatus.SUCCESS == overallStatus && AuditEntryStatus.SUCCESS != currentStatus)) {
-                newOverallStatus = currentStatus;
-            }
+        if (currentStatus == AuditEntryStatus.FAILURE) {
+            newOverallStatus = currentStatus;
+        } else if (null == overallStatus || (AuditEntryStatus.SUCCESS == overallStatus && AuditEntryStatus.SUCCESS != currentStatus)) {
+            newOverallStatus = currentStatus;
         }
+
         return newOverallStatus;
     }
 }
