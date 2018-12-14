@@ -158,10 +158,16 @@ public class EmailEventProducer extends ChannelEventProducer {
     }
 
     private boolean doesProjectNameMatchThePattern(final String currentProjectName, final String projectNamePattern) {
-        return currentProjectName.matches(projectNamePattern);
+        if (StringUtils.isNotBlank(currentProjectName) && StringUtils.isNotBlank(projectNamePattern)) {
+            return currentProjectName.matches(projectNamePattern);
+        }
+        return false;
     }
 
     private boolean doesProjectNameMatchAConfiguredProject(final String currentProjectName, final List<String> configuredProjectNames) {
-        return configuredProjectNames.contains(currentProjectName);
+        if (StringUtils.isNotBlank(currentProjectName) && null != configuredProjectNames && !configuredProjectNames.isEmpty()) {
+            return configuredProjectNames.contains(currentProjectName);
+        }
+        return false;
     }
 }
