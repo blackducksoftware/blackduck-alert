@@ -20,10 +20,10 @@ import com.synopsys.integration.alert.TestBlackDuckProperties;
 import com.synopsys.integration.alert.TestPropertyKey;
 import com.synopsys.integration.alert.TestTags;
 import com.synopsys.integration.alert.channel.ChannelTest;
+import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.audit.AuditUtility;
-import com.synopsys.integration.alert.database.channel.email.EmailGlobalConfigEntity;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
 
@@ -52,7 +52,7 @@ public class EmailChannelTestIT extends ChannelTest {
         final Set<String> emailAddresses = Stream.of(properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT)).collect(Collectors.toSet());
         final String subjectLine = "Integration test subject line";
 
-        final EmailChannelEvent event = new EmailChannelEvent(RestConstants.formatDate(new Date()), "provider", "FORMAT", content, 1L, emailAddresses, subjectLine);
+        final DistributionEvent event = new DistributionEvent(RestConstants.formatDate(new Date()), "provider", "FORMAT", content, 1L, emailAddresses, subjectLine);
 
         final String smtpHost = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST);
         final String smtpFrom = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM);
@@ -63,8 +63,7 @@ public class EmailChannelTestIT extends ChannelTest {
         final Integer smtpPort = Integer.valueOf(properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT));
 
         final EmailGlobalConfigEntity emailGlobalConfigEntity = new EmailGlobalConfigEntity(smtpHost, smtpUser, smtpPassword, smtpPort, null, null, null, smtpFrom, null, null, null, smtpEhlo, smtpAuth, null, null, null, null, null, null,
-                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
         emailChannel = Mockito.spy(emailChannel);
         Mockito.doReturn(emailGlobalConfigEntity).when(emailChannel).getGlobalConfigEntity();
@@ -78,8 +77,7 @@ public class EmailChannelTestIT extends ChannelTest {
             final EmailGroupChannel emailChannel = new EmailGroupChannel(gson, null, null, null, null);
             final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
             final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
-            final EmailChannelEvent event = new EmailChannelEvent(RestConstants.formatDate(new Date()), "provider", "FORMAT",
-                    content, 1L, null, null);
+            final DistributionEvent event = new DistributionEvent(RestConstants.formatDate(new Date()), "provider", "FORMAT", content, 1L, null, null);
             emailChannel.sendMessage(event);
             fail();
         } catch (final IntegrationException e) {

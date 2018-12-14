@@ -24,7 +24,7 @@ public class GlobalBlackDuckConfigControllerTestIT extends GlobalControllerTest 
     AlertProperties alertProperties;
 
     @Override
-    public RepositoryAccessor getGlobalRepositoryAccessor() {
+    public BlackDuckRepositoryAccessor getGlobalRepositoryAccessor() {
         return blackDuckRepositoryAccessor;
     }
 
