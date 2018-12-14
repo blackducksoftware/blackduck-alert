@@ -34,6 +34,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
 import com.synopsys.integration.alert.web.model.LoginConfig;
 import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
 
@@ -68,11 +69,16 @@ public class LoginActions {
     private Authentication performLdapAuthentication(final LoginConfig loginConfig) {
         logger.info("Checking ldap based authentication...");
         final Authentication pendingAuthentication = createUsernamePasswordAuthToken(loginConfig);
-        final Authentication result;
+        Authentication result;
         if (ldapManager.isLdapEnabled()) {
             logger.info("LDAP authentication enabled");
-            final LdapAuthenticationProvider authenticationProvider = ldapManager.getAuthenticationProvider();
-            result = authenticationProvider.authenticate(pendingAuthentication);
+            try {
+                final LdapAuthenticationProvider authenticationProvider = ldapManager.getAuthenticationProvider();
+                result = authenticationProvider.authenticate(pendingAuthentication);
+            } catch (final AlertLDAPConfigurationException ex) {
+                logger.error("LDAP Configuration error", ex);
+                result = pendingAuthentication;
+            }
         } else {
             logger.info("LDAP authentication disabled");
             result = pendingAuthentication;
