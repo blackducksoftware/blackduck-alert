@@ -41,6 +41,7 @@ public class ProviderDistributionUIConfig {
     public static final String KEY_FORMAT_TYPE = "provider.distribution.format.type";
 
     // TODO call this method in controller for Providers
+    // TODO pass the notification types and formats
     public List<ConfigField> createCommonConfigFields(final Provider provider) {
         final ConfigField notificationTypesField = new SelectConfigField(KEY_NOTIFICATION_TYPES, "Notification Types", true, false, provider.getProviderContentTypes().stream().map(ProviderContentType::getNotificationType).collect(
             Collectors.toList()));

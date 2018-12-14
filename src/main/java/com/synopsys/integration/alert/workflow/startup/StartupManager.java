@@ -260,7 +260,7 @@ public class StartupManager {
                 return Boolean.FALSE;
             }
         } catch (final Exception ex) {
-            logger.error("Error occurred puring data on startup", ex);
+            logger.error("Error occurred purging data on startup", ex);
             return Boolean.FALSE;
         } finally {
             logger.info("Finished startup purge of old data");
@@ -276,6 +276,7 @@ public class StartupManager {
         return loggingLevel;
     }
 
+    @Transactional
     public void registerDescriptors() {
         try {
             final Set<String> registeredDescriptors = descriptorAccessor
