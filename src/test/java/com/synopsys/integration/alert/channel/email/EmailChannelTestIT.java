@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.jupiter.api.Tag;
 import org.mockito.Mockito;
 
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.OutputLogger;
 import com.synopsys.integration.alert.TestAlertProperties;
 import com.synopsys.integration.alert.TestBlackDuckProperties;
@@ -39,7 +40,7 @@ public class EmailChannelTestIT extends ChannelTest {
         Mockito.when(globalRepository.findAll()).thenReturn(Arrays.asList(globalConfig));
 
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(globalRepository, testAlertProperties);
+        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(new Gson(), globalRepository, testAlertProperties);
         globalProperties.setBlackDuckUrl(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
 
         final String trustCert = properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TRUST_HTTPS_CERT);

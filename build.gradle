@@ -19,6 +19,7 @@ plugins {
     id 'application'
     id 'com.moowork.node' version '1.2.0'
     id 'com.jfrog.artifactory' version '4.8.1'
+
 }
 
 project.ext.javaSourceCompatibility = JavaVersion.VERSION_11
@@ -33,6 +34,11 @@ apply plugin: 'maven-publish'
 apply plugin: 'com.blackducksoftware.integration.solution'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'com.bmuschko.docker-remote-api'
+
+// configure the version of the JaCoCo plugin to 0.8.2 which works for Java 11 until we switch to a gradle wrapper that includes 0.8.2+ by default.
+jacoco {
+    toolVersion = "0.8.2"
+}
 
 
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
@@ -57,11 +63,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-batch'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.ldap:spring-ldap-core'
 
     // Spring web security
     implementation 'org.springframework:spring-webmvc'
     implementation 'org.springframework.security:spring-security-web'
     implementation 'org.springframework.security:spring-security-config'
+    implementation 'org.springframework.security:spring-security-ldap'
 
     // Database
     runtimeOnly 'com.h2database:h2'
