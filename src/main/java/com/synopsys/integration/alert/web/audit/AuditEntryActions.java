@@ -112,14 +112,14 @@ public class AuditEntryActions {
 
     public AlertPagedModel<AuditEntryModel> resendNotification(final Long notificationdId, final Long commonConfigId) throws IntegrationException {
         final Optional<NotificationContent> notificationContentOptional = notificationManager.findById(notificationdId);
-        if (!notificationContentOptional.isPresent()) {
+        if (notificationContentOptional.isEmpty()) {
             throw new AlertNotificationPurgedException("No notification with this id exists.");
         }
         final NotificationContent notificationContent = notificationContentOptional.get();
-        List<DistributionEvent> distributionEvents = null;
+        final List<DistributionEvent> distributionEvents;
         if (null != commonConfigId) {
             final Optional<? extends CommonDistributionConfig> commonDistributionConfig = jobConfigReader.getPopulatedConfig(commonConfigId);
-            if (!commonDistributionConfig.isPresent()) {
+            if (commonDistributionConfig.isEmpty()) {
                 logger.warn("The Distribution Job with Id {} could not be found. This notification could not be sent", commonConfigId);
                 throw new AlertJobMissingException("The Distribution Job with this id could not be found.");
             } else {
