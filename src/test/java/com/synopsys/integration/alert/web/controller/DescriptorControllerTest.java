@@ -27,6 +27,7 @@ import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIComponent;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 
 public class DescriptorControllerTest extends AlertIntegrationTest {
 
@@ -136,7 +137,7 @@ public class DescriptorControllerTest extends AlertIntegrationTest {
 
         final List<UIComponent> componentList = gson.fromJson(body, componentListType.getType());
         assertNotNull(componentList);
-        final List<UIComponent> expected = descriptorMap.getUIComponents(ActionApiType.CHANNEL_GLOBAL_CONFIG);
+        final List<UIComponent> expected = descriptorMap.getUIComponents(ConfigContextEnum.GLOBAL);
         assertEquals(expected.size(), componentList.size());
     }
 

@@ -53,7 +53,7 @@ public class DefinedFieldRepositoryTestIT extends AlertIntegrationTest {
     @Test
     public void onDeleteCascadeTest() {
         final String descriptorName = "test descriptor";
-        final RegisteredDescriptorEntity registeredDescriptorEntity = new RegisteredDescriptorEntity(descriptorName);
+        final RegisteredDescriptorEntity registeredDescriptorEntity = new RegisteredDescriptorEntity(descriptorName, 1L);
         final RegisteredDescriptorEntity savedRegisteredDescriptorEntity = registeredDescriptorRepository.save(registeredDescriptorEntity);
         assertEquals(1, registeredDescriptorRepository.findAll().size());
 
