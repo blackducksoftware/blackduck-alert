@@ -115,6 +115,17 @@ public class MockConfigurationModelFactory {
         return configurationFieldMap;
     }
 
+    public static Map<String, ConfigurationFieldModel> mapStringsToSensitiveFields(final Map<String, String> fields) {
+        final Map<String, ConfigurationFieldModel> configurationFieldMap = new HashMap<>(fields.size());
+        for (final Map.Entry<String, String> entry : fields.entrySet()) {
+            final ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.createSensitive(entry.getKey());
+            configurationFieldModel.setFieldValue(entry.getValue());
+            configurationFieldMap.put(entry.getKey(), configurationFieldModel);
+        }
+
+        return configurationFieldMap;
+    }
+
     public static ConfigurationFieldModel createFieldModel(final String fieldKey, final Collection<String> fieldValues) {
         final ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(fieldKey);
         configurationFieldModel.setFieldValues(fieldValues);
