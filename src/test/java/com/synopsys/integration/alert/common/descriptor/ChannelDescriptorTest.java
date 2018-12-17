@@ -9,7 +9,7 @@ public class ChannelDescriptorTest {
     public void getterTest() {
         final String name = "channel";
         final String destinationName = "hipchat";
-        final ChannelDescriptor channelDescriptor = new ChannelDescriptor(name, destinationName, null, null, null, null) {};
+        final ChannelDescriptor channelDescriptor = new ChannelDescriptor(name, destinationName, null, null) {};
 
         Assert.assertEquals(name, channelDescriptor.getName());
         Assert.assertEquals(destinationName, channelDescriptor.getDestinationName());
