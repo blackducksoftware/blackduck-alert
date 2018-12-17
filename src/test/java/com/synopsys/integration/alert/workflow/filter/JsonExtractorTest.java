@@ -76,8 +76,7 @@ public class JsonExtractorTest {
     //        final List<String> configuredProjects = Arrays.asList("project1", "project2", "project3");
     //        final List<String> notificationTypes = Arrays.asList("type1", "type2");
     //        final CommonDistributionConfiguration commonDistributionConfig = new CommonDistributionConfiguration(id, distributionConfigId, distributionType, name, providerName, frequency, filterByProject, projectNamePattern, configuredProjects,
-    //            notificationTypes,
-    //            FormatType.DEFAULT.name());
+    //            notificationTypes, FormatType.DEFAULT.name());
     //
     //        final JsonField<String> nameField = JsonField.createStringField(null, null, null, null, Arrays.asList(JsonPath.compile("$.name")));
     //        final List<String> nameValues = jsonExtractor.getValuesFromConfig(nameField, commonDistributionConfig);
