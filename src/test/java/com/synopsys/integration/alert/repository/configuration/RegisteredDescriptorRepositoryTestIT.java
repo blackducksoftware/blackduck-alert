@@ -27,8 +27,8 @@ public class RegisteredDescriptorRepositoryTestIT extends AlertIntegrationTest {
 
     @Test
     public void findFirstByNameTest() {
-        final RegisteredDescriptorEntity entity1 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME_1);
-        final RegisteredDescriptorEntity entity2 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME_2);
+        final RegisteredDescriptorEntity entity1 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME_1, 1L);
+        final RegisteredDescriptorEntity entity2 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME_2, 1L);
         registeredDescriptorRepository.save(entity1);
         registeredDescriptorRepository.save(entity2);
         assertEquals(2, registeredDescriptorRepository.findAll().size());
