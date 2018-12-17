@@ -120,7 +120,7 @@ public class AuditEntryActions {
         if (null != commonConfigId) {
             final Optional<? extends CommonDistributionConfig> commonDistributionConfig = jobConfigReader.getPopulatedConfig(commonConfigId);
             if (!commonDistributionConfig.isPresent()) {
-                logger.warn("The Distribution Job with Id {} could not be found. This notification could not be sent", commonDistributionConfig.get().getId());
+                logger.warn("The Distribution Job with Id {} could not be found. This notification could not be sent", commonConfigId);
                 throw new AlertJobMissingException("The Distribution Job with this id could not be found.");
             } else {
                 distributionEvents = notificationProcessor.processNotifications(commonDistributionConfig.get(), Arrays.asList(notificationContent));
