@@ -30,8 +30,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -70,12 +70,12 @@ public class AuditEntryEntity extends DatabaseEntity {
     private String errorStackTrace;
 
     @OneToMany
-    @JoinColumn(name = "audit_entry_id")
+    @JoinColumn(name = "audit_entry_id", insertable = false, updatable = false)
     private List<AuditNotificationRelation> auditNotificationRelations;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "common_config_id", insertable = false, updatable = false)
-    private DescriptorConfigEntity commonDistributionConfigEntity;
+    private DescriptorConfigEntity descriptorConfigEntity;
 
     public AuditEntryEntity() {
         // JPA requires default constructor definitions
@@ -134,7 +134,7 @@ public class AuditEntryEntity extends DatabaseEntity {
         return auditNotificationRelations;
     }
 
-    public DescriptorConfigEntity getCommonDistributionConfigEntity() {
-        return commonDistributionConfigEntity;
+    public DescriptorConfigEntity getDescriptorConfigEntity() {
+        return descriptorConfigEntity;
     }
 }

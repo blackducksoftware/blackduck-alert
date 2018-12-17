@@ -45,7 +45,7 @@ public class BlackDuckDistributionUIConfig extends UIConfig {
 
     @Override
     public UIComponent generateUIComponent() {
-        return new UIComponent("Black Duck", "blackduck", BlackDuckProvider.COMPONENT_NAME, "laptop", Collections.emptyList());
+        return new UIComponent("Black Duck", "blackduck", BlackDuckProvider.COMPONENT_NAME, "laptop", createFields());
     }
 
     public List<ConfigField> createFields() {
@@ -53,6 +53,7 @@ public class BlackDuckDistributionUIConfig extends UIConfig {
         final ConfigField projectNamePattern = new TextInputConfigField(KEY_PROJECT_NAME_PATTERN, "Project name pattern", false, false);
 
         // TODO figure out how to create a project listing (Perhaps a new field type called table)
+        // TODO create a linkedField that is an endpoint the UI hits to generate a field
         final ConfigField configuredProject = new SelectConfigField(KEY_CONFIGURED_PROJECT, "Projects", true, false, Collections.emptyList());
         return Arrays.asList(filterByProject, projectNamePattern, configuredProject);
     }

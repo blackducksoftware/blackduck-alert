@@ -23,8 +23,12 @@
  */
 package com.synopsys.integration.alert.database.entity.configuration;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
@@ -36,6 +40,10 @@ public class DescriptorConfigEntity extends DatabaseEntity {
     private Long descriptorId;
     @Column(name = "CONTEXT_ID")
     private Long contextId;
+
+    @OneToMany
+    @JoinColumn(name = "CONFIG_ID", insertable = false, updatable = false)
+    private List<FieldValueEntity> fieldValueEntities;
 
     public DescriptorConfigEntity() {
         // JPA requires default constructor definitions
@@ -52,5 +60,9 @@ public class DescriptorConfigEntity extends DatabaseEntity {
 
     public Long getContextId() {
         return contextId;
+    }
+
+    public List<FieldValueEntity> getFieldValueEntities() {
+        return fieldValueEntities;
     }
 }
