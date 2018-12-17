@@ -24,7 +24,7 @@ import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDis
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 public class MockConfigurationModelFactory {
-    public static Collection<ConfigurationFieldModel> createHipChatConfigurationFields() {
+    public static List<ConfigurationFieldModel> createHipChatConfigurationFields() {
         final List<ConfigurationFieldModel> fields = new ArrayList<>();
 
         final ConfigurationFieldModel color = createFieldModel(HipChatDistributionUIConfig.KEY_COLOR, "RED");
@@ -40,7 +40,7 @@ public class MockConfigurationModelFactory {
         return fields;
     }
 
-    public static Collection<ConfigurationFieldModel> createSlackConfigurationFields() {
+    public static List<ConfigurationFieldModel> createSlackConfigurationFields() {
         final List<ConfigurationFieldModel> fields = new ArrayList<>();
 
         final ConfigurationFieldModel channel = createFieldModel(SlackUIConfig.KEY_CHANNEL_NAME, "Alert channel");
@@ -56,7 +56,7 @@ public class MockConfigurationModelFactory {
         return fields;
     }
 
-    public static Collection<ConfigurationFieldModel> createEmailConfigurationFields() {
+    public static List<ConfigurationFieldModel> createEmailConfigurationFields() {
         final List<ConfigurationFieldModel> fields = new ArrayList<>();
 
         final ConfigurationFieldModel emailAddresses = createFieldModel(EmailDistributionUIConfig.KEY_EMAIL_ADDRESSES, List.of("noreply@blackducksoftware.com"));
@@ -72,7 +72,7 @@ public class MockConfigurationModelFactory {
         return fields;
     }
 
-    public static Collection<ConfigurationFieldModel> createCommonBlackDuckConfigurationFields(final String jobName, final String channelDescriptorName) {
+    public static List<ConfigurationFieldModel> createCommonBlackDuckConfigurationFields(final String jobName, final String channelDescriptorName) {
         final List<ConfigurationFieldModel> fields = new ArrayList<>();
 
         final ConfigurationFieldModel name = createFieldModel(CommonDistributionUIConfig.KEY_NAME, jobName);
@@ -100,8 +100,8 @@ public class MockConfigurationModelFactory {
 
     public static Map<String, ConfigurationFieldModel> mapFieldKeyToFields(final Collection<ConfigurationFieldModel> fields) {
         return fields
-                   .stream()
-                   .collect(Collectors.toMap(ConfigurationFieldModel::getFieldKey, Function.identity()));
+                       .stream()
+                       .collect(Collectors.toMap(ConfigurationFieldModel::getFieldKey, Function.identity()));
     }
 
     public static Map<String, ConfigurationFieldModel> mapStringsToFields(final Map<String, String> fields) {

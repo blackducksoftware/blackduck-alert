@@ -26,7 +26,6 @@ package com.synopsys.integration.alert.channel.event;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,23 +38,20 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 
 @Component
-public class NotificationToChannelEventConverter {
-    private final Logger logger = LoggerFactory.getLogger(NotificationToChannelEventConverter.class);
+public class NotificationToDistributionEventConverter {
+    private final Logger logger = LoggerFactory.getLogger(NotificationToDistributionEventConverter.class);
     private final DescriptorMap descriptorMap;
 
     @Autowired
-    public NotificationToChannelEventConverter(final DescriptorMap descriptorMap) {
+    public NotificationToDistributionEventConverter(final DescriptorMap descriptorMap) {
         this.descriptorMap = descriptorMap;
     }
 
     public List<DistributionEvent> convertToEvents(final Map<CommonDistributionConfiguration, List<AggregateMessageContent>> messageContentMap) {
         final List<DistributionEvent> distributionEvents = new ArrayList<>();
-        final Set<? extends Map.Entry<CommonDistributionConfiguration, List<AggregateMessageContent>>> jobMessageContentEntries = messageContentMap.entrySet();
-        for (final Map.Entry<CommonDistributionConfiguration, List<AggregateMessageContent>> entry : jobMessageContentEntries) {
-            final CommonDistributionConfiguration jobConfig = entry.getKey();
-            final List<AggregateMessageContent> contentList = entry.getValue();
-            for (final AggregateMessageContent content : contentList) {
-                distributionEvents.add(createChannelEvent(jobConfig, content));
+        for (final Map.Entry<CommonDistributionConfiguration, List<AggregateMessageContent>> entry : messageContentMap.entrySet()) {
+            for (final AggregateMessageContent content : entry.getValue()) {
+                distributionEvents.add(createChannelEvent(entry.getKey(), content));
             }
         }
         logger.debug("Created {} events.", distributionEvents.size());
