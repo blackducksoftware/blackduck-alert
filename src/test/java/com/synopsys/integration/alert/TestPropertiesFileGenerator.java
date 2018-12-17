@@ -6,7 +6,7 @@ import java.nio.charset.Charset;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class TestPropertiesFileGenerator {
     @Test
@@ -24,7 +24,7 @@ public class TestPropertiesFileGenerator {
             }
 
             final StringBuilder dataBuilder = new StringBuilder();
-            for (TestPropertyKey propertyKey : TestPropertyKey.values()) {
+            for (final TestPropertyKey propertyKey : TestPropertyKey.values()) {
                 dataBuilder.append(propertyKey.getPropertyKey());
                 dataBuilder.append('=');
                 dataBuilder.append(System.lineSeparator());

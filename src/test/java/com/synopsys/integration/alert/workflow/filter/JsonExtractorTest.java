@@ -1,13 +1,14 @@
 package com.synopsys.integration.alert.workflow.filter;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
@@ -47,8 +48,8 @@ public class JsonExtractorTest {
         final List<JsonField<?>> fields = Arrays.asList(stringField, objectField);
 
         final JsonFieldAccessor accessor = jsonExtractor.createJsonFieldAccessor(fields, json);
-        Assert.assertEquals(innerString, accessor.get(stringField).get(0));
-        Assert.assertEquals(innerObject, accessor.get(objectField).get(0));
+        assertEquals(innerString, accessor.get(stringField).get(0));
+        assertEquals(innerObject, accessor.get(objectField).get(0));
     }
 
     @Test
@@ -58,7 +59,7 @@ public class JsonExtractorTest {
         final String json = "{\"content\":{\"someObject\":{\"" + key + "\":\"" + value + "\"}}}";
         final JsonField<String> field = JsonField.createStringField(JsonPath.compile("$.content.someObject.innerField"), "innerField", null, null);
         final List<String> values = jsonExtractor.getValuesFromJson(field, json);
-        Assert.assertEquals(Arrays.asList(value), values);
+        assertEquals(Arrays.asList(value), values);
     }
 
     @Test
@@ -69,7 +70,7 @@ public class JsonExtractorTest {
         final String json = "{\"content\":{\"someObject\":[{\"" + key + "\":\"" + value1 + "\"},{\"" + key + "\":\"" + value2 + "\"}]}}";
         final JsonField<String> field = JsonField.createStringField(JsonPath.compile("$.content.someObject[*].innerField"), "innerField", null, null);
         final List<String> values = jsonExtractor.getValuesFromJson(field, json);
-        Assert.assertEquals(Arrays.asList(value1, value2), values);
+        assertEquals(Arrays.asList(value1, value2), values);
     }
 
     @Test
@@ -91,15 +92,15 @@ public class JsonExtractorTest {
 
         final JsonField<String> nameField = JsonField.createStringField(null, null, null, null, Arrays.asList(JsonPath.compile("$.name")));
         final List<String> nameValues = jsonExtractor.getValuesFromConfig(nameField, commonDistributionConfig);
-        Assert.assertEquals(Arrays.asList(name), nameValues);
+        assertEquals(Arrays.asList(name), nameValues);
 
         final JsonField<String> configuredProjectsField = JsonField.createStringField(null, null, null, null, Arrays.asList(JsonPath.compile("$.configuredProjects[*]")));
         final List<String> configuredProjectValues = jsonExtractor.getValuesFromConfig(configuredProjectsField, commonDistributionConfig);
-        Assert.assertEquals(configuredProjects, configuredProjectValues);
+        assertEquals(configuredProjects, configuredProjectValues);
 
         final JsonField<String> notificationTypesField = JsonField.createStringField(null, null, null, null, Arrays.asList(JsonPath.compile("$.notificationTypes[*]")));
         final List<String> notificationTypeValues = jsonExtractor.getValuesFromConfig(notificationTypesField, commonDistributionConfig);
-        Assert.assertEquals(notificationTypes, notificationTypeValues);
+        assertEquals(notificationTypes, notificationTypeValues);
     }
 
     private ConfigurationModel createConfigModel(final Long id, final Long descriptorId, final String distributionType, final String name, final String providerName, final String frequency, final String filterByProject,

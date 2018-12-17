@@ -1,5 +1,7 @@
 package com.synopsys.integration.alert.workflow.filter;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -7,8 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.TypeRef;
@@ -25,7 +26,7 @@ public class JsonFieldAccessorTest {
         map.put(expectedField, expectedValues);
 
         final JsonFieldAccessor accessor = new JsonFieldAccessor(map);
-        Assert.assertEquals(expectedValues, accessor.get(expectedField));
+        assertEquals(expectedValues, accessor.get(expectedField));
     }
 
     @Test
@@ -36,7 +37,7 @@ public class JsonFieldAccessorTest {
         map.put(expectedField, expectedValues);
 
         final JsonFieldAccessor accessor = new JsonFieldAccessor(map);
-        Assert.assertEquals(Optional.of(expectedValues.get(0)), accessor.getFirst(expectedField));
+        assertEquals(Optional.of(expectedValues.get(0)), accessor.getFirst(expectedField));
     }
 
     @Test
@@ -47,7 +48,7 @@ public class JsonFieldAccessorTest {
         map.put(expectedField, expectedValues);
 
         final JsonFieldAccessor accessor = new JsonFieldAccessor(map);
-        Assert.assertEquals(expectedValues, accessor.get(expectedField));
+        assertEquals(expectedValues, accessor.get(expectedField));
     }
 
     @Test
@@ -58,7 +59,7 @@ public class JsonFieldAccessorTest {
         map.put(expectedField, expectedValues);
 
         final JsonFieldAccessor accessor = new JsonFieldAccessor(map);
-        Assert.assertEquals(Optional.of(expectedValues.get(0)), accessor.getFirst(expectedField));
+        assertEquals(Optional.of(expectedValues.get(0)), accessor.getFirst(expectedField));
     }
 
     @Test
@@ -69,7 +70,7 @@ public class JsonFieldAccessorTest {
         map.put(expectedField, expectedValues);
 
         final JsonFieldAccessor accessor = new JsonFieldAccessor(map);
-        Assert.assertEquals(expectedValues, accessor.get(expectedField));
+        assertEquals(expectedValues, accessor.get(expectedField));
     }
 
     @Test
@@ -80,7 +81,7 @@ public class JsonFieldAccessorTest {
         map.put(expectedField, expectedValues);
 
         final JsonFieldAccessor accessor = new JsonFieldAccessor(map);
-        Assert.assertEquals(expectedValues, accessor.get(expectedField));
+        assertEquals(expectedValues, accessor.get(expectedField));
     }
 
     @Test
@@ -91,7 +92,7 @@ public class JsonFieldAccessorTest {
         map.put(expectedField, expectedValues);
 
         final JsonFieldAccessor accessor = new JsonFieldAccessor(map);
-        Assert.assertEquals(Optional.empty(), accessor.getFirst(expectedField));
+        assertEquals(Optional.empty(), accessor.getFirst(expectedField));
     }
 
     @Test
@@ -100,7 +101,7 @@ public class JsonFieldAccessorTest {
         final Map<JsonField, List<Object>> map = new HashMap<>();
 
         final JsonFieldAccessor accessor = new JsonFieldAccessor(map);
-        Assert.assertEquals(Collections.emptyList(), accessor.get(expectedField));
+        assertEquals(Collections.emptyList(), accessor.get(expectedField));
     }
 
     private class MyObject {
