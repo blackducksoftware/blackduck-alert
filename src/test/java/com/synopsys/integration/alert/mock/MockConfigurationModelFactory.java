@@ -3,6 +3,9 @@ package com.synopsys.integration.alert.mock;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDistributionUIConfig;
@@ -20,7 +23,6 @@ import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDis
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 public class MockConfigurationModelFactory {
-
     public static Collection<ConfigurationFieldModel> createHipChatConfigurationFields() {
         final List<ConfigurationFieldModel> fields = new ArrayList<>();
 
@@ -93,6 +95,12 @@ public class MockConfigurationModelFactory {
         fields.add(configuredProject);
 
         return fields;
+    }
+
+    public static Map<String, ConfigurationFieldModel> mapFieldKeyToFields(final Collection<ConfigurationFieldModel> fields) {
+        return fields
+                       .stream()
+                       .collect(Collectors.toMap(ConfigurationFieldModel::getFieldKey, Function.identity()));
     }
 
     public static ConfigurationFieldModel createFieldModel(final String fieldKey, final Collection<String> fieldValues) {
