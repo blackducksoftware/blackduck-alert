@@ -93,7 +93,7 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
 
         final BlackDuckRestConnection restConnection = createRestConnection(blackDuckServerConfigBuilder);
         final BlackDuckServerVerifier blackDuckServerVerifier = new BlackDuckServerVerifier();
-        blackDuckServerVerifier.verifyIsBlackDuckServer(restConnection.getBaseUrl(), restConnection.getProxyInfo(), restConnection.isAlwaysTrustServerCertificate(), restConnection.getTimeout());
+        blackDuckServerVerifier.verifyIsBlackDuckServer(restConnection.getBaseUrl(), restConnection.getProxyInfo(), restConnection.isAlwaysTrustServerCertificate(), restConnection.getTimeoutInSeconds());
 
         final Request authRequest = RequestFactory.createCommonGetRequest(url);
         try (final Response response = restConnection.execute(authRequest)) {
