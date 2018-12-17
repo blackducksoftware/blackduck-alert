@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.mock;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -99,8 +100,19 @@ public class MockConfigurationModelFactory {
 
     public static Map<String, ConfigurationFieldModel> mapFieldKeyToFields(final Collection<ConfigurationFieldModel> fields) {
         return fields
-                       .stream()
-                       .collect(Collectors.toMap(ConfigurationFieldModel::getFieldKey, Function.identity()));
+                   .stream()
+                   .collect(Collectors.toMap(ConfigurationFieldModel::getFieldKey, Function.identity()));
+    }
+
+    public static Map<String, ConfigurationFieldModel> mapStringsToFields(final Map<String, String> fields) {
+        final Map<String, ConfigurationFieldModel> configurationFieldMap = new HashMap<>(fields.size());
+        for (final Map.Entry<String, String> entry : fields.entrySet()) {
+            final ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(entry.getKey());
+            configurationFieldModel.setFieldValue(entry.getValue());
+            configurationFieldMap.put(entry.getKey(), configurationFieldModel);
+        }
+
+        return configurationFieldMap;
     }
 
     public static ConfigurationFieldModel createFieldModel(final String fieldKey, final Collection<String> fieldValues) {
