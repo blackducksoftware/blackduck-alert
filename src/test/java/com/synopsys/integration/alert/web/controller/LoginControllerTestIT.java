@@ -20,8 +20,6 @@ import com.synopsys.integration.alert.TestProperties;
 import com.synopsys.integration.alert.TestPropertyKey;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.LdapProperties;
-import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
@@ -34,8 +32,6 @@ public class LoginControllerTestIT extends AlertIntegrationTest {
     @Autowired
     protected WebApplicationContext webApplicationContext;
     @Autowired
-    protected GlobalBlackDuckRepository blackDuckRepository;
-    @Autowired
     protected BlackDuckProperties blackDuckProperties;
     @Autowired
     protected AlertProperties alertProperties;
@@ -45,7 +41,6 @@ public class LoginControllerTestIT extends AlertIntegrationTest {
 
     @Before
     public void setup() throws Exception {
-        blackDuckRepository.deleteAll();
         final LdapProperties ldapProperties = new LdapProperties();
         ldapProperties.setEnabled("false");
         ldapManager.updateConfiguration(ldapProperties);
@@ -58,6 +53,7 @@ public class LoginControllerTestIT extends AlertIntegrationTest {
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
     }
 
+    //FIXME fix test
     @Test
     public void testLogin() throws Exception {
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(loginUrl);
@@ -65,12 +61,6 @@ public class LoginControllerTestIT extends AlertIntegrationTest {
         final MockLoginRestModel mockLoginRestModel = new MockLoginRestModel();
         mockLoginRestModel.setBlackDuckUsername(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_USERNAME));
         mockLoginRestModel.setBlackDuckPassword(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PASSWORD));
-
-        final String blackDuckUrl = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL);
-        final String blackDuckApiToken = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY);
-        final String blackDuckTimeout = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT);
-        final GlobalBlackDuckConfigEntity blackDuckConfigEntity = new GlobalBlackDuckConfigEntity(Integer.valueOf(blackDuckTimeout), blackDuckApiToken, blackDuckUrl);
-        blackDuckRepository.save(blackDuckConfigEntity);
 
         ReflectionTestUtils.setField(alertProperties, "alertTrustCertificate", Boolean.valueOf(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TRUST_HTTPS_CERT)));
         final String restModel = mockLoginRestModel.getRestModelJson();
