@@ -1,8 +1,9 @@
 package com.synopsys.integration.alert.mock;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
-import com.sun.tools.javac.util.List;
 import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDistributionUIConfig;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
@@ -21,39 +22,56 @@ import com.synopsys.integration.blackduck.api.generated.enumeration.Notification
 public class MockConfigurationModelFactory {
 
     public static Collection<ConfigurationFieldModel> createHipChatConfigurationFields() {
+        final List<ConfigurationFieldModel> fields = new ArrayList<>();
+
         final ConfigurationFieldModel color = createFieldModel(HipChatDistributionUIConfig.KEY_COLOR, "RED");
         final ConfigurationFieldModel notify = createFieldModel(HipChatDistributionUIConfig.KEY_NOTIFY, "false");
         final ConfigurationFieldModel room = createFieldModel(HipChatDistributionUIConfig.KEY_ROOM_ID, "4056783");
 
-        final List<ConfigurationFieldModel> fields = List.of(color, notify, room);
+        fields.add(color);
+        fields.add(notify);
+        fields.add(room);
+
         final Collection<ConfigurationFieldModel> commonFields = createCommonBlackDuckConfigurationFields("HipChat Test Job", HipChatChannel.COMPONENT_NAME);
         fields.addAll(commonFields);
         return fields;
     }
 
     public static Collection<ConfigurationFieldModel> createSlackConfigurationFields() {
+        final List<ConfigurationFieldModel> fields = new ArrayList<>();
+
         final ConfigurationFieldModel channel = createFieldModel(SlackUIConfig.KEY_CHANNEL_NAME, "Alert channel");
         final ConfigurationFieldModel username = createFieldModel(SlackUIConfig.KEY_CHANNEL_USERNAME, "Alert unit test");
         final ConfigurationFieldModel webhook = createFieldModel(SlackUIConfig.KEY_WEBHOOK, "Webhook");
 
-        final List<ConfigurationFieldModel> fields = List.of(channel, username, webhook);
+        fields.add(channel);
+        fields.add(username);
+        fields.add(webhook);
+
         final Collection<ConfigurationFieldModel> commonFields = createCommonBlackDuckConfigurationFields("Slack Test Job", SlackChannel.COMPONENT_NAME);
         fields.addAll(commonFields);
         return fields;
     }
 
     public static Collection<ConfigurationFieldModel> createEmailConfigurationFields() {
+        final List<ConfigurationFieldModel> fields = new ArrayList<>();
+
         final ConfigurationFieldModel emailAddresses = createFieldModel(EmailDistributionUIConfig.KEY_EMAIL_ADDRESSES, List.of("noreply@blackducksoftware.com"));
         final ConfigurationFieldModel projectOwnerOnly = createFieldModel(EmailDistributionUIConfig.KEY_PROJECT_OWNER_ONLY, "true");
         final ConfigurationFieldModel subjectLine = createFieldModel(EmailDistributionUIConfig.KEY_SUBJECT_LINE, "Alert unit test subject line");
 
-        final List<ConfigurationFieldModel> fields = List.of(emailAddresses, projectOwnerOnly, subjectLine);
+        fields.add(emailAddresses);
+        fields.add(projectOwnerOnly);
+        fields.add(subjectLine);
+
         final Collection<ConfigurationFieldModel> commonFields = createCommonBlackDuckConfigurationFields("Email Test Job", EmailGroupChannel.COMPONENT_NAME);
         fields.addAll(commonFields);
         return fields;
     }
 
     public static Collection<ConfigurationFieldModel> createCommonBlackDuckConfigurationFields(final String jobName, final String channelDescriptorName) {
+        final List<ConfigurationFieldModel> fields = new ArrayList<>();
+
         final ConfigurationFieldModel name = createFieldModel(CommonDistributionUIConfig.KEY_NAME, jobName);
         final ConfigurationFieldModel channelName = createFieldModel(CommonDistributionUIConfig.KEY_CHANNEL_NAME, channelDescriptorName);
         final ConfigurationFieldModel providerName = createFieldModel(CommonDistributionUIConfig.KEY_PROVIDER_NAME, BlackDuckProvider.COMPONENT_NAME);
@@ -64,7 +82,17 @@ public class MockConfigurationModelFactory {
         final ConfigurationFieldModel projectNamePattern = createFieldModel(BlackDuckDistributionUIConfig.KEY_PROJECT_NAME_PATTERN, ".*UnitTest.*");
         final ConfigurationFieldModel configuredProject = createFieldModel(BlackDuckDistributionUIConfig.KEY_CONFIGURED_PROJECT, List.of("TestProject1", "TestProject2"));
 
-        return List.of(name, channelName, providerName, notificationTypes, frequencyType, formatType, filterByProject, projectNamePattern, configuredProject);
+        fields.add(name);
+        fields.add(channelName);
+        fields.add(providerName);
+        fields.add(notificationTypes);
+        fields.add(frequencyType);
+        fields.add(formatType);
+        fields.add(filterByProject);
+        fields.add(projectNamePattern);
+        fields.add(configuredProject);
+
+        return fields;
     }
 
     public static ConfigurationFieldModel createFieldModel(final String fieldKey, final Collection<String> fieldValues) {
