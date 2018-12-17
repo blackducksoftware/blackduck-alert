@@ -15,13 +15,13 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.mock.MockBlackDuckProjectRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.mock.MockBlackDuckUserRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.mock.MockUserProjectRelationRepositoryAccessor;
-import com.synopsys.integration.blackduck.api.core.HubPathMultipleResponses;
-import com.synopsys.integration.blackduck.api.core.ResourceMetadata;
+import com.synopsys.integration.blackduck.api.core.BlackDuckPathMultipleResponses;
+import com.synopsys.integration.blackduck.api.generated.component.ResourceMetadata;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;
-import com.synopsys.integration.blackduck.rest.BlackduckRestConnection;
-import com.synopsys.integration.blackduck.service.HubService;
-import com.synopsys.integration.blackduck.service.HubServicesFactory;
+import com.synopsys.integration.blackduck.rest.BlackDuckRestConnection;
+import com.synopsys.integration.blackduck.service.BlackDuckService;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.ProjectService;
 
 public class ProjectSyncTaskTest {
@@ -45,21 +45,21 @@ public class ProjectSyncTaskTest {
         final String groupURL1 = "groupURL1";
         final String groupURL2 = "groupURL2";
 
-        Mockito.when(blackDuckProperties.createRestConnectionAndLogErrors(Mockito.any())).thenReturn(Optional.of(Mockito.mock(BlackduckRestConnection.class)));
-        final HubServicesFactory hubServicesFactory = Mockito.mock(HubServicesFactory.class);
-        Mockito.when(blackDuckProperties.createBlackDuckServicesFactory(Mockito.any(), Mockito.any())).thenReturn(hubServicesFactory);
+        Mockito.when(blackDuckProperties.createRestConnectionAndLogErrors(Mockito.any())).thenReturn(Optional.of(Mockito.mock(BlackDuckRestConnection.class)));
+        final BlackDuckServicesFactory BlackDuckServicesFactory = Mockito.mock(BlackDuckServicesFactory.class);
+        Mockito.when(blackDuckProperties.createBlackDuckServicesFactory(Mockito.any(), Mockito.any())).thenReturn(BlackDuckServicesFactory);
 
-        final HubService hubService = Mockito.mock(HubService.class);
-        Mockito.when(hubServicesFactory.createHubService()).thenReturn(hubService);
+        final BlackDuckService hubService = Mockito.mock(BlackDuckService.class);
+        Mockito.when(BlackDuckServicesFactory.createBlackDuckService()).thenReturn(hubService);
 
         final ProjectService projectService = Mockito.mock(ProjectService.class);
-        Mockito.when(hubServicesFactory.createProjectService()).thenReturn(projectService);
+        Mockito.when(BlackDuckServicesFactory.createProjectService()).thenReturn(projectService);
 
         final ProjectView projectView = createProjectView("project", "description1", "projectUrl1");
         final ProjectView projectView2 = createProjectView("project2", "description2", "projectUrl2");
         final ProjectView projectView3 = createProjectView("project3", "description3", "projectUrl3");
 
-        Mockito.when(hubService.getAllResponses(Mockito.any(HubPathMultipleResponses.class))).thenReturn(Arrays.asList(projectView, projectView2, projectView3));
+        Mockito.when(hubService.getAllResponses(Mockito.any(BlackDuckPathMultipleResponses.class))).thenReturn(Arrays.asList(projectView, projectView2, projectView3));
 
         final UserView user1 = createUserView(email1, true);
         final UserView user2 = createUserView(email2, true);
@@ -71,14 +71,14 @@ public class ProjectSyncTaskTest {
         Mockito.when(projectService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView3))).thenReturn(new HashSet<>(Arrays.asList(user1, user2, user3)));
 
         final ProjectSyncTask projectSyncTask = new ProjectSyncTask(null, blackDuckProperties, blackDuckUserRepositoryAccessor, blackDuckProjectRepositoryAccessor,
-            userProjectRelationRepositoryAccessor);
+                userProjectRelationRepositoryAccessor);
         projectSyncTask.run();
 
         assertEquals(4, blackDuckUserRepositoryAccessor.readEntities().size());
         assertEquals(3, blackDuckProjectRepositoryAccessor.readEntities().size());
         assertEquals(6, userProjectRelationRepositoryAccessor.readEntities().size());
 
-        Mockito.when(hubService.getAllResponses(Mockito.any(HubPathMultipleResponses.class))).thenReturn(Arrays.asList(projectView, projectView2));
+        Mockito.when(hubService.getAllResponses(Mockito.any(BlackDuckPathMultipleResponses.class))).thenReturn(Arrays.asList(projectView, projectView2));
 
         Mockito.when(projectService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView))).thenReturn(new HashSet<>(Arrays.asList(user2, user4)));
         Mockito.when(projectService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView2))).thenReturn(new HashSet<>(Arrays.asList(user3)));
@@ -93,18 +93,18 @@ public class ProjectSyncTaskTest {
 
     public UserView createUserView(final String email, final Boolean active) {
         final UserView userView = new UserView();
-        userView.email = email;
-        userView.active = active;
+        userView.setEmail(email);
+        userView.setActive(active);
         return userView;
     }
 
     public ProjectView createProjectView(final String name, final String description, final String href) {
         final ProjectView projectView = new ProjectView();
-        projectView.name = name;
-        projectView.description = description;
+        projectView.setName(name);
+        projectView.setDescription(description);
         final ResourceMetadata resourceMetadata = new ResourceMetadata();
-        resourceMetadata.href = href;
-        projectView._meta = resourceMetadata;
+        resourceMetadata.setHref(href);
+        projectView.setMeta(resourceMetadata);
         return projectView;
     }
 

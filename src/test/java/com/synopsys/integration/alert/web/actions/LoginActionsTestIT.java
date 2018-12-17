@@ -19,7 +19,7 @@ import java.util.Optional;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +32,7 @@ import org.springframework.security.ldap.authentication.LdapAuthenticationProvid
 import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.TestProperties;
 import com.synopsys.integration.alert.TestPropertyKey;
+import com.synopsys.integration.alert.TestTags;
 import com.synopsys.integration.alert.common.LdapProperties;
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
 import com.synopsys.integration.alert.database.api.user.UserAccessor;
@@ -39,9 +40,8 @@ import com.synopsys.integration.alert.database.api.user.UserModel;
 import com.synopsys.integration.alert.database.user.UserRepository;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
 import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
-import com.synopsys.integration.test.annotation.HubConnectionTest;
 
-@Category(HubConnectionTest.class)
+@Tag(TestTags.CUSTOM_BLACKDUCK_CONNECTION)
 public class LoginActionsTestIT extends AlertIntegrationTest {
     private final Logger logger = LoggerFactory.getLogger(LoginActionsTestIT.class);
     private final MockLoginRestModel mockLoginRestModel = new MockLoginRestModel();
