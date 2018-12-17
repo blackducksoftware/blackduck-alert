@@ -12,7 +12,7 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.blackduck.api.UriSingleResponse;
 import com.synopsys.integration.blackduck.api.component.AffectedProjectVersion;
-import com.synopsys.integration.blackduck.api.core.ResourceMetadata;
+import com.synopsys.integration.blackduck.api.generated.component.ResourceMetadata;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.NotificationView;
@@ -27,11 +27,11 @@ import com.synopsys.integration.blackduck.notification.content.VulnerabilityNoti
 import com.synopsys.integration.blackduck.notification.content.VulnerabilitySourceQualifiedId;
 import com.synopsys.integration.blackduck.notification.content.detail.NotificationContentDetail;
 import com.synopsys.integration.blackduck.notification.content.detail.NotificationContentDetailFactory;
-import com.synopsys.integration.blackduck.rest.BlackduckRestConnection;
-import com.synopsys.integration.blackduck.service.HubService;
-import com.synopsys.integration.blackduck.service.HubServicesFactory;
-import com.synopsys.integration.blackduck.service.bucket.HubBucket;
-import com.synopsys.integration.blackduck.service.bucket.HubBucketService;
+import com.synopsys.integration.blackduck.rest.BlackDuckRestConnection;
+import com.synopsys.integration.blackduck.service.BlackDuckService;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
+import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
+import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucketService;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
 
@@ -47,9 +47,9 @@ public class NotificationGeneratorUtils {
 
     public static NotificationView createNotificationView(final Date createdAt, final NotificationType type) {
         final NotificationView view = new NotificationView();
-        view.contentType = "application/json";
-        view.createdAt = createdAt;
-        view.type = type;
+        view.setContentType("application/json");
+        view.setCreatedAt(createdAt);
+        view.setType(type);
         return view;
     }
 
@@ -58,47 +58,47 @@ public class NotificationGeneratorUtils {
     }
 
     public static List<NotificationDetailResult> createNotificationDetailList(final NotificationView view, final RuleViolationNotificationContent content) {
-        final NotificationContentDetailFactory factory = new NotificationContentDetailFactory(null, null);
+        final NotificationContentDetailFactory factory = new NotificationContentDetailFactory(null);
         final CommonNotificationView commonNotificationView = createCommonNotificationView(view);
         final String notificationGroup = NotificationContentDetail.CONTENT_KEY_GROUP_POLICY;
         final List<NotificationContentDetail> notificationContentDetails = new ArrayList<>();
         factory.populateContentDetails(notificationContentDetails, notificationGroup, content);
 
         return Arrays.asList(new NotificationDetailResult(content, commonNotificationView.getContentType(), commonNotificationView.getCreatedAt(), commonNotificationView.getType(), notificationGroup,
-                Optional.ofNullable(commonNotificationView.getNotificationState()), notificationContentDetails));
+                commonNotificationView.getNotificationState(), notificationContentDetails));
     }
 
     public static List<NotificationDetailResult> createNotificationDetailList(final NotificationView view, final RuleViolationClearedNotificationContent content) {
-        final NotificationContentDetailFactory factory = new NotificationContentDetailFactory(null, null);
+        final NotificationContentDetailFactory factory = new NotificationContentDetailFactory(null);
         final CommonNotificationView commonNotificationView = createCommonNotificationView(view);
         final String notificationGroup = NotificationContentDetail.CONTENT_KEY_GROUP_POLICY;
         final List<NotificationContentDetail> notificationContentDetails = new ArrayList<>();
         factory.populateContentDetails(notificationContentDetails, notificationGroup, content);
 
         return Arrays.asList(new NotificationDetailResult(content, commonNotificationView.getContentType(), commonNotificationView.getCreatedAt(), commonNotificationView.getType(), notificationGroup,
-                Optional.ofNullable(commonNotificationView.getNotificationState()), notificationContentDetails));
+                commonNotificationView.getNotificationState(), notificationContentDetails));
     }
 
     public static List<NotificationDetailResult> createNotificationDetailList(final NotificationView view, final PolicyOverrideNotificationContent content) {
-        final NotificationContentDetailFactory factory = new NotificationContentDetailFactory(null, null);
+        final NotificationContentDetailFactory factory = new NotificationContentDetailFactory(null);
         final CommonNotificationView commonNotificationView = createCommonNotificationView(view);
         final String notificationGroup = NotificationContentDetail.CONTENT_KEY_GROUP_POLICY;
         final List<NotificationContentDetail> notificationContentDetails = new ArrayList<>();
         factory.populateContentDetails(notificationContentDetails, notificationGroup, content);
 
         return Arrays.asList(new NotificationDetailResult(content, commonNotificationView.getContentType(), commonNotificationView.getCreatedAt(), commonNotificationView.getType(), notificationGroup,
-                Optional.ofNullable(commonNotificationView.getNotificationState()), notificationContentDetails));
+                commonNotificationView.getNotificationState(), notificationContentDetails));
     }
 
     public static NotificationDetailResult createNotificationDetailList(final NotificationView view, final VulnerabilityNotificationContent content) {
-        final NotificationContentDetailFactory factory = new NotificationContentDetailFactory(null, null);
+        final NotificationContentDetailFactory factory = new NotificationContentDetailFactory(null);
         final CommonNotificationView commonNotificationView = createCommonNotificationView(view);
         final String notificationGroup = NotificationContentDetail.CONTENT_KEY_GROUP_VULNERABILITY;
         final List<NotificationContentDetail> notificationContentDetails = new ArrayList<>();
         factory.populateContentDetails(notificationContentDetails, notificationGroup, content);
 
         return new NotificationDetailResult(content, commonNotificationView.getContentType(), commonNotificationView.getCreatedAt(), commonNotificationView.getType(), notificationGroup,
-                Optional.ofNullable(commonNotificationView.getNotificationState()), notificationContentDetails);
+                commonNotificationView.getNotificationState(), notificationContentDetails);
     }
 
     public static NotificationDetailResults createNotificationResults(final List<NotificationDetailResult> detailList) {
@@ -112,18 +112,18 @@ public class NotificationGeneratorUtils {
     }
 
     @SuppressWarnings("unchecked")
-    public static NotificationDetailResults initializeTestData(final BlackDuckProperties blackDuckProperties, final ComponentVersionView versionView, final VulnerabilityNotificationContent content, final HubBucket bucket)
+    public static NotificationDetailResults initializeTestData(final BlackDuckProperties blackDuckProperties, final ComponentVersionView versionView, final VulnerabilityNotificationContent content, final BlackDuckBucket bucket)
             throws IntegrationException {
-        final HubServicesFactory blackDuckServicesFactory = Mockito.mock(HubServicesFactory.class);
-        final HubService blackDuckService = Mockito.mock(HubService.class);
-        final HubBucketService bucketService = Mockito.mock(HubBucketService.class);
+        final BlackDuckServicesFactory blackDuckServicesFactory = Mockito.mock(BlackDuckServicesFactory.class);
+        final BlackDuckService blackDuckService = Mockito.mock(BlackDuckService.class);
+        final BlackDuckBucketService bucketService = Mockito.mock(BlackDuckBucketService.class);
         final List<VulnerabilityV2View> vulnerabilityViewList = createVulnerabilityList();
-        final BlackduckRestConnection restConnection = Mockito.mock(BlackduckRestConnection.class);
+        final BlackDuckRestConnection restConnection = Mockito.mock(BlackDuckRestConnection.class);
 
         Mockito.when(blackDuckProperties.createRestConnectionAndLogErrors(Mockito.any())).thenReturn(Optional.of(restConnection));
         Mockito.when(blackDuckProperties.createBlackDuckServicesFactory(Mockito.any(), Mockito.any())).thenReturn(blackDuckServicesFactory);
-        Mockito.when(blackDuckServicesFactory.createHubService()).thenReturn(blackDuckService);
-        Mockito.when(blackDuckServicesFactory.createHubBucketService()).thenReturn(bucketService);
+        Mockito.when(blackDuckServicesFactory.createBlackDuckService()).thenReturn(blackDuckService);
+        Mockito.when(blackDuckServicesFactory.createBlackDuckBucketService()).thenReturn(bucketService);
         Mockito.when(blackDuckService.getResponse(Mockito.any(UriSingleResponse.class))).thenReturn(versionView);
         Mockito.when(blackDuckService.getAllResponses(versionView, ComponentVersionView.VULNERABILITIES_LINK_RESPONSE)).thenReturn(vulnerabilityViewList);
         final NotificationView view = NotificationGeneratorUtils.createNotificationView(NotificationType.VULNERABILITY);
@@ -140,10 +140,10 @@ public class NotificationGeneratorUtils {
 
     public static void createCommonContentData(final VulnerabilityNotificationContent content) {
         final AffectedProjectVersion affectedProjectVersion = new AffectedProjectVersion();
-        affectedProjectVersion.projectName = "VulnerableProjectName";
-        affectedProjectVersion.projectVersionName = "1.2.3";
-        affectedProjectVersion.projectVersion = "projectURL";
-        affectedProjectVersion.componentIssueUrl = "componentIssueUrl";
+        affectedProjectVersion.setProjectName("VulnerableProjectName");
+        affectedProjectVersion.setProjectVersionName("1.2.3");
+        affectedProjectVersion.setProjectVersion("projectURL");
+        affectedProjectVersion.setComponentIssueUrl("componentIssueUrl");
 
         content.componentVersion = "componentversionurl";
         content.componentName = "VulnerableComponent";
@@ -165,70 +165,70 @@ public class NotificationGeneratorUtils {
 
     public static List<VulnerabilityV2View> createVulnerabilityList() {
         final VulnerabilityV2View vuln_1 = new VulnerabilityV2View();
-        vuln_1.name = "1";
-        vuln_1.severity = "LOW";
-        vuln_1._meta = new ResourceMetadata();
-        vuln_1._meta.href = "href_1";
+        vuln_1.setName("1");
+        vuln_1.setSeverity("LOW");
+        vuln_1.setMeta(new ResourceMetadata());
+        vuln_1.getMeta().setHref("href_1");
 
         final VulnerabilityV2View vuln_2 = new VulnerabilityV2View();
-        vuln_2.name = "2";
-        vuln_2.severity = "LOW";
-        vuln_2._meta = new ResourceMetadata();
-        vuln_2._meta.href = "href_2";
+        vuln_2.setName("2");
+        vuln_2.setSeverity("LOW");
+        vuln_2.setMeta(new ResourceMetadata());
+        vuln_2.getMeta().setHref("href_2");
 
         final VulnerabilityV2View vuln_3 = new VulnerabilityV2View();
-        vuln_3.name = "3";
-        vuln_3.severity = "LOW";
-        vuln_3._meta = new ResourceMetadata();
-        vuln_3._meta.href = "href_3";
+        vuln_3.setName("3");
+        vuln_3.setSeverity("LOW");
+        vuln_3.setMeta(new ResourceMetadata());
+        vuln_3.getMeta().setHref("href_3");
 
         final VulnerabilityV2View vuln_4 = new VulnerabilityV2View();
-        vuln_4.name = "4";
-        vuln_4.severity = "MEDIUM";
-        vuln_4._meta = new ResourceMetadata();
-        vuln_4._meta.href = "href_4";
+        vuln_4.setName("4");
+        vuln_4.setSeverity("MEDIUM");
+        vuln_4.setMeta(new ResourceMetadata());
+        vuln_4.getMeta().setHref("href_4");
 
         final VulnerabilityV2View vuln_5 = new VulnerabilityV2View();
-        vuln_5.name = "5";
-        vuln_5.severity = "HIGH";
-        vuln_5._meta = new ResourceMetadata();
-        vuln_5._meta.href = "href_5";
+        vuln_5.setName("5");
+        vuln_5.setSeverity("HIGH");
+        vuln_5.setMeta(new ResourceMetadata());
+        vuln_5.getMeta().setHref("href_5");
 
         final VulnerabilityV2View vuln_6 = new VulnerabilityV2View();
-        vuln_6.name = "6";
-        vuln_6.severity = "HIGH";
-        vuln_6._meta = new ResourceMetadata();
-        vuln_6._meta.href = "href_6";
+        vuln_6.setName("6");
+        vuln_6.setSeverity("HIGH");
+        vuln_6.setMeta(new ResourceMetadata());
+        vuln_6.getMeta().setHref("href_6");
 
         final VulnerabilityV2View vuln_7 = new VulnerabilityV2View();
-        vuln_7.name = "7";
-        vuln_7.severity = "HIGH";
-        vuln_7._meta = new ResourceMetadata();
-        vuln_7._meta.href = "href_7";
+        vuln_7.setName("7");
+        vuln_7.setSeverity("HIGH");
+        vuln_7.setMeta(new ResourceMetadata());
+        vuln_7.getMeta().setHref("href_7");
 
         final VulnerabilityV2View vuln_8 = new VulnerabilityV2View();
-        vuln_8.name = "8";
-        vuln_8.severity = "HIGH";
-        vuln_8._meta = new ResourceMetadata();
-        vuln_8._meta.href = "href_8";
+        vuln_8.setName("8");
+        vuln_8.setSeverity("HIGH");
+        vuln_8.setMeta(new ResourceMetadata());
+        vuln_8.getMeta().setHref("href_8");
 
         final VulnerabilityV2View vuln_9 = new VulnerabilityV2View();
-        vuln_9.name = "9";
-        vuln_9.severity = "HIGH";
-        vuln_9._meta = new ResourceMetadata();
-        vuln_9._meta.href = "href_9";
+        vuln_9.setName("9");
+        vuln_9.setSeverity("HIGH");
+        vuln_9.setMeta(new ResourceMetadata());
+        vuln_9.getMeta().setHref("href_9");
 
         final VulnerabilityV2View vuln_10 = new VulnerabilityV2View();
-        vuln_10.name = "10";
-        vuln_10.severity = "HIGH";
-        vuln_10._meta = new ResourceMetadata();
-        vuln_10._meta.href = "href_10";
+        vuln_10.setName("10");
+        vuln_10.setSeverity("HIGH");
+        vuln_10.setMeta(new ResourceMetadata());
+        vuln_10.getMeta().setHref("href_10");
 
         final VulnerabilityV2View vuln_11 = new VulnerabilityV2View();
-        vuln_11.name = "11";
-        vuln_11.severity = "HIGH";
-        vuln_11._meta = new ResourceMetadata();
-        vuln_11._meta.href = "href_11";
+        vuln_11.setName("11");
+        vuln_11.setSeverity("HIGH");
+        vuln_11.setMeta(new ResourceMetadata());
+        vuln_11.getMeta().setHref("href_11");
 
         return Arrays.asList(vuln_1, vuln_2, vuln_3, vuln_4, vuln_5, vuln_6, vuln_7, vuln_8, vuln_9, vuln_10, vuln_11);
     }

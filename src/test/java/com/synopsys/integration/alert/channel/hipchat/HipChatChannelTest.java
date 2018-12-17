@@ -17,20 +17,20 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
 import org.mockito.Mockito;
 
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.TestAlertProperties;
 import com.synopsys.integration.alert.TestBlackDuckProperties;
 import com.synopsys.integration.alert.TestPropertyKey;
+import com.synopsys.integration.alert.TestTags;
 import com.synopsys.integration.alert.channel.ChannelTest;
 import com.synopsys.integration.alert.channel.hipchat.mock.MockHipChatGlobalEntity;
 import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
@@ -47,19 +47,19 @@ import com.synopsys.integration.log.LogLevel;
 import com.synopsys.integration.log.PrintStreamIntLogger;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.connection.RestConnection;
-import com.synopsys.integration.rest.connection.UnauthenticatedRestConnection;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.rest.request.Request;
-import com.synopsys.integration.test.annotation.ExternalConnectionTest;
 
 public class HipChatChannelTest extends ChannelTest {
     private final MockHipChatGlobalEntity hipChatMockUtil = new MockHipChatGlobalEntity();
 
     @Test
-    @Category(ExternalConnectionTest.class)
+    @Tag(TestTags.DEFAULT_INTEGRATION)
+    @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     public void sendMessageTestIT() throws IOException, IntegrationException {
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final GlobalBlackDuckRepository mockedGlobalRepository = Mockito.mock(GlobalBlackDuckRepository.class);
-        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(mockedGlobalRepository, new TestAlertProperties());
+        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(new Gson(), mockedGlobalRepository, new TestAlertProperties());
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties);
         HipChatChannel hipChatChannel = new HipChatChannel(gson, testAlertProperties, globalProperties, auditUtility, null, channelRestConnectionFactory);
@@ -126,7 +126,7 @@ public class HipChatChannelTest extends ChannelTest {
         final ChannelRestConnectionFactory restFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, null, null, null, null, restFactory);
 
-        Mockito.when(restFactory.createUnauthenticatedRestConnection(Mockito.anyString())).thenReturn(null);
+        Mockito.when(restFactory.createRestConnection()).thenReturn(null);
 
         try {
             hipChatChannel.testGlobalConfig(new TestConfigModel(null));
@@ -151,12 +151,12 @@ public class HipChatChannelTest extends ChannelTest {
         final ChannelRestConnectionFactory restFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, null, null, null, null, restFactory);
 
-        Mockito.when(restFactory.createUnauthenticatedRestConnection(Mockito.anyString())).thenReturn(null);
+        Mockito.when(restFactory.createRestConnection()).thenReturn(null);
 
         try {
             final Config config = hipChatMockUtil.createEmptyGlobalConfig();
             hipChatChannel.testGlobalConfig(new TestConfigModel(config));
-            fail();
+            fail("Expected exception to be thrown");
         } catch (final IntegrationException ex) {
             assertEquals("Invalid API key: API key not provided", ex.getMessage());
         }
@@ -185,8 +185,9 @@ public class HipChatChannelTest extends ChannelTest {
         final ChannelRestConnectionFactory restFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, null, null, null, null, restFactory);
 
-        try (final RestConnection restConnection = new UnauthenticatedRestConnection(new PrintStreamIntLogger(System.out, LogLevel.INFO), new URL("http://google.com"), 100, null)) {
-            Mockito.when(restFactory.createUnauthenticatedRestConnection(Mockito.anyString())).thenReturn(restConnection);
+        try {
+            final RestConnection restConnection = new RestConnection(new PrintStreamIntLogger(System.out, LogLevel.INFO), 100, true, ProxyInfo.NO_PROXY_INFO);
+            Mockito.when(restFactory.createRestConnection()).thenReturn(restConnection);
 
             hipChatMockUtil.setApiKey("garbage");
             try {
@@ -195,34 +196,10 @@ public class HipChatChannelTest extends ChannelTest {
             } catch (final IntegrationException ex) {
                 assertTrue(ex.getMessage().contains("Invalid API key: "));
             }
-        } catch (final IOException e) {
+        } catch (final Exception e) {
             Assert.fail();
             e.printStackTrace();
         }
-    }
-
-    @Test
-    public void testGlobalConfigThrowsExceptionTest() throws IntegrationException, MalformedURLException {
-        final ChannelRestConnectionFactory restFactory = Mockito.mock(ChannelRestConnectionFactory.class);
-        final HipChatChannel hipChatChannel = new HipChatChannel(gson, null, null, null, null, restFactory);
-
-        try (final RestConnection restConnection = new UnauthenticatedRestConnection(new PrintStreamIntLogger(System.out, LogLevel.INFO), new URL("http://google.com"), 100, null)) {
-            final RestConnection mockRestConnection = Mockito.spy(restConnection);
-            Mockito.doThrow(new IntegrationException("Mock exception")).when(mockRestConnection).connect();
-            Mockito.when(restFactory.createUnauthenticatedRestConnection(Mockito.anyString())).thenReturn(mockRestConnection);
-
-            hipChatMockUtil.setApiKey("apiKey");
-            try {
-                final Config config = hipChatMockUtil.createGlobalConfig();
-                hipChatChannel.testGlobalConfig(new TestConfigModel(config));
-            } catch (final IntegrationException ex) {
-                assertEquals("Invalid API key: Mock exception", ex.getMessage());
-            }
-        } catch (final IOException e) {
-            Assert.fail();
-            e.printStackTrace();
-        }
-
     }
 
     @Test
@@ -230,7 +207,7 @@ public class HipChatChannelTest extends ChannelTest {
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final TestAlertProperties alertProperties = new TestAlertProperties();
         final GlobalBlackDuckRepository mockedGlobalRepository = Mockito.mock(GlobalBlackDuckRepository.class);
-        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(mockedGlobalRepository, alertProperties);
+        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(new Gson(), mockedGlobalRepository, alertProperties);
         HipChatChannel hipChatChannel = new HipChatChannel(gson, alertProperties, globalProperties, auditUtility, null, null);
 
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
@@ -254,7 +231,7 @@ public class HipChatChannelTest extends ChannelTest {
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final TestAlertProperties alertProperties = new TestAlertProperties();
         final GlobalBlackDuckRepository mockedGlobalRepository = Mockito.mock(GlobalBlackDuckRepository.class);
-        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(mockedGlobalRepository, alertProperties);
+        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(new Gson(), mockedGlobalRepository, alertProperties);
         HipChatChannel hipChatChannel = new HipChatChannel(gson, alertProperties, globalProperties, auditUtility, null, null);
 
         final AggregateMessageContent messageContent = createLargeMessageContent();

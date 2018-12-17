@@ -33,7 +33,6 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean;
 import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -59,14 +58,13 @@ import com.synopsys.integration.alert.web.security.authentication.database.UserD
 import com.synopsys.integration.alert.workflow.startup.StartupManager;
 import com.synopsys.integration.rest.RestConstants;
 
-@EnableAutoConfiguration(exclude = { BatchAutoConfiguration.class })
 @EnableJpaRepositories(basePackages = { "com.synopsys.integration.alert.database" })
 @EnableTransactionManagement
 @EnableBatchProcessing
 @EnableScheduling
 @EnableJms
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-@SpringBootApplication
+@SpringBootApplication(exclude = { BatchAutoConfiguration.class })
 public class Application {
     private final static Logger logger = LoggerFactory.getLogger(Application.class);
 

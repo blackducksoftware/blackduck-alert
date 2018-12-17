@@ -23,15 +23,13 @@
  */
 package com.synopsys.integration.alert.workflow.scheduled;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,16 +41,18 @@ import com.synopsys.integration.alert.common.AboutReader;
 import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.blackduck.rest.BlackduckRestConnection;
-import com.synopsys.integration.blackduck.service.HubServicesFactory;
+import com.synopsys.integration.blackduck.phonehome.BlackDuckPhoneHomeHelper;
+import com.synopsys.integration.blackduck.rest.BlackDuckRestConnection;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.log.Slf4jIntLogger;
-import com.synopsys.integration.phonehome.PhoneHomeCallable;
-import com.synopsys.integration.phonehome.PhoneHomeRequestBody;
-import com.synopsys.integration.phonehome.PhoneHomeService;
+import com.synopsys.integration.phonehome.PhoneHomeResponse;
 
 @Component
 public class PhoneHomeTask extends ScheduledTask {
     public static final String TASK_NAME = "phonehome";
+    public static final String ARTIFACT_ID = "blackduck-alert";
+    public static final Long DEFAULT_TIMEOUT = 10L;
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final BlackDuckProperties blackDuckProperties;
     private final AboutReader aboutReader;
@@ -68,58 +68,30 @@ public class PhoneHomeTask extends ScheduledTask {
 
     @Override
     public void run() {
-        final Optional<BlackduckRestConnection> optionalRestConnection = blackDuckProperties.createRestConnectionAndLogErrors(logger);
+        final Optional<BlackDuckRestConnection> optionalRestConnection = blackDuckProperties.createRestConnectionAndLogErrors(logger);
         if (optionalRestConnection.isPresent()) {
-            final ExecutorService executorService = Executors.newSingleThreadExecutor();
-            try (final BlackduckRestConnection restConnection = optionalRestConnection.get()) {
-                final HubServicesFactory hubServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(restConnection, new Slf4jIntLogger(logger));
-                // TODO refactor to create a PhoneHomeCallable for alert.  May phone home per provider and channel.
-                final PhoneHomeService phoneHomeService = hubServicesFactory.createPhoneHomeService(executorService);
-                final Optional<PhoneHomeCallable> callable = createPhoneHomeCallable(hubServicesFactory);
-                if (callable.isPresent()) {
-                    phoneHomeService.phoneHome(callable.get());
-                }
+            final String productVersion = aboutReader.getProductVersion();
+            if (AboutReader.PRODUCT_VERSION_UNKNOWN.equals(productVersion)) {
+                return;
+            }
+            final ExecutorService phoneHomeExecutor = Executors.newSingleThreadExecutor();
+            try {
+                final BlackDuckRestConnection restConnection = optionalRestConnection.get();
+                final BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(restConnection, new Slf4jIntLogger(logger));
+                final BlackDuckPhoneHomeHelper blackDuckPhoneHomeHelper = BlackDuckPhoneHomeHelper.createAsynchronousPhoneHomeHelper(blackDuckServicesFactory, phoneHomeExecutor);
 
-            } catch (final IOException e) {
+                final Map<String, String> metaData = getChannelMetaData();
+                final PhoneHomeResponse phoneHomeResponse = blackDuckPhoneHomeHelper.handlePhoneHome(ARTIFACT_ID, productVersion, metaData);
+                phoneHomeResponse.awaitResult(DEFAULT_TIMEOUT);
+            } catch (final Exception e) {
                 logger.error(e.getMessage(), e);
             } finally {
-                executorService.shutdownNow();
+                phoneHomeExecutor.shutdownNow();
             }
         }
     }
 
-    public Optional<PhoneHomeCallable> createPhoneHomeCallable(final HubServicesFactory hubServicesFactory) {
-        final String productVersion = aboutReader.getProductVersion();
-        if (AboutReader.PRODUCT_VERSION_UNKNOWN.equals(productVersion)) {
-            logger.debug("Unknown version for phone home");
-            return Optional.empty();
-        }
-        final PhoneHomeRequestBody.Builder builder = new PhoneHomeRequestBody.Builder();
-        addChannelMetaData(builder);
-        try {
-            final Optional<String> blackDuckUrl = blackDuckProperties.getBlackDuckUrl();
-            if (blackDuckUrl.isPresent()) {
-                return Optional.of(hubServicesFactory.createBlackDuckPhoneHomeCallable(new URL(blackDuckUrl.get()), "blackduck-alert", productVersion, builder));
-            } else {
-                return Optional.empty();
-            }
-        } catch (final MalformedURLException ex) {
-            logger.error("Cannot create phone home callable", ex);
-            return Optional.empty();
-        }
-    }
-
-    public PhoneHomeRequestBody.Builder addChannelMetaData(final PhoneHomeRequestBody.Builder phoneHomeRequestBody) {
-        final Map<String, Integer> createdSupportedChannels = getChannelMetaData();
-        createdSupportedChannels.forEach((key, count) -> {
-            final String supportedChannelkey = "channel." + key;
-            phoneHomeRequestBody.addToMetaData(supportedChannelkey, count.toString());
-        });
-
-        return phoneHomeRequestBody;
-    }
-
-    private Map<String, Integer> getChannelMetaData() {
+    private Map<String, String> getChannelMetaData() {
         final List<CommonDistributionConfigEntity> commonConfigList = commonDistributionRepository.findAll();
         final Map<String, Integer> createdSupportedChannels = new HashMap<>();
         for (final CommonDistributionConfigEntity commonConfigEntity : commonConfigList) {
@@ -131,8 +103,10 @@ public class PhoneHomeTask extends ScheduledTask {
                 createdSupportedChannels.put(supportedChannel, 1);
             }
         }
-
-        return createdSupportedChannels;
+        return createdSupportedChannels
+                       .entrySet()
+                       .stream()
+                       .collect(Collectors.toMap(Map.Entry::getKey, intValue -> intValue.toString()));
     }
 
 }

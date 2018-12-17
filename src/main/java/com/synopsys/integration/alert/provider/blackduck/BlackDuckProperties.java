@@ -33,21 +33,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
-import com.synopsys.integration.blackduck.configuration.HubServerConfig;
-import com.synopsys.integration.blackduck.configuration.HubServerConfigBuilder;
-import com.synopsys.integration.blackduck.rest.BlackduckRestConnection;
-import com.synopsys.integration.blackduck.service.HubServicesFactory;
-import com.synopsys.integration.exception.EncryptionException;
+import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
+import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigBuilder;
+import com.synopsys.integration.blackduck.rest.BlackDuckRestConnection;
+import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
 public class BlackDuckProperties {
     public static final int DEFAULT_TIMEOUT = 300;
+
+    private final Gson gson;
     private final GlobalBlackDuckRepository globalBlackDuckRepository;
     private final AlertProperties alertProperties;
 
@@ -60,7 +62,8 @@ public class BlackDuckProperties {
     private String publicBlackDuckWebserverPort;
 
     @Autowired
-    public BlackDuckProperties(final GlobalBlackDuckRepository globalBlackDuckRepository, final AlertProperties alertProperties) {
+    public BlackDuckProperties(final Gson gson, final GlobalBlackDuckRepository globalBlackDuckRepository, final AlertProperties alertProperties) {
+        this.gson = gson;
         this.globalBlackDuckRepository = globalBlackDuckRepository;
         this.alertProperties = alertProperties;
     }
@@ -114,11 +117,11 @@ public class BlackDuckProperties {
         return Optional.empty();
     }
 
-    public HubServicesFactory createBlackDuckServicesFactory(final BlackduckRestConnection restConnection, final IntLogger logger) {
-        return new HubServicesFactory(HubServicesFactory.createDefaultGson(), HubServicesFactory.createDefaultJsonParser(), restConnection, logger);
+    public BlackDuckServicesFactory createBlackDuckServicesFactory(final BlackDuckRestConnection restConnection, final IntLogger logger) {
+        return new BlackDuckServicesFactory(gson, BlackDuckServicesFactory.createDefaultObjectMapper(), restConnection, logger);
     }
 
-    public Optional<BlackduckRestConnection> createRestConnectionAndLogErrors(final Logger logger) {
+    public Optional<BlackDuckRestConnection> createRestConnectionAndLogErrors(final Logger logger) {
         try {
             return createRestConnection(logger);
         } catch (final Exception e) {
@@ -127,42 +130,42 @@ public class BlackDuckProperties {
         return Optional.empty();
     }
 
-    public Optional<BlackduckRestConnection> createRestConnection(final Logger logger) throws AlertException {
+    public Optional<BlackDuckRestConnection> createRestConnection(final Logger logger) throws AlertException {
         final IntLogger intLogger = new Slf4jIntLogger(logger);
         return createRestConnection(intLogger);
     }
 
-    public Optional<BlackduckRestConnection> createRestConnection(final IntLogger intLogger) throws AlertException {
-        final Optional<HubServerConfig> blackDuckServerConfig = createBlackDuckServerConfig(intLogger);
+    public Optional<BlackDuckRestConnection> createRestConnection(final IntLogger intLogger) throws AlertException {
+        final Optional<BlackDuckServerConfig> blackDuckServerConfig = createBlackDuckServerConfig(intLogger);
         if (blackDuckServerConfig.isPresent()) {
             return createRestConnection(intLogger, blackDuckServerConfig.get());
         }
         return Optional.empty();
     }
 
-    public Optional<BlackduckRestConnection> createRestConnection(final IntLogger intLogger, final HubServerConfig blackDuckServerConfig) {
+    public Optional<BlackDuckRestConnection> createRestConnection(final IntLogger intLogger, final BlackDuckServerConfig blackDuckServerConfig) {
         try {
             return Optional.of(blackDuckServerConfig.createRestConnection(intLogger));
-        } catch (final EncryptionException e) {
+        } catch (final Exception e) {
             intLogger.error(e.getMessage(), e);
         }
         return Optional.empty();
     }
 
-    public Optional<HubServerConfig> createBlackDuckServerConfig(final IntLogger logger) throws AlertException {
+    public Optional<BlackDuckServerConfig> createBlackDuckServerConfig(final IntLogger logger) throws AlertException {
         final Optional<GlobalBlackDuckConfigEntity> optionalGlobalBlackDuckConfigEntity = getBlackDuckConfig();
         if (optionalGlobalBlackDuckConfigEntity.isPresent()) {
-            final GlobalBlackDuckConfigEntity globalHubConfigEntity = optionalGlobalBlackDuckConfigEntity.get();
-            if (globalHubConfigEntity.getBlackDuckTimeout() == null || globalHubConfigEntity.getBlackDuckApiKey() == null) {
+            final GlobalBlackDuckConfigEntity globalBlackDuckConfigEntity = optionalGlobalBlackDuckConfigEntity.get();
+            if (globalBlackDuckConfigEntity.getBlackDuckTimeout() == null || globalBlackDuckConfigEntity.getBlackDuckApiKey() == null) {
                 throw new AlertException("Global config settings can not be null.");
             }
-            return Optional.of(createBlackDuckServerConfig(logger, globalHubConfigEntity.getBlackDuckTimeout(), globalHubConfigEntity.getBlackDuckApiKey()));
+            return Optional.of(createBlackDuckServerConfig(logger, globalBlackDuckConfigEntity.getBlackDuckTimeout(), globalBlackDuckConfigEntity.getBlackDuckApiKey()));
         }
         return Optional.empty();
     }
 
-    public HubServerConfig createBlackDuckServerConfig(final IntLogger logger, final int blackDuckTimeout, final String blackDuckApiToken) throws AlertException {
-        final HubServerConfigBuilder blackDuckServerConfigBuilder = createServerConfigBuilderWithoutAuthentication(logger, blackDuckTimeout);
+    public BlackDuckServerConfig createBlackDuckServerConfig(final IntLogger logger, final int blackDuckTimeout, final String blackDuckApiToken) throws AlertException {
+        final BlackDuckServerConfigBuilder blackDuckServerConfigBuilder = createServerConfigBuilderWithoutAuthentication(logger, blackDuckTimeout);
         blackDuckServerConfigBuilder.setApiToken(blackDuckApiToken);
 
         try {
@@ -172,8 +175,8 @@ public class BlackDuckProperties {
         }
     }
 
-    public HubServerConfig createBlackDuckServerConfig(final IntLogger logger, final int blackDuckTimeout, final String blackDuckUsername, final String blackDuckPassword) throws AlertException {
-        final HubServerConfigBuilder blackDuckServerConfigBuilder = createServerConfigBuilderWithoutAuthentication(logger, blackDuckTimeout);
+    public BlackDuckServerConfig createBlackDuckServerConfig(final IntLogger logger, final int blackDuckTimeout, final String blackDuckUsername, final String blackDuckPassword) throws AlertException {
+        final BlackDuckServerConfigBuilder blackDuckServerConfigBuilder = createServerConfigBuilderWithoutAuthentication(logger, blackDuckTimeout);
         blackDuckServerConfigBuilder.setUsername(blackDuckUsername);
         blackDuckServerConfigBuilder.setPassword(blackDuckPassword);
 
@@ -184,8 +187,8 @@ public class BlackDuckProperties {
         }
     }
 
-    public HubServerConfigBuilder createServerConfigBuilderWithoutAuthentication(final IntLogger logger, final int blackDuckTimeout) {
-        final HubServerConfigBuilder blackDuckServerConfigBuilder = new HubServerConfigBuilder();
+    public BlackDuckServerConfigBuilder createServerConfigBuilderWithoutAuthentication(final IntLogger logger, final int blackDuckTimeout) {
+        final BlackDuckServerConfigBuilder blackDuckServerConfigBuilder = new BlackDuckServerConfigBuilder();
         blackDuckServerConfigBuilder.setFromProperties(getBlackDuckProperties());
         blackDuckServerConfigBuilder.setLogger(logger);
         blackDuckServerConfigBuilder.setTimeout(blackDuckTimeout);
@@ -196,11 +199,11 @@ public class BlackDuckProperties {
 
     private Properties getBlackDuckProperties() {
         final Properties properties = new Properties();
-        properties.setProperty(HubServerConfigBuilder.HUB_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "trust.cert", String.valueOf(alertProperties.getAlertTrustCertificate().orElse(false)));
-        properties.setProperty(HubServerConfigBuilder.HUB_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.host", alertProperties.getAlertProxyHost().orElse(""));
-        properties.setProperty(HubServerConfigBuilder.HUB_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.port", alertProperties.getAlertProxyPort().orElse(""));
-        properties.setProperty(HubServerConfigBuilder.HUB_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.username", alertProperties.getAlertProxyUsername().orElse(""));
-        properties.setProperty(HubServerConfigBuilder.HUB_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.password", alertProperties.getAlertProxyPassword().orElse(""));
+        properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "trust.cert", String.valueOf(alertProperties.getAlertTrustCertificate().orElse(false)));
+        properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.host", alertProperties.getAlertProxyHost().orElse(""));
+        properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.port", alertProperties.getAlertProxyPort().orElse(""));
+        properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.username", alertProperties.getAlertProxyUsername().orElse(""));
+        properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.password", alertProperties.getAlertProxyPassword().orElse(""));
         return properties;
     }
 

@@ -43,7 +43,7 @@ import com.synopsys.integration.alert.database.entity.channel.GlobalChannelConfi
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpMethod;
-import com.synopsys.integration.rest.body.BodyContent;
+import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.body.StringBodyContent;
 import com.synopsys.integration.rest.connection.RestConnection;
 import com.synopsys.integration.rest.request.Request;
@@ -55,7 +55,7 @@ public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntit
     private final ChannelRestConnectionFactory channelRestConnectionFactory;
 
     public RestDistributionChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditUtility auditUtility, final JpaRepository<G, Long> globalRepository,
-        final Class eventClass, final ChannelRestConnectionFactory channelRestConnectionFactory) {
+            final Class eventClass, final ChannelRestConnectionFactory channelRestConnectionFactory) {
         super(gson, alertProperties, blackDuckProperties, auditUtility, globalRepository, eventClass);
         this.channelRestConnectionFactory = channelRestConnectionFactory;
     }
@@ -63,48 +63,54 @@ public abstract class RestDistributionChannel<G extends GlobalChannelConfigEntit
     @Override
     public void sendMessage(final E event) throws IntegrationException {
         final G globalConfig = getGlobalConfigEntity();
-        final List<Request> requests = createRequests(globalConfig, event);
-        try (final RestConnection restConnection = channelRestConnectionFactory.createUnauthenticatedRestConnection(getApiUrl(globalConfig))) {
+        try {
+            final RestConnection restConnection = channelRestConnectionFactory.createRestConnection();
+            final List<Request> requests = createRequests(globalConfig, event);
             for (final Request request : requests) {
                 sendMessageRequest(restConnection, request, event.getDestination());
             }
-        } catch (final IOException ex) {
+        } catch (final Exception ex) {
             throw new AlertException(ex);
         }
     }
 
     public Request createPostMessageRequest(final String url, final Map<String, String> headers, final String jsonString) {
-        Request.Builder requestBuilder = new Request.Builder();
-        final BodyContent bodyContent = new StringBodyContent(jsonString);
-        requestBuilder = requestBuilder.method(HttpMethod.POST).uri(url).additionalHeaders(headers).bodyContent(bodyContent);
-        final Request request = requestBuilder.build();
-        return request;
+        return createPostMessageRequest(url, headers, null, jsonString);
+    }
+
+    public Request createPostMessageRequest(final String url, final Map<String, String> headers, final Map<String, Set<String>> queryParameters) {
+        return createPostMessageRequest(url, headers, queryParameters, null);
     }
 
     public Request createPostMessageRequest(final String url, final Map<String, String> headers, final Map<String, Set<String>> queryParameters, final String jsonString) {
-        Request.Builder requestBuilder = new Request.Builder();
-        final BodyContent bodyContent = new StringBodyContent(jsonString);
-        requestBuilder = requestBuilder.method(HttpMethod.POST).uri(url).additionalHeaders(headers).queryParameters(queryParameters).bodyContent(bodyContent);
-        final Request request = requestBuilder.build();
-        return request;
+        final Request.Builder requestBuilder = new Request.Builder().method(HttpMethod.POST).uri(url).additionalHeaders(headers);
+        if (queryParameters != null && !queryParameters.isEmpty()) {
+            requestBuilder.queryParameters(queryParameters);
+        }
+        if (jsonString != null) {
+            requestBuilder.bodyContent(new StringBodyContent(jsonString));
+        }
+        return requestBuilder.build();
     }
 
     public void sendMessageRequest(final RestConnection restConnection, final Request request, final String messageType) throws IntegrationException {
         logger.info("Attempting to send a {} message...", messageType);
-        final Response response = sendGenericRequest(restConnection, request);
-        if (response.getStatusCode() >= 200 && response.getStatusCode() < 400) {
-            logger.info("Successfully sent a {} message!", messageType);
+        try (final Response response = sendGenericRequest(restConnection, request)) {
+            if (RestConstants.OK_200 <= response.getStatusCode() && response.getStatusCode() < RestConstants.BAD_REQUEST_400) {
+                logger.info("Successfully sent a {} message!", messageType);
+            }
+        } catch (final IOException e) {
+            throw new AlertException(e.getMessage(), e);
         }
     }
 
     public Response sendGenericRequest(final RestConnection restConnection, final Request request) throws IntegrationException {
-        try {
-            final Response response = restConnection.executeRequest(request);
+        try (final Response response = restConnection.execute(request)) {
             logger.trace("Response: " + response.toString());
             return response;
-        } catch (final Exception generalException) {
-            logger.error("Error sending request", generalException);
-            throw new AlertException(generalException.getMessage());
+        } catch (final Exception e) {
+            logger.error("Error sending request", e);
+            throw new AlertException(e.getMessage(), e);
         }
     }
 
