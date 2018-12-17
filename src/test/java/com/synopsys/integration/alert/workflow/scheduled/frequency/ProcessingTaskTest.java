@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,6 +18,8 @@ import org.springframework.scheduling.TaskScheduler;
 
 import com.synopsys.integration.alert.channel.ChannelTemplateManager;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.DateRange;
@@ -39,7 +42,7 @@ public class ProcessingTaskTest {
         final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic ", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, Collections.emptyList());
         modelList = Arrays.asList(model);
-        eventList = Arrays.asList(new EmailChannelEvent(RestConstants.formatDate(new Date()), "provider", "FORMAT", content, 1L, null, null));
+        eventList = Arrays.asList(new DistributionEvent("1L", "FORMAT", RestConstants.formatDate(new Date()), "Provider", FormatType.DEFAULT.name(), null, new FieldAccessor(Map.of())));
     }
 
     public ProcessingTask createTask(final TaskScheduler taskScheduler, final NotificationManager notificationManager, final NotificationProcessor notificationProcessor, final ChannelTemplateManager channelTemplateManager) {
@@ -75,12 +78,6 @@ public class ProcessingTaskTest {
     public void testDigestType() {
         final ProcessingTask task = createTask(null, null, null, null);
         assertEquals(FrequencyType.DAILY, task.getDigestType());
-    }
-
-    private void assertDateIsEqual(final ZonedDateTime expected, final ZonedDateTime actual) {
-        assertEquals(expected.getYear(), actual.getYear());
-        assertEquals(expected.getMonth(), actual.getMonth());
-        assertEquals(expected.getDayOfMonth(), actual.getDayOfMonth());
     }
 
     @Test
@@ -174,5 +171,11 @@ public class ProcessingTaskTest {
         final List<DistributionEvent> actualEventList = processingTask.process(Collections.emptyList());
         assertEquals(Collections.emptyList(), actualEventList);
 
+    }
+
+    private void assertDateIsEqual(final ZonedDateTime expected, final ZonedDateTime actual) {
+        assertEquals(expected.getYear(), actual.getYear());
+        assertEquals(expected.getMonth(), actual.getMonth());
+        assertEquals(expected.getDayOfMonth(), actual.getDayOfMonth());
     }
 }
