@@ -110,7 +110,7 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
         if (foundEntity.isPresent()) {
             final CommonDistributionConfigEntity commonEntity = foundEntity.get();
             final CommonDistributionConfigEntity newEntity = new CommonDistributionConfigEntity(commonEntity.getDistributionConfigId(), commonEntity.getDistributionType(), commonEntity.getName(), BlackDuckProvider.COMPONENT_NAME,
-                FrequencyType.DAILY, commonEntity.getFilterByProject(), commonEntity.getProjectNamePattern(), FormatType.DEFAULT);
+                    FrequencyType.DAILY, commonEntity.getFilterByProject(), commonEntity.getProjectNamePattern(), FormatType.DEFAULT);
             newEntity.setId(commonEntity.getId());
             commonDistributionRepository.save(newEntity);
         }
@@ -152,7 +152,7 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
         final NotificationContent garbage3 = createVulnerabilityNotification("garbage3", BlackDuckProvider.COMPONENT_NAME, new Date());
         final List<NotificationContent> notifications = Arrays.asList(garbage1, applicableNotification, garbage2, garbage3);
 
-        //TODO refactor the test to use the ObjectHierarchicalField
+        // TODO refactor the test to use the ObjectHierarchicalField
 
         final Collection<NotificationContent> filteredNotifications = notificationFilter.extractApplicableNotifications(FrequencyType.REAL_TIME, notifications);
 
@@ -181,8 +181,8 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
 
     private NotificationContent createVulnerabilityNotification(final String projectName, final String providerName, final Date created) {
         final String content = "{\"content\":{\"affectedProjectVersions\":[{\"projectName\":\""
-                                   + projectName
-                                   + "\",\"dummyField\":\"dummyValue\"},{\"projectName\":\"Project Name\",\"dummyField\":\"dummyValue\"}],\"dummyField\":\"dummyValue\"},\"dummyField\":\"dummyValue\"}";
+                                       + projectName
+                                       + "\",\"dummyField\":\"dummyValue\"},{\"projectName\":\"Project Name\",\"dummyField\":\"dummyValue\"}],\"dummyField\":\"dummyValue\"},\"dummyField\":\"dummyValue\"}";
         final NotificationContent notification = new NotificationContent(created, providerName, created, NotificationType.VULNERABILITY.name(), content);
         notification.setId(1L);
 
