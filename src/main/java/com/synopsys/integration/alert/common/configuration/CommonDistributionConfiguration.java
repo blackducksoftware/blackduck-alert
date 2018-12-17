@@ -35,7 +35,6 @@ import com.synopsys.integration.alert.database.api.configuration.ConfigurationAc
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDistributionUIConfig;
 
 public class CommonDistributionConfiguration extends Configuration {
-
     private final String name;
     private final String channelName;
     private final String providerName;
