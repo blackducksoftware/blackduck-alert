@@ -64,7 +64,8 @@ public class EmailDescriptor extends ChannelDescriptor {
         } else if (ConfigContextEnum.DISTRIBUTION == context) {
             final DefinedFieldModel subjectLine = DefinedFieldModel.createDistributionField(KEY_SUBJECT_LINE);
             final DefinedFieldModel projectOwnerOnly = DefinedFieldModel.createDistributionField(KEY_PROJECT_OWNER_ONLY);
-            return List.of(subjectLine, projectOwnerOnly);
+            final DefinedFieldModel emailAddresses = DefinedFieldModel.createDistributionField(KEY_EMAIL_ADDRESSES);
+            return List.of(subjectLine, projectOwnerOnly, emailAddresses);
         }
 
         return Collections.emptyList();

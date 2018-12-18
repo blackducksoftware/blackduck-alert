@@ -314,7 +314,11 @@ public class StartupManager {
                 allFieldModels.addAll(globalFieldModels);
                 allFieldModels.addAll(completeDistributionFieldModels);
 
+                //TODO add methods to descriptor accessor to add multiple fields to a registered descriptor
+                // TODO add a method to add fields to a descriptor by name.
+
                 descriptorAccessor.registerDescriptor(descriptorName, descriptorType, allFieldModels);
+
             }
         } catch (final AlertDatabaseConstraintException e) {
             logger.error("Error registering descriptors.");
