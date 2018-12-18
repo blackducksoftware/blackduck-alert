@@ -34,6 +34,22 @@ public class DefinedFieldModel extends Stringable {
     private final Collection<ConfigContextEnum> contexts;
     private final Boolean sensitive;
 
+    public static DefinedFieldModel createDistributionField(final String key) {
+        return new DefinedFieldModel(key, ConfigContextEnum.DISTRIBUTION, false);
+    }
+
+    public static DefinedFieldModel createDistributionSensitiveField(final String key) {
+        return new DefinedFieldModel(key, ConfigContextEnum.DISTRIBUTION, true);
+    }
+
+    public static DefinedFieldModel createGlobalField(final String key) {
+        return new DefinedFieldModel(key, ConfigContextEnum.GLOBAL, false);
+    }
+
+    public static DefinedFieldModel createGlobalSensitiveField(final String key) {
+        return new DefinedFieldModel(key, ConfigContextEnum.GLOBAL, true);
+    }
+
     public DefinedFieldModel(final String key, final ConfigContextEnum context, final Boolean sensitive) {
         this.key = key;
         contexts = Collections.singleton(context);

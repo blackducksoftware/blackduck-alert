@@ -23,7 +23,6 @@
  */
 package com.synopsys.integration.alert.common.descriptor;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,7 +33,6 @@ import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
-import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
@@ -117,18 +115,5 @@ public abstract class Descriptor {
         getRestApi(actionApiType).testConfig(testConfig);
     }
 
-    public Collection<DefinedFieldModel> createAllDefinedFields() {
-        final Set<ConfigContextEnum> appliedUIContexts = getAppliedUIContexts();
-        final List<DefinedFieldModel> fieldModels = new ArrayList<>();
-        for (final ConfigContextEnum context : appliedUIContexts) {
-            final UIConfig uiConfig = getUIConfig(context);
-            final List<ConfigField> fields = uiConfig.generateUIComponent().getFields();
-            for (final ConfigField field : fields) {
-                final String key = field.getKey();
-                final boolean isSensitive = field.isSensitive();
-                fieldModels.add(new DefinedFieldModel(key, context, isSensitive));
-            }
-        }
-        return fieldModels;
-    }
+    public abstract Collection<DefinedFieldModel> getDefinedFields(final ConfigContextEnum context);
 }

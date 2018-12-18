@@ -40,7 +40,7 @@ import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.channel.rest.RestDistributionChannel;
-import com.synopsys.integration.alert.channel.slack.descriptor.SlackUIConfig;
+import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -82,9 +82,9 @@ public class SlackChannel extends RestDistributionChannel {
     @Override
     public List<Request> createRequests(final DistributionEvent event) throws IntegrationException {
         final FieldAccessor fields = event.getFieldAccessor();
-        final Optional<String> webhook = fields.getString(SlackUIConfig.KEY_WEBHOOK);
-        final Optional<String> channelName = fields.getString(SlackUIConfig.KEY_CHANNEL_NAME);
-        final Optional<String> channelUsername = fields.getString(SlackUIConfig.KEY_CHANNEL_USERNAME);
+        final Optional<String> webhook = fields.getString(SlackDescriptor.KEY_WEBHOOK);
+        final Optional<String> channelName = fields.getString(SlackDescriptor.KEY_CHANNEL_NAME);
+        final Optional<String> channelUsername = fields.getString(SlackDescriptor.KEY_CHANNEL_USERNAME);
         if (webhook.isPresent()) {
             throw new AlertException("Missing Webhook URL");
         } else if (channelName.isPresent()) {

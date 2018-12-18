@@ -36,7 +36,7 @@ import com.synopsys.integration.alert.database.entity.repository.ConfiguredProje
 import com.synopsys.integration.alert.database.relation.repository.DistributionProjectRepository;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDistributionUIConfig;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
@@ -78,8 +78,8 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
         final Map<String, ConfigurationFieldModel> fieldMap = MockConfigurationModelFactory.mapFieldKeyToFields(fieldList);
         fieldMap.get(CommonDistributionUIConfig.KEY_FREQUENCY).setFieldValue(TEST_CONFIG_FREQUENCY.name());
         fieldMap.get(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES).setFieldValue(TEST_CONFIG_NOTIFICATION_TYPE);
-        fieldMap.get(BlackDuckDistributionUIConfig.KEY_FILTER_BY_PROJECT).setFieldValue(Boolean.TRUE.toString());
-        fieldMap.get(BlackDuckDistributionUIConfig.KEY_CONFIGURED_PROJECT).setFieldValue(TEST_CONFIG_PROJECT_NAME);
+        fieldMap.get(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT).setFieldValue(Boolean.TRUE.toString());
+        fieldMap.get(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT).setFieldValue(TEST_CONFIG_PROJECT_NAME);
 
         final ConfigurationModel configurationModel = Mockito.mock(ConfigurationModel.class);
         Mockito.when(configurationModel.getCopyOfKeyToFieldMap()).thenReturn(fieldMap);
@@ -178,22 +178,22 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
 
     private NotificationContent createVulnerabilityNotification(final String projectName, final String providerName, final Date created) {
         final String content = "{\"content\":"
-                                       + "{"
-                                       + "    \"affectedProjectVersions\":"
-                                       + "        ["
-                                       + "            {"
-                                       + "                \"projectName\": \"" + projectName + "\","
-                                       + "                 \"dummyField\":\"dummyValue\""
-                                       + "            },"
-                                       + "            {"
-                                       + "                \"projectName\":\"Project Name\","
-                                       + "                \"dummyField\":\"dummyValue\""
-                                       + "            }"
-                                       + "        ],"
-                                       + "    \"dummyField\":\"dummyValue\""
-                                       + "},"
-                                       + "\"dummyField\":\"dummyValue\""
-                                       + "}";
+                                   + "{"
+                                   + "    \"affectedProjectVersions\":"
+                                   + "        ["
+                                   + "            {"
+                                   + "                \"projectName\": \"" + projectName + "\","
+                                   + "                 \"dummyField\":\"dummyValue\""
+                                   + "            },"
+                                   + "            {"
+                                   + "                \"projectName\":\"Project Name\","
+                                   + "                \"dummyField\":\"dummyValue\""
+                                   + "            }"
+                                   + "        ],"
+                                   + "    \"dummyField\":\"dummyValue\""
+                                   + "},"
+                                   + "\"dummyField\":\"dummyValue\""
+                                   + "}";
         final NotificationContent notification = new NotificationContent(created, providerName, created, TEST_CONFIG_NOTIFICATION_TYPE, content);
         notification.setId(1L);
 
