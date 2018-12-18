@@ -46,7 +46,7 @@ public class CommonDistributionConfiguration extends Configuration {
     // FIXME this field is here temporarily as there is some tight coupling to the BD provider.
     private final String projectNamePattern;
     // FIXME this field is here temporarily as there is some tight coupling to the BD provider.
-    private final Set<String> configuredProject;
+    private final Set<String> configuredProjects;
 
     public CommonDistributionConfiguration(final ConfigurationModel configurationModel) {
         super(configurationModel);
@@ -59,7 +59,7 @@ public class CommonDistributionConfiguration extends Configuration {
         formatType = getFieldAccessor().getEnum(ProviderDistributionUIConfig.KEY_FORMAT_TYPE, FormatType.class).orElse(null);
         filterByProject = getFieldAccessor().getBoolean(BlackDuckDistributionUIConfig.KEY_FILTER_BY_PROJECT).orElse(null);
         projectNamePattern = getFieldAccessor().getString(BlackDuckDistributionUIConfig.KEY_PROJECT_NAME_PATTERN).orElse(null);
-        configuredProject = getFieldAccessor().getAllStrings(BlackDuckDistributionUIConfig.KEY_CONFIGURED_PROJECT).stream().collect(Collectors.toSet());
+        configuredProjects = getFieldAccessor().getAllStrings(BlackDuckDistributionUIConfig.KEY_CONFIGURED_PROJECT).stream().collect(Collectors.toSet());
     }
 
     public String getName() {
@@ -94,8 +94,8 @@ public class CommonDistributionConfiguration extends Configuration {
         return projectNamePattern;
     }
 
-    public Set<String> getConfiguredProject() {
-        return configuredProject;
+    public Set<String> getConfiguredProjects() {
+        return configuredProjects;
     }
 
 }
