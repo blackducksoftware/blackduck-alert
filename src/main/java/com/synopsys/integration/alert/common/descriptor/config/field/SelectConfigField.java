@@ -24,6 +24,7 @@
 package com.synopsys.integration.alert.common.descriptor.config.field;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import com.synopsys.integration.alert.common.enumeration.FieldGroup;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
@@ -32,6 +33,18 @@ public class SelectConfigField extends ConfigField {
     private Collection<String> options;
     private boolean searchable;
     private boolean multiSelect;
+
+    public static SelectConfigField createRequiredEmpty(final String key, final String label) {
+        return new SelectConfigField(key, label, true, false, Collections.emptyList());
+    }
+
+    public static SelectConfigField createRequired(final String key, final String label, final Collection<String> options) {
+        return new SelectConfigField(key, label, true, false, options);
+    }
+
+    public static SelectConfigField create(final String key, final String label, final Collection<String> options) {
+        return new SelectConfigField(key, label, false, false, options);
+    }
 
     public SelectConfigField(final String key, final String label, final boolean required, final boolean sensitive, final boolean searchable, final boolean multiSelect, final Collection<String> options) {
         super(key, label, FieldType.SELECT.getFieldTypeName(), required, sensitive, FieldGroup.DEFAULT, "");

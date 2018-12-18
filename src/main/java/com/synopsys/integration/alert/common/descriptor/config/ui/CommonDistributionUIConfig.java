@@ -44,10 +44,10 @@ public class CommonDistributionUIConfig {
 
     // TODO call this method in controller for distributions
     public List<ConfigField> createCommonConfigFields(final Set<String> channelDescriptors, final Set<String> providerDescriptors) {
-        final ConfigField name = new TextInputConfigField(KEY_NAME, "Name", true, false);
-        final ConfigField frequency = new SelectConfigField(KEY_FREQUENCY, "Frequency", true, false, Arrays.stream(FrequencyType.values()).map(type -> type.getDisplayName()).collect(Collectors.toList()));
-        final ConfigField channelName = new SelectConfigField(KEY_CHANNEL_NAME, "Channel Type", true, false, channelDescriptors);
-        final ConfigField providerName = new SelectConfigField(KEY_PROVIDER_NAME, "Provider Type", true, false, providerDescriptors);
+        final ConfigField name = TextInputConfigField.createRequired(KEY_NAME, "Name");
+        final ConfigField frequency = SelectConfigField.createRequired(KEY_FREQUENCY, "Frequency", Arrays.stream(FrequencyType.values()).map(type -> type.getDisplayName()).collect(Collectors.toList()));
+        final ConfigField channelName = SelectConfigField.createRequired(KEY_CHANNEL_NAME, "Channel Type", channelDescriptors);
+        final ConfigField providerName = SelectConfigField.createRequired(KEY_PROVIDER_NAME, "Provider Type", providerDescriptors);
 
         return List.of(name, channelName, frequency, providerName);
     }
