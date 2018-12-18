@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert;
 
+import org.junit.Test;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
@@ -27,4 +28,9 @@ import com.synopsys.integration.alert.database.DatabaseDataSource;
 @WebAppConfiguration
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public abstract class AlertIntegrationTest {
+    @Test
+    public void deleteMe() {
+        // FIXME this test should be removed when we no longer use JUnit 4
+        //  i.e. when the annotation `@RunWith(SpringJUnit4ClassRunner.class)` is removed from this class
+    }
 }
