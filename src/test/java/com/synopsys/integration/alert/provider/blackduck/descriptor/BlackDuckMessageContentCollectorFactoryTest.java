@@ -9,12 +9,12 @@ import org.junit.Test;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckLicenseLimitCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyOverrideCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyViolationCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckVulnerabilityCollector;
+import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 public class BlackDuckMessageContentCollectorFactoryTest extends AlertIntegrationTest {
 

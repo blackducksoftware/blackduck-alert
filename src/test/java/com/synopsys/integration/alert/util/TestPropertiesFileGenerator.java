@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert;
+package com.synopsys.integration.alert.util;
 
 import java.io.File;
 import java.io.IOException;

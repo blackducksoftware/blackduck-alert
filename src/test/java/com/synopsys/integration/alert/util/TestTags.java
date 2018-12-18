@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert;
+package com.synopsys.integration.alert.util;
 
 public class TestTags {
     // Provided by the common-gradle-plugin

@@ -14,9 +14,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
+import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.rest.RestConstants;
 
 public class NotificationContentRepositoryIT extends AlertIntegrationTest {
