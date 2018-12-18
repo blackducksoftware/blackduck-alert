@@ -28,10 +28,12 @@ public class EmailPropertiesTest {
     public void updateFromConfigTest() {
         final Map<String, ConfigurationFieldModel> fieldMap = new LinkedHashMap<>();
         for (final EmailPropertyKeys emailKey : EmailPropertyKeys.values()) {
-            final String key = emailKey.getPropertyKey();
-            final ConfigurationFieldModel model = ConfigurationFieldModel.create(key);
-            fieldMap.put(key, model);
-            model.setFieldValue(key + "_value");
+            if (!emailKey.name().startsWith("EMAIL") && !emailKey.name().startsWith("TEMPLATE")) {
+                final String key = emailKey.getPropertyKey();
+                final ConfigurationFieldModel model = ConfigurationFieldModel.create(key);
+                fieldMap.put(key, model);
+                model.setFieldValue(key + "_value");
+            }
         }
 
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);

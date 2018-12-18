@@ -1,7 +1,6 @@
 package com.synopsys.integration.alert.channel.email;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.mail.Message;
@@ -26,7 +25,7 @@ public class EmailMessagingServiceTest {
         final AlertProperties alertProperties = new AlertProperties();
 
         final TestProperties testProperties = new TestProperties();
-        final EmailProperties emailProperties = new EmailProperties(createEmailGlobalConfigEntity(testProperties));
+        final EmailProperties emailProperties = new EmailProperties(createEmailGlobalConfigEntity());
 
         final EmailMessagingService emailMessagingService = new EmailMessagingService(alertProperties, emailProperties);
 
@@ -44,13 +43,13 @@ public class EmailMessagingServiceTest {
         emailMessagingService.sendMessage(emailProperties, mockSession, message);
     }
 
-    private FieldAccessor createEmailGlobalConfigEntity(final TestProperties testProperties) {
-        final Map<String, ConfigurationFieldModel> fieldMap = new LinkedHashMap<>();
-        for (final EmailPropertyKeys emailKey : EmailPropertyKeys.values()) {
-            final String key = emailKey.getPropertyKey();
-            fieldMap.put(key, ConfigurationFieldModel.create(key));
-        }
+    private FieldAccessor createEmailGlobalConfigEntity() {
+        final ConfigurationFieldModel fieldModel = ConfigurationFieldModel.create(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey());
+        fieldModel.setFieldValue("true");
+        final Map<String, ConfigurationFieldModel> fieldMap = Map.of(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey(), fieldModel);
+
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);
         return fieldAccessor;
     }
+
 }
