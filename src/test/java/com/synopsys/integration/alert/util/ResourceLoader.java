@@ -9,7 +9,7 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.synopsys.integration.alert;
+package com.synopsys.integration.alert.util;
 
 import java.io.BufferedReader;
 import java.io.File;

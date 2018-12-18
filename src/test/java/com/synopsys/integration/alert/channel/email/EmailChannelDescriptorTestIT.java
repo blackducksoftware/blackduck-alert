@@ -11,7 +11,6 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.TestPropertyKey;
 import com.synopsys.integration.alert.channel.DescriptorTestConfigTest;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
@@ -36,6 +35,7 @@ import com.synopsys.integration.alert.database.provider.blackduck.data.relation.
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
+import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.FieldValueModel;
 import com.synopsys.integration.rest.RestConstants;

@@ -20,8 +20,8 @@ import javax.mail.MessagingException;
 
 import org.junit.Test;
 
-import com.synopsys.integration.alert.ResourceLoader;
 import com.synopsys.integration.alert.AlertConstants;
+import com.synopsys.integration.alert.util.ResourceLoader;
 
 public class MimeMultipartBuilderTest {
     @Test
