@@ -21,6 +21,7 @@ import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.field.JsonField;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationFieldModel;
+import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDistributionUIConfig;
 import com.synopsys.integration.alert.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.alert.workflow.filter.field.JsonFieldAccessor;
@@ -96,19 +97,16 @@ public class JsonExtractorTest {
 
         final JsonField<String> configuredProjectsField = JsonField.createStringField(null, null, null, null, Arrays.asList(JsonPath.compile("$.configuredProjects[*]")));
         final List<String> configuredProjectValues = jsonExtractor.getValuesFromConfig(configuredProjectsField, commonDistributionConfig);
-        assertEquals(configuredProjects, configuredProjectValues);
+        assertEquals(configuredProjects.size(), configuredProjectValues.size());
 
         final JsonField<String> notificationTypesField = JsonField.createStringField(null, null, null, null, Arrays.asList(JsonPath.compile("$.notificationTypes[*]")));
         final List<String> notificationTypeValues = jsonExtractor.getValuesFromConfig(notificationTypesField, commonDistributionConfig);
-        assertEquals(notificationTypes, notificationTypeValues);
+        assertEquals(notificationTypes.size(), notificationTypeValues.size());
     }
 
     private ConfigurationModel createConfigModel(final Long id, final Long descriptorId, final String distributionType, final String name, final String providerName, final String frequency, final String filterByProject,
             final String projectNamePattern, final List<String> configuredProjects, final List<String> notificationTypes, final String formatType) {
         final ConfigurationModel configurationModel = Mockito.mock(ConfigurationModel.class);
-
-        Mockito.when(configurationModel.getConfigurationId()).thenReturn(id);
-        Mockito.when(configurationModel.getDescriptorId()).thenReturn(descriptorId);
 
         final List<ConfigurationFieldModel> fieldList = new ArrayList<>();
         mockField(fieldList, configurationModel, CommonDistributionUIConfig.KEY_NAME, name);
@@ -123,6 +121,11 @@ public class JsonExtractorTest {
         mockField(fieldList, configurationModel, BlackDuckDistributionUIConfig.KEY_FILTER_BY_PROJECT, filterByProject);
         mockField(fieldList, configurationModel, BlackDuckDistributionUIConfig.KEY_PROJECT_NAME_PATTERN, projectNamePattern);
         mockField(fieldList, configurationModel, BlackDuckDistributionUIConfig.KEY_CONFIGURED_PROJECT, configuredProjects);
+
+        Mockito.when(configurationModel.getConfigurationId()).thenReturn(id);
+        Mockito.when(configurationModel.getDescriptorId()).thenReturn(descriptorId);
+        Mockito.when(configurationModel.getCopyOfFieldList()).thenReturn(fieldList);
+        Mockito.when(configurationModel.getCopyOfKeyToFieldMap()).thenReturn(MockConfigurationModelFactory.mapFieldKeyToFields(fieldList));
 
         return configurationModel;
     }
