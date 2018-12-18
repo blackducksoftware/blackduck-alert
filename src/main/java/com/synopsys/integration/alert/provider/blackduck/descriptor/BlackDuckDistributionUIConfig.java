@@ -23,7 +23,6 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -39,9 +38,6 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 
 @Component
 public class BlackDuckDistributionUIConfig extends UIConfig {
-    public static final String KEY_FILTER_BY_PROJECT = "channel.common.filter.by.project";
-    public static final String KEY_PROJECT_NAME_PATTERN = "channel.common.project.name.pattern";
-    public static final String KEY_CONFIGURED_PROJECT = "channel.common.configured.project";
 
     @Override
     public UIComponent generateUIComponent() {
@@ -49,12 +45,12 @@ public class BlackDuckDistributionUIConfig extends UIConfig {
     }
 
     public List<ConfigField> createFields() {
-        final ConfigField filterByProject = new CheckboxConfigField(KEY_FILTER_BY_PROJECT, "Filter by project", false, false);
-        final ConfigField projectNamePattern = new TextInputConfigField(KEY_PROJECT_NAME_PATTERN, "Project name pattern", false, false);
+        final ConfigField filterByProject = new CheckboxConfigField(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT, "Filter by project", false, false);
+        final ConfigField projectNamePattern = new TextInputConfigField(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN, "Project name pattern", false, false);
 
         // TODO figure out how to create a project listing (Perhaps a new field type called table)
         // TODO create a linkedField that is an endpoint the UI hits to generate a field
-        final ConfigField configuredProject = new SelectConfigField(KEY_CONFIGURED_PROJECT, "Projects", true, false, Collections.emptyList());
-        return Arrays.asList(filterByProject, projectNamePattern, configuredProject);
+        final ConfigField configuredProject = new SelectConfigField(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT, "Projects", true, false, Collections.emptyList());
+        return List.of(filterByProject, projectNamePattern, configuredProject);
     }
 }

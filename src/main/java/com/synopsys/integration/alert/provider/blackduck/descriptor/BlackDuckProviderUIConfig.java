@@ -23,7 +23,6 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -38,14 +37,6 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 
 @Component
 public class BlackDuckProviderUIConfig extends UIConfig {
-    public static final String KEY_BLACKDUCK_URL = "blackduck.url";
-    public static final String KEY_BLACKDUCK_API_KEY = "blackduck.api.key";
-    public static final String KEY_BLACKDUCK_TIMEOUT = "blackduck.timeout";
-    public static final String KEY_BLACKDUCK_PROXY_HOST = "blackduck.proxy.host";
-    public static final String KEY_BLACKDUCK_PROXY_PORT = "blackduck.proxy.port";
-    public static final String KEY_BLACKDUCK_PROXY_USERNAME = "blackduck.proxy.username";
-    public static final String KEY_BLACKDUCK_PROXY_PASSWORD = "blackduck.proxy.password";
-
     private static final String PROXY_SUB_GROUP = "Proxy Configuration";
 
     @Override
@@ -54,15 +45,15 @@ public class BlackDuckProviderUIConfig extends UIConfig {
     }
 
     public List<ConfigField> setupFields() {
-        final ConfigField blackDuckUrl = new ReadOnlyConfigField(KEY_BLACKDUCK_URL, "Url", true, false);
-        final ConfigField blackDuckApiKey = new PasswordConfigField(KEY_BLACKDUCK_API_KEY, "API Token", true);
-        final ConfigField blackDuckTimeout = new NumberConfigField(KEY_BLACKDUCK_TIMEOUT, "Timeout", true, false);
-        final ConfigField blackDuckProxyHost = new ReadOnlyConfigField(KEY_BLACKDUCK_PROXY_HOST, "Host Name", false, false, PROXY_SUB_GROUP);
-        final ConfigField blackDuckProxyPort = new ReadOnlyConfigField(KEY_BLACKDUCK_PROXY_PORT, "Port", false, false, PROXY_SUB_GROUP);
-        final ConfigField blackDuckProxyUsername = new ReadOnlyConfigField(KEY_BLACKDUCK_PROXY_USERNAME, "Username", false, false, PROXY_SUB_GROUP);
-        final ConfigField blackDuckProxyPassword = new ReadOnlyConfigField(KEY_BLACKDUCK_PROXY_PASSWORD, "ProxyPassword", false, true, PROXY_SUB_GROUP);
+        final ConfigField blackDuckUrl = new ReadOnlyConfigField(BlackDuckDescriptor.KEY_BLACKDUCK_URL, "Url", true, false);
+        final ConfigField blackDuckApiKey = new PasswordConfigField(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, "API Token", true);
+        final ConfigField blackDuckTimeout = new NumberConfigField(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, "Timeout", true, false);
+        final ConfigField blackDuckProxyHost = new ReadOnlyConfigField(BlackDuckDescriptor.KEY_BLACKDUCK_PROXY_HOST, "Host Name", false, false, PROXY_SUB_GROUP);
+        final ConfigField blackDuckProxyPort = new ReadOnlyConfigField(BlackDuckDescriptor.KEY_BLACKDUCK_PROXY_PORT, "Port", false, false, PROXY_SUB_GROUP);
+        final ConfigField blackDuckProxyUsername = new ReadOnlyConfigField(BlackDuckDescriptor.KEY_BLACKDUCK_PROXY_USERNAME, "Username", false, false, PROXY_SUB_GROUP);
+        final ConfigField blackDuckProxyPassword = new ReadOnlyConfigField(BlackDuckDescriptor.KEY_BLACKDUCK_PROXY_PASSWORD, "ProxyPassword", false, true, PROXY_SUB_GROUP);
 
-        return Arrays.asList(blackDuckUrl, blackDuckApiKey, blackDuckTimeout, blackDuckProxyHost, blackDuckProxyPort, blackDuckProxyUsername, blackDuckProxyPassword);
+        return List.of(blackDuckUrl, blackDuckApiKey, blackDuckTimeout, blackDuckProxyHost, blackDuckProxyPort, blackDuckProxyUsername, blackDuckProxyPassword);
     }
 
 }

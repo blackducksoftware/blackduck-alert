@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.synopsys.integration.alert.TestPropertyKey;
 import com.synopsys.integration.alert.channel.DescriptorTestConfigTest;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
-import com.synopsys.integration.alert.channel.email.descriptor.EmailDistributionUIConfig;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
@@ -139,9 +138,9 @@ public class EmailChannelDescriptorTestIT extends DescriptorTestConfigTest {
         valueMap.put(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey(), new FieldValueModel(List.of(String.valueOf(smtpAuth)), true));
         valueMap.put(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), new FieldValueModel(List.of(String.valueOf(smtpPort)), true));
 
-        valueMap.put(EmailDistributionUIConfig.KEY_SUBJECT_LINE, new FieldValueModel(List.of(SUBJECT_LINE), true));
-        valueMap.put(EmailDistributionUIConfig.KEY_PROJECT_OWNER_ONLY, new FieldValueModel(List.of("true"), true));
-        valueMap.put(EmailDistributionUIConfig.KEY_EMAIL_ADDRESSES, new FieldValueModel(List.of("noreply@blackducksoftware.com"), true));
+        valueMap.put(EmailDescriptor.KEY_SUBJECT_LINE, new FieldValueModel(List.of(SUBJECT_LINE), true));
+        valueMap.put(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, new FieldValueModel(List.of("true"), true));
+        valueMap.put(EmailDescriptor.KEY_EMAIL_ADDRESSES, new FieldValueModel(List.of("noreply@blackducksoftware.com"), true));
 
         final FieldModel model = new FieldModel("1L", EmailGroupChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION.name(), valueMap);
         return model;

@@ -49,7 +49,7 @@ public class CommonDistributionUIConfig {
         final ConfigField channelName = new SelectConfigField(KEY_CHANNEL_NAME, "Channel Type", true, false, channelDescriptors);
         final ConfigField providerName = new SelectConfigField(KEY_PROVIDER_NAME, "Provider Type", true, false, providerDescriptors);
 
-        return Arrays.asList(name, channelName, frequency, providerName);
+        return List.of(name, channelName, frequency, providerName);
     }
 
 }

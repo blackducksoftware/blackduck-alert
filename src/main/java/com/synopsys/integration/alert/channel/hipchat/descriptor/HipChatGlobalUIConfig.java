@@ -38,12 +38,10 @@ import com.synopsys.integration.alert.common.enumeration.FieldGroup;
 
 @Component
 public class HipChatGlobalUIConfig extends UIConfig {
-    public static final String KEY_API_KEY = "api.key";
-    public static final String KEY_HOST_SERVER = "host.server";
 
     public List<ConfigField> setupFields() {
-        final ConfigField apiKey = new PasswordConfigField(KEY_API_KEY, "Api Key", true);
-        final ConfigField hostServer = new TextInputConfigField(KEY_HOST_SERVER, "Host Server", false, false, FieldGroup.ADVANCED);
+        final ConfigField apiKey = new PasswordConfigField(HipChatDescriptor.KEY_API_KEY, "Api Key", true);
+        final ConfigField hostServer = new TextInputConfigField(HipChatDescriptor.KEY_HOST_SERVER, "Host Server", false, false, FieldGroup.ADVANCED);
         return Arrays.asList(apiKey, hostServer);
     }
 
