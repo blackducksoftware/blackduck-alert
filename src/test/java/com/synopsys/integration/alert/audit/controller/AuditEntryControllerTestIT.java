@@ -15,7 +15,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.audit.mock.MockAuditEntryEntity;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
@@ -32,11 +31,14 @@ import com.synopsys.integration.alert.database.repository.configuration.Descript
 import com.synopsys.integration.alert.database.repository.configuration.FieldValueRepository;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
+import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.web.controller.BaseController;
 
 public class AuditEntryControllerTestIT extends AlertIntegrationTest {
 
     private final String auditUrl = BaseController.BASE_PATH + "/audit";
+    @Autowired
+    NotificationContentRepository notificationRepository;
     @Autowired
     private AuditEntryRepository auditEntryRepository;
     @Autowired
@@ -47,9 +49,6 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
     private DescriptorConfigRepository descriptorConfigRepository;
     @Autowired
     private FieldValueRepository fieldValueRepository;
-
-    @Autowired
-    NotificationContentRepository notificationRepository;
     @Autowired
     private WebApplicationContext webApplicationContext;
     private MockMvc mockMvc;

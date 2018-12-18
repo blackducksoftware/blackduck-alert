@@ -20,7 +20,6 @@ import org.springframework.core.convert.support.DefaultConversionService;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.FieldRegistrationIntegrationTest;
-import com.synopsys.integration.alert.TestProperties;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
@@ -30,6 +29,7 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.DescriptorAccessor;
+import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.FieldValueModel;
 import com.synopsys.integration.alert.web.model.TestConfigModel;

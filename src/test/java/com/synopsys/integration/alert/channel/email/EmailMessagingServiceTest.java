@@ -13,11 +13,11 @@ import javax.mail.internet.MimeMessage;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.TestProperties;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationFieldModel;
+import com.synopsys.integration.alert.util.TestProperties;
 
 public class EmailMessagingServiceTest {
 

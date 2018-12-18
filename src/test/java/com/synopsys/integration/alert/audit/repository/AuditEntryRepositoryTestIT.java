@@ -19,9 +19,9 @@ import java.util.Date;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
+import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 public class AuditEntryRepositoryTestIT extends AlertIntegrationTest {
     @Autowired

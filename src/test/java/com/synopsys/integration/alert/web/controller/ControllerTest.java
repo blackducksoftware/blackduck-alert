@@ -1,6 +1,6 @@
 package com.synopsys.integration.alert.web.controller;
 
-import com.synopsys.integration.alert.AlertIntegrationTest;
+import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 // FIXME change this into our new configuraitonController test class that is not abstract
 public abstract class ControllerTest extends AlertIntegrationTest {
