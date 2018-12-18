@@ -42,10 +42,10 @@ public class SlackUIConfig extends UIConfig {
     }
 
     public List<ConfigField> setupFields() {
-        final ConfigField webhook = new TextInputConfigField(SlackDescriptor.KEY_WEBHOOK, "Webhook", true, false);
-        final ConfigField channelUsername = new TextInputConfigField(SlackDescriptor.KEY_CHANNEL_USERNAME, "Channel Username", false, false);
-        final ConfigField channelName = new TextInputConfigField(SlackDescriptor.KEY_CHANNEL_NAME, "Channel Name", true, false);
-        return List.of(webhook, channelUsername, channelName);
+        final ConfigField webhook = TextInputConfigField.createRequired(SlackDescriptor.KEY_WEBHOOK, "Webhook");
+        final ConfigField channelName = TextInputConfigField.createRequired(SlackDescriptor.KEY_CHANNEL_NAME, "Channel Name");
+        final ConfigField channelUsername = TextInputConfigField.create(SlackDescriptor.KEY_CHANNEL_USERNAME, "Channel Username");
+        return List.of(webhook, channelName, channelUsername);
     }
 
 }
