@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
@@ -21,7 +21,7 @@ import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 
-public class AlertStartupInitializerTestIT {
+public class AlertStartupInitializerTest {
 
     @Test
     public void testInitializeConfigs() throws Exception {
