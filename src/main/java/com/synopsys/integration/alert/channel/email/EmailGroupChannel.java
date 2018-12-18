@@ -100,7 +100,7 @@ public class EmailGroupChannel extends DistributionChannel {
         emailAddresses = populateEmails(emailAddresses, event.getContent().getValue(), filterByProject);
         final EmailProperties emailProperties = new EmailProperties(fieldAccessor);
         final String subjectLine = fieldAccessor.getString(EmailDescriptor.KEY_SUBJECT_LINE).orElse("");
-        sendMessage(emailProperties, emailAddresses, subjectLine, event.getProvider(), event.getFormatType(), event.getContent(), "ProjectName");
+        sendMessage(emailProperties, emailAddresses, subjectLine, event.getProvider(), event.getFormatType(), event.getContent(), event.getContent().getValue());
     }
 
     public String testGlobalConfig(final TestConfigModel testConfig) throws IntegrationException {
