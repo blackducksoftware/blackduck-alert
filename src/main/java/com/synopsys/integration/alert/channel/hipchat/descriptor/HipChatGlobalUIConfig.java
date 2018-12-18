@@ -23,7 +23,6 @@
  */
 package com.synopsys.integration.alert.channel.hipchat.descriptor;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -40,9 +39,9 @@ import com.synopsys.integration.alert.common.enumeration.FieldGroup;
 public class HipChatGlobalUIConfig extends UIConfig {
 
     public List<ConfigField> setupFields() {
-        final ConfigField apiKey = new PasswordConfigField(HipChatDescriptor.KEY_API_KEY, "Api Key", true);
-        final ConfigField hostServer = new TextInputConfigField(HipChatDescriptor.KEY_HOST_SERVER, "Host Server", false, false, FieldGroup.ADVANCED);
-        return Arrays.asList(apiKey, hostServer);
+        final ConfigField apiKey = PasswordConfigField.createRequired(HipChatDescriptor.KEY_API_KEY, "Api Key");
+        final ConfigField hostServer = TextInputConfigField.createGrouped(HipChatDescriptor.KEY_HOST_SERVER, "Host Server", FieldGroup.ADVANCED);
+        return List.of(apiKey, hostServer);
     }
 
     @Override

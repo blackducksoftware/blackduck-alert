@@ -26,6 +26,17 @@ package com.synopsys.integration.alert.common.descriptor.config.field;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
 public class ReadOnlyConfigField extends ConfigField {
+    public static ReadOnlyConfigField createRequired(final String key, final String label) {
+        return new ReadOnlyConfigField(key, label, true, false);
+    }
+
+    public static ReadOnlyConfigField createGrouped(final String key, final String label, final String group) {
+        return new ReadOnlyConfigField(key, label, false, false, group);
+    }
+
+    public static ReadOnlyConfigField createSensitiveGrouped(final String key, final String label, final String group) {
+        return new ReadOnlyConfigField(key, label, false, true, group);
+    }
 
     public ReadOnlyConfigField(final String key, final String label, final boolean required, final boolean sensitive, final String subGroup) {
         super(key, label, FieldType.READ_ONLY.getFieldTypeName(), required, sensitive, subGroup);
