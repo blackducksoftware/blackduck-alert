@@ -31,7 +31,6 @@ public class Configuration {
 
     public Configuration(final ConfigurationModel configurationModel) {
         fieldAccessor = new FieldAccessor(configurationModel.getCopyOfKeyToFieldMap());
-
         id = configurationModel.getConfigurationId();
     }
 

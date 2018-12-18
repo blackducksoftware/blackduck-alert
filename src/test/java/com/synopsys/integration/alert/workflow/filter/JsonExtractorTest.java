@@ -89,11 +89,11 @@ public class JsonExtractorTest {
 
         final JsonField<String> configuredProjectsField = JsonField.createStringField(null, null, null, null, Arrays.asList(JsonPath.compile("$.configuredProjects[*]")));
         final List<String> configuredProjectValues = jsonExtractor.getValuesFromConfig(configuredProjectsField, commonDistributionConfig);
-        assertEquals(configuredProjects, configuredProjectValues);
+        assertEquals(configuredProjects.size(), configuredProjectValues.size());
 
         final JsonField<String> notificationTypesField = JsonField.createStringField(null, null, null, null, Arrays.asList(JsonPath.compile("$.notificationTypes[*]")));
         final List<String> notificationTypeValues = jsonExtractor.getValuesFromConfig(notificationTypesField, commonDistributionConfig);
-        assertEquals(notificationTypes, notificationTypeValues);
+        assertEquals(notificationTypes.size(), notificationTypeValues.size());
     }
 
     private class DummyClass extends Object {

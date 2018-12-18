@@ -17,6 +17,7 @@ import com.synopsys.integration.alert.common.configuration.CommonDistributionCon
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
+import com.synopsys.integration.alert.database.api.configuration.ConfigurationFieldModel;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 
 public class NotificationToDistributionEventConverterTestIT extends AlertIntegrationTest {
@@ -39,7 +40,9 @@ public class NotificationToDistributionEventConverterTestIT extends AlertIntegra
 
     private CommonDistributionConfiguration createEmailConfig() {
         final ConfigurationModel model = Mockito.mock(ConfigurationModel.class);
-        Mockito.when(model.getCopyOfFieldList()).thenReturn(MockConfigurationModelFactory.createEmailConfigurationFields());
+        final List<ConfigurationFieldModel> fields = MockConfigurationModelFactory.createEmailConfigurationFields();
+        Mockito.when(model.getCopyOfFieldList()).thenReturn(fields);
+        Mockito.when(model.getCopyOfKeyToFieldMap()).thenReturn(MockConfigurationModelFactory.mapFieldKeyToFields(fields));
 
         final CommonDistributionConfiguration config = new CommonDistributionConfiguration(model);
         return config;
@@ -47,7 +50,9 @@ public class NotificationToDistributionEventConverterTestIT extends AlertIntegra
 
     private CommonDistributionConfiguration createHipChatConfig() {
         final ConfigurationModel model = Mockito.mock(ConfigurationModel.class);
-        Mockito.when(model.getCopyOfFieldList()).thenReturn(MockConfigurationModelFactory.createHipChatConfigurationFields());
+        final List<ConfigurationFieldModel> fields = MockConfigurationModelFactory.createHipChatConfigurationFields();
+        Mockito.when(model.getCopyOfFieldList()).thenReturn(fields);
+        Mockito.when(model.getCopyOfKeyToFieldMap()).thenReturn(MockConfigurationModelFactory.mapFieldKeyToFields(fields));
 
         final CommonDistributionConfiguration config = new CommonDistributionConfiguration(model);
         return config;
@@ -55,7 +60,9 @@ public class NotificationToDistributionEventConverterTestIT extends AlertIntegra
 
     private CommonDistributionConfiguration createSlackConfig() {
         final ConfigurationModel model = Mockito.mock(ConfigurationModel.class);
+        final List<ConfigurationFieldModel> fields = MockConfigurationModelFactory.createSlackConfigurationFields();
         Mockito.when(model.getCopyOfFieldList()).thenReturn(MockConfigurationModelFactory.createSlackConfigurationFields());
+        Mockito.when(model.getCopyOfKeyToFieldMap()).thenReturn(MockConfigurationModelFactory.mapFieldKeyToFields(fields));
 
         final CommonDistributionConfiguration config = new CommonDistributionConfiguration(model);
         return config;

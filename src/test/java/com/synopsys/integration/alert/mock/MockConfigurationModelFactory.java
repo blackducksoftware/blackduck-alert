@@ -122,6 +122,11 @@ public class MockConfigurationModelFactory {
         mockField(fieldList, configurationModel, BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN, projectNamePattern);
         mockField(fieldList, configurationModel, BlackDuckDescriptor.KEY_CONFIGURED_PROJECT, configuredProjects);
 
+        Mockito.when(configurationModel.getConfigurationId()).thenReturn(id);
+        Mockito.when(configurationModel.getDescriptorId()).thenReturn(descriptorId);
+        Mockito.when(configurationModel.getCopyOfFieldList()).thenReturn(fieldList);
+        Mockito.when(configurationModel.getCopyOfKeyToFieldMap()).thenReturn(MockConfigurationModelFactory.mapFieldKeyToFields(fieldList));
+
         return configurationModel;
     }
 
