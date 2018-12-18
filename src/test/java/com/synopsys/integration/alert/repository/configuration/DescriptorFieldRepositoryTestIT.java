@@ -32,18 +32,18 @@ public class DescriptorFieldRepositoryTestIT extends AlertIntegrationTest {
 
     @BeforeEach
     public void init() {
-        registeredDescriptorRepository.deleteAll();
-        descriptorFieldRepository.deleteAll();
-        definedFieldRepository.deleteAll();
+        registeredDescriptorRepository.deleteAllInBatch();
+        descriptorFieldRepository.deleteAllInBatch();
+        definedFieldRepository.deleteAllInBatch();
 
         registeredDescriptorRepository.flush();
     }
 
     @AfterEach
     public void cleanup() {
-        registeredDescriptorRepository.deleteAll();
-        descriptorFieldRepository.deleteAll();
-        definedFieldRepository.deleteAll();
+        registeredDescriptorRepository.deleteAllInBatch();
+        descriptorFieldRepository.deleteAllInBatch();
+        definedFieldRepository.deleteAllInBatch();
     }
 
     @Test
