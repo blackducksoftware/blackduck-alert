@@ -1,11 +1,12 @@
 package com.synopsys.integration.alert.repository.configuration;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.database.entity.configuration.ConfigContextEntity;
@@ -27,11 +28,20 @@ public class FieldContextRepositoryTestIT extends AlertIntegrationTest {
     @Autowired
     private FieldContextRepository fieldContextRepository;
 
-    @After
+    @BeforeEach
+    public void init() {
+        definedFieldRepository.deleteAllInBatch();
+        fieldContextRepository.deleteAllInBatch();
+        configContextRepository.deleteAllInBatch();
+
+        definedFieldRepository.flush();
+    }
+
+    @AfterEach
     public void cleanup() {
-        definedFieldRepository.deleteAll();
-        fieldContextRepository.deleteAll();
-        configContextRepository.deleteAll();
+        definedFieldRepository.deleteAllInBatch();
+        fieldContextRepository.deleteAllInBatch();
+        configContextRepository.deleteAllInBatch();
     }
 
     @Test
