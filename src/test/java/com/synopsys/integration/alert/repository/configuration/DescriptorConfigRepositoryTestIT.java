@@ -30,18 +30,18 @@ public class DescriptorConfigRepositoryTestIT extends AlertIntegrationTest {
 
     @BeforeEach
     public void init() {
-        registeredDescriptorRepository.deleteAll();
-        configContextRepository.deleteAll();
-        descriptorConfigRepository.deleteAll();
+        registeredDescriptorRepository.deleteAllInBatch();
+        configContextRepository.deleteAllInBatch();
+        descriptorConfigRepository.deleteAllInBatch();
 
         registeredDescriptorRepository.flush();
     }
 
     @AfterEach
     public void cleanup() {
-        registeredDescriptorRepository.deleteAll();
-        configContextRepository.deleteAll();
-        descriptorConfigRepository.deleteAll();
+        registeredDescriptorRepository.deleteAllInBatch();
+        configContextRepository.deleteAllInBatch();
+        descriptorConfigRepository.deleteAllInBatch();
     }
 
     @Test
