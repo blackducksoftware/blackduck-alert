@@ -47,8 +47,8 @@ public class SchedulingUIConfig extends UIConfig {
     }
 
     public List<ConfigField> createFields() {
-        final ConfigField digestHour = new SelectConfigField(KEY_DAILY_DIGEST_HOUR_OF_DAY, "Daily digest hour of day", true, false, Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "10", "11", "12"));
-        final ConfigField purgeFrequency = new SelectConfigField(KEY_PURGE_DATA_FREQUENCY_DAYS, "Purge data frequency in days", true, false, Arrays.asList("1", "2", "3"));
+        final ConfigField digestHour = SelectConfigField.createRequired(KEY_DAILY_DIGEST_HOUR_OF_DAY, "Daily digest hour of day", Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "10", "11", "12"));
+        final ConfigField purgeFrequency = SelectConfigField.createRequired(KEY_PURGE_DATA_FREQUENCY_DAYS, "Purge data frequency in days", Arrays.asList("1", "2", "3"));
         return Arrays.asList(digestHour, purgeFrequency);
     }
 

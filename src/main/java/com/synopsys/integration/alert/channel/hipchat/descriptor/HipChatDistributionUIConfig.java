@@ -45,9 +45,9 @@ public class HipChatDistributionUIConfig extends UIConfig {
     }
 
     public List<ConfigField> setupFields() {
-        final ConfigField roomId = new NumberConfigField(HipChatDescriptor.KEY_ROOM_ID, "Room Id", true, false);
-        final ConfigField notify = new CheckboxConfigField(HipChatDescriptor.KEY_NOTIFY, "Notify", false);
-        final ConfigField color = new SelectConfigField(HipChatDescriptor.KEY_COLOR, "Color", false, false, Arrays.asList("Yellow", "Green", "Red", "Purple", "Gray", "Random"));
-        return Arrays.asList(roomId, notify, color);
+        final ConfigField roomId = NumberConfigField.createRequired(HipChatDescriptor.KEY_ROOM_ID, "Room Id");
+        final ConfigField notify = CheckboxConfigField.create(HipChatDescriptor.KEY_NOTIFY, "Notify");
+        final ConfigField color = SelectConfigField.create(HipChatDescriptor.KEY_COLOR, "Color", Arrays.asList("Yellow", "Green", "Red", "Purple", "Gray", "Random"));
+        return List.of(roomId, notify, color);
     }
 }
