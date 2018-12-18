@@ -26,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
@@ -47,6 +46,7 @@ import com.synopsys.integration.alert.database.repository.configuration.FieldVal
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.web.audit.AuditEntryHandler;
 import com.synopsys.integration.alert.web.audit.AuditEntryModel;
 import com.synopsys.integration.alert.web.model.AlertPagedModel;
@@ -119,7 +119,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
 
     @Test
     public void resendNotificationTestIt() throws Exception {
-        final String content = ResourceUtil.getResourceAsString(this.getClass(), "/json/policyOverrideNotification.json", StandardCharsets.UTF_8);
+        final String content = ResourceUtil.getResourceAsString(getClass(), "/json/policyOverrideNotification.json", StandardCharsets.UTF_8);
 
         final MockNotificationContent mockNotification = new MockNotificationContent(new java.util.Date(), BlackDuckProvider.COMPONENT_NAME, new java.util.Date(), "POLICY_OVERRIDE", content, 1L);
 

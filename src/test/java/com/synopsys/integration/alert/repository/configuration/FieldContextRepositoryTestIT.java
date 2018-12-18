@@ -8,25 +8,24 @@ import org.junit.After;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.database.entity.configuration.ConfigContextEntity;
 import com.synopsys.integration.alert.database.entity.configuration.DefinedFieldEntity;
 import com.synopsys.integration.alert.database.entity.configuration.FieldContextRelation;
 import com.synopsys.integration.alert.database.repository.configuration.ConfigContextRepository;
 import com.synopsys.integration.alert.database.repository.configuration.DefinedFieldRepository;
 import com.synopsys.integration.alert.database.repository.configuration.FieldContextRepository;
+import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 public class FieldContextRepositoryTestIT extends AlertIntegrationTest {
     public static final String CONTEXT_NAME = "TEST_CONTEXT";
     public static final String FIELD_KEY_1 = "field1";
     public static final String FIELD_KEY_2 = "field2";
-
+    @Autowired
+    public ConfigContextRepository configContextRepository;
     @Autowired
     private DefinedFieldRepository definedFieldRepository;
     @Autowired
     private FieldContextRepository fieldContextRepository;
-    @Autowired
-    public ConfigContextRepository configContextRepository;
 
     @After
     public void cleanup() {

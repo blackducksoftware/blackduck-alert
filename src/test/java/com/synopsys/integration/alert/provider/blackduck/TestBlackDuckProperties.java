@@ -9,7 +9,7 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.synopsys.integration.alert;
+package com.synopsys.integration.alert.provider.blackduck;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +21,9 @@ import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationFieldModel;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.util.TestAlertProperties;
+import com.synopsys.integration.alert.util.TestProperties;
+import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.blackduck.rest.BlackDuckRestConnection;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
@@ -116,7 +118,7 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
 
     public BlackDuckServerConfig createHubServerConfigWithCredentials(final IntLogger logger) throws NumberFormatException, AlertException {
         return super.createBlackDuckServerConfig(logger, Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT)), testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_USERNAME),
-                testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PASSWORD));
+            testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PASSWORD));
     }
 
     public BlackDuckServicesFactory createHubServicesFactoryWithCredential(final IntLogger logger) throws Exception {

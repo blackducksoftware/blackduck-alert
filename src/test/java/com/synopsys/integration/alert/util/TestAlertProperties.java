@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert;
+package com.synopsys.integration.alert.util;
 
 import java.util.Optional;
 
@@ -51,12 +51,21 @@ public class TestAlertProperties extends AlertProperties {
         return Optional.ofNullable(alertTrustCertificate);
     }
 
+    public void setAlertTrustCertificate(final Boolean alertTrustCertificate) {
+        this.alertTrustCertificate = alertTrustCertificate;
+    }
+
     @Override
     public Optional<String> getAlertProxyHost() {
         if (StringUtils.isNotBlank(alertProxyHost)) {
             return Optional.of(alertProxyHost);
         }
         return Optional.empty();
+    }
+
+    @Override
+    public void setAlertProxyHost(final String alertProxyHost) {
+        this.alertProxyHost = alertProxyHost;
     }
 
     @Override
@@ -68,11 +77,21 @@ public class TestAlertProperties extends AlertProperties {
     }
 
     @Override
+    public void setAlertProxyPort(final String alertProxyPort) {
+        this.alertProxyPort = alertProxyPort;
+    }
+
+    @Override
     public Optional<String> getAlertProxyUsername() {
         if (StringUtils.isNotBlank(alertProxyUsername)) {
             return Optional.of(alertProxyUsername);
         }
         return Optional.empty();
+    }
+
+    @Override
+    public void setAlertProxyUsername(final String alertProxyUsername) {
+        this.alertProxyUsername = alertProxyUsername;
     }
 
     @Override
@@ -83,22 +102,7 @@ public class TestAlertProperties extends AlertProperties {
         return Optional.empty();
     }
 
-    public void setAlertTrustCertificate(final Boolean alertTrustCertificate) {
-        this.alertTrustCertificate = alertTrustCertificate;
-    }
-
-    public void setAlertProxyHost(final String alertProxyHost) {
-        this.alertProxyHost = alertProxyHost;
-    }
-
-    public void setAlertProxyPort(final String alertProxyPort) {
-        this.alertProxyPort = alertProxyPort;
-    }
-
-    public void setAlertProxyUsername(final String alertProxyUsername) {
-        this.alertProxyUsername = alertProxyUsername;
-    }
-
+    @Override
     public void setAlertProxyPassword(final String alertProxyPassword) {
         this.alertProxyPassword = alertProxyPassword;
     }

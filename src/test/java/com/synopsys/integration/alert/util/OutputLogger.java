@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert;
+package com.synopsys.integration.alert.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -29,14 +29,6 @@ public class OutputLogger implements AutoCloseable {
         printLoggerOutput();
     }
 
-    private void printLoggerOutput() throws IOException {
-        loggerOutput.flush();
-        final String[] consoleLines = loggerOutput.toString().split("\n");
-        for (final String line : consoleLines) {
-            System.out.println(line);
-        }
-    }
-
     public boolean isLineContainingText(final String text) throws IOException {
         loggerOutput.flush();
         final String[] consoleLines = loggerOutput.toString().split("\n");
@@ -52,5 +44,13 @@ public class OutputLogger implements AutoCloseable {
     @Override
     public void close() throws Exception {
         cleanup();
+    }
+
+    private void printLoggerOutput() throws IOException {
+        loggerOutput.flush();
+        final String[] consoleLines = loggerOutput.toString().split("\n");
+        for (final String line : consoleLines) {
+            System.out.println(line);
+        }
     }
 }

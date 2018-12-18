@@ -16,7 +16,7 @@ import java.util.Set;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.AlertIntegrationTest;
+import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 public class UserAccessorTestIT extends AlertIntegrationTest {
 
