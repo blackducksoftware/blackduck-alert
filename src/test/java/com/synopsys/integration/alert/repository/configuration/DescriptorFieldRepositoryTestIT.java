@@ -1,11 +1,12 @@
 package com.synopsys.integration.alert.repository.configuration;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.AlertIntegrationTest;
@@ -29,7 +30,16 @@ public class DescriptorFieldRepositoryTestIT extends AlertIntegrationTest {
     @Autowired
     public DefinedFieldRepository definedFieldRepository;
 
-    @After
+    @BeforeEach
+    public void init() {
+        registeredDescriptorRepository.deleteAll();
+        descriptorFieldRepository.deleteAll();
+        definedFieldRepository.deleteAll();
+
+        registeredDescriptorRepository.flush();
+    }
+
+    @AfterEach
     public void cleanup() {
         registeredDescriptorRepository.deleteAll();
         descriptorFieldRepository.deleteAll();
