@@ -47,7 +47,7 @@ import com.synopsys.integration.alert.database.api.configuration.ConfigurationFi
 import com.synopsys.integration.alert.database.api.user.UserAccessor;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckProviderUIConfig;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.workflow.startup.SystemValidator;
 
 @Component
@@ -88,9 +88,9 @@ public class SystemInitializer {
         if (blackDuckConfigEntity.isPresent()) {
             final ConfigurationModel blackDuckEntity = blackDuckConfigEntity.get();
             final FieldAccessor fieldAccessor = new FieldAccessor(blackDuckEntity.getCopyOfKeyToFieldMap());
-            blackDuckUrl = fieldAccessor.getString(BlackDuckProviderUIConfig.KEY_BLACKDUCK_URL).orElse(null);
-            blackDuckConnectionTimeout = fieldAccessor.getInteger(BlackDuckProviderUIConfig.KEY_BLACKDUCK_TIMEOUT).orElse(null);
-            blackDuckApiToken = fieldAccessor.getString(BlackDuckProviderUIConfig.KEY_BLACKDUCK_API_KEY).orElse(null);
+            blackDuckUrl = fieldAccessor.getString(BlackDuckDescriptor.KEY_BLACKDUCK_URL).orElse(null);
+            blackDuckConnectionTimeout = fieldAccessor.getInteger(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT).orElse(null);
+            blackDuckApiToken = fieldAccessor.getString(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY).orElse(null);
         }
 
         return new RequiredSystemConfiguration(
@@ -154,9 +154,9 @@ public class SystemInitializer {
     private void saveBlackDuckConfiguration(final Integer timeout, final String apiToken, final String url) {
         final Optional<ConfigurationModel> blackDuckConfigEntity = getGlobalBlackDuckConfigEntity();
 
-        final ConfigurationFieldModel timeoutField = createField(BlackDuckProviderUIConfig.KEY_BLACKDUCK_TIMEOUT, String.valueOf(timeout));
-        final ConfigurationFieldModel apiField = createField(BlackDuckProviderUIConfig.KEY_BLACKDUCK_API_KEY, apiToken);
-        final ConfigurationFieldModel urlField = createField(BlackDuckProviderUIConfig.KEY_BLACKDUCK_URL, url);
+        final ConfigurationFieldModel timeoutField = createField(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, String.valueOf(timeout));
+        final ConfigurationFieldModel apiField = createField(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, apiToken);
+        final ConfigurationFieldModel urlField = createField(BlackDuckDescriptor.KEY_BLACKDUCK_URL, url);
         try {
             if (blackDuckConfigEntity.isPresent()) {
                 final ConfigurationModel configurationModel = blackDuckConfigEntity.get();

@@ -23,6 +23,7 @@
  */
 package com.synopsys.integration.alert.workflow.startup;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -46,6 +47,8 @@ import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
+import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -61,7 +64,7 @@ import com.synopsys.integration.alert.database.api.configuration.DescriptorAcces
 import com.synopsys.integration.alert.database.security.StringEncryptionConverter;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckProviderUIConfig;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
@@ -180,7 +183,7 @@ public class StartupManager {
             final ConfigurationModel globalBlackDuckConfigEntity = optionalGlobalBlackDuckConfigEntity.get();
             final FieldAccessor fieldAccessor = new FieldAccessor(globalBlackDuckConfigEntity.getCopyOfKeyToFieldMap());
             logger.info("BlackDuck API Token:           **********");
-            logger.info("BlackDuck Timeout:             {}", fieldAccessor.getInteger(BlackDuckProviderUIConfig.KEY_BLACKDUCK_TIMEOUT));
+            logger.info("BlackDuck Timeout:             {}", fieldAccessor.getInteger(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT));
         }
         logger.info("----------------------------------------");
     }
@@ -290,9 +293,25 @@ public class StartupManager {
             for (final Descriptor descriptor : missingDescriptors) {
                 final String descriptorName = descriptor.getName();
                 logger.info("Adding descriptor '{}'", descriptorName);
-                final Collection<DefinedFieldModel> fieldModels = descriptor.createAllDefinedFields();
                 final DescriptorType descriptorType = descriptor.getType();
-                descriptorAccessor.registerDescriptor(descriptorName, descriptorType, fieldModels);
+
+                final Collection<DefinedFieldModel> globalFieldModels = descriptor.getDefinedFields(ConfigContextEnum.GLOBAL);
+                final Collection<DefinedFieldModel> distributionFieldModels = descriptor.getDefinedFields(ConfigContextEnum.DISTRIBUTION);
+                descriptorAccessor.registerDescriptor(descriptorName, descriptorType, globalFieldModels);
+
+                List<DefinedFieldModel> completeDistributionFieldModels = new ArrayList<>();
+                completeDistributionFieldModels.addAll(distributionFieldModels);
+
+                final DefinedFieldModel name = DefinedFieldModel.createDistributionField(CommonDistributionUIConfig.KEY_NAME);
+                final DefinedFieldModel frequency = DefinedFieldModel.createDistributionField(CommonDistributionUIConfig.KEY_FREQUENCY);
+                final DefinedFieldModel channelName = DefinedFieldModel.createDistributionField(CommonDistributionUIConfig.KEY_CHANNEL_NAME);
+                final DefinedFieldModel providerName = DefinedFieldModel.createDistributionField(CommonDistributionUIConfig.KEY_PROVIDER_NAME);
+
+                final DefinedFieldModel formatType = DefinedFieldModel.createDistributionField(ProviderDistributionUIConfig.KEY_FORMAT_TYPE);
+                final DefinedFieldModel notificationTypes = DefinedFieldModel.createDistributionField(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES);
+                completeDistributionFieldModels.addAll(List.of(name, frequency, channelName, providerName, formatType, notificationTypes));
+
+                descriptorAccessor.registerDescriptor(descriptorName, descriptorType, completeDistributionFieldModels);
             }
         } catch (final AlertDatabaseConstraintException e) {
             logger.error("Error registering descriptors.");

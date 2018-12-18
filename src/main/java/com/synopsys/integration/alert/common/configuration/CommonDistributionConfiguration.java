@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistri
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDistributionUIConfig;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 
 public class CommonDistributionConfiguration extends Configuration {
     private final String name;
@@ -57,9 +57,9 @@ public class CommonDistributionConfiguration extends Configuration {
         notificationTypes = getFieldAccessor().getAllStrings(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES).stream().collect(Collectors.toSet());
         frequencyType = getFieldAccessor().getEnum(CommonDistributionUIConfig.KEY_FREQUENCY, FrequencyType.class).orElse(null);
         formatType = getFieldAccessor().getEnum(ProviderDistributionUIConfig.KEY_FORMAT_TYPE, FormatType.class).orElse(null);
-        filterByProject = getFieldAccessor().getBoolean(BlackDuckDistributionUIConfig.KEY_FILTER_BY_PROJECT).orElse(null);
-        projectNamePattern = getFieldAccessor().getString(BlackDuckDistributionUIConfig.KEY_PROJECT_NAME_PATTERN).orElse(null);
-        configuredProjects = getFieldAccessor().getAllStrings(BlackDuckDistributionUIConfig.KEY_CONFIGURED_PROJECT).stream().collect(Collectors.toSet());
+        filterByProject = getFieldAccessor().getBoolean(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT).orElse(null);
+        projectNamePattern = getFieldAccessor().getString(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN).orElse(null);
+        configuredProjects = getFieldAccessor().getAllStrings(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT).stream().collect(Collectors.toSet());
     }
 
     public String getName() {

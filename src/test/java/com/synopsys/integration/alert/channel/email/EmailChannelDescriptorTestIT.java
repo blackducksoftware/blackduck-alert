@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.database.provider.blackduck.data.relation.
 import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelationRepositoryAccessor;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckProviderUIConfig;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.FieldValueModel;
 import com.synopsys.integration.rest.RestConstants;
@@ -68,15 +68,15 @@ public class EmailChannelDescriptorTestIT extends DescriptorTestConfigTest {
         final UserProjectRelation userProjectRelation4 = new UserProjectRelation(user3.getId(), project4.getId());
         userProjectRelationRepositoryAccessor.deleteAndSaveAll(new HashSet<>(Arrays.asList(userProjectRelation1, userProjectRelation2, userProjectRelation3, userProjectRelation4)));
 
-        final String blackDuckTimeoutKey = BlackDuckProviderUIConfig.KEY_BLACKDUCK_TIMEOUT;
+        final String blackDuckTimeoutKey = BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT;
         final ConfigurationFieldModel blackDuckTimeoutField = ConfigurationFieldModel.create(blackDuckTimeoutKey);
         blackDuckTimeoutField.setFieldValue(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT));
 
-        final String blackDuckApiKey = BlackDuckProviderUIConfig.KEY_BLACKDUCK_API_KEY;
+        final String blackDuckApiKey = BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY;
         final ConfigurationFieldModel blackDuckApiField = ConfigurationFieldModel.create(blackDuckApiKey);
         blackDuckApiField.setFieldValue(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY));
 
-        final String blackDuckProviderUrlKey = BlackDuckProviderUIConfig.KEY_BLACKDUCK_URL;
+        final String blackDuckProviderUrlKey = BlackDuckDescriptor.KEY_BLACKDUCK_URL;
         final ConfigurationFieldModel blackDuckProviderUrlField = ConfigurationFieldModel.create(blackDuckProviderUrlKey);
         blackDuckProviderUrlField.setFieldValue(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
 

@@ -47,21 +47,21 @@ public class BlackDuckDistributionDescriptorActionApi extends ProviderDistributi
 
     @Override
     public void validateProviderDistributionConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
-        final String filterByProject = fieldAccessor.getString(BlackDuckDistributionUIConfig.KEY_FILTER_BY_PROJECT).orElse(null);
+        final String filterByProject = fieldAccessor.getString(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT).orElse(null);
         if (StringUtils.isNotBlank(filterByProject) && !contentConverter.isBoolean(filterByProject)) {
-            fieldErrors.put(BlackDuckDistributionUIConfig.KEY_FILTER_BY_PROJECT, "Not a Boolean.");
+            fieldErrors.put(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT, "Not a Boolean.");
         }
-        final String projectNamePattern = fieldAccessor.getString(BlackDuckDistributionUIConfig.KEY_PROJECT_NAME_PATTERN).orElse(null);
+        final String projectNamePattern = fieldAccessor.getString(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN).orElse(null);
         if (StringUtils.isNotBlank(projectNamePattern)) {
             try {
                 Pattern.compile(projectNamePattern);
             } catch (final PatternSyntaxException e) {
-                fieldErrors.put(BlackDuckDistributionUIConfig.KEY_PROJECT_NAME_PATTERN, "Project name pattern is not a regular expression. " + e.getMessage());
+                fieldErrors.put(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN, "Project name pattern is not a regular expression. " + e.getMessage());
             }
         }
-        final Collection<String> configuredProjects = fieldAccessor.getAllStrings(BlackDuckDistributionUIConfig.KEY_CONFIGURED_PROJECT);
+        final Collection<String> configuredProjects = fieldAccessor.getAllStrings(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT);
         if (contentConverter.getBooleanValue(filterByProject) && (null == configuredProjects || configuredProjects.isEmpty()) && StringUtils.isBlank(projectNamePattern)) {
-            fieldErrors.put(BlackDuckDistributionUIConfig.KEY_CONFIGURED_PROJECT, "You must select at least one project.");
+            fieldErrors.put(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT, "You must select at least one project.");
         }
     }
 

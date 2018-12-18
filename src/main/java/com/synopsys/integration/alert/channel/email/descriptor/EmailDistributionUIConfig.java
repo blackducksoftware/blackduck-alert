@@ -37,9 +37,6 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 
 @Component
 public class EmailDistributionUIConfig extends UIConfig {
-    public static final String KEY_SUBJECT_LINE = "subject.line";
-    public static final String KEY_PROJECT_OWNER_ONLY = "project.owner.only";
-    public static final String KEY_EMAIL_ADDRESSES = "email.addresses";
 
     @Override
     public UIComponent generateUIComponent() {
@@ -47,8 +44,8 @@ public class EmailDistributionUIConfig extends UIConfig {
     }
 
     public List<ConfigField> setupFields() {
-        final ConfigField subjectLine = new TextInputConfigField(KEY_SUBJECT_LINE, "Subject Line", false, false);
-        final ConfigField projectOwnerOnly = new CheckboxConfigField(KEY_PROJECT_OWNER_ONLY, "Project Owner Only", false, false);
+        final ConfigField subjectLine = new TextInputConfigField(EmailDescriptor.KEY_SUBJECT_LINE, "Subject Line", false, false);
+        final ConfigField projectOwnerOnly = new CheckboxConfigField(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, "Project Owner Only", false, false);
         return Arrays.asList(subjectLine, projectOwnerOnly);
     }
 }
