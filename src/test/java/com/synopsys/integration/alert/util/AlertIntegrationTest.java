@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert;
+package com.synopsys.integration.alert.util;
 
 import org.junit.Test;
 import org.junit.jupiter.api.Tag;
@@ -16,6 +16,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.synopsys.integration.alert.Application;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
 
 @Tag(TestTags.DEFAULT_INTEGRATION)

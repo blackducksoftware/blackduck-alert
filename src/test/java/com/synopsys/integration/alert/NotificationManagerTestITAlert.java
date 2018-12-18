@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.entity.repository.NotificationContentRepository;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
+import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.workflow.NotificationManager;
 
 public class NotificationManagerTestITAlert extends AlertIntegrationTest {
@@ -26,20 +27,6 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
 
     @Autowired
     private NotificationManager notificationManager;
-
-    private NotificationContent createNotificationContent(final Date createdAt) {
-        final MockNotificationContent mockedNotificationContent = new MockNotificationContent(createdAt, "provider", createdAt, "notificationType", "{content: \"content is here...\"}", null);
-        return mockedNotificationContent.createEntity();
-    }
-
-    private NotificationContent createNotificationContent() {
-        final Date createdAt = createDate(LocalDateTime.now());
-        return createNotificationContent(createdAt);
-    }
-
-    private Date createDate(final LocalDateTime localTime) {
-        return Date.from(localTime.toInstant(ZoneOffset.UTC));
-    }
 
     public void assertNotificationModel(final NotificationContent notification, final NotificationContent savedNotification) {
         assertEquals(notification.getCreatedAt(), savedNotification.getCreatedAt());
@@ -198,5 +185,19 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
         notificationManager.deleteNotification(savedModel);
 
         assertEquals(0, notificationContentRepository.count());
+    }
+
+    private NotificationContent createNotificationContent(final Date createdAt) {
+        final MockNotificationContent mockedNotificationContent = new MockNotificationContent(createdAt, "provider", createdAt, "notificationType", "{content: \"content is here...\"}", null);
+        return mockedNotificationContent.createEntity();
+    }
+
+    private NotificationContent createNotificationContent() {
+        final Date createdAt = createDate(LocalDateTime.now());
+        return createNotificationContent(createdAt);
+    }
+
+    private Date createDate(final LocalDateTime localTime) {
+        return Date.from(localTime.toInstant(ZoneOffset.UTC));
     }
 }

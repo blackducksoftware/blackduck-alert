@@ -10,13 +10,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.OutputLogger;
-import com.synopsys.integration.alert.TestAlertProperties;
-import com.synopsys.integration.alert.TestBlackDuckProperties;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.api.user.UserAccessor;
 import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
+import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties;
+import com.synopsys.integration.alert.util.OutputLogger;
+import com.synopsys.integration.alert.util.TestAlertProperties;
 
 public class SystemValidatorTest {
     private OutputLogger outputLogger;

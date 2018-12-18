@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert;
+package com.synopsys.integration.alert.util;
 
 public enum TestPropertyKey {
     TEST_BLACKDUCK_PROVIDER_URL("blackduck.provider.url"),
@@ -36,6 +36,6 @@ public enum TestPropertyKey {
     }
 
     public String getPropertyKey() {
-        return this.propertyKey;
+        return propertyKey;
     }
 }

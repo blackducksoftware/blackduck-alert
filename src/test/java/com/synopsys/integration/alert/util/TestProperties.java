@@ -9,7 +9,7 @@
  * accordance with the terms of the license agreement you entered into
  * with Black Duck Software.
  */
-package com.synopsys.integration.alert;
+package com.synopsys.integration.alert.util;
 
 import java.util.Properties;
 
@@ -22,7 +22,7 @@ public class TestProperties {
 
     public TestProperties() {
         resourceLoader = new ResourceLoader();
-        this.propertiesLocation = ResourceLoader.DEFAULT_PROPERTIES_FILE_LOCATION;
+        propertiesLocation = ResourceLoader.DEFAULT_PROPERTIES_FILE_LOCATION;
     }
 
     public TestProperties(final String propertiesLocation) {
@@ -53,15 +53,6 @@ public class TestProperties {
         return properties;
     }
 
-    private void populatePropertiesFromEnv() {
-        for (final TestPropertyKey key : TestPropertyKey.values()) {
-            final String prop = System.getenv(key.name());
-            if (prop != null && !prop.isEmpty()) {
-                properties.put(key.getPropertyKey(), prop);
-            }
-        }
-    }
-
     public String getProperty(final TestPropertyKey propertyKey) {
         return getProperty(propertyKey.getPropertyKey());
     }
@@ -85,5 +76,14 @@ public class TestProperties {
 
     public boolean containsKey(final String propertyKey) {
         return getProperties().containsKey(propertyKey);
+    }
+
+    private void populatePropertiesFromEnv() {
+        for (final TestPropertyKey key : TestPropertyKey.values()) {
+            final String prop = System.getenv(key.name());
+            if (prop != null && !prop.isEmpty()) {
+                properties.put(key.getPropertyKey(), prop);
+            }
+        }
     }
 }
