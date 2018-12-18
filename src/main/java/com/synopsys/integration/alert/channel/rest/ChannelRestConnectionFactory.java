@@ -36,6 +36,7 @@ import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.connection.RestConnection;
 import com.synopsys.integration.rest.credentials.Credentials;
+import com.synopsys.integration.rest.credentials.CredentialsBuilder;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.rest.proxy.ProxyInfoBuilder;
 
@@ -74,7 +75,10 @@ public class ChannelRestConnectionFactory {
             proxyInfoBuilder.setPort(NumberUtils.toInt(alertProxyPort.get()));
         }
         if (alertProxyUsername.isPresent() && alertProxyPassword.isPresent()) {
-            proxyInfoBuilder.setCredentials(new Credentials(alertProxyUsername.get(), alertProxyPassword.get()));
+            final CredentialsBuilder credentialBuilder = Credentials.newBuilder();
+            credentialBuilder.setUsername(alertProxyUsername.get());
+            credentialBuilder.setPassword(alertProxyPassword.get());
+            proxyInfoBuilder.setCredentials(credentialBuilder.build());
         }
         return proxyInfoBuilder.build();
     }

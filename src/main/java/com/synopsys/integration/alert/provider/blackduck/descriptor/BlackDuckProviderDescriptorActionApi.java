@@ -58,7 +58,7 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
 
     @Autowired
     public BlackDuckProviderDescriptorActionApi(final BlackDuckTypeConverter databaseContentConverter, final BlackDuckRepositoryAccessor repositoryAccessor, final BlackDuckProviderStartupComponent startupComponent,
-            final BlackDuckProperties blackDuckProperties) {
+        final BlackDuckProperties blackDuckProperties) {
         super(databaseContentConverter, repositoryAccessor, startupComponent);
         this.blackDuckProperties = blackDuckProperties;
     }
@@ -92,7 +92,7 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
 
         final BlackDuckRestConnection restConnection = createRestConnection(blackDuckServerConfigBuilder);
         final BlackDuckServerVerifier blackDuckServerVerifier = new BlackDuckServerVerifier();
-        blackDuckServerVerifier.verifyIsBlackDuckServer(restConnection.getBaseUrl(), restConnection.getProxyInfo(), restConnection.isAlwaysTrustServerCertificate(), restConnection.getTimeout());
+        blackDuckServerVerifier.verifyIsBlackDuckServer(restConnection.getBaseUrl(), restConnection.getProxyInfo(), restConnection.isAlwaysTrustServerCertificate(), restConnection.getTimeoutInSeconds());
 
         final Request authRequest = RequestFactory.createCommonGetRequest(url);
         try (final Response response = restConnection.execute(authRequest)) {
