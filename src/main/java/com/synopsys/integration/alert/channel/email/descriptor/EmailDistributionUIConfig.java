@@ -44,7 +44,7 @@ public class EmailDistributionUIConfig extends UIConfig {
     }
 
     public List<ConfigField> setupFields() {
-        final ConfigField subjectLine = TextInputConfigField.createRequired(EmailDescriptor.KEY_SUBJECT_LINE, "Subject Line");
+        final ConfigField subjectLine = TextInputConfigField.create(EmailDescriptor.KEY_SUBJECT_LINE, "Subject Line");
         final ConfigField projectOwnerOnly = CheckboxConfigField.create(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, "Project Owner Only");
         return Arrays.asList(subjectLine, projectOwnerOnly);
     }
