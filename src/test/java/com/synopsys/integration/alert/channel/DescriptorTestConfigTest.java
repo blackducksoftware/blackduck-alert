@@ -128,10 +128,10 @@ public abstract class DescriptorTestConfigTest extends FieldRegistrationIntegrat
     }
 
     @Test
-    public void testCreateChannelEvent() throws Exception {
+    public void testCreateChannelEvent() {
         final DistributionEvent channelEvent = this.createChannelEvent();
 
-        assertEquals("1", channelEvent.getConfigId());
+        assertEquals(distribution_config.getConfigurationId(), channelEvent.getConfigId());
         assertEquals(36, channelEvent.getEventId().length());
         assertEquals(getDescriptor().getDestinationName(), channelEvent.getDestination());
     }

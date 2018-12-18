@@ -135,7 +135,8 @@ public class EmailChannelDescriptorTestIT extends DescriptorTestConfigTest {
 
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);
         final String createdAt = RestConstants.formatDate(DateRange.createCurrentDateTimestamp());
-        final DistributionEvent event = new DistributionEvent("1", EmailGroupChannel.COMPONENT_NAME, createdAt, BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), content, fieldAccessor);
+        final DistributionEvent event = new DistributionEvent(String.valueOf(distribution_config.getConfigurationId()), EmailGroupChannel.COMPONENT_NAME, createdAt, BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), content,
+            fieldAccessor);
         return event;
     }
 
@@ -147,7 +148,7 @@ public class EmailChannelDescriptorTestIT extends DescriptorTestConfigTest {
     @Override
     public FieldModel getFieldModel() {
         final Map<String, FieldValueModel> valueMap = createFieldModelMap();
-        final FieldModel model = new FieldModel("1", EmailGroupChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION.name(), valueMap);
+        final FieldModel model = new FieldModel(String.valueOf(distribution_config.getConfigurationId()), EmailGroupChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION.name(), valueMap);
         return model;
     }
 }
