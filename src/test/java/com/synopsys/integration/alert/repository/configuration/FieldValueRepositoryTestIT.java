@@ -1,11 +1,12 @@
 package com.synopsys.integration.alert.repository.configuration;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.database.entity.configuration.ConfigContextEntity;
@@ -38,15 +39,27 @@ public class FieldValueRepositoryTestIT extends AlertIntegrationTest {
     private DescriptorConfigRepository descriptorConfigRepository;
     @Autowired
     private FieldValueRepository fieldValueRepository;
+     
+    @BeforeEach
+    public void init() {
+        registeredDescriptorRepository.deleteAllInBatch();
+        descriptorFieldRepository.deleteAllInBatch();
+        definedFieldRepository.deleteAllInBatch();
+        descriptorConfigRepository.deleteAllInBatch();
+        configContextRepository.deleteAllInBatch();
+        fieldValueRepository.deleteAllInBatch();
 
-    @After
+        registeredDescriptorRepository.flush();
+    }
+
+    @AfterEach
     public void cleanup() {
-        registeredDescriptorRepository.deleteAll();
-        descriptorFieldRepository.deleteAll();
-        definedFieldRepository.deleteAll();
-        descriptorConfigRepository.deleteAll();
-        configContextRepository.deleteAll();
-        fieldValueRepository.deleteAll();
+        registeredDescriptorRepository.deleteAllInBatch();
+        descriptorFieldRepository.deleteAllInBatch();
+        definedFieldRepository.deleteAllInBatch();
+        descriptorConfigRepository.deleteAllInBatch();
+        configContextRepository.deleteAllInBatch();
+        fieldValueRepository.deleteAllInBatch();
     }
 
     @Test

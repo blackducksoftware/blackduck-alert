@@ -45,7 +45,7 @@ public class BlackDuckDistributionUIConfig extends UIConfig {
     }
 
     public List<ConfigField> createFields() {
-        final ConfigField filterByProject = new CheckboxConfigField(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT, "Filter by project", false, false);
+        final ConfigField filterByProject = new CheckboxConfigField(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT, "Filter by project", false);
         final ConfigField projectNamePattern = new TextInputConfigField(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN, "Project name pattern", false, false);
 
         // TODO figure out how to create a project listing (Perhaps a new field type called table)
