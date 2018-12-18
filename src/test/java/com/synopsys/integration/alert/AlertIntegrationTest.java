@@ -1,10 +1,12 @@
 package com.synopsys.integration.alert;
 
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
@@ -18,6 +20,7 @@ import com.synopsys.integration.alert.database.DatabaseDataSource;
 @Tag(TestTags.DEFAULT_INTEGRATION)
 @Tag(TestTags.CUSTOM_DATABASE_CONNECTION)
 @RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = { Application.class, DatabaseDataSource.class })
 @TestPropertySource(locations = "classpath:spring-test.properties")
 @Transactional

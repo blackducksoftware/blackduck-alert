@@ -26,6 +26,7 @@ package com.synopsys.integration.alert.common.configuration;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apache.commons.lang3.EnumUtils;
 
@@ -67,7 +68,10 @@ public class FieldAccessor {
     }
 
     public Collection<String> getAllStrings(final String key) {
-        return fields.get(key).getFieldValues();
+        if (fields.containsKey(key)) {
+            return fields.get(key).getFieldValues();
+        }
+        return Set.of();
     }
 
     public <T extends Enum<T>> Optional<T> getEnum(final String key, final Class<T> enumClass) {
@@ -83,7 +87,6 @@ public class FieldAccessor {
         if (fieldModel == null) {
             return Optional.empty();
         }
-
         return fieldModel.getFieldValue();
     }
 
