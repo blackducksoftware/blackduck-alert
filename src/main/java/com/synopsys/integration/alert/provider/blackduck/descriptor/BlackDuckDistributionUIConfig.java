@@ -23,7 +23,6 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -45,12 +44,12 @@ public class BlackDuckDistributionUIConfig extends UIConfig {
     }
 
     public List<ConfigField> createFields() {
-        final ConfigField filterByProject = new CheckboxConfigField(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT, "Filter by project", false);
-        final ConfigField projectNamePattern = new TextInputConfigField(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN, "Project name pattern", false, false);
+        final ConfigField filterByProject = CheckboxConfigField.create(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT, "Filter by project");
+        final ConfigField projectNamePattern = TextInputConfigField.create(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN, "Project name pattern");
 
         // TODO figure out how to create a project listing (Perhaps a new field type called table)
         // TODO create a linkedField that is an endpoint the UI hits to generate a field
-        final ConfigField configuredProject = new SelectConfigField(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT, "Projects", true, false, Collections.emptyList());
+        final ConfigField configuredProject = SelectConfigField.createRequiredEmpty(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT, "Projects");
         return List.of(filterByProject, projectNamePattern, configuredProject);
     }
 }

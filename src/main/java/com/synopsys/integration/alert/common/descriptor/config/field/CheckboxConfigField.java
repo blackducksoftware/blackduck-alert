@@ -27,6 +27,13 @@ import com.synopsys.integration.alert.common.enumeration.FieldGroup;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
 public class CheckboxConfigField extends ConfigField {
+    public static CheckboxConfigField create(final String key, final String label) {
+        return new CheckboxConfigField(key, label, false);
+    }
+
+    public static CheckboxConfigField createGrouped(final String key, final String label, final FieldGroup group) {
+        return new CheckboxConfigField(key, label, false, group);
+    }
 
     public CheckboxConfigField(final String key, final String label, final boolean required, final FieldGroup group) {
         super(key, label, FieldType.CHECKBOX_INPUT.getFieldTypeName(), required, false, group);
