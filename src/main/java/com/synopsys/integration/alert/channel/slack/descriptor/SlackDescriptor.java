@@ -23,9 +23,9 @@
  */
 package com.synopsys.integration.alert.channel.slack.descriptor;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -52,7 +52,7 @@ public class SlackDescriptor extends ChannelDescriptor {
             final DefinedFieldModel webhook = DefinedFieldModel.createDistributionField(SlackDescriptor.KEY_WEBHOOK);
             final DefinedFieldModel channelUsername = DefinedFieldModel.createDistributionField(SlackDescriptor.KEY_CHANNEL_USERNAME);
             final DefinedFieldModel channelName = DefinedFieldModel.createDistributionField(SlackDescriptor.KEY_CHANNEL_NAME);
-            return Arrays.asList(webhook, channelUsername, channelName);
+            return List.of(webhook, channelUsername, channelName);
         }
         return Collections.emptyList();
     }

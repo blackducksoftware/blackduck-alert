@@ -23,6 +23,7 @@
  */
 package com.synopsys.integration.alert.workflow.startup;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -298,6 +299,9 @@ public class StartupManager {
                 final Collection<DefinedFieldModel> distributionFieldModels = descriptor.getDefinedFields(ConfigContextEnum.DISTRIBUTION);
                 descriptorAccessor.registerDescriptor(descriptorName, descriptorType, globalFieldModels);
 
+                List<DefinedFieldModel> completeDistributionFieldModels = new ArrayList<>();
+                completeDistributionFieldModels.addAll(distributionFieldModels);
+
                 final DefinedFieldModel name = DefinedFieldModel.createDistributionField(CommonDistributionUIConfig.KEY_NAME);
                 final DefinedFieldModel frequency = DefinedFieldModel.createDistributionField(CommonDistributionUIConfig.KEY_FREQUENCY);
                 final DefinedFieldModel channelName = DefinedFieldModel.createDistributionField(CommonDistributionUIConfig.KEY_CHANNEL_NAME);
@@ -305,9 +309,9 @@ public class StartupManager {
 
                 final DefinedFieldModel formatType = DefinedFieldModel.createDistributionField(ProviderDistributionUIConfig.KEY_FORMAT_TYPE);
                 final DefinedFieldModel notificationTypes = DefinedFieldModel.createDistributionField(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES);
-                distributionFieldModels.addAll(List.of(name, frequency, channelName, providerName, formatType, notificationTypes));
+                completeDistributionFieldModels.addAll(List.of(name, frequency, channelName, providerName, formatType, notificationTypes));
 
-                descriptorAccessor.registerDescriptor(descriptorName, descriptorType, distributionFieldModels);
+                descriptorAccessor.registerDescriptor(descriptorName, descriptorType, completeDistributionFieldModels);
             }
         } catch (final AlertDatabaseConstraintException e) {
             logger.error("Error registering descriptors.");
