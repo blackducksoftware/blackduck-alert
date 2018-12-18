@@ -23,9 +23,9 @@
  */
 package com.synopsys.integration.alert.channel.hipchat.descriptor;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -55,12 +55,12 @@ public class HipChatDescriptor extends ChannelDescriptor {
         if (ConfigContextEnum.GLOBAL == context) {
             final DefinedFieldModel apiKey = DefinedFieldModel.createGlobalSensitiveField(KEY_API_KEY);
             final DefinedFieldModel hostServer = DefinedFieldModel.createGlobalField(KEY_HOST_SERVER);
-            return Arrays.asList(apiKey, hostServer);
+            return List.of(apiKey, hostServer);
         } else if (ConfigContextEnum.DISTRIBUTION == context) {
             final DefinedFieldModel roomId = DefinedFieldModel.createDistributionField(KEY_ROOM_ID);
             final DefinedFieldModel notify = DefinedFieldModel.createDistributionField(KEY_NOTIFY);
             final DefinedFieldModel color = DefinedFieldModel.createDistributionField(KEY_COLOR);
-            return Arrays.asList(roomId, notify, color);
+            return List.of(roomId, notify, color);
         }
         return Collections.emptyList();
     }

@@ -23,9 +23,9 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,12 +74,12 @@ public class BlackDuckDescriptor extends ProviderDescriptor {
             final DefinedFieldModel blackDuckProxyPort = DefinedFieldModel.createGlobalField(KEY_BLACKDUCK_PROXY_PORT);
             final DefinedFieldModel blackDuckProxyUsername = DefinedFieldModel.createGlobalField(KEY_BLACKDUCK_PROXY_USERNAME);
             final DefinedFieldModel blackDuckProxyPassword = DefinedFieldModel.createGlobalSensitiveField(KEY_BLACKDUCK_PROXY_PASSWORD);
-            return Arrays.asList(blackDuckUrl, blackDuckApiKey, blackDuckTimeout, blackDuckProxyHost, blackDuckProxyPort, blackDuckProxyUsername, blackDuckProxyPassword);
+            return List.of(blackDuckUrl, blackDuckApiKey, blackDuckTimeout, blackDuckProxyHost, blackDuckProxyPort, blackDuckProxyUsername, blackDuckProxyPassword);
         } else if (ConfigContextEnum.DISTRIBUTION == context) {
             final DefinedFieldModel filterByProject = DefinedFieldModel.createDistributionField(KEY_FILTER_BY_PROJECT);
             final DefinedFieldModel projectNamePattern = DefinedFieldModel.createDistributionField(KEY_PROJECT_NAME_PATTERN);
             final DefinedFieldModel configuredProject = DefinedFieldModel.createDistributionField(KEY_CONFIGURED_PROJECT);
-            return Arrays.asList(filterByProject, projectNamePattern, configuredProject);
+            return List.of(filterByProject, projectNamePattern, configuredProject);
         }
         return Collections.emptyList();
     }

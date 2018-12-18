@@ -23,10 +23,10 @@
  */
 package com.synopsys.integration.alert.channel.email.descriptor;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +64,7 @@ public class EmailDescriptor extends ChannelDescriptor {
         } else if (ConfigContextEnum.DISTRIBUTION == context) {
             final DefinedFieldModel subjectLine = DefinedFieldModel.createDistributionField(KEY_SUBJECT_LINE);
             final DefinedFieldModel projectOwnerOnly = DefinedFieldModel.createDistributionField(KEY_PROJECT_OWNER_ONLY);
-            return Arrays.asList(subjectLine, projectOwnerOnly);
+            return List.of(subjectLine, projectOwnerOnly);
         }
 
         return Collections.emptyList();
