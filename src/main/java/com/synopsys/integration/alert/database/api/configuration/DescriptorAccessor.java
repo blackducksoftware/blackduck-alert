@@ -103,6 +103,7 @@ public class DescriptorAccessor implements BaseDescriptorAccessor {
     }
 
     @Override
+    // TODO add foreign key constraint for type on the registered descriptors table
     public List<RegisteredDescriptorModel> getRegisteredDescriptorsByType(final DescriptorType descriptorType) throws AlertDatabaseConstraintException {
         if (null == descriptorType) {
             throw new AlertDatabaseConstraintException("Descriptor type cannot be null");
