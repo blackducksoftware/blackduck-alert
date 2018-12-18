@@ -36,49 +36,46 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistribu
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 
 public interface NotificationContentRepository extends JpaRepository<NotificationContent, Long> {
-    //    @Query("SELECT entity FROM NotificationContent entity WHERE entity.createdAt BETWEEN ?1 AND ?2 ORDER BY created_at, provider_creation_time asc")
-    @Query(value = "SELECT entity FROM NotificationContent entity")
+    @Query("SELECT entity FROM NotificationContent entity WHERE entity.createdAt BETWEEN ?1 AND ?2 ORDER BY created_at, provider_creation_time asc")
     List<NotificationContent> findByCreatedAtBetween(final Date startDate, final Date endDate);
 
-    //    @Query("SELECT entity FROM NotificationContent entity WHERE entity.createdAt < ?1 ORDER BY created_at, provider_creation_time asc")
-    @Query(value = "SELECT entity FROM NotificationContent entity")
+    @Query("SELECT entity FROM NotificationContent entity WHERE entity.createdAt < ?1 ORDER BY created_at, provider_creation_time asc")
     List<NotificationContent> findByCreatedAtBefore(final Date date);
 
-    //    @Query(value = "SELECT entity FROM NotificationContent entity WHERE entity.id IN (SELECT notificationId FROM entity.auditNotificationRelations WHERE entity.id = notificationId)")
-    @Query(value = "SELECT entity FROM NotificationContent entity")
+    @Query(value = "SELECT entity FROM NotificationContent entity WHERE entity.id IN (SELECT notificationId FROM entity.auditNotificationRelations WHERE entity.id = notificationId)")
     Page<NotificationContent> findAllSentNotifications(final Pageable pageable);
 
     @Query(value = "SELECT entity FROM NotificationContent entity LEFT JOIN entity.auditNotificationRelations relation ON entity.id = relation.notificationId "
-                       + "LEFT JOIN relation.auditEntryEntity auditEntry ON auditEntry.id = relation.auditEntryId "
-                       + "LEFT JOIN auditEntry.descriptorConfigEntity descriptorConfig ON auditEntry.commonConfigId = descriptorConfig.id "
-                       + "LEFT JOIN descriptorConfig.fieldValueEntities fieldValue ON descriptorConfig.id = fieldValue.configId "
-                       + "LEFT JOIN fieldValue.definedFieldEntity definedField ON fieldValue.fieldId = definedField.id "
-                       + "WHERE LOWER(entity.provider) LIKE %:searchTerm% OR "
-                       + "LOWER(entity.notificationType) LIKE %:searchTerm% OR "
-                       + "LOWER(entity.content) LIKE %:searchTerm% OR "
-                       + "LOWER(entity.createdAt) LIKE %:searchTerm% OR "
-                       + "LOWER(auditEntry.timeLastSent) LIKE %:searchTerm% OR "
-                       + "LOWER(auditEntry.status) LIKE %:searchTerm% OR "
-                       + "(definedField.key = '" + CommonDistributionUIConfig.KEY_NAME + "' AND LOWER(fieldValue.value) LIKE %:searchTerm% ) OR "
-                       + "(definedField.key = '" + CommonDistributionUIConfig.KEY_CHANNEL_NAME + "' AND LOWER(fieldValue.value) LIKE %:searchTerm% )")
+                           + "LEFT JOIN relation.auditEntryEntity auditEntry ON auditEntry.id = relation.auditEntryId "
+                           + "LEFT JOIN auditEntry.descriptorConfigEntity descriptorConfig ON auditEntry.commonConfigId = descriptorConfig.id "
+                           + "LEFT JOIN descriptorConfig.fieldValueEntities fieldValue ON descriptorConfig.id = fieldValue.configId "
+                           + "LEFT JOIN fieldValue.definedFieldEntity definedField ON fieldValue.fieldId = definedField.id "
+                           + "WHERE LOWER(entity.provider) LIKE %:searchTerm% OR "
+                           + "LOWER(entity.notificationType) LIKE %:searchTerm% OR "
+                           + "LOWER(entity.content) LIKE %:searchTerm% OR "
+                           + "LOWER(entity.createdAt) LIKE %:searchTerm% OR "
+                           + "LOWER(auditEntry.timeLastSent) LIKE %:searchTerm% OR "
+                           + "LOWER(auditEntry.status) LIKE %:searchTerm% OR "
+                           + "(definedField.key = '" + CommonDistributionUIConfig.KEY_NAME + "' AND LOWER(fieldValue.value) LIKE %:searchTerm% ) OR "
+                           + "(definedField.key = '" + CommonDistributionUIConfig.KEY_CHANNEL_NAME + "' AND LOWER(fieldValue.value) LIKE %:searchTerm% )")
     Page<NotificationContent> findMatchingNotification(@Param("searchTerm") String searchTerm, final Pageable pageable);
 
     @Query(value = "SELECT entity FROM NotificationContent entity LEFT JOIN entity.auditNotificationRelations relation ON entity.id = relation.notificationId "
-                       + "LEFT JOIN relation.auditEntryEntity auditEntry ON auditEntry.id = relation.auditEntryId "
-                       + "LEFT JOIN auditEntry.descriptorConfigEntity descriptorConfig ON auditEntry.commonConfigId = descriptorConfig.id "
-                       + "LEFT JOIN descriptorConfig.fieldValueEntities fieldValue ON descriptorConfig.id = fieldValue.configId "
-                       + "LEFT JOIN fieldValue.definedFieldEntity definedField ON fieldValue.fieldId = definedField.id "
-                       + "WHERE entity.id IN (SELECT notificationId FROM entity.auditNotificationRelations WHERE entity.id = notificationId) AND "
-                       + "("
-                       + "LOWER(entity.provider) LIKE %:searchTerm% OR "
-                       + "LOWER(entity.notificationType) LIKE %:searchTerm% OR "
-                       + "LOWER(entity.content) LIKE %:searchTerm% OR "
-                       + "LOWER(entity.createdAt) LIKE %:searchTerm% OR "
-                       + "LOWER(auditEntry.timeLastSent) LIKE %:searchTerm% OR "
-                       + "LOWER(auditEntry.status) LIKE %:searchTerm% OR "
-                       + "(definedField.key = '" + CommonDistributionUIConfig.KEY_NAME + "' AND LOWER(fieldValue.value) LIKE %:searchTerm% ) OR "
-                       + "(definedField.key = '" + CommonDistributionUIConfig.KEY_CHANNEL_NAME + "' AND LOWER(fieldValue.value) LIKE %:searchTerm% )"
-                       + ")")
+                           + "LEFT JOIN relation.auditEntryEntity auditEntry ON auditEntry.id = relation.auditEntryId "
+                           + "LEFT JOIN auditEntry.descriptorConfigEntity descriptorConfig ON auditEntry.commonConfigId = descriptorConfig.id "
+                           + "LEFT JOIN descriptorConfig.fieldValueEntities fieldValue ON descriptorConfig.id = fieldValue.configId "
+                           + "LEFT JOIN fieldValue.definedFieldEntity definedField ON fieldValue.fieldId = definedField.id "
+                           + "WHERE entity.id IN (SELECT notificationId FROM entity.auditNotificationRelations WHERE entity.id = notificationId) AND "
+                           + "("
+                           + "LOWER(entity.provider) LIKE %:searchTerm% OR "
+                           + "LOWER(entity.notificationType) LIKE %:searchTerm% OR "
+                           + "LOWER(entity.content) LIKE %:searchTerm% OR "
+                           + "LOWER(entity.createdAt) LIKE %:searchTerm% OR "
+                           + "LOWER(auditEntry.timeLastSent) LIKE %:searchTerm% OR "
+                           + "LOWER(auditEntry.status) LIKE %:searchTerm% OR "
+                           + "(definedField.key = '" + CommonDistributionUIConfig.KEY_NAME + "' AND LOWER(fieldValue.value) LIKE %:searchTerm% ) OR "
+                           + "(definedField.key = '" + CommonDistributionUIConfig.KEY_CHANNEL_NAME + "' AND LOWER(fieldValue.value) LIKE %:searchTerm% )"
+                           + ")")
     Page<NotificationContent> findMatchingSentNotification(@Param("searchTerm") String searchTerm, final Pageable pageable);
 
 }

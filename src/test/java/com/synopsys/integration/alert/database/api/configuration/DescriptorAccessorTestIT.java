@@ -1,17 +1,17 @@
 package com.synopsys.integration.alert.database.api.configuration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.AlertIntegrationTest;
@@ -44,12 +44,16 @@ public class DescriptorAccessorTestIT extends AlertIntegrationTest {
 
     private DescriptorAccessor descriptorAccessor;
 
-    @Before
+    @BeforeEach
     public void init() {
+        registeredDescriptorRepository.deleteAllInBatch();
+        definedFieldRepository.deleteAllInBatch();
+        definedFieldRepository.flush();
+
         descriptorAccessor = new DescriptorAccessor(registeredDescriptorRepository, descriptorFieldRepository, definedFieldRepository, fieldContextRepository, configContextRepository, descriptorTypeRepository);
     }
 
-    @After
+    @AfterEach
     public void cleanup() {
         registeredDescriptorRepository.deleteAllInBatch();
         definedFieldRepository.deleteAllInBatch();
@@ -71,8 +75,8 @@ public class DescriptorAccessorTestIT extends AlertIntegrationTest {
     public void registerAndGetDescriptorTest() throws AlertDatabaseConstraintException {
         descriptorAccessor.registerDescriptorWithoutFields(DESCRIPTOR_NAME, DescriptorType.CHANNEL);
         final RegisteredDescriptorModel registeredDescriptorModel = descriptorAccessor
-                                                                        .getRegisteredDescriptorByName(DESCRIPTOR_NAME)
-                                                                        .orElseThrow(() -> new AlertDatabaseConstraintException("This descriptor should exist"));
+                                                                            .getRegisteredDescriptorByName(DESCRIPTOR_NAME)
+                                                                            .orElseThrow(() -> new AlertDatabaseConstraintException("This descriptor should exist"));
         assertNotNull(registeredDescriptorModel.getId());
         assertEquals(DESCRIPTOR_NAME, registeredDescriptorModel.getName());
     }
@@ -241,7 +245,8 @@ public class DescriptorAccessorTestIT extends AlertIntegrationTest {
     @Test
     public void removeDescriptorFieldTest() throws AlertDatabaseConstraintException {
         final String field1Key = "field1";
-        final DefinedFieldModel field1 = new DefinedFieldModel(field1Key, ConfigContextEnum.DISTRIBUTION, Boolean.FALSE);
+        final ConfigContextEnum configContext = ConfigContextEnum.DISTRIBUTION;
+        final DefinedFieldModel field1 = new DefinedFieldModel(field1Key, configContext, Boolean.FALSE);
         descriptorAccessor.registerDescriptor(DESCRIPTOR_NAME, DescriptorType.CHANNEL, Arrays.asList(field1));
         assertEquals(1, registeredDescriptorRepository.findAll().size());
         assertEquals(1, descriptorFieldRepository.findAll().size());
@@ -323,12 +328,15 @@ public class DescriptorAccessorTestIT extends AlertIntegrationTest {
     @Test
     public void deleteDescriptorFieldByKeyTest() throws AlertDatabaseConstraintException {
         final String field1Key = "field1";
-        final DefinedFieldModel field1 = new DefinedFieldModel("field1", ConfigContextEnum.DISTRIBUTION, Boolean.FALSE);
+        final ConfigContextEnum configContext = ConfigContextEnum.DISTRIBUTION;
+        final DefinedFieldModel field1 = new DefinedFieldModel("field1", configContext, Boolean.FALSE);
         descriptorAccessor.registerDescriptor(DESCRIPTOR_NAME, DescriptorType.CHANNEL, Arrays.asList(field1));
-        assertEquals(1, definedFieldRepository.findAll().size());
+        final List<DefinedFieldModel> foundFields = descriptorAccessor.getFieldsForDescriptor(DESCRIPTOR_NAME, configContext);
+        assertEquals(1, foundFields.size());
 
         descriptorAccessor.deleteDefinedField(field1Key);
-        assertEquals(0, definedFieldRepository.findAll().size());
+        final List<DefinedFieldModel> fieldsAfterDeletion = descriptorAccessor.getFieldsForDescriptor(DESCRIPTOR_NAME, configContext);
+        assertEquals(foundFields.size() - 1, fieldsAfterDeletion.size());
     }
 
     @Test

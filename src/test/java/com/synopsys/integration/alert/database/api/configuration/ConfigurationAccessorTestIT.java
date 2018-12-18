@@ -1,17 +1,17 @@
 package com.synopsys.integration.alert.database.api.configuration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.AlertIntegrationTest;
@@ -54,13 +54,13 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
 
     private ConfigurationAccessor configurationAccessor;
 
-    @Before
+    @BeforeEach
     public void init() throws AlertDatabaseConstraintException {
         configurationAccessor = new ConfigurationAccessor(registeredDescriptorRepository, definedFieldRepository, descriptorConfigsRepository, configContextRepository, fieldValueRepository, encryptionUtility, descriptorTypeRepository);
         descriptorAccessor.registerDescriptor(DESCRIPTOR_NAME, DescriptorType.PROVIDER, Arrays.asList(DESCRIPTOR_FIELD_INSENSITIVE, DESCRIPTOR_FIELD_SENSITIVE));
     }
 
-    @After
+    @AfterEach
     public void cleanup() throws AlertDatabaseConstraintException {
         descriptorAccessor.unregisterDescriptor(DESCRIPTOR_NAME);
 
@@ -219,13 +219,16 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
     public void deleteConfigurationTest() throws AlertDatabaseConstraintException {
         final ConfigurationModel createdModel1 = configurationAccessor.createEmptyConfiguration(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION);
         final ConfigurationModel createdModel2 = configurationAccessor.createEmptyConfiguration(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION);
-        assertEquals(2, descriptorConfigsRepository.findAll().size());
+        final List<ConfigurationModel> foundModels = configurationAccessor.getConfigurationsByDescriptorName(DESCRIPTOR_NAME);
+        assertEquals(2, foundModels.size());
 
         configurationAccessor.deleteConfiguration(createdModel1);
-        assertEquals(1, descriptorConfigsRepository.findAll().size());
+        final List<ConfigurationModel> afterFirstDeletion = configurationAccessor.getConfigurationsByDescriptorName(DESCRIPTOR_NAME);
+        assertEquals(foundModels.size() - 1, afterFirstDeletion.size());
 
         configurationAccessor.deleteConfiguration(createdModel2);
-        assertEquals(0, descriptorConfigsRepository.findAll().size());
+        final List<ConfigurationModel> afterSecondDeletion = configurationAccessor.getConfigurationsByDescriptorName(DESCRIPTOR_NAME);
+        assertEquals(foundModels.size() - 2, afterSecondDeletion.size());
     }
 
     @Test
