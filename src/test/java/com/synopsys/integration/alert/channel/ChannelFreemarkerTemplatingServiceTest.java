@@ -10,8 +10,8 @@ import java.util.HashMap;
 import org.junit.Test;
 
 import com.synopsys.integration.alert.AlertConstants;
-import com.synopsys.integration.alert.TestProperties;
-import com.synopsys.integration.alert.TestPropertyKey;
+import com.synopsys.integration.alert.util.TestProperties;
+import com.synopsys.integration.alert.util.TestPropertyKey;
 
 import freemarker.template.TemplateException;
 

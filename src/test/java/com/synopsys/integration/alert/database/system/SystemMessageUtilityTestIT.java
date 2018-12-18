@@ -16,15 +16,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.model.DateRange;
+import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
-    private static final int MESSAGE_COUNT = 5;
     public static final String SEVERITY = "severity";
     public static final String TYPE = "type";
+    private static final int MESSAGE_COUNT = 5;
     @Autowired
     private SystemMessageUtility systemMessageUtility;
     @Autowired

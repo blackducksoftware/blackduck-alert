@@ -25,13 +25,13 @@ import org.mockito.Mockito;
 import org.springframework.scheduling.TaskScheduler;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.TestAlertProperties;
-import com.synopsys.integration.alert.TestBlackDuckProperties;
 import com.synopsys.integration.alert.common.FilePersistenceUtil;
 import com.synopsys.integration.alert.common.model.DateRange;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties;
+import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.workflow.NotificationManager;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.generated.view.NotificationView;
@@ -72,14 +72,6 @@ public class BlackDuckAccumulatorTest {
     @After
     public void cleanup() throws Exception {
         FileUtils.deleteDirectory(testAccumulatorParent);
-    }
-
-    private BlackDuckAccumulator createNonProcessingAccumulator(final BlackDuckProperties blackDuckProperties) {
-        return createAccumulator(blackDuckProperties);
-    }
-
-    private BlackDuckAccumulator createAccumulator(final BlackDuckProperties blackDuckProperties) {
-        return new BlackDuckAccumulator(taskScheduler, blackDuckProperties, notificationManager, filePersistenceUtil);
     }
 
     @Test
@@ -367,5 +359,13 @@ public class BlackDuckAccumulatorTest {
         notificationAccumulator.write(notificationContentList);
 
         Mockito.verify(notificationManager, Mockito.times(notificationContentList.size())).saveNotification(Mockito.any());
+    }
+
+    private BlackDuckAccumulator createNonProcessingAccumulator(final BlackDuckProperties blackDuckProperties) {
+        return createAccumulator(blackDuckProperties);
+    }
+
+    private BlackDuckAccumulator createAccumulator(final BlackDuckProperties blackDuckProperties) {
+        return new BlackDuckAccumulator(taskScheduler, blackDuckProperties, notificationManager, filePersistenceUtil);
     }
 }

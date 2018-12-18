@@ -21,7 +21,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.OutputLogger;
 import com.synopsys.integration.alert.audit.mock.MockAuditEntryEntity;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor;
@@ -32,6 +31,7 @@ import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.entity.repository.NotificationContentRepository;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
+import com.synopsys.integration.alert.util.OutputLogger;
 import com.synopsys.integration.alert.web.audit.AuditEntryActions;
 import com.synopsys.integration.alert.web.audit.AuditEntryModel;
 import com.synopsys.integration.alert.web.model.AlertPagedModel;
