@@ -23,10 +23,10 @@
  */
 package com.synopsys.integration.alert.workflow.startup;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -297,9 +297,8 @@ public class StartupManager {
 
                 final Collection<DefinedFieldModel> globalFieldModels = descriptor.getDefinedFields(ConfigContextEnum.GLOBAL);
                 final Collection<DefinedFieldModel> distributionFieldModels = descriptor.getDefinedFields(ConfigContextEnum.DISTRIBUTION);
-                descriptorAccessor.registerDescriptor(descriptorName, descriptorType, globalFieldModels);
 
-                List<DefinedFieldModel> completeDistributionFieldModels = new ArrayList<>();
+                final List<DefinedFieldModel> completeDistributionFieldModels = new LinkedList<>();
                 completeDistributionFieldModels.addAll(distributionFieldModels);
 
                 final DefinedFieldModel name = DefinedFieldModel.createDistributionField(CommonDistributionUIConfig.KEY_NAME);
@@ -311,7 +310,11 @@ public class StartupManager {
                 final DefinedFieldModel notificationTypes = DefinedFieldModel.createDistributionField(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES);
                 completeDistributionFieldModels.addAll(List.of(name, frequency, channelName, providerName, formatType, notificationTypes));
 
-                descriptorAccessor.registerDescriptor(descriptorName, descriptorType, completeDistributionFieldModels);
+                final Collection<DefinedFieldModel> allFieldModels = new LinkedList<>();
+                allFieldModels.addAll(globalFieldModels);
+                allFieldModels.addAll(completeDistributionFieldModels);
+
+                descriptorAccessor.registerDescriptor(descriptorName, descriptorType, allFieldModels);
             }
         } catch (final AlertDatabaseConstraintException e) {
             logger.error("Error registering descriptors.");
