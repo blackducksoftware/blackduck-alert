@@ -23,9 +23,14 @@
  */
 package com.synopsys.integration.alert.common.descriptor;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
+import com.synopsys.integration.alert.database.api.configuration.DefinedFieldModel;
 
 public class ComponentDescriptor extends Descriptor {
 
@@ -34,4 +39,8 @@ public class ComponentDescriptor extends Descriptor {
         addGlobalUiConfig(componentDescriptorActionApi, componentUIConfig);
     }
 
+    @Override
+    public Collection<DefinedFieldModel> getDefinedFields(final ConfigContextEnum context) {
+        return Collections.emptyList();
+    }
 }
