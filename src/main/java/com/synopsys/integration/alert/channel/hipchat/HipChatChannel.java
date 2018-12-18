@@ -45,8 +45,7 @@ import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.AlertConstants;
 import com.synopsys.integration.alert.channel.ChannelFreemarkerTemplatingService;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
-import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDistributionUIConfig;
-import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatGlobalUIConfig;
+import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescriptor;
 import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.channel.rest.RestDistributionChannel;
 import com.synopsys.integration.alert.common.AlertProperties;
@@ -73,22 +72,22 @@ public class HipChatChannel extends RestDistributionChannel {
 
     @Autowired
     public HipChatChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditUtility auditUtility,
-            final ChannelRestConnectionFactory channelRestConnectionFactory) {
+        final ChannelRestConnectionFactory channelRestConnectionFactory) {
         super(HipChatChannel.COMPONENT_NAME, gson, alertProperties, blackDuckProperties, auditUtility, channelRestConnectionFactory);
     }
 
     @Override
     public String getApiUrl(final DistributionEvent distributionEvent) {
         final FieldAccessor fieldAccessor = distributionEvent.getFieldAccessor();
-        final Optional<String> hostServer = fieldAccessor.getString(HipChatGlobalUIConfig.KEY_HOST_SERVER);
+        final Optional<String> hostServer = fieldAccessor.getString(HipChatDescriptor.KEY_HOST_SERVER);
         return hostServer.orElse(HIP_CHAT_API);
     }
 
     // TODO move channel global testing to descriptorActionApi. Goal is to only define how to send data here. Testing methods will insert appropriate values for testing
     public String testGlobalConfig(final TestConfigModel testConfig) throws IntegrationException {
         final FieldAccessor fieldAccessor = testConfig.getFieldModel().convertToFieldAccessor();
-        final Optional<String> apiKey = fieldAccessor.getString(HipChatGlobalUIConfig.KEY_API_KEY);
-        final String configuredApiUrl = fieldAccessor.getString(HipChatGlobalUIConfig.KEY_HOST_SERVER).orElse(HIP_CHAT_API);
+        final Optional<String> apiKey = fieldAccessor.getString(HipChatDescriptor.KEY_API_KEY);
+        final String configuredApiUrl = fieldAccessor.getString(HipChatDescriptor.KEY_HOST_SERVER).orElse(HIP_CHAT_API);
 
         if (!apiKey.isPresent()) {
             throw new AlertException("ERROR: Missing global config.");
@@ -113,16 +112,16 @@ public class HipChatChannel extends RestDistributionChannel {
     @Override
     public List<Request> createRequests(final DistributionEvent event) throws IntegrationException {
         final FieldAccessor fieldAccessor = event.getFieldAccessor();
-        final Optional<String> apiKey = fieldAccessor.getString(HipChatGlobalUIConfig.KEY_API_KEY);
-        final String hostServer = fieldAccessor.getString(HipChatGlobalUIConfig.KEY_HOST_SERVER).orElse(HIP_CHAT_API);
+        final Optional<String> apiKey = fieldAccessor.getString(HipChatDescriptor.KEY_API_KEY);
+        final String hostServer = fieldAccessor.getString(HipChatDescriptor.KEY_HOST_SERVER).orElse(HIP_CHAT_API);
 
         if (!apiKey.isPresent()) {
             throw new AlertException("ERROR: Missing global config.");
         }
 
-        final Optional<Integer> roomId = fieldAccessor.getInteger(HipChatDistributionUIConfig.KEY_ROOM_ID);
-        final Boolean notify = fieldAccessor.getBoolean(HipChatDistributionUIConfig.KEY_NOTIFY).orElse(false);
-        final String color = fieldAccessor.getString(HipChatDistributionUIConfig.KEY_COLOR).orElse("Red");
+        final Optional<Integer> roomId = fieldAccessor.getInteger(HipChatDescriptor.KEY_ROOM_ID);
+        final Boolean notify = fieldAccessor.getBoolean(HipChatDescriptor.KEY_NOTIFY).orElse(false);
+        final String color = fieldAccessor.getString(HipChatDescriptor.KEY_COLOR).orElse("Red");
 
         if (!roomId.isPresent()) {
             throw new AlertException("Room ID missing");

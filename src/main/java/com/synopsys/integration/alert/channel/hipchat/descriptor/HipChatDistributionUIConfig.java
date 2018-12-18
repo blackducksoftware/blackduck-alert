@@ -38,9 +38,6 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 
 @Component
 public class HipChatDistributionUIConfig extends UIConfig {
-    public static final String KEY_ROOM_ID = "channel.hipchat.room.id";
-    public static final String KEY_NOTIFY = "channel.hipchat.notify";
-    public static final String KEY_COLOR = "channel.hipchat.color";
 
     @Override
     public UIComponent generateUIComponent() {
@@ -48,9 +45,9 @@ public class HipChatDistributionUIConfig extends UIConfig {
     }
 
     public List<ConfigField> setupFields() {
-        final ConfigField roomId = new NumberConfigField(KEY_ROOM_ID, "Room Id", true, false);
-        final ConfigField notify = new CheckboxConfigField(KEY_NOTIFY, "Notify", false, false);
-        final ConfigField color = new SelectConfigField(KEY_COLOR, "Color", false, false, Arrays.asList("Yellow", "Green", "Red", "Purple", "Gray", "Random"));
+        final ConfigField roomId = new NumberConfigField(HipChatDescriptor.KEY_ROOM_ID, "Room Id", true, false);
+        final ConfigField notify = new CheckboxConfigField(HipChatDescriptor.KEY_NOTIFY, "Notify", false, false);
+        final ConfigField color = new SelectConfigField(HipChatDescriptor.KEY_COLOR, "Color", false, false, Arrays.asList("Yellow", "Green", "Red", "Purple", "Gray", "Random"));
         return Arrays.asList(roomId, notify, color);
     }
 }

@@ -40,7 +40,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.DistributionChannel;
-import com.synopsys.integration.alert.channel.email.descriptor.EmailDistributionUIConfig;
+import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.email.template.EmailTarget;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.AlertProperties;
@@ -95,11 +95,11 @@ public class EmailGroupChannel extends DistributionChannel {
             throw new AlertException("ERROR: Missing global config.");
         }
 
-        Set<String> emailAddresses = fieldAccessor.getAllStrings(EmailDistributionUIConfig.KEY_EMAIL_ADDRESSES).stream().collect(Collectors.toSet());
-        final Boolean filterByProject = fieldAccessor.getBoolean(EmailDistributionUIConfig.KEY_PROJECT_OWNER_ONLY).orElse(false);
+        Set<String> emailAddresses = fieldAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDRESSES).stream().collect(Collectors.toSet());
+        final Boolean filterByProject = fieldAccessor.getBoolean(EmailDescriptor.KEY_PROJECT_OWNER_ONLY).orElse(false);
         emailAddresses = populateEmails(emailAddresses, event.getContent().getValue(), filterByProject);
         final EmailProperties emailProperties = new EmailProperties(fieldAccessor);
-        final String subjectLine = fieldAccessor.getString(EmailDistributionUIConfig.KEY_SUBJECT_LINE).orElse("");
+        final String subjectLine = fieldAccessor.getString(EmailDescriptor.KEY_SUBJECT_LINE).orElse("");
         sendMessage(emailProperties, emailAddresses, subjectLine, event.getProvider(), event.getFormatType(), event.getContent(), "ProjectName");
     }
 

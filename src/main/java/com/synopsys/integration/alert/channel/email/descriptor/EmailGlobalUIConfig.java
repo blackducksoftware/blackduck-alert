@@ -23,7 +23,6 @@
  */
 package com.synopsys.integration.alert.channel.email.descriptor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -48,19 +47,12 @@ public class EmailGlobalUIConfig extends UIConfig {
     }
 
     public List<ConfigField> setupFields() {
-        final List<ConfigField> fields = new ArrayList<>();
-
         // Default fields
         final ConfigField mailSmtpHost = new TextInputConfigField(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey(), "Smtp Host", true, false);
         final ConfigField mailSmtpFrom = new TextInputConfigField(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey(), "Smtp From", true, false);
         final ConfigField mailSmtpAuth = new CheckboxConfigField(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey(), "Smtp Auth", false, false);
         final ConfigField mailSmtpUser = new TextInputConfigField(EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey(), "Smtp User", false, false);
         final ConfigField mailSmtpPassword = new PasswordConfigField(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey(), "Smtp Password", false);
-        fields.add(mailSmtpHost);
-        fields.add(mailSmtpFrom);
-        fields.add(mailSmtpAuth);
-        fields.add(mailSmtpUser);
-        fields.add(mailSmtpPassword);
 
         // Advanced fields
         final ConfigField mailSmtpPort = new NumberConfigField(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), "Smtp Port", false, false, FieldGroup.ADVANCED);
@@ -105,48 +97,13 @@ public class EmailGlobalUIConfig extends UIConfig {
         final ConfigField mailSmtpMailExtension = new TextInputConfigField(EmailPropertyKeys.JAVAMAIL_MAILEXTENSION_KEY.getPropertyKey(), "Smtp Mail Extension", false, false, FieldGroup.ADVANCED);
         final ConfigField mailSmtpUserSet = new CheckboxConfigField(EmailPropertyKeys.JAVAMAIL_USERSET_KEY.getPropertyKey(), "Smtp User Set", false, false, FieldGroup.ADVANCED);
         final ConfigField mailSmtpNoopStrict = new CheckboxConfigField(EmailPropertyKeys.JAVAMAIL_NOOP_STRICT_KEY.getPropertyKey(), "Smtp NoOp Strict", false, false, FieldGroup.ADVANCED);
-        fields.add(mailSmtpPort);
-        fields.add(mailSmtpConnectionTimeout);
-        fields.add(mailSmtpTimeout);
-        fields.add(mailSmtpWriteTimeout);
-        fields.add(mailSmtpLocalhost);
-        fields.add(mailSmtpLocalAddress);
-        fields.add(mailSmtpLocalPort);
-        fields.add(mailSmtpEhlo);
-        fields.add(mailSmtpAuthMechanisms);
-        fields.add(mailSmtpAuthLoginDisable);
-        fields.add(mailSmtpAuthPlainDisable);
-        fields.add(mailSmtpAuthDigestMd5Disable);
-        fields.add(mailSmtpAuthNtlmDisable);
-        fields.add(mailSmtpAuthNtlmDomain);
-        fields.add(mailSmtpAuthNtlmFlags);
-        fields.add(mailSmtpAuthXoauth2Disable);
-        fields.add(mailSmtpSubmitter);
-        fields.add(mailSmtpDnsNotify);
-        fields.add(mailSmtpDnsRet);
-        fields.add(mailSmtpAllow8bitmime);
-        fields.add(mailSmtpSendPartial);
-        fields.add(mailSmtpSaslEnable);
-        fields.add(mailSmtpSaslMechanisms);
-        fields.add(mailSmtpSaslAuthorizationId);
-        fields.add(mailSmtpSaslRealm);
-        fields.add(mailSmtpSaslUseCanonicalHostname);
-        fields.add(mailSmtpQuitwait);
-        fields.add(mailSmtpReportSuccess);
-        fields.add(mailSmtpSslEnable);
-        fields.add(mailSmtpSslCheckServerIdentity);
-        fields.add(mailSmtpSslTrust);
-        fields.add(mailSmtpSslProtocols);
-        fields.add(mailSmtpSslCipherSuites);
-        fields.add(mailSmtpStartTlsEnable);
-        fields.add(mailSmtpStartTlsRequired);
-        fields.add(mailSmtpProxyHost);
-        fields.add(mailSmtpProxyPort);
-        fields.add(mailSmtpSocksHost);
-        fields.add(mailSmtpSocksPort);
-        fields.add(mailSmtpMailExtension);
-        fields.add(mailSmtpUserSet);
-        fields.add(mailSmtpNoopStrict);
+
+        final List fields = List.of(mailSmtpHost, mailSmtpFrom, mailSmtpAuth, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpWriteTimeout, mailSmtpLocalhost, mailSmtpLocalAddress,
+            mailSmtpLocalPort, mailSmtpEhlo, mailSmtpAuthMechanisms, mailSmtpAuthLoginDisable, mailSmtpAuthPlainDisable, mailSmtpAuthDigestMd5Disable, mailSmtpAuthNtlmDisable, mailSmtpAuthNtlmDomain, mailSmtpAuthNtlmFlags,
+            mailSmtpAuthXoauth2Disable, mailSmtpSubmitter, mailSmtpDnsNotify, mailSmtpDnsRet, mailSmtpAllow8bitmime, mailSmtpSendPartial, mailSmtpSaslEnable, mailSmtpSaslMechanisms, mailSmtpSaslAuthorizationId, mailSmtpSaslRealm,
+            mailSmtpSaslUseCanonicalHostname, mailSmtpQuitwait, mailSmtpReportSuccess, mailSmtpSslEnable, mailSmtpSslCheckServerIdentity, mailSmtpSslTrust, mailSmtpSslProtocols, mailSmtpSslCipherSuites, mailSmtpStartTlsEnable,
+            mailSmtpStartTlsRequired, mailSmtpProxyHost, mailSmtpProxyPort, mailSmtpSocksHost, mailSmtpSocksPort, mailSmtpMailExtension, mailSmtpUserSet, mailSmtpNoopStrict
+        );
 
         return fields;
     }

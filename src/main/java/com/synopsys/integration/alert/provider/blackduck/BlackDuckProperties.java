@@ -41,7 +41,7 @@ import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckProviderUIConfig;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigBuilder;
 import com.synopsys.integration.blackduck.rest.BlackDuckRestConnection;
@@ -78,7 +78,7 @@ public class BlackDuckProperties {
         if (optionalGlobalBlackDuckConfigEntity.isPresent()) {
             final ConfigurationModel blackDuckConfigEntity = optionalGlobalBlackDuckConfigEntity.get();
             final FieldAccessor fieldAccessor = new FieldAccessor(blackDuckConfigEntity.getCopyOfKeyToFieldMap());
-            final Optional<String> url = fieldAccessor.getString(BlackDuckProviderUIConfig.KEY_BLACKDUCK_URL);
+            final Optional<String> url = fieldAccessor.getString(BlackDuckDescriptor.KEY_BLACKDUCK_URL);
             if (url.isPresent()) {
                 if (StringUtils.isBlank(url.get())) {
                     return Optional.empty();
@@ -103,7 +103,7 @@ public class BlackDuckProperties {
         if (optionalGlobalBlackDuckConfigEntity.isPresent()) {
             final ConfigurationModel blackDuckConfigEntity = optionalGlobalBlackDuckConfigEntity.get();
             final FieldAccessor fieldAccessor = new FieldAccessor(blackDuckConfigEntity.getCopyOfKeyToFieldMap());
-            return fieldAccessor.getInteger(BlackDuckProviderUIConfig.KEY_BLACKDUCK_TIMEOUT).orElse(DEFAULT_TIMEOUT);
+            return fieldAccessor.getInteger(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT).orElse(DEFAULT_TIMEOUT);
         }
         return DEFAULT_TIMEOUT;
     }
@@ -162,8 +162,8 @@ public class BlackDuckProperties {
             final ConfigurationModel globalBlackDuckConfig = optionalGlobalBlackDuckConfig.get();
             final FieldAccessor fieldAccessor = new FieldAccessor(globalBlackDuckConfig.getCopyOfKeyToFieldMap());
 
-            final Integer timeout = fieldAccessor.getInteger(BlackDuckProviderUIConfig.KEY_BLACKDUCK_TIMEOUT).orElse(null);
-            final String apiKey = fieldAccessor.getString(BlackDuckProviderUIConfig.KEY_BLACKDUCK_API_KEY).orElse(null);
+            final Integer timeout = fieldAccessor.getInteger(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT).orElse(null);
+            final String apiKey = fieldAccessor.getString(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY).orElse(null);
             if (timeout == null || apiKey == null) {
                 throw new AlertException("Global config settings can not be null.");
             }
