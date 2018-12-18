@@ -29,17 +29,6 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
         repository.deleteAll();
     }
 
-    private NotificationContent createEntity(final String dateString) throws ParseException {
-        final Date createdAt = RestConstants.parseDateString(dateString);
-        final Date providerCreationTime = createdAt;
-        final String provider = "provider_1";
-        final String notificationType = "type_1";
-        final String content = "NOTIFICATION CONTENT HERE";
-        final NotificationContent entity = new MockNotificationContent(createdAt, provider, providerCreationTime, notificationType, content, null).createEntity();
-        final NotificationContent savedEntity = repository.save(entity);
-        return savedEntity;
-    }
-
     @Test
     public void testSaveEntity() throws Exception {
         final NotificationContent entity = createEntity(RestConstants.formatDate(new Date()));
@@ -85,5 +74,16 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
             final String createdAtString = RestConstants.formatDate(entity.getCreatedAt());
             assertTrue(validResultDates.contains(createdAtString));
         });
+    }
+
+    private NotificationContent createEntity(final String dateString) throws ParseException {
+        final Date createdAt = RestConstants.parseDateString(dateString);
+        final Date providerCreationTime = createdAt;
+        final String provider = "provider_1";
+        final String notificationType = "type_1";
+        final String content = "NOTIFICATION CONTENT HERE";
+        final NotificationContent entity = new MockNotificationContent(createdAt, provider, providerCreationTime, notificationType, content, null).createEntity();
+        final NotificationContent savedEntity = repository.save(entity);
+        return savedEntity;
     }
 }
