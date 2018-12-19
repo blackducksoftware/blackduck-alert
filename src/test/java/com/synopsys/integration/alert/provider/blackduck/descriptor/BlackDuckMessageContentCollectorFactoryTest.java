@@ -1,11 +1,11 @@
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -30,7 +30,7 @@ public class BlackDuckMessageContentCollectorFactoryTest extends AlertIntegratio
     @Test
     public void testCollectorCreation() {
         final BlackDuckTopicCollectorFactory topicCollectorFactory = new BlackDuckTopicCollectorFactory(vulnerabilityTopicCollectorFactory, policyViolationTopicCollectorFactory, policyOverrideTopicCollectorFactory,
-            licenseTopicCollectorFactory);
+                licenseTopicCollectorFactory);
         final Set<MessageContentCollector> messageContentCollectorSet = topicCollectorFactory.createTopicCollectors();
         assertFalse(messageContentCollectorSet.isEmpty());
         assertEquals(4, messageContentCollectorSet.size());

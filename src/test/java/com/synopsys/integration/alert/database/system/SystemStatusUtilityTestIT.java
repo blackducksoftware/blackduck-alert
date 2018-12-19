@@ -1,17 +1,18 @@
 package com.synopsys.integration.alert.database.system;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
@@ -23,9 +24,15 @@ public class SystemStatusUtilityTestIT extends AlertIntegrationTest {
     @Autowired
     private SystemStatusUtility systemStatusUtility;
 
-    @Before
-    public void initializeTest() {
-        systemStatusRepository.deleteAll();
+    @BeforeEach
+    public void init() {
+        systemStatusRepository.deleteAllInBatch();
+        systemStatusRepository.flush();
+    }
+
+    @AfterEach
+    public void cleanup() {
+        systemStatusRepository.deleteAllInBatch();
     }
 
     @Test

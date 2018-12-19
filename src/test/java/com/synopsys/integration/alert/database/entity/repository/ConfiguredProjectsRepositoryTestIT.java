@@ -11,11 +11,12 @@
  */
 package com.synopsys.integration.alert.database.entity.repository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.database.entity.ConfiguredProjectEntity;
@@ -25,9 +26,15 @@ public class ConfiguredProjectsRepositoryTestIT extends AlertIntegrationTest {
     @Autowired
     private ConfiguredProjectsRepository configuredProjectsRepository;
 
-    @Before
+    @BeforeEach
+    public void init() {
+        configuredProjectsRepository.deleteAllInBatch();
+        configuredProjectsRepository.flush();
+    }
+
+    @AfterEach
     public void cleanup() {
-        configuredProjectsRepository.deleteAll();
+        configuredProjectsRepository.deleteAllInBatch();
     }
 
     @Test
