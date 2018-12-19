@@ -12,14 +12,14 @@
 package com.synopsys.integration.alert.web.actions;
 
 import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +56,7 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
     @Autowired
     private LdapManager ldapManager;
 
-    @Before
+    @BeforeEach
     public void init() throws Exception {
         final LdapProperties ldapProperties = new LdapProperties();
         ldapProperties.setEnabled(false);

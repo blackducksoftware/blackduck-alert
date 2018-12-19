@@ -2,8 +2,8 @@ package com.synopsys.integration.alert.web.controller;
 
 import java.nio.charset.Charset;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -34,7 +34,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     private SystemInitializer systemInitializer;
     private MockMvc mockMvc;
 
-    @Before
+    @BeforeEach
     public void initialize() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).apply(SecurityMockMvcConfigurers.springSecurity()).build();
     }
@@ -42,7 +42,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     @Test
     public void testGetLatestMessages() throws Exception {
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(systemMessageBaseUrl + "/latest")
-                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
+                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -50,15 +50,15 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     @WithMockUser(roles = "ADMIN")
     public void testGetMessages() throws Exception {
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(systemMessageBaseUrl)
-                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
-                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
+                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
     public void testGetInitialSystemSetup() throws Exception {
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(systemInitialSetupBaseUrl)
-                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
+                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
         if (systemInitializer.isSystemInitialized()) {
             // the spring-test.properties file sets the encryption and in order to run a hub URL is needed therefore the environment is setup.
             mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isFound());
@@ -87,11 +87,11 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
         final boolean proxyPasswordSet = false;
 
         final SystemSetupModel configuration = SystemSetupModel.of(defaultAdminPassword, defaultAdminPasswordSet, blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet,
-            globalEncryptionPassword, isGlobalEncryptionPasswordSet, globalEncryptionSalt, isGlobalEncryptionSaltSet,
-            proxyHost, proxyPort, proxyUsername, proxyPassword, proxyPasswordSet);
+                globalEncryptionPassword, isGlobalEncryptionPasswordSet, globalEncryptionSalt, isGlobalEncryptionSaltSet,
+                proxyHost, proxyPort, proxyUsername, proxyPassword, proxyPasswordSet);
 
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(systemInitialSetupBaseUrl)
-                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
+                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
         request.content(gson.toJson(configuration));
         request.contentType(contentType);
         if (systemInitializer.isSystemInitialized()) {

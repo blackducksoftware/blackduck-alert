@@ -27,6 +27,8 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.validation.constraints.NotNull;
+
 import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
@@ -48,7 +50,7 @@ public class CommonDistributionConfiguration extends Configuration {
     // FIXME this field is here temporarily as there is some tight coupling to the BD provider.
     private final Set<String> configuredProjects;
 
-    public CommonDistributionConfiguration(final ConfigurationModel configurationModel) {
+    public CommonDistributionConfiguration(@NotNull final ConfigurationModel configurationModel) {
         super(configurationModel);
 
         name = getFieldAccessor().getString(CommonDistributionUIConfig.KEY_NAME).orElse(null);
