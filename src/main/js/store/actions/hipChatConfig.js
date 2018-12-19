@@ -191,7 +191,8 @@ export function testConfig(config, destination) {
     return (dispatch, getState) => {
         dispatch(testingConfig());
         const {csrfToken} = getState().session;
-        const requestUrl = `${TEST_URL}?destination=${destination}`;
+        const encodedDestination = encodeURIComponent(destination);
+        const requestUrl = `${TEST_URL}?destination=${encodedDestination}`;
         fetch(requestUrl, {
             credentials: 'same-origin',
             method: 'POST',
