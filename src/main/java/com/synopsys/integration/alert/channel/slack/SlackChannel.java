@@ -85,9 +85,9 @@ public class SlackChannel extends RestDistributionChannel {
         final Optional<String> webhook = fields.getString(SlackDescriptor.KEY_WEBHOOK);
         final Optional<String> channelName = fields.getString(SlackDescriptor.KEY_CHANNEL_NAME);
         final Optional<String> channelUsername = fields.getString(SlackDescriptor.KEY_CHANNEL_USERNAME);
-        if (webhook.isPresent()) {
+        if (webhook.isEmpty()) {
             throw new AlertException("Missing Webhook URL");
-        } else if (channelName.isPresent()) {
+        } else if (channelName.isEmpty()) {
             throw new AlertException("Missing channel name");
         } else {
             if (StringUtils.isBlank(event.getContent().getValue())) {
