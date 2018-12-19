@@ -1,9 +1,13 @@
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
+import java.util.HashMap;
+import java.util.Optional;
+
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.exception.IntegrationException;
 
 public class BlackDuckDistributionDescriptorActionApiTest {
@@ -12,7 +16,9 @@ public class BlackDuckDistributionDescriptorActionApiTest {
     public void testValidateConfig() {
         final BlackDuckDistributionDescriptorActionApi restApi = new BlackDuckDistributionDescriptorActionApi(Mockito.mock(ContentConverter.class));
         final BlackDuckDistributionDescriptorActionApi spiedRestApi = Mockito.spy(restApi);
-        spiedRestApi.validateConfig(Mockito.any(), Mockito.anyMap());
+        final FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
+        Mockito.when(fieldAccessor.getString(Mockito.anyString())).thenReturn(Optional.empty());
+        spiedRestApi.validateConfig(fieldAccessor, new HashMap<>());
         Mockito.verify(spiedRestApi).validateConfig(Mockito.any(), Mockito.anyMap());
     }
 
