@@ -53,7 +53,6 @@ public class LoginControllerTestIT extends AlertIntegrationTest {
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isNoContent());
     }
 
-    //FIXME fix test
     @Test
     public void testLogin() throws Exception {
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(loginUrl);

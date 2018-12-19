@@ -5,10 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Optional;
 
 import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
@@ -49,7 +49,7 @@ public abstract class DescriptorTestConfigTest extends FieldRegistrationIntegrat
     protected DescriptorAccessor descriptorAccessor;
 
     protected ConfigurationAccessor.ConfigurationModel provider_global;
-    protected ConfigurationAccessor.ConfigurationModel global_config;
+    protected Optional<ConfigurationAccessor.ConfigurationModel> global_config;
     protected ConfigurationAccessor.ConfigurationModel distribution_config;
 
     public abstract DistributionEvent createChannelEvent();
@@ -67,8 +67,8 @@ public abstract class DescriptorTestConfigTest extends FieldRegistrationIntegrat
 
     @AfterEach
     public void cleanupTest() throws Exception {
-        if (global_config != null) {
-            configurationAccessor.deleteConfiguration(global_config);
+        if (global_config.isPresent()) {
+            configurationAccessor.deleteConfiguration(global_config.get());
         }
 
         if (distribution_config != null) {
@@ -89,12 +89,15 @@ public abstract class DescriptorTestConfigTest extends FieldRegistrationIntegrat
         }
     }
 
-    public abstract ConfigurationAccessor.ConfigurationModel saveGlobalConfiguration() throws Exception;
+    public abstract Optional<ConfigurationAccessor.ConfigurationModel> saveGlobalConfiguration() throws Exception;
 
     public abstract ConfigurationAccessor.ConfigurationModel saveDistributionConfiguration() throws Exception;
 
     public Map<String, FieldValueModel> createFieldModelMap() {
-        final List<ConfigurationFieldModel> configModels = Stream.concat(global_config.getCopyOfFieldList().stream(), distribution_config.getCopyOfFieldList().stream()).collect(Collectors.toList());
+        final List<ConfigurationFieldModel> configModels = new LinkedList<>();
+        configModels.addAll(distribution_config.getCopyOfFieldList());
+        global_config.ifPresent(model -> configModels.addAll(model.getCopyOfFieldList()));
+
         final Map<String, FieldValueModel> fieldModelMap = new HashMap<>();
         for (final ConfigurationFieldModel model : configModels) {
             final String key = model.getFieldKey();

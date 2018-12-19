@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,7 @@ import com.synopsys.integration.alert.web.model.FieldValueModel;
 import com.synopsys.integration.rest.RestConstants;
 
 public class EmailChannelDescriptorTestIT extends DescriptorTestConfigTest {
-    public static final String EMAIL_UNIT_TEST_JOB = "EmailUnitTestJob";
+    public static final String UNIT_TEST_JOB_NAME = "EmailUnitTestJob";
     @Autowired
     private BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
     @Autowired
@@ -85,7 +86,7 @@ public class EmailChannelDescriptorTestIT extends DescriptorTestConfigTest {
     }
 
     @Override
-    public ConfigurationAccessor.ConfigurationModel saveGlobalConfiguration() throws Exception {
+    public Optional<ConfigurationAccessor.ConfigurationModel> saveGlobalConfiguration() throws Exception {
         final Map<String, String> valueMap = new HashMap<>();
         final String smtpHost = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST);
         final String smtpFrom = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM);
@@ -105,14 +106,13 @@ public class EmailChannelDescriptorTestIT extends DescriptorTestConfigTest {
 
         final Map<String, ConfigurationFieldModel> fieldModelMap = MockConfigurationModelFactory.mapStringsToFields(valueMap);
 
-        return configurationAccessor.createConfiguration(EmailGroupChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL, fieldModelMap.values());
+        return Optional.of(configurationAccessor.createConfiguration(EmailGroupChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL, fieldModelMap.values()));
     }
 
     @Override
     public ConfigurationAccessor.ConfigurationModel saveDistributionConfiguration() throws Exception {
-
         final List<ConfigurationFieldModel> models = new LinkedList<>();
-        models.addAll(MockConfigurationModelFactory.createCommonBlackDuckConfigurationFields(EMAIL_UNIT_TEST_JOB, EmailGroupChannel.COMPONENT_NAME));
+        models.addAll(MockConfigurationModelFactory.createCommonBlackDuckConfigurationFields(UNIT_TEST_JOB_NAME, EmailGroupChannel.COMPONENT_NAME));
         models.addAll(MockConfigurationModelFactory.createEmailConfigurationFields());
         return configurationAccessor.createConfiguration(EmailGroupChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION, models);
     }
