@@ -23,10 +23,15 @@
  */
 package com.synopsys.integration.alert.database.entity.configuration;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 
 @Entity
@@ -36,6 +41,10 @@ public class DefinedFieldEntity extends DatabaseEntity {
     private String key;
     @Column(name = "SENSITIVE")
     private Boolean sensitive;
+
+    @OneToMany
+    @JoinColumn(name = "FIELD_ID", insertable = false, updatable = false)
+    private List<DescriptorFieldRelation> descriptorFieldRelations;
 
     public DefinedFieldEntity() {
         // JPA requires default constructor definitions
@@ -52,5 +61,9 @@ public class DefinedFieldEntity extends DatabaseEntity {
 
     public Boolean getSensitive() {
         return sensitive;
+    }
+
+    public List<DescriptorFieldRelation> getDescriptorFieldRelations() {
+        return descriptorFieldRelations;
     }
 }

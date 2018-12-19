@@ -389,28 +389,36 @@ public class DescriptorAccessor implements BaseDescriptorAccessor {
 
     // TODO implement a join
     private List<DefinedFieldModel> getFieldsForDescriptorId(final Long descriptorId, final ConfigContextEnum context) throws AlertDatabaseConstraintException {
-        final Set<Long> fieldIds = descriptorFieldRepository
-                                           .findByDescriptorId(descriptorId)
-                                           .stream()
-                                           .map(DescriptorFieldRelation::getFieldId)
-                                           .collect(Collectors.toSet());
-        if (fieldIds.isEmpty()) {
-            return Collections.emptyList();
-        }
+//        final Set<Long> fieldIds = descriptorFieldRepository
+//                                           .findByDescriptorId(descriptorId)
+//                                           .stream()
+//                                           .map(DescriptorFieldRelation::getFieldId)
+//                                           .collect(Collectors.toSet());
+//        if (fieldIds.isEmpty()) {
+//            return Collections.emptyList();
+//        }
+//        //TODO why are we saving context here? Shouldnt the 2 values be stored at startup if they are not already?
+//        //TODO why is this block of code even here? the return is ignored....
+//        final Long contextId = saveContextAndReturnId(context);
+//        fieldContextRepository
+//                .findByContextId(contextId)
+//                .stream()
+//                .filter(relation -> fieldIds.contains(relation.getFieldId()))
+//                .map(FieldContextRelation::getFieldId)
+//                .collect(Collectors.toList());
+//        ////////////////////////////////////////////////////////////////////
+//
+//        return definedFieldRepository
+//                       .findAllById(fieldIds)
+//                       .stream()
+//                       .map(entity -> new DefinedFieldModel(entity.getKey(), context, entity.getSensitive()))
+//                       .collect(Collectors.toList());
 
-        final Long contextId = saveContextAndReturnId(context);
-        fieldContextRepository
-                .findByContextId(contextId)
-                .stream()
-                .filter(relation -> fieldIds.contains(relation.getFieldId()))
-                .map(FieldContextRelation::getFieldId)
-                .collect(Collectors.toList());
 
-        return definedFieldRepository
-                       .findAllById(fieldIds)
-                       .stream()
-                       .map(entity -> new DefinedFieldModel(entity.getKey(), context, entity.getSensitive()))
-                       .collect(Collectors.toList());
+        return definedFieldRepository.findByDescriptorId(descriptorId)
+            .stream()
+            .map(entity -> new DefinedFieldModel(entity.getKey(), context, entity.getSensitive()))
+            .collect(Collectors.toList());
     }
 
     private Set<ConfigContextEnum> getContextsForFieldId(final Long fieldId) {
