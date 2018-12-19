@@ -55,8 +55,8 @@ public class JobConfigReader {
         try {
             final List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationsByDescriptorType(DescriptorType.CHANNEL);
             return configurationModels.stream()
-                       .map(configurationModel -> new CommonDistributionConfiguration(configurationModel))
-                       .collect(Collectors.toList());
+                           .map(configurationModel -> new CommonDistributionConfiguration(configurationModel))
+                           .collect(Collectors.toList());
         } catch (final AlertDatabaseConstraintException e) {
             logger.error("Was not able to retrieve configurations", e);
             return Collections.emptyList();
@@ -68,13 +68,15 @@ public class JobConfigReader {
         if (null == configId) {
             return Optional.empty();
         }
-
         try {
-            final ConfigurationModel configurationModel = configurationAccessor.getConfigurationById(configId).orElse(null);
-            return Optional.ofNullable(new CommonDistributionConfiguration(configurationModel));
+            final Optional<ConfigurationModel> configurationModel = configurationAccessor.getConfigurationById(configId);
+            if (configurationModel.isPresent()) {
+                return Optional.of(new CommonDistributionConfiguration(configurationModel.get()));
+            }
         } catch (final AlertDatabaseConstraintException e) {
-            return Optional.empty();
+            // Intentionally ignored
         }
+        return Optional.empty();
     }
 
 }
