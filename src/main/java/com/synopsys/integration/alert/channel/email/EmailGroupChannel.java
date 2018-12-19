@@ -29,6 +29,9 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.Set;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -77,6 +80,12 @@ public class EmailGroupChannel extends DistributionChannel<EmailGlobalConfigEnti
         Set<String> emailAddresses = null;
         final String testEmailAddress = testConfig.getDestination().orElse(null);
         if (StringUtils.isNotBlank(testEmailAddress)) {
+            try {
+                InternetAddress emailAddr = new InternetAddress(testEmailAddress);
+                emailAddr.validate();
+            } catch (AddressException ex) {
+                throw new AlertException(String.format("%s is not a valid email address. %s", testEmailAddress, ex.getMessage()));
+            }
             emailAddresses = Collections.singleton(testEmailAddress);
         }
         final EmailProperties emailProperties = new EmailProperties((EmailGlobalConfig) testConfig.getRestModel());
