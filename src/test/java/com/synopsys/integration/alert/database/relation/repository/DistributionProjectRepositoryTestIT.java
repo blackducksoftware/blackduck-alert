@@ -11,10 +11,11 @@
  */
 package com.synopsys.integration.alert.database.relation.repository;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.database.relation.DistributionProjectRelation;
@@ -24,9 +25,15 @@ public class DistributionProjectRepositoryTestIT extends AlertIntegrationTest {
     @Autowired
     private DistributionProjectRepository distributionProjectRepository;
 
-    @Before
+    @BeforeEach
+    public void init() {
+        distributionProjectRepository.deleteAllInBatch();
+        distributionProjectRepository.flush();
+    }
+
+    @AfterEach
     public void cleanup() {
-        distributionProjectRepository.deleteAll();
+        distributionProjectRepository.deleteAllInBatch();
     }
 
     @Test

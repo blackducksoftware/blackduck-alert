@@ -10,8 +10,9 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.database.entity.NotificationContent;
@@ -35,9 +36,15 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
         assertEquals(notification.getContent(), savedNotification.getContent());
     }
 
-    @Before
+    @BeforeEach
+    public void init() {
+        notificationContentRepository.deleteAllInBatch();
+        notificationContentRepository.flush();
+    }
+
+    @AfterEach
     public void cleanUpDB() {
-        notificationContentRepository.deleteAll();
+        notificationContentRepository.deleteAllInBatch();
     }
 
     @Test
