@@ -62,15 +62,15 @@ public class UIComponentController extends BaseController {
     }
 
     @GetMapping
-    public Collection<UIComponent> getDescriptors(@RequestParam(value = "descriptorName", required = false) final String descriptorName, @RequestParam(value = "descriptorType", required = false) final String descriptorConfigType) {
+    public Collection<UIComponent> getDescriptors(@RequestParam(value = "descriptorName", required = false) final String descriptorName, @RequestParam(value = "context", required = false) final String context) {
         // filter by name
         if (StringUtils.isNotBlank(descriptorName)) {
             final Descriptor descriptor = descriptorMap.getDescriptor(descriptorName);
             if (descriptor != null) {
                 // filter by type also
-                if (StringUtils.isNotBlank(descriptorConfigType)) {
-                    final ConfigContextEnum descriptorType = EnumUtils.getEnum(ConfigContextEnum.class, descriptorConfigType);
-                    final UIConfig uiConfig = descriptor.getUIConfig(descriptorType);
+                if (StringUtils.isNotBlank(context)) {
+                    final ConfigContextEnum contextType = EnumUtils.getEnum(ConfigContextEnum.class, context);
+                    final UIConfig uiConfig = descriptor.getUIConfig(contextType);
                     if (uiConfig != null) {
                         return Arrays.asList(uiConfig.generateUIComponent());
                     } else {
@@ -83,9 +83,9 @@ public class UIComponentController extends BaseController {
             } else {
                 return Collections.emptyList();
             }
-        } else if (StringUtils.isNotBlank(descriptorConfigType)) {
-            final ConfigContextEnum descriptorConfigTypeEnum = EnumUtils.getEnum(ConfigContextEnum.class, descriptorConfigType);
-            return descriptorMap.getUIComponents(descriptorConfigTypeEnum);
+        } else if (StringUtils.isNotBlank(context)) {
+            final ConfigContextEnum contextType = EnumUtils.getEnum(ConfigContextEnum.class, context);
+            return descriptorMap.getUIComponents(contextType);
         } else {
             return descriptorMap.getAllUIComponents();
         }
