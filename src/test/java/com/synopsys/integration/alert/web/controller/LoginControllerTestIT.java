@@ -2,8 +2,8 @@ package com.synopsys.integration.alert.web.controller;
 
 import java.nio.charset.Charset;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
@@ -25,7 +25,6 @@ import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
 
 public class LoginControllerTestIT extends AlertIntegrationTest {
-
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
     private final String loginUrl = BaseController.BASE_PATH + "/login";
     private final String logoutUrl = BaseController.BASE_PATH + "/logout";
@@ -39,7 +38,7 @@ public class LoginControllerTestIT extends AlertIntegrationTest {
     protected LdapManager ldapManager;
     private MockMvc mockMvc;
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         final LdapProperties ldapProperties = new LdapProperties();
         ldapProperties.setEnabled("false");

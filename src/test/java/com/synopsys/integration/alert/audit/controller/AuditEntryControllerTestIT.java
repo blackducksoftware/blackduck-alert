@@ -2,8 +2,8 @@ package com.synopsys.integration.alert.audit.controller;
 
 import java.util.Collection;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
@@ -54,7 +54,7 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
     private MockMvc mockMvc;
     private MockAuditEntryEntity mockAuditEntity;
 
-    @Before
+    @BeforeEach
     public void setup() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).apply(SecurityMockMvcConfigurers.springSecurity()).build();
 
@@ -78,8 +78,8 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
     @WithMockUser(roles = "ADMIN")
     public void testGetConfig() throws Exception {
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(auditUrl)
-                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
-                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
+                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -90,8 +90,8 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
         entity = auditEntryRepository.save(entity);
         final String getUrl = auditUrl + "/" + String.valueOf(entity.getId());
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(getUrl)
-                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
-                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
+                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -111,8 +111,8 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
 
         final String resendUrl = auditUrl + "/" + String.valueOf(notificationEntity.getId()) + "/" + "/resend";
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(resendUrl)
-                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
-                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
+                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 }

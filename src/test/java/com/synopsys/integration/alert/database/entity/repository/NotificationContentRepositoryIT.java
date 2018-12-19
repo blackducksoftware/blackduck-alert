@@ -1,7 +1,7 @@
 package com.synopsys.integration.alert.database.entity.repository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -10,8 +10,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.database.entity.NotificationContent;
@@ -24,9 +25,15 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
     @Autowired
     private NotificationContentRepository repository;
 
-    @Before
+    @BeforeEach
+    public void init() {
+        repository.deleteAllInBatch();
+        repository.flush();
+    }
+
+    @AfterEach
     public void cleanup() {
-        repository.deleteAll();
+        repository.deleteAllInBatch();
     }
 
     @Test
