@@ -79,8 +79,8 @@ public class AuditEntryActions {
 
     @Autowired
     public AuditEntryActions(final AuditEntryRepository auditEntryRepository, final NotificationManager notificationManager, final AuditNotificationRepository auditNotificationRepository,
-        final JobConfigReader jobConfigReader, final NotificationContentConverter notificationContentConverter, final ChannelTemplateManager channelTemplateManager, final NotificationProcessor notificationProcessor,
-        final ContentConverter contentConverter) {
+            final JobConfigReader jobConfigReader, final NotificationContentConverter notificationContentConverter, final ChannelTemplateManager channelTemplateManager, final NotificationProcessor notificationProcessor,
+            final ContentConverter contentConverter) {
         this.auditEntryRepository = auditEntryRepository;
         this.notificationManager = notificationManager;
         this.auditNotificationRepository = auditNotificationRepository;
@@ -122,8 +122,8 @@ public class AuditEntryActions {
         final List<DistributionEvent> distributionEvents;
         if (null != commonConfigId) {
             final Optional<CommonDistributionConfiguration> commonDistributionConfig = jobConfigReader.getPopulatedConfig(commonConfigId);
-            if (!commonDistributionConfig.isPresent()) {
-                logger.warn("The Distribution Job with Id {} could not be found. This notification could not be sent");
+            if (commonDistributionConfig.isEmpty()) {
+                logger.warn("The Distribution Job with Id {} could not be found. This notification could not be sent", commonConfigId);
                 throw new AlertJobMissingException("The Distribution Job with this id could not be found.");
             } else {
                 distributionEvents = notificationProcessor.processNotifications(commonDistributionConfig.get(), List.of(notificationContent));

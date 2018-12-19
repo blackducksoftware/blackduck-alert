@@ -11,17 +11,17 @@
  */
 package com.synopsys.integration.alert.audit.controller;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.util.Collection;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -72,12 +72,22 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     @Autowired
     private FieldValueRepository fieldValueRepository;
 
-    @Before
+    @BeforeEach
+    public void init() {
+        auditEntryRepository.deleteAllInBatch();
+        notificationContentRepository.deleteAllInBatch();
+        descriptorConfigRepository.deleteAllInBatch();
+        fieldValueRepository.deleteAllInBatch();
+
+        auditEntryRepository.flush();
+    }
+
+    @AfterEach
     public void cleanup() {
-        auditEntryRepository.deleteAll();
-        notificationContentRepository.deleteAll();
-        descriptorConfigRepository.deleteAll();
-        fieldValueRepository.deleteAll();
+        auditEntryRepository.deleteAllInBatch();
+        notificationContentRepository.deleteAllInBatch();
+        descriptorConfigRepository.deleteAllInBatch();
+        fieldValueRepository.deleteAllInBatch();
     }
 
     @Test
@@ -91,7 +101,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         final ConfigurationAccessor.ConfigurationModel configurationModel = baseConfigurationAccessor.createConfiguration(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION, hipChatFields);
 
         final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(
-            new AuditEntryEntity(configurationModel.getConfigurationId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS.toString(), null, null));
+                new AuditEntryEntity(configurationModel.getConfigurationId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS.toString(), null, null));
 
         auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
 
@@ -104,7 +114,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
 
         assertEquals(savedNotificationEntity.getId().toString(), auditEntry.getId());
         assertFalse(auditEntry.getJobs().isEmpty());
-        assertTrue(1 == auditEntry.getJobs().size());
+        assertEquals(1, auditEntry.getJobs().size());
         assertEquals(configurationModel.getField(CommonDistributionUIConfig.KEY_CHANNEL_NAME).get().getFieldValue().get(), auditEntry.getJobs().get(0).getEventType());
         assertEquals(configurationModel.getField(CommonDistributionUIConfig.KEY_NAME).get().getFieldValue().get(), auditEntry.getJobs().get(0).getName());
 
@@ -118,7 +128,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void resendNotificationTestIt() throws Exception {
+    public void resendNotificationTestIT() throws Exception {
         final String content = ResourceUtil.getResourceAsString(getClass(), "/json/policyOverrideNotification.json", StandardCharsets.UTF_8);
 
         final MockNotificationContent mockNotification = new MockNotificationContent(new java.util.Date(), BlackDuckProvider.COMPONENT_NAME, new java.util.Date(), "POLICY_OVERRIDE", content, 1L);
@@ -131,8 +141,9 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         final NotificationContent savedNotificationEntity = notificationContentRepository.save(mockNotification.createEntity());
 
         final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository
-                                                           .save(new AuditEntryEntity(configurationModel.getConfigurationId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS.toString(),
-                                                               null, null));
+                                                               .save(new AuditEntryEntity(configurationModel.getConfigurationId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()),
+                                                                       AuditEntryStatus.SUCCESS.toString(),
+                                                                       null, null));
 
         auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
 

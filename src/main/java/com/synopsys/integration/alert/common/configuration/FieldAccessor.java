@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationFieldModel;
 
@@ -41,26 +42,17 @@ public class FieldAccessor {
 
     public Optional<Long> getLong(final String key) {
         final Optional<String> value = getValue(key);
-        if (!value.isPresent()) {
-            return Optional.empty();
-        }
-        return Optional.of(Long.parseLong(value.get()));
+        return value.map(Long::parseLong);
     }
 
     public Optional<Integer> getInteger(final String key) {
         final Optional<String> value = getValue(key);
-        if (!value.isPresent()) {
-            return Optional.empty();
-        }
-        return Optional.of(Integer.parseInt(value.get()));
+        return value.map(Integer::parseInt);
     }
 
     public Optional<Boolean> getBoolean(final String key) {
         final Optional<String> value = getValue(key);
-        if (!value.isPresent()) {
-            return Optional.empty();
-        }
-        return Optional.of(Boolean.parseBoolean(value.get()));
+        return value.map(Boolean::parseBoolean);
     }
 
     public Optional<String> getString(final String key) {
@@ -76,18 +68,15 @@ public class FieldAccessor {
 
     public <T extends Enum<T>> Optional<T> getEnum(final String key, final Class<T> enumClass) {
         final Optional<String> enumString = getString(key);
-        if (!enumString.isPresent()) {
-            return Optional.empty();
-        }
-        return Optional.ofNullable(EnumUtils.getEnum(enumClass, enumString.get()));
+        return enumString.map(strValue -> EnumUtils.getEnum(enumClass, strValue));
     }
 
     private Optional<String> getValue(final String key) {
-        final ConfigurationFieldModel fieldModel = fields.get(key);
-        if (fieldModel == null) {
-            return Optional.empty();
+        if (StringUtils.isNotEmpty(key) && fields.containsKey(key)) {
+            final ConfigurationFieldModel fieldModel = fields.get(key);
+            return fieldModel.getFieldValue();
         }
-        return fieldModel.getFieldValue();
+        return Optional.empty();
     }
 
 }
