@@ -30,7 +30,7 @@ class ChannelTestModal extends Component {
     }
 
     render() {
-        // TODO figure out a way to toggle the spinner
+        // TODO figure out a way to toggle the spinner/ there is no point to toggling the spinner if the sendTestMessage is closing the modal
         let spinning = false;
         return (<Modal show={this.props.showTestModal} onHide={this.props.cancelTestModal}>
             <Modal.Header closeButton>

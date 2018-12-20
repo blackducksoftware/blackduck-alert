@@ -69,7 +69,7 @@ public class DescriptorAccessor implements BaseDescriptorAccessor {
 
     @Autowired
     public DescriptorAccessor(final RegisteredDescriptorRepository registeredDescriptorRepository, final DescriptorFieldRepository descriptorFieldRepository, final DefinedFieldRepository definedFieldRepository,
-            final FieldContextRepository fieldContextRepository, final ConfigContextRepository configContextRepository, final DescriptorTypeRepository descriptorTypeRepository) {
+        final FieldContextRepository fieldContextRepository, final ConfigContextRepository configContextRepository, final DescriptorTypeRepository descriptorTypeRepository) {
         this.registeredDescriptorRepository = registeredDescriptorRepository;
         this.descriptorFieldRepository = descriptorFieldRepository;
         this.definedFieldRepository = definedFieldRepository;
@@ -174,13 +174,15 @@ public class DescriptorAccessor implements BaseDescriptorAccessor {
     @Override
     public List<DefinedFieldModel> getFieldsForDescriptor(final String descriptorName, final ConfigContextEnum context) throws AlertDatabaseConstraintException {
         final RegisteredDescriptorEntity descriptor = findDescriptorByName(descriptorName);
-        return getFieldsForDescriptorId(descriptor.getId(), context);
+        final Long contextId = saveContextAndReturnId(context);
+        return getFieldsForDescriptorId(descriptor.getId(), contextId, context);
     }
 
     @Override
     public List<DefinedFieldModel> getFieldsForDescriptorById(final Long descriptorId, final ConfigContextEnum context) throws AlertDatabaseConstraintException {
         final RegisteredDescriptorEntity descriptor = findDescriptorById(descriptorId);
-        return getFieldsForDescriptorId(descriptor.getId(), context);
+        final Long contextId = saveContextAndReturnId(context);
+        return getFieldsForDescriptorId(descriptor.getId(), contextId, context);
     }
 
     @Override
@@ -235,8 +237,8 @@ public class DescriptorAccessor implements BaseDescriptorAccessor {
             final DescriptorFieldRelation descriptorFieldRelation = optionalDescriptorFieldRelation.get();
             descriptorFieldRepository.delete(descriptorFieldRelation);
             final boolean fieldIsNotConfiguredForAnyDescriptors = descriptorFieldRepository
-                                                                          .findByFieldId(fieldId)
-                                                                          .isEmpty();
+                                                                      .findByFieldId(fieldId)
+                                                                      .isEmpty();
             if (fieldIsNotConfiguredForAnyDescriptors) {
                 definedFieldRepository.deleteById(fieldId);
             }
@@ -297,8 +299,8 @@ public class DescriptorAccessor implements BaseDescriptorAccessor {
             throw new AlertDatabaseConstraintException("The field key cannot be empty");
         }
         final Optional<Long> optionalDefinedFieldId = definedFieldRepository
-                                                              .findFirstByKey(key)
-                                                              .map(DefinedFieldEntity::getId);
+                                                          .findFirstByKey(key)
+                                                          .map(DefinedFieldEntity::getId);
         if (optionalDefinedFieldId.isPresent()) {
             return optionalDefinedFieldId.get();
         }
@@ -309,9 +311,9 @@ public class DescriptorAccessor implements BaseDescriptorAccessor {
 
     private void saveDescriptorFieldRelationIfNecessary(final Long descriptorId, final Long fieldId) {
         final boolean alreadySaved = descriptorFieldRepository
-                                             .findByFieldId(fieldId)
-                                             .stream()
-                                             .anyMatch(relation -> descriptorId.equals(relation.getDescriptorId()));
+                                         .findByFieldId(fieldId)
+                                         .stream()
+                                         .anyMatch(relation -> descriptorId.equals(relation.getDescriptorId()));
         if (!alreadySaved) {
             final DescriptorFieldRelation relation = new DescriptorFieldRelation(descriptorId, fieldId);
             descriptorFieldRepository.save(relation);
@@ -320,9 +322,9 @@ public class DescriptorAccessor implements BaseDescriptorAccessor {
 
     private String getDescriptorTypeById(final Long id) throws AlertDatabaseConstraintException {
         return descriptorTypeRepository
-                       .findById(id)
-                       .map(DescriptorTypeEntity::getType)
-                       .orElseThrow(() -> new AlertDatabaseConstraintException("No descriptor type with that id exists"));
+                   .findById(id)
+                   .map(DescriptorTypeEntity::getType)
+                   .orElseThrow(() -> new AlertDatabaseConstraintException("No descriptor type with that id exists"));
     }
 
     private Long saveDescriptorTypeAndReturnId(final DescriptorType descriptorType) throws AlertDatabaseConstraintException {
@@ -332,8 +334,8 @@ public class DescriptorAccessor implements BaseDescriptorAccessor {
 
         final String descriptorTypeString = descriptorType.name();
         final Optional<Long> optionalDescriptorType = descriptorTypeRepository
-                                                              .findFirstByType(descriptorTypeString)
-                                                              .map(DescriptorTypeEntity::getId);
+                                                          .findFirstByType(descriptorTypeString)
+                                                          .map(DescriptorTypeEntity::getId);
         if (optionalDescriptorType.isPresent()) {
             return optionalDescriptorType.get();
         }
@@ -348,8 +350,8 @@ public class DescriptorAccessor implements BaseDescriptorAccessor {
         }
         final String contextString = context.name();
         final Optional<Long> optionalConfigContextId = configContextRepository
-                                                               .findFirstByContext(contextString)
-                                                               .map(ConfigContextEntity::getId);
+                                                           .findFirstByContext(contextString)
+                                                           .map(ConfigContextEntity::getId);
         if (optionalConfigContextId.isPresent()) {
             return optionalConfigContextId.get();
         }
@@ -360,9 +362,9 @@ public class DescriptorAccessor implements BaseDescriptorAccessor {
 
     private void saveFieldContextRelationIfNecessary(final Long fieldId, final Long contextId) {
         final boolean alreadySaved = fieldContextRepository
-                                             .findByContextId(contextId)
-                                             .stream()
-                                             .anyMatch(relation -> fieldId.equals(relation.getFieldId()));
+                                         .findByContextId(contextId)
+                                         .stream()
+                                         .anyMatch(relation -> fieldId.equals(relation.getFieldId()));
         if (!alreadySaved) {
             final FieldContextRelation relation = new FieldContextRelation(fieldId, contextId);
             fieldContextRepository.save(relation);
@@ -374,8 +376,8 @@ public class DescriptorAccessor implements BaseDescriptorAccessor {
             throw new AlertDatabaseConstraintException("Descriptor name cannot be empty");
         }
         return registeredDescriptorRepository
-                       .findFirstByName(name)
-                       .orElseThrow(() -> new AlertDatabaseConstraintException("A descriptor with that name did not exist"));
+                   .findFirstByName(name)
+                   .orElseThrow(() -> new AlertDatabaseConstraintException("A descriptor with that name did not exist"));
     }
 
     private RegisteredDescriptorEntity findDescriptorById(final Long id) throws AlertDatabaseConstraintException {
@@ -383,44 +385,27 @@ public class DescriptorAccessor implements BaseDescriptorAccessor {
             throw new AlertDatabaseConstraintException("The descriptor id cannot be null");
         }
         return registeredDescriptorRepository
-                       .findById(id)
-                       .orElseThrow(() -> new AlertDatabaseConstraintException("A descriptor with that id did not exist"));
+                   .findById(id)
+                   .orElseThrow(() -> new AlertDatabaseConstraintException("A descriptor with that id did not exist"));
     }
 
-    // TODO implement a join
-    private List<DefinedFieldModel> getFieldsForDescriptorId(final Long descriptorId, final ConfigContextEnum context) throws AlertDatabaseConstraintException {
-        final Set<Long> fieldIds = descriptorFieldRepository
-                                           .findByDescriptorId(descriptorId)
-                                           .stream()
-                                           .map(DescriptorFieldRelation::getFieldId)
-                                           .collect(Collectors.toSet());
-        if (fieldIds.isEmpty()) {
-            return Collections.emptyList();
-        }
+    private List<DefinedFieldModel> getFieldsForDescriptorId(final Long descriptorId, final Long contextId, ConfigContextEnum context) throws AlertDatabaseConstraintException {
+        List<DefinedFieldModel> fields = definedFieldRepository.findByDescriptorIdAndContext(descriptorId, contextId)
+                                             .stream()
+                                             .map(entity -> new DefinedFieldModel(entity.getKey(), context, entity.getSensitive()))
+                                             .collect(Collectors.toList());
 
-        final Long contextId = saveContextAndReturnId(context);
-        fieldContextRepository
-                .findByContextId(contextId)
-                .stream()
-                .filter(relation -> fieldIds.contains(relation.getFieldId()))
-                .map(FieldContextRelation::getFieldId)
-                .collect(Collectors.toList());
-
-        return definedFieldRepository
-                       .findAllById(fieldIds)
-                       .stream()
-                       .map(entity -> new DefinedFieldModel(entity.getKey(), context, entity.getSensitive()))
-                       .collect(Collectors.toList());
+        return fields;
     }
 
     private Set<ConfigContextEnum> getContextsForFieldId(final Long fieldId) {
         return fieldContextRepository
-                       .findByFieldId(fieldId)
-                       .stream()
-                       .map(FieldContextRelation::getContextId)
-                       .flatMap(configId -> configContextRepository.findAllById(Collections.singleton(configId)).stream())
-                       .map(entity -> ConfigContextEnum.valueOf(entity.getContext()))
-                       .collect(Collectors.toSet());
+                   .findByFieldId(fieldId)
+                   .stream()
+                   .map(FieldContextRelation::getContextId)
+                   .flatMap(configId -> configContextRepository.findAllById(Set.of(configId)).stream())
+                   .map(entity -> ConfigContextEnum.valueOf(entity.getContext()))
+                   .collect(Collectors.toSet());
     }
 
     private DefinedFieldEntity findFieldByKey(final String key) throws AlertDatabaseConstraintException {
@@ -428,8 +413,8 @@ public class DescriptorAccessor implements BaseDescriptorAccessor {
             throw new AlertDatabaseConstraintException("The field key cannot be empty");
         }
         return definedFieldRepository
-                       .findFirstByKey(key)
-                       .orElseThrow(() -> new AlertDatabaseConstraintException("No field with that key exists"));
+                   .findFirstByKey(key)
+                   .orElseThrow(() -> new AlertDatabaseConstraintException("No field with that key exists"));
     }
 
     public final class RegisteredDescriptorModel extends Stringable {
