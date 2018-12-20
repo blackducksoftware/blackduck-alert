@@ -111,9 +111,9 @@ public class EmailGroupChannel extends DistributionChannel {
         final String testEmailAddress = testConfig.getDestination().orElse(null);
         if (StringUtils.isNotBlank(testEmailAddress)) {
             try {
-                InternetAddress emailAddr = new InternetAddress(testEmailAddress);
+                final InternetAddress emailAddr = new InternetAddress(testEmailAddress);
                 emailAddr.validate();
-            } catch (AddressException ex) {
+            } catch (final AddressException ex) {
                 throw new AlertException(String.format("%s is not a valid email address. %s", testEmailAddress, ex.getMessage()));
             }
             emailAddresses = Collections.singleton(testEmailAddress);
@@ -141,9 +141,7 @@ public class EmailGroupChannel extends DistributionChannel {
             model.put("emailCategory", formatType);
             model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), subjectLine);
             final Optional<String> optionalBlackDuckUrl = getBlackDuckProperties().getBlackDuckUrl();
-            if (optionalBlackDuckUrl.isPresent()) {
-                model.put(EmailPropertyKeys.TEMPLATE_KEY_BLACKDUCK_SERVER_URL.getPropertyKey(), StringUtils.trimToEmpty(optionalBlackDuckUrl.get()));
-            }
+            model.put(EmailPropertyKeys.TEMPLATE_KEY_BLACKDUCK_SERVER_URL.getPropertyKey(), StringUtils.trimToEmpty(optionalBlackDuckUrl.orElse("#")));
             model.put(EmailPropertyKeys.TEMPLATE_KEY_BLACKDUCK_PROJECT_NAME.getPropertyKey(), blackDuckProjectName);
 
             model.put(EmailPropertyKeys.TEMPLATE_KEY_START_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
