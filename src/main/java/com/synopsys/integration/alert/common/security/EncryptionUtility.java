@@ -53,19 +53,23 @@ public class EncryptionUtility {
     }
 
     public String encrypt(final String value) {
-        final TextEncryptor encryptor = Encryptors.delux(getPassword(), getEncodedSalt());
-        return encryptor.encrypt(value);
+        if (StringUtils.isNotBlank(value)) {
+            final TextEncryptor encryptor = Encryptors.delux(getPassword(), getEncodedSalt());
+            return encryptor.encrypt(value);
+        }
+        return StringUtils.EMPTY;
     }
 
     public String decrypt(final String encryptedValue) {
-        String decryptedValue = "";
         try {
-            final TextEncryptor decryptor = Encryptors.delux(getPassword(), getEncodedSalt());
-            decryptedValue = decryptor.decrypt(encryptedValue);
+            if (StringUtils.isNotBlank(encryptedValue)) {
+                final TextEncryptor decryptor = Encryptors.delux(getPassword(), getEncodedSalt());
+                return decryptor.decrypt(encryptedValue);
+            }
         } catch (final IllegalArgumentException | NullPointerException ex) {
             logger.error("Error decrypting value", ex);
         }
-        return decryptedValue;
+        return StringUtils.EMPTY;
     }
 
     public boolean isInitialized() {
