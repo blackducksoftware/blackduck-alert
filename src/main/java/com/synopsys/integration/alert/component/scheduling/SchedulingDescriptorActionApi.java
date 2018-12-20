@@ -41,36 +41,26 @@ public class SchedulingDescriptorActionApi extends DescriptorActionApi {
         final String dailyDigestHourOfDay = fieldAccessor.getString(SchedulingUIConfig.KEY_DAILY_DIGEST_HOUR_OF_DAY).orElse(null);
         final String purgeDataFrequency = fieldAccessor.getString(SchedulingUIConfig.KEY_PURGE_DATA_FREQUENCY_DAYS).orElse(null);
 
-        if (StringUtils.isNotBlank(dailyDigestHourOfDay)) {
-            if (!StringUtils.isNumeric(dailyDigestHourOfDay)) {
-                fieldErrors.put("dailyDigestHourOfDay", "Must be a number between 0 and 23");
-            } else {
-                final Integer integer = Integer.valueOf(dailyDigestHourOfDay);
-                if (integer > 23) {
-                    fieldErrors.put("dailyDigestHourOfDay", "Must be a number less than 24");
-                }
-            }
-        } else {
-            fieldErrors.put("dailyDigestHourOfDay", "Must be a number between 0 and 23");
+        if (isNotValid(dailyDigestHourOfDay, 0, 23)) {
+            fieldErrors.put(SchedulingUIConfig.KEY_DAILY_DIGEST_HOUR_OF_DAY, "Must be a number between 0 and 23");
         }
 
-        if (StringUtils.isNotBlank(purgeDataFrequency)) {
-            if (!StringUtils.isNumeric(purgeDataFrequency)) {
-                fieldErrors.put("purgeDataFrequencyDays", "Must be a number between 1 and 7");
-            } else {
-                final Integer integer = Integer.valueOf(purgeDataFrequency);
-                if (integer > 8) {
-                    fieldErrors.put("purgeDataFrequencyDays", "Must be a number less than 8");
-                }
-            }
-        } else {
-            fieldErrors.put("purgeDataFrequencyDays", "Must be a number between 1 and 7");
+        if (isNotValid(purgeDataFrequency, 1, 7)) {
+            fieldErrors.put(SchedulingUIConfig.KEY_PURGE_DATA_FREQUENCY_DAYS, "Must be a number between 1 and 7");
         }
     }
 
     @Override
     public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
         throw new IntegrationException("Should not be implemented");
+    }
+
+    private boolean isNotValid(final String actualValue, final Integer minimumAllowedValue, final Integer maximumAllowedValue) {
+        return StringUtils.isBlank(actualValue) || !StringUtils.isNumeric(actualValue) || isOutOfRange(Integer.valueOf(actualValue), minimumAllowedValue, maximumAllowedValue);
+    }
+
+    private boolean isOutOfRange(final Integer number, final Integer minimumAllowedValue, final Integer maximumAllowedValue) {
+        return number < minimumAllowedValue || maximumAllowedValue < number;
     }
 
 }
