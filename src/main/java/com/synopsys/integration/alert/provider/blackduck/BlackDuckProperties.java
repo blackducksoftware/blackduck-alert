@@ -79,13 +79,7 @@ public class BlackDuckProperties {
             final ConfigurationModel blackDuckConfigEntity = optionalGlobalBlackDuckConfigEntity.get();
             final FieldAccessor fieldAccessor = new FieldAccessor(blackDuckConfigEntity.getCopyOfKeyToFieldMap());
             final Optional<String> url = fieldAccessor.getString(BlackDuckDescriptor.KEY_BLACKDUCK_URL);
-            if (url.isPresent()) {
-                if (StringUtils.isBlank(url.get())) {
-                    return Optional.empty();
-                } else {
-                    return Optional.of(url.get());
-                }
-            }
+            return url.filter(StringUtils::isNotBlank);
         }
         return Optional.empty();
     }

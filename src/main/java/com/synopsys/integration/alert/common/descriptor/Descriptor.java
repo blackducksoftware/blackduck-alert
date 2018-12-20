@@ -79,6 +79,7 @@ public abstract class Descriptor {
         addDistributionActionApi(descriptorActionApi);
     }
 
+    // TODO since global config is optional this should return an optional.  The lookups in the maps should return optionals since they could be null.
     public DescriptorActionApi getRestApi(final ConfigContextEnum actionApiType) {
         return restApis.get(actionApiType);
     }
