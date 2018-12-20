@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,7 +121,15 @@ public class SystemInitializer {
 
     private void saveEncryptionProperties(final RequiredSystemConfiguration requiredSystemConfiguration) {
         try {
-            encryptionUtility.updateEncryptionFields(requiredSystemConfiguration.getGlobalEncryptionPassword(), requiredSystemConfiguration.getGlobalEncryptionSalt());
+            final String passwordToSave = requiredSystemConfiguration.getGlobalEncryptionPassword();
+            final String saltToSave = requiredSystemConfiguration.getGlobalEncryptionSalt();
+            if (StringUtils.isNotBlank(passwordToSave)) {
+                encryptionUtility.updatePasswordField(passwordToSave);
+            }
+
+            if (StringUtils.isNotBlank(saltToSave)) {
+                encryptionUtility.updateSaltField(saltToSave);
+            }
         } catch (final IllegalArgumentException | IOException ex) {
             logger.error("Error saving encryption configuration during intialization.", ex);
         }
