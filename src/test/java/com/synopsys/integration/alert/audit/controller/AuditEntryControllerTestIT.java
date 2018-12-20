@@ -98,7 +98,7 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     public void testPostConfig() throws Exception {
-        final Collection<ConfigurationFieldModel> hipChatFields = MockConfigurationModelFactory.createHipChatConfigurationFields();
+        final Collection<ConfigurationFieldModel> hipChatFields = MockConfigurationModelFactory.createHipChatDistributionFields();
         final ConfigurationAccessor.ConfigurationModel configurationModel = baseConfigurationAccessor.createConfiguration(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION, hipChatFields);
 
         final MockNotificationContent mockNotifications = new MockNotificationContent();

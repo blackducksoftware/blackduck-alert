@@ -97,7 +97,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
 
         notificationContentRepository.save(new MockNotificationContent(new Date(System.currentTimeMillis()), "provider", new Date(System.currentTimeMillis()), "notificationType", "{}", 234L).createEntity());
 
-        final Collection<ConfigurationFieldModel> hipChatFields = MockConfigurationModelFactory.createHipChatConfigurationFields();
+        final Collection<ConfigurationFieldModel> hipChatFields = MockConfigurationModelFactory.createHipChatDistributionFields();
         final ConfigurationAccessor.ConfigurationModel configurationModel = baseConfigurationAccessor.createConfiguration(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION, hipChatFields);
 
         final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(
@@ -133,7 +133,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
 
         final MockNotificationContent mockNotification = new MockNotificationContent(new java.util.Date(), BlackDuckProvider.COMPONENT_NAME, new java.util.Date(), "POLICY_OVERRIDE", content, 1L);
 
-        final Collection<ConfigurationFieldModel> hipChatFields = MockConfigurationModelFactory.createHipChatConfigurationFields();
+        final Collection<ConfigurationFieldModel> hipChatFields = MockConfigurationModelFactory.createHipChatDistributionFields();
         final ConfigurationAccessor.ConfigurationModel configurationModel = baseConfigurationAccessor.createConfiguration(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION, hipChatFields);
 
         distributionNotificationTypeRepository.save(new DistributionNotificationTypeRelation(configurationModel.getConfigurationId(), "POLICY_OVERRIDE"));

@@ -41,7 +41,7 @@ public class NotificationToDistributionEventConverterTestIT extends AlertIntegra
 
     private CommonDistributionConfiguration createEmailConfig() {
         final ConfigurationModel model = Mockito.mock(ConfigurationModel.class);
-        final List<ConfigurationFieldModel> fields = MockConfigurationModelFactory.createEmailConfigurationFields();
+        final List<ConfigurationFieldModel> fields = MockConfigurationModelFactory.createEmailDistributionFieldsProjectOwnerOnly();
         Mockito.when(model.getCopyOfFieldList()).thenReturn(fields);
         Mockito.when(model.getCopyOfKeyToFieldMap()).thenReturn(MockConfigurationModelFactory.mapFieldKeyToFields(fields));
 
@@ -51,7 +51,7 @@ public class NotificationToDistributionEventConverterTestIT extends AlertIntegra
 
     private CommonDistributionConfiguration createHipChatConfig() {
         final ConfigurationModel model = Mockito.mock(ConfigurationModel.class);
-        final List<ConfigurationFieldModel> fields = MockConfigurationModelFactory.createHipChatConfigurationFields();
+        final List<ConfigurationFieldModel> fields = MockConfigurationModelFactory.createHipChatDistributionFields();
         Mockito.when(model.getCopyOfFieldList()).thenReturn(fields);
         Mockito.when(model.getCopyOfKeyToFieldMap()).thenReturn(MockConfigurationModelFactory.mapFieldKeyToFields(fields));
 
@@ -61,8 +61,8 @@ public class NotificationToDistributionEventConverterTestIT extends AlertIntegra
 
     private CommonDistributionConfiguration createSlackConfig() {
         final ConfigurationModel model = Mockito.mock(ConfigurationModel.class);
-        final List<ConfigurationFieldModel> fields = MockConfigurationModelFactory.createSlackConfigurationFields();
-        Mockito.when(model.getCopyOfFieldList()).thenReturn(MockConfigurationModelFactory.createSlackConfigurationFields());
+        final List<ConfigurationFieldModel> fields = MockConfigurationModelFactory.createSlackDistributionFields();
+        Mockito.when(model.getCopyOfFieldList()).thenReturn(MockConfigurationModelFactory.createSlackDistributionFields());
         Mockito.when(model.getCopyOfKeyToFieldMap()).thenReturn(MockConfigurationModelFactory.mapFieldKeyToFields(fields));
         final CommonDistributionConfiguration config = new CommonDistributionConfiguration(model);
         return config;

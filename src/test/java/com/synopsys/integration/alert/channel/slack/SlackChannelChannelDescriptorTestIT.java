@@ -1,16 +1,18 @@
 package com.synopsys.integration.alert.channel.slack;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.channel.DescriptorTestConfigTest;
+import com.synopsys.integration.alert.channel.ChannelDescriptorTest;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
@@ -23,15 +25,14 @@ import com.synopsys.integration.alert.common.model.DateRange;
 import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.DefinedFieldModel;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.TestPropertyKey;
-import com.synopsys.integration.alert.web.model.FieldModel;
-import com.synopsys.integration.alert.web.model.FieldValueModel;
 import com.synopsys.integration.rest.RestConstants;
 
-public class SlackChannelDescriptorTestIT extends DescriptorTestConfigTest {
+public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     public static final String UNIT_TEST_JOB_NAME = "SlackChatUnitTestJob";
     @Autowired
     private SlackDescriptor slackDescriptor;
@@ -98,10 +99,24 @@ public class SlackChannelDescriptorTestIT extends DescriptorTestConfigTest {
     }
 
     @Override
-    public FieldModel getFieldModel() {
-        final Map<String, FieldValueModel> valueMap = createFieldModelMap();
-        final FieldModel model = new FieldModel(String.valueOf(distribution_config.getConfigurationId()), SlackChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION.name(), valueMap);
-        return model;
+    public boolean assertGlobalFields(final Collection<DefinedFieldModel> globalFields) {
+        return globalFields.isEmpty(); // no global fields for slack
     }
 
+    @Override
+    public boolean assertDistributionFields(final Collection<DefinedFieldModel> distributionFields) {
+        final Set<String> fieldNames = Set.of(SlackDescriptor.KEY_CHANNEL_NAME, SlackDescriptor.KEY_CHANNEL_USERNAME, SlackDescriptor.KEY_WEBHOOK);
+        return distributionFields.stream().map(DefinedFieldModel::getKey).allMatch(fieldNames::contains);
+    }
+
+    @Override
+    public Map<String, String> createInvalidGlobalFieldMap() {
+        return Map.of();
+    }
+
+    @Override
+    public Map<String, String> createInvalidDistributionFieldMap() {
+        return Map.of(SlackDescriptor.KEY_WEBHOOK, "",
+            SlackDescriptor.KEY_CHANNEL_NAME, "");
+    }
 }
