@@ -47,7 +47,7 @@ public class ConfigurationFieldModel extends Stringable {
     private ConfigurationFieldModel(final String fieldKey, final Boolean isSensitive) {
         this.fieldKey = fieldKey;
         this.isSensitive = isSensitive;
-        this.fieldValues = null;
+        fieldValues = null;
     }
 
     public String getFieldKey() {
@@ -59,11 +59,15 @@ public class ConfigurationFieldModel extends Stringable {
     }
 
     public void setFieldValue(final String value) {
-        this.fieldValues = Collections.singleton(value);
+        if (value != null) {
+            fieldValues = Collections.singleton(value);
+        } else {
+            fieldValues = null;
+        }
     }
 
     public void setFieldValues(final Collection<String> values) {
-        this.fieldValues = values;
+        fieldValues = values;
     }
 
     public Optional<String> getFieldValue() {
