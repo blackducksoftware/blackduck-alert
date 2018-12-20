@@ -1,20 +1,27 @@
 package com.synopsys.integration.alert.channel.hipchat;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.channel.DescriptorTestConfigTest;
+import com.synopsys.integration.alert.channel.ChannelDescriptorTest;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescriptor;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
+import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -23,6 +30,7 @@ import com.synopsys.integration.alert.common.model.DateRange;
 import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.DefinedFieldModel;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
@@ -31,7 +39,7 @@ import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.FieldValueModel;
 import com.synopsys.integration.rest.RestConstants;
 
-public class HipChatDescriptorTestIT extends DescriptorTestConfigTest {
+public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
     public static final String UNIT_TEST_JOB_NAME = "HipChatUnitTestJob";
     @Autowired
     private HipChatDescriptor hipChatDescriptor;
@@ -68,7 +76,7 @@ public class HipChatDescriptorTestIT extends DescriptorTestConfigTest {
     public ConfigurationAccessor.ConfigurationModel saveDistributionConfiguration() throws Exception {
         final List<ConfigurationFieldModel> models = new LinkedList<>();
         models.addAll(MockConfigurationModelFactory.createCommonBlackDuckConfigurationFields(UNIT_TEST_JOB_NAME, HipChatChannel.COMPONENT_NAME));
-        models.addAll(MockConfigurationModelFactory.createHipChatConfigurationFields());
+        models.addAll(MockConfigurationModelFactory.createHipChatDistributionFields());
         return configurationAccessor.createConfiguration(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION, models);
     }
 
@@ -101,9 +109,48 @@ public class HipChatDescriptorTestIT extends DescriptorTestConfigTest {
     }
 
     @Override
-    public FieldModel getFieldModel() {
-        final Map<String, FieldValueModel> valueMap = createFieldModelMap();
-        final FieldModel model = new FieldModel(String.valueOf(distribution_config.getConfigurationId()), HipChatChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION.name(), valueMap);
-        return model;
+    public boolean assertGlobalFields(final Collection<DefinedFieldModel> globalFields) {
+        boolean result = true;
+        final Set<String> fieldNames = Set.of(HipChatDescriptor.KEY_API_KEY, HipChatDescriptor.KEY_HOST_SERVER);
+        result = result && globalFields.stream().map(DefinedFieldModel::getKey).allMatch(fieldNames::contains);
+
+        final Optional<DefinedFieldModel> apiKeyField = globalFields.stream()
+                                                            .filter(field -> HipChatDescriptor.KEY_API_KEY.equals(field.getKey()))
+                                                            .findFirst();
+        if (apiKeyField.isPresent()) {
+            result = result && apiKeyField.get().getSensitive();
+        }
+        return result;
+    }
+
+    @Override
+    public boolean assertDistributionFields(final Collection<DefinedFieldModel> distributionFields) {
+        final Set<String> fieldNames = Set.of(HipChatDescriptor.KEY_ROOM_ID, HipChatDescriptor.KEY_COLOR, HipChatDescriptor.KEY_NOTIFY);
+        return distributionFields.stream().map(DefinedFieldModel::getKey).allMatch(fieldNames::contains);
+    }
+
+    @Override
+    public Map<String, String> createInvalidGlobalFieldMap() {
+        return Map.of(HipChatDescriptor.KEY_API_KEY, "");
+    }
+
+    @Override
+    public Map<String, String> createInvalidDistributionFieldMap() {
+        return Map.of(HipChatDescriptor.KEY_ROOM_ID, "");
+    }
+
+    @Test
+    public void testInvalidTextRoomID() {
+        final Map<String, String> invalidValuesMap = new HashMap<>();
+        invalidValuesMap.putAll(createInvalidCommonDistributionFieldMap());
+        invalidValuesMap.putAll(Map.of(HipChatDescriptor.KEY_ROOM_ID, "abcdefg"));
+        final Map<String, FieldValueModel> fieldModelMap = createFieldValueModelMap(invalidValuesMap);
+        final FieldModel model = new FieldModel("1L", getDescriptor().getDestinationName(), ConfigContextEnum.DISTRIBUTION.name(), fieldModelMap);
+        final HashMap<String, String> fieldErrors = new HashMap<>();
+        final DescriptorActionApi descriptorActionApi = getDescriptor().getRestApi(ConfigContextEnum.DISTRIBUTION);
+        final DescriptorActionApi spyDescriptorConfig = Mockito.spy(descriptorActionApi);
+        spyDescriptorConfig.validateConfig(model.convertToFieldAccessor(), fieldErrors);
+        assertEquals(model.getKeyToValues().size(), fieldErrors.size());
+        Mockito.verify(spyDescriptorConfig).validateConfig(Mockito.any(), Mockito.anyMap());
     }
 }

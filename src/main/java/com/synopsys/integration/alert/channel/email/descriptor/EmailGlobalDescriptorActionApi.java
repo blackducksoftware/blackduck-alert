@@ -49,7 +49,7 @@ public class EmailGlobalDescriptorActionApi extends DescriptorActionApi {
     // TODO Global email config doesn't validate properly or give any indication that saving was successful
     @Override
     public void validateConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
-        final String port = fieldAccessor.getString(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey()).orElse(null);
+        final String port = fieldAccessor.getString(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey()).orElse(null);
         final String connectionTimeout = fieldAccessor.getString(EmailPropertyKeys.JAVAMAIL_CONNECTION_TIMEOUT_KEY.getPropertyKey()).orElse(null);
         final String timeout = fieldAccessor.getString(EmailPropertyKeys.JAVAMAIL_TIMEOUT_KEY.getPropertyKey()).orElse(null);
 
