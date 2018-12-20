@@ -126,7 +126,15 @@ public class SystemInitializer {
 
     private void saveEncryptionProperties(final RequiredSystemConfiguration requiredSystemConfiguration) {
         try {
-            encryptionUtility.updateEncryptionFields(requiredSystemConfiguration.getGlobalEncryptionPassword(), requiredSystemConfiguration.getGlobalEncryptionSalt());
+            final String passwordToSave = requiredSystemConfiguration.getGlobalEncryptionPassword();
+            final String saltToSave = requiredSystemConfiguration.getGlobalEncryptionSalt();
+            if (StringUtils.isNotBlank(passwordToSave)) {
+                encryptionUtility.updatePasswordField(passwordToSave);
+            }
+
+            if (StringUtils.isNotBlank(saltToSave)) {
+                encryptionUtility.updateSaltField(saltToSave);
+            }
         } catch (final IllegalArgumentException | IOException ex) {
             logger.error("Error saving encryption configuration during intialization.", ex);
         }

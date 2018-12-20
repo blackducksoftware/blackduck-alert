@@ -14,7 +14,7 @@ import {
 
 const initialState = {
     fetching: false,
-    fetchingSetup: false,
+    fetchingSetupStatus: '',
     updateStatus: '',
     latestMessages: [],
     errorMessage: '',
@@ -45,25 +45,25 @@ const config = (state = initialState, action) => {
             });
         case SYSTEM_SETUP_FETCHING:
             return Object.assign({}, state, {
-                fetchingSetup: true,
+                fetchingSetupStatus: 'SYSTEM SETUP FETCHING',
                 updateStatus: 'FETCHING'
             });
         case SYSTEM_SETUP_FETCH_REDIRECTED:
             return Object.assign({}, state, {
-                fetchingSetup: false,
+                fetchingSetupStatus: '',
                 setupRedirect: true,
                 updateStatus: ''
             });
         case SYSTEM_SETUP_FETCHED:
             return Object.assign({}, state, {
-                fetchingSetup: false,
+                fetchingSetupStatus: 'SYSTEM SETUP FETCHED',
                 updateStatus: 'FETCHED',
                 setupData: action.setupData
             });
         case SYSTEM_SETUP_FETCH_ERROR:
             return Object.assign({}, state, {
-                fetchingSetup: false,
                 updateStatus: 'ERROR',
+                fetchingSetupStatus: 'SYSTEM SETUP ERROR',
                 error: {
                     message: action.message,
                     ...action.errors,
@@ -71,17 +71,17 @@ const config = (state = initialState, action) => {
             });
         case SYSTEM_SETUP_UPDATING:
             return Object.assign({}, state, {
-                fetchingSetup: true,
+                fetchingSetupStatus: 'SYSTEM SETUP UPDATING',
                 updateStatus: 'UPDATING'
             });
         case SYSTEM_SETUP_UPDATED:
             return Object.assign({}, state, {
-                fetchingSetup: false,
+                fetchingSetupStatus: 'SYSTEM SETUP UPDATED',
                 updateStatus: 'UPDATED'
             });
         case SYSTEM_SETUP_UPDATE_ERROR:
             return Object.assign({}, state, {
-                fetchingSetup: false,
+                fetchingSetupStatus: 'SYSTEM SETUP UPDATE ERROR',
                 updateStatus: 'ERROR',
                 error: {
                     message: action.message,
