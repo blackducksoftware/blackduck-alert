@@ -23,15 +23,10 @@
  */
 package com.synopsys.integration.alert.database.entity.configuration;
 
-import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.synopsys.integration.alert.database.relation.DatabaseRelation;
@@ -47,10 +42,6 @@ public class DescriptorFieldRelation extends DatabaseRelation {
     @Id
     @Column(name = "FIELD_ID")
     public Long fieldId;
-
-    @ManyToOne
-    @JoinColumn(name = "FIELD_ID", insertable = false, updatable = false)
-    private DefinedFieldEntity definedFieldEntity;
 
     public DescriptorFieldRelation() {
         // JPA requires default constructor definitions
@@ -69,7 +60,4 @@ public class DescriptorFieldRelation extends DatabaseRelation {
         return fieldId;
     }
 
-    public DefinedFieldEntity getDefinedFieldEntity() {
-        return definedFieldEntity;
-    }
 }

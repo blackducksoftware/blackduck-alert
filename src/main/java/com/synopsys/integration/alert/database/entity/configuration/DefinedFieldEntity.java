@@ -31,7 +31,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 
 @Entity
@@ -45,6 +44,10 @@ public class DefinedFieldEntity extends DatabaseEntity {
     @OneToMany
     @JoinColumn(name = "FIELD_ID", insertable = false, updatable = false)
     private List<DescriptorFieldRelation> descriptorFieldRelations;
+
+    @OneToMany
+    @JoinColumn(name = "FIELD_ID", insertable = false, updatable = false)
+    private List<FieldContextRelation> fieldContextRelations;
 
     public DefinedFieldEntity() {
         // JPA requires default constructor definitions
@@ -65,5 +68,9 @@ public class DefinedFieldEntity extends DatabaseEntity {
 
     public List<DescriptorFieldRelation> getDescriptorFieldRelations() {
         return descriptorFieldRelations;
+    }
+
+    public List<FieldContextRelation> getFieldContextRelations() {
+        return fieldContextRelations;
     }
 }
