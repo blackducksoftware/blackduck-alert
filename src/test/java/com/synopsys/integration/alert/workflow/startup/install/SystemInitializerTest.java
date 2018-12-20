@@ -91,7 +91,8 @@ public class SystemInitializerTest {
 
         final SystemInitializer systemInitializer = new SystemInitializer(systemStatusUtility, alertProperties, globalBlackDuckRepository, encryptionUtility, systemValidator, userAccessor);
         systemInitializer.updateRequiredConfiguration(configuration, new HashMap<>());
-        Mockito.verify(encryptionUtility).updateEncryptionFields(Mockito.anyString(), Mockito.anyString());
+        Mockito.verify(encryptionUtility).updatePasswordField(Mockito.anyString());
+        Mockito.verify(encryptionUtility).updateSaltField(Mockito.anyString());
     }
 
     @Test
@@ -130,6 +131,7 @@ public class SystemInitializerTest {
         Mockito.verify(alertProperties).setAlertProxyUsername(Mockito.anyString());
         Mockito.verify(globalBlackDuckRepository).findAll();
         Mockito.verify(globalBlackDuckRepository).save(Mockito.any());
-        Mockito.verify(encryptionUtility).updateEncryptionFields(Mockito.anyString(), Mockito.anyString());
+        Mockito.verify(encryptionUtility).updatePasswordField(Mockito.anyString());
+        Mockito.verify(encryptionUtility).updateSaltField(Mockito.anyString());
     }
 }
