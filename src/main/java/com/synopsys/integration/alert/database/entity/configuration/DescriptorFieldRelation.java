@@ -59,4 +59,5 @@ public class DescriptorFieldRelation extends DatabaseRelation {
     public Long getFieldId() {
         return fieldId;
     }
+
 }
