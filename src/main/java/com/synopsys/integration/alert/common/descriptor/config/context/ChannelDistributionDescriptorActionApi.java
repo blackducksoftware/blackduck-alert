@@ -111,7 +111,7 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
         if (StringUtils.isBlank(fieldAccessor.getString(CommonDistributionUIConfig.KEY_CHANNEL_NAME).orElse(null))) {
             fieldErrors.put(CommonDistributionUIConfig.KEY_CHANNEL_NAME, "You must choose a distribution type.");
         }
-        if (StringUtils.isBlank(CommonDistributionUIConfig.KEY_PROVIDER_NAME)) {
+        if (StringUtils.isBlank(fieldAccessor.getString(CommonDistributionUIConfig.KEY_PROVIDER_NAME).orElse(null))) {
             fieldErrors.put(CommonDistributionUIConfig.KEY_PROVIDER_NAME, "You must choose a provider.");
         }
 
