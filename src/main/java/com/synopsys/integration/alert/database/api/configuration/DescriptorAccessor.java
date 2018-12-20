@@ -403,7 +403,7 @@ public class DescriptorAccessor implements BaseDescriptorAccessor {
                    .findByFieldId(fieldId)
                    .stream()
                    .map(FieldContextRelation::getContextId)
-                   .flatMap(configId -> configContextRepository.findAllById(Collections.singleton(configId)).stream())
+                   .flatMap(configId -> configContextRepository.findAllById(Set.of(configId)).stream())
                    .map(entity -> ConfigContextEnum.valueOf(entity.getContext()))
                    .collect(Collectors.toSet());
     }
