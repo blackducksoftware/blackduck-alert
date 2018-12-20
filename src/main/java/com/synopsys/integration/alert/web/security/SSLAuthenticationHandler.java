@@ -29,30 +29,21 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
 @EnableWebSecurity
 @Configuration
 @Profile("ssl")
 public class SSLAuthenticationHandler extends WebSecurityConfigurerAdapter {
-    private final HttpSessionCsrfTokenRepository csrfTokenRepository;
     private final HttpPathManager httpPathManager;
 
     @Autowired
-    public SSLAuthenticationHandler(final HttpSessionCsrfTokenRepository csrfTokenRepository, final HttpPathManager httpPathManager) {
-        this.csrfTokenRepository = csrfTokenRepository;
+    public SSLAuthenticationHandler(final HttpPathManager httpPathManager) {
         this.httpPathManager = httpPathManager;
     }
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
-        final String[] allowedPaths = httpPathManager.getAllowedPaths();
-        final String[] csrfIgnoredPaths = httpPathManager.getCsrfIgnoredPaths();
-
-        http.requiresChannel().anyRequest().requiresSecure()
-            .and().csrf().csrfTokenRepository(csrfTokenRepository).ignoringAntMatchers(csrfIgnoredPaths)
-            .and().authorizeRequests().antMatchers(allowedPaths).permitAll()
-            .and().authorizeRequests().anyRequest().hasRole("ADMIN")
-            .and().logout().logoutSuccessUrl("/");
+        httpPathManager.completeHttpSecurity(http.requiresChannel().anyRequest().requiresSecure()
+                                                 .and());
     }
 }

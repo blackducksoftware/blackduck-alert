@@ -29,19 +29,17 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
 @EnableWebSecurity
 @Configuration
 @Profile("!ssl")
 public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     public static final String H2_CONSOLE_PATH = "/h2/**";
-    private final HttpSessionCsrfTokenRepository csrfTokenRepository;
+
     private final HttpPathManager httpPathManager;
 
     @Autowired
-    AuthenticationHandler(final HttpSessionCsrfTokenRepository csrfTokenRepository, final HttpPathManager httpPathManager) {
-        this.csrfTokenRepository = csrfTokenRepository;
+    AuthenticationHandler(final HttpPathManager httpPathManager) {
         this.httpPathManager = httpPathManager;
     }
 
@@ -49,13 +47,7 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
     protected void configure(final HttpSecurity http) throws Exception {
         httpPathManager.addAllowedPath(H2_CONSOLE_PATH);
         httpPathManager.addCsrfIgnoredPath(H2_CONSOLE_PATH);
-        final String[] allowedPaths = httpPathManager.getAllowedPaths();
-        final String[] csrfIgnoredPaths = httpPathManager.getCsrfIgnoredPaths();
-
-        http.csrf().csrfTokenRepository(csrfTokenRepository).ignoringAntMatchers(csrfIgnoredPaths)
-            .and().authorizeRequests().antMatchers(allowedPaths).permitAll()
-            .and().authorizeRequests().anyRequest().hasRole("ADMIN")
-            .and().logout().logoutSuccessUrl("/");
+        httpPathManager.completeHttpSecurity(http);
         // The profile above ensures that this will not be used if SSL is enabled.
         http.headers().frameOptions().disable();
     }

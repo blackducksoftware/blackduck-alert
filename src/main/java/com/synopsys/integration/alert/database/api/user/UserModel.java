@@ -51,7 +51,7 @@ public class UserModel extends Stringable {
         return new UserModel(userName, password, roles, false, false, false, true);
     }
 
-    public UserModel(final String name, final String password, final Set<String> roles, final boolean expired, final boolean locked, final boolean passwordExpired, final boolean enabled) {
+    private UserModel(final String name, final String password, final Set<String> roles, final boolean expired, final boolean locked, final boolean passwordExpired, final boolean enabled) {
         this.name = name;
         this.password = password;
         this.roles = roles;
