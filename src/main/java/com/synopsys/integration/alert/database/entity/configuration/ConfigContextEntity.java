@@ -23,8 +23,12 @@
  */
 package com.synopsys.integration.alert.database.entity.configuration;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
@@ -34,6 +38,10 @@ import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 public class ConfigContextEntity extends DatabaseEntity {
     @Column(name = "CONTEXT")
     private String context;
+
+    @OneToMany
+    @JoinColumn(name = "CONTEXT_ID", insertable = false, updatable = false)
+    private List<FieldContextRelation> fieldContextRelations;
 
     public ConfigContextEntity() {
         // JPA requires default constructor definitions
@@ -45,5 +53,9 @@ public class ConfigContextEntity extends DatabaseEntity {
 
     public String getContext() {
         return context;
+    }
+
+    public List<FieldContextRelation> getFieldContextRelations() {
+        return fieldContextRelations;
     }
 }

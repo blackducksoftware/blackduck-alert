@@ -399,11 +399,8 @@ public class DescriptorAccessor implements BaseDescriptorAccessor {
     }
 
     private Set<ConfigContextEnum> getContextsForFieldId(final Long fieldId) {
-        return fieldContextRepository
-                   .findByFieldId(fieldId)
+        return configContextRepository.findByFieldId(fieldId)
                    .stream()
-                   .map(FieldContextRelation::getContextId)
-                   .flatMap(configId -> configContextRepository.findAllById(Set.of(configId)).stream())
                    .map(entity -> ConfigContextEnum.valueOf(entity.getContext()))
                    .collect(Collectors.toSet());
     }
