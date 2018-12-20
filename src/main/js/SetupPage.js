@@ -33,7 +33,8 @@ class SetupPage extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.updateStatus === 'FETCHED' && this.props.updateStatus != nextProps.updateStatus) {
+        if (nextProps.fetchingSetupStatus === 'SYSTEM SETUP FETCHED' && nextProps.updateStatus === 'FETCHED' ||
+            this.props.fetchingSetupStatus === 'SYSTEM SETUP FETCHED' && this.props.updateStatus === 'FETCHED') {
             const newState = Object.assign({}, this.state.setupData, {
                 defaultAdminPassword: nextProps.currentSetupData.defaultAdminPassword || '',
                 defaultAdminPasswordSet: nextProps.currentSetupData.defaultAdminPasswordSet || false,
@@ -175,7 +176,7 @@ class SetupPage extends Component {
 }
 
 SetupPage.propTypes = {
-    fetchingSetup: PropTypes.bool.isRequired,
+    fetchingSetupStatus: PropTypes.string.isRequired,
     updateStatus: PropTypes.string,
     currentSetupData: PropTypes.object,
     fieldErrors: PropTypes.object
@@ -183,11 +184,13 @@ SetupPage.propTypes = {
 
 SetupPage.defaultProps = {
     currentSetupData: {},
-    fieldErrors: {}
+    fieldErrors: {},
+    fetchingSetupStatus: '',
+    updateStatus: ''
 };
 
 const mapStateToProps = state => ({
-    fetchingSetup: state.system.fetching,
+    fetchingSetupStatus: state.system.fetchingSetupStatus,
     updateStatus: state.system.updateStatus,
     currentSetupData: state.system.setupData,
     fieldErrors: state.system.error

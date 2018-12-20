@@ -82,14 +82,15 @@ public class SystemInitializerTest {
         final String proxyPassword = "password";
 
         final RequiredSystemConfiguration configuration = new RequiredSystemConfiguration(defaultAdminPassword, defaultAdminPasswordSet, blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken,
-                globalEncryptionPassword, isGlobalEncryptionPasswordSet, globalEncryptionSalt, isGlobalEncryptionSaltSet,
-                proxyHost, proxyPort, proxyUsername, proxyPassword);
+            globalEncryptionPassword, isGlobalEncryptionPasswordSet, globalEncryptionSalt, isGlobalEncryptionSaltSet,
+            proxyHost, proxyPort, proxyUsername, proxyPassword);
 
         Mockito.doThrow(new IllegalArgumentException("bad credentials")).when(encryptionUtility).updateEncryptionFields(Mockito.anyString(), Mockito.anyString());
 
         final SystemInitializer systemInitializer = new SystemInitializer(systemStatusUtility, alertProperties, encryptionUtility, systemValidator, userAccessor, baseConfigurationAccessor);
         systemInitializer.updateRequiredConfiguration(configuration, new HashMap<>());
-        Mockito.verify(encryptionUtility).updateEncryptionFields(Mockito.anyString(), Mockito.anyString());
+        Mockito.verify(encryptionUtility).updatePasswordField(Mockito.anyString());
+        Mockito.verify(encryptionUtility).updateSaltField(Mockito.anyString());
     }
 
     @Test
@@ -109,8 +110,8 @@ public class SystemInitializerTest {
         final String proxyPassword = "password";
 
         final RequiredSystemConfiguration configuration = new RequiredSystemConfiguration(defaultAdminPassword, defaultAdminPasswordSet, blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken,
-                globalEncryptionPassword, isGlobalEncryptionPasswordSet, globalEncryptionSalt, isGlobalEncryptionSaltSet,
-                proxyHost, proxyPort, proxyUsername, proxyPassword);
+            globalEncryptionPassword, isGlobalEncryptionPasswordSet, globalEncryptionSalt, isGlobalEncryptionSaltSet,
+            proxyHost, proxyPort, proxyUsername, proxyPassword);
 
         final SystemInitializer systemInitializer = new SystemInitializer(systemStatusUtility, alertProperties, encryptionUtility, systemValidator, userAccessor, baseConfigurationAccessor);
         systemInitializer.updateRequiredConfiguration(configuration, new HashMap<>());
@@ -120,6 +121,7 @@ public class SystemInitializerTest {
         Mockito.verify(alertProperties).setAlertProxyPort(Mockito.anyString());
         Mockito.verify(alertProperties).setAlertProxyPassword(Mockito.anyString());
         Mockito.verify(alertProperties).setAlertProxyUsername(Mockito.anyString());
-        Mockito.verify(encryptionUtility).updateEncryptionFields(Mockito.anyString(), Mockito.anyString());
+        Mockito.verify(encryptionUtility).updatePasswordField(Mockito.anyString());
+        Mockito.verify(encryptionUtility).updateSaltField(Mockito.anyString());
     }
 }
