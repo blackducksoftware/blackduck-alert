@@ -72,16 +72,26 @@ public class EncryptionUtility {
         return isPasswordSet() && isGlobalSaltSet();
     }
 
-    public void updateEncryptionFields(final String password, final String globalSalt) throws IOException {
+    public void updatePasswordField(final String password) throws IOException {
         if (StringUtils.isBlank(password)) {
             throw new IllegalArgumentException("Encryption password cannot be blank");
         }
 
+        final EncryptionFileData encryptionFileData = new EncryptionFileData(password, getGlobalSalt());
+        filePersistenceUtil.writeJsonToFile(DATA_FILE_NAME, encryptionFileData);
+    }
+
+    public void updateSaltField(final String globalSalt) throws IOException {
         if (StringUtils.isBlank(globalSalt)) {
             throw new IllegalArgumentException("Encryption global salt cannot be blank");
         }
-        final EncryptionFileData encryptionFileData = new EncryptionFileData(password, globalSalt);
+        final EncryptionFileData encryptionFileData = new EncryptionFileData(getPassword(), globalSalt);
         filePersistenceUtil.writeJsonToFile(DATA_FILE_NAME, encryptionFileData);
+    }
+
+    public void updateEncryptionFields(final String password, final String globalSalt) throws IOException {
+        updatePasswordField(password);
+        updateSaltField(globalSalt);
     }
 
     private String getEncodedSalt() {
