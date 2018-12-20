@@ -29,4 +29,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public abstract class BaseController {
     public static final String BASE_PATH = "/api";
 
+    //TODO create response entity methods should go in here
+
 }
