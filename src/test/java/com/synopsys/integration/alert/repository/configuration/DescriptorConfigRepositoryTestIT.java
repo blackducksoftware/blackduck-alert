@@ -1,20 +1,21 @@
 package com.synopsys.integration.alert.repository.configuration;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.database.entity.configuration.ConfigContextEntity;
 import com.synopsys.integration.alert.database.entity.configuration.DescriptorConfigEntity;
 import com.synopsys.integration.alert.database.entity.configuration.RegisteredDescriptorEntity;
 import com.synopsys.integration.alert.database.repository.configuration.ConfigContextRepository;
 import com.synopsys.integration.alert.database.repository.configuration.DescriptorConfigRepository;
 import com.synopsys.integration.alert.database.repository.configuration.RegisteredDescriptorRepository;
+import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 public class DescriptorConfigRepositoryTestIT extends AlertIntegrationTest {
     public static final String DESCRIPTOR_NAME = "Test Descriptor";
@@ -27,17 +28,26 @@ public class DescriptorConfigRepositoryTestIT extends AlertIntegrationTest {
     @Autowired
     private DescriptorConfigRepository descriptorConfigRepository;
 
-    @After
+    @BeforeEach
+    public void init() {
+        registeredDescriptorRepository.deleteAllInBatch();
+        configContextRepository.deleteAllInBatch();
+        descriptorConfigRepository.deleteAllInBatch();
+
+        registeredDescriptorRepository.flush();
+    }
+
+    @AfterEach
     public void cleanup() {
-        registeredDescriptorRepository.deleteAll();
-        configContextRepository.deleteAll();
-        descriptorConfigRepository.deleteAll();
+        registeredDescriptorRepository.deleteAllInBatch();
+        configContextRepository.deleteAllInBatch();
+        descriptorConfigRepository.deleteAllInBatch();
     }
 
     @Test
     public void findByDescriptorIdTest() {
-        final RegisteredDescriptorEntity descriptorEntity1 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME);
-        final RegisteredDescriptorEntity descriptorEntity2 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME + "Alt");
+        final RegisteredDescriptorEntity descriptorEntity1 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME, 1L);
+        final RegisteredDescriptorEntity descriptorEntity2 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME + "Alt", 1L);
         final RegisteredDescriptorEntity savedDescriptorEntity1 = registeredDescriptorRepository.save(descriptorEntity1);
         final RegisteredDescriptorEntity savedDescriptorEntity2 = registeredDescriptorRepository.save(descriptorEntity2);
 
@@ -60,8 +70,8 @@ public class DescriptorConfigRepositoryTestIT extends AlertIntegrationTest {
 
     @Test
     public void onDeleteCascadeTest() {
-        final RegisteredDescriptorEntity descriptorEntity1 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME);
-        final RegisteredDescriptorEntity descriptorEntity2 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME + "2");
+        final RegisteredDescriptorEntity descriptorEntity1 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME, 1L);
+        final RegisteredDescriptorEntity descriptorEntity2 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME + "2", 1L);
         final RegisteredDescriptorEntity savedDescriptorEntity1 = registeredDescriptorRepository.save(descriptorEntity1);
         final RegisteredDescriptorEntity savedDescriptorEntity2 = registeredDescriptorRepository.save(descriptorEntity2);
 

@@ -1,16 +1,16 @@
 package com.synopsys.integration.alert;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
@@ -24,7 +24,7 @@ public class AboutReaderTest {
     private SystemStatusUtility systemStatusUtility;
     private SystemMessageUtility systemMessageUtility;
 
-    @Before
+    @BeforeEach
     public void initialize() {
         systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         Mockito.when(systemStatusUtility.isSystemInitialized()).thenReturn(Boolean.TRUE);

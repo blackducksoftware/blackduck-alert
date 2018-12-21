@@ -1,7 +1,7 @@
 package com.synopsys.integration.alert.database.entity.repository;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -10,13 +10,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
+import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.rest.RestConstants;
 
 public class NotificationContentRepositoryIT extends AlertIntegrationTest {
@@ -24,20 +25,15 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
     @Autowired
     private NotificationContentRepository repository;
 
-    @Before
-    public void cleanup() {
-        repository.deleteAll();
+    @BeforeEach
+    public void init() {
+        repository.deleteAllInBatch();
+        repository.flush();
     }
 
-    private NotificationContent createEntity(final String dateString) throws ParseException {
-        final Date createdAt = RestConstants.parseDateString(dateString);
-        final Date providerCreationTime = createdAt;
-        final String provider = "provider_1";
-        final String notificationType = "type_1";
-        final String content = "NOTIFICATION CONTENT HERE";
-        final NotificationContent entity = new MockNotificationContent(createdAt, provider, providerCreationTime, notificationType, content, null).createEntity();
-        final NotificationContent savedEntity = repository.save(entity);
-        return savedEntity;
+    @AfterEach
+    public void cleanup() {
+        repository.deleteAllInBatch();
     }
 
     @Test
@@ -85,5 +81,16 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
             final String createdAtString = RestConstants.formatDate(entity.getCreatedAt());
             assertTrue(validResultDates.contains(createdAtString));
         });
+    }
+
+    private NotificationContent createEntity(final String dateString) throws ParseException {
+        final Date createdAt = RestConstants.parseDateString(dateString);
+        final Date providerCreationTime = createdAt;
+        final String provider = "provider_1";
+        final String notificationType = "type_1";
+        final String content = "NOTIFICATION CONTENT HERE";
+        final NotificationContent entity = new MockNotificationContent(createdAt, provider, providerCreationTime, notificationType, content, null).createEntity();
+        final NotificationContent savedEntity = repository.save(entity);
+        return savedEntity;
     }
 }

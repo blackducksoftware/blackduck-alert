@@ -15,7 +15,7 @@ public class SSLAuthenticationHandlerTest {
     class PublicSSLAuthenticationHandler extends SSLAuthenticationHandler {
 
         public PublicSSLAuthenticationHandler() {
-            super(new HttpSessionCsrfTokenRepository(), new HttpPathManager());
+            super(new HttpPathManager(Mockito.mock(HttpSessionCsrfTokenRepository.class)));
         }
 
         public void callConfigure(final HttpSecurity http) throws Exception {

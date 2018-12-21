@@ -26,57 +26,41 @@ package com.synopsys.integration.alert.component.scheduling;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
-import com.synopsys.integration.alert.database.scheduling.SchedulingRepositoryAccessor;
-import com.synopsys.integration.alert.web.component.scheduling.SchedulingConfig;
-import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class SchedulingDescriptorActionApi extends DescriptorActionApi {
 
-    @Autowired
-    public SchedulingDescriptorActionApi(final SchedulingTypeConverter typeConverter, final SchedulingRepositoryAccessor repositoryAccessor, final SchedulingStartupComponent schedulingStartupComponent) {
-        super(typeConverter, repositoryAccessor, schedulingStartupComponent);
-    }
-
     @Override
-    public void validateConfig(final Config config, final Map<String, String> fieldErrors) {
-        final SchedulingConfig schedulingConfig = (SchedulingConfig) config;
-        if (StringUtils.isNotBlank(schedulingConfig.getDailyDigestHourOfDay())) {
-            if (!StringUtils.isNumeric(schedulingConfig.getDailyDigestHourOfDay())) {
-                fieldErrors.put("dailyDigestHourOfDay", "Must be a number between 0 and 23");
-            } else {
-                final Integer integer = Integer.valueOf(schedulingConfig.getDailyDigestHourOfDay());
-                if (integer > 23) {
-                    fieldErrors.put("dailyDigestHourOfDay", "Must be a number less than 24");
-                }
-            }
-        } else {
-            fieldErrors.put("dailyDigestHourOfDay", "Must be a number between 0 and 23");
+    public void validateConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
+        final String dailyDigestHourOfDay = fieldAccessor.getString(SchedulingUIConfig.KEY_DAILY_DIGEST_HOUR_OF_DAY).orElse(null);
+        final String purgeDataFrequency = fieldAccessor.getString(SchedulingUIConfig.KEY_PURGE_DATA_FREQUENCY_DAYS).orElse(null);
+
+        if (isNotValid(dailyDigestHourOfDay, 0, 23)) {
+            fieldErrors.put(SchedulingUIConfig.KEY_DAILY_DIGEST_HOUR_OF_DAY, "Must be a number between 0 and 23");
         }
 
-        if (StringUtils.isNotBlank(schedulingConfig.getPurgeDataFrequencyDays())) {
-            if (!StringUtils.isNumeric(schedulingConfig.getPurgeDataFrequencyDays())) {
-                fieldErrors.put("purgeDataFrequencyDays", "Must be a number between 1 and 7");
-            } else {
-                final Integer integer = Integer.valueOf(schedulingConfig.getPurgeDataFrequencyDays());
-                if (integer > 8) {
-                    fieldErrors.put("purgeDataFrequencyDays", "Must be a number less than 8");
-                }
-            }
-        } else {
-            fieldErrors.put("purgeDataFrequencyDays", "Must be a number between 1 and 7");
+        if (isNotValid(purgeDataFrequency, 1, 7)) {
+            fieldErrors.put(SchedulingUIConfig.KEY_PURGE_DATA_FREQUENCY_DAYS, "Must be a number between 1 and 7");
         }
     }
 
     @Override
     public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
         throw new IntegrationException("Should not be implemented");
+    }
+
+    private boolean isNotValid(final String actualValue, final Integer minimumAllowedValue, final Integer maximumAllowedValue) {
+        return StringUtils.isBlank(actualValue) || !StringUtils.isNumeric(actualValue) || isOutOfRange(Integer.valueOf(actualValue), minimumAllowedValue, maximumAllowedValue);
+    }
+
+    private boolean isOutOfRange(final Integer number, final Integer minimumAllowedValue, final Integer maximumAllowedValue) {
+        return number < minimumAllowedValue || maximumAllowedValue < number;
     }
 
 }

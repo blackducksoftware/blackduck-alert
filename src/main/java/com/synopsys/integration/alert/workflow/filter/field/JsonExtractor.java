@@ -47,8 +47,8 @@ import com.jayway.jsonpath.spi.json.GsonJsonProvider;
 import com.jayway.jsonpath.spi.json.JsonProvider;
 import com.jayway.jsonpath.spi.mapper.GsonMappingProvider;
 import com.jayway.jsonpath.spi.mapper.MappingProvider;
+import com.synopsys.integration.alert.common.configuration.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.field.JsonField;
-import com.synopsys.integration.alert.web.model.Config;
 
 @Component
 public class JsonExtractor {
@@ -95,7 +95,7 @@ public class JsonExtractor {
         return new JsonFieldAccessor(fieldToValuesMap);
     }
 
-    public <T> List<T> getValuesFromConfig(final JsonField<T> field, final Config config) {
+    public <T> List<T> getValuesFromConfig(final JsonField<T> field, final CommonDistributionConfiguration config) {
         final Optional<List<JsonPath>> mappings = field.getConfigNameMappings();
         final List<T> values = new ArrayList<>();
         if (mappings.isPresent()) {

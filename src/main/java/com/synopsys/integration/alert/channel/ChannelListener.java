@@ -63,7 +63,6 @@ public class ChannelListener implements JmsListenerConfigurer {
                 registrar.registerEndpoint(endpoint);
             }
         });
-
     }
 
     private String createListenerId(final String name) {

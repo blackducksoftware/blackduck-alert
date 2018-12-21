@@ -1,45 +1,50 @@
 package com.synopsys.integration.alert;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collections;
 
-import org.junit.Test;
-import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.TaskScheduler;
 
-import com.synopsys.integration.alert.channel.slack.SlackChannel;
 import com.synopsys.integration.alert.common.AboutReader;
-import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
-import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
-import com.synopsys.integration.alert.mock.entity.MockCommonDistributionEntity;
+import com.synopsys.integration.alert.common.descriptor.Descriptor;
+import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor;
+import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
+import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties;
+import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
 
 public class PhoneHomeTest {
-
-    private static final Logger logger = LoggerFactory.getLogger(PhoneHomeTest.class);
+    private static final String TEST_VERSION = "1.2.3";
+    private static final String TEST_DESCRIPTOR_NAME = "Test Desc";
 
     @Test
-    @Tag(TestTags.CUSTOM_BLACKDUCK_CONNECTION)
-    public void testProductVersion() {
-        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(new TestAlertProperties());
-        final CommonDistributionRepository commonDistributionRepository = Mockito.mock(CommonDistributionRepository.class);
-        Mockito.when(commonDistributionRepository.findAll()).thenReturn(createConfigEntities());
+    public void runTest() throws AlertDatabaseConstraintException {
+        final TaskScheduler taskScheduler = Mockito.mock(TaskScheduler.class);
+        final TestBlackDuckProperties bdProperties = new TestBlackDuckProperties(new TestAlertProperties());
+
         final AboutReader aboutReader = Mockito.mock(AboutReader.class);
-        final String productVersion = "test";
-        Mockito.when(aboutReader.getProductVersion()).thenReturn(productVersion);
-        final PhoneHomeTask phoneHome = new PhoneHomeTask(null, globalProperties, aboutReader, commonDistributionRepository);
-        phoneHome.run();
-    }
+        Mockito.when(aboutReader.getProductVersion()).thenReturn(TEST_VERSION);
 
-    private List<CommonDistributionConfigEntity> createConfigEntities() {
-        final MockCommonDistributionEntity mockCommonDistributionEntity = new MockCommonDistributionEntity();
-        final CommonDistributionConfigEntity entity1 = mockCommonDistributionEntity.createEntity();
-        final CommonDistributionConfigEntity entity2 = mockCommonDistributionEntity.createEntity();
-        mockCommonDistributionEntity.setDistributionType(SlackChannel.COMPONENT_NAME);
-        final CommonDistributionConfigEntity entity3 = mockCommonDistributionEntity.createEntity();
+        final ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
+        final ConfigurationModel config = Mockito.mock(ConfigurationModel.class);
+        Mockito.when(configurationAccessor.getConfigurationsByDescriptorName(TEST_DESCRIPTOR_NAME)).thenReturn(Arrays.asList(config));
 
-        return Arrays.asList(entity1, entity2, entity3);
+        final DescriptorMap descriptorMap = Mockito.mock(DescriptorMap.class);
+        final Descriptor descriptor = Mockito.mock(Descriptor.class);
+        Mockito.when(descriptorMap.getDescriptorMap()).thenReturn(Collections.singletonMap(TEST_DESCRIPTOR_NAME, descriptor));
+
+        final PhoneHomeTask phoneHomeTask = new PhoneHomeTask(taskScheduler, bdProperties, aboutReader, configurationAccessor, descriptorMap);
+
+        try {
+            phoneHomeTask.run();
+        } catch (final Exception e) {
+            fail("Unexpected exception");
+        }
     }
 }

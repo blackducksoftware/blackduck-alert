@@ -1,21 +1,22 @@
 package com.synopsys.integration.alert.repository.configuration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Optional;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.database.entity.configuration.DefinedFieldEntity;
 import com.synopsys.integration.alert.database.entity.configuration.DescriptorFieldRelation;
 import com.synopsys.integration.alert.database.entity.configuration.RegisteredDescriptorEntity;
 import com.synopsys.integration.alert.database.repository.configuration.DefinedFieldRepository;
 import com.synopsys.integration.alert.database.repository.configuration.DescriptorFieldRepository;
 import com.synopsys.integration.alert.database.repository.configuration.RegisteredDescriptorRepository;
+import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 public class DefinedFieldRepositoryTestIT extends AlertIntegrationTest {
     public static final String FIELD_KEY_1 = "Test Key 1";
@@ -28,11 +29,20 @@ public class DefinedFieldRepositoryTestIT extends AlertIntegrationTest {
     @Autowired
     private DefinedFieldRepository definedFieldRepository;
 
-    @After
+    @BeforeEach
+    public void init() {
+        registeredDescriptorRepository.deleteAllInBatch();
+        descriptorFieldRepository.deleteAllInBatch();
+        definedFieldRepository.deleteAllInBatch();
+
+        registeredDescriptorRepository.flush();
+    }
+
+    @AfterEach
     public void cleanup() {
-        registeredDescriptorRepository.deleteAll();
-        descriptorFieldRepository.deleteAll();
-        definedFieldRepository.deleteAll();
+        registeredDescriptorRepository.deleteAllInBatch();
+        descriptorFieldRepository.deleteAllInBatch();
+        definedFieldRepository.deleteAllInBatch();
     }
 
     @Test
@@ -53,7 +63,7 @@ public class DefinedFieldRepositoryTestIT extends AlertIntegrationTest {
     @Test
     public void onDeleteCascadeTest() {
         final String descriptorName = "test descriptor";
-        final RegisteredDescriptorEntity registeredDescriptorEntity = new RegisteredDescriptorEntity(descriptorName);
+        final RegisteredDescriptorEntity registeredDescriptorEntity = new RegisteredDescriptorEntity(descriptorName, 1L);
         final RegisteredDescriptorEntity savedRegisteredDescriptorEntity = registeredDescriptorRepository.save(registeredDescriptorEntity);
         assertEquals(1, registeredDescriptorRepository.findAll().size());
 

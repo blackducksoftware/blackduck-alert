@@ -33,7 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.ConfiguredProjectEntity;
 import com.synopsys.integration.alert.database.entity.repository.ConfiguredProjectsRepository;
 import com.synopsys.integration.alert.database.relation.DistributionProjectRelation;
@@ -61,8 +60,8 @@ public class ConfiguredProjectsActions {
     }
 
     @Transactional
-    public List<String> getConfiguredProjects(final CommonDistributionConfigEntity commonEntity) {
-        final List<DistributionProjectRelation> distributionProjects = distributionProjectRepository.findByCommonDistributionConfigId(commonEntity.getId());
+    public List<String> getConfiguredProjects(final Long configId) {
+        final List<DistributionProjectRelation> distributionProjects = distributionProjectRepository.findByCommonDistributionConfigId(configId);
         final List<String> configuredProjects = new ArrayList<>(distributionProjects.size());
         for (final DistributionProjectRelation relation : distributionProjects) {
             final Optional<ConfiguredProjectEntity> entity = configuredProjectsRepository.findById(relation.getProjectId());

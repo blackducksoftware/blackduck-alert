@@ -1,20 +1,21 @@
 package com.synopsys.integration.alert.repository.configuration;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.database.entity.configuration.DefinedFieldEntity;
 import com.synopsys.integration.alert.database.entity.configuration.DescriptorFieldRelation;
 import com.synopsys.integration.alert.database.entity.configuration.RegisteredDescriptorEntity;
 import com.synopsys.integration.alert.database.repository.configuration.DefinedFieldRepository;
 import com.synopsys.integration.alert.database.repository.configuration.DescriptorFieldRepository;
 import com.synopsys.integration.alert.database.repository.configuration.RegisteredDescriptorRepository;
+import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 public class DescriptorFieldRepositoryTestIT extends AlertIntegrationTest {
     public static final String DESCRIPTOR_NAME_1 = "name1";
@@ -29,17 +30,26 @@ public class DescriptorFieldRepositoryTestIT extends AlertIntegrationTest {
     @Autowired
     public DefinedFieldRepository definedFieldRepository;
 
-    @After
+    @BeforeEach
+    public void init() {
+        registeredDescriptorRepository.deleteAllInBatch();
+        descriptorFieldRepository.deleteAllInBatch();
+        definedFieldRepository.deleteAllInBatch();
+
+        registeredDescriptorRepository.flush();
+    }
+
+    @AfterEach
     public void cleanup() {
-        registeredDescriptorRepository.deleteAll();
-        descriptorFieldRepository.deleteAll();
-        definedFieldRepository.deleteAll();
+        registeredDescriptorRepository.deleteAllInBatch();
+        descriptorFieldRepository.deleteAllInBatch();
+        definedFieldRepository.deleteAllInBatch();
     }
 
     @Test
     public void findByDescriptorIdTest() {
-        final RegisteredDescriptorEntity registeredDescriptorEntity1 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME_1);
-        final RegisteredDescriptorEntity registeredDescriptorEntity2 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME_2);
+        final RegisteredDescriptorEntity registeredDescriptorEntity1 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME_1, 1L);
+        final RegisteredDescriptorEntity registeredDescriptorEntity2 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME_2, 1L);
         final RegisteredDescriptorEntity savedRegisteredDescriptorEntity1 = registeredDescriptorRepository.save(registeredDescriptorEntity1);
         final RegisteredDescriptorEntity savedRegisteredDescriptorEntity2 = registeredDescriptorRepository.save(registeredDescriptorEntity2);
         assertEquals(2, registeredDescriptorRepository.findAll().size());
@@ -68,8 +78,8 @@ public class DescriptorFieldRepositoryTestIT extends AlertIntegrationTest {
 
     @Test
     public void findByFieldIdTest() {
-        final RegisteredDescriptorEntity registeredDescriptorEntity1 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME_1);
-        final RegisteredDescriptorEntity registeredDescriptorEntity2 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME_2);
+        final RegisteredDescriptorEntity registeredDescriptorEntity1 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME_1, 1L);
+        final RegisteredDescriptorEntity registeredDescriptorEntity2 = new RegisteredDescriptorEntity(DESCRIPTOR_NAME_2, 1L);
         final RegisteredDescriptorEntity savedRegisteredDescriptorEntity1 = registeredDescriptorRepository.save(registeredDescriptorEntity1);
         final RegisteredDescriptorEntity savedRegisteredDescriptorEntity2 = registeredDescriptorRepository.save(registeredDescriptorEntity2);
         assertEquals(2, registeredDescriptorRepository.findAll().size());

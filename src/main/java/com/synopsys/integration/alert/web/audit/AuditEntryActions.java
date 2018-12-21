@@ -45,6 +45,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.channel.ChannelTemplateManager;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
+import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.configuration.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
@@ -55,7 +57,6 @@ import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.web.exception.AlertJobMissingException;
 import com.synopsys.integration.alert.web.exception.AlertNotificationPurgedException;
 import com.synopsys.integration.alert.web.model.AlertPagedModel;
-import com.synopsys.integration.alert.web.model.CommonDistributionConfig;
 import com.synopsys.integration.alert.web.model.NotificationConfig;
 import com.synopsys.integration.alert.web.model.NotificationContentConverter;
 import com.synopsys.integration.alert.workflow.NotificationManager;
@@ -74,10 +75,12 @@ public class AuditEntryActions {
     private final NotificationContentConverter notificationContentConverter;
     private final ChannelTemplateManager channelTemplateManager;
     private final NotificationProcessor notificationProcessor;
+    private final ContentConverter contentConverter;
 
     @Autowired
     public AuditEntryActions(final AuditEntryRepository auditEntryRepository, final NotificationManager notificationManager, final AuditNotificationRepository auditNotificationRepository,
-        final JobConfigReader jobConfigReader, final NotificationContentConverter notificationContentConverter, final ChannelTemplateManager channelTemplateManager, final NotificationProcessor notificationProcessor) {
+        final JobConfigReader jobConfigReader, final NotificationContentConverter notificationContentConverter, final ChannelTemplateManager channelTemplateManager, final NotificationProcessor notificationProcessor,
+        final ContentConverter contentConverter) {
         this.auditEntryRepository = auditEntryRepository;
         this.notificationManager = notificationManager;
         this.auditNotificationRepository = auditNotificationRepository;
@@ -85,6 +88,7 @@ public class AuditEntryActions {
         this.notificationContentConverter = notificationContentConverter;
         this.channelTemplateManager = channelTemplateManager;
         this.notificationProcessor = notificationProcessor;
+        this.contentConverter = contentConverter;
     }
 
     public AlertPagedModel<AuditEntryModel> get() {
@@ -117,7 +121,7 @@ public class AuditEntryActions {
         final NotificationContent notificationContent = notificationContentOptional.get();
         final List<DistributionEvent> distributionEvents;
         if (null != commonConfigId) {
-            final Optional<? extends CommonDistributionConfig> commonDistributionConfig = jobConfigReader.getPopulatedConfig(commonConfigId);
+            final Optional<CommonDistributionConfiguration> commonDistributionConfig = jobConfigReader.getPopulatedConfig(commonConfigId);
             if (commonDistributionConfig.isEmpty()) {
                 logger.warn("The Distribution Job with Id {} could not be found. This notification could not be sent", commonConfigId);
                 throw new AlertJobMissingException("The Distribution Job with this id could not be found.");
@@ -131,9 +135,9 @@ public class AuditEntryActions {
             logger.warn("This notification could not be sent. Make sure you have a Distribution Job configured to handle this notification.");
         }
         distributionEvents.forEach(event -> {
-            final Long commonDistributionId = event.getCommonDistributionConfigId();
+            final String commonDistributionId = event.getConfigId();
             Long auditId = null;
-            final Optional<AuditEntryEntity> auditEntryEntity = auditEntryRepository.findMatchingAudit(notificationContent.getId(), commonDistributionId);
+            final Optional<AuditEntryEntity> auditEntryEntity = auditEntryRepository.findMatchingAudit(notificationContent.getId(), contentConverter.getLongValue(commonDistributionId));
             final Map<Long, Long> notificationIdToAuditId = new HashMap<>();
             if (auditEntryEntity.isPresent()) {
                 auditId = auditEntryEntity.get().getId();
@@ -223,15 +227,19 @@ public class AuditEntryActions {
             final String errorMessage = auditEntryEntity.getErrorMessage();
             final String errorStackTrace = auditEntryEntity.getErrorStackTrace();
 
-            final Optional<? extends CommonDistributionConfig> commonConfig = jobConfigReader.getPopulatedConfig(commonConfigId);
+            final Optional<CommonDistributionConfiguration> commonConfig = jobConfigReader.getPopulatedConfig(commonConfigId);
             String distributionConfigName = null;
             String eventType = null;
             if (commonConfig.isPresent()) {
                 distributionConfigName = commonConfig.get().getName();
-                eventType = commonConfig.get().getDistributionType();
+                eventType = commonConfig.get().getChannelName();
             }
 
-            jobModels.add(new JobModel(id, configId, distributionConfigName, eventType, timeCreated, timeLastSent, status.getDisplayName(), errorMessage, errorStackTrace));
+            String statusDisplayName = null;
+            if (null != status) {
+                statusDisplayName = status.getDisplayName();
+            }
+            jobModels.add(new JobModel(id, configId, distributionConfigName, eventType, timeCreated, timeLastSent, statusDisplayName, errorMessage, errorStackTrace));
         }
         final String id = notificationContentConverter.getContentConverter().getStringValue(notificationContentEntry.getId());
         final NotificationConfig notificationConfig = (NotificationConfig) notificationContentConverter.populateConfigFromEntity(notificationContentEntry);

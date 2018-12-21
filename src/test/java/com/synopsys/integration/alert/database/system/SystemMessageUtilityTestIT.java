@@ -1,9 +1,9 @@
 package com.synopsys.integration.alert.database.system;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -12,27 +12,34 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.model.DateRange;
+import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
-    private static final int MESSAGE_COUNT = 5;
     public static final String SEVERITY = "severity";
     public static final String TYPE = "type";
+    private static final int MESSAGE_COUNT = 5;
     @Autowired
     private SystemMessageUtility systemMessageUtility;
     @Autowired
     private SystemMessageRepository systemMessageRepository;
 
-    @Before
-    public void initializeTests() {
-        systemMessageRepository.deleteAll();
+    @BeforeEach
+    public void init() {
+        systemMessageRepository.deleteAllInBatch();
+        systemMessageRepository.flush();
+    }
+
+    @AfterEach
+    public void cleanup() {
+        systemMessageRepository.deleteAllInBatch();
     }
 
     @Test

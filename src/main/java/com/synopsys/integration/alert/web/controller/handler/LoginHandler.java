@@ -73,6 +73,7 @@ public class LoginHandler extends ControllerHandler {
         return authenticateUser(request, response, loginConfig);
     }
 
+    // TODO Create HandlerResponse to encapsulate the response  BaseController should convert HandlerResponse to ResponseEntity
     public ResponseEntity<String> authenticateUser(final HttpServletRequest request, final HttpServletResponse response, final LoginConfig loginConfig) {
         final IntLogger logger = new PrintStreamIntLogger(System.out, LogLevel.INFO);
         ResponseEntity<String> responseEntity;

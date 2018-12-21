@@ -2,8 +2,8 @@ package com.synopsys.integration.alert.web.controller;
 
 import java.nio.charset.Charset;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
@@ -15,26 +15,21 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.synopsys.integration.alert.AlertIntegrationTest;
-import com.synopsys.integration.alert.TestProperties;
-import com.synopsys.integration.alert.TestPropertyKey;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.LdapProperties;
-import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckConfigEntity;
-import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
+import com.synopsys.integration.alert.util.AlertIntegrationTest;
+import com.synopsys.integration.alert.util.TestProperties;
+import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
 
 public class LoginControllerTestIT extends AlertIntegrationTest {
-
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
     private final String loginUrl = BaseController.BASE_PATH + "/login";
     private final String logoutUrl = BaseController.BASE_PATH + "/logout";
     @Autowired
     protected WebApplicationContext webApplicationContext;
-    @Autowired
-    protected GlobalBlackDuckRepository blackDuckRepository;
     @Autowired
     protected BlackDuckProperties blackDuckProperties;
     @Autowired
@@ -43,9 +38,8 @@ public class LoginControllerTestIT extends AlertIntegrationTest {
     protected LdapManager ldapManager;
     private MockMvc mockMvc;
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
-        blackDuckRepository.deleteAll();
         final LdapProperties ldapProperties = new LdapProperties();
         ldapProperties.setEnabled("false");
         ldapManager.updateConfiguration(ldapProperties);
@@ -65,12 +59,6 @@ public class LoginControllerTestIT extends AlertIntegrationTest {
         final MockLoginRestModel mockLoginRestModel = new MockLoginRestModel();
         mockLoginRestModel.setBlackDuckUsername(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_USERNAME));
         mockLoginRestModel.setBlackDuckPassword(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PASSWORD));
-
-        final String blackDuckUrl = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL);
-        final String blackDuckApiToken = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY);
-        final String blackDuckTimeout = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT);
-        final GlobalBlackDuckConfigEntity blackDuckConfigEntity = new GlobalBlackDuckConfigEntity(Integer.valueOf(blackDuckTimeout), blackDuckApiToken, blackDuckUrl);
-        blackDuckRepository.save(blackDuckConfigEntity);
 
         ReflectionTestUtils.setField(alertProperties, "alertTrustCertificate", Boolean.valueOf(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TRUST_HTTPS_CERT)));
         final String restModel = mockLoginRestModel.getRestModelJson();

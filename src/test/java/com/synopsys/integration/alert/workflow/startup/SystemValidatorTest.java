@@ -10,15 +10,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.google.gson.Gson;
-import com.synopsys.integration.alert.OutputLogger;
-import com.synopsys.integration.alert.TestAlertProperties;
-import com.synopsys.integration.alert.TestBlackDuckProperties;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.api.user.UserAccessor;
-import com.synopsys.integration.alert.database.provider.blackduck.GlobalBlackDuckRepository;
 import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
+import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties;
+import com.synopsys.integration.alert.util.OutputLogger;
+import com.synopsys.integration.alert.util.TestAlertProperties;
 
 public class SystemValidatorTest {
     private OutputLogger outputLogger;
@@ -126,7 +124,7 @@ public class SystemValidatorTest {
     @Test
     public void testvalidateBlackDuckProviderHubWebserverEnvironmentSet() throws IOException {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(new Gson(), Mockito.mock(GlobalBlackDuckRepository.class), testAlertProperties);
+        final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(testAlertProperties);
         final TestBlackDuckProperties spiedGlobalProperties = Mockito.spy(testGlobalProperties);
         spiedGlobalProperties.setBlackDuckUrl("https://localhost:443");
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);

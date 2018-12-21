@@ -26,21 +26,20 @@ package com.synopsys.integration.alert.web.model;
 import java.util.Optional;
 
 public class TestConfigModel {
-    private final Config restModel;
     private final String destination;
+    private final FieldModel fieldModel;
 
-    public TestConfigModel(final Config restModel) {
-        this.restModel = restModel;
-        this.destination = null;
+    public TestConfigModel(final FieldModel fieldModel) {
+        this(fieldModel, null);
     }
 
-    public TestConfigModel(final Config restModel, final String destination) {
-        this.restModel = restModel;
+    public TestConfigModel(final FieldModel fieldModel, final String destination) {
+        this.fieldModel = fieldModel;
         this.destination = destination;
     }
 
-    public Config getRestModel() {
-        return restModel;
+    public FieldModel getFieldModel() {
+        return fieldModel;
     }
 
     public Optional<String> getDestination() {

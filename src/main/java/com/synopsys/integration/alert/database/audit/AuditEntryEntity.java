@@ -30,8 +30,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -39,8 +39,8 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.Type;
 
 import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
-import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+import com.synopsys.integration.alert.database.entity.configuration.DescriptorConfigEntity;
 
 @Entity
 @Table(schema = "alert", name = "audit_entries")
@@ -70,12 +70,12 @@ public class AuditEntryEntity extends DatabaseEntity {
     private String errorStackTrace;
 
     @OneToMany
-    @JoinColumn(name = "audit_entry_id")
+    @JoinColumn(name = "audit_entry_id", insertable = false, updatable = false)
     private List<AuditNotificationRelation> auditNotificationRelations;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "common_config_id", insertable = false, updatable = false)
-    private CommonDistributionConfigEntity commonDistributionConfigEntity;
+    private DescriptorConfigEntity descriptorConfigEntity;
 
     public AuditEntryEntity() {
         // JPA requires default constructor definitions
@@ -134,7 +134,7 @@ public class AuditEntryEntity extends DatabaseEntity {
         return auditNotificationRelations;
     }
 
-    public CommonDistributionConfigEntity getCommonDistributionConfigEntity() {
-        return commonDistributionConfigEntity;
+    public DescriptorConfigEntity getDescriptorConfigEntity() {
+        return descriptorConfigEntity;
     }
 }
