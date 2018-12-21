@@ -24,6 +24,7 @@
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -35,6 +36,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.FieldModel;
@@ -66,12 +68,12 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
         final String timeout = fieldAccessor.getString(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT).orElse(null);
         final String apiKey = fieldAccessor.getString(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY).orElse(null);
         if (StringUtils.isNotBlank(timeout) && !StringUtils.isNumeric(timeout)) {
-            fieldErrors.put("blackDuckTimeout", "Not an Integer.");
+            fieldErrors.put(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, "Not an Integer.");
         }
 
         if (StringUtils.isNotBlank(apiKey)) {
             if (apiKey.length() < 64 || apiKey.length() > 256) {
-                fieldErrors.put("blackDuckApiKey", "Invalid Black Duck API Key.");
+                fieldErrors.put(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, "Invalid Black Duck API Token.");
             }
         }
     }
@@ -81,10 +83,11 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
         final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
 
         final FieldModel fieldModel = testConfig.getFieldModel();
+        validateFieldFormatting(fieldModel.convertToFieldAccessor());
+
         final String apiToken = fieldModel.getField(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY).getValue().orElse("");
         final String url = fieldModel.getField(BlackDuckDescriptor.KEY_BLACKDUCK_URL).getValue().orElse("");
         final String timeout = fieldModel.getField(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT).getValue().orElse("");
-
         final BlackDuckServerConfigBuilder blackDuckServerConfigBuilder = blackDuckProperties.createServerConfigBuilderWithoutAuthentication(intLogger, NumberUtils.toInt(timeout, 300));
         blackDuckServerConfigBuilder.setApiToken(apiToken);
         blackDuckServerConfigBuilder.setUrl(url);
@@ -105,16 +108,24 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
         }
     }
 
-    public void validateBlackDuckConfiguration(final BlackDuckServerConfigBuilder blackDuckServerConfigBuilder) throws AlertFieldException {
-        final BuilderStatus builderStatus = blackDuckServerConfigBuilder.validateAndGetBuilderStatus();
-        if (!builderStatus.isValid()) {
-            final String errorMessage = StringUtils.join(builderStatus.getErrorMessages(), ", ");
-            // FIXME the following will require UI changes
-            // throw new AlertFieldException("There were issues with the configuration: " + errorMessage);
+    public void validateFieldFormatting(final FieldAccessor fieldAccessor) throws AlertFieldException {
+        final Map<String, String> fieldErrors = new HashMap<>();
+        validateConfig(fieldAccessor, fieldErrors);
+
+        if (!fieldErrors.isEmpty()) {
+            throw new AlertFieldException(fieldErrors);
         }
     }
 
-    private BlackDuckRestConnection createRestConnection(final BlackDuckServerConfigBuilder blackDuckServerConfigBuilder) throws IntegrationException {
+    public void validateBlackDuckConfiguration(final BlackDuckServerConfigBuilder blackDuckServerConfigBuilder) throws AlertException {
+        final BuilderStatus builderStatus = blackDuckServerConfigBuilder.validateAndGetBuilderStatus();
+        if (!builderStatus.isValid()) {
+            final String errorMessage = StringUtils.join(builderStatus.getErrorMessages(), ", ");
+            throw new AlertException("There were issues with the configuration: " + errorMessage);
+        }
+    }
+
+    private BlackDuckRestConnection createRestConnection(final BlackDuckServerConfigBuilder blackDuckServerConfigBuilder) {
         final BlackDuckServerConfig blackDuckServerConfig = blackDuckServerConfigBuilder.build();
         return blackDuckServerConfig.createRestConnection(blackDuckServerConfigBuilder.getLogger());
     }
