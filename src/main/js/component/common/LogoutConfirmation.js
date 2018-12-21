@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Modal } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { logout, cancelLogout } from '../../store/actions/session';
+import { cancelLogout, logout } from '../../store/actions/session';
 
 class LogoutConfirmation extends Component {
     render() {
@@ -17,13 +17,14 @@ class LogoutConfirmation extends Component {
                 <button id="logoutCancel" type="button" className="btn btn-link" onClick={this.props.cancelLogout}>Cancel</button>
                 <button id="logoutLogout" type="button" className="btn btn-danger" onClick={this.props.logout}>Logout</button>
             </Modal.Footer>
-                </Modal>);
+        </Modal>);
     }
 }
 
 LogoutConfirmation.propTypes = {
     showLogoutConfirm: PropTypes.bool.isRequired,
-    cancelLogout: PropTypes.func.isRequired
+    cancelLogout: PropTypes.func.isRequired,
+    logout: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({

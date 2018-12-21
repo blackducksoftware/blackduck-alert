@@ -19,7 +19,7 @@ const ConfigButtons = props => (
             <SubmitButton id="submitButton">Save</SubmitButton>
             }
             {props.includeCancel &&
-            <CancelButton id="cancelButton" onClick={props.onCancelClick}/>
+            <CancelButton id="cancelButton" onClick={props.onCancelClick} />
             }
         </div>
     </div>
