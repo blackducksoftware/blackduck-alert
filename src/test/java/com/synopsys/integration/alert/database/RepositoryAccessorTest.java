@@ -25,20 +25,26 @@ public class RepositoryAccessorTest {
     @Test
     public void readEntitiesTest() {
         repositoryAccessor.readEntities();
+        Mockito.verify(repository).findAll();
     }
 
     @Test
     public void readEntityTest() {
-        repositoryAccessor.readEntity(1L);
+        final Long id = 1L;
+        repositoryAccessor.readEntity(id);
+        Mockito.verify(repository).findById(id);
     }
 
     @Test
     public void deleteEntityTest() {
-        repositoryAccessor.deleteEntity(1L);
+        final Long id = 1L;
+        repositoryAccessor.deleteEntity(id);
+        Mockito.verify(repository).deleteById(id);
     }
 
     @Test
     public void deleteAllTest() {
         repositoryAccessor.deleteAll();
+        Mockito.verify(repository).deleteAllInBatch();
     }
 }
