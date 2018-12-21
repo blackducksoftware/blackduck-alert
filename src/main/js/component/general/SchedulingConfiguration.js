@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import Select from 'react-select';
 
-import {getSchedulingConfig, updateSchedulingConfig} from '../../store/actions/schedulingConfig';
+import { getSchedulingConfig, updateSchedulingConfig } from '../../store/actions/schedulingConfig';
 
 import ConfigButtons from '../common/ConfigButtons';
 
-import {dailyDigestOptions, purgeOptions} from '../../util/scheduling-data';
+import { dailyDigestOptions, purgeOptions } from '../../util/scheduling-data';
 
 class SchedulingConfiguration extends React.Component {
     constructor(props) {
@@ -28,7 +28,7 @@ class SchedulingConfiguration extends React.Component {
     componentWillReceiveProps(nextProps) {
         this.cancelAutoTick();
 
-        var nextRun = nextProps.accumulatorNextRun;
+        let nextRun = nextProps.accumulatorNextRun;
         if (!nextRun) {
             nextRun = 60;
         } else {
@@ -42,9 +42,9 @@ class SchedulingConfiguration extends React.Component {
         });
         this.startAutoTick();
 
-        const {dailyDigestHourOfDay, purgeDataFrequencyDays} = this.state;
-        this.setState({dailyDigestHourOfDay: dailyDigestHourOfDay || nextProps.dailyDigestHourOfDay || null});
-        this.setState({purgeDataFrequencyDays: purgeDataFrequencyDays || nextProps.purgeDataFrequencyDays || null});
+        const { dailyDigestHourOfDay, purgeDataFrequencyDays } = this.state;
+        this.setState({ dailyDigestHourOfDay: dailyDigestHourOfDay || nextProps.dailyDigestHourOfDay || null });
+        this.setState({ purgeDataFrequencyDays: purgeDataFrequencyDays || nextProps.purgeDataFrequencyDays || null });
     }
 
     componentWillUnmount() {
@@ -75,34 +75,32 @@ class SchedulingConfiguration extends React.Component {
     handleSubmit(event) {
         event.preventDefault();
         event.stopPropagation();
-        const {dailyDigestHourOfDay, purgeDataFrequencyDays} = this.state;
-        this.props.updateConfig({dailyDigestHourOfDay, purgeDataFrequencyDays});
+        const { dailyDigestHourOfDay, purgeDataFrequencyDays } = this.state;
+        this.props.updateConfig({ dailyDigestHourOfDay, purgeDataFrequencyDays });
     }
 
     handleDailyDigestChanged(option) {
         if (option) {
-            this.setState({dailyDigestHourOfDay: option.value});
+            this.setState({ dailyDigestHourOfDay: option.value });
         } else {
-            this.setState({dailyDigestHourOfDay: option});
+            this.setState({ dailyDigestHourOfDay: option });
         }
     }
 
     handlePurgeChanged(option) {
         if (option) {
-            this.setState({purgeDataFrequencyDays: option.value});
+            this.setState({ purgeDataFrequencyDays: option.value });
         } else {
-            this.setState({purgeDataFrequencyDays: option});
+            this.setState({ purgeDataFrequencyDays: option });
         }
     }
 
     render() {
-        const {
-            errorFields, errorMessage, updateStatus
-        } = this.props;
+        const { errorFields, errorMessage, updateStatus } = this.props;
         return (
             <div>
                 <h1>
-                    <span className="fa fa-clock-o"/>
+                    <span className="fa fa-clock-o" />
                     Scheduling
                 </h1>
                 {errorMessage && <div className="alert alert-danger">
@@ -130,7 +128,7 @@ class SchedulingConfiguration extends React.Component {
                                 id="schedulingConfigurationHour"
                                 className="accumulatorTypeAheadField"
                                 onChange={this.handleDailyDigestChanged}
-                                isSearchable={true}
+                                isSearchable
                                 options={dailyDigestOptions}
                                 placeholder="Choose the hour of day"
                                 value={dailyDigestOptions.find(option => option.value === this.state.dailyDigestHourOfDay)}
@@ -156,7 +154,7 @@ class SchedulingConfiguration extends React.Component {
                                 id="schedulingConfigurationFrequency"
                                 className="accumulatorTypeAheadField"
                                 onChange={this.handlePurgeChanged}
-                                isSearchable={true}
+                                isSearchable
                                 options={purgeOptions}
                                 placeholder="Choose the frequency"
                                 value={purgeOptions.find(option => option.value === this.state.purgeDataFrequencyDays)}
@@ -175,7 +173,7 @@ class SchedulingConfiguration extends React.Component {
                         </div>
                     </div>
 
-                    <ConfigButtons submitId="scheduling-submit" cancelId="scheduling-cancel" includeSave includeTest={false}/>
+                    <ConfigButtons submitId="scheduling-submit" cancelId="scheduling-cancel" includeSave includeTest={false} />
                 </form>
             </div>
         );
@@ -183,17 +181,25 @@ class SchedulingConfiguration extends React.Component {
 }
 
 SchedulingConfiguration.propTypes = {
+    errorFields: PropTypes.string,
+    errorMessage: PropTypes.string,
+    updateStatus: PropTypes.string,
     accumulatorNextRun: PropTypes.string,
     purgeDataNextRun: PropTypes.string,
-    purgeDataFrequencyDays: PropTypes.string,
-    dailyDigestHourOfDay: PropTypes.string,
+    dailyDigestNextRun: PropTypes.string,
+    purgeDataFrequencyDays: PropTypes.string.isRequired,
+    dailyDigestHourOfDay: PropTypes.string.isRequired,
     getConfig: PropTypes.func.isRequired,
     updateConfig: PropTypes.func.isRequired
 };
 
 SchedulingConfiguration.defaultProps = {
+    errorFields: '',
+    errorMessage: '',
+    updateStatus: '',
     accumulatorNextRun: '-1',
-    purgeDataNextRun: '-'
+    purgeDataNextRun: '-',
+    dailyDigestNextRun: '-'
 };
 
 const mapStateToProps = state => ({

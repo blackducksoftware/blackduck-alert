@@ -1,11 +1,11 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
-import {BootstrapTable, ReactBsTable, TableHeaderColumn} from 'react-bootstrap-table';
+import { connect } from 'react-redux';
+import { BootstrapTable, ReactBsTable, TableHeaderColumn } from 'react-bootstrap-table';
 
 import CheckboxInput from '../../../field/input/CheckboxInput';
-import {getProjects} from '../../../store/actions/projects';
-import TextInput from "../../../field/input/TextInput";
+import { getProjects } from '../../../store/actions/projects';
+import TextInput from '../../../field/input/TextInput';
 
 function assignClassName(row, rowIdx) {
     return 'tableRow';
@@ -13,7 +13,7 @@ function assignClassName(row, rowIdx) {
 
 function assignDataFormat(cell, row) {
     const cellContent = (row.missing) ?
-        <span className="missingBlackDuckData"><span className="fa fa-exclamation-triangle fa-fw" aria-hidden="true"/>{cell}</span> :
+        <span className="missingBlackDuckData"><span className="fa fa-exclamation-triangle fa-fw" aria-hidden="true" />{cell}</span> :
         cell;
     return <div title={cell}> {cellContent} </div>;
 }
@@ -49,7 +49,7 @@ class ProjectConfiguration extends Component {
     onRowSelectedAll(isSelected, rows) {
         if (rows) {
             const selected = Object.assign([], this.props.configuredProjects);
-            rows.forEach(row => {
+            rows.forEach((row) => {
                 this.createSelectedArray(selected, row, isSelected);
             });
             this.props.handleProjectChanged(selected);
@@ -65,8 +65,8 @@ class ProjectConfiguration extends Component {
     }
 
     createProjectList() {
-        const {projects, configuredProjects} = this.props;
-        const projectData = projects.map(({name, description}) => ({name, description: description || '', missing: false}));
+        const { projects, configuredProjects } = this.props;
+        const projectData = projects.map(({ name, description }) => ({ name, description: description || '', missing: false }));
 
         configuredProjects.forEach((project) => {
             const projectFound = projectData.find(p => project === p.name);
@@ -103,8 +103,15 @@ class ProjectConfiguration extends Component {
         let projectSelectionDiv = null;
         if (!this.props.includeAllProjects) {
             projectSelectionDiv = (<div>
-                <TextInput id="projectNamePattern" label="Project Name Pattern" name="projectNamePattern" value={this.props.projectNamePattern} onChange={this.props.handleChange} errorName="projectNamePatternError"
-                           errorValue={this.props.error.projectNamePatternError}/>
+                <TextInput
+                    id="projectNamePattern"
+                    label="Project Name Pattern"
+                    name="projectNamePattern"
+                    value={this.props.projectNamePattern}
+                    onChange={this.props.handleChange}
+                    errorName="projectNamePatternError"
+                    errorValue={this.props.error.projectNamePatternError}
+                />
                 <BootstrapTable
                     version="4"
                     data={projectData}
@@ -123,7 +130,7 @@ class ProjectConfiguration extends Component {
                     <TableHeaderColumn dataField="missing" dataFormat={assignDataFormat} hidden>Missing Project</TableHeaderColumn>
                 </BootstrapTable>
 
-                {this.props.fetching && <div className="progressIcon"><span className="fa fa-spinner fa-pulse fa-fw" aria-hidden="true"/></div>}
+                {this.props.fetching && <div className="progressIcon"><span className="fa fa-spinner fa-pulse fa-fw" aria-hidden="true" /></div>}
 
                 {this.props.errorMsg && <p name="projectTableMessage">{this.props.errorMsg}</p>}
             </div>);
@@ -153,11 +160,13 @@ ProjectConfiguration.defaultProps = {
     projectNamePattern: '',
     errorMsg: null,
     error: {},
-    includeAllProjects: true
+    includeAllProjects: true,
+    includeAllProjectsError: ''
 };
 
 ProjectConfiguration.propTypes = {
     includeAllProjects: PropTypes.bool,
+    includeAllProjectsError: PropTypes.string,
     configuredProjects: PropTypes.arrayOf(PropTypes.string),
     projectNamePattern: PropTypes.string,
     projects: PropTypes.arrayOf(PropTypes.any),

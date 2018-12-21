@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
-import {BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn} from 'react-bootstrap-table';
+import { connect } from 'react-redux';
+import { BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn } from 'react-bootstrap-table';
 
 import AutoRefresh from '../../common/AutoRefresh';
 import DescriptorLabel from '../../common/DescriptorLabel';
@@ -11,7 +11,7 @@ import SlackJobConfiguration from './job/SlackJobConfiguration';
 import EditTableCellFormatter from '../../common/EditTableCellFormatter';
 
 import JobAddModal from './JobAddModal';
-import {logout} from '../../../store/actions/session';
+import { logout } from '../../../store/actions/session';
 
 /**
  * Selects className based on field value
@@ -81,7 +81,7 @@ class Index extends Component {
 
     getCurrentJobConfig(currentRowSelected) {
         if (currentRowSelected != null) {
-            const {distributionConfigId, distributionType} = currentRowSelected;
+            const { distributionConfigId, distributionType } = currentRowSelected;
             if (distributionType === 'channel_email') {
                 return (<GroupEmailJobConfiguration
                     alertChannelName={distributionType}
@@ -169,7 +169,7 @@ class Index extends Component {
             console.log('Deleting the Job configs');
             // TODO delete the Job configs from the backend
             // dropRowKeys are the Id's of the Job configs
-            const {jobs} = this.state;
+            const { jobs } = this.state;
             const matchingJobs = jobs.filter(job => dropRowKeys.includes(job.id));
 
             matchingJobs.forEach((job) => {
@@ -213,10 +213,10 @@ class Index extends Component {
                 'Content-Type': 'application/json'
             }
         }).then((response) => {
-            this.setState({inProgress: false});
+            this.setState({ inProgress: false });
             this.startAutoReloadIfConfigured();
             if (response.ok) {
-                this.setState({jobConfigTableMessage: ''});
+                this.setState({ jobConfigTableMessage: '' });
                 response.json().then((jsonArray) => {
                     const newJobs = [];
                     if (jsonArray != null && jsonArray.length > 0) {
@@ -248,9 +248,10 @@ class Index extends Component {
                     case 401:
                     case 403:
                         this.props.logout();
+                        break;
                     default:
                         response.json().then((json) => {
-                            this.setState({jobConfigTableMessage: json.message});
+                            this.setState({ jobConfigTableMessage: json.message });
                         });
                 }
             }
@@ -262,11 +263,11 @@ class Index extends Component {
 
     editButtonClicked(currentRowSelected) {
         this.cancelAutoReload();
-        this.setState({currentRowSelected});
+        this.setState({ currentRowSelected });
     }
 
     editButtonClick(cell, row) {
-        return <EditTableCellFormatter handleButtonClicked={this.editButtonClicked} currentRowSelected={row}/>;
+        return <EditTableCellFormatter handleButtonClicked={this.editButtonClicked} currentRowSelected={row} />;
     }
 
 
@@ -280,18 +281,18 @@ class Index extends Component {
         if (!this.props.autoRefresh) {
             refreshButton = (
                 <button type="button" tabIndex={0} className={classes} onClick={reloadEntries}>
-                    <span className={fontAwesomeIcon} aria-hidden="true"/>Refresh
+                    <span className={fontAwesomeIcon} aria-hidden="true" />Refresh
                 </button>
             );
         }
         return (
             <div>
                 <InsertButton className="addJobButton btn-md" onClick={insertOnClick}>
-                    <span className="fa fa-plus"/>
+                    <span className="fa fa-plus" />
                     New
                 </InsertButton>
                 <DeleteButton className="deleteJobButton btn-md" onClick={deleteOnClick}>
-                    <span className="fa fa-trash"/>
+                    <span className="fa fa-trash" />
                     Delete
                 </DeleteButton>
                 {refreshButton}
@@ -302,41 +303,35 @@ class Index extends Component {
     typeColumnDataFormat(cell) {
         const defaultValue = <div className="inline">{cell}</div>;
         if (this.props.descriptors) {
-            const descriptorList = this.props.descriptors.items['CHANNEL_DISTRIBUTION_CONFIG'];
+            const descriptorList = this.props.descriptors.items.CHANNEL_DISTRIBUTION_CONFIG;
             if (descriptorList) {
-                const filteredList = descriptorList.filter(descriptor => descriptor.descriptorName === cell)
+                const filteredList = descriptorList.filter(descriptor => descriptor.descriptorName === cell);
                 if (filteredList && filteredList.length > 0) {
                     const foundDescriptor = filteredList[0];
-                    return (<DescriptorLabel keyPrefix='distribution-channel-icon' descriptor={foundDescriptor}/>);
-                } else {
-                    return defaultValue;
+                    return (<DescriptorLabel keyPrefix="distribution-channel-icon" descriptor={foundDescriptor} />);
                 }
-            } else {
                 return defaultValue;
             }
-        } else {
             return defaultValue;
         }
+        return defaultValue;
     }
 
     providerColumnDataFormat(cell) {
         const defaultValue = <div className="inline">{cell}</div>;
         if (this.props.descriptors) {
-            const descriptorList = this.props.descriptors.items['PROVIDER_CONFIG'];
+            const descriptorList = this.props.descriptors.items.PROVIDER_CONFIG;
             if (descriptorList) {
-                const filteredList = descriptorList.filter(descriptor => descriptor.descriptorName === cell)
+                const filteredList = descriptorList.filter(descriptor => descriptor.descriptorName === cell);
                 if (filteredList && filteredList.length > 0) {
                     const foundDescriptor = filteredList[0];
-                    return (<DescriptorLabel keyPrefix='distribution-provider-icon' descriptor={foundDescriptor}/>);
-                } else {
-                    return defaultValue;
+                    return (<DescriptorLabel keyPrefix="distribution-provider-icon" descriptor={foundDescriptor} />);
                 }
-            } else {
                 return defaultValue;
             }
-        } else {
             return defaultValue;
         }
+        return defaultValue;
     }
 
     render() {
@@ -382,12 +377,12 @@ class Index extends Component {
                     <TableHeaderColumn dataField="frequency" dataSort columnClassName="tableCell" dataFormat={frequencyColumnDataFormat}>Frequency Type</TableHeaderColumn>
                     <TableHeaderColumn dataField="lastRan" dataSort columnTitle columnClassName="tableCell">Last Run</TableHeaderColumn>
                     <TableHeaderColumn dataField="status" dataSort columnTitle columnClassName={statusColumnClassNameFormat}>Status</TableHeaderColumn>
-                    <TableHeaderColumn dataField="" width="48" columnClassName="tableCell" dataFormat={this.editButtonClick}/>
+                    <TableHeaderColumn dataField="" width="48" columnClassName="tableCell" dataFormat={this.editButtonClick} />
                 </BootstrapTable>
 
                 {this.state.inProgress &&
                 <div className="progressIcon">
-                    <span className="fa fa-spinner fa-pulse" aria-hidden="true"/>
+                    <span className="fa fa-spinner fa-pulse" aria-hidden="true" />
                 </div>
                 }
 
@@ -402,10 +397,10 @@ class Index extends Component {
         return (
             <div>
                 <h1>
-                    <span className="fa fa-truck"/>
+                    <span className="fa fa-truck" />
                     Distribution
                     <small className="pull-right">
-                        <AutoRefresh startAutoReload={this.startAutoReload} cancelAutoReload={this.cancelAutoReload}/>
+                        <AutoRefresh startAutoReload={this.startAutoReload} cancelAutoReload={this.cancelAutoReload} />
                     </small>
                 </h1>
                 {content}
@@ -415,6 +410,7 @@ class Index extends Component {
 }
 
 Index.propTypes = {
+    logout: PropTypes.func.isRequired,
     autoRefresh: PropTypes.bool,
     csrfToken: PropTypes.string,
     descriptors: PropTypes.object
@@ -422,7 +418,8 @@ Index.propTypes = {
 
 Index.defaultProps = {
     csrfToken: null,
-    descriptor: {}
+    autoRefresh: true,
+    descriptors: {}
 };
 
 const mapStateToProps = state => ({
