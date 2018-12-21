@@ -118,7 +118,6 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     @Override
     public ConfigurationAccessor.ConfigurationModel saveDistributionConfiguration() throws Exception {
         final List<ConfigurationFieldModel> models = new LinkedList<>();
-        models.addAll(MockConfigurationModelFactory.createCommonBlackDuckConfigurationFields(UNIT_TEST_JOB_NAME, EmailGroupChannel.COMPONENT_NAME));
         models.addAll(MockConfigurationModelFactory.createEmailDistributionFields());
         return configurationAccessor.createConfiguration(EmailGroupChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION, models);
     }
@@ -184,6 +183,16 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
         return Map.of();
     }
 
+    @Override
+    public String createTestConfigDestination() {
+        return "noreply@blackducksoftware.com";
+    }
+
+    @Override
+    public String getTestJobName() {
+        return UNIT_TEST_JOB_NAME;
+    }
+
     @Test
     public void testProjectOwner() throws Exception {
         // update the distribution jobs configuration and run the send test again
@@ -194,6 +203,6 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
             final List<ConfigurationFieldModel> fieldModels = MockConfigurationModelFactory.createEmailDistributionFieldsProjectOwnerOnly();
             configurationAccessor.updateConfiguration(configId, fieldModels);
         }
-        this.testSendTestMessage();
+        this.testDistributionConfig();
     }
 }
