@@ -23,31 +23,33 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
-import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
+import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.provider.ProviderUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.ui.UIComponent;
+import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 
 @Component
-public class BlackDuckDistributionUIConfig extends ProviderUIConfig {
-
-    @Autowired
-    public BlackDuckDistributionUIConfig(final BlackDuckProvider provider) {
-        super(provider);
-    }
+public class BlackDuckDistributionUIConfig extends UIConfig {
 
     @Override
     public UIComponent generateUIComponent() {
-        return new UIComponent("Black Duck", "blackduck", BlackDuckProvider.COMPONENT_NAME, "laptop", setupFields());
+        return new UIComponent("Black Duck", "blackduck", BlackDuckProvider.COMPONENT_NAME, "laptop", createFields());
     }
 
-    private List<ConfigField> setupFields() {
-        return Arrays.asList(getSupportedFormatTypeField(), getNotificationTypeField());
+    public List<ConfigField> createFields() {
+        final ConfigField filterByProject = CheckboxConfigField.create(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT, "Filter by project");
+        final ConfigField projectNamePattern = TextInputConfigField.create(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN, "Project name pattern");
+
+        // TODO figure out how to create a project listing (Perhaps a new field type called table)
+        // TODO create a linkedField that is an endpoint the UI hits to generate a field
+        final ConfigField configuredProject = SelectConfigField.createRequiredEmpty(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT, "Projects");
+        return List.of(filterByProject, projectNamePattern, configuredProject);
     }
 }

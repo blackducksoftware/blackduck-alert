@@ -78,11 +78,11 @@ public class BlackDuckAccumulator extends ScheduledTask {
         this.notificationManager = notificationManager;
         this.filePersistenceUtil = filePersistenceUtil;
         // TODO: do not store a file with the timestamp save this information into a database table for tasks.  Perhaps a task metadata object stored in the database.
-        this.searchRangeFileName = String.format("%s-last-search.txt", getTaskName());
+        searchRangeFileName = String.format("%s-last-search.txt", getTaskName());
     }
 
     public String getSearchRangeFileName() {
-        return this.searchRangeFileName;
+        return searchRangeFileName;
     }
 
     public String formatDate(final Date date) {

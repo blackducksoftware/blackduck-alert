@@ -5,7 +5,16 @@
             <column name="ID" type="BIGINT(19)" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="REGISTERED_DESCRIPTORS_KEY"/>
             </column>
+            <column name="TYPE_ID" type="BIGINT(19)"/>
             <column name="NAME" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="bmandel" id="1544636378584-1">
+        <createTable tableName="DESCRIPTOR_TYPES" schemaName="ALERT">
+            <column name="ID" type="BIGINT(19)" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="DESCRIPTOR_TYPES_KEY"/>
+            </column>
+            <column name="TYPE" type="VARCHAR(255)"/>
         </createTable>
     </changeSet>
     <changeSet author="gkillough" id="1543499878547-2">

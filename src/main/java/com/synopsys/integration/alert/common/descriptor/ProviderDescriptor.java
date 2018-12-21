@@ -27,23 +27,22 @@ import java.util.Set;
 
 import javax.validation.constraints.NotNull;
 
-import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
-import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
-import com.synopsys.integration.alert.common.provider.ProviderUIConfig;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentCollector;
 
 public abstract class ProviderDescriptor extends Descriptor {
     private final Provider provider;
 
-    public ProviderDescriptor(final DescriptorActionApi providerDescriptorActionApi, final UIConfig providerUiConfig, final DescriptorActionApi distributionDescriptorActionApi, final ProviderUIConfig distributionUIConfig,
+    public ProviderDescriptor(final DescriptorActionApi providerDescriptorActionApi, final UIConfig providerUiConfig, final DescriptorActionApi distributionDescriptorActionApi, final UIConfig distributionUIConfig,
         @NotNull final Provider provider) {
         super(provider.getName(), DescriptorType.PROVIDER);
         this.provider = provider;
-        addProviderUiConfigs(providerDescriptorActionApi, providerUiConfig);
-        addProviderDistributionUiConfigs(distributionDescriptorActionApi, distributionUIConfig);
+        addGlobalUiConfig(providerDescriptorActionApi, providerUiConfig);
+        addDistributionUiConfig(distributionDescriptorActionApi, distributionUIConfig);
     }
 
     public Provider getProvider() {

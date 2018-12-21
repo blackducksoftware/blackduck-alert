@@ -9,8 +9,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.synopsys.integration.alert.OutputLogger;
-import com.synopsys.integration.alert.TestAlertProperties;
+import com.synopsys.integration.alert.util.OutputLogger;
+import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.rest.connection.RestConnection;
 import com.synopsys.integration.rest.credentials.Credentials;
 import com.synopsys.integration.rest.credentials.CredentialsBuilder;

@@ -26,6 +26,9 @@ package com.synopsys.integration.alert.web.security;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.web.controller.BaseController;
@@ -34,46 +37,45 @@ import com.synopsys.integration.alert.web.controller.BaseController;
 public class HttpPathManager {
     private final List<String> allowedPaths;
     private final List<String> csrfIgnoredPaths;
+    private final HttpSessionCsrfTokenRepository csrfTokenRepository;
 
-    public HttpPathManager() {
+    private static final String[] DEFAULT_PATHS = {
+        "/",
+        "/#",
+        "/favicon.ico",
+        "/fonts/**",
+        "/js/bundle.js",
+        "/js/bundle.js.map",
+        "/css/style.css",
+        "index.html",
+        BaseController.BASE_PATH + "/login",
+        BaseController.BASE_PATH + "/logout",
+        BaseController.BASE_PATH + "/about",
+        BaseController.BASE_PATH + "/system/messages/latest",
+        BaseController.BASE_PATH + "/system/setup/initial"
+    };
+
+    @Autowired
+    public HttpPathManager(final HttpSessionCsrfTokenRepository csrfTokenRepository) {
+        this.csrfTokenRepository = csrfTokenRepository;
         allowedPaths = createDefaultAllowedPaths();
         csrfIgnoredPaths = createDefaultCsrfIgnoredPaths();
     }
 
-    private List<String> createDefaultAllowedPaths() {
+    private List<String> createDefaultPaths() {
         final List<String> list = new LinkedList<>();
-        list.add("/");
-        list.add("/#");
-        list.add("/favicon.ico");
-        list.add("/fonts/**");
-        list.add("/js/bundle.js");
-        list.add("/js/bundle.js.map");
-        list.add("/css/style.css");
-        list.add("index.html");
-        list.add(BaseController.BASE_PATH + "/login");
-        list.add(BaseController.BASE_PATH + "/logout");
-        list.add(BaseController.BASE_PATH + "/about");
-        list.add(BaseController.BASE_PATH + "/system/messages/latest");
-        list.add(BaseController.BASE_PATH + "/system/setup/initial");
+        for (final String path : DEFAULT_PATHS) {
+            list.add(path);
+        }
         return list;
     }
 
+    private List<String> createDefaultAllowedPaths() {
+        return createDefaultPaths();
+    }
+
     private List<String> createDefaultCsrfIgnoredPaths() {
-        final List<String> list = new LinkedList<>();
-        list.add("/");
-        list.add("/#");
-        list.add("/favicon.ico");
-        list.add("/fonts/**");
-        list.add("/js/bundle.js");
-        list.add("/js/bundle.js.map");
-        list.add("/css/style.css");
-        list.add("index.html");
-        list.add(BaseController.BASE_PATH + "/login");
-        list.add(BaseController.BASE_PATH + "/verify");
-        list.add(BaseController.BASE_PATH + "/about");
-        list.add(BaseController.BASE_PATH + "/system/messages/latest");
-        list.add(BaseController.BASE_PATH + "/system/setup/initial");
-        return list;
+        return createDefaultPaths();
     }
 
     public void addAllowedPath(final String path) {
@@ -92,5 +94,12 @@ public class HttpPathManager {
     public String[] getCsrfIgnoredPaths() {
         final String[] csrfIgnoredPathArray = new String[csrfIgnoredPaths.size()];
         return csrfIgnoredPaths.toArray(csrfIgnoredPathArray);
+    }
+
+    public void completeHttpSecurity(final HttpSecurity http) throws Exception {
+        http.csrf().csrfTokenRepository(csrfTokenRepository).ignoringAntMatchers(getCsrfIgnoredPaths())
+            .and().authorizeRequests().antMatchers(getAllowedPaths()).permitAll()
+            .and().authorizeRequests().anyRequest().hasRole("ADMIN")
+            .and().logout().logoutSuccessUrl("/");
     }
 }

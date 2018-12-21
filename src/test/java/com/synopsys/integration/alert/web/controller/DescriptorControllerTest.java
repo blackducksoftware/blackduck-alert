@@ -1,14 +1,14 @@
 package com.synopsys.integration.alert.web.controller;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -24,10 +24,10 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
-import com.synopsys.integration.alert.common.descriptor.config.UIComponent;
-import com.synopsys.integration.alert.common.enumeration.ActionApiType;
+import com.synopsys.integration.alert.common.descriptor.config.ui.UIComponent;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 public class DescriptorControllerTest extends AlertIntegrationTest {
 
@@ -42,7 +42,7 @@ public class DescriptorControllerTest extends AlertIntegrationTest {
     @Autowired
     private DescriptorMap descriptorMap;
 
-    @Before
+    @BeforeEach
     public void setup() {
         gson = new Gson();
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).apply(SecurityMockMvcConfigurers.springSecurity()).build();
@@ -82,8 +82,8 @@ public class DescriptorControllerTest extends AlertIntegrationTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    public void getbyNameAndDescriptorTypeTest() throws Exception {
-        final String getUrl = UIComponentController.DESCRIPTOR_PATH + "?descriptorName=channel_email&descriptorType=CHANNEL_GLOBAL_CONFIG";
+    public void getbyNameAndcontextTest() throws Exception {
+        final String getUrl = UIComponentController.DESCRIPTOR_PATH + "?descriptorName=channel_email&context=GLOBAL";
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(getUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
         final MvcResult result = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
 
@@ -112,8 +112,8 @@ public class DescriptorControllerTest extends AlertIntegrationTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    public void getbyNameAndDescriptorTypeNotFoundTest() throws Exception {
-        final String getUrl = UIComponentController.DESCRIPTOR_PATH + "?descriptorName=channel_email&descriptorType=bad_type";
+    public void getbyNameAndcontextNotFoundTest() throws Exception {
+        final String getUrl = UIComponentController.DESCRIPTOR_PATH + "?descriptorName=channel_email&context=bad_type";
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(getUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
         final MvcResult result = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
 
@@ -127,8 +127,8 @@ public class DescriptorControllerTest extends AlertIntegrationTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    public void getbyDescriptorTypeTest() throws Exception {
-        final String getUrl = UIComponentController.DESCRIPTOR_PATH + "?descriptorType=CHANNEL_GLOBAL_CONFIG";
+    public void getbycontextTest() throws Exception {
+        final String getUrl = UIComponentController.DESCRIPTOR_PATH + "?context=GLOBAL";
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(getUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
         final MvcResult result = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
 
@@ -137,14 +137,14 @@ public class DescriptorControllerTest extends AlertIntegrationTest {
 
         final List<UIComponent> componentList = gson.fromJson(body, componentListType.getType());
         assertNotNull(componentList);
-        final List<UIComponent> expected = descriptorMap.getUIComponents(ActionApiType.CHANNEL_GLOBAL_CONFIG);
+        final List<UIComponent> expected = descriptorMap.getUIComponents(ConfigContextEnum.GLOBAL);
         assertEquals(expected.size(), componentList.size());
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    public void getbyDescriptorTypeNotFoundTest() throws Exception {
-        final String getUrl = UIComponentController.DESCRIPTOR_PATH + "?descriptorType=bad_type";
+    public void getbycontextNotFoundTest() throws Exception {
+        final String getUrl = UIComponentController.DESCRIPTOR_PATH + "?context=bad_type";
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(getUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
         final MvcResult result = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
 
@@ -159,7 +159,7 @@ public class DescriptorControllerTest extends AlertIntegrationTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     public void badNameAndDescriptorTypeTest() throws Exception {
-        final String getUrl = UIComponentController.DESCRIPTOR_PATH + "?descriptorName=bad_name&descriptorType=bad_type";
+        final String getUrl = UIComponentController.DESCRIPTOR_PATH + "?descriptorName=bad_name&context=bad_type";
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(getUrl).with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"));
         final MvcResult result = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
 

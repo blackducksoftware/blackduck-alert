@@ -1,20 +1,20 @@
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.AlertIntegrationTest;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckLicenseLimitCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyOverrideCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyViolationCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckVulnerabilityCollector;
+import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 public class BlackDuckMessageContentCollectorFactoryTest extends AlertIntegrationTest {
 
@@ -30,7 +30,7 @@ public class BlackDuckMessageContentCollectorFactoryTest extends AlertIntegratio
     @Test
     public void testCollectorCreation() {
         final BlackDuckTopicCollectorFactory topicCollectorFactory = new BlackDuckTopicCollectorFactory(vulnerabilityTopicCollectorFactory, policyViolationTopicCollectorFactory, policyOverrideTopicCollectorFactory,
-            licenseTopicCollectorFactory);
+                licenseTopicCollectorFactory);
         final Set<MessageContentCollector> messageContentCollectorSet = topicCollectorFactory.createTopicCollectors();
         assertFalse(messageContentCollectorSet.isEmpty());
         assertEquals(4, messageContentCollectorSet.size());

@@ -33,4 +33,8 @@ import com.synopsys.integration.alert.database.entity.configuration.DescriptorCo
 @Component
 public interface DescriptorConfigRepository extends JpaRepository<DescriptorConfigEntity, Long> {
     List<DescriptorConfigEntity> findByDescriptorId(final Long descriptorId);
+
+    List<DescriptorConfigEntity> findByContextId(Long contextId);
+
+    List<DescriptorConfigEntity> findByDescriptorIdAndContextId(Long descriptorId, Long contextId);
 }

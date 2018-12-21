@@ -33,7 +33,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
 import com.synopsys.integration.alert.database.entity.repository.NotificationTypeRepository;
 import com.synopsys.integration.alert.database.relation.DistributionNotificationTypeRelation;
 import com.synopsys.integration.alert.database.relation.repository.DistributionNotificationTypeRepository;
@@ -60,8 +59,8 @@ public class NotificationTypesActions {
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public List<String> getNotificationTypes(final CommonDistributionConfigEntity commonEntity) {
-        final List<DistributionNotificationTypeRelation> foundRelations = distributionNotificationTypeRepository.findByCommonDistributionConfigId(commonEntity.getId());
+    public List<String> getNotificationTypes(final Long configId) {
+        final List<DistributionNotificationTypeRelation> foundRelations = distributionNotificationTypeRepository.findByCommonDistributionConfigId(configId);
         return foundRelations.stream().map(DistributionNotificationTypeRelation::getNotificationType).collect(Collectors.toList());
 
     }

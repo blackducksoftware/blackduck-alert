@@ -1,22 +1,23 @@
 package com.synopsys.integration.alert.repository.configuration;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Optional;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.AlertIntegrationTest;
-import com.synopsys.integration.alert.database.api.configuration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.database.entity.configuration.ConfigContextEntity;
 import com.synopsys.integration.alert.database.entity.configuration.DescriptorConfigEntity;
 import com.synopsys.integration.alert.database.entity.configuration.RegisteredDescriptorEntity;
 import com.synopsys.integration.alert.database.repository.configuration.ConfigContextRepository;
 import com.synopsys.integration.alert.database.repository.configuration.DescriptorConfigRepository;
 import com.synopsys.integration.alert.database.repository.configuration.RegisteredDescriptorRepository;
+import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 public class ConfigContextTestIT extends AlertIntegrationTest {
     @Autowired
@@ -26,11 +27,20 @@ public class ConfigContextTestIT extends AlertIntegrationTest {
     @Autowired
     private ConfigContextRepository configContextRepository;
 
-    @After
+    @BeforeEach
+    public void init() {
+        registeredDescriptorRepository.deleteAllInBatch();
+        descriptorConfigRepository.deleteAllInBatch();
+        configContextRepository.deleteAllInBatch();
+
+        registeredDescriptorRepository.flush();
+    }
+
+    @AfterEach
     public void cleanup() {
-        registeredDescriptorRepository.deleteAll();
-        descriptorConfigRepository.deleteAll();
-        configContextRepository.deleteAll();
+        registeredDescriptorRepository.deleteAllInBatch();
+        descriptorConfigRepository.deleteAllInBatch();
+        configContextRepository.deleteAllInBatch();
     }
 
     @Test
@@ -53,7 +63,7 @@ public class ConfigContextTestIT extends AlertIntegrationTest {
         assertEquals(1, configContextRepository.findAll().size());
 
         final String descriptorName = "test descriptor";
-        final RegisteredDescriptorEntity registeredDescriptorEntity = new RegisteredDescriptorEntity(descriptorName);
+        final RegisteredDescriptorEntity registeredDescriptorEntity = new RegisteredDescriptorEntity(descriptorName, 1L);
         final RegisteredDescriptorEntity savedRegisteredDescriptorEntity = registeredDescriptorRepository.save(registeredDescriptorEntity);
         assertEquals(1, registeredDescriptorRepository.findAll().size());
 

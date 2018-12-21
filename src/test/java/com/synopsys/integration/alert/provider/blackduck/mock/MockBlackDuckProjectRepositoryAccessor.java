@@ -40,12 +40,12 @@ public class MockBlackDuckProjectRepositoryAccessor extends BlackDuckProjectRepo
 
     @Override
     public Optional<? extends DatabaseEntity> readEntity(final long id) {
-        return Optional.ofNullable(blackDuckProjectEntityMap.get(new Long(id)));
+        return Optional.ofNullable(blackDuckProjectEntityMap.get(Long.valueOf(id)));
     }
 
     @Override
     public void deleteEntity(final long id) {
-        blackDuckProjectEntityMap.remove(new Long(id));
+        blackDuckProjectEntityMap.remove(Long.valueOf(id));
     }
 
     @Override

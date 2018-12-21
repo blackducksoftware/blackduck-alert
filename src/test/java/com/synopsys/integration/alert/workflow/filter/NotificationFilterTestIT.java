@@ -1,50 +1,68 @@
 package com.synopsys.integration.alert.workflow.filter;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.AlertIntegrationTest;
-import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
-import com.synopsys.integration.alert.common.enumeration.FormatType;
+import com.synopsys.integration.alert.common.configuration.CommonDistributionConfiguration;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
+import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionConfigEntity;
-import com.synopsys.integration.alert.database.channel.hipchat.HipChatDistributionRepository;
-import com.synopsys.integration.alert.database.entity.CommonDistributionConfigEntity;
-import com.synopsys.integration.alert.database.entity.ConfiguredProjectEntity;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor;
+import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
+import com.synopsys.integration.alert.database.api.configuration.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.DefinedFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.DescriptorAccessor;
+import com.synopsys.integration.alert.database.api.configuration.DescriptorAccessor.RegisteredDescriptorModel;
+import com.synopsys.integration.alert.database.channel.JobConfigReader;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
-import com.synopsys.integration.alert.database.entity.repository.CommonDistributionRepository;
 import com.synopsys.integration.alert.database.entity.repository.ConfiguredProjectsRepository;
-import com.synopsys.integration.alert.database.entity.repository.NotificationTypeRepository;
-import com.synopsys.integration.alert.database.relation.DistributionNotificationTypeRelation;
-import com.synopsys.integration.alert.database.relation.DistributionProjectRelation;
-import com.synopsys.integration.alert.database.relation.repository.DistributionNotificationTypeRepository;
 import com.synopsys.integration.alert.database.relation.repository.DistributionProjectRepository;
+import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
+import com.synopsys.integration.alert.util.AlertIntegrationTest;
+import com.synopsys.integration.alert.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 public class NotificationFilterTestIT extends AlertIntegrationTest {
-    private static final String TEST_PROJECT_NAME = "Test Project";
+    private static final String TEST_DESCRIPTOR_NAME = "Test Descriptor";
+    private static final String TEST_DESCRIPTOR_FIELD_KEY = "testFieldKeyForDesc";
+    private static final ConfigContextEnum TEST_DESCRIPTOR_FIELD_CONTEXT = ConfigContextEnum.DISTRIBUTION;
+
+    private static final FrequencyType TEST_CONFIG_FREQUENCY = FrequencyType.REAL_TIME;
+    private static final String TEST_CONFIG_PROJECT_NAME = "Test Project";
+    private static final String TEST_CONFIG_NOTIFICATION_TYPE = NotificationType.VULNERABILITY.name();
+
     private static final Date NEW = new Date(2000L);
     private static final Date OLD = new Date(1000L);
 
     @Autowired
-    private NotificationFilter notificationFilter;
+    private JsonExtractor jsonExtractor;
 
     @Autowired
-    private HipChatDistributionRepository hipChatDistributionRepository;
+    private List<ProviderDescriptor> providerDescriptors;
 
     @Autowired
-    private CommonDistributionRepository commonDistributionRepository;
+    private DescriptorAccessor descriptorAccessor;
+
+    @Autowired
+    private ConfigurationAccessor configurationAccessor;
 
     @Autowired
     private ConfiguredProjectsRepository configuredProjectsRepository;
@@ -52,140 +70,131 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
     @Autowired
     private DistributionProjectRepository distributionProjectRepository;
 
-    @Autowired
-    private NotificationTypeRepository notificationTypeRepository;
+    private NotificationFilter defaultNotificationFilter;
 
-    @Autowired
-    private DistributionNotificationTypeRepository distributionNotificationTypeRepository;
+    @BeforeEach
+    public void init() throws AlertDatabaseConstraintException {
+        final List<ConfigurationFieldModel> fieldList = MockConfigurationModelFactory.createCommonBlackDuckConfigurationFields("Job Name", TEST_DESCRIPTOR_NAME);
+        final Map<String, ConfigurationFieldModel> fieldMap = MockConfigurationModelFactory.mapFieldKeyToFields(fieldList);
+        fieldMap.get(CommonDistributionUIConfig.KEY_FREQUENCY).setFieldValue(TEST_CONFIG_FREQUENCY.name());
+        fieldMap.get(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES).setFieldValue(TEST_CONFIG_NOTIFICATION_TYPE);
+        fieldMap.get(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT).setFieldValue(Boolean.TRUE.toString());
+        fieldMap.get(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT).setFieldValue(TEST_CONFIG_PROJECT_NAME);
 
-    private Long commonDistributionId = 0L;
-    private Long distributionConfigId = 0L;
-    private Long projectId = 0L;
-    private String notificationType = "";
+        final ConfigurationModel configurationModel = Mockito.mock(ConfigurationModel.class);
+        Mockito.when(configurationModel.getCopyOfKeyToFieldMap()).thenReturn(fieldMap);
+        Mockito.when(configurationModel.getConfigurationId()).thenReturn(1L);
 
-    @Before
-    public void init() {
-        final HipChatDistributionConfigEntity hipChatEntity = createHipChatEntity();
-        final HipChatDistributionConfigEntity savedHipChatEntity = hipChatDistributionRepository.save(hipChatEntity);
-        distributionConfigId = savedHipChatEntity.getId();
+        final CommonDistributionConfiguration config = new CommonDistributionConfiguration(configurationModel);
 
-        final CommonDistributionConfigEntity configEntity = createCommonConfigEntity();
-        configEntity.setDistributionConfigId(distributionConfigId);
-        final CommonDistributionConfigEntity savedCommonEntity = commonDistributionRepository.save(configEntity);
-        commonDistributionId = savedCommonEntity.getId();
+        final JobConfigReader jobConfigReader = Mockito.mock(JobConfigReader.class);
+        Mockito.when(jobConfigReader.getPopulatedConfigs()).thenReturn(List.of(config));
 
-        final ConfiguredProjectEntity projectEntity = new ConfiguredProjectEntity(TEST_PROJECT_NAME);
-        final ConfiguredProjectEntity savedProjectEntity = configuredProjectsRepository.save(projectEntity);
-        projectId = savedProjectEntity.getId();
+        defaultNotificationFilter = new NotificationFilter(jsonExtractor, providerDescriptors, jobConfigReader);
+        descriptorAccessor.registerDescriptor(TEST_DESCRIPTOR_NAME, DescriptorType.CHANNEL, List.of());
 
-        final DistributionProjectRelation distributionProjectRelation = new DistributionProjectRelation(commonDistributionId, projectId);
-        distributionProjectRepository.save(distributionProjectRelation);
-
-        notificationType = NotificationType.VULNERABILITY.name();
-
-        final DistributionNotificationTypeRelation typeRelation = new DistributionNotificationTypeRelation(commonDistributionId, notificationType);
-        distributionNotificationTypeRepository.save(typeRelation);
+        final RegisteredDescriptorModel registeredDescriptorModel = descriptorAccessor.getRegisteredDescriptorByName(TEST_DESCRIPTOR_NAME).orElseThrow();
+        final DefinedFieldModel definedFieldModel = new DefinedFieldModel(TEST_DESCRIPTOR_FIELD_KEY, TEST_DESCRIPTOR_FIELD_CONTEXT, Boolean.FALSE);
+        descriptorAccessor.addDescriptorField(registeredDescriptorModel.getId(), definedFieldModel);
     }
 
-    @After
-    public void cleanup() {
-        hipChatDistributionRepository.deleteAll();
-        commonDistributionRepository.deleteAll();
+    @AfterEach
+    public void cleanup() throws AlertDatabaseConstraintException {
         configuredProjectsRepository.deleteAll();
         distributionProjectRepository.deleteAll();
-        notificationTypeRepository.deleteAll();
-        distributionNotificationTypeRepository.deleteAll();
+        descriptorAccessor.unregisterDescriptor(TEST_DESCRIPTOR_NAME);
     }
 
     @Test
     public void shortCircuitIfNoCommonConfigsTest() {
-        commonDistributionRepository.deleteAll();
+        final JobConfigReader jobConfigReader = Mockito.mock(JobConfigReader.class);
+        Mockito.when(jobConfigReader.getPopulatedConfigs()).thenReturn(List.of());
 
-        final NotificationContent applicableNotification = createVulnerabilityNotification(TEST_PROJECT_NAME, BlackDuckProvider.COMPONENT_NAME, NEW);
-        final Collection<NotificationContent> filteredNotifications = notificationFilter.extractApplicableNotifications(FrequencyType.REAL_TIME, Arrays.asList(applicableNotification));
-        Assert.assertEquals(0, filteredNotifications.size());
+        final NotificationFilter notificationFilter = new NotificationFilter(jsonExtractor, providerDescriptors, jobConfigReader);
+        final NotificationContent applicableNotification = createVulnerabilityNotification(TEST_CONFIG_PROJECT_NAME, BlackDuckProvider.COMPONENT_NAME, NEW);
+        final Collection<NotificationContent> filteredNotifications = notificationFilter.extractApplicableNotifications(TEST_CONFIG_FREQUENCY, List.of(applicableNotification));
+        assertEquals(0, filteredNotifications.size());
     }
 
     @Test
-    public void shortCircuitIfNoCommonConfigsForFrequencyTest() {
-        final Optional<CommonDistributionConfigEntity> foundEntity = commonDistributionRepository.findById(commonDistributionId);
-        if (foundEntity.isPresent()) {
-            final CommonDistributionConfigEntity commonEntity = foundEntity.get();
-            final CommonDistributionConfigEntity newEntity = new CommonDistributionConfigEntity(commonEntity.getDistributionConfigId(), commonEntity.getDistributionType(), commonEntity.getName(), BlackDuckProvider.COMPONENT_NAME,
-                FrequencyType.DAILY, commonEntity.getFilterByProject(), commonEntity.getProjectNamePattern(), FormatType.DEFAULT);
-            newEntity.setId(commonEntity.getId());
-            commonDistributionRepository.save(newEntity);
-        }
+    public void shortCircuitIfNoCommonConfigsForFrequencyTest() throws AlertDatabaseConstraintException {
+        final CommonDistributionConfiguration config = Mockito.mock(CommonDistributionConfiguration.class);
+        Mockito.when(config.getFrequencyType()).thenReturn(FrequencyType.DAILY);
 
-        final NotificationContent applicableNotification = createVulnerabilityNotification(TEST_PROJECT_NAME, BlackDuckProvider.COMPONENT_NAME, NEW);
+        final JobConfigReader jobConfigReader = Mockito.mock(JobConfigReader.class);
+        Mockito.when(jobConfigReader.getPopulatedConfigs()).thenReturn(List.of(config));
+
+        final NotificationFilter notificationFilter = new NotificationFilter(jsonExtractor, providerDescriptors, jobConfigReader);
+        final ConfigurationFieldModel fieldModel = createFieldModel(TEST_DESCRIPTOR_FIELD_KEY, "value");
+        configurationAccessor.createConfiguration(TEST_DESCRIPTOR_NAME, TEST_DESCRIPTOR_FIELD_CONTEXT, List.of(fieldModel));
+
+        final NotificationContent applicableNotification = createVulnerabilityNotification(TEST_CONFIG_PROJECT_NAME, BlackDuckProvider.COMPONENT_NAME, NEW);
         final Collection<NotificationContent> filteredNotifications = notificationFilter.extractApplicableNotifications(FrequencyType.REAL_TIME, Arrays.asList(applicableNotification));
-        Assert.assertEquals(0, filteredNotifications.size());
+        assertEquals(0, filteredNotifications.size());
     }
 
     @Test
     public void shortCircuitIfNoConfiguredNotificationsTest() {
-        notificationTypeRepository.deleteAll();
-        distributionNotificationTypeRepository.deleteAll();
-
-        final NotificationContent applicableNotification = createVulnerabilityNotification(TEST_PROJECT_NAME, BlackDuckProvider.COMPONENT_NAME, NEW);
-        final Collection<NotificationContent> filteredNotifications = notificationFilter.extractApplicableNotifications(FrequencyType.REAL_TIME, Arrays.asList(applicableNotification));
-        Assert.assertEquals(0, filteredNotifications.size());
+        final NotificationContent applicableNotification = new NotificationContent(NEW, BlackDuckProvider.COMPONENT_NAME, NEW, NotificationType.BOM_EDIT.name(), "{}");
+        final Collection<NotificationContent> filteredNotifications = defaultNotificationFilter.extractApplicableNotifications(TEST_CONFIG_FREQUENCY, Arrays.asList(applicableNotification));
+        assertEquals(0, filteredNotifications.size());
     }
 
     @Test
-    public void applyWithOutOfOrderNotificationsTest() {
-        final NotificationContent applicableNotification1 = createVulnerabilityNotification(TEST_PROJECT_NAME, BlackDuckProvider.COMPONENT_NAME, NEW);
-        final NotificationContent applicableNotification2 = createVulnerabilityNotification(TEST_PROJECT_NAME, BlackDuckProvider.COMPONENT_NAME, OLD);
+    public void applyWithoutOfOrderNotificationsTest() {
+        final NotificationContent applicableNotification1 = createVulnerabilityNotification(TEST_CONFIG_PROJECT_NAME, BlackDuckProvider.COMPONENT_NAME, NEW);
+        final NotificationContent applicableNotification2 = createVulnerabilityNotification(TEST_CONFIG_PROJECT_NAME, BlackDuckProvider.COMPONENT_NAME, OLD);
         final List<NotificationContent> notifications = Arrays.asList(applicableNotification1, applicableNotification2);
 
-        final Collection<NotificationContent> filteredNotifications = notificationFilter.extractApplicableNotifications(FrequencyType.REAL_TIME, notifications);
+        final Collection<NotificationContent> filteredNotifications = defaultNotificationFilter.extractApplicableNotifications(TEST_CONFIG_FREQUENCY, notifications);
 
-        Assert.assertEquals(2, filteredNotifications.size());
+        assertEquals(2, filteredNotifications.size());
         final List<NotificationContent> randomAccessNotifications = filteredNotifications.stream().collect(Collectors.toList());
-        Assert.assertEquals(applicableNotification2, randomAccessNotifications.get(0));
-        Assert.assertEquals(applicableNotification1, randomAccessNotifications.get(1));
+        assertEquals(applicableNotification2, randomAccessNotifications.get(0));
+        assertEquals(applicableNotification1, randomAccessNotifications.get(1));
     }
 
     @Test
     public void applyWithOneValidNotificationTest() {
-        final NotificationContent applicableNotification = createVulnerabilityNotification(TEST_PROJECT_NAME, BlackDuckProvider.COMPONENT_NAME, NEW);
+        final NotificationContent applicableNotification = createVulnerabilityNotification(TEST_CONFIG_PROJECT_NAME, BlackDuckProvider.COMPONENT_NAME, NEW);
         final NotificationContent garbage1 = createVulnerabilityNotification("garbage1", BlackDuckProvider.COMPONENT_NAME, new Date());
         final NotificationContent garbage2 = createVulnerabilityNotification("garbage2", BlackDuckProvider.COMPONENT_NAME, new Date());
         final NotificationContent garbage3 = createVulnerabilityNotification("garbage3", BlackDuckProvider.COMPONENT_NAME, new Date());
-        final List<NotificationContent> notifications = Arrays.asList(garbage1, applicableNotification, garbage2, garbage3);
+        final List<NotificationContent> notifications = List.of(garbage1, applicableNotification, garbage2, garbage3);
 
-        //TODO refactor the test to use the ObjectHierarchicalField
+        // TODO refactor the test to use the ObjectHierarchicalField
 
-        final Collection<NotificationContent> filteredNotifications = notificationFilter.extractApplicableNotifications(FrequencyType.REAL_TIME, notifications);
+        final Collection<NotificationContent> filteredNotifications = defaultNotificationFilter.extractApplicableNotifications(TEST_CONFIG_FREQUENCY, notifications);
 
-        Assert.assertEquals(1, filteredNotifications.size());
-        Assert.assertEquals(applicableNotification, filteredNotifications.iterator().next());
+        assertEquals(1, filteredNotifications.size());
+        assertEquals(applicableNotification, filteredNotifications.iterator().next());
     }
 
-    private HipChatDistributionConfigEntity createHipChatEntity() {
-        final Integer roomId = 12345;
-        final String color = "green";
-        final HipChatDistributionConfigEntity entity = new HipChatDistributionConfigEntity(roomId, Boolean.FALSE, color);
-
-        return entity;
-    }
-
-    private CommonDistributionConfigEntity createCommonConfigEntity() {
-        final String distributionType = HipChatChannel.COMPONENT_NAME;
-        final String providerName = BlackDuckProvider.COMPONENT_NAME;
-        final String name = "name";
-        final FrequencyType frequency = FrequencyType.REAL_TIME;
-
-        final CommonDistributionConfigEntity entity = new CommonDistributionConfigEntity(distributionConfigId, distributionType, name, providerName, frequency, Boolean.TRUE, "", FormatType.DEFAULT);
-
-        return entity;
+    private ConfigurationFieldModel createFieldModel(final String fieldKey, final String fieldValue) {
+        final ConfigurationFieldModel field = ConfigurationFieldModel.create(fieldKey);
+        field.setFieldValue(fieldValue);
+        return field;
     }
 
     private NotificationContent createVulnerabilityNotification(final String projectName, final String providerName, final Date created) {
-        final String content = "{\"content\":{\"affectedProjectVersions\":[{\"projectName\":\""
-                                   + projectName
-                                   + "\",\"dummyField\":\"dummyValue\"},{\"projectName\":\"Project Name\",\"dummyField\":\"dummyValue\"}],\"dummyField\":\"dummyValue\"},\"dummyField\":\"dummyValue\"}";
-        final NotificationContent notification = new NotificationContent(created, providerName, created, NotificationType.VULNERABILITY.name(), content);
+        final String content = "{\"content\":"
+                                   + "{"
+                                   + "    \"affectedProjectVersions\":"
+                                   + "        ["
+                                   + "            {"
+                                   + "                \"projectName\": \"" + projectName + "\","
+                                   + "                 \"dummyField\":\"dummyValue\""
+                                   + "            },"
+                                   + "            {"
+                                   + "                \"projectName\":\"Project Name\","
+                                   + "                \"dummyField\":\"dummyValue\""
+                                   + "            }"
+                                   + "        ],"
+                                   + "    \"dummyField\":\"dummyValue\""
+                                   + "},"
+                                   + "\"dummyField\":\"dummyValue\""
+                                   + "}";
+        final NotificationContent notification = new NotificationContent(created, providerName, created, TEST_CONFIG_NOTIFICATION_TYPE, content);
         notification.setId(1L);
 
         return notification;

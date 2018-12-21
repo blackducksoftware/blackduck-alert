@@ -23,8 +23,8 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config;
 
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.web.model.Config;
 
 public abstract class TypeConverter {

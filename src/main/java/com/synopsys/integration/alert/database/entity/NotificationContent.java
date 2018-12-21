@@ -54,7 +54,7 @@ public class NotificationContent extends DatabaseEntity {
     private String content;
 
     @OneToMany
-    @JoinColumn(name = "notification_id")
+    @JoinColumn(name = "notification_id", insertable = false, updatable = false)
     private final List<AuditNotificationRelation> auditNotificationRelations = new ArrayList<>();
 
     public NotificationContent() {

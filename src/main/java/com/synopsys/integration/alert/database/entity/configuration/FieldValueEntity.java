@@ -25,6 +25,8 @@ package com.synopsys.integration.alert.database.entity.configuration;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
@@ -38,6 +40,14 @@ public class FieldValueEntity extends DatabaseEntity {
     private Long fieldId;
     @Column(name = "FIELD_VALUE")
     private String value;
+
+    @ManyToOne
+    @JoinColumn(name = "FIELD_ID", insertable = false, updatable = false)
+    private DefinedFieldEntity definedFieldEntity;
+
+    @ManyToOne
+    @JoinColumn(name = "CONFIG_ID", insertable = false, updatable = false)
+    private DescriptorConfigEntity descriptorConfigEntity;
 
     public FieldValueEntity() {
         // JPA requires default constructor definitions
@@ -59,5 +69,13 @@ public class FieldValueEntity extends DatabaseEntity {
 
     public String getValue() {
         return value;
+    }
+
+    public DefinedFieldEntity getDefinedFieldEntity() {
+        return definedFieldEntity;
+    }
+
+    public DescriptorConfigEntity getDescriptorConfigEntity() {
+        return descriptorConfigEntity;
     }
 }

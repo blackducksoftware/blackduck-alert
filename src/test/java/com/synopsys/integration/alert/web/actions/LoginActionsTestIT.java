@@ -12,14 +12,14 @@
 package com.synopsys.integration.alert.web.actions;
 
 import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,16 +29,16 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.core.Authentication;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 
-import com.synopsys.integration.alert.AlertIntegrationTest;
-import com.synopsys.integration.alert.TestProperties;
-import com.synopsys.integration.alert.TestPropertyKey;
-import com.synopsys.integration.alert.TestTags;
 import com.synopsys.integration.alert.common.LdapProperties;
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
 import com.synopsys.integration.alert.database.api.user.UserAccessor;
 import com.synopsys.integration.alert.database.api.user.UserModel;
 import com.synopsys.integration.alert.database.user.UserRepository;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
+import com.synopsys.integration.alert.util.AlertIntegrationTest;
+import com.synopsys.integration.alert.util.TestProperties;
+import com.synopsys.integration.alert.util.TestPropertyKey;
+import com.synopsys.integration.alert.util.TestTags;
 import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManager;
 
 @Tag(TestTags.CUSTOM_BLACKDUCK_CONNECTION)
@@ -56,7 +56,7 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
     @Autowired
     private LdapManager ldapManager;
 
-    @Before
+    @BeforeEach
     public void init() throws Exception {
         final LdapProperties ldapProperties = new LdapProperties();
         ldapProperties.setEnabled(false);

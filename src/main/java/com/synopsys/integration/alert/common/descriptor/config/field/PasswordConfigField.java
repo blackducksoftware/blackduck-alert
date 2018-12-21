@@ -26,6 +26,13 @@ package com.synopsys.integration.alert.common.descriptor.config.field;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
 
 public class PasswordConfigField extends ConfigField {
+    public static PasswordConfigField create(final String key, final String label) {
+        return new PasswordConfigField(key, label, false);
+    }
+
+    public static PasswordConfigField createRequired(final String key, final String label) {
+        return new PasswordConfigField(key, label, true);
+    }
 
     public PasswordConfigField(final String key, final String label, final boolean required) {
         super(key, label, FieldType.PASSWORD_INPUT.getFieldTypeName(), required, true);

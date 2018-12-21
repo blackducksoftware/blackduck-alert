@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.channel.email;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -11,10 +12,11 @@ import javax.mail.internet.MimeMessage;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.TestProperties;
-import com.synopsys.integration.alert.TestPropertyKey;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.database.channel.email.EmailGlobalConfigEntity;
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
+import com.synopsys.integration.alert.database.api.configuration.ConfigurationFieldModel;
+import com.synopsys.integration.alert.util.TestProperties;
 
 public class EmailMessagingServiceTest {
 
@@ -23,7 +25,7 @@ public class EmailMessagingServiceTest {
         final AlertProperties alertProperties = new AlertProperties();
 
         final TestProperties testProperties = new TestProperties();
-        final EmailProperties emailProperties = new EmailProperties(createEmailGlobalConfigEntity(testProperties));
+        final EmailProperties emailProperties = new EmailProperties(createEmailGlobalConfigEntity());
 
         final EmailMessagingService emailMessagingService = new EmailMessagingService(alertProperties, emailProperties);
 
@@ -41,58 +43,13 @@ public class EmailMessagingServiceTest {
         emailMessagingService.sendMessage(emailProperties, mockSession, message);
     }
 
-    private EmailGlobalConfigEntity createEmailGlobalConfigEntity(final TestProperties testProperties) {
-        final EmailGlobalConfigEntity emailGlobalConfigEntity = new EmailGlobalConfigEntity(
-            testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST),
-            "testUser",
-            "testPassword",
-            Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT)),
-            null,
-            null,
-            null,
-            testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM),
-            null,
-            null,
-            null,
-            Boolean.valueOf(testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_EHLO)),
-            Boolean.TRUE,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            Boolean.TRUE,
-            null
-        );
-        emailGlobalConfigEntity.setId(100L);
+    private FieldAccessor createEmailGlobalConfigEntity() {
+        final ConfigurationFieldModel fieldModel = ConfigurationFieldModel.create(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey());
+        fieldModel.setFieldValue("true");
+        final Map<String, ConfigurationFieldModel> fieldMap = Map.of(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey(), fieldModel);
 
-        return emailGlobalConfigEntity;
+        final FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);
+        return fieldAccessor;
     }
+
 }

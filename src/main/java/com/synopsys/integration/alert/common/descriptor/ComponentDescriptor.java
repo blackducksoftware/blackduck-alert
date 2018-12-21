@@ -23,15 +23,24 @@
  */
 package com.synopsys.integration.alert.common.descriptor;
 
-import com.synopsys.integration.alert.common.descriptor.config.DescriptorActionApi;
-import com.synopsys.integration.alert.common.descriptor.config.UIConfig;
+import java.util.Collection;
+import java.util.Collections;
+
+import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
+import com.synopsys.integration.alert.database.api.configuration.DefinedFieldModel;
 
 public class ComponentDescriptor extends Descriptor {
 
     public ComponentDescriptor(final String name, final DescriptorActionApi componentDescriptorActionApi, final UIConfig componentUIConfig) {
         super(name, DescriptorType.COMPONENT);
-        addComponentUiConfigs(componentDescriptorActionApi, componentUIConfig);
+        addGlobalUiConfig(componentDescriptorActionApi, componentUIConfig);
     }
 
+    @Override
+    public Collection<DefinedFieldModel> getDefinedFields(final ConfigContextEnum context) {
+        return Collections.emptyList();
+    }
 }
