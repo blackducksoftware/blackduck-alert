@@ -75,7 +75,6 @@ public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
     @Override
     public ConfigurationAccessor.ConfigurationModel saveDistributionConfiguration() throws Exception {
         final List<ConfigurationFieldModel> models = new LinkedList<>();
-        models.addAll(MockConfigurationModelFactory.createCommonBlackDuckConfigurationFields(UNIT_TEST_JOB_NAME, HipChatChannel.COMPONENT_NAME));
         models.addAll(MockConfigurationModelFactory.createHipChatDistributionFields());
         return configurationAccessor.createConfiguration(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION, models);
     }
@@ -137,6 +136,16 @@ public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
     @Override
     public Map<String, String> createInvalidDistributionFieldMap() {
         return Map.of(HipChatDescriptor.KEY_ROOM_ID, "");
+    }
+
+    @Override
+    public String createTestConfigDestination() {
+        return properties.getProperty(TestPropertyKey.TEST_HIPCHAT_ROOM_ID.getPropertyKey());
+    }
+
+    @Override
+    public String getTestJobName() {
+        return UNIT_TEST_JOB_NAME;
     }
 
     @Test

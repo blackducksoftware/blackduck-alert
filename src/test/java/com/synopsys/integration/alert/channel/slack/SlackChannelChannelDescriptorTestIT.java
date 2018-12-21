@@ -3,7 +3,6 @@ package com.synopsys.integration.alert.channel.slack;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -62,11 +61,12 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
 
     @Override
     public ConfigurationAccessor.ConfigurationModel saveDistributionConfiguration() throws Exception {
-        final List<ConfigurationFieldModel> models = new LinkedList<>();
-        models.addAll(MockConfigurationModelFactory.createCommonBlackDuckConfigurationFields(UNIT_TEST_JOB_NAME, SlackChannel.COMPONENT_NAME));
-        models.add(MockConfigurationModelFactory.createFieldModel(SlackDescriptor.KEY_WEBHOOK, this.properties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK)));
-        models.add(MockConfigurationModelFactory.createFieldModel(SlackDescriptor.KEY_CHANNEL_NAME, this.properties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME)));
-        models.add(MockConfigurationModelFactory.createFieldModel(SlackDescriptor.KEY_CHANNEL_USERNAME, this.properties.getProperty(TestPropertyKey.TEST_SLACK_USERNAME)));
+        final List<ConfigurationFieldModel> models = MockConfigurationModelFactory.createSlackDistributionFields();
+        final Map<String, ConfigurationFieldModel> fieldMap = MockConfigurationModelFactory.mapFieldKeyToFields(models);
+
+        fieldMap.get(SlackDescriptor.KEY_WEBHOOK).setFieldValue(this.properties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK));
+        fieldMap.get(SlackDescriptor.KEY_CHANNEL_NAME).setFieldValue(this.properties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME));
+        fieldMap.get(SlackDescriptor.KEY_CHANNEL_USERNAME).setFieldValue(this.properties.getProperty(TestPropertyKey.TEST_SLACK_USERNAME));
         return configurationAccessor.createConfiguration(SlackChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION, models);
     }
 
@@ -118,5 +118,15 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     public Map<String, String> createInvalidDistributionFieldMap() {
         return Map.of(SlackDescriptor.KEY_WEBHOOK, "",
             SlackDescriptor.KEY_CHANNEL_NAME, "");
+    }
+
+    @Override
+    public String createTestConfigDestination() {
+        return "";
+    }
+
+    @Override
+    public String getTestJobName() {
+        return UNIT_TEST_JOB_NAME;
     }
 }
