@@ -1,7 +1,7 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {Modal} from 'react-bootstrap';
-import TextInput from "../../field/input/TextInput";
+import { Modal } from 'react-bootstrap';
+import TextInput from '../../field/input/TextInput';
 
 class ChannelTestModal extends Component {
     constructor(props) {
@@ -16,8 +16,8 @@ class ChannelTestModal extends Component {
 
     handleChange(event) {
         event.preventDefault();
-        const target = event.target;
-        this.setState({destination: target.value});
+        const [value] = event.target;
+        this.setState({ destination: value });
     }
 
     handleSendTestMessage(event) {
@@ -31,20 +31,19 @@ class ChannelTestModal extends Component {
 
     render() {
         // TODO figure out a way to toggle the spinner/ there is no point to toggling the spinner if the sendTestMessage is closing the modal
-        let spinning = false;
         return (<Modal show={this.props.showTestModal} onHide={this.props.cancelTestModal}>
             <Modal.Header closeButton>
                 <Modal.Title>Test Your Configuration</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <TextInput id="destinationName" label={this.props.destinationName} name="destinationName" value={this.state.destination} onChange={this.handleChange}/>
+                <TextInput id="destinationName" label={this.props.destinationName} name="destinationName" value={this.state.destination} onChange={this.handleChange} />
             </Modal.Body>
             <Modal.Footer>
                 <button id="testCancel" type="button" className="btn btn-link" onClick={this.props.cancelTestModal}>Cancel</button>
                 <button id="testSend" type="button" className="btn btn-primary" onClick={this.handleSendTestMessage}>Send Test Message</button>
-                {spinning &&
+                {this.state.spinning &&
                 <div className="progressIcon">
-                    <span className="fa fa-spinner fa-pulse" aria-hidden="true"/>
+                    <span className="fa fa-spinner fa-pulse" aria-hidden="true" />
                 </div>
                 }
             </Modal.Footer>
@@ -60,13 +59,7 @@ ChannelTestModal.propTypes = {
 };
 
 ChannelTestModal.defaultProps = {
-    showTestModal: false,
-    destinationName: "Destination",
-    cancelTestModal: () => {
-        this.setProperty({showTestModal: false});
-    },
-    sendTestMessage: (dest) => {
-    }
+    destinationName: 'Destination'
 };
 
 export default ChannelTestModal;

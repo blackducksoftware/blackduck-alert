@@ -3,7 +3,7 @@ import LabeledField from '../LabeledField';
 
 export default class TextInput extends LabeledField {
     render() {
-        const {isSet, inputClass} = this.props;
+        const { isSet, inputClass } = this.props;
         const placeholderText = (isSet) ? '********' : null;
         const className = inputClass || 'form-control';
 

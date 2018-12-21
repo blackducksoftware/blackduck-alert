@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 
 import TextInput from '../../field/input/TextInput';
 import PasswordInput from '../../field/input/PasswordInput';
 import ConfigButtons from '../common/ConfigButtons';
-import {closeHipChatConfigTest, getConfig, openHipChatConfigTest, testConfig, toggleShowHostServer, updateConfig} from '../../store/actions/hipChatConfig';
-import ChannelTestModal from "../common/ChannelTestModal";
+import { closeHipChatConfigTest, getConfig, openHipChatConfigTest, testConfig, toggleShowHostServer, updateConfig } from '../../store/actions/hipChatConfig';
+import ChannelTestModal from '../common/ChannelTestModal';
 
 class HipChatConfiguration extends React.Component {
     constructor(props) {
@@ -39,7 +39,7 @@ class HipChatConfiguration extends React.Component {
         }
     }
 
-    handleChange({target}) {
+    handleChange({ target }) {
         const value = target.type === 'checkbox' ? target.checked : target.value;
         this.setState({
             [target.name]: value
@@ -50,24 +50,23 @@ class HipChatConfiguration extends React.Component {
         event.preventDefault();
         event.stopPropagation();
 
-        const {id} = this.props;
-        this.props.updateConfig({id, ...this.state});
+        const { id } = this.props;
+        this.props.updateConfig({ id, ...this.state });
     }
 
     handleTest(destination) {
-        const {id} = this.props;
-        this.props.testConfig({id, ...this.state}, destination);
+        const { id } = this.props;
+        this.props.testConfig({ id, ...this.state }, destination);
     }
 
     render() {
         const disabled = this.props.fetching || !this.state.dataLoaded;
-        const {errorMessage, testStatus, updateStatus} = this.props;
-        const showAdvanced = this.props.showAdvanced;
-        const showAdvancedLabel = (showAdvanced) ? 'Hide Advanced' : 'Show Advanced';
+        const { errorMessage, testStatus, updateStatus } = this.props;
+        const showAdvancedLabel = (this.props.showAdvanced) ? 'Hide Advanced' : 'Show Advanced';
         return (
             <div>
                 <h1>
-                    <span className="fa fa-comments"/>
+                    <span className="fa fa-comments" />
                     HipChat
                 </h1>
                 {testStatus === 'SUCCESS' && <div className="alert alert-success">
@@ -83,36 +82,57 @@ class HipChatConfiguration extends React.Component {
                 </div>}
 
                 <form className="form-horizontal" disabled={disabled} onSubmit={this.handleSubmit}>
-                    <PasswordInput id="hipChatApiKey" label="Api Key" name="apiKey" readOnly={disabled} value={this.state.apiKey} isSet={this.state.apiKeyIsSet} onChange={this.handleChange} errorName="apiKeyError"
-                                   errorValue={this.props.fieldErrors.apiKey}/>
+                    <PasswordInput
+                        id="hipChatApiKey"
+                        label="Api Key"
+                        name="apiKey"
+                        readOnly={disabled}
+                        value={this.state.apiKey}
+                        isSet={this.state.apiKeyIsSet}
+                        onChange={this.handleChange}
+                        errorName="apiKeyError"
+                        errorValue={this.props.fieldErrors.apiKey}
+                    />
 
                     <div className="form-group">
                         <div className="col-sm-9 offset-sm-3">
-                            <button type="button" className="btn btn-link" onClick={() => {
-                                this.props.toggleShowHostServer(!showAdvanced);
-                                return false;
-                            }}>
+                            <button
+                                type="button"
+                                className="btn btn-link"
+                                onClick={() => {
+                                    this.props.toggleShowHostServer(!this.props.showAdvanced);
+                                    return false;
+                                }}
+                            >
                                 {showAdvancedLabel}
                             </button>
                         </div>
                     </div>
 
-                    {showAdvanced &&
+                    {this.props.showAdvanced &&
                     <div>
-                        <TextInput id="hipChatServerUrl" label="HipChat Host Server Url" name="hostServer" value={this.state.hostServer} onChange={this.handleChange} errorName="hostServerError"
-                                   errorValue={this.props.fieldErrors.hostServer}/>
+                        <TextInput
+                            id="hipChatServerUrl"
+                            label="HipChat Host Server Url"
+                            name="hostServer"
+                            value={this.state.hostServer}
+                            onChange={this.handleChange}
+                            errorName="hostServerError"
+                            errorValue={this.props.fieldErrors.hostServer}
+                        />
                     </div>
                     }
 
-                    <ConfigButtons submitId="hipChat-submit" cancelId="hipChat-cancel" includeSave includeTest onTestClick={this.props.openHipChatConfigTest}/>
+                    <ConfigButtons submitId="hipChat-submit" cancelId="hipChat-cancel" includeSave includeTest onTestClick={this.props.openHipChatConfigTest} />
                     <div>
                         <ChannelTestModal
                             destinationName="Room ID"
                             showTestModal={this.props.showTestModal}
                             cancelTestModal={this.props.closeHipChatConfigTest}
-                            sendTestMessage={destination => {
+                            sendTestMessage={(destination) => {
                                 this.handleTest(destination);
-                            }}/>
+                            }}
+                        />
                     </div>
                 </form>
             </div>
@@ -121,6 +141,8 @@ class HipChatConfiguration extends React.Component {
 }
 
 HipChatConfiguration.propTypes = {
+    openHipChatConfigTest: PropTypes.func.isRequired,
+    closeHipChatConfigTest: PropTypes.func.isRequired,
     hostServer: PropTypes.string,
     apiKey: PropTypes.string,
     apiKeyIsSet: PropTypes.bool,
@@ -135,7 +157,7 @@ HipChatConfiguration.propTypes = {
     showTestModal: PropTypes.bool.isRequired,
     updateConfig: PropTypes.func.isRequired,
     showAdvanced: PropTypes.bool.isRequired,
-    toggleShowHostServer: PropTypes.func.isRequired,
+    toggleShowHostServer: PropTypes.func.isRequired
 };
 
 HipChatConfiguration.defaultProps = {

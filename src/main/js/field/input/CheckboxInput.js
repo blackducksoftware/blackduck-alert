@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const CheckboxInput = (props) => {
-    const {errorName, errorValue} = props;
+    const { errorName, errorValue } = props;
     const {
         name, value, label, onChange, readOnly, id
     } = props;
@@ -38,6 +38,7 @@ const CheckboxInput = (props) => {
 };
 
 CheckboxInput.propTypes = {
+    id: PropTypes.string,
     errorName: PropTypes.string,
     errorValue: PropTypes.string,
     name: PropTypes.string.isRequired,
@@ -48,6 +49,7 @@ CheckboxInput.propTypes = {
 };
 
 CheckboxInput.defaultProps = {
+    id: 'id',
     errorName: '',
     errorValue: '',
     readOnly: false,

@@ -11,5 +11,4 @@ const SlackConfiguration = () => (
         </div>
     </div>
 );
-
 export default SlackConfiguration;
