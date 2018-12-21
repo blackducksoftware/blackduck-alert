@@ -13,7 +13,6 @@ class EditTableCellFormatter extends Component {
     }
 
     render() {
-        const buttonText = this.props.buttonText || 'Edit';
         let buttonClass = this.props.buttonClass;
 
         if (buttonClass) {
@@ -23,14 +22,20 @@ class EditTableCellFormatter extends Component {
         }
 
         return (
-            <button className={buttonClass} type="button" title={buttonText} onClick={this.onClick}><span className="fa fa-pencil" /></button>
+            <button className={buttonClass} type="button" title={this.props.buttonText} onClick={this.onClick}><span className="fa fa-pencil" /></button>
         );
     }
 }
 
-EditTableCellFormatter.PropTypes = {
-    currentRowSelected: PropTypes.object,
-    handleButtonClicked: PropTypes.func.isRequired
+EditTableCellFormatter.propTypes = {
+    currentRowSelected: PropTypes.object.isRequired,
+    handleButtonClicked: PropTypes.func.isRequired,
+    buttonClass: PropTypes.string.isRequired,
+    buttonText: PropTypes.string
+};
+
+EditTableCellFormatter.defaultProps = {
+    buttonText: 'Edit'
 };
 
 export default EditTableCellFormatter;

@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Popover, OverlayTrigger } from 'react-bootstrap';
+import { OverlayTrigger, Popover } from 'react-bootstrap';
 
 const policyViolationIcon = <span key="policyViolationIcon" alt="Policy Violation" className="fa fa-ban policyViolation" aria-hidden="true" />;
 const policyViolationClearedIcon = <span key="policyViolationClearedIcon" alt="Policy Violation Cleared" className="fa fa-eraser policyViolationCleared" aria-hidden="true" />;
@@ -24,13 +24,13 @@ const NotificationTypeLegend = ({
         placement="right"
         overlay={(
             <Popover id="popover" title="Notification Type Legend">
-                { hasPolicyViolation && <div>{ policyViolationIcon } Policy Violation</div> }
-                { hasPolicyViolationCleared && <div>{ policyViolationClearedIcon } Policy Violation Cleared</div> }
-                { hasPolicyViolationOverride && <div>{ policyViolationOverrideIcon } Policy Override</div> }
-                { hasHighVulnerability && <div>{highVulnerabilityIcon} High Vulnerability</div> }
-                { hasMediumVulnerability && <div>{mediumVulnerabilityIcon} Medium Vulnerability</div> }
-                { hasLowVulnerability && <div>{lowVulnerabilityIcon} Low Vulnerability</div> }
-                { hasVulnerability && <div>{vulnerabilityIcon} Vulnerability</div> }
+                {hasPolicyViolation && <div>{policyViolationIcon} Policy Violation</div>}
+                {hasPolicyViolationCleared && <div>{policyViolationClearedIcon} Policy Violation Cleared</div>}
+                {hasPolicyViolationOverride && <div>{policyViolationOverrideIcon} Policy Override</div>}
+                {hasHighVulnerability && <div>{highVulnerabilityIcon} High Vulnerability</div>}
+                {hasMediumVulnerability && <div>{mediumVulnerabilityIcon} Medium Vulnerability</div>}
+                {hasLowVulnerability && <div>{lowVulnerabilityIcon} Low Vulnerability</div>}
+                {hasVulnerability && <div>{vulnerabilityIcon} Vulnerability</div>}
             </Popover>
         )}
     >

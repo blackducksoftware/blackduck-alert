@@ -1,14 +1,9 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 class DescriptorLabel extends Component {
-
-    constructor(props) {
-        super(props);
-    }
-
     render() {
-        const {descriptor, keyPrefix} = this.props;
+        const { descriptor, keyPrefix } = this.props;
         const icon = `fa fa-${descriptor.fontAwesomeIcon} fa-fw`;
         const elementKey = `${keyPrefix}-${descriptor.label}`;
         const cellText = descriptor.label;
@@ -23,11 +18,6 @@ class DescriptorLabel extends Component {
 DescriptorLabel.propTypes = {
     descriptor: PropTypes.object.isRequired,
     keyPrefix: PropTypes.string.isRequired
-};
-
-DescriptorLabel.defaultProps = {
-    descriptor: {},
-    keyPrefix: ''
 };
 
 export default DescriptorLabel;
