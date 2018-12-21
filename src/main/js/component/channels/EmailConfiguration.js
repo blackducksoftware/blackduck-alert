@@ -1,5 +1,5 @@
 import React from 'react';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import CheckboxInput from '../../field/input/CheckboxInput';
 import NumberInput from '../../field/input/NumberInput';
@@ -7,8 +7,8 @@ import PasswordInput from '../../field/input/PasswordInput';
 import TextInput from '../../field/input/TextInput';
 import ConfigButtons from '../common/ConfigButtons';
 
-import {closeEmailConfigTest, getEmailConfig, openEmailConfigTest, sendEmailConfigTest, toggleAdvancedEmailOptions, updateEmailConfig} from '../../store/actions/emailConfig';
-import ChannelTestModal from "../common/ChannelTestModal";
+import { closeEmailConfigTest, getEmailConfig, openEmailConfigTest, sendEmailConfigTest, toggleAdvancedEmailOptions, updateEmailConfig } from '../../store/actions/emailConfig';
+import ChannelTestModal from '../common/ChannelTestModal';
 
 class EmailConfiguration extends React.Component {
     constructor(props) {
@@ -82,7 +82,7 @@ class EmailConfiguration extends React.Component {
     }
 
     handleChange(event) {
-        const target = event.target;
+        const [target] = event;
         const value = target.type === 'checkbox' ? target.checked : target.value;
         this.setState({
             [target.name]: value
@@ -92,18 +92,17 @@ class EmailConfiguration extends React.Component {
     handleSubmit(evt) {
         evt.preventDefault();
         evt.stopPropagation();
-        const {id} = this.props;
-        this.props.updateEmailConfig({id, ...this.state});
+        const { id } = this.props;
+        this.props.updateEmailConfig({ id, ...this.state });
     }
 
     render() {
-        const showAdvanced = this.props.showAdvanced;
-        const showAdvancedLabel = (showAdvanced) ? 'Hide Advanced' : 'Show Advanced';
-        const {errorMessage, actionMessage} = this.props;
+        const showAdvancedLabel = (this.props.showAdvanced) ? 'Hide Advanced' : 'Show Advanced';
+        const { errorMessage, actionMessage } = this.props;
         return (
             <div>
                 <h1>
-                    <span className="fa fa-envelope"/>
+                    <span className="fa fa-envelope" />
                     Email
                 </h1>
                 <form className="form-horizontal" onSubmit={this.handleSubmit}>
@@ -168,16 +167,21 @@ class EmailConfiguration extends React.Component {
 
                     <div className="form-group">
                         <div className="col-sm-9 offset-sm-3">
-                            <button id="emailAdvanced" type="button" className="btn btn-link" onClick={() => {
-                                this.props.toggleAdvancedEmailOptions(!showAdvanced);
-                                return false;
-                            }}>
+                            <button
+                                id="emailAdvanced"
+                                type="button"
+                                className="btn btn-link"
+                                onClick={() => {
+                                    this.props.toggleAdvancedEmailOptions(!this.props.showAdvanced);
+                                    return false;
+                                }}
+                            >
                                 {showAdvancedLabel}
                             </button>
                         </div>
                     </div>
 
-                    {showAdvanced &&
+                    {this.props.showAdvanced &&
                     <div>
                         <NumberInput
                             id="emailSmtpPort"
@@ -600,18 +604,25 @@ class EmailConfiguration extends React.Component {
                         />
                     </div>
                     }
-                    <ConfigButtons cancelId="email-cancel" submitId="email-submit" includeSave includeTest onTestClick={(event) => {
-                        event.preventDefault();
-                        this.props.openEmailConfigTest();
-                    }}/>
+                    <ConfigButtons
+                        cancelId="email-cancel"
+                        submitId="email-submit"
+                        includeSave
+                        includeTest
+                        onTestClick={(event) => {
+                            event.preventDefault();
+                            this.props.openEmailConfigTest();
+                        }}
+                    />
                     <div>
                         <ChannelTestModal
                             destinationName="Email address"
                             showTestModal={this.props.showTestModal}
                             cancelTestModal={this.props.closeEmailConfigTest}
-                            sendTestMessage={destination => {
-                                this.props.sendEmailConfigTest({...this.state}, destination);
-                            }}/>
+                            sendTestMessage={(destination) => {
+                                this.props.sendEmailConfigTest({ ...this.state }, destination);
+                            }}
+                        />
                     </div>
                 </form>
             </div>
@@ -620,6 +631,10 @@ class EmailConfiguration extends React.Component {
 }
 
 EmailConfiguration.propTypes = {
+    updateEmailConfig: PropTypes.func.isRequired,
+    openEmailConfigTest: PropTypes.func.isRequired,
+    closeEmailConfigTest: PropTypes.func.isRequired,
+    sendEmailConfigTest: PropTypes.func.isRequired,
     id: PropTypes.string,
     mailSmtpHost: PropTypes.string,
     mailSmtpUser: PropTypes.string,
@@ -652,7 +667,7 @@ EmailConfiguration.propTypes = {
     mailSmtpSaslMechanisms: PropTypes.string,
     mailSmtpSaslAuthorizationId: PropTypes.string,
     mailSmtpSaslRealm: PropTypes.string,
-    mailSmtpSaslUseCanonicalHostname: PropTypes.boolean,
+    mailSmtpSaslUseCanonicalHostname: PropTypes.bool,
     mailSmtpQuitwait: PropTypes.bool,
     mailSmtpReportSuccess: PropTypes.bool,
     mailSmtpSslEnable: PropTypes.bool,
@@ -680,11 +695,58 @@ EmailConfiguration.propTypes = {
 };
 
 EmailConfiguration.defaultProps = {
+    id: 'globalEmailConfiguration',
     mailSmtpAuth: false,
-    mailSmtpPasswordIsSet: false,
     mailSmtpEhlo: false,
     mailSmtpAllow8bitmime: false,
-    mailSmtpSendPartial: false
+    mailSmtpSendPartial: false,
+    mailSmtpHost: '',
+    mailSmtpUser: '',
+    mailSmtpPassword: '',
+    mailSmtpPort: '',
+    mailSmtpConnectionTimeout: '',
+    mailSmtpTimeout: '',
+    mailSmtpWriteTimeout: '',
+    mailSmtpFrom: '',
+    mailSmtpLocalhost: '',
+    mailSmtpLocalAddress: '',
+    mailSmtpLocalPort: '',
+    mailSmtpAuthMechanisms: '',
+    mailSmtpAuthLoginDisable: false,
+    mailSmtpAuthPlainDisable: false,
+    mailSmtpAuthDigestMd5Disable: false,
+    mailSmtpAuthNtlmDisable: false,
+    mailSmtpAuthNtlmDomain: '',
+    mailSmtpAuthNtlmFlags: '',
+    mailSmtpAuthXoauth2Disable: false,
+    mailSmtpSubmitter: '',
+    mailSmtpDnsNotify: false,
+    mailSmtpDnsRet: false,
+    mailSmtpSaslEnable: false,
+    mailSmtpSaslMechanisms: '',
+    mailSmtpSaslAuthorizationId: '',
+    mailSmtpSaslRealm: '',
+    mailSmtpSaslUseCanonicalHostname: false,
+    mailSmtpQuitwait: false,
+    mailSmtpReportSuccess: false,
+    mailSmtpSslEnable: false,
+    mailSmtpSslCheckServerIdentity: false,
+    mailSmtpSslTrust: '',
+    mailSmtpSslProtocols: '',
+    mailSmtpSslCipherSuites: '',
+    mailSmtpStartTlsEnable: false,
+    mailSmtpStartTlsRequired: false,
+    mailSmtpProxyHost: '',
+    mailSmtpProxyPort: '',
+    mailSmtpSocksHost: '',
+    mailSmtpSocksPort: '',
+    mailSmtpMailExtension: '',
+    mailSmtpUserSet: false,
+    mailSmtpNoopStrict: false,
+    errorMessage: '',
+    updateStatus: '',
+    actionMessage: '',
+    fieldErrors: []
 };
 
 const mapStateToProps = state => ({
