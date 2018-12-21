@@ -48,12 +48,8 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.workflow.NotificationManager;
 import com.synopsys.integration.alert.workflow.scheduled.ScheduledTask;
 import com.synopsys.integration.blackduck.api.generated.view.NotificationView;
-import com.synopsys.integration.blackduck.notification.CommonNotificationView;
-import com.synopsys.integration.blackduck.notification.CommonNotificationViewResults;
-import com.synopsys.integration.blackduck.notification.content.detail.NotificationContentDetailFactory;
 import com.synopsys.integration.blackduck.rest.BlackDuckRestConnection;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.blackduck.service.CommonNotificationService;
 import com.synopsys.integration.blackduck.service.NotificationService;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.RestConstants;
@@ -72,7 +68,7 @@ public class BlackDuckAccumulator extends ScheduledTask {
 
     @Autowired
     public BlackDuckAccumulator(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties,
-            final NotificationManager notificationManager, final FilePersistenceUtil filePersistenceUtil) {
+        final NotificationManager notificationManager, final FilePersistenceUtil filePersistenceUtil) {
         super(taskScheduler, "blackduck-accumulator-task");
         this.blackDuckProperties = blackDuckProperties;
         this.notificationManager = notificationManager;
@@ -164,65 +160,74 @@ public class BlackDuckAccumulator extends ScheduledTask {
         final Date currentStartTime = dateRange.getStart();
         Optional<Date> latestNotificationCreatedAtDate = Optional.empty();
 
-        final Optional<CommonNotificationViewResults> results = read(dateRange);
-        if (results.isPresent()) {
-            final List<NotificationContent> contentList = process(results.get());
+        final List<NotificationView> notifications = read(dateRange);
+        if (!notifications.isEmpty()) {
+            final List<NotificationView> sortedNotifications = sort(notifications);
+            final List<NotificationContent> contentList = process(sortedNotifications);
             write(contentList);
-            latestNotificationCreatedAtDate = results.get().getLatestNotificationCreatedAtDate();
+            latestNotificationCreatedAtDate = getLatestNotificationCreatedAtDate(sortedNotifications);
         }
         return calculateNextStartTime(latestNotificationCreatedAtDate, currentStartTime);
     }
 
-    protected Optional<CommonNotificationViewResults> read(final DateRange dateRange) {
+    protected List<NotificationView> read(final DateRange dateRange) {
         final Optional<BlackDuckRestConnection> optionalConnection = blackDuckProperties.createRestConnectionAndLogErrors(logger);
         if (optionalConnection.isPresent()) {
             try {
-                final BlackDuckRestConnection restConnection = optionalConnection.get();
-                if (restConnection != null) {
-                    final BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(restConnection, new Slf4jIntLogger(logger));
-                    final Date startDate = dateRange.getStart();
-                    final Date endDate = dateRange.getEnd();
-                    logger.info("Accumulating Notifications Between {} and {} ", RestConstants.formatDate(startDate), RestConstants.formatDate(endDate));
-                    final NotificationService notificationService = blackDuckServicesFactory.createNotificationService();
-                    final NotificationContentDetailFactory notificationContentDetailFactory = new NotificationContentDetailFactory(blackDuckServicesFactory.getGson());
-                    final CommonNotificationService commonNotificationService = blackDuckServicesFactory.createCommonNotificationService(notificationContentDetailFactory, true);
-                    // TODO change this code to only use the notification audit and return a different type.  No longer
-                    final List<NotificationView> notificationViewList = notificationService.getAllNotifications(startDate, endDate);
-                    final List<CommonNotificationView> commonNotificationViews = commonNotificationService.getCommonNotifications(notificationViewList);
-                    final CommonNotificationViewResults notificationResults = commonNotificationService.getCommonNotificationViewResults(commonNotificationViews);
+                final BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(optionalConnection.get(), new Slf4jIntLogger(logger));
+                final Date startDate = dateRange.getStart();
+                final Date endDate = dateRange.getEnd();
+                logger.info("Accumulating Notifications Between {} and {} ", RestConstants.formatDate(startDate), RestConstants.formatDate(endDate));
+                final NotificationService notificationService = blackDuckServicesFactory.createNotificationService();
 
-                    if (notificationResults.isEmpty()) {
-                        logger.debug("Read Notification Count: 0");
-                        return Optional.empty();
-                    }
-                    logger.debug("Read Notification Count: {}", notificationResults.getResults().size());
-                    return Optional.of(notificationResults);
-                }
+                final List<NotificationView> notificationViews = notificationService.getAllNotifications(startDate, endDate);
+                logger.debug("Read Notification Count: {}", notificationViews.size());
+                return notificationViews;
             } catch (final Exception ex) {
                 logger.error("Error Reading notifications", ex);
             }
         }
-        return Optional.empty();
+        return List.of();
     }
 
-    protected List<NotificationContent> process(final CommonNotificationViewResults notificationData) {
+    protected List<NotificationContent> process(final List<NotificationView> notifications) {
         logger.info("Processing accumulated notifications");
-        return notificationData.getResults().stream().map(this::createContent).sorted(Comparator.comparing(NotificationContent::getProviderCreationTime)).collect(Collectors.toList());
-    }
-
-    protected NotificationContent createContent(final CommonNotificationView commonNotificationView) {
-        final Date createdAt = Date.from(ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC).toInstant());
-        final Date providerCreationTime = commonNotificationView.getCreatedAt();
-        final String provider = BlackDuckProvider.COMPONENT_NAME;
-        final String notificationType = commonNotificationView.getType().name();
-        final String jsonContent = commonNotificationView.getJson();
-        final NotificationContent content = new NotificationContent(createdAt, provider, providerCreationTime, notificationType, jsonContent);
-        return content;
+        return notifications
+                   .stream()
+                   .map(this::createContent)
+                   .collect(Collectors.toList());
     }
 
     protected void write(final List<NotificationContent> contentList) {
         logger.info("Writing Notifications...");
         contentList.forEach(notificationManager::saveNotification);
+    }
+
+    private List<NotificationView> sort(final List<NotificationView> notifications) {
+        return notifications
+                   .stream()
+                   .sorted(Comparator.comparing(NotificationView::getCreatedAt))
+                   .collect(Collectors.toList());
+    }
+
+    private NotificationContent createContent(final NotificationView notification) {
+        final Date createdAt = Date.from(ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC).toInstant());
+        final Date providerCreationTime = notification.getCreatedAt();
+        final String provider = BlackDuckProvider.COMPONENT_NAME;
+        final String notificationType = notification.getType().name();
+        final String jsonContent = notification.getJson();
+        final NotificationContent content = new NotificationContent(createdAt, provider, providerCreationTime, notificationType, jsonContent);
+        return content;
+    }
+
+    // Expects that the notifications are sorted oldest to newest
+    private Optional<Date> getLatestNotificationCreatedAtDate(final List<NotificationView> sortedNotificationList) {
+        if (!sortedNotificationList.isEmpty()) {
+            final int lastIndex = sortedNotificationList.size() - 1;
+            final NotificationView notificationView = sortedNotificationList.get(lastIndex);
+            return Optional.of(notificationView.getCreatedAt());
+        }
+        return Optional.empty();
     }
 
     private Date calculateNextStartTime(final Optional<Date> latestNotificationCreatedAt, final Date currentStartDate) {
