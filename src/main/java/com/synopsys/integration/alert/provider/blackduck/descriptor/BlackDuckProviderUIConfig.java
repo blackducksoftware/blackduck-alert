@@ -47,11 +47,11 @@ public class BlackDuckProviderUIConfig extends UIConfig {
     public List<ConfigField> setupFields() {
         final ConfigField blackDuckUrl = ReadOnlyConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_URL, "Url");
         final ConfigField blackDuckApiKey = PasswordConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, "API Token");
-        final ConfigField blackDuckTimeout = NumberConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, "Timeout");
+        final ConfigField blackDuckTimeout = NumberConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, "Timeout (in seconds)");
         final ConfigField blackDuckProxyHost = ReadOnlyConfigField.createGrouped(BlackDuckDescriptor.KEY_BLACKDUCK_PROXY_HOST, "Host Name", PROXY_SUB_GROUP);
         final ConfigField blackDuckProxyPort = ReadOnlyConfigField.createGrouped(BlackDuckDescriptor.KEY_BLACKDUCK_PROXY_PORT, "Port", PROXY_SUB_GROUP);
         final ConfigField blackDuckProxyUsername = ReadOnlyConfigField.createGrouped(BlackDuckDescriptor.KEY_BLACKDUCK_PROXY_USERNAME, "Username", PROXY_SUB_GROUP);
-        final ConfigField blackDuckProxyPassword = ReadOnlyConfigField.createSensitiveGrouped(BlackDuckDescriptor.KEY_BLACKDUCK_PROXY_PASSWORD, "ProxyPassword", PROXY_SUB_GROUP);
+        final ConfigField blackDuckProxyPassword = ReadOnlyConfigField.createSensitiveGrouped(BlackDuckDescriptor.KEY_BLACKDUCK_PROXY_PASSWORD, "Proxy Password", PROXY_SUB_GROUP);
 
         return List.of(blackDuckUrl, blackDuckApiKey, blackDuckTimeout, blackDuckProxyHost, blackDuckProxyPort, blackDuckProxyUsername, blackDuckProxyPassword);
     }
