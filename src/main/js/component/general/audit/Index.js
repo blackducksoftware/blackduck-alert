@@ -1,17 +1,17 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
-import {BootstrapTable, ButtonGroup, TableHeaderColumn} from 'react-bootstrap-table';
-import {getAuditData} from '../../../store/actions/audit';
+import { connect } from 'react-redux';
+import { BootstrapTable, ButtonGroup, TableHeaderColumn } from 'react-bootstrap-table';
+import { getAuditData } from '../../../store/actions/audit';
 import AutoRefresh from '../../common/AutoRefresh';
 import DescriptorLabel from '../../common/DescriptorLabel';
 import RefreshTableCellFormatter from '../../common/RefreshTableCellFormatter';
 import NotificationTypeLegend from '../../common/NotificationTypeLegend';
 
 import '../../../../css/audit.scss';
-import {logout} from '../../../store/actions/session';
-import AuditDetails from "./Details";
-import CheckboxInput from "../../../field/input/CheckboxInput";
+import { logout } from '../../../store/actions/session';
+import AuditDetails from './Details';
+import CheckboxInput from '../../../field/input/CheckboxInput';
 
 class Index extends Component {
     constructor(props) {
@@ -57,7 +57,7 @@ class Index extends Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.items !== this.props.items) {
-            this.setState({message: '', inProgress: false});
+            this.setState({ message: '', inProgress: false });
             this.setEntriesFromArray(nextProps.items);
         }
 
@@ -75,6 +75,70 @@ class Index extends Component {
         this.resendNotification(currentEntry.id);
     }
 
+    onStatusFailureClick(currentRowSelected) {
+        this.setState({
+            currentRowSelected
+        });
+    }
+
+    onOnlyShowSentNotificationsChange({ target }) {
+        const value = target.checked;
+        this.setState({
+            onlyShowSentNotifications: value
+        });
+        this.reloadAuditEntries(null, null, null, null, null, value);
+    }
+
+    onSizePerPageListChange(sizePerPage) {
+        this.setState({ currentPage: 1, currentPageSize: sizePerPage });
+
+        this.reloadAuditEntries(1, sizePerPage);
+    }
+
+    onPageChange(page, sizePerPage) {
+        this.setState({ currentPage: page });
+        this.reloadAuditEntries(page, sizePerPage);
+    }
+
+    onSearchChange(searchText, colInfos, multiColumnSearch) {
+        this.setState({
+            currentPage: 1,
+            searchTerm: searchText
+        });
+        this.reloadAuditEntries(null, null, searchText);
+    }
+
+    onSortChange(sortName, sortOrder) {
+        this.setState({ sortField: sortName, sortOrder });
+        this.reloadAuditEntries(null, null, null, sortName, sortOrder);
+    }
+
+    onRowClick(row) {
+        this.setState({ currentRowSelected: row, showDetailModal: true });
+    }
+
+    setEntriesFromArray(jsonArray = []) {
+        const entries = jsonArray.map((entry) => {
+            const result = {
+                id: entry.id,
+                createdAt: entry.notification.createdAt,
+                notificationType: entry.notification.notificationType,
+                provider: entry.notification.provider,
+                content: entry.notification.content,
+                overallStatus: entry.overallStatus,
+                lastSent: entry.lastSent
+            };
+            if (entry.jobs) {
+                result.jobs = entry.jobs;
+            }
+            return result;
+        });
+
+        this.setState({
+            entries
+        });
+    }
+
     resendNotification(notificationId, commonConfigId) {
         this.setState({
             message: 'Sending...',
@@ -83,10 +147,10 @@ class Index extends Component {
 
         let resendUrl = `/alert/api/audit/${notificationId}/resend`;
         if (commonConfigId) {
-            resendUrl = resendUrl + `?commonConfigId=${commonConfigId}`;
+            resendUrl += `?commonConfigId=${commonConfigId}`;
         }
 
-        const {csrfToken} = this.props;
+        const { csrfToken } = this.props;
 
         fetch(resendUrl, {
             method: 'POST',
@@ -105,47 +169,20 @@ class Index extends Component {
                     case 401:
                     case 403:
                         this.props.logout();
+                        break;
+                    default:
                         return response.json().then((json) => {
-                            this.setState({message: json.message});
+                            this.setState({ message: json.message });
                         });
                 }
             }
             return response.json().then((json) => {
-                setTimeout(function () {
-                    this.setState({message: ''});
-                }.bind(this), 3000);
+                setTimeout(() => {
+                    this.setState({ message: '' });
+                }, 3000);
                 this.setEntriesFromArray(JSON.parse(json.message));
             });
         }).catch(console.error);
-    }
-
-    onStatusFailureClick(currentRowSelected) {
-        this.setState({
-            currentRowSelected
-        });
-    }
-
-    setEntriesFromArray(jsonArray = []) {
-        const entries = jsonArray.map((entry) => {
-                const result = {
-                    id: entry.id,
-                    createdAt: entry.notification.createdAt,
-                    notificationType: entry.notification.notificationType,
-                    provider: entry.notification.provider,
-                    content: entry.notification.content,
-                    overallStatus: entry.overallStatus,
-                    lastSent: entry.lastSent
-                };
-                if (entry.jobs) {
-                    result.jobs = entry.jobs;
-                }
-                return result;
-            }
-        );
-
-        this.setState({
-            entries
-        });
     }
 
     statusColumnDataFormat(cell) {
@@ -164,9 +201,9 @@ class Index extends Component {
         let hasPolicyViolation = false;
         let hasPolicyViolationCleared = false;
         let hasPolicyViolationOverride = false;
-        let hasHighVulnerability = false;
-        let hasMediumVulnerability = false;
-        let hasLowVulnerability = false;
+        const hasHighVulnerability = false;
+        const hasMediumVulnerability = false;
+        const hasLowVulnerability = false;
         let hasVulnerability = false;
 
 
@@ -217,42 +254,42 @@ class Index extends Component {
             message: 'Loading...',
             inProgress: true
         });
-        var page = 1;
+        let page = 1;
         if (currentPage) {
             page = currentPage;
         } else if (this.state.currentPage) {
             page = this.state.currentPage;
         }
 
-        var size = 10;
+        let size = 10;
         if (sizePerPage) {
             size = sizePerPage;
         } else if (this.state.currentPageSize) {
             size = this.state.currentPageSize;
         }
 
-        var term = '';
-        if (null != searchTerm || undefined != searchTerm) {
+        let term = '';
+        if (searchTerm != null || undefined !== searchTerm) {
             term = searchTerm;
         } else if (this.state.searchTerm) {
             term = this.state.searchTerm;
         }
 
-        var sortingField = '';
-        if (null != sortField || undefined != sortField) {
+        let sortingField = '';
+        if (sortField != null || undefined !== sortField) {
             sortingField = sortField;
         } else if (this.state.sortField) {
             sortingField = this.state.sortField;
         }
-        var sortingOrder = '';
-        if (null != sortOrder || undefined != sortOrder) {
+        let sortingOrder = '';
+        if (sortOrder != null || undefined !== sortOrder) {
             sortingOrder = sortOrder;
         } else if (this.state.sortOrder) {
             sortingOrder = this.state.sortOrder;
         }
 
-        var sentNotificationsOnly = false;
-        if (null != onlyShowSentNotifications || undefined != onlyShowSentNotifications) {
+        let sentNotificationsOnly = false;
+        if (onlyShowSentNotifications != null || undefined !== onlyShowSentNotifications) {
             sentNotificationsOnly = onlyShowSentNotifications;
         } else if (this.state.onlyShowSentNotifications) {
             sentNotificationsOnly = this.state.onlyShowSentNotifications;
@@ -269,75 +306,38 @@ class Index extends Component {
 
     resendButton(cell, row) {
         if (row.content) {
-            return (<RefreshTableCellFormatter handleButtonClicked={this.onResendClick} currentRowSelected={row} buttonText="Re-send"/>);
-        } else {
-            return (<div className="editJobButtonDisabled"><span className="fa fa-refresh"/></div>);
+            return (<RefreshTableCellFormatter handleButtonClicked={this.onResendClick} currentRowSelected={row} buttonText="Re-send" />);
         }
+        return (<div className="editJobButtonDisabled"><span className="fa fa-refresh" /></div>);
     }
 
     createCustomButtonGroup(buttons) {
         return (
             <ButtonGroup>
                 {!this.props.autoRefresh && <div className="btn btn-info react-bs-table-add-btn tableButton" onClick={this.refreshAuditEntries}>
-                    <span className="fa fa-refresh fa-fw" aria-hidden="true"/> Refresh
+                    <span className="fa fa-refresh fa-fw" aria-hidden="true" /> Refresh
                 </div>}
             </ButtonGroup>
         );
     }
 
-    onOnlyShowSentNotificationsChange({target}) {
-        const value = target.checked;
-        this.setState({
-            onlyShowSentNotifications: value
-        });
-        this.reloadAuditEntries(null, null, null, null, null, value);
-    }
-
-    onSizePerPageListChange(sizePerPage) {
-        this.setState({currentPage: 1, currentPageSize: sizePerPage});
-
-        this.reloadAuditEntries(1, sizePerPage);
-    }
-
-    onPageChange(page, sizePerPage) {
-        this.setState({currentPage: page});
-        this.reloadAuditEntries(page, sizePerPage);
-    }
-
-    onSearchChange(searchText, colInfos, multiColumnSearch) {
-        this.setState({
-            currentPage: 1,
-            searchTerm: searchText
-        });
-        this.reloadAuditEntries(null, null, searchText)
-    }
-
     providerColumnDataFormat(cell) {
         const defaultValue = <div className="inline" aria-hidden="true">{cell}</div>;
         if (this.props.descriptors) {
-            const descriptorList = this.props.descriptors.items['PROVIDER_CONFIG'];
+            const descriptorList = this.props.descriptors.items.PROVIDER_CONFIG;
             if (descriptorList) {
-                const filteredList = descriptorList.filter(descriptor => descriptor.descriptorName === cell)
+                const filteredList = descriptorList.filter(descriptor => descriptor.descriptorName === cell);
                 if (filteredList && filteredList.length > 0) {
                     const foundDescriptor = filteredList[0];
-                    return (<DescriptorLabel keyPrefix='audit-provider-icon' descriptor={foundDescriptor}/>);
+                    return (<DescriptorLabel keyPrefix="audit-provider-icon" descriptor={foundDescriptor} />);
                 }
             }
         }
         return defaultValue;
     }
 
-    onSortChange(sortName, sortOrder) {
-        this.setState({sortField: sortName, sortOrder: sortOrder});
-        this.reloadAuditEntries(null, null, null, sortName, sortOrder)
-    }
-
-    onRowClick(row) {
-        this.setState({currentRowSelected: row, showDetailModal: true});
-    }
-
     handleCloseDetails() {
-        this.setState({showDetailModal: false});
+        this.setState({ showDetailModal: false });
     }
 
     render() {
@@ -359,15 +359,15 @@ class Index extends Component {
 
         const auditFetchInfo = {
             dataTotalSize: this.props.totalDataCount * this.state.currentPageSize
-        }
+        };
 
         return (
             <div>
                 <h1>
-                    <span className="fa fa-history"/>
+                    <span className="fa fa-history" />
                     Audit
                     <small className="pull-right">
-                        <AutoRefresh startAutoReload={this.startAutoReload} cancelAutoReload={this.cancelAutoReload}/>
+                        <AutoRefresh startAutoReload={this.startAutoReload} cancelAutoReload={this.cancelAutoReload} />
                     </small>
                     <small className="pull-right">
                         <CheckboxInput
@@ -380,8 +380,15 @@ class Index extends Component {
                     </small>
                 </h1>
                 <div>
-                    <AuditDetails handleClose={this.handleCloseDetails} show={this.state.showDetailModal} currentEntry={this.state.currentRowSelected} resendNotification={this.resendNotification}
-                                  providerNameFormat={this.providerColumnDataFormat} notificationTypeFormat={this.notificationTypeDataFormat} statusFormat={this.statusColumnDataFormat}/>
+                    <AuditDetails
+                        handleClose={this.handleCloseDetails}
+                        show={this.state.showDetailModal}
+                        currentEntry={this.state.currentRowSelected}
+                        resendNotification={this.resendNotification}
+                        providerNameFormat={this.providerColumnDataFormat}
+                        notificationTypeFormat={this.notificationTypeDataFormat}
+                        statusFormat={this.statusColumnDataFormat}
+                    />
                     <BootstrapTable
                         version="4"
                         trClassName={this.trClassFormat}
@@ -401,12 +408,12 @@ class Index extends Component {
                         <TableHeaderColumn dataField="createdAt" dataSort columnTitle columnClassName="tableCell">Time Retrieved</TableHeaderColumn>
                         <TableHeaderColumn dataField="lastSent" dataSort columnTitle columnClassName="tableCell">Last Sent</TableHeaderColumn>
                         <TableHeaderColumn dataField="overallStatus" dataSort columnClassName="tableCell" dataFormat={this.statusColumnDataFormat}>Status</TableHeaderColumn>
-                        <TableHeaderColumn width="48" columnClassName="tableCell" dataFormat={this.resendButton}></TableHeaderColumn>
+                        <TableHeaderColumn width="48" columnClassName="tableCell" dataFormat={this.resendButton} />
                         <TableHeaderColumn dataField="id" isKey hidden>Notification Id</TableHeaderColumn>
                     </BootstrapTable>
 
                     {this.state.inProgress && <div className="progressIcon">
-                        <span className="fa fa-spinner fa-pulse fa-fw" aria-hidden="true"/>
+                        <span className="fa fa-spinner fa-pulse fa-fw" aria-hidden="true" />
                     </div>}
 
                     <p name="message">{this.state.message}</p>
@@ -417,6 +424,9 @@ class Index extends Component {
 }
 
 Index.defaultProps = {
+    autoRefresh: true,
+    fetching: false,
+    totalDataCount: 0,
     csrfToken: null,
     descriptors: {},
     items: []
@@ -429,7 +439,8 @@ Index.propTypes = {
     items: PropTypes.arrayOf(PropTypes.object),
     totalDataCount: PropTypes.number,
     getAuditData: PropTypes.func.isRequired,
-    descriptors: PropTypes.object
+    descriptors: PropTypes.object,
+    logout: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({

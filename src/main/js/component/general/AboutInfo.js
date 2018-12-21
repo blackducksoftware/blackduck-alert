@@ -1,14 +1,11 @@
 import React from 'react';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import ReadOnlyField from '../../field/ReadOnlyField';
-import {getAboutInfo} from '../../store/actions/about';
+import { getAboutInfo } from '../../store/actions/about';
 
 class AboutInfo extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
     componentDidMount() {
         this.props.getAboutInfo();
     }
@@ -17,7 +14,7 @@ class AboutInfo extends React.Component {
         const altText = cell;
         const keyText = `aboutIconKey-${cell}`;
         const classNameText = `fa fa-${cell}`;
-        return (<span key={keyText} alt={altText} className={classNameText} aria-hidden="true"/>);
+        return (<span key={keyText} alt={altText} className={classNameText} aria-hidden="true" />);
     }
 
     createDescriptorTable(tableData) {
@@ -35,8 +32,7 @@ class AboutInfo extends React.Component {
                     headerContainerClass="scrollable"
                     bodyContainerClass="scrollable"
                 >
-                    <TableHeaderColumn dataField="fontAwesomeIcon" className="iconTableRow" columnClassName="iconTableRow" dataFormat={this.iconColumnRenderer}>
-                    </TableHeaderColumn>
+                    <TableHeaderColumn dataField="fontAwesomeIcon" className="iconTableRow" columnClassName="iconTableRow" dataFormat={this.iconColumnRenderer} />
                     <TableHeaderColumn dataField="label" isKey>
                         Name
                     </TableHeaderColumn>
@@ -46,7 +42,7 @@ class AboutInfo extends React.Component {
     }
 
     render() {
-        const {version, description, projectUrl} = this.props;
+        const { version, description, projectUrl } = this.props;
         const providerList = this.props.descriptors.items['PROVIDER_CONFIG'];
         const channelList = this.props.descriptors.items['CHANNEL_DISTRIBUTION_CONFIG'];
         const projectUrlLink = <a alt={projectUrl} href={projectUrl}>{projectUrl}</a>;
@@ -55,13 +51,13 @@ class AboutInfo extends React.Component {
         return (
             <div>
                 <h1>
-                    <span className="fa fa-info"/>
+                    <span className="fa fa-info" />
                     About
                 </h1>
                 <div className="form-horizontal">
-                    <ReadOnlyField label="Description" name="description" readOnly="true" value={description}/>
-                    <ReadOnlyField label="Version" name="version" readOnly="true" value={version}/>
-                    <ReadOnlyField label="Project URL" name="projectUrl" readOnly="true" value={projectUrlLink}/>
+                    <ReadOnlyField label="Description" name="description" readOnly="true" value={description} />
+                    <ReadOnlyField label="Version" name="version" readOnly="true" value={version} />
+                    <ReadOnlyField label="Project URL" name="projectUrl" readOnly="true" value={projectUrlLink} />
                     <div className="form-group">
                         <div className="form-group">
                             <label className="col-sm-3 col-form-label text-right">Supported Providers</label>
@@ -89,7 +85,7 @@ class AboutInfo extends React.Component {
 }
 
 AboutInfo.propTypes = {
-    fetching: PropTypes.bool,
+    getAboutInfo: PropTypes.func.isRequired,
     version: PropTypes.string.isRequired,
     description: PropTypes.string,
     projectUrl: PropTypes.string.isRequired,
@@ -97,15 +93,11 @@ AboutInfo.propTypes = {
 };
 
 AboutInfo.defaultProps = {
-    fetching: false,
-    version: '',
     description: '',
-    projectUrl: '',
     descriptors: {}
 };
 
 const mapStateToProps = state => ({
-    fetching: state.about.fetching,
     version: state.about.version,
     description: state.about.description,
     projectUrl: state.about.projectUrl,

@@ -1,5 +1,5 @@
 import React from 'react';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import NumberInput from '../../field/input/NumberInput';
 import PasswordInput from '../../field/input/PasswordInput';
@@ -7,7 +7,7 @@ import ReadOnlyField from '../../field/ReadOnlyField';
 import TextInput from '../../field/input/TextInput';
 import ConfigButtons from '../common/ConfigButtons';
 
-import {getConfig, testConfig, updateConfig} from '../../store/actions/config';
+import { getConfig, testConfig, updateConfig } from '../../store/actions/config';
 
 class BlackDuckConfiguration extends React.Component {
     constructor(props) {
@@ -48,7 +48,7 @@ class BlackDuckConfiguration extends React.Component {
         }
     }
 
-    handleChange({target}) {
+    handleChange({ target }) {
         const value = target.type === 'checkbox' ? target.checked : target.value;
         this.setState({
             [target.name]: value
@@ -56,22 +56,22 @@ class BlackDuckConfiguration extends React.Component {
     }
 
     handleTest() {
-        const {id} = this.props;
-        this.props.testConfig({id, ...this.state});
+        const { id } = this.props;
+        this.props.testConfig({ id, ...this.state });
     }
 
     handleSubmit(evt) {
         evt.preventDefault();
-        const {id} = this.props;
-        this.props.updateConfig({id, ...this.state});
+        const { id } = this.props;
+        this.props.updateConfig({ id, ...this.state });
     }
 
     render() {
-        const {errorMessage, testStatus, updateStatus} = this.props;
+        const { errorMessage, testStatus, updateStatus } = this.props;
         return (
             <div>
                 <h1>
-                    <span className="fa fa-laptop"/>
+                    <span className="fa fa-laptop" />
                     Black Duck
                 </h1>
 
@@ -89,27 +89,36 @@ class BlackDuckConfiguration extends React.Component {
 
                 <form className="form-horizontal" onSubmit={this.handleSubmit}>
                     <div>
-                        <TextInput id="blackDuckUrl"
-                                   label="Url"
-                                   name="blackDuckUrl"
-                                   value={this.state.blackDuckUrl}
-                                   onChange={this.handleChange}
-                                   errorName="blackDuckUrlError"
-                                   errorValue={this.props.fieldErrors.blackDuckUrl}/>
-                        <PasswordInput id="blackDuckConfigurationApiToken" label="API Token" name="blackDuckApiKey" value={this.state.blackDuckApiKey} isSet={this.state.blackDuckApiKeyIsSet} onChange={this.handleChange}
-                                       errorMessage={this.props.fieldErrors.apiKey || this.props.fieldErrors.blackDuckApiKey}/>
-                        <NumberInput id="blackDuckConfigurationTimeout" label="Timeout" name="blackDuckTimeout" value={this.state.blackDuckTimeout} onChange={this.handleChange}/>
+                        <TextInput
+                            id="blackDuckUrl"
+                            label="Url"
+                            name="blackDuckUrl"
+                            value={this.state.blackDuckUrl}
+                            onChange={this.handleChange}
+                            errorName="blackDuckUrlError"
+                            errorValue={this.props.fieldErrors.blackDuckUrl}
+                        />
+                        <PasswordInput
+                            id="blackDuckConfigurationApiToken"
+                            label="API Token"
+                            name="blackDuckApiKey"
+                            value={this.state.blackDuckApiKey}
+                            isSet={this.state.blackDuckApiKeyIsSet}
+                            onChange={this.handleChange}
+                            errorMessage={this.props.fieldErrors.apiKey || this.props.fieldErrors.blackDuckApiKey}
+                        />
+                        <NumberInput id="blackDuckConfigurationTimeout" label="Timeout" name="blackDuckTimeout" value={this.state.blackDuckTimeout} onChange={this.handleChange} />
                         <div className="form-group">
                             <div className="col-sm-12">
                                 <h2>Proxy Configuration <small>(Read-Only)</small></h2>
                             </div>
                         </div>
-                        <ReadOnlyField label="Host Name" name="blackDuckProxyHost" value={this.props.blackDuckProxyHost}/>
-                        <ReadOnlyField label="Port" name="blackDuckProxyPort" value={this.props.blackDuckProxyPort}/>
-                        <ReadOnlyField label="Username" name="blackDuckProxyUsername" value={this.props.blackDuckProxyUsername}/>
-                        <ReadOnlyField label="Proxy Password" name="blackDuckProxyPassword" isSet={this.props.blackDuckProxyPasswordIsSet}/>
+                        <ReadOnlyField label="Host Name" name="blackDuckProxyHost" value={this.props.blackDuckProxyHost} />
+                        <ReadOnlyField label="Port" name="blackDuckProxyPort" value={this.props.blackDuckProxyPort} />
+                        <ReadOnlyField label="Username" name="blackDuckProxyUsername" value={this.props.blackDuckProxyUsername} />
+                        <ReadOnlyField label="Proxy Password" name="blackDuckProxyPassword" isSet={this.props.blackDuckProxyPasswordIsSet} />
                     </div>
-                    <ConfigButtons isFixed={false} includeSave includeTest type="submit" onTestClick={this.handleTest}/>
+                    <ConfigButtons isFixed={false} includeSave includeTest type="submit" onTestClick={this.handleTest} />
                 </form>
             </div>
         );

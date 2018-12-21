@@ -1,28 +1,28 @@
-import React, {Component} from 'react';
-import Select, {components} from 'react-select';
+import React, { Component } from 'react';
+import Select, { components } from 'react-select';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import TextInput from '../../../../field/input/TextInput';
 import ProjectConfiguration from '../ProjectConfiguration';
 import ConfigButtons from '../../../common/ConfigButtons';
 
-import {frequencyOptions} from '../../../../util/distribution-data';
+import { frequencyOptions } from '../../../../util/distribution-data';
 
-import {getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob} from '../../../../store/actions/distributions';
-import {getDistributionDescriptor} from '../../../../store/actions/descriptors';
-import DescriptorOption from "../../../common/DescriptorOption";
+import { getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob } from '../../../../store/actions/distributions';
+import { getDistributionDescriptor } from '../../../../store/actions/descriptors';
+import DescriptorOption from '../../../common/DescriptorOption';
 
-const {Option, SingleValue} = components;
+const { Option, SingleValue } = components;
 
-const CustomProviderTypeOptionLabel = (props) => (
+const CustomProviderTypeOptionLabel = props => (
     <Option {...props}>
-        <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value}/>
+        <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value} />
     </Option>
 );
 
-const CustomProviderTypeLabel = (props) => (
+const CustomProviderTypeLabel = props => (
     <SingleValue {...props}>
-        <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value}/>
+        <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value} />
     </SingleValue>
 );
 
@@ -83,13 +83,13 @@ class BaseJobConfiguration extends Component {
                     success: nextProps.success,
                     configurationMessage: nextProps.configurationMessage,
                     error: nextProps.error ? nextProps.error : {},
-                    providerOptions: providerOptions
+                    providerOptions
                 });
 
                 if (nextProps.distributionConfigId) {
                     const jobConfig = nextProps.jobs[nextProps.distributionConfigId];
                     if (jobConfig) {
-                        const readDescriptorDistribution = !this.state.providerName && jobConfig.providerName
+                        const readDescriptorDistribution = !this.state.providerName && jobConfig.providerName;
                         if (readDescriptorDistribution) {
                             nextProps.getDistributionDescriptor(jobConfig.providerName, nextProps.alertChannelName);
                         }
@@ -102,7 +102,7 @@ class BaseJobConfiguration extends Component {
                         distributionType: jobConfig.distributionType,
                         frequency: jobConfig.frequency,
                         formatType: jobConfig.formatType,
-                        includeAllProjects: jobConfig.filterByProject == 'false',
+                        includeAllProjects: jobConfig.filterByProject === 'false',
                         filterByProject: jobConfig.filterByProject,
                         notificationTypes: jobConfig.notificationTypes,
                         configuredProjects: jobConfig.configuredProjects,
@@ -110,12 +110,12 @@ class BaseJobConfiguration extends Component {
                     });
                     this.setState(newState);
                 } else {
-                    if (null == this.state.includeAllProjects || undefined == this.state.includeAllProjects) {
+                    if (this.state.includeAllProjects == null || undefined === this.state.includeAllProjects) {
                         this.setState({
                             includeAllProjects: true
                         });
                     }
-                    if (!this.state.providerName && providerOptions.length == 1) {
+                    if (!this.state.providerName && providerOptions.length === 1) {
                         const providerSelection = providerOptions[0].value;
                         nextProps.getDistributionDescriptor(providerSelection, nextProps.alertChannelName);
                         this.setState({
@@ -130,7 +130,7 @@ class BaseJobConfiguration extends Component {
 
     onSubmit(event) {
         event.preventDefault();
-        const {handleSaveBtnClick, handleCancel} = this.props;
+        const { handleSaveBtnClick, handleCancel } = this.props;
         this.handleSubmit();
         if (handleCancel && !handleSaveBtnClick) {
             handleCancel();
@@ -191,9 +191,9 @@ class BaseJobConfiguration extends Component {
         return jsonBody;
     }
 
-    handleChange({target}) {
+    handleChange({ target }) {
         const value = target.type === 'checkbox' ? target.checked : target.value;
-        const {name} = target;
+        const { name } = target;
         this.handleStateValues(name, value);
     }
 
@@ -211,15 +211,13 @@ class BaseJobConfiguration extends Component {
 
     handleProviderChanged(option) {
         if (option) {
-            if (this.state.providerName != option.value) {
+            if (this.state.providerName !== option.value) {
                 this.handleStateValues('providerName', option.value);
                 this.props.getDistributionDescriptor(option.value, this.props.alertChannelName);
             }
-        } else {
-            if (this.state.providerOptions.length > 1) {
-                this.handleStateValues('providerName', option);
-                this.props.getDistributionDescriptor('', this.props.alertChannelName);
-            }
+        } else if (this.state.providerOptions.length > 1) {
+            this.handleStateValues('providerName', option);
+            this.props.getDistributionDescriptor('', this.props.alertChannelName);
         }
     }
 
@@ -257,114 +255,114 @@ class BaseJobConfiguration extends Component {
     }
 
     createProviderOptions() {
-        const providers = this.props.descriptors.items['PROVIDER_CONFIG'];
+        const providers = this.props.descriptors.items.PROVIDER_CONFIG;
         if (providers) {
-            const optionList = providers.map(descriptor => {
-                return {
-                    label: descriptor.label,
-                    value: descriptor.descriptorName,
-                    icon: descriptor.fontAwesomeIcon
-                }
-            });
+            const optionList = providers.map(descriptor => ({
+                label: descriptor.label,
+                value: descriptor.descriptorName,
+                icon: descriptor.fontAwesomeIcon
+            }));
             return optionList;
-        } else {
-            return [];
         }
+        return [];
     }
 
     createNotificationTypeOptions() {
-        const {fields} = this.props.currentDistributionComponents;
+        const { fields } = this.props.currentDistributionComponents;
         if (fields) {
             const notificationTypeField = fields.filter(field => field.key === 'notificationTypes');
-            const {options} = notificationTypeField[0];
+            const { options } = notificationTypeField[0];
 
-            const optionList = options.map(option => Object.assign({}, {label: option, value: option}));
+            const optionList = options.map(option => Object.assign({}, { label: option, value: option }));
             return optionList;
-        } else {
-            return [];
         }
+        return [];
     }
 
     createFormatTypeOptions() {
-        const {fields} = this.props.currentDistributionComponents;
+        const { fields } = this.props.currentDistributionComponents;
         if (fields) {
             const formatTypeField = fields.filter(field => field.key === 'formatType');
-            const {options} = formatTypeField[0];
+            const { options } = formatTypeField[0];
 
-            const optionList = options.map(option => Object.assign({}, {label: option, value: option}));
+            const optionList = options.map(option => Object.assign({}, { label: option, value: option }));
             return optionList;
-        } else {
-            return [];
         }
+        return [];
     }
 
     renderDistributionForm() {
         if (!this.props.currentDistributionComponents) {
             return null;
-        } else {
-            const formatOptions = this.createFormatTypeOptions();
-            const notificationOptions = this.createNotificationTypeOptions();
-            var configuredNotificationOptions = null;
-            if (this.state.notificationTypes) {
-                configuredNotificationOptions = notificationOptions.filter(option => this.state.notificationTypes.indexOf(option.value) !== -1);
-            }
-            return (
-                <div>
-                    <div className="form-group">
-                        <label className="col-sm-3 col-form-label text-right">Format</label>
-                        <div className="d-inline-flex flex-column p-2 col-sm-9">
-                            <Select
-                                id="formatType"
-                                className="typeAheadField"
-                                onChange={this.handleFormatChanged}
-                                removeSelected
-                                options={formatOptions}
-                                placeholder="Choose the format for the job"
-                                value={formatOptions.find(option => option.value === this.state.formatType)}
-                            />
-                            {this.state.error.formatTypeError && <label className="fieldError" name="formatTypeError">
-                                {this.state.error.formatTypeError}
-                            </label>}
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        <label className="col-sm-3 col-form-label text-right">Notification Types</label>
-                        <div className="d-inline-flex flex-column p-2 col-sm-9">
-                            <Select
-                                id="jobType"
-                                className="typeAheadField"
-                                onChange={this.handleNotificationChanged}
-                                isSearchable={true}
-                                isMulti={true}
-                                removeSelected
-                                options={notificationOptions}
-                                placeholder="Choose the notification types"
-                                value={configuredNotificationOptions}
-                            />
-                            {this.state.error.notificationTypesError && <label className="fieldError" name="notificationTypesError">
-                                {this.state.error.notificationTypesError}
-                            </label>}
-                        </div>
-                    </div>
-                    {this.props.childContent}
-                    <ProjectConfiguration includeAllProjects={this.state.includeAllProjects} handleChange={this.handleChange} handleProjectChanged={this.handleProjectChanged} projects={this.props.projects}
-                                          configuredProjects={this.state.configuredProjects} projectNamePattern={this.state.projectNamePattern}/>
-                    <ConfigButtons cancelId="job-cancel" submitId="job-submit" includeTest includeCancel onTestClick={this.handleTestSubmit} onCancelClick={this.props.handleCancel}/>
-                    <p name="configurationMessage">{this.state.configurationMessage}</p>
-                </div>
-            );
         }
+        const formatOptions = this.createFormatTypeOptions();
+        const notificationOptions = this.createNotificationTypeOptions();
+        let configuredNotificationOptions = null;
+        if (this.state.notificationTypes) {
+            configuredNotificationOptions = notificationOptions.filter(option => this.state.notificationTypes.indexOf(option.value) !== -1);
+        }
+        return (
+            <div>
+                <div className="form-group">
+                    <label className="col-sm-3 col-form-label text-right">Format</label>
+                    <div className="d-inline-flex flex-column p-2 col-sm-9">
+                        <Select
+                            id="formatType"
+                            className="typeAheadField"
+                            onChange={this.handleFormatChanged}
+                            removeSelected
+                            options={formatOptions}
+                            placeholder="Choose the format for the job"
+                            value={formatOptions.find(option => option.value === this.state.formatType)}
+                        />
+                        {this.state.error.formatTypeError && <label className="fieldError" name="formatTypeError">
+                            {this.state.error.formatTypeError}
+                        </label>}
+                    </div>
+                </div>
+                <div className="form-group">
+                    <label className="col-sm-3 col-form-label text-right">Notification Types</label>
+                    <div className="d-inline-flex flex-column p-2 col-sm-9">
+                        <Select
+                            id="jobType"
+                            className="typeAheadField"
+                            onChange={this.handleNotificationChanged}
+                            isSearchable
+                            isMulti
+                            removeSelected
+                            options={notificationOptions}
+                            placeholder="Choose the notification types"
+                            value={configuredNotificationOptions}
+                        />
+                        {this.state.error.notificationTypesError && <label className="fieldError" name="notificationTypesError">
+                            {this.state.error.notificationTypesError}
+                        </label>}
+                    </div>
+                </div>
+                {this.props.childContent}
+                <ProjectConfiguration
+                    includeAllProjects={this.state.includeAllProjects}
+                    handleChange={this.handleChange}
+                    handleProjectChanged={this.handleProjectChanged}
+                    projects={this.props.projects}
+                    configuredProjects={this.state.configuredProjects}
+                    projectNamePattern={this.state.projectNamePattern}
+                />
+                <ConfigButtons cancelId="job-cancel" submitId="job-submit" includeTest includeCancel onTestClick={this.handleTestSubmit} onCancelClick={this.props.handleCancel} />
+                <p name="configurationMessage">{this.state.configurationMessage}</p>
+            </div>
+        );
     }
 
     render() {
-        const providerOptions = this.state.providerOptions;
-        var selectedProviderOption = null
+        const [providerOptions] = this.state;
+        let selectedProviderOption = null;
         if (providerOptions) {
-            selectedProviderOption = providerOptions.find(option => option.value === this.state.providerName)
+            selectedProviderOption = providerOptions.find(option => option.value === this.state.providerName);
         }
         return (
             <form className="form-horizontal" onSubmit={this.onSubmit}>
-                <TextInput id="name" label="Job Name" name="name" value={this.state.name} onChange={this.handleChange} errorName="nameError" errorValue={this.state.error.nameError}/>
+                <TextInput id="name" label="Job Name" name="name" value={this.state.name} onChange={this.handleChange} errorName="nameError" errorValue={this.state.error.nameError} />
                 <div className="form-group">
                     <label className="col-sm-3 col-form-label text-right">Frequency</label>
                     <div className="d-inline-flex flex-column p-2 col-sm-9">
@@ -372,7 +370,7 @@ class BaseJobConfiguration extends Component {
                             id="jobFrequency"
                             className="typeAheadField"
                             onChange={this.handleFrequencyChanged}
-                            isSearchable={true}
+                            isSearchable
                             options={frequencyOptions}
                             placeholder="Choose the frequency"
                             value={frequencyOptions.find(option => option.value === this.state.frequency)}
@@ -389,11 +387,11 @@ class BaseJobConfiguration extends Component {
                             id="providerName"
                             className="typeAheadField"
                             onChange={this.handleProviderChanged}
-                            isSearchable={true}
+                            isSearchable
                             options={providerOptions}
                             placeholder="Choose the provider"
                             value={selectedProviderOption}
-                            components={{Option: CustomProviderTypeOptionLabel, SingleValue: CustomProviderTypeLabel}}
+                            components={{ Option: CustomProviderTypeOptionLabel, SingleValue: CustomProviderTypeLabel }}
                         />
                         {this.state.error.providerNameError && <label className="fieldError" name="providerNameError">
                             {this.state.error.providerNameError}
@@ -407,7 +405,10 @@ class BaseJobConfiguration extends Component {
 }
 
 BaseJobConfiguration.propTypes = {
-    csrfToken: PropTypes.string,
+    testDistributionJob: PropTypes.func.isRequired,
+    saveDistributionJob: PropTypes.func.isRequired,
+    updateDistributionJob: PropTypes.func.isRequired,
+    getDistributionDescriptor: PropTypes.func.isRequired,
     descriptors: PropTypes.object,
     jobs: PropTypes.object,
     baseUrl: PropTypes.string.isRequired,
@@ -424,11 +425,11 @@ BaseJobConfiguration.propTypes = {
     getParentConfiguration: PropTypes.func.isRequired,
     childContent: PropTypes.object.isRequired,
     alertChannelName: PropTypes.string.isRequired,
-    currentDistributionComponents: PropTypes.object
+    currentDistributionComponents: PropTypes.object,
+    projects: PropTypes.arrayOf(PropTypes.any)
 };
 
 BaseJobConfiguration.defaultProps = {
-    csrfToken: null,
     descriptors: {},
     jobs: {},
     baseUrl: '',
@@ -440,7 +441,8 @@ BaseJobConfiguration.defaultProps = {
     configurationMessage: '',
     error: {},
     distributionConfigId: null,
-    currentDistributionComponents: null
+    currentDistributionComponents: null,
+    projects: []
 };
 
 const mapDispatchToProps = dispatch => ({
@@ -452,7 +454,6 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = state => ({
-    csrfToken: state.session.csrfToken,
     descriptors: state.descriptors,
     jobs: state.distributions.jobs,
     fetching: state.distributions.fetching,
