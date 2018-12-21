@@ -13,7 +13,7 @@ class SystemMessage extends Component {
         }
         return 'fa fa-check-circle validStatus';
     }
-    
+
     render() {
         const { createdAt, content, severity } = this.props;
         return (<div className="messageHeader">

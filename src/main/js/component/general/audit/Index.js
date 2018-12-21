@@ -169,6 +169,8 @@ class Index extends Component {
                     case 401:
                     case 403:
                         this.props.logout();
+                        break;
+                    default:
                         return response.json().then((json) => {
                             this.setState({ message: json.message });
                         });

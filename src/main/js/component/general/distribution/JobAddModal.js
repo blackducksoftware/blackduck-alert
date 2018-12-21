@@ -1,26 +1,26 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import {Modal} from 'react-bootstrap';
-import Select, {components} from 'react-select';
+import { Modal } from 'react-bootstrap';
+import Select, { components } from 'react-select';
 
 import GroupEmailJobConfiguration from './job/GroupEmailJobConfiguration';
 import HipChatJobConfiguration from './job/HipChatJobConfiguration';
 import SlackJobConfiguration from './job/SlackJobConfiguration';
-import DescriptorOption from "../../common/DescriptorOption";
-import {resetDistributionDescriptor} from '../../../store/actions/descriptors';
+import DescriptorOption from '../../common/DescriptorOption';
+import { resetDistributionDescriptor } from '../../../store/actions/descriptors';
 
-const {Option, SingleValue} = components;
+const { Option, SingleValue } = components;
 
-const CustomJobTypeOptionLabel = (props) => (
+const CustomJobTypeOptionLabel = props => (
     <Option {...props}>
-        <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value}/>
+        <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value} />
     </Option>
 );
 
-const CustomJobTypeLabel = (props) => (
+const CustomJobTypeLabel = props => (
     <SingleValue {...props}>
-        <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value}/>
+        <DescriptorOption icon={props.data.icon} label={props.data.label} value={props.data.value} />
     </SingleValue>
 );
 
@@ -51,7 +51,6 @@ class JobAddModal extends Component {
                     projects={this.props.projects}
                     handleCancel={this.handleClose}
                     handleSaveBtnClick={this.handleSaveBtnClick}
-                    groupError={this.props.groupError}
                 />);
             case 'channel_hipchat':
                 return (<HipChatJobConfiguration
@@ -73,18 +72,18 @@ class JobAddModal extends Component {
     }
 
     handleSaveBtnClick(values) {
-        const {onModalClose} = this.props;
+        const { onModalClose } = this.props;
         // You should call onSave function and give the new row
         //  onSave(values);
         onModalClose();
     }
 
 
-    handleChange({target}) {
-        const {name, type, checked} = target;
+    handleChange({ target }) {
+        const { name, type, checked } = target;
         const value = type === 'checkbox' ? checked : target.value;
 
-        const {values} = this.state;
+        const { values } = this.state;
         values[name] = value;
         this.setState({
             values
@@ -92,7 +91,7 @@ class JobAddModal extends Component {
     }
 
     handleTypeChanged(option) {
-        const {values} = this.state;
+        const { values } = this.state;
         if (option) {
             values.typeValue = option.value;
             this.setState({
@@ -103,24 +102,21 @@ class JobAddModal extends Component {
 
 
     handleClose() {
-        this.setState({show: false});
+        this.setState({ show: false });
         this.props.onModalClose();
     }
 
     createJobTypeOptions() {
-        const channelDescriptors = this.props.descriptors.items['CHANNEL_DISTRIBUTION_CONFIG'];
+        const channelDescriptors = this.props.descriptors.items.CHANNEL_DISTRIBUTION_CONFIG;
         if (channelDescriptors) {
-            const optionList = channelDescriptors.map(descriptor => {
-                return {
-                    label: descriptor.label,
-                    value: descriptor.descriptorName,
-                    icon: descriptor.fontAwesomeIcon
-                }
-            });
+            const optionList = channelDescriptors.map(descriptor => ({
+                label: descriptor.label,
+                value: descriptor.descriptorName,
+                icon: descriptor.fontAwesomeIcon
+            }));
             return optionList;
-        } else {
-            return [];
         }
+        return [];
     }
 
     render() {
@@ -145,7 +141,7 @@ class JobAddModal extends Component {
                                     options={jobTypeOptions}
                                     placeholder="Choose the Job Type"
                                     value={jobTypeOptions.find(option => option.value === this.state.values.typeValue)}
-                                    components={{Option: CustomJobTypeOptionLabel, SingleValue: CustomJobTypeLabel}}
+                                    components={{ Option: CustomJobTypeOptionLabel, SingleValue: CustomJobTypeLabel }}
                                 />
                             </div>
                         </div>
@@ -159,20 +155,18 @@ class JobAddModal extends Component {
 }
 
 JobAddModal.propTypes = {
+    resetDistributionDescriptor: PropTypes.func.isRequired,
     onModalClose: PropTypes.func.isRequired,
-    csrfToken: PropTypes.string,
     descriptors: PropTypes.object,
     projects: PropTypes.arrayOf(PropTypes.object)
 };
 
 JobAddModal.defaultProps = {
-    csrfToken: null,
-    descriptor: {},
+    descriptors: {},
     projects: []
 };
 
 const mapStateToProps = state => ({
-    csrfToken: state.session.csrfToken,
     descriptors: state.descriptors
 });
 
