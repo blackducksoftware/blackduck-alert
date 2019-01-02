@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
@@ -71,7 +71,7 @@ public class ProjectSyncTaskTest {
         Mockito.when(projectService.getAllActiveUsersForProject(ArgumentMatchers.same(projectView3))).thenReturn(new HashSet<>(Arrays.asList(user1, user2, user3)));
 
         final ProjectSyncTask projectSyncTask = new ProjectSyncTask(null, blackDuckProperties, blackDuckUserRepositoryAccessor, blackDuckProjectRepositoryAccessor,
-                userProjectRelationRepositoryAccessor);
+            userProjectRelationRepositoryAccessor);
         projectSyncTask.run();
 
         assertEquals(4, blackDuckUserRepositoryAccessor.readEntities().size());

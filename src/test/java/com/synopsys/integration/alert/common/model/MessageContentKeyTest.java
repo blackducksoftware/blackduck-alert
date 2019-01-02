@@ -3,7 +3,7 @@ package com.synopsys.integration.alert.common.model;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class MessageContentKeyTest {
     @Test

@@ -3,7 +3,7 @@ package com.synopsys.integration.alert.provider.blackduck.descriptor;
 import java.util.HashMap;
 import java.util.Optional;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.ContentConverter;

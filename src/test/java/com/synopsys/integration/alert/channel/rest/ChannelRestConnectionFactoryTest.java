@@ -5,9 +5,9 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.util.OutputLogger;
 import com.synopsys.integration.alert.util.TestAlertProperties;
@@ -20,12 +20,12 @@ import com.synopsys.integration.rest.proxy.ProxyInfoBuilder;
 public class ChannelRestConnectionFactoryTest {
     private OutputLogger outputLogger;
 
-    @Before
+    @BeforeEach
     public void init() throws IOException {
         outputLogger = new OutputLogger();
     }
 
-    @After
+    @AfterEach
     public void cleanup() throws IOException {
         outputLogger.cleanup();
     }

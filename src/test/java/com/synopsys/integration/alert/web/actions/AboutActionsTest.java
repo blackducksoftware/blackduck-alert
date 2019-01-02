@@ -2,7 +2,7 @@ package com.synopsys.integration.alert.web.actions;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.AboutReader;

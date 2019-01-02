@@ -8,32 +8,15 @@ import com.synopsys.integration.alert.mock.model.MockRestModelUtil;
 import com.synopsys.integration.alert.web.audit.JobModel;
 
 public class MockJobModel extends MockRestModelUtil<JobModel> {
-    private final String id;
-    private final String configId;
-    private final String name;
-    private final String eventType;
-    private final String timeAuditCreated;
-    private final String timeLastSent;
-    private final String status;
-    private final String errorMessage;
-    private final String errorStackTrace;
-
-    public MockJobModel() {
-        this("1", "22", "name", "eventType", new Date(400).toString(), new Date(500).toString(), AuditEntryStatus.SUCCESS.name(), "errorMessage", "errorStackTrace");
-    }
-
-    private MockJobModel(final String id, final String configId, final String name, final String eventType, final String timeAuditCreated, final String timeLastSent, final String status, final String errorMessage,
-        final String errorStackTrace) {
-        this.id = id;
-        this.configId = configId;
-        this.name = name;
-        this.eventType = eventType;
-        this.timeAuditCreated = timeAuditCreated;
-        this.timeLastSent = timeLastSent;
-        this.status = status;
-        this.errorMessage = errorMessage;
-        this.errorStackTrace = errorStackTrace;
-    }
+    private final String id = "1";
+    private final String configId = "22";
+    private final String name = "name";
+    private final String eventType = "eventType";
+    private final String timeAuditCreated = new Date(400).toString();
+    private final String timeLastSent = new Date(500).toString();
+    private final String status = AuditEntryStatus.SUCCESS.name();
+    private final String errorMessage = "errorMessage";
+    private final String errorStackTrace = "errorStackTrace";
 
     public String getConfigId() {
         return configId;

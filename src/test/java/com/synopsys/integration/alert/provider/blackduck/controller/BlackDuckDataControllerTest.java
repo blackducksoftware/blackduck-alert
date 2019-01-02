@@ -13,7 +13,7 @@ package com.synopsys.integration.alert.provider.blackduck.controller;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.ResponseEntity;
 

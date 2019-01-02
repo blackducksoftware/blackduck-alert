@@ -6,8 +6,8 @@ import static org.junit.Assert.assertNull;
 import java.text.ParseException;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ public class SystemHandlerTest {
     private SystemActions systemActions;
     private final ContentConverter contentConverter = Mockito.mock(ContentConverter.class);
 
-    @Before
+    @BeforeEach
     public void initialize() {
         systemActions = Mockito.mock(SystemActions.class);
     }
