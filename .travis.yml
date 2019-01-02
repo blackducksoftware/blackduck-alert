@@ -23,6 +23,7 @@ script:
 
 env:
 - DETECT_GRADLE_INCLUDED_CONFIGURATIONS=compile
+- JAVA_OPTS="-Xmx2048m"
 
 after_success:
 - "./gradlew test jacocoTestReport coveralls"
