@@ -23,34 +23,38 @@ public class TestProperties {
     public TestProperties() {
         resourceLoader = new ResourceLoader();
         propertiesLocation = ResourceLoader.DEFAULT_PROPERTIES_FILE_LOCATION;
+        loadProperties();
     }
 
     public TestProperties(final String propertiesLocation) {
         resourceLoader = new ResourceLoader();
         this.propertiesLocation = propertiesLocation;
+        loadProperties();
     }
 
     public void setPropertiesLocation(final String newPropertiesLocation) {
         properties = null;
         propertiesLocation = newPropertiesLocation;
+        loadProperties();
     }
 
     public Properties getProperties() {
+        loadProperties();
+        return properties;
+    }
+
+    public void loadProperties() {
         if (properties == null) {
             properties = new Properties();
             try {
                 properties = resourceLoader.loadProperties(propertiesLocation);
-                if (properties.isEmpty()) {
-                    populatePropertiesFromEnv();
-                }
+                populatePropertiesFromEnv();
             } catch (final Exception ex) {
                 System.out.println("Couldn't load " + propertiesLocation + " file!");
                 System.out.println("Reading from the environment...");
                 populatePropertiesFromEnv();
             }
         }
-
-        return properties;
     }
 
     public String getProperty(final TestPropertyKey propertyKey) {
