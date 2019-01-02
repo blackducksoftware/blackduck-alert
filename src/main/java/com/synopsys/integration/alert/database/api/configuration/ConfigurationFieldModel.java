@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.synopsys.integration.util.Stringable;
 
@@ -86,6 +87,11 @@ public class ConfigurationFieldModel extends Stringable {
 
     public boolean isSet() {
         return fieldValues != null;
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this, "fieldValues");
     }
 
     @Override
