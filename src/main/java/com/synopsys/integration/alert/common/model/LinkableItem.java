@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.common.model;
 
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 
 import com.synopsys.integration.util.Stringable;
 
@@ -58,9 +58,6 @@ public class LinkableItem extends Stringable implements Comparable<LinkableItem>
 
     @Override
     public int compareTo(final LinkableItem otherItem) {
-        if (otherItem == null) {
-            return 1;
-        }
-        return StringUtils.compare(name, otherItem.getName());
+        return CompareToBuilder.reflectionCompare(this, otherItem);
     }
 }
