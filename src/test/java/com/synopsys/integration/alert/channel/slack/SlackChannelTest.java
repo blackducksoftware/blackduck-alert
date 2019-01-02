@@ -245,7 +245,7 @@ public class SlackChannelTest extends ChannelTest {
     //        final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
     //        final GlobalBlackDuckRepository mockedGlobalRepository = Mockito.mock(GlobalBlackDuckRepository.class);
     //        final TestAlertProperties testAlertProperties = new TestAlertProperties();
-    //        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(new Gson(), mockedGlobalRepository, testAlertProperties, null);
+    //        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(new Gson(), mockedGlobalRepository, testAlertProperties, properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT, properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TRUST_HTTPS_CERT));
     //        final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties);
     //        final SlackChannel slackChannel = new SlackChannel(gson, testAlertProperties, globalProperties, auditUtility, channelRestConnectionFactory);
     //        final String roomName = properties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME);

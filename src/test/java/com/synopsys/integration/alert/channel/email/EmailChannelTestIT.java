@@ -14,8 +14,9 @@ public class EmailChannelTestIT extends ChannelTest {
     //        final GlobalBlackDuckConfigEntity globalConfig = new GlobalBlackDuckConfigEntity(300, properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY), properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
     //        Mockito.when(globalRepository.findAll()).thenReturn(Arrays.asList(globalConfig));
     //
+    //        final String trustCert = properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TRUST_HTTPS_CERT);
     //        final TestAlertProperties testAlertProperties = new TestAlertProperties();
-    //        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(new Gson(), globalRepository, testAlertProperties);
+    //        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(new Gson(), globalRepository, testAlertProperties, properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT, trustCert);
     //        globalProperties.setBlackDuckUrl(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
     //
     //        final String trustCert = properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TRUST_HTTPS_CERT);
