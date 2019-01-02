@@ -7,26 +7,12 @@ import com.synopsys.integration.alert.web.model.NotificationConfig;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 public class MockNotificationRestModel extends MockRestModelUtil<NotificationConfig> {
-    private final String createdAt;
-    private final String provider;
-    private final String providerCreationTime;
-    private final String notificationType;
-    private final String content;
-    private String id;
-
-    @SuppressWarnings("deprecation")
-    public MockNotificationRestModel() {
-        this(new Date(400).toLocaleString(), "provider", new Date(300).toLocaleString(), NotificationType.RULE_VIOLATION.name(), "{content: \" projectName projectVersion\"", "1");
-    }
-
-    private MockNotificationRestModel(final String createdAt, final String provider, final String providerCreationTime, final String notificationType, final String content, final String id) {
-        this.createdAt = createdAt;
-        this.provider = provider;
-        this.providerCreationTime = providerCreationTime;
-        this.notificationType = notificationType;
-        this.content = content;
-        this.id = id;
-    }
+    private final String createdAt = new Date(400).toString();
+    private final String provider = "provider";
+    private final String providerCreationTime = new Date(300).toString();
+    private final String notificationType = NotificationType.RULE_VIOLATION.name();
+    private final String content = "{content: \" projectName projectVersion\"";
+    private String id = "1";
 
     public String getCreatedAt() {
         return createdAt;

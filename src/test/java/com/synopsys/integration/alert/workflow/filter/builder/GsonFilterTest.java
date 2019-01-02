@@ -7,8 +7,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 import com.jayway.jsonpath.JsonPath;
@@ -22,7 +22,7 @@ public class GsonFilterTest {
 
     private JsonExtractor jsonExtractor;
 
-    @Before
+    @BeforeEach
     public void init() {
         jsonExtractor = new JsonExtractor(new Gson());
     }

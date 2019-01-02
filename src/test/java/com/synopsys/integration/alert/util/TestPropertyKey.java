@@ -26,7 +26,6 @@ public enum TestPropertyKey {
     TEST_EMAIL_SMTP_AUTH("mail.smtp.auth"),
     TEST_EMAIL_SMTP_EHLO("mail.smtp.ehlo"),
     TEST_EMAIL_SMTP_PORT("mail.smtp.port"),
-    TEST_BLACKDUCK_PROVIDER_EMAIL_TEMPLATE("blackduck.provider.email.template.directory"),
     TEST_EMAIL_LOGO("logo.image");
 
     private final String propertyKey;

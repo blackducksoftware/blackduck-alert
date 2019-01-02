@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.web.audit.AuditEntryModel;
 

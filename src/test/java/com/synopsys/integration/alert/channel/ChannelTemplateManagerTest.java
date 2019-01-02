@@ -7,8 +7,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.jms.core.JmsTemplate;
@@ -28,7 +28,7 @@ public class ChannelTemplateManagerTest {
     private Gson gson;
     private ContentConverter contentConverter;
 
-    @Before
+    @BeforeEach
     public void init() {
         gson = new Gson();
         contentConverter = new ContentConverter(gson, new DefaultConversionService());
