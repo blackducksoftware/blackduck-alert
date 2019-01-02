@@ -41,16 +41,15 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
     }
 
     public TestBlackDuckProperties(final Gson gson, final TestAlertProperties alertProperties, final BaseConfigurationAccessor baseConfigurationAccessor) {
-        this(gson, alertProperties, baseConfigurationAccessor, 400);
+       this(gson, alertProperties, baseConfigurationAccessor, 400, true);
     }
 
-    public TestBlackDuckProperties(final Gson gson, final TestAlertProperties alertProperties, final BaseConfigurationAccessor baseConfigurationAccessor, final Integer blackDuckTimeout) {
+    public TestBlackDuckProperties(final Gson gson, final TestAlertProperties alertProperties, final BaseConfigurationAccessor baseConfigurationAccessor, final Integer blackDuckTimeout, boolean trustCertificates) {
         super(gson, alertProperties, baseConfigurationAccessor);
         this.blackDuckTimeout = blackDuckTimeout;
         testAlertProperties = alertProperties;
         testProperties = new TestProperties();
-        setHubTimeout(Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT)));
-        testAlertProperties.setAlertTrustCertificate(Boolean.valueOf(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TRUST_HTTPS_CERT)));
+        testAlertProperties.setAlertTrustCertificate(trustCertificates);
     }
 
     @Override
