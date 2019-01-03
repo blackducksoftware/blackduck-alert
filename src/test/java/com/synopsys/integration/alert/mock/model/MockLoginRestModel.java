@@ -4,20 +4,9 @@ import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.web.model.LoginConfig;
 
 public class MockLoginRestModel extends MockRestModelUtil<LoginConfig> {
-    private String blackDuckUsername;
-    private String blackDuckPassword;
-    private String id;
-
-    public MockLoginRestModel() {
-        this("blackDuckUsername", "blackDuckPassword");
-    }
-
-    private MockLoginRestModel(final String blackDuckUsername, final String blackDuckPassword) {
-        super();
-        this.blackDuckUsername = blackDuckUsername;
-        this.blackDuckPassword = blackDuckPassword;
-        this.id = "1L";
-    }
+    private String blackDuckUsername = "blackDuckUsername";
+    private String blackDuckPassword = "blackDuckPassword";
+    private String id = "1L";
 
     public String getBlackDuckPassword() {
         return blackDuckPassword;

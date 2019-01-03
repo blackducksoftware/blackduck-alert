@@ -17,13 +17,13 @@ import java.lang.reflect.Constructor;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class AlertExceptionTest {
     private Set<Class<? extends Exception>> exceptionSet;
 
-    @Before
+    @BeforeEach
     public void createExceptionSet() {
         exceptionSet = new LinkedHashSet<>();
         exceptionSet.add(AlertException.class);

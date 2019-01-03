@@ -16,24 +16,11 @@ import com.synopsys.integration.alert.web.audit.JobModel;
 import com.synopsys.integration.alert.web.model.NotificationConfig;
 
 public class MockAuditEntryRestModel extends MockRestModelUtil<AuditEntryModel> {
-    private final String timeLastSent;
-    private final String overallStatus;
-    private final NotificationConfig notification;
-    private final List<JobModel> jobModels;
-    private final String id;
-
-    public MockAuditEntryRestModel() {
-        this("1", new Date(500).toString(), AuditEntryStatus.SUCCESS.name(), new NotificationConfig(), Collections.singletonList(new JobModel()));
-    }
-
-    private MockAuditEntryRestModel(final String id, final String timeLastSent, final String overallStatus, final NotificationConfig notification, final List<JobModel> jobModels) {
-        super();
-        this.id = id;
-        this.timeLastSent = timeLastSent;
-        this.overallStatus = overallStatus;
-        this.notification = notification;
-        this.jobModels = jobModels;
-    }
+    private final String timeLastSent = new Date(500).toString();
+    private final String overallStatus = AuditEntryStatus.SUCCESS.name();
+    private final NotificationConfig notification = new NotificationConfig();
+    private final List<JobModel> jobModels = Collections.singletonList(new JobModel());
+    private final String id = "1";
 
     public String getOverallStatus() {
         return overallStatus;

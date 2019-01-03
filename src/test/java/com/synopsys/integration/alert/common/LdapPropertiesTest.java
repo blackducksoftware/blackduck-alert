@@ -3,7 +3,7 @@ package com.synopsys.integration.alert.common;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class LdapPropertiesTest {
 

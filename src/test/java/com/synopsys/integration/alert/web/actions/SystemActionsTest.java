@@ -12,8 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.database.system.SystemMessage;
@@ -28,7 +28,7 @@ public class SystemActionsTest {
     private SystemMessageUtility systemMessageUtility;
     private SystemInitializer systemInitializer;
 
-    @Before
+    @BeforeEach
     public void initiailize() {
         systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         systemMessageUtility = Mockito.mock(SystemMessageUtility.class);

@@ -16,8 +16,8 @@ import java.util.Arrays;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.core.convert.support.DefaultConversionService;
 
 import com.google.gson.Gson;
@@ -36,7 +36,7 @@ public class ChannelTest {
     protected OutputLogger outputLogger;
     protected ContentConverter contentConverter;
 
-    @Before
+    @BeforeEach
     public void init() throws IOException {
         gson = new Gson();
         properties = new TestProperties();
@@ -44,7 +44,7 @@ public class ChannelTest {
         contentConverter = new ContentConverter(gson, new DefaultConversionService());
     }
 
-    @After
+    @AfterEach
     public void cleanup() throws IOException {
         outputLogger.cleanup();
     }

@@ -14,7 +14,7 @@ package com.synopsys.integration.alert.common.event;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class AlertEventTest {
     private static final String TOPIC = "TOPIC";

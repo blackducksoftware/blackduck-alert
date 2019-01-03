@@ -36,21 +36,23 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
     private String blackDuckUrl;
     private boolean urlSet;
 
+    private String blackDuckApiKey;
+    private boolean apiKeySet;
+
     public TestBlackDuckProperties(final TestAlertProperties alertProperties) {
         this(new Gson(), alertProperties, Mockito.mock(BaseConfigurationAccessor.class));
     }
 
     public TestBlackDuckProperties(final Gson gson, final TestAlertProperties alertProperties, final BaseConfigurationAccessor baseConfigurationAccessor) {
-        this(gson, alertProperties, baseConfigurationAccessor, 400);
+       this(gson, alertProperties, baseConfigurationAccessor, 400, true);
     }
 
-    public TestBlackDuckProperties(final Gson gson, final TestAlertProperties alertProperties, final BaseConfigurationAccessor baseConfigurationAccessor, final Integer blackDuckTimeout) {
+    public TestBlackDuckProperties(final Gson gson, final TestAlertProperties alertProperties, final BaseConfigurationAccessor baseConfigurationAccessor, final Integer blackDuckTimeout, boolean trustCertificates) {
         super(gson, alertProperties, baseConfigurationAccessor);
         this.blackDuckTimeout = blackDuckTimeout;
         testAlertProperties = alertProperties;
         testProperties = new TestProperties();
-        setHubTimeout(Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT)));
-        testAlertProperties.setAlertTrustCertificate(Boolean.valueOf(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TRUST_HTTPS_CERT)));
+        testAlertProperties.setAlertTrustCertificate(trustCertificates);
     }
 
     @Override
@@ -66,12 +68,24 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
         urlSet = true;
     }
 
+    public String getBlackDuckApiKey() {
+        if (apiKeySet) {
+            return blackDuckApiKey;
+        }
+        return testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY);
+    }
+
+    public void setBlackDuckApiKey(final String blackDuckApiKey) {
+        this.blackDuckApiKey = blackDuckApiKey;
+        apiKeySet = true;
+    }
+
     @Override
     public Integer getBlackDuckTimeout() {
         return blackDuckTimeout;
     }
 
-    public void setHubTimeout(final Integer blackDuckTimeout) {
+    public void setBlackDuckTimeout(final Integer blackDuckTimeout) {
         this.blackDuckTimeout = blackDuckTimeout;
     }
 
@@ -93,17 +107,17 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
         // TODO update these field keys when they are clearly defined by the descriptor
         final String blackDuckTimeoutKey = TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT.getPropertyKey();
         final ConfigurationFieldModel blackDuckTimeoutField = ConfigurationFieldModel.create(blackDuckTimeoutKey);
-        blackDuckTimeoutField.setFieldValue(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT));
+        blackDuckTimeoutField.setFieldValue(String.valueOf(getBlackDuckTimeout()));
         Mockito.when(configurationModel.getField(blackDuckTimeoutKey)).thenReturn(Optional.of(blackDuckTimeoutField));
 
         final String blackDuckApiKey = TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY.getPropertyKey();
         final ConfigurationFieldModel blackDuckApiField = ConfigurationFieldModel.create(blackDuckApiKey);
-        blackDuckApiField.setFieldValue(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY));
+        blackDuckApiField.setFieldValue(getBlackDuckApiKey());
         Mockito.when(configurationModel.getField(blackDuckApiKey)).thenReturn(Optional.of(blackDuckApiField));
 
         final String blackDuckProviderUrlKey = TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL.getPropertyKey();
         final ConfigurationFieldModel blackDuckProviderUrlField = ConfigurationFieldModel.create(blackDuckProviderUrlKey);
-        blackDuckProviderUrlField.setFieldValue(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
+        blackDuckProviderUrlField.setFieldValue(getBlackDuckUrl().orElse("URL not set"));
         Mockito.when(configurationModel.getField(blackDuckProviderUrlKey)).thenReturn(Optional.of(blackDuckProviderUrlField));
 
         Mockito.when(configurationModel.getCopyOfFieldList()).thenReturn(List.of(blackDuckTimeoutField, blackDuckApiField, blackDuckProviderUrlField));
