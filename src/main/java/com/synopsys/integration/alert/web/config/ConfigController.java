@@ -41,8 +41,6 @@ public class ConfigController extends BaseController {
 
     private final ConfigControllerHandler controllerHandler;
 
-    // TODO Change the endpoint to have configuration/context/type/descriptorName/id
-
     @Autowired
     public ConfigController(final ConfigControllerHandler controllerHandler) {
         this.controllerHandler = controllerHandler;

@@ -8,9 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -39,34 +37,26 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
         descriptors.addAll(descriptorMap.getDescriptorMap().values());
     }
 
-    public DatabaseConfiguredFieldTest(final List<Descriptor> descriptors) {
-        this.descriptors = new ArrayList<>();
-        descriptors.addAll(descriptors);
-    }
-
-    @BeforeAll
-    public void initializeDescriptors() throws AlertDatabaseConstraintException {
-        for (final Descriptor descriptor : descriptors) {
-            registerDescriptor(descriptor);
-        }
-    }
-
-    @AfterAll
-    public void removeDescriptors() throws AlertDatabaseConstraintException {
-        for (final Descriptor descriptor : descriptors) {
-            unregisterDescriptor(descriptor);
-        }
+    public DatabaseConfiguredFieldTest(final List<Descriptor> specificDescriptors) {
+        descriptors = new ArrayList<>();
+        descriptors.addAll(specificDescriptors);
     }
 
     @BeforeEach
-    public void initializeTest() {
+    public void initializeTest() throws AlertDatabaseConstraintException {
         addedConfigurations = new HashSet<>();
+        for (final Descriptor descriptor : descriptors) {
+            registerDescriptor(descriptor);
+        }
     }
 
     @AfterEach
     public void cleanupDB() throws AlertDatabaseConstraintException {
         for (final Long id : addedConfigurations) {
             deleteConfiguration(id);
+        }
+        for (final Descriptor descriptor : descriptors) {
+            unregisterDescriptor(descriptor);
         }
     }
 
