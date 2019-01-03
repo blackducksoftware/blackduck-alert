@@ -34,6 +34,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -57,6 +59,7 @@ import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class ConfigActions {
+    private static final Logger logger = LoggerFactory.getLogger(ConfigActions.class);
     private final ContentConverter contentConverter;
     private final BaseConfigurationAccessor configurationAccessor;
     private final BaseDescriptorAccessor descriptorAccessor;
@@ -115,7 +118,11 @@ public class ConfigActions {
                 final ConfigurationModel configurationModel = configuration.get();
                 final FieldModel fieldModel = convertToFieldModel(configurationModel);
                 final DescriptorActionApi descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
-                descriptorActionApi.deleteConfig(fieldModel);
+                if (null != descriptorActionApi) {
+                    descriptorActionApi.deleteConfig(fieldModel);
+                } else {
+                    logger.error("Could not find a Descriptor with the name: " + fieldModel.getDescriptorName());
+                }
                 configurationAccessor.deleteConfiguration(id);
             }
         }
@@ -123,7 +130,11 @@ public class ConfigActions {
 
     public ConfigurationModel saveConfig(final FieldModel fieldModel, final ConfigContextEnum context) throws AlertException {
         final DescriptorActionApi descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
-        descriptorActionApi.saveConfig(fieldModel);
+        if (null != descriptorActionApi) {
+            descriptorActionApi.saveConfig(fieldModel);
+        } else {
+            logger.error("Could not find a Descriptor with the name: " + fieldModel.getDescriptorName());
+        }
         final String descriptorName = fieldModel.getDescriptorName();
         final Map<String, ConfigurationFieldModel> configurationFieldModelMap = fieldModel.convertToConfigurationFieldModelMap();
         return configurationAccessor.createConfiguration(descriptorName, context, configurationFieldModelMap.values());
@@ -131,7 +142,11 @@ public class ConfigActions {
 
     public String validateConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) throws AlertFieldException {
         final DescriptorActionApi descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
-        descriptorActionApi.validateConfig(fieldModel.convertToFieldAccessor(), fieldErrors);
+        if (null != descriptorActionApi) {
+            descriptorActionApi.validateConfig(fieldModel.convertToFieldAccessor(), fieldErrors);
+        } else {
+            logger.error("Could not find a Descriptor with the name: " + fieldModel.getDescriptorName());
+        }
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }
@@ -140,14 +155,22 @@ public class ConfigActions {
 
     public String testConfig(final FieldModel restModel, final String destination) throws IntegrationException {
         final DescriptorActionApi descriptorActionApi = retrieveDescriptorActionApi(restModel);
-        final TestConfigModel testConfig = descriptorActionApi.createTestConfigModel(restModel, destination);
-        descriptorActionApi.testConfig(testConfig);
-        return "Successfully sent test message.";
+        if (null != descriptorActionApi) {
+            final TestConfigModel testConfig = descriptorActionApi.createTestConfigModel(restModel, destination);
+            descriptorActionApi.testConfig(testConfig);
+            return "Successfully sent test message.";
+        } else {
+            return "Could not find a Descriptor with the name: " + restModel.getDescriptorName();
+        }
     }
 
     public ConfigurationModel updateConfig(final FieldModel fieldModel) throws AlertException {
         final DescriptorActionApi descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
-        descriptorActionApi.updateConfig(fieldModel);
+        if (null != descriptorActionApi) {
+            descriptorActionApi.updateConfig(fieldModel);
+        } else {
+            logger.error("Could not find a Descriptor with the name: " + fieldModel.getDescriptorName());
+        }
         final String id = fieldModel.getId();
         if (fieldModel != null && StringUtils.isNotBlank(id)) {
             final Long longId = contentConverter.getLongValue(id);
@@ -162,7 +185,7 @@ public class ConfigActions {
     public ConfigurationModel getSavedEntity(final Long id) throws AlertException {
         if (null != id) {
             final Optional<ConfigurationModel> configuration = configurationAccessor.getConfigurationById(id);
-            if (!configuration.isPresent()) {
+            if (configuration.isPresent()) {
                 return configuration.get();
             }
         }

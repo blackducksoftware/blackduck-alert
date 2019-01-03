@@ -14,7 +14,7 @@ package com.synopsys.integration.alert.database.entity;
 import static org.junit.Assert.assertEquals;
 
 import org.json.JSONException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.database.relation.DatabaseRelation;
 

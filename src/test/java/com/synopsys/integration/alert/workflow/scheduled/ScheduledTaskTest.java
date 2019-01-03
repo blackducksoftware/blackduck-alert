@@ -1,6 +1,8 @@
 package com.synopsys.integration.alert.workflow.scheduled;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -10,8 +12,8 @@ import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
@@ -24,7 +26,7 @@ public class ScheduledTaskTest {
     private final String validCronExpression = "0 0/1 * 1/1 * *";
     private final String taskName = "scheduledTaskTest";
 
-    @Before
+    @BeforeEach
     public void initializeTest() {
         taskScheduler = Mockito.mock(TaskScheduler.class);
         future = Mockito.mock(ScheduledFuture.class);

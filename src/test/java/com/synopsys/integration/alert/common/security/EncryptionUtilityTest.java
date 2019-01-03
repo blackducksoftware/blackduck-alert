@@ -10,9 +10,9 @@ import java.io.File;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
@@ -28,7 +28,7 @@ public class EncryptionUtilityTest {
     private FilePersistenceUtil filePersistenceUtil;
     private EncryptionUtility encryptionUtility;
 
-    @Before
+    @BeforeEach
     public void initializeTest() {
         alertProperties = Mockito.mock(AlertProperties.class);
         Mockito.when(alertProperties.getAlertEncryptionPassword()).thenReturn(Optional.of(TEST_PASSWORD));
@@ -40,7 +40,7 @@ public class EncryptionUtilityTest {
         file.mkdirs();
     }
 
-    @After
+    @AfterEach
     public void cleanupTest() throws Exception {
         if (filePersistenceUtil.exists(FILE_NAME)) {
             filePersistenceUtil.delete(FILE_NAME);

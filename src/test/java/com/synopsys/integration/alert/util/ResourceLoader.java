@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 public class ResourceLoader {
     public static final String DEFAULT_PROPERTIES_FILE_LOCATION = "test.properties";
+    public static final String DEFAULT_BLACK_DUCK_TEMPLATE_LOCATION = "src/main/resources/email/templates";
     public static final File RESOURCE_DIR = new File("./src/test/resources/");
     public static final String PROPERTIES_ENV_VARIABLE = "SPRING_APPLICATION_JSON";
 
