@@ -56,17 +56,21 @@ public class AuditEntryHandler extends ControllerHandler {
         return auditEntryActions.get(id);
     }
 
-    public ResponseEntity<String> resendNotification(final Long notificationdId, final Long commonConfigId) {
+    public JobAuditModel getAuditInfoForJob(final Long jobId) {
+        return auditEntryActions.getAuditInfoForJob(jobId);
+    }
+
+    public ResponseEntity<String> resendNotification(final Long notificationId, final Long commonConfigId) {
         AlertPagedModel<AuditEntryModel> auditEntries = null;
         try {
-            auditEntries = auditEntryActions.resendNotification(notificationdId, commonConfigId);
-            return createResponse(HttpStatus.OK, notificationdId, gson.toJson(auditEntries));
+            auditEntries = auditEntryActions.resendNotification(notificationId, commonConfigId);
+            return createResponse(HttpStatus.OK, notificationId, gson.toJson(auditEntries));
         } catch (final AlertNotificationPurgedException e) {
-            return createResponse(HttpStatus.GONE, notificationdId, e.getMessage());
+            return createResponse(HttpStatus.GONE, notificationId, e.getMessage());
         } catch (final AlertJobMissingException e) {
             return createResponse(HttpStatus.GONE, commonConfigId, e.getMessage());
         } catch (final IntegrationException e) {
-            return createResponse(HttpStatus.BAD_REQUEST, notificationdId, e.getMessage());
+            return createResponse(HttpStatus.BAD_REQUEST, notificationId, e.getMessage());
         }
     }
 
