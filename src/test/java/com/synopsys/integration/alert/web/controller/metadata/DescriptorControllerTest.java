@@ -28,9 +28,15 @@ public class DescriptorControllerTest {
     }
 
     @Test
-    public void getDescriptorsWithInvalidNameTest() {
+    public void getDescriptorsWithInvalidParametersTest() {
         final Set<DescriptorMetadata> descriptorMetadata1 = controller.getDescriptors("x not a real name x", null, null);
         assertEquals(0, descriptorMetadata1.size());
+
+        final Set<DescriptorMetadata> descriptorMetadata2 = controller.getDescriptors(null, "x not a real type x", null);
+        assertEquals(0, descriptorMetadata2.size());
+
+        final Set<DescriptorMetadata> descriptorMetadata3 = controller.getDescriptors(null, null, "x not a real context x");
+        assertEquals(0, descriptorMetadata3.size());
     }
 
     @Test
