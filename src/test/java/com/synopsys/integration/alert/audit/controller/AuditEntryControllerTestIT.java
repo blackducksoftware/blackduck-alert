@@ -97,6 +97,18 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
+    public void testGetAuditInfoForJob() throws Exception {
+        AuditEntryEntity entity = mockAuditEntity.createEntity();
+        entity = auditEntryRepository.save(entity);
+        final String getUrl = auditUrl + "/job/" + String.valueOf(entity.getCommonConfigId());
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(getUrl)
+                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
     public void testPostConfig() throws Exception {
         final Collection<ConfigurationFieldModel> hipChatFields = MockConfigurationModelFactory.createHipChatDistributionFields();
         final ConfigurationAccessor.ConfigurationModel configurationModel = baseConfigurationAccessor.createConfiguration(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION, hipChatFields);
@@ -109,7 +121,7 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
         auditEntity = auditEntryRepository.save(auditEntity);
         auditNotificationRepository.save(new AuditNotificationRelation(auditEntity.getId(), notificationEntity.getId()));
 
-        final String resendUrl = auditUrl + "/" + String.valueOf(notificationEntity.getId()) + "/" + "/resend";
+        final String resendUrl = auditUrl + "/resend/" + String.valueOf(notificationEntity.getId()) + "/";
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(resendUrl)
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());

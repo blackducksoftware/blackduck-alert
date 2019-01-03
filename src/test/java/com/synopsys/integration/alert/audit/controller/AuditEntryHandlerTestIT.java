@@ -49,6 +49,7 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.web.audit.AuditEntryHandler;
 import com.synopsys.integration.alert.web.audit.AuditEntryModel;
+import com.synopsys.integration.alert.web.audit.JobAuditModel;
 import com.synopsys.integration.alert.web.model.AlertPagedModel;
 import com.synopsys.integration.alert.web.model.NotificationConfig;
 import com.synopsys.integration.util.ResourceUtil;
@@ -101,7 +102,7 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         final ConfigurationAccessor.ConfigurationModel configurationModel = baseConfigurationAccessor.createConfiguration(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION, hipChatFields);
 
         final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(
-                new AuditEntryEntity(configurationModel.getConfigurationId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS.toString(), null, null));
+            new AuditEntryEntity(configurationModel.getConfigurationId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS.toString(), null, null));
 
         auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
 
@@ -128,6 +129,18 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     }
 
     @Test
+    public void getGetAuditInfoForJobIT() throws Exception {
+        final Collection<ConfigurationFieldModel> hipChatFields = MockConfigurationModelFactory.createHipChatDistributionFields();
+        final ConfigurationAccessor.ConfigurationModel configurationModel = baseConfigurationAccessor.createConfiguration(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION, hipChatFields);
+
+        final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(
+            new AuditEntryEntity(configurationModel.getConfigurationId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS.toString(), null, null));
+
+        final JobAuditModel jobAuditModel = auditEntryHandler.getAuditInfoForJob(savedAuditEntryEntity.getCommonConfigId());
+        assertNotNull(jobAuditModel);
+    }
+
+    @Test
     public void resendNotificationTestIT() throws Exception {
         final String content = ResourceUtil.getResourceAsString(getClass(), "/json/policyOverrideNotification.json", StandardCharsets.UTF_8);
 
@@ -141,9 +154,9 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         final NotificationContent savedNotificationEntity = notificationContentRepository.save(mockNotification.createEntity());
 
         final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository
-                                                               .save(new AuditEntryEntity(configurationModel.getConfigurationId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()),
-                                                                       AuditEntryStatus.SUCCESS.toString(),
-                                                                       null, null));
+                                                           .save(new AuditEntryEntity(configurationModel.getConfigurationId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()),
+                                                               AuditEntryStatus.SUCCESS.toString(),
+                                                               null, null));
 
         auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
 
