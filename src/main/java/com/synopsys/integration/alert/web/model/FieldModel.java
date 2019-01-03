@@ -35,6 +35,12 @@ public class FieldModel extends Config {
     private final String descriptorName;
     private final String context;
 
+    public FieldModel(final String descriptorName, final String context, final Map<String, FieldValueModel> keyToValues) {
+        this.descriptorName = descriptorName;
+        this.context = context;
+        this.keyToValues = keyToValues;
+    }
+
     public FieldModel(final String configId, final String descriptorName, final String context, final Map<String, FieldValueModel> keyToValues) {
         super(configId);
         this.descriptorName = descriptorName;
@@ -70,7 +76,7 @@ public class FieldModel extends Config {
                    .collect(Collectors.toMap(Map.Entry::getKey, entry -> createConfigurationFieldModel(entry.getKey(), entry.getValue().getValues(), entry.getValue().isSet())));
     }
 
-    public void putField(String key, FieldValueModel field) {
+    public void putField(final String key, final FieldValueModel field) {
         keyToValues.put(key, field);
     }
 
