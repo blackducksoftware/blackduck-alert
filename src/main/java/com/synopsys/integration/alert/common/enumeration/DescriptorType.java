@@ -26,5 +26,5 @@ package com.synopsys.integration.alert.common.enumeration;
 public enum DescriptorType {
     CHANNEL,
     PROVIDER,
-    COMPONENT;
+    COMPONENT
 }
