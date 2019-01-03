@@ -16,12 +16,11 @@ public class MockAuditEntryEntity extends MockEntityUtil<AuditEntryEntity> {
     private String errorStackTrace;
     private Long id;
 
-    public MockAuditEntryEntity() {
-        this(2L, new Date(400), new Date(500), AuditEntryStatus.SUCCESS, "errorMessage", "errorStackTrace", 1L);
+    public static MockAuditEntryEntity createDefault() {
+        return new MockAuditEntryEntity(2L, new Date(400), new Date(500), AuditEntryStatus.SUCCESS, "errorMessage", "errorStackTrace", 1L);
     }
 
     private MockAuditEntryEntity(final Long commonConfigId, final Date timeCreated, final Date timeLastSent, final AuditEntryStatus status, final String errorMessage, final String errorStackTrace, final Long id) {
-        super();
         this.commonConfigId = commonConfigId;
         this.timeCreated = timeCreated;
         this.timeLastSent = timeLastSent;

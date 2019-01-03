@@ -66,7 +66,7 @@ import com.synopsys.integration.rest.RestConstants;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @SpringBootApplication(exclude = { BatchAutoConfiguration.class })
 public class Application {
-    private final static Logger logger = LoggerFactory.getLogger(Application.class);
+    private static final Logger logger = LoggerFactory.getLogger(Application.class);
 
     @Autowired
     private UserDatabaseService userDatabaseService;

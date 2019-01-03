@@ -23,7 +23,7 @@ public class HipChatChannelTest extends ChannelTest {
     //    @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     //    public void sendMessageTestIT() throws IOException, IntegrationException {
     //        final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
-    //        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(new Gson(), mockedGlobalRepository, new TestAlertProperties());
+    //        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(new Gson(), mockedGlobalRepository, new TestAlertProperties(), properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT, properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TRUST_HTTPS_CERT));
     //        final TestAlertProperties testAlertProperties = new TestAlertProperties();
     //        final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties);
     //        HipChatChannel hipChatChannel = new HipChatChannel(gson, testAlertProperties, globalProperties, auditUtility, null, channelRestConnectionFactory);
@@ -171,7 +171,7 @@ public class HipChatChannelTest extends ChannelTest {
     //        final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
     //        final TestAlertProperties alertProperties = new TestAlertProperties();
     //        final GlobalBlackDuckRepository mockedGlobalRepository = Mockito.mock(GlobalBlackDuckRepository.class);
-    //        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(new Gson(), mockedGlobalRepository, alertProperties);
+    //        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(new Gson(), mockedGlobalRepository, alertProperties, properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT, properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TRUST_HTTPS_CERT));
     //        HipChatChannel hipChatChannel = new HipChatChannel(gson, alertProperties, globalProperties, auditUtility, null, null);
     //
     //        final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
@@ -195,7 +195,7 @@ public class HipChatChannelTest extends ChannelTest {
     //        final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
     //        final TestAlertProperties alertProperties = new TestAlertProperties();
     //        final GlobalBlackDuckRepository mockedGlobalRepository = Mockito.mock(GlobalBlackDuckRepository.class);
-    //        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(new Gson(), mockedGlobalRepository, alertProperties);
+    //        final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(new Gson(), mockedGlobalRepository, alertProperties, properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT, properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TRUST_HTTPS_CERT));
     //        HipChatChannel hipChatChannel = new HipChatChannel(gson, alertProperties, globalProperties, auditUtility, null, null);
     //
     //        final AggregateMessageContent messageContent = createLargeMessageContent();

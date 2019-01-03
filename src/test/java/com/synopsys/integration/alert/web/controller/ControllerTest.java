@@ -35,7 +35,7 @@ public abstract class ControllerTest extends AlertIntegrationTest {
     //
     //    public abstract void deleteGlobalConfig(long id);
     //
-    //    @Before
+    //    @BeforeEach
     //    public void setup() {
     //        gson = new Gson();
     //        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).apply(SecurityMockMvcConfigurers.springSecurity()).build();

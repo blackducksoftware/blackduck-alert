@@ -11,7 +11,7 @@
  */
 package com.synopsys.integration.alert.channel.rest;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.ChannelTest;
@@ -127,7 +127,7 @@ public class RestDistributionChannelTest extends ChannelTest {
     }
 
     private RestDistributionChannel createMockRestDistributionChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
-            final ChannelRestConnectionFactory channelRestConnectionFactory, final Request request) {
+        final ChannelRestConnectionFactory channelRestConnectionFactory, final Request request) {
         //        final RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity, DistributionEvent> restChannel = new RestDistributionChannel<GlobalChannelConfigEntity, DistributionChannelConfigEntity, DistributionEvent>(
         //                gson,
         //                alertProperties, blackDuckProperties, null, null,

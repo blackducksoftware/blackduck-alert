@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.channel.DistributionChannel;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
-import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
@@ -53,14 +52,12 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
     private final DistributionChannel distributionChannel;
     private final BaseConfigurationAccessor configurationAccessor;
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final ContentConverter contentConverter;
     private final List<ProviderDescriptor> providerDescriptors;
 
-    public ChannelDistributionDescriptorActionApi(final DistributionChannel distributionChannel, final BaseConfigurationAccessor configurationAccessor, final ContentConverter contentConverter,
+    public ChannelDistributionDescriptorActionApi(final DistributionChannel distributionChannel, final BaseConfigurationAccessor configurationAccessor,
         final List<ProviderDescriptor> providerDescriptors) {
         this.distributionChannel = distributionChannel;
         this.configurationAccessor = configurationAccessor;
-        this.contentConverter = contentConverter;
         this.providerDescriptors = providerDescriptors;
     }
 

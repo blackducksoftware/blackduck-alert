@@ -39,7 +39,6 @@ import org.springframework.stereotype.Component;
 
 import com.jayway.jsonpath.TypeRef;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.field.JsonField;
 import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.common.model.LinkableItem;
@@ -72,23 +71,21 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
 
         final List<JsonField<PolicyInfo>> policyFields = getFieldsOfType(notificationFields, new TypeRef<PolicyInfo>() {});
         final List<JsonField<ComponentVersionStatus>> componentFields = getFieldsOfType(notificationFields, new TypeRef<ComponentVersionStatus>() {});
-        try {
-            final List<PolicyInfo> policyItems = getFieldValueObjectsByLabel(jsonFieldAccessor, policyFields, BlackDuckProviderContentTypes.LABEL_POLICY_INFO_LIST);
-            final List<ComponentVersionStatus> componentVersionStatuses = getFieldValueObjectsByLabel(jsonFieldAccessor, componentFields, BlackDuckProviderContentTypes.LABEL_COMPONENT_VERSION_STATUS);
-            final Map<String, SortedSet<LinkableItem>> policyItemMap = mapPolicyToComponents(componentVersionStatuses);
 
-            for (final PolicyInfo policyItem : policyItems) {
-                final String policyUrl = policyItem.policy;
-                final String policyName = policyItem.policyName;
-                final LinkableItem policyLinkableItem = new LinkableItem(BlackDuckProviderContentTypes.LABEL_POLICY_NAME, policyName, policyUrl);
-                if (policyItemMap.containsKey(policyUrl)) {
-                    final SortedSet<LinkableItem> applicableItems = policyItemMap.get(policyUrl);
-                    addApplicableItems(categoryItems, notificationContent.getId(), policyLinkableItem, policyUrl, operation, applicableItems);
-                }
+        final List<PolicyInfo> policyItems = getFieldValueObjectsByLabel(jsonFieldAccessor, policyFields, BlackDuckProviderContentTypes.LABEL_POLICY_INFO_LIST);
+        final List<ComponentVersionStatus> componentVersionStatuses = getFieldValueObjectsByLabel(jsonFieldAccessor, componentFields, BlackDuckProviderContentTypes.LABEL_COMPONENT_VERSION_STATUS);
+        final Map<String, SortedSet<LinkableItem>> policyItemMap = mapPolicyToComponents(componentVersionStatuses);
+
+        for (final PolicyInfo policyItem : policyItems) {
+            final String policyUrl = policyItem.policy;
+            final String policyName = policyItem.policyName;
+            final LinkableItem policyLinkableItem = new LinkableItem(BlackDuckProviderContentTypes.LABEL_POLICY_NAME, policyName, policyUrl);
+            if (policyItemMap.containsKey(policyUrl)) {
+                final SortedSet<LinkableItem> applicableItems = policyItemMap.get(policyUrl);
+                addApplicableItems(categoryItems, notificationContent.getId(), policyLinkableItem, policyUrl, operation, applicableItems);
             }
-        } catch (final AlertException ex) {
-            logger.error("Mishandled the expected type of a notification field", ex);
         }
+        
     }
 
     private ItemOperation getOperationFromNotification(final NotificationContent notificationContent) {

@@ -38,8 +38,8 @@ import com.synopsys.integration.util.ResourceUtil;
 
 @Component
 public class AboutReader {
-    public final static String PRODUCT_VERSION_UNKNOWN = "unknown";
-    private final static Logger logger = LoggerFactory.getLogger(AboutReader.class);
+    public static final String PRODUCT_VERSION_UNKNOWN = "unknown";
+    private static final Logger logger = LoggerFactory.getLogger(AboutReader.class);
     private final Gson gson;
     private final SystemStatusUtility systemStatusUtility;
 

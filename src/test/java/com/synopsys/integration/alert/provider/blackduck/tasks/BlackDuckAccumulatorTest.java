@@ -18,9 +18,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.scheduling.TaskScheduler;
 
@@ -53,7 +53,7 @@ public class BlackDuckAccumulatorTest {
     private TaskScheduler taskScheduler;
     private FilePersistenceUtil filePersistenceUtil;
 
-    @Before
+    @BeforeEach
     public void init() throws Exception {
         testAccumulatorParent = new File("testAccumulatorDirectory");
         testAccumulatorParent.mkdirs();
@@ -68,7 +68,7 @@ public class BlackDuckAccumulatorTest {
         filePersistenceUtil = new FilePersistenceUtil(testAlertProperties, new Gson());
     }
 
-    @After
+    @AfterEach
     public void cleanup() throws Exception {
         FileUtils.deleteDirectory(testAccumulatorParent);
     }
