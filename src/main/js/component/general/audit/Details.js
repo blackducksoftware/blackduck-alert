@@ -15,6 +15,7 @@ class Details extends Component {
         this.resendButton = this.resendButton.bind(this);
         this.onResendClick = this.onResendClick.bind(this);
         this.getEventType = this.getEventType.bind(this);
+        this.flattenJobsForTable = this.flattenJobsForTable.bind(this);
     }
 
     onResendClick(currentRowSelected) {
@@ -54,6 +55,21 @@ class Details extends Component {
         return (<RefreshTableCellFormatter handleButtonClicked={this.onResendClick} currentRowSelected={row} buttonText="Re-send" />);
     }
 
+    flattenJobsForTable(jsonArray = []) {
+        const jobs = jsonArray.map((entry) => {
+            const result = {
+                id: entry.id,
+                configId: entry.configId,
+                name: entry.name,
+                eventType: entry.eventType,
+                timeLastSent: entry.jobAuditModel.timeLastSent,
+                status: entry.jobAuditModel.status
+            };
+            return result;
+        });
+        return jobs;
+    }
+
     render() {
         const jobTableOptions = {
             defaultSortName: 'timeLastSent',
@@ -71,7 +87,7 @@ class Details extends Component {
             jsonContent = Object.assign({}, { warning: 'Content in an Unknown Format' });
         }
         const jsonPrettyPrintContent = JSON.stringify(jsonContent, null, 2);
-        const [jobs] = this.props.currentEntry;
+        const flatJobs = this.flattenJobsForTable(this.props.currentEntry.jobs);
         return (
             <Modal size="lg" show={this.props.show} onHide={this.props.handleClose}>
                 <Modal.Header closeButton>
@@ -99,7 +115,7 @@ class Details extends Component {
                                         version="4"
                                         trClassName={this.trClassFormat}
                                         condensed
-                                        data={jobs}
+                                        data={flatJobs}
                                         expandableRow={() => true}
                                         expandComponent={this.expandComponent}
                                         containerClass="table"
