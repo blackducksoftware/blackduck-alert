@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
+import com.synopsys.integration.alert.common.descriptor.config.ui.UIComponent;
+import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.web.controller.BaseController;
@@ -29,10 +31,8 @@ public class DescriptorController {
         this.descriptors = descriptors;
     }
 
-    // TODO use UIComponents?
-
     @GetMapping
-    public Set<DescriptorTempModel> getDescriptors(@RequestParam(required = false) final String name, @RequestParam(required = false) final DescriptorType type, @RequestParam(required = false) final ConfigContextEnum context) {
+    public Set<UIComponent> getDescriptors(@RequestParam(required = false) final String name, @RequestParam(required = false) final DescriptorType type, @RequestParam(required = false) final ConfigContextEnum context) {
         Set<Descriptor> filteredDescriptors = filter(descriptors, Descriptor::hasUIConfigs);
         if (name != null) {
             filteredDescriptors = filter(filteredDescriptors, descriptor -> name.equalsIgnoreCase(descriptor.getName()));
@@ -43,7 +43,7 @@ public class DescriptorController {
         if (context != null) {
             filteredDescriptors = filter(filteredDescriptors, descriptor -> descriptor.hasUIConfigForType(context));
         }
-        return createModels(filteredDescriptors, context);
+        return generateUIComponents(filteredDescriptors, context);
     }
 
     private Set<Descriptor> filter(final Collection<Descriptor> descriptors, final Predicate<Descriptor> predicate) {
@@ -53,7 +53,7 @@ public class DescriptorController {
                    .collect(Collectors.toSet());
     }
 
-    private Set<DescriptorTempModel> createModels(final Set<Descriptor> filteredDescriptors, final ConfigContextEnum context) {
+    private Set<UIComponent> generateUIComponents(final Set<Descriptor> filteredDescriptors, final ConfigContextEnum context) {
         final ConfigContextEnum[] applicableContexts;
         if (context != null) {
             applicableContexts = new ConfigContextEnum[] { context };
@@ -61,16 +61,15 @@ public class DescriptorController {
             applicableContexts = ConfigContextEnum.values();
         }
 
-        final Set<DescriptorTempModel> models = new HashSet<>();
+        final Set<UIComponent> uiComponents = new HashSet<>();
         for (final ConfigContextEnum applicableContext : applicableContexts) {
             for (final Descriptor descriptor : filteredDescriptors) {
-                models.add(createModel(descriptor, applicableContext));
+                final UIConfig uiConfig = descriptor.getUIConfig(applicableContext);
+                if (uiConfig != null) {
+                    uiComponents.add(uiConfig.generateUIComponent());
+                }
             }
         }
-        return models;
-    }
-
-    private DescriptorTempModel createModel(final Descriptor descriptor, final ConfigContextEnum context) {
-        return new DescriptorTempModel(descriptor.getName(), descriptor.getType(), context, descriptor.getUIConfig(context).generateUIComponent());
+        return uiComponents;
     }
 }
