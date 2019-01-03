@@ -79,7 +79,7 @@ public class SystemHandler extends ControllerHandler {
         }
     }
 
-    public ResponseEntity<String> getCurrentSetup(final String contextPath) {
+    public ResponseEntity<String> getInitialSetup(final String contextPath) {
         if (actions.isSystemInitialized()) {
             final HttpHeaders headers = new HttpHeaders();
             headers.add("Location", contextPath);
@@ -89,24 +89,49 @@ public class SystemHandler extends ControllerHandler {
         }
     }
 
-    public ResponseEntity<String> saveRequiredInformation(final SystemSetupModel requiredSystemConfiguration) {
+    public ResponseEntity<String> saveInitialSetup(final SystemSetupModel requiredSystemConfiguration) {
         final ResponseEntity<String> response;
         if (actions.isSystemInitialized()) {
             final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder("System Setup has already occurred");
             final String responseBody = responseBodyBuilder.build();
             response = new ResponseEntity<>(responseBody, HttpStatus.CONFLICT);
         } else {
-            final HashMap<String, String> fieldErrors = new HashMap<>();
-            final SystemSetupModel savedConfig = actions.saveRequiredInformation(requiredSystemConfiguration, fieldErrors);
-            if (fieldErrors.isEmpty()) {
-                response = new ResponseEntity<>(getContentConverter().getJsonString(savedConfig), HttpStatus.OK);
-            } else {
-                final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder("Invalid System Setup");
-                responseBodyBuilder.putErrors(fieldErrors);
-                final String responseBody = responseBodyBuilder.build();
-                response = new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
-            }
+            response = saveSystemSettings(requiredSystemConfiguration);
         }
+        return response;
+    }
+
+    public ResponseEntity<String> getSettings(final String contextPath) {
+        if (actions.isSystemInitialized()) {
+            return new ResponseEntity<>(getContentConverter().getJsonString(actions.getCurrentSystemSetup()), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    public ResponseEntity<String> saveSettings(final SystemSetupModel requiredSystemConfiguration) {
+        final ResponseEntity<String> response;
+        if (actions.isSystemInitialized()) {
+            response = saveSystemSettings(requiredSystemConfiguration);
+        } else {
+            response = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return response;
+    }
+
+    private ResponseEntity<String> saveSystemSettings(final SystemSetupModel model) {
+        final ResponseEntity<String> response;
+        final HashMap<String, String> fieldErrors = new HashMap<>();
+        final SystemSetupModel savedConfig = actions.saveRequiredInformation(model, fieldErrors);
+        if (fieldErrors.isEmpty()) {
+            response = new ResponseEntity<>(getContentConverter().getJsonString(savedConfig), HttpStatus.OK);
+        } else {
+            final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder("Invalid System Setup");
+            responseBodyBuilder.putErrors(fieldErrors);
+            final String responseBody = responseBodyBuilder.build();
+            response = new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
+        }
+
         return response;
     }
 }
