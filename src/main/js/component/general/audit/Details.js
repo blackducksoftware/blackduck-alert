@@ -71,7 +71,10 @@ class Details extends Component {
             jsonContent = Object.assign({}, { warning: 'Content in an Unknown Format' });
         }
         const jsonPrettyPrintContent = JSON.stringify(jsonContent, null, 2);
-        const [jobs] = this.props.currentEntry;
+        let jobs = [];
+        if (this.props.currentEntry.jobs) {
+            [jobs] = this.props.currentEntry;
+        }
         return (
             <Modal size="lg" show={this.props.show} onHide={this.props.handleClose}>
                 <Modal.Header closeButton>
