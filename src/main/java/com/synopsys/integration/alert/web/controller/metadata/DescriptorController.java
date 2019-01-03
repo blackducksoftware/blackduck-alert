@@ -56,7 +56,7 @@ public class DescriptorController extends MetadataController {
     public Set<DescriptorMetadata> getDescriptors(@RequestParam(required = false) final String name, @RequestParam(required = false) final String type, @RequestParam(required = false) final String context) {
         Predicate<Descriptor> filter = Descriptor::hasUIConfigs;
         if (name != null) {
-            filter = filter.and(descriptor -> descriptor.getName().equalsIgnoreCase(name));
+            filter = filter.and(descriptor -> name.equalsIgnoreCase(descriptor.getName()));
         }
 
         final DescriptorType typeEnum = EnumUtils.getEnumIgnoreCase(DescriptorType.class, type);
