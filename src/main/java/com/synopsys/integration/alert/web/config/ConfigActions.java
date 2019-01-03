@@ -80,7 +80,7 @@ public class ConfigActions {
     }
 
     public boolean doesConfigExist(final Long id) throws AlertException {
-        return id != null && !configurationAccessor.getConfigurationById(id).isPresent();
+        return id != null && configurationAccessor.getConfigurationById(id).isPresent();
     }
 
     public List<FieldModel> getConfigs(final ConfigContextEnum context, final String descriptorName) throws AlertException {
