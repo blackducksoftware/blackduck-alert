@@ -1,7 +1,12 @@
 @import 'variables.scss';
 // Alert specific
 @import 'app';
+@import 'audit';
 @import 'field';
+@import 'footer';
+@import 'header';
+@import 'messages';
+@import 'settings';
 @import 'table';
 // Third-party
 @import '~bootstrap/dist/css/bootstrap.css';
