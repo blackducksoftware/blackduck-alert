@@ -98,7 +98,7 @@ public class ConfigActions {
 
     public FieldModel getConfigById(final Long id) throws AlertException {
         final Optional<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationById(id);
-        if (!configurationModels.isPresent()) {
+        if (configurationModels.isPresent()) {
             final ConfigurationModel configurationModel = configurationModels.get();
             if (configurationModel != null) {
                 return convertToFieldModel(configurationModel);
@@ -114,7 +114,7 @@ public class ConfigActions {
     public void deleteConfig(final Long id) throws AlertException {
         if (id != null) {
             final Optional<ConfigurationModel> configuration = configurationAccessor.getConfigurationById(id);
-            if (!configuration.isPresent()) {
+            if (configuration.isPresent()) {
                 final ConfigurationModel configurationModel = configuration.get();
                 final FieldModel fieldModel = convertToFieldModel(configurationModel);
                 final DescriptorActionApi descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
