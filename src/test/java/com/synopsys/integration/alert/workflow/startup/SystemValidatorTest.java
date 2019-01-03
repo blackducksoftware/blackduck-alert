@@ -39,6 +39,8 @@ public class SystemValidatorTest {
     public void testValidate() {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(testAlertProperties);
+        testGlobalProperties.setBlackDuckUrl("Black Duck URL");
+        testGlobalProperties.setBlackDuckApiKey("Black Duck API Token");
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
@@ -83,6 +85,8 @@ public class SystemValidatorTest {
     public void testValidateProviders() throws IOException {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(testAlertProperties);
+        testGlobalProperties.setBlackDuckUrl("Black Duck URL");
+        testGlobalProperties.setBlackDuckApiKey("Black Duck API Token");
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
@@ -179,6 +183,8 @@ public class SystemValidatorTest {
         testAlertProperties.setAlertProxyUsername("AUser");
         testAlertProperties.setAlertProxyPassword("aPassword");
         final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(testAlertProperties);
+        testGlobalProperties.setBlackDuckUrl("Black Duck URL");
+        testGlobalProperties.setBlackDuckApiKey("Black Duck API Token");
         testGlobalProperties.setBlackDuckTimeout(1);
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
