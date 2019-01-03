@@ -1,16 +1,16 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
-import {withRouter} from 'react-router-dom';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 
 import 'font-awesome/scss/font-awesome.scss';
 
 import MainPage from './MainPage';
 import LoginPage from './LoginPage';
 import AboutInfoFooter from './AboutInfoFooter';
-import {getConfig} from './store/actions/config';
-import {verifyLogin} from './store/actions/session';
-import {getCurrentSystemSetup} from './store/actions/system';
+import { getConfig } from './store/actions/config';
+import { verifyLogin } from './store/actions/session';
+import { getInitialSystemSetup } from './store/actions/system';
 
 import '../css/main.scss';
 import SetupPage from "./SetupPage";
@@ -19,18 +19,18 @@ class App extends Component {
     componentDidMount() {
         this.props.getConfig();
         this.props.verifyLogin();
-        this.props.getCurrentSetup();
+        this.props.getSettings();
     }
 
     render() {
         if (this.props.initializing) {
-            return (<div/>);
+            return (<div />);
         } else {
-            const contentPage = (this.props.systemSetupAttempted) ? ((this.props.loggedIn) ? <MainPage/> : <LoginPage/>) : <SetupPage/>;
+            const contentPage = (this.props.systemSetupAttempted) ? ((this.props.loggedIn) ? <MainPage /> : <LoginPage />) : <SetupPage />;
             return (
                 <div>
                     {contentPage}
-                    <AboutInfoFooter/>
+                    <AboutInfoFooter />
                 </div>
             );
         }
@@ -42,7 +42,7 @@ App.propTypes = {
     initializing: PropTypes.bool.isRequired,
     getConfig: PropTypes.func.isRequired,
     verifyLogin: PropTypes.func.isRequired,
-    getCurrentSetup: PropTypes.func.isRequired,
+    getSettings: PropTypes.func.isRequired,
     systemSetupAttempted: PropTypes.bool.isRequired
 };
 
@@ -56,7 +56,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     getConfig: () => dispatch(getConfig()),
     verifyLogin: () => dispatch(verifyLogin()),
-    getCurrentSetup: () => dispatch(getCurrentSystemSetup())
+    getSettings: () => dispatch(getInitialSystemSetup())
 });
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));
