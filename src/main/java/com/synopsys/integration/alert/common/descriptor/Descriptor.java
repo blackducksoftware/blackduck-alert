@@ -39,8 +39,9 @@ import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.database.api.configuration.DefinedFieldModel;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.util.Stringable;
 
-public abstract class Descriptor {
+public abstract class Descriptor extends Stringable {
     private final String name;
     private final DescriptorType type;
     private final Map<ConfigContextEnum, DescriptorActionApi> restApis;

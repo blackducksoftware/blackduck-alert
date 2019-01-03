@@ -49,7 +49,7 @@ public class DescriptorMap {
     public DescriptorMap(final List<ChannelDescriptor> channelDescriptors, final List<ProviderDescriptor> providerDescriptors, final List<ComponentDescriptor> componentDescriptors, final List<DescriptorActionApi> restApis)
         throws AlertException {
         this.restApis = restApis;
-        descriptorMap = new HashMap<>(channelDescriptors.size() + providerDescriptors.size());
+        descriptorMap = new HashMap<>();
         channelDescriptorMap = initDescriptorMap(channelDescriptors);
         providerDescriptorMap = initDescriptorMap(providerDescriptors);
         componentDescriptorMap = initDescriptorMap(componentDescriptors);

@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping(BaseController.BASE_PATH)
 public abstract class BaseController {
     public static final String BASE_PATH = "/api";
-    public static final String INTERNAL_BASE_PATH = BASE_PATH + "/internal";
+    public static final String METADATA_BASE_PATH = BASE_PATH + "/metadata";
 
     //TODO create response entity methods should go in here
 
