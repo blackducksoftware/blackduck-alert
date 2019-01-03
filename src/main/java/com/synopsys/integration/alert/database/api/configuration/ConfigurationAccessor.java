@@ -45,6 +45,7 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
+import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.entity.configuration.ConfigContextEntity;
 import com.synopsys.integration.alert.database.entity.configuration.DefinedFieldEntity;
 import com.synopsys.integration.alert.database.entity.configuration.DescriptorConfigEntity;
@@ -114,7 +115,7 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
 
         final Long typeId = descriptorTypeRepository
                                 .findFirstByType(descriptorType.name())
-                                .map(descriptorTypeEntity -> descriptorTypeEntity.getId())
+                                .map(DatabaseEntity::getId)
                                 .orElseThrow(() -> new AlertDatabaseConstraintException("Descriptor type has not been registered"));
         final List<RegisteredDescriptorEntity> registeredDescriptorEntities = registeredDescriptorRepository.findByTypeId(typeId);
         return createConfigModels(registeredDescriptorEntities);
