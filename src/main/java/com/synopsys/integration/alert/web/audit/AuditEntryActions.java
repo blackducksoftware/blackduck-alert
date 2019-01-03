@@ -256,7 +256,6 @@ public class AuditEntryActions {
             if (null != status) {
                 statusDisplayName = status.getDisplayName();
             }
-            //TODO fix UI to use the new model structure
             JobAuditModel jobAuditModel = new JobAuditModel(timeCreated, timeLastSent, statusDisplayName);
             jobModels.add(new JobModel(id, configId, distributionConfigName, eventType, jobAuditModel, errorMessage, errorStackTrace));
         }

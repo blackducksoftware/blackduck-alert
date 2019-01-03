@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.util.OutputLogger;
 import com.synopsys.integration.alert.web.audit.AuditEntryActions;
 import com.synopsys.integration.alert.web.audit.AuditEntryModel;
+import com.synopsys.integration.alert.web.audit.JobAuditModel;
 import com.synopsys.integration.alert.web.model.AlertPagedModel;
 import com.synopsys.integration.alert.web.model.NotificationContentConverter;
 import com.synopsys.integration.alert.workflow.NotificationManager;
@@ -59,6 +60,16 @@ public class AuditEntryActionsTest {
         final AuditEntryActions auditEntryActions = new AuditEntryActions(null, notificationManager, null, null, null, null, null, null);
 
         final AuditEntryModel restModel = auditEntryActions.get(1L);
+        assertNull(restModel);
+    }
+
+    @Test
+    public void testGetAuditInfoForJobNull() {
+        final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
+        Mockito.when(auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(Mockito.anyLong())).thenReturn(Optional.empty());
+        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, null, null, null, null, null, null, null);
+
+        final JobAuditModel restModel = auditEntryActions.getAuditInfoForJob(1L);
         assertNull(restModel);
     }
 
