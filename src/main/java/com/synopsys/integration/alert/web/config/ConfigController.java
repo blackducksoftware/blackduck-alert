@@ -27,14 +27,21 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.web.controller.BaseController;
 import com.synopsys.integration.alert.web.model.FieldModel;
 
+@RestController
 @RequestMapping(ConfigController.CONFIGURATION_PATH)
 public class ConfigController extends BaseController {
     public static final String CONFIGURATION_PATH = BaseController.BASE_PATH + "/configuration";
@@ -46,31 +53,38 @@ public class ConfigController extends BaseController {
         this.controllerHandler = controllerHandler;
     }
 
-    public List<FieldModel> getConfigs(final @RequestParam ConfigContextEnum context, @RequestParam(required = false) final String descriptorName) {
+    @GetMapping("/{context}")
+    public List<FieldModel> getConfigs(final @PathVariable ConfigContextEnum context, @RequestParam(required = false) final String descriptorName) {
         return controllerHandler.getConfigs(context, descriptorName);
     }
 
+    @GetMapping
     public FieldModel getConfig(final Long id) {
         return controllerHandler.getConfig(id);
     }
 
-    public ResponseEntity<String> postConfig(@RequestBody(required = false) final FieldModel restModel, @RequestParam final ConfigContextEnum context) {
+    @PostMapping
+    public ResponseEntity<String> postConfig(@RequestBody(required = true) final FieldModel restModel, @RequestParam final ConfigContextEnum context) {
         return controllerHandler.postConfig(restModel, context);
     }
 
-    public ResponseEntity<String> putConfig(@RequestBody(required = false) final FieldModel restModel) {
+    @PutMapping
+    public ResponseEntity<String> putConfig(@RequestBody(required = true) final FieldModel restModel) {
         return controllerHandler.putConfig(restModel);
     }
 
-    public ResponseEntity<String> validateConfig(@RequestBody(required = false) final FieldModel restModel) {
+    @PostMapping("/validate")
+    public ResponseEntity<String> validateConfig(@RequestBody(required = true) final FieldModel restModel) {
         return controllerHandler.validateConfig(restModel);
     }
 
+    @DeleteMapping
     public ResponseEntity<String> deleteConfig(final Long id) {
         return controllerHandler.deleteConfig(id);
     }
 
-    public ResponseEntity<String> testConfig(@RequestBody(required = false) final FieldModel restModel, @RequestParam(required = false) final String destination) {
+    @PostMapping("/test")
+    public ResponseEntity<String> testConfig(@RequestBody(required = true) final FieldModel restModel, @RequestParam(required = false) final String destination) {
         return controllerHandler.testConfig(restModel);
     }
 }
