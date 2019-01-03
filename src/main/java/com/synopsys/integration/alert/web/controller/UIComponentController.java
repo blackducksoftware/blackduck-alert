@@ -52,6 +52,8 @@ import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 
 @RestController
 @RequestMapping(UIComponentController.DESCRIPTOR_PATH)
+@Deprecated
+// FIXME this class should be deleted once the UI switches to the new endpoints
 public class UIComponentController extends BaseController {
     public static final String DESCRIPTOR_PATH = BASE_PATH + "/descriptor";
     private final DescriptorMap descriptorMap;
