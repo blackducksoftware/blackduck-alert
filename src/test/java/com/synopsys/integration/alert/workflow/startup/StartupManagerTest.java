@@ -49,11 +49,11 @@ public class StartupManagerTest {
     @Test
     public void testLogConfiguration() throws IOException {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
+        testAlertProperties.setAlertProxyPassword("not_blank_data");
         final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(testAlertProperties);
         testGlobalProperties.setBlackDuckUrl("Black Duck Url");
         testGlobalProperties.setBlackDuckApiKey("Black Duck API Token");
         final TestBlackDuckProperties mockTestGlobalProperties = Mockito.spy(testGlobalProperties);
-        testAlertProperties.setAlertProxyPassword("not_blank_data");
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
