@@ -23,6 +23,7 @@
  */
 package com.synopsys.integration.alert.web.model;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
@@ -30,6 +31,10 @@ import java.util.Optional;
 public class FieldValueModel {
     private Collection<String> values;
     private boolean isSet;
+
+    public FieldValueModel() {
+        this(new ArrayList<>(), false);
+    }
 
     public FieldValueModel(final Collection<String> values, final boolean isSet) {
         this.values = values;
@@ -48,8 +53,8 @@ public class FieldValueModel {
         return values.stream().findFirst();
     }
 
-    public void setValue(String value) {
-        this.values = Arrays.asList(value);
+    public void setValue(final String value) {
+        values = Arrays.asList(value);
     }
 
     public boolean isSet() {

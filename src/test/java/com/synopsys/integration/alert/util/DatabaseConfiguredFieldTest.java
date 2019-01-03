@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
-import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
@@ -23,40 +22,22 @@ import com.synopsys.integration.alert.database.api.configuration.ConfigurationFi
 
 public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
 
-    private final List<Descriptor> descriptors;
+    private final List<Descriptor> descriptors = new ArrayList<>();
     @Autowired
     private BaseDescriptorAccessor descriptorAccessor;
     @Autowired
     private BaseConfigurationAccessor configurationAccessor;
-    @Autowired
-    private DescriptorMap descriptorMap;
     private Set<Long> addedConfigurations;
-
-    public DatabaseConfiguredFieldTest() {
-        descriptors = new ArrayList<>();
-        descriptors.addAll(descriptorMap.getDescriptorMap().values());
-    }
-
-    public DatabaseConfiguredFieldTest(final List<Descriptor> specificDescriptors) {
-        descriptors = new ArrayList<>();
-        descriptors.addAll(specificDescriptors);
-    }
 
     @BeforeEach
     public void initializeTest() throws AlertDatabaseConstraintException {
         addedConfigurations = new HashSet<>();
-        for (final Descriptor descriptor : descriptors) {
-            registerDescriptor(descriptor);
-        }
     }
 
     @AfterEach
     public void cleanupDB() throws AlertDatabaseConstraintException {
         for (final Long id : addedConfigurations) {
             deleteConfiguration(id);
-        }
-        for (final Descriptor descriptor : descriptors) {
-            unregisterDescriptor(descriptor);
         }
     }
 
@@ -99,10 +80,6 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
 
     public BaseConfigurationAccessor getConfigurationAccessor() {
         return configurationAccessor;
-    }
-
-    public DescriptorMap getDescriptorMap() {
-        return descriptorMap;
     }
 
     public Set<Long> getAddedConfigurations() {
