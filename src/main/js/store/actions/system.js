@@ -10,10 +10,11 @@ import {
     SYSTEM_SETUP_UPDATED,
     SYSTEM_SETUP_UPDATING
 } from './types';
-import {verifyLoginByStatus} from "./session";
+import { verifyLoginByStatus } from "./session";
 
 const LATEST_MESSAGES_URL = '/alert/api/system/messages/latest';
 const INITIAL_SYSTEM_SETUP_URL = '/alert/api/system/setup/initial';
+const CURRENT_SYSTEM_SETUP_URL = '/alert/api/system/setup';
 
 function fetchingLatestSystemMessages() {
     return {
@@ -102,7 +103,7 @@ export function getLatestMessages() {
 }
 
 
-export function getCurrentSystemSetup() {
+export function getInitialSystemSetup() {
     return (dispatch) => {
         dispatch(fetchingSystemSetup())
         fetch(INITIAL_SYSTEM_SETUP_URL)
@@ -123,10 +124,31 @@ export function getCurrentSystemSetup() {
     };
 }
 
-export function saveSystemSetup(setupData) {
+export function getSystemSetup() {
+    return (dispatch) => {
+        dispatch(fetchingSystemSetup())
+        fetch(CURRENT_SYSTEM_SETUP_URL)
+            .then((response) => {
+                if (response.redirected) {
+                    dispatch(fetchSetupRedirected())
+                } else {
+                    if (response.ok) {
+                        response.json().then((body) => {
+                            dispatch(systemSetupFetched(body))
+                        })
+                    } else {
+                        dispatch(systemSetupFetchError(response.statusText))
+                    }
+                }
+            })
+            .catch(console.error);
+    };
+}
+
+export function saveInitialSystemSetup(setupData) {
     return (dispatch, getState) => {
         dispatch(updatingSystemSetup());
-        const {csrfToken} = getState().session;
+        const { csrfToken } = getState().session;
         const options = {
             credentials: 'same-origin',
             method: 'POST',
@@ -141,7 +163,49 @@ export function saveSystemSetup(setupData) {
             .then((response) => {
                 if (response.ok) {
                     dispatch(systemSetupUpdated());
-                    dispatch(getCurrentSystemSetup());
+                    dispatch(getInitialSystemSetup());
+                } else {
+                    response.json().then((body) => {
+                        const jsonErrors = body.errors;
+                        if (jsonErrors) {
+                            const errors = {};
+                            for (const key in jsonErrors) {
+                                if (jsonErrors.hasOwnProperty(key)) {
+                                    const name = key.concat('Error');
+                                    const value = jsonErrors[key];
+                                    errors[name] = value;
+                                }
+                            }
+                            dispatch(systemSetupUpdateError(body.message, errors))
+                        }
+                    })
+                }
+            })
+            .catch(console.error);
+
+    };
+}
+
+
+export function saveSystemSetup(setupData) {
+    return (dispatch, getState) => {
+        dispatch(updatingSystemSetup());
+        const { csrfToken } = getState().session;
+        const options = {
+            credentials: 'same-origin',
+            method: 'PUT',
+            body: JSON.stringify(setupData),
+            headers: {
+                'content-type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            }
+        };
+
+        fetch(CURRENT_SYSTEM_SETUP_URL, options)
+            .then((response) => {
+                if (response.ok) {
+                    dispatch(systemSetupUpdated());
+                    dispatch(getSystemSetup());
                 } else {
                     response.json().then((body) => {
                         const jsonErrors = body.errors;

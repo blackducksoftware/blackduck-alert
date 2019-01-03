@@ -301,3 +301,32 @@ form.form-horizontal.loginForm {
 .blackduckLogo {
   margin-top: 4px;
 }
+
+.collapsiblePane {
+
+}
+
+.collapsiblePane .title {
+  cursor: pointer;
+}
+
+.collapsiblePane .title :hover {
+  border-bottom-color: inherit;
+  border-bottom-style: solid;
+  border-bottom-width: thin;
+}
+
+.collapsiblePane .shown {
+  visibility: visible;
+  opacity: 1;
+}
+
+.collapsiblePane .hidden {
+  visibility: hidden;
+  opacity: 0;
+  -webkit-transition: visibility 1s, opacity 0.5s linear;
+  -moz-transition: visibility 1s, opacity 0.5s linear;
+  -ms-transition: visibility 1s, opacity 0.5s linear;
+  -o-transition: visibility 1s, opacity 0.5s linear;
+  transition: visibility 1s, opacity 0.5s linear;
+}
