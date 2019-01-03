@@ -62,11 +62,15 @@ public class DescriptorController extends MetadataController {
         final DescriptorType typeEnum = EnumUtils.getEnumIgnoreCase(DescriptorType.class, type);
         if (typeEnum != null) {
             filter = filter.and(descriptor -> typeEnum.equals(descriptor.getType()));
+        } else if (type != null) {
+            return Set.of();
         }
 
         final ConfigContextEnum contextEnum = EnumUtils.getEnumIgnoreCase(ConfigContextEnum.class, context);
         if (contextEnum != null) {
             filter = filter.and(descriptor -> descriptor.hasUIConfigForType(contextEnum));
+        } else if (context != null) {
+            return Set.of();
         }
 
         final Set<Descriptor> filteredDescriptors = filter(descriptors, filter);
