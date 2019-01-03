@@ -42,7 +42,6 @@ import org.slf4j.LoggerFactory;
 import com.jayway.jsonpath.TypeRef;
 import com.synopsys.integration.alert.common.enumeration.FieldContentIdentifier;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.field.JsonField;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.CategoryItem;
@@ -143,7 +142,7 @@ public abstract class MessageContentCollector {
         return Collections.emptyList();
     }
 
-    protected final <T> List<T> getFieldValueObjectsByLabel(final JsonFieldAccessor accessor, final List<JsonField<T>> fields, final String label) throws AlertException {
+    protected final <T> List<T> getFieldValueObjectsByLabel(final JsonFieldAccessor accessor, final List<JsonField<T>> fields, final String label) {
         final Optional<JsonField<T>> field = getFieldByLabel(fields, label);
         if (field.isPresent()) {
             return accessor.get(field.get());

@@ -3,6 +3,7 @@ package com.synopsys.integration.alert.provider.blackduck.descriptor;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -12,7 +13,9 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentCollector;
+import com.synopsys.integration.alert.database.api.configuration.DefinedFieldModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckVulnerabilityCollector;
@@ -58,5 +61,22 @@ public class BlackDuckDescriptorTest {
         final Set<MessageContentCollector> actualCollectorSet = descriptor.createTopicCollectors();
         Mockito.verify(topicCollectorFactory).createTopicCollectors();
         assertEquals(expectedCollectorSet, actualCollectorSet);
+    }
+
+    @Test
+    public void testGetDefinedFields() {
+        final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
+        final ProjectSyncTask projectSyncTask = Mockito.mock(ProjectSyncTask.class);
+        final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask);
+        final BlackDuckTopicCollectorFactory topicCollectorFactory = Mockito.mock(BlackDuckTopicCollectorFactory.class);
+        final List<MessageContentCollector> collectorList = Arrays.asList(Mockito.mock(BlackDuckVulnerabilityCollector.class), Mockito.mock(BlackDuckPolicyCollector.class));
+        final Set<MessageContentCollector> expectedCollectorSet = new HashSet<>(collectorList);
+        Mockito.when(topicCollectorFactory.createTopicCollectors()).thenReturn(expectedCollectorSet);
+        final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, null, null, null, provider, topicCollectorFactory);
+        Collection<DefinedFieldModel> fields = descriptor.getDefinedFields(ConfigContextEnum.GLOBAL);
+        assertEquals(7, fields.size());
+
+        fields = descriptor.getDefinedFields(ConfigContextEnum.DISTRIBUTION);
+        assertEquals(3, fields.size());
     }
 }

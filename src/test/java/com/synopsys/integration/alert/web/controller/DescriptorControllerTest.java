@@ -137,7 +137,7 @@ public class DescriptorControllerTest extends AlertIntegrationTest {
 
         final List<DescriptorMetadata> componentList = gson.fromJson(body, componentListType.getType());
         assertNotNull(componentList);
-        final List<DescriptorMetadata> expected = descriptorMap.getUIComponents(ConfigContextEnum.GLOBAL);
+        final List<DescriptorMetadata> expected = descriptorMap.getDescriptorMetadataList(ConfigContextEnum.GLOBAL);
         assertEquals(expected.size(), componentList.size());
     }
 

@@ -85,7 +85,7 @@ public class UIComponentController extends BaseController {
             }
         } else if (StringUtils.isNotBlank(context)) {
             final ConfigContextEnum contextType = EnumUtils.getEnum(ConfigContextEnum.class, context);
-            return descriptorMap.getUIComponents(contextType);
+            return descriptorMap.getDescriptorMetadataList(contextType);
         } else {
             return descriptorMap.getAllUIComponents();
         }
