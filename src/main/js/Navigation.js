@@ -1,10 +1,10 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
-import {NavLink, withRouter} from 'react-router-dom';
+import { connect } from 'react-redux';
+import { NavLink, withRouter } from 'react-router-dom';
 import FontAwesome from 'react-fontawesome';
 import Logo from './component/common/Logo';
-import {confirmLogout} from './store/actions/session';
+import { confirmLogout } from './store/actions/session';
 
 class Navigation extends Component {
     constructor(props) {
@@ -13,7 +13,7 @@ class Navigation extends Component {
     }
 
     createNavItemForDescriptors(decriptorTypeKey, uriPrefix) {
-        const {descriptors} = this.props;
+        const { descriptors } = this.props;
         if (!descriptors.items) {
             return null;
         } else {
@@ -24,7 +24,7 @@ class Navigation extends Component {
                 return descriptorList.map((component) =>
                     <li>
                         <NavLink to={`${uriPrefix}${component.urlName}`} activeClassName="activeNav">
-                            <FontAwesome name={component.fontAwesomeIcon} fixedWidth/> {component.label}
+                            <FontAwesome name={component.fontAwesomeIcon} fixedWidth /> {component.label}
                         </NavLink>
                     </li>);
             }
@@ -38,7 +38,7 @@ class Navigation extends Component {
         return (
             <div className="navigation">
                 <div className="navigationLogo">
-                    <Logo/>
+                    <Logo />
                 </div>
                 <div className="navigationContent">
                     <ul>
@@ -55,23 +55,28 @@ class Navigation extends Component {
                         </li>
                         <li>
                             <NavLink to="/alert/jobs/distribution" activeClassName="activeNav">
-                                <FontAwesome name="truck" fixedWidth/> Distribution
+                                <FontAwesome name="truck" fixedWidth /> Distribution
                             </NavLink>
                         </li>
                         <li>
                             <NavLink to="/alert/jobs/scheduling" activeClassName="activeNav">
-                                <FontAwesome name="clock-o" fixedWidth/> Scheduling
+                                <FontAwesome name="clock-o" fixedWidth /> Scheduling
                             </NavLink>
                         </li>
-                        <li className="divider"/>
+                        <li className="divider" />
+                        <li>
+                            <NavLink to="/alert/general/settings" activeClassName="activeNav">
+                                <FontAwesome name="cog" fixedWidth /> Settings
+                            </NavLink>
+                        </li>
                         <li>
                             <NavLink to="/alert/general/audit" activeClassName="activeNav">
-                                <FontAwesome name="history" fixedWidth/> Audit
+                                <FontAwesome name="history" fixedWidth /> Audit
                             </NavLink>
                         </li>
                         <li>
                             <NavLink to="/alert/general/about" activeClassName="activeNav">
-                                <FontAwesome name="info" fixedWidth/> About
+                                <FontAwesome name="info" fixedWidth /> About
                             </NavLink>
                         </li>
                         <li className="logoutLink">
@@ -83,7 +88,7 @@ class Navigation extends Component {
                                     this.props.confirmLogout();
                                 }}
                             >
-                                <FontAwesome name="sign-out" fixedWidth/> Logout
+                                <FontAwesome name="sign-out" fixedWidth /> Logout
                             </a>
                         </li>
                     </ul>
