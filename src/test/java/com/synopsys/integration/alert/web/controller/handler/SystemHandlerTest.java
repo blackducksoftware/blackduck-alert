@@ -84,7 +84,7 @@ public class SystemHandlerTest {
         final SystemHandler handler = new SystemHandler(contentConverter, systemActions);
 
         final String contextPath = "context-path/";
-        final ResponseEntity<String> response = handler.getCurrentSetup(contextPath);
+        final ResponseEntity<String> response = handler.getInitialSetup(contextPath);
         Mockito.verify(systemActions).isSystemInitialized();
         Mockito.verify(systemActions).getCurrentSystemSetup();
 
@@ -98,7 +98,7 @@ public class SystemHandlerTest {
         final SystemHandler handler = new SystemHandler(contentConverter, systemActions);
         Mockito.when(systemActions.isSystemInitialized()).thenReturn(Boolean.TRUE);
         final String contextPath = "context-path/";
-        final ResponseEntity<String> response = handler.getCurrentSetup(contextPath);
+        final ResponseEntity<String> response = handler.getInitialSetup(contextPath);
         Mockito.verify(systemActions).isSystemInitialized();
 
         assertEquals(HttpStatus.FOUND, response.getStatusCode());
@@ -111,7 +111,7 @@ public class SystemHandlerTest {
         final SystemSetupModel model = new SystemSetupModel();
         Mockito.when(systemActions.isSystemInitialized()).thenReturn(Boolean.TRUE);
         final SystemHandler handler = new SystemHandler(contentConverter, systemActions);
-        final ResponseEntity<String> response = handler.saveRequiredInformation(model);
+        final ResponseEntity<String> response = handler.saveInitialSetup(model);
         Mockito.verify(systemActions).isSystemInitialized();
 
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
@@ -145,7 +145,7 @@ public class SystemHandlerTest {
             return invocation.getArgument(0);
         }).when(systemActions).saveRequiredInformation(Mockito.any(SystemSetupModel.class), Mockito.anyMap());
         final SystemHandler handler = new SystemHandler(contentConverter, systemActions);
-        final ResponseEntity<String> response = handler.saveRequiredInformation(model);
+        final ResponseEntity<String> response = handler.saveInitialSetup(model);
         Mockito.verify(systemActions).isSystemInitialized();
         Mockito.verify(systemActions).saveRequiredInformation(Mockito.any(SystemSetupModel.class), Mockito.anyMap());
 
@@ -175,7 +175,7 @@ public class SystemHandlerTest {
             proxyHost, proxyPort, proxyUsername, proxyPassword, proxyPasswordSet);
         Mockito.when(systemActions.isSystemInitialized()).thenReturn(Boolean.FALSE);
         final SystemHandler handler = new SystemHandler(contentConverter, systemActions);
-        final ResponseEntity<String> response = handler.saveRequiredInformation(model);
+        final ResponseEntity<String> response = handler.saveInitialSetup(model);
         Mockito.verify(systemActions).isSystemInitialized();
         Mockito.verify(systemActions).saveRequiredInformation(Mockito.any(SystemSetupModel.class), Mockito.anyMap());
 
