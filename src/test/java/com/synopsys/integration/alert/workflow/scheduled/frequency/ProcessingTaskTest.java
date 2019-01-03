@@ -11,8 +11,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.scheduling.TaskScheduler;
 
@@ -36,7 +36,7 @@ public class ProcessingTaskTest {
     private List<NotificationContent> modelList;
     private List<DistributionEvent> eventList;
 
-    @Before
+    @BeforeEach
     public void initTest() {
         final NotificationContent model = new MockNotificationContent(new Date(), "BlackDuck", new Date(), "NotificationType", "{content: \"content is here\"}", null).createEntity();
         final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic ", null);

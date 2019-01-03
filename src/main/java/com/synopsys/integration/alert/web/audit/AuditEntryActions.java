@@ -114,20 +114,14 @@ public class AuditEntryActions {
     }
 
     public AlertPagedModel<AuditEntryModel> resendNotification(final Long notificationdId, final Long commonConfigId) throws IntegrationException {
-        final Optional<NotificationContent> notificationContentOptional = notificationManager.findById(notificationdId);
-        if (notificationContentOptional.isEmpty()) {
-            throw new AlertNotificationPurgedException("No notification with this id exists.");
-        }
-        final NotificationContent notificationContent = notificationContentOptional.get();
+        final NotificationContent notificationContent = notificationManager.findById(notificationdId).orElseThrow(() -> new AlertNotificationPurgedException("No notification with this id exists."));
         final List<DistributionEvent> distributionEvents;
         if (null != commonConfigId) {
-            final Optional<CommonDistributionConfiguration> commonDistributionConfig = jobConfigReader.getPopulatedConfig(commonConfigId);
-            if (commonDistributionConfig.isEmpty()) {
+            final CommonDistributionConfiguration commonDistributionConfig = jobConfigReader.getPopulatedConfig(commonConfigId).orElseThrow(() -> {
                 logger.warn("The Distribution Job with Id {} could not be found. This notification could not be sent", commonConfigId);
-                throw new AlertJobMissingException("The Distribution Job with this id could not be found.");
-            } else {
-                distributionEvents = notificationProcessor.processNotifications(commonDistributionConfig.get(), List.of(notificationContent));
-            }
+                return new AlertJobMissingException("The Distribution Job with this id could not be found.");
+            });
+            distributionEvents = notificationProcessor.processNotifications(commonDistributionConfig, List.of(notificationContent));
         } else {
             distributionEvents = notificationProcessor.processNotifications(List.of(notificationContent));
         }

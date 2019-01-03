@@ -55,8 +55,8 @@ public class JobConfigReader {
         try {
             final List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationsByDescriptorType(DescriptorType.CHANNEL);
             return configurationModels.stream()
-                           .map(configurationModel -> new CommonDistributionConfiguration(configurationModel))
-                           .collect(Collectors.toList());
+                       .map(CommonDistributionConfiguration::new)
+                       .collect(Collectors.toList());
         } catch (final AlertDatabaseConstraintException e) {
             logger.error("Was not able to retrieve configurations", e);
             return Collections.emptyList();

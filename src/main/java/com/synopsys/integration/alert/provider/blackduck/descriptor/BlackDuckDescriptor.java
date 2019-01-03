@@ -49,7 +49,7 @@ public class BlackDuckDescriptor extends ProviderDescriptor {
     public static final String KEY_BLACKDUCK_PROXY_HOST = "blackduck.proxy.host";
     public static final String KEY_BLACKDUCK_PROXY_PORT = "blackduck.proxy.port";
     public static final String KEY_BLACKDUCK_PROXY_USERNAME = "blackduck.proxy.username";
-    public static final String KEY_BLACKDUCK_PROXY_PASSWORD = "blackduck.proxy.password";
+    public static final String KEY_BLACKDUCK_PROXY_PASS = "blackduck.proxy.password";
     private final BlackDuckTopicCollectorFactory topicCollectorFactory;
 
     @Autowired
@@ -73,7 +73,7 @@ public class BlackDuckDescriptor extends ProviderDescriptor {
             final DefinedFieldModel blackDuckProxyHost = DefinedFieldModel.createGlobalField(KEY_BLACKDUCK_PROXY_HOST);
             final DefinedFieldModel blackDuckProxyPort = DefinedFieldModel.createGlobalField(KEY_BLACKDUCK_PROXY_PORT);
             final DefinedFieldModel blackDuckProxyUsername = DefinedFieldModel.createGlobalField(KEY_BLACKDUCK_PROXY_USERNAME);
-            final DefinedFieldModel blackDuckProxyPassword = DefinedFieldModel.createGlobalSensitiveField(KEY_BLACKDUCK_PROXY_PASSWORD);
+            final DefinedFieldModel blackDuckProxyPassword = DefinedFieldModel.createGlobalSensitiveField(KEY_BLACKDUCK_PROXY_PASS);
             return List.of(blackDuckUrl, blackDuckApiKey, blackDuckTimeout, blackDuckProxyHost, blackDuckProxyPort, blackDuckProxyUsername, blackDuckProxyPassword);
         } else if (ConfigContextEnum.DISTRIBUTION == context) {
             final DefinedFieldModel filterByProject = DefinedFieldModel.createDistributionField(KEY_FILTER_BY_PROJECT);

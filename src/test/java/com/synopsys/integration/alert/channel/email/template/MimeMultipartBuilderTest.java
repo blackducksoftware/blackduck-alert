@@ -18,7 +18,7 @@ import java.util.Map;
 
 import javax.mail.MessagingException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.AlertConstants;
 import com.synopsys.integration.alert.util.ResourceLoader;
