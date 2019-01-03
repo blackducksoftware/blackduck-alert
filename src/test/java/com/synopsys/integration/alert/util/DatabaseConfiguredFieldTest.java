@@ -71,7 +71,9 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
     }
 
     public void deleteConfiguration(final Long id) throws AlertDatabaseConstraintException {
-        configurationAccessor.deleteConfiguration(id);
+        if (configurationAccessor.getConfigurationById(id).isPresent()) {
+            configurationAccessor.deleteConfiguration(id);
+        }
     }
 
     public BaseDescriptorAccessor getDescriptorAccessor() {
