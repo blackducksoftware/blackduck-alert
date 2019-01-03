@@ -40,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
 
 @Component
@@ -58,7 +59,7 @@ public class AuditUtility {
     public Map<Long, Long> createAuditEntry(final Map<Long, Long> existingNotificationIdToAuditId, final Long commonDistributionId, final AggregateMessageContent content) {
         final Map<Long, Long> notificationIdToAuditId = new HashMap<>();
         final Set<Long> notificationIds = content.getCategoryItemList().stream()
-                                              .map(item -> item.getNotificationId())
+                                              .map(CategoryItem::getNotificationId)
                                               .collect(Collectors.toSet());
         for (final Long notificationId : notificationIds) {
             AuditEntryEntity auditEntryEntity = new AuditEntryEntity(commonDistributionId, new Date(System.currentTimeMillis()), null, null, null, null);
