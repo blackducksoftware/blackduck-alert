@@ -54,20 +54,22 @@ public class DescriptorController extends MetadataController {
 
     @GetMapping(DESCRIPTORS_PATH)
     public Set<DescriptorMetadata> getDescriptors(@RequestParam(required = false) final String name, @RequestParam(required = false) final String type, @RequestParam(required = false) final String context) {
-        Set<Descriptor> filteredDescriptors = filter(descriptors, Descriptor::hasUIConfigs);
+        Predicate<Descriptor> filter = Descriptor::hasUIConfigs;
         if (name != null) {
-            filteredDescriptors = filter(filteredDescriptors, descriptor -> descriptor.getName().equalsIgnoreCase(name));
+            filter = filter.and(descriptor -> descriptor.getName().equalsIgnoreCase(name));
         }
 
         final DescriptorType typeEnum = EnumUtils.getEnumIgnoreCase(DescriptorType.class, type);
         if (typeEnum != null) {
-            filteredDescriptors = filter(filteredDescriptors, descriptor -> typeEnum.equals(descriptor.getType()));
+            filter = filter.and(descriptor -> typeEnum.equals(descriptor.getType()));
         }
 
         final ConfigContextEnum contextEnum = EnumUtils.getEnumIgnoreCase(ConfigContextEnum.class, context);
         if (contextEnum != null) {
-            filteredDescriptors = filter(filteredDescriptors, descriptor -> descriptor.hasUIConfigForType(contextEnum));
+            filter = filter.and(descriptor -> descriptor.hasUIConfigForType(contextEnum));
         }
+
+        final Set<Descriptor> filteredDescriptors = filter(descriptors, filter);
         return generateUIComponents(filteredDescriptors, contextEnum);
     }
 
