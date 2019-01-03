@@ -25,7 +25,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIComponent;
+import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
@@ -34,7 +34,7 @@ public class DescriptorControllerTest extends AlertIntegrationTest {
     protected final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
     protected MockMvc mockMvc;
     protected Gson gson;
-    protected TypeToken componentListType = new TypeToken<List<UIComponent>>() {};
+    protected TypeToken componentListType = new TypeToken<List<DescriptorMetadata>>() {};
 
     @Autowired
     protected WebApplicationContext webApplicationContext;
@@ -58,7 +58,7 @@ public class DescriptorControllerTest extends AlertIntegrationTest {
         final String body = result.getResponse().getContentAsString();
         assertNotNull(body);
 
-        final List<UIComponent> componentList = gson.fromJson(body, componentListType.getType());
+        final List<DescriptorMetadata> componentList = gson.fromJson(body, componentListType.getType());
         assertNotNull(componentList);
     }
 
@@ -72,11 +72,11 @@ public class DescriptorControllerTest extends AlertIntegrationTest {
         final String body = result.getResponse().getContentAsString();
         assertNotNull(body);
 
-        final List<UIComponent> componentList = gson.fromJson(body, componentListType.getType());
+        final List<DescriptorMetadata> componentList = gson.fromJson(body, componentListType.getType());
         assertNotNull(componentList);
-        final List<UIComponent> expected = descriptorMap.getDescriptor("channel_email").getAllUIConfigs()
-                                               .stream()
-                                               .map(uiConfig -> uiConfig.generateUIComponent()).collect(Collectors.toList());
+        final List<DescriptorMetadata> expected = descriptorMap.getDescriptor("channel_email").getAllUIConfigs()
+                                                      .stream()
+                                                      .map(uiConfig -> uiConfig.generateDescriptorMetadata()).collect(Collectors.toList());
         assertEquals(expected.size(), componentList.size());
     }
 
@@ -90,7 +90,7 @@ public class DescriptorControllerTest extends AlertIntegrationTest {
         final String body = result.getResponse().getContentAsString();
         assertNotNull(body);
 
-        final List<UIComponent> componentList = gson.fromJson(body, componentListType.getType());
+        final List<DescriptorMetadata> componentList = gson.fromJson(body, componentListType.getType());
         assertNotNull(componentList);
         assertEquals(1, componentList.size());
     }
@@ -105,7 +105,7 @@ public class DescriptorControllerTest extends AlertIntegrationTest {
         final String body = result.getResponse().getContentAsString();
         assertNotNull(body);
 
-        final List<UIComponent> componentList = gson.fromJson(body, componentListType.getType());
+        final List<DescriptorMetadata> componentList = gson.fromJson(body, componentListType.getType());
         assertNotNull(componentList);
         assertEquals(0, componentList.size());
     }
@@ -120,7 +120,7 @@ public class DescriptorControllerTest extends AlertIntegrationTest {
         final String body = result.getResponse().getContentAsString();
         assertNotNull(body);
 
-        final List<UIComponent> componentList = gson.fromJson(body, componentListType.getType());
+        final List<DescriptorMetadata> componentList = gson.fromJson(body, componentListType.getType());
         assertNotNull(componentList);
         assertEquals(0, componentList.size());
     }
@@ -135,9 +135,9 @@ public class DescriptorControllerTest extends AlertIntegrationTest {
         final String body = result.getResponse().getContentAsString();
         assertNotNull(body);
 
-        final List<UIComponent> componentList = gson.fromJson(body, componentListType.getType());
+        final List<DescriptorMetadata> componentList = gson.fromJson(body, componentListType.getType());
         assertNotNull(componentList);
-        final List<UIComponent> expected = descriptorMap.getUIComponents(ConfigContextEnum.GLOBAL);
+        final List<DescriptorMetadata> expected = descriptorMap.getUIComponents(ConfigContextEnum.GLOBAL);
         assertEquals(expected.size(), componentList.size());
     }
 
@@ -151,7 +151,7 @@ public class DescriptorControllerTest extends AlertIntegrationTest {
         final String body = result.getResponse().getContentAsString();
         assertNotNull(body);
 
-        final List<UIComponent> componentList = gson.fromJson(body, componentListType.getType());
+        final List<DescriptorMetadata> componentList = gson.fromJson(body, componentListType.getType());
         assertNotNull(componentList);
         assertEquals(0, componentList.size());
     }
@@ -166,7 +166,7 @@ public class DescriptorControllerTest extends AlertIntegrationTest {
         final String body = result.getResponse().getContentAsString();
         assertNotNull(body);
 
-        final List<UIComponent> componentList = gson.fromJson(body, componentListType.getType());
+        final List<DescriptorMetadata> componentList = gson.fromJson(body, componentListType.getType());
         assertNotNull(componentList);
         assertEquals(0, componentList.size());
     }

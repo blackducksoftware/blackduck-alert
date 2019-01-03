@@ -21,9 +21,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config.ui;
+package com.synopsys.integration.alert.web.controller.metadata;
 
-public abstract class UIConfig {
+import org.springframework.web.bind.annotation.RequestMapping;
 
-    public abstract DescriptorMetadata generateDescriptorMetadata();
+import com.synopsys.integration.alert.web.controller.BaseController;
+
+@RequestMapping(MetadataController.METADATA_BASE_PATH)
+public abstract class MetadataController {
+    public static final String METADATA_BASE_PATH = BaseController.BASE_PATH + "/metadata";
+
 }

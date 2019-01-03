@@ -33,15 +33,17 @@ import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxCon
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIComponent;
+import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 
 @Component
 public class HipChatDistributionUIConfig extends UIConfig {
 
     @Override
-    public UIComponent generateUIComponent() {
-        return new UIComponent("HipChat", "hipchat", HipChatChannel.COMPONENT_NAME, "comments", setupFields());
+    public DescriptorMetadata generateDescriptorMetadata() {
+        return new DescriptorMetadata("HipChat", "hipchat", HipChatChannel.COMPONENT_NAME, DescriptorType.CHANNEL, ConfigContextEnum.DISTRIBUTION, "comments", setupFields());
     }
 
     public List<ConfigField> setupFields() {

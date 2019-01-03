@@ -30,15 +30,17 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIComponent;
+import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 
 @Component
 public class SlackUIConfig extends UIConfig {
 
     @Override
-    public UIComponent generateUIComponent() {
-        return new UIComponent("Slack", "slack", SlackChannel.COMPONENT_NAME, "slack", setupFields());
+    public DescriptorMetadata generateDescriptorMetadata() {
+        return new DescriptorMetadata("Slack", "slack", SlackChannel.COMPONENT_NAME, DescriptorType.CHANNEL, ConfigContextEnum.DISTRIBUTION, "slack", setupFields());
     }
 
     public List<ConfigField> setupFields() {

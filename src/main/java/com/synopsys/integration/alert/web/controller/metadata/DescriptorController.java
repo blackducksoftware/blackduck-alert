@@ -1,3 +1,26 @@
+/**
+ * blackduck-alert
+ *
+ * Copyright (C) 2019 Black Duck Software, Inc.
+ * http://www.blackducksoftware.com/
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package com.synopsys.integration.alert.web.controller.metadata;
 
 import java.util.Collection;
@@ -6,22 +29,20 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIComponent;
+import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.web.controller.BaseController;
 
 @RestController
-@RequestMapping(BaseController.METADATA_BASE_PATH + DescriptorController.DESCRIPTORS_PATH)
-public class DescriptorController {
+public class DescriptorController extends MetadataController {
     public static final String DESCRIPTORS_PATH = "/descriptors";
 
     private final Collection<Descriptor> descriptors;
@@ -31,19 +52,23 @@ public class DescriptorController {
         this.descriptors = descriptors;
     }
 
-    @GetMapping
-    public Set<UIComponent> getDescriptors(@RequestParam(required = false) final String name, @RequestParam(required = false) final DescriptorType type, @RequestParam(required = false) final ConfigContextEnum context) {
+    @GetMapping(DESCRIPTORS_PATH)
+    public Set<DescriptorMetadata> getDescriptors(@RequestParam(required = false) final String name, @RequestParam(required = false) final String type, @RequestParam(required = false) final String context) {
         Set<Descriptor> filteredDescriptors = filter(descriptors, Descriptor::hasUIConfigs);
         if (name != null) {
-            filteredDescriptors = filter(filteredDescriptors, descriptor -> name.equalsIgnoreCase(descriptor.getName()));
+            filteredDescriptors = filter(filteredDescriptors, descriptor -> descriptor.getName().equalsIgnoreCase(name));
         }
-        if (type != null) {
-            filteredDescriptors = filter(filteredDescriptors, descriptor -> type.equals(descriptor.getType()));
+
+        final DescriptorType typeEnum = EnumUtils.getEnumIgnoreCase(DescriptorType.class, type);
+        if (typeEnum != null) {
+            filteredDescriptors = filter(filteredDescriptors, descriptor -> typeEnum.equals(descriptor.getType()));
         }
-        if (context != null) {
-            filteredDescriptors = filter(filteredDescriptors, descriptor -> descriptor.hasUIConfigForType(context));
+
+        final ConfigContextEnum contextEnum = EnumUtils.getEnumIgnoreCase(ConfigContextEnum.class, context);
+        if (contextEnum != null) {
+            filteredDescriptors = filter(filteredDescriptors, descriptor -> descriptor.hasUIConfigForType(contextEnum));
         }
-        return generateUIComponents(filteredDescriptors, context);
+        return generateUIComponents(filteredDescriptors, contextEnum);
     }
 
     private Set<Descriptor> filter(final Collection<Descriptor> descriptors, final Predicate<Descriptor> predicate) {
@@ -53,7 +78,7 @@ public class DescriptorController {
                    .collect(Collectors.toSet());
     }
 
-    private Set<UIComponent> generateUIComponents(final Set<Descriptor> filteredDescriptors, final ConfigContextEnum context) {
+    private Set<DescriptorMetadata> generateUIComponents(final Set<Descriptor> filteredDescriptors, final ConfigContextEnum context) {
         final ConfigContextEnum[] applicableContexts;
         if (context != null) {
             applicableContexts = new ConfigContextEnum[] { context };
@@ -61,15 +86,15 @@ public class DescriptorController {
             applicableContexts = ConfigContextEnum.values();
         }
 
-        final Set<UIComponent> uiComponents = new HashSet<>();
+        final Set<DescriptorMetadata> descriptorMetadata = new HashSet<>();
         for (final ConfigContextEnum applicableContext : applicableContexts) {
             for (final Descriptor descriptor : filteredDescriptors) {
                 final UIConfig uiConfig = descriptor.getUIConfig(applicableContext);
                 if (uiConfig != null) {
-                    uiComponents.add(uiConfig.generateUIComponent());
+                    descriptorMetadata.add(uiConfig.generateDescriptorMetadata());
                 }
             }
         }
-        return uiComponents;
+        return descriptorMetadata;
     }
 }
