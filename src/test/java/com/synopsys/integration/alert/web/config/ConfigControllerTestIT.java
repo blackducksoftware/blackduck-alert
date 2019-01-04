@@ -66,7 +66,7 @@ public class ConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         final ConfigurationModel emptyConfigurationModel = addConfiguration(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION, Map.of());
         final String configId = String.valueOf(emptyConfigurationModel.getConfigurationId());
 
-        final String urlPath = ConfigController.CONFIGURATION_PATH + "/" + ConfigContextEnum.DISTRIBUTION.name() + "?descriptorName=" + HipChatChannel.COMPONENT_NAME;
+        final String urlPath = ConfigController.CONFIGURATION_PATH + "?context=" + ConfigContextEnum.DISTRIBUTION.name() + "&descriptorName=" + HipChatChannel.COMPONENT_NAME;
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -94,7 +94,7 @@ public class ConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         final ConfigurationModel emptyConfigurationModel = addConfiguration(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION, Map.of());
         final String configId = String.valueOf(emptyConfigurationModel.getConfigurationId());
 
-        final String urlPath = ConfigController.CONFIGURATION_PATH + "?id=" + configId;
+        final String urlPath = ConfigController.CONFIGURATION_PATH + "/" + configId;
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -116,7 +116,7 @@ public class ConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         final ConfigurationModel emptyConfigurationModel = addConfiguration(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION, Map.of());
         final String configId = String.valueOf(emptyConfigurationModel.getConfigurationId());
 
-        final String urlPath = ConfigController.CONFIGURATION_PATH + "?id=" + configId;
+        final String urlPath = ConfigController.CONFIGURATION_PATH + "/" + configId;
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(urlPath)
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -160,7 +160,7 @@ public class ConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @WithMockUser(roles = "ADMIN")
     public void testSaveConfig() throws Exception {
         registerDescriptor(hipChatDescriptor);
-        final String urlPath = ConfigController.CONFIGURATION_PATH + "?context=DISTRIBUTION";
+        final String urlPath = ConfigController.CONFIGURATION_PATH;
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(urlPath)
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());

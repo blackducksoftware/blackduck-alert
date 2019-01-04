@@ -24,7 +24,6 @@
 package com.synopsys.integration.alert.web.model;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -36,8 +35,8 @@ public class FieldModel extends Config {
     private final String descriptorName;
     private final String context;
 
-    public FieldModel() {
-        this("", "", new HashMap<>());
+    private FieldModel() {
+        this(null, null, null);
     }
 
     public FieldModel(final String descriptorName, final String context, final Map<String, FieldValueModel> keyToValues) {
