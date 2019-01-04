@@ -12,12 +12,18 @@ class SettingsConfiguration extends Component {
 
     render() {
         return (
-            <SettingsConfigurationForm fetchingSetupStatus={this.props.fetchingSetupStatus}
-                                       updateStatus={this.props.updateStatus}
-                                       currentSetupData={this.props.currentSetupData}
-                                       fieldErrors={this.props.fieldErrors}
-                                       getSettings={this.getSettings}
-                                       saveSettings={this.saveSettings} />
+            <div>
+                <h1>
+                    <span className="fa fa-cog" />
+                    Settings
+                </h1>
+                <SettingsConfigurationForm fetchingSetupStatus={this.props.fetchingSetupStatus}
+                                           updateStatus={this.props.updateStatus}
+                                           currentSetupData={this.props.currentSetupData}
+                                           fieldErrors={this.props.fieldErrors}
+                                           getSettings={this.getSettings}
+                                           saveSettings={this.saveSettings} />
+            </div>
         )
     }
 
