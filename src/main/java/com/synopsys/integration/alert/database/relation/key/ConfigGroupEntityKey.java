@@ -21,22 +21,37 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.repository.configuration;
+package com.synopsys.integration.alert.database.relation.key;
 
-import java.util.List;
+import java.io.Serializable;
 import java.util.UUID;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Component;
+public class ConfigGroupEntityKey implements Serializable {
+    private UUID jobId;
+    private Long configId;
 
-import com.synopsys.integration.alert.database.entity.configuration.ConfigGroupEntity;
-import com.synopsys.integration.alert.database.relation.key.ConfigGroupEntityKey;
+    public ConfigGroupEntityKey() {
+        // JPA requires default constructor definitions
+    }
 
-@Component
-public interface ConfigGroupRepository extends JpaRepository<ConfigGroupEntity, ConfigGroupEntityKey> {
-    List<ConfigGroupEntity> findByJobId(final UUID jobId);
+    public ConfigGroupEntityKey(final UUID jobId, final Long configId) {
+        this.jobId = jobId;
+        this.configId = configId;
+    }
 
-    List<ConfigGroupEntity> findByConfigId(final Long configId);
+    public UUID getJobId() {
+        return jobId;
+    }
 
-    void deleteByJobId(final UUID jobId);
+    public void setJobId(final UUID jobId) {
+        this.jobId = jobId;
+    }
+
+    public Long getConfigId() {
+        return configId;
+    }
+
+    public void setConfigId(final Long configId) {
+        this.configId = configId;
+    }
 }

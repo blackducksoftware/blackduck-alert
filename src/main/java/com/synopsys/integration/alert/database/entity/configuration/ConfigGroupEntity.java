@@ -23,15 +23,22 @@
  */
 package com.synopsys.integration.alert.database.entity.configuration;
 
+import java.util.UUID;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.IdClass;
 import javax.persistence.Table;
 
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+import com.synopsys.integration.alert.database.entity.BaseEntity;
+import com.synopsys.integration.alert.database.relation.key.ConfigGroupEntityKey;
 
 @Entity
 @Table(schema = "ALERT", name = "CONFIG_GROUPS")
-public class ConfigGroupEntity extends DatabaseEntity {
+@IdClass(ConfigGroupEntityKey.class)
+public class ConfigGroupEntity extends BaseEntity {
+    @Column(name = "JOB_ID")
+    private UUID jobId;
     @Column(name = "CONFIG_ID")
     private Long configId;
 
@@ -39,8 +46,13 @@ public class ConfigGroupEntity extends DatabaseEntity {
         // JPA requires default constructor definitions
     }
 
-    public ConfigGroupEntity(final Long configId) {
+    public ConfigGroupEntity(final UUID jobId, final Long configId) {
+        this.jobId = jobId;
         this.configId = configId;
+    }
+
+    public UUID getJobId() {
+        return jobId;
     }
 
     public Long getConfigId() {
