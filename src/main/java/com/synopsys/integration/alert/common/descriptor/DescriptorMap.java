@@ -33,7 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIComponent;
+import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 
@@ -49,31 +49,31 @@ public class DescriptorMap {
     public DescriptorMap(final List<ChannelDescriptor> channelDescriptors, final List<ProviderDescriptor> providerDescriptors, final List<ComponentDescriptor> componentDescriptors, final List<DescriptorActionApi> restApis)
         throws AlertException {
         this.restApis = restApis;
-        descriptorMapping = new HashMap<>(channelDescriptors.size() + providerDescriptors.size());
+        descriptorMapping = new HashMap<>();
         channelDescriptorMapping = initDescriptorMap(channelDescriptors);
         providerDescriptorMapping = initDescriptorMap(providerDescriptors);
         componentDescriptorMapping = initDescriptorMap(componentDescriptors);
     }
 
-    public List<UIComponent> getDistributionUIConfigs() {
-        return getUIComponents(ConfigContextEnum.DISTRIBUTION);
+    public List<DescriptorMetadata> getDistributionUIConfigs() {
+        return getDescriptorMetadataList(ConfigContextEnum.DISTRIBUTION);
     }
 
-    public List<UIComponent> getGlobalUIConfigs() {
-        return getUIComponents(ConfigContextEnum.GLOBAL);
+    public List<DescriptorMetadata> getGlobalUIConfigs() {
+        return getDescriptorMetadataList(ConfigContextEnum.GLOBAL);
     }
 
-    public List<UIComponent> getUIComponents(final ConfigContextEnum configType) {
+    public List<DescriptorMetadata> getDescriptorMetadataList(final ConfigContextEnum configType) {
         return descriptorMapping.values()
                    .stream()
                    .filter(descriptor -> descriptor.hasUIConfigForType(configType))
-                   .map(descriptor -> descriptor.getUIConfig(configType).generateUIComponent())
+                   .map(descriptor -> descriptor.getUIConfig(configType).generateDescriptorMetadata())
                    .collect(Collectors.toList());
     }
 
-    public List<UIComponent> getAllUIComponents() {
+    public List<DescriptorMetadata> getAllUIComponents() {
         return Arrays.stream(ConfigContextEnum.values())
-                   .flatMap(type -> getUIComponents(type).stream())
+                   .flatMap(type -> getDescriptorMetadataList(type).stream())
                    .collect(Collectors.toList());
     }
 

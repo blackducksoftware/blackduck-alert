@@ -32,15 +32,17 @@ import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIComponent;
+import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 
 @Component
 public class EmailDistributionUIConfig extends UIConfig {
 
     @Override
-    public UIComponent generateUIComponent() {
-        return new UIComponent("Email", "email", EmailGroupChannel.COMPONENT_NAME, "envelope", setupFields());
+    public DescriptorMetadata generateDescriptorMetadata() {
+        return new DescriptorMetadata("Email", "email", EmailGroupChannel.COMPONENT_NAME, DescriptorType.CHANNEL, ConfigContextEnum.DISTRIBUTION, "envelope", setupFields());
     }
 
     public List<ConfigField> setupFields() {
