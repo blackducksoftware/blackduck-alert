@@ -23,8 +23,36 @@
  */
 package com.synopsys.integration.alert.database.api.configuration.model;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
 import com.synopsys.integration.util.Stringable;
 
-public class ConfigJobModel extends Stringable {
-    // TODO implement this
+public class ConfigurationJobModel extends Stringable {
+    private final UUID jobId;
+    private final Set<ConfigurationModel> configurations;
+
+    public ConfigurationJobModel(final UUID jobId, final Set<ConfigurationModel> configurations) {
+        this.jobId = jobId;
+        this.configurations = configurations;
+    }
+
+    public UUID getJobId() {
+        return jobId;
+    }
+
+    public Set<ConfigurationModel> getCopyOfConfigurations() {
+        return Set.copyOf(configurations);
+    }
+
+    // TODO find out if collisions are possible and how to avoid them
+    public Map<String, ConfigurationFieldModel> createKeyToFieldMap() {
+        final Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
+        for (final ConfigurationModel config : configurations) {
+            fieldMap.putAll(config.getCopyOfKeyToFieldMap());
+        }
+        return fieldMap;
+    }
 }

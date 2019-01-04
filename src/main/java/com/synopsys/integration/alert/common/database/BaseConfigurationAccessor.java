@@ -26,24 +26,25 @@ package com.synopsys.integration.alert.common.database;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigJobModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 
 public interface BaseConfigurationAccessor {
-    List<ConfigJobModel> getAllJobs();
+    List<ConfigurationJobModel> getAllJobs();
 
-    Optional<ConfigJobModel> getJobById(final Long jobId);
+    Optional<ConfigurationJobModel> getJobById(final UUID jobId) throws AlertDatabaseConstraintException;
 
-    ConfigJobModel createJob(final String providerDescriptorName, final String distributionDescriptorName, final Collection<ConfigurationFieldModel> configuredFields);
+    ConfigurationJobModel createJob(final Collection<String> descriptorNames, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException;
 
-    ConfigJobModel updateJob(final Long jobId, final Collection<ConfigurationFieldModel> configuredFields);
+    ConfigurationJobModel updateJob(final UUID jobId, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException;
 
-    void deleteJob(final Long jobId);
+    void deleteJob(final UUID jobId) throws AlertDatabaseConstraintException;
 
     Optional<ConfigurationModel> getConfigurationById(final Long id) throws AlertDatabaseConstraintException;
 
@@ -58,6 +59,8 @@ public interface BaseConfigurationAccessor {
     ConfigurationModel createConfiguration(final String descriptorName, final ConfigContextEnum context, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException;
 
     ConfigurationModel updateConfiguration(final Long descriptorConfigId, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException;
+
+    void deleteConfiguration(final ConfigurationModel configModel) throws AlertDatabaseConstraintException;
 
     void deleteConfiguration(final Long descriptorConfigId) throws AlertDatabaseConstraintException;
 

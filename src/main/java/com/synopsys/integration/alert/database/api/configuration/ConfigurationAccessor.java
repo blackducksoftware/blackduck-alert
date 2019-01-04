@@ -26,9 +26,13 @@ package com.synopsys.integration.alert.database.api.configuration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -40,12 +44,14 @@ import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigJobModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.entity.configuration.ConfigContextEntity;
+import com.synopsys.integration.alert.database.entity.configuration.ConfigGroupEntity;
 import com.synopsys.integration.alert.database.entity.configuration.DefinedFieldEntity;
 import com.synopsys.integration.alert.database.entity.configuration.DescriptorConfigEntity;
 import com.synopsys.integration.alert.database.entity.configuration.FieldValueEntity;
@@ -85,32 +91,69 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
     }
 
     @Override
-    public List<ConfigJobModel> getAllJobs() {
-        // TODO implement this
-        return null;
+    public List<ConfigurationJobModel> getAllJobs() {
+        final List<ConfigGroupEntity> jobEntities = configGroupRepository.findAll();
+        final Map<UUID, Set<ConfigGroupEntity>> jobMap = new HashMap<>();
+        for (final ConfigGroupEntity entity : jobEntities) {
+            final UUID entityJobId = entity.getJobId();
+            if (!jobMap.containsKey(entityJobId)) {
+                jobMap.put(entityJobId, new HashSet<>());
+            }
+            jobMap.get(entityJobId).add(entity);
+        }
+
+        return jobMap.entrySet()
+                   .stream()
+                   .map(entry -> createJobModel(entry.getKey(), entry.getValue()))
+                   .collect(Collectors.toList());
     }
 
     @Override
-    public Optional<ConfigJobModel> getJobById(final Long jobId) {
-        // TODO implement this
-        return Optional.empty();
+    public Optional<ConfigurationJobModel> getJobById(final UUID jobId) throws AlertDatabaseConstraintException {
+        if (jobId == null) {
+            throw new AlertDatabaseConstraintException("The job id cannot be null");
+        }
+        final List<ConfigGroupEntity> jobConfigEntities = configGroupRepository.findByJobId(jobId);
+        return jobConfigEntities
+                   .stream()
+                   .findAny()
+                   .map(configGroupEntity -> createJobModel(configGroupEntity.getJobId(), jobConfigEntities));
     }
 
     @Override
-    public ConfigJobModel createJob(final String providerDescriptorName, final String distributionDescriptorName, final Collection<ConfigurationFieldModel> configuredFields) {
-        // TODO implement this
-        return null;
+    public ConfigurationJobModel createJob(final Collection<String> descriptorNames, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
+        final Set<ConfigurationModel> configurationModels = new HashSet<>();
+        for (final String descriptorName : descriptorNames) {
+            configurationModels.add(createConfigForRelevantFields(descriptorName, configuredFields));
+        }
+        return new ConfigurationJobModel(UUID.randomUUID(), configurationModels);
     }
 
     @Override
-    public ConfigJobModel updateJob(final Long jobId, final Collection<ConfigurationFieldModel> configuredFields) {
-        // TODO implement this
-        return null;
+    public ConfigurationJobModel updateJob(final UUID jobId, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
+        if (jobId == null) {
+            throw new AlertDatabaseConstraintException("The job id cannot be null");
+        }
+        // TODO maybe don't do this...
+        final Set<String> descriptorNames = configGroupRepository.findByJobId(jobId)
+                                                .stream()
+                                                .map(jobEntity -> descriptorConfigsRepository.findById(jobEntity.getConfigId()))
+                                                .map(Optional::orElseThrow)
+                                                .map(configEntity -> registeredDescriptorRepository.findById(configEntity.getDescriptorId()))
+                                                .map(Optional::orElseThrow)
+                                                .map(RegisteredDescriptorEntity::getName)
+                                                .collect(Collectors.toSet());
+
+        configGroupRepository.deleteByJobId(jobId);
+        return createJob(descriptorNames, configuredFields);
     }
 
     @Override
-    public void deleteJob(final Long jobId) {
-        // TODO implement this
+    public void deleteJob(final UUID jobId) throws AlertDatabaseConstraintException {
+        if (jobId == null) {
+            throw new AlertDatabaseConstraintException("The job id cannot be null");
+        }
+        configGroupRepository.deleteByJobId(jobId);
     }
 
     @Override
@@ -128,7 +171,7 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
 
     @Override
     public List<ConfigurationModel> getConfigurationsByDescriptorName(final String descriptorName) throws AlertDatabaseConstraintException {
-        if (StringUtils.isEmpty(descriptorName)) {
+        if (StringUtils.isBlank(descriptorName)) {
             throw new AlertDatabaseConstraintException("Descriptor name cannot be empty");
         }
         final Optional<RegisteredDescriptorEntity> registeredDescriptorEntity = registeredDescriptorRepository.findFirstByName(descriptorName);
@@ -243,6 +286,7 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
         return updatedConfig;
     }
 
+    @Override
     public void deleteConfiguration(final ConfigurationModel configModel) throws AlertDatabaseConstraintException {
         if (configModel == null) {
             throw new AlertDatabaseConstraintException("Cannot delete a null object from the database");
@@ -256,6 +300,34 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
             throw new AlertDatabaseConstraintException("The config id cannot be null");
         }
         descriptorConfigsRepository.deleteById(descriptorConfigId);
+    }
+
+    private ConfigurationJobModel createJobModel(final UUID jobId, final Collection<ConfigGroupEntity> entities) {
+        final Set<ConfigurationModel> configurationModels = new HashSet<>();
+        for (final ConfigGroupEntity sortedEntity : entities) {
+            try {
+                getConfigurationById(sortedEntity.getConfigId()).ifPresent(configurationModels::add);
+            } catch (final AlertDatabaseConstraintException e) {
+                // This case should be impossible based on database constraints
+                throw new AlertRuntimeException(e);
+            }
+        }
+        return new ConfigurationJobModel(jobId, configurationModels);
+    }
+
+    private ConfigurationModel createConfigForRelevantFields(final String descriptorName, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
+        final Long descriptorId = getDescriptorIdOrThrowException(descriptorName);
+        final Long contextId = getConfigContextIdOrThrowException(ConfigContextEnum.DISTRIBUTION);
+        final Set<String> descriptorFields = definedFieldRepository.findByDescriptorIdAndContext(descriptorId, contextId)
+                                                 .stream()
+                                                 .map(DefinedFieldEntity::getKey)
+                                                 .collect(Collectors.toSet());
+
+        final Set<ConfigurationFieldModel> relevantFields = configuredFields
+                                                                .stream()
+                                                                .filter(field -> descriptorFields.contains(field.getFieldKey()))
+                                                                .collect(Collectors.toSet());
+        return createConfiguration(descriptorName, ConfigContextEnum.DISTRIBUTION, relevantFields);
     }
 
     private List<ConfigurationModel> createConfigModels(final Collection<RegisteredDescriptorEntity> descriptors) throws AlertDatabaseConstraintException {
@@ -288,7 +360,7 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
     }
 
     private Long getDescriptorIdOrThrowException(final String descriptorName) throws AlertDatabaseConstraintException {
-        if (StringUtils.isEmpty(descriptorName)) {
+        if (StringUtils.isBlank(descriptorName)) {
             throw new AlertDatabaseConstraintException("Descriptor name cannot be empty");
         }
         return registeredDescriptorRepository
@@ -315,7 +387,7 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
     }
 
     private Long getFieldIdOrThrowException(final String fieldKey) throws AlertDatabaseConstraintException {
-        if (StringUtils.isEmpty(fieldKey)) {
+        if (StringUtils.isBlank(fieldKey)) {
             throw new AlertDatabaseConstraintException("Field key cannot be empty");
         }
         return definedFieldRepository

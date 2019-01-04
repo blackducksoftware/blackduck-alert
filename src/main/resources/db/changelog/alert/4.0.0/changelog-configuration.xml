@@ -141,11 +141,10 @@
     </changeSet>
     <changeSet id="1543499878547-7" author="gkillough">
         <createTable tableName="CONFIG_GROUPS" schemaName="ALERT">
-            <column name="ID" type="BIGINT(19)" autoIncrement="true">
-                <constraints primaryKey="true" primaryKeyName="CONFIG_GROUPS_KEY"/>
-            </column>
+            <column name="JOB_ID" type="UUID"/>
             <column name="CONFIG_ID" type="BIGINT(19)"/>
         </createTable>
+        <addPrimaryKey tableName="CONFIG_GROUPS" columnNames="JOB_ID, CONFIG_ID"/>
         <addForeignKeyConstraint
                 baseTableSchemaName="ALERT"
                 baseTableName="CONFIG_GROUPS"
