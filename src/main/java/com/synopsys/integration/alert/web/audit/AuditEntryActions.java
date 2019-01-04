@@ -103,17 +103,17 @@ public class AuditEntryActions {
         return pagedRestModel;
     }
 
-    public AuditEntryModel get(final Long id) {
+    public Optional<AuditEntryModel> get(final Long id) {
         if (id != null) {
             final Optional<NotificationContent> notificationContent = notificationManager.findById(id);
             if (notificationContent.isPresent()) {
-                return createRestModel(notificationContent.get());
+                return Optional.of(createRestModel(notificationContent.get()));
             }
         }
-        return null;
+        return Optional.empty();
     }
 
-    public JobAuditModel getAuditInfoForJob(final Long jobId) {
+    public Optional<JobAuditModel> getAuditInfoForJob(final Long jobId) {
         if (jobId != null) {
             Optional<AuditEntryEntity> optionalAuditEntryEntity = auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(jobId);
             if (optionalAuditEntryEntity.isPresent()) {
@@ -130,10 +130,10 @@ public class AuditEntryActions {
                 if (null != auditEntryEntity.getStatus()) {
                     status = auditEntryEntity.getStatus();
                 }
-                return new JobAuditModel(timeCreated, timeLastSent, status);
+                return Optional.of(new JobAuditModel(timeCreated, timeLastSent, status));
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     public AlertPagedModel<AuditEntryModel> resendNotification(final Long notificationId, final Long commonConfigId) throws IntegrationException {

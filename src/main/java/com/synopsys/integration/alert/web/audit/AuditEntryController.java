@@ -54,12 +54,12 @@ public class AuditEntryController extends BaseController {
     }
 
     @GetMapping(value = "/{id}")
-    public AuditEntryModel get(@PathVariable(value = "id") final Long id) {
+    public ResponseEntity<String> get(@PathVariable(value = "id") final Long id) {
         return auditEntryHandler.get(id);
     }
 
     @GetMapping(value = "/job/{jobId}")
-    public JobAuditModel getAuditInfoForJob(@PathVariable(value = "jobId") final Long jobId) {
+    public ResponseEntity<String> getAuditInfoForJob(@PathVariable(value = "jobId") final Long jobId) {
         return auditEntryHandler.getAuditInfoForJob(jobId);
     }
 

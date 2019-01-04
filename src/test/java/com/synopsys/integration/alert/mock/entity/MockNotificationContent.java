@@ -7,25 +7,12 @@ import com.synopsys.integration.alert.database.entity.NotificationContent;
 
 public class MockNotificationContent extends MockEntityUtil<NotificationContent> {
 
-    private final Date createdAt;
-    private final String provider;
-    private final Date providerCreationTime;
-    private final String notificationType;
-    private final String content;
-    private final Long id;
-
-    public MockNotificationContent() {
-        this(new Date(), "provider", new Date(), "notificationType", "{content: \"content is here...\"}", 1L);
-    }
-
-    public MockNotificationContent(final Date createdAt, final String provider, final Date providerCreationTime, final String notificationType, final String content, final Long id) {
-        this.createdAt = createdAt;
-        this.provider = provider;
-        this.providerCreationTime = providerCreationTime;
-        this.notificationType = notificationType;
-        this.content = content;
-        this.id = id;
-    }
+    private final Date createdAt = new Date();
+    private final String provider = "provider";
+    private final Date providerCreationTime = new Date();
+    private final String notificationType = "notificationType";
+    private final String content = "{content: \"content is here...\"}";
+    private final Long id = 1L;
 
     @Override
     public NotificationContent createEntity() {

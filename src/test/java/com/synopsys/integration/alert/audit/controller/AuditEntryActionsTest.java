@@ -59,8 +59,8 @@ public class AuditEntryActionsTest {
         Mockito.when(notificationManager.findById(Mockito.anyLong())).thenReturn(Optional.empty());
         final AuditEntryActions auditEntryActions = new AuditEntryActions(null, notificationManager, null, null, null, null, null, null);
 
-        final AuditEntryModel restModel = auditEntryActions.get(1L);
-        assertNull(restModel);
+        final Optional<AuditEntryModel> auditEntryModel = auditEntryActions.get(1L);
+        assertTrue(auditEntryModel.isEmpty());
     }
 
     @Test
@@ -69,8 +69,8 @@ public class AuditEntryActionsTest {
         Mockito.when(auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(Mockito.anyLong())).thenReturn(Optional.empty());
         final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, null, null, null, null, null, null, null);
 
-        final JobAuditModel restModel = auditEntryActions.getAuditInfoForJob(1L);
-        assertNull(restModel);
+        final Optional<JobAuditModel> jobAuditModel = auditEntryActions.getAuditInfoForJob(1L);
+        assertTrue(jobAuditModel.isEmpty());
     }
 
     @Test
