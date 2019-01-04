@@ -5,8 +5,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.AlertProperties;
@@ -26,7 +26,7 @@ public class SystemInitializerTest {
     private UserAccessor userAccessor;
     private BaseConfigurationAccessor baseConfigurationAccessor;
 
-    @Before
+    @BeforeEach
     public void initialize() {
         systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         alertProperties = Mockito.mock(AlertProperties.class);

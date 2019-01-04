@@ -3,7 +3,7 @@ package com.synopsys.integration.alert.common.descriptor;
 import java.util.Collection;
 
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.database.api.configuration.DefinedFieldModel;

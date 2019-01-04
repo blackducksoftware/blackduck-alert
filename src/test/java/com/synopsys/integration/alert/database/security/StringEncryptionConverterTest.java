@@ -2,7 +2,7 @@ package com.synopsys.integration.alert.database.security;
 
 import static org.junit.Assert.assertFalse;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.security.EncryptionUtility;

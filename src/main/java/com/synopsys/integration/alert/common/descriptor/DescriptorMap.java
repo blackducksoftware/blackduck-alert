@@ -39,20 +39,20 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 
 @Component
 public class DescriptorMap {
-    private final Map<String, Descriptor> descriptorMap;
-    private final Map<String, ChannelDescriptor> channelDescriptorMap;
-    private final Map<String, ProviderDescriptor> providerDescriptorMap;
-    private final Map<String, ComponentDescriptor> componentDescriptorMap;
+    private final Map<String, Descriptor> descriptorMapping;
+    private final Map<String, ChannelDescriptor> channelDescriptorMapping;
+    private final Map<String, ProviderDescriptor> providerDescriptorMapping;
+    private final Map<String, ComponentDescriptor> componentDescriptorMapping;
     private final List<DescriptorActionApi> restApis;
 
     @Autowired
     public DescriptorMap(final List<ChannelDescriptor> channelDescriptors, final List<ProviderDescriptor> providerDescriptors, final List<ComponentDescriptor> componentDescriptors, final List<DescriptorActionApi> restApis)
         throws AlertException {
         this.restApis = restApis;
-        descriptorMap = new HashMap<>(channelDescriptors.size() + providerDescriptors.size());
-        channelDescriptorMap = initDescriptorMap(channelDescriptors);
-        providerDescriptorMap = initDescriptorMap(providerDescriptors);
-        componentDescriptorMap = initDescriptorMap(componentDescriptors);
+        descriptorMapping = new HashMap<>(channelDescriptors.size() + providerDescriptors.size());
+        channelDescriptorMapping = initDescriptorMap(channelDescriptors);
+        providerDescriptorMapping = initDescriptorMap(providerDescriptors);
+        componentDescriptorMapping = initDescriptorMap(componentDescriptors);
     }
 
     public List<UIComponent> getDistributionUIConfigs() {
@@ -64,7 +64,7 @@ public class DescriptorMap {
     }
 
     public List<UIComponent> getUIComponents(final ConfigContextEnum configType) {
-        return descriptorMap.values()
+        return descriptorMapping.values()
                    .stream()
                    .filter(descriptor -> descriptor.hasUIConfigForType(configType))
                    .map(descriptor -> descriptor.getUIConfig(configType).generateUIComponent())
@@ -82,45 +82,45 @@ public class DescriptorMap {
     }
 
     public Descriptor getDescriptor(final String name) {
-        return descriptorMap.get(name);
+        return descriptorMapping.get(name);
     }
 
     public ChannelDescriptor getChannelDescriptor(final String name) {
-        return channelDescriptorMap.get(name);
+        return channelDescriptorMapping.get(name);
     }
 
     public ProviderDescriptor getProviderDescriptor(final String name) {
-        return providerDescriptorMap.get(name);
+        return providerDescriptorMapping.get(name);
     }
 
     public ComponentDescriptor getComponentDescriptor(final String name) {
-        return componentDescriptorMap.get(name);
+        return componentDescriptorMapping.get(name);
     }
 
     public Map<String, Descriptor> getDescriptorMap() {
-        return descriptorMap;
+        return descriptorMapping;
     }
 
     public Map<String, ChannelDescriptor> getChannelDescriptorMap() {
-        return channelDescriptorMap;
+        return channelDescriptorMapping;
     }
 
     public Map<String, ProviderDescriptor> getProviderDescriptorMap() {
-        return providerDescriptorMap;
+        return providerDescriptorMapping;
     }
 
     public Map<String, ComponentDescriptor> getComponentDescriptorMap() {
-        return componentDescriptorMap;
+        return componentDescriptorMapping;
     }
 
     private <D extends Descriptor> Map<String, D> initDescriptorMap(final List<D> descriptorList) throws AlertException {
         final Map<String, D> descriptorMapping = new HashMap<>(descriptorList.size());
         for (final D descriptor : descriptorList) {
             final String descriptorName = descriptor.getName();
-            if (descriptorMap.containsKey(descriptorName)) {
+            if (this.descriptorMapping.containsKey(descriptorName)) {
                 throw new AlertException("Found duplicate descriptor name of: " + descriptorName);
             }
-            descriptorMap.put(descriptorName, descriptor);
+            this.descriptorMapping.put(descriptorName, descriptor);
             descriptorMapping.put(descriptorName, descriptor);
         }
         return descriptorMapping;

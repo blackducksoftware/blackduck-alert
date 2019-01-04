@@ -5,9 +5,10 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.HashMap;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
@@ -17,16 +18,17 @@ import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties;
 import com.synopsys.integration.alert.util.OutputLogger;
 import com.synopsys.integration.alert.util.TestAlertProperties;
+import com.synopsys.integration.alert.util.TestTags;
 
 public class SystemValidatorTest {
     private OutputLogger outputLogger;
 
-    @Before
+    @BeforeEach
     public void init() throws IOException {
         outputLogger = new OutputLogger();
     }
 
-    @After
+    @AfterEach
     public void cleanup() throws IOException {
         if (outputLogger != null) {
             outputLogger.cleanup();
@@ -37,6 +39,8 @@ public class SystemValidatorTest {
     public void testValidate() {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(testAlertProperties);
+        testGlobalProperties.setBlackDuckUrl("Black Duck URL");
+        testGlobalProperties.setBlackDuckApiKey("Black Duck API Token");
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
@@ -81,6 +85,8 @@ public class SystemValidatorTest {
     public void testValidateProviders() throws IOException {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(testAlertProperties);
+        testGlobalProperties.setBlackDuckUrl("Black Duck URL");
+        testGlobalProperties.setBlackDuckApiKey("Black Duck API Token");
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
@@ -155,6 +161,7 @@ public class SystemValidatorTest {
     }
 
     @Test
+    @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     public void testValidateHubValidProvider() throws IOException {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(testAlertProperties);
@@ -176,7 +183,9 @@ public class SystemValidatorTest {
         testAlertProperties.setAlertProxyUsername("AUser");
         testAlertProperties.setAlertProxyPassword("aPassword");
         final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(testAlertProperties);
-        testGlobalProperties.setHubTimeout(1);
+        testGlobalProperties.setBlackDuckUrl("Black Duck URL");
+        testGlobalProperties.setBlackDuckApiKey("Black Duck API Token");
+        testGlobalProperties.setBlackDuckTimeout(1);
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemMessageUtility systemMessageUtility = Mockito.mock(SystemMessageUtility.class);

@@ -7,11 +7,10 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.util.HashMap;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.AlertConstants;
-import com.synopsys.integration.alert.util.TestProperties;
-import com.synopsys.integration.alert.util.TestPropertyKey;
+import com.synopsys.integration.alert.util.ResourceLoader;
 
 import freemarker.template.TemplateException;
 
@@ -30,8 +29,7 @@ public class ChannelFreemarkerTemplatingServiceTest {
 
     @Test
     public void testSubjectLine() throws IOException, TemplateException {
-        final TestProperties testProperties = new TestProperties();
-        final ChannelFreemarkerTemplatingService channelFreemarkerTemplatingService = new ChannelFreemarkerTemplatingService(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_EMAIL_TEMPLATE));
+        final ChannelFreemarkerTemplatingService channelFreemarkerTemplatingService = new ChannelFreemarkerTemplatingService(ResourceLoader.DEFAULT_BLACK_DUCK_TEMPLATE_LOCATION);
         final String subjectLine = channelFreemarkerTemplatingService.getResolvedSubjectLine(new HashMap<>());
 
         assertEquals("Default Subject Line - please define one", subjectLine);

@@ -5,7 +5,7 @@ import static org.junit.Assert.assertNull;
 
 import java.util.Date;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SystemMessageTest {
 

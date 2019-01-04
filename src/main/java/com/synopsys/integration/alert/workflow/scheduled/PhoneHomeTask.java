@@ -108,9 +108,9 @@ public class PhoneHomeTask extends ScheduledTask {
             }
         }
         return createdSupportedChannels
-                       .entrySet()
-                       .stream()
-                       .collect(Collectors.toMap(Map.Entry::getKey, intValue -> intValue.toString()));
+                   .entrySet()
+                   .stream()
+                   .collect(Collectors.toMap(Map.Entry::getKey, intValue -> intValue.toString()));
     }
 
 }

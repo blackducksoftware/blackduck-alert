@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.common.workflow.processor;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +51,7 @@ public class DigestMessageContentProcessor extends MessageContentProcessor {
         super(FormatType.DIGEST);
         final BiFunction<Map<CategoryKey, CategoryItem>, CategoryItem, Void> addFunction = createAddFunction();
         final BiFunction<Map<CategoryKey, CategoryItem>, CategoryItem, Void> deleteFunction = createDeleteFunction();
-        operationFunctionMap = new HashMap<>();
+        operationFunctionMap = new EnumMap<>(ItemOperation.class);
         operationFunctionMap.put(ItemOperation.ADD, addFunction);
         operationFunctionMap.put(ItemOperation.UPDATE, addFunction);
         operationFunctionMap.put(ItemOperation.DELETE, deleteFunction);
