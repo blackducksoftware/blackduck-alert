@@ -36,7 +36,7 @@ public class AuditEntryEntityTest extends EntityTest<AuditEntryEntity> {
 
     @Override
     public MockAuditEntryEntity getMockUtil() {
-        return MockAuditEntryEntity.createDefault();
+        return new MockAuditEntryEntity();
     }
 
 }

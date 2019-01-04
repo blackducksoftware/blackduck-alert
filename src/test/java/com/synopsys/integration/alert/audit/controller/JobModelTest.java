@@ -25,9 +25,7 @@ public class JobModelTest extends RestModelTest<JobModel> {
         assertNull(restModel.getErrorStackTrace());
         assertNull(restModel.getEventType());
         assertNull(restModel.getName());
-        assertNull(restModel.getStatus());
-        assertNull(restModel.getTimeAuditCreated());
-        assertNull(restModel.getTimeLastSent());
+        assertNull(restModel.getJobAuditModel());
         assertNull(restModel.getConfigId());
         assertNull(restModel.getId());
     }
@@ -38,9 +36,9 @@ public class JobModelTest extends RestModelTest<JobModel> {
         assertEquals(getMockUtil().getErrorStackTrace(), restModel.getErrorStackTrace());
         assertEquals(getMockUtil().getEventType(), restModel.getEventType());
         assertEquals(getMockUtil().getName(), restModel.getName());
-        assertEquals(getMockUtil().getStatus(), restModel.getStatus());
-        assertEquals(getMockUtil().getTimeAuditCreated(), restModel.getTimeAuditCreated());
-        assertEquals(getMockUtil().getTimeLastSent(), restModel.getTimeLastSent());
+        assertEquals(getMockUtil().getStatus(), restModel.getJobAuditModel().getStatus());
+        assertEquals(getMockUtil().getTimeAuditCreated(), restModel.getJobAuditModel().getTimeAuditCreated());
+        assertEquals(getMockUtil().getTimeLastSent(), restModel.getJobAuditModel().getTimeLastSent());
         assertEquals(getMockUtil().getConfigId(), restModel.getConfigId());
         assertEquals(getMockUtil().getId().toString(), restModel.getId());
     }
