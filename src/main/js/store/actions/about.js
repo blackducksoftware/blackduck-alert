@@ -1,9 +1,4 @@
-import {
-    ABOUT_INFO_FETCHING,
-    ABOUT_INFO_FETCHED,
-    ABOUT_INFO_FETCH_ERROR,
-    SERIALIZE
-} from './types';
+import { ABOUT_INFO_FETCH_ERROR, ABOUT_INFO_FETCHED, ABOUT_INFO_FETCHING } from './types';
 
 import { verifyLoginByStatus } from './session';
 
@@ -36,15 +31,15 @@ export function getAboutInfo() {
     return (dispatch) => {
         dispatch(fetchingAboutInfo());
         fetch(ABOUT_INFO_URL)
-        .then((response) => {
-            if(response.ok) {
-                response.json().then((body) => {
-                    dispatch(aboutInfoFetched(body));
-                })
-            } else {
-                dispatch(verifyLoginByStatus(response.status));
-            }
-        })
-        .catch(console.error);
+            .then((response) => {
+                if (response.ok) {
+                    response.json().then((body) => {
+                        dispatch(aboutInfoFetched(body));
+                    });
+                } else {
+                    dispatch(verifyLoginByStatus(response.status));
+                }
+            })
+            .catch(console.error);
     };
 }

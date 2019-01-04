@@ -16,19 +16,17 @@ class Navigation extends Component {
         const { descriptors } = this.props;
         if (!descriptors.items) {
             return null;
-        } else {
-            const descriptorList = descriptors.items[decriptorTypeKey];
-            if (!descriptorList) {
-                return null;
-            } else {
-                return descriptorList.map((component) =>
-                    <li>
-                        <NavLink to={`${uriPrefix}${component.urlName}`} activeClassName="activeNav">
-                            <FontAwesome name={component.fontAwesomeIcon} fixedWidth /> {component.label}
-                        </NavLink>
-                    </li>);
-            }
         }
+        const descriptorList = descriptors.items[decriptorTypeKey];
+        if (!descriptorList) {
+            return null;
+        }
+        return descriptorList.map(component =>
+            (<li>
+                <NavLink to={`${uriPrefix}${component.urlName}`} activeClassName="activeNav">
+                    <FontAwesome name={component.fontAwesomeIcon} fixedWidth /> {component.label}
+                </NavLink>
+            </li>));
     }
 
     render() {

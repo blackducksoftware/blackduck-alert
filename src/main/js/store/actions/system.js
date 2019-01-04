@@ -62,7 +62,7 @@ function systemSetupFetchError(message) {
     return {
         type: SYSTEM_SETUP_FETCH_ERROR,
         message
-    }
+    };
 }
 
 function updatingSystemSetup() {
@@ -82,7 +82,7 @@ function systemSetupUpdateError(message, errors) {
         type: SYSTEM_SETUP_UPDATE_ERROR,
         message,
         errors
-    }
+    };
 }
 
 export function getLatestMessages() {
@@ -93,7 +93,7 @@ export function getLatestMessages() {
                 if (response.ok) {
                     response.json().then((body) => {
                         dispatch(latestSystemMessagesFetched(body));
-                    })
+                    });
                 } else {
                     dispatch(verifyLoginByStatus(response.status));
                 }
@@ -105,19 +105,17 @@ export function getLatestMessages() {
 
 export function getInitialSystemSetup() {
     return (dispatch) => {
-        dispatch(fetchingSystemSetup())
+        dispatch(fetchingSystemSetup());
         fetch(INITIAL_SYSTEM_SETUP_URL)
             .then((response) => {
                 if (response.redirected) {
-                    dispatch(fetchSetupRedirected())
+                    dispatch(fetchSetupRedirected());
+                } else if (response.ok) {
+                    response.json().then((body) => {
+                        dispatch(systemSetupFetched(body));
+                    });
                 } else {
-                    if (response.ok) {
-                        response.json().then((body) => {
-                            dispatch(systemSetupFetched(body))
-                        })
-                    } else {
-                        dispatch(systemSetupFetchError(response.statusText))
-                    }
+                    dispatch(systemSetupFetchError(response.statusText));
                 }
             })
             .catch(console.error);
@@ -126,16 +124,16 @@ export function getInitialSystemSetup() {
 
 export function getSystemSetup() {
     return (dispatch) => {
-        dispatch(fetchingSystemSetup())
+        dispatch(fetchingSystemSetup());
         fetch(CURRENT_SYSTEM_SETUP_URL)
             .then((response) => {
                 if (response.redirected) {
-                    dispatch(fetchSetupRedirected())
+                    dispatch(fetchSetupRedirected());
                 } else {
                     if (response.ok) {
                         response.json().then((body) => {
-                            dispatch(systemSetupFetched(body))
-                        })
+                            dispatch(systemSetupFetched(body));
+                        });
                     } else {
                         dispatch(systemSetupFetchError(response.statusText))
                     }
@@ -218,12 +216,11 @@ export function saveSystemSetup(setupData) {
                                     errors[name] = value;
                                 }
                             }
-                            dispatch(systemSetupUpdateError(body.message, errors))
+                            dispatch(systemSetupUpdateError(body.message, errors));
                         }
-                    })
+                    });
                 }
             })
             .catch(console.error);
-
     };
 }

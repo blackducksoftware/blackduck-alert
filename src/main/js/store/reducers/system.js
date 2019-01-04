@@ -10,7 +10,7 @@ import {
     SYSTEM_SETUP_UPDATE_ERROR,
     SYSTEM_SETUP_UPDATED,
     SYSTEM_SETUP_UPDATING
-} from "../actions/types";
+} from '../actions/types';
 
 const initialState = {
     fetching: false,
@@ -66,7 +66,7 @@ const config = (state = initialState, action) => {
                 fetchingSetupStatus: 'SYSTEM SETUP ERROR',
                 error: {
                     message: action.message,
-                    ...action.errors,
+                    ...action.errors
                 }
             });
         case SYSTEM_SETUP_UPDATING:
@@ -85,7 +85,7 @@ const config = (state = initialState, action) => {
                 updateStatus: 'ERROR',
                 error: {
                     message: action.message,
-                    ...action.errors,
+                    ...action.errors
                 }
             });
         case SERIALIZE:
@@ -93,6 +93,6 @@ const config = (state = initialState, action) => {
         default:
             return state;
     }
-}
+};
 
 export default config;
