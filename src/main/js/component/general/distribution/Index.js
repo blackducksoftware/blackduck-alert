@@ -213,8 +213,6 @@ class Index extends Component {
                 'Content-Type': 'application/json'
             }
         }).then((response) => {
-            this.setState({ inProgress: false });
-            this.startAutoReloadIfConfigured();
             if (response.ok) {
                 this.setState({ jobConfigTableMessage: '' });
                 response.json().then((jsonArray) => {
@@ -227,16 +225,14 @@ class Index extends Component {
                                 name: item.name,
                                 distributionType: item.distributionType,
                                 providerName: item.providerName,
-                                lastRan: item.lastRan,
-                                status: item.status,
                                 frequency: item.frequency,
                                 formatType: item.formatType,
                                 notificationTypes: item.notificationTypes,
                                 configuredProjects: item.configuredProjects,
                                 projectNamePattern: item.projectNamePattern
                             };
-
-                            newJobs.push(jobConfig);
+                            const jobConfigWithAuditInfo = this.fetchAuditInfoForJob(jobConfig);
+                            newJobs.push(jobConfigWithAuditInfo);
                         });
                     }
                     this.setState({
@@ -255,9 +251,37 @@ class Index extends Component {
                         });
                 }
             }
+            this.setState({ inProgress: false });
+            this.startAutoReloadIfConfigured();
         }).catch((error) => {
             this.startAutoReloadIfConfigured();
             console.log(error);
+        });
+    }
+
+    fetchAuditInfoForJob(jobConfig) {
+        let lastRan = 'Unknown';
+        let status = 'Unknown';
+        fetch(`/alert/api/audit/job/${jobConfig.distributionConfigId}`, {
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((response) => {
+            if (response.ok) {
+                response.json().then((jsonObj) => {
+                    if (jsonObj != null) {
+                        lastRan = jsonObj.timeLastSent;
+                        [status] = jsonObj;
+                    }
+                });
+            }
+        }).catch((error) => {
+            console.log(error);
+        });
+        return Object.assign({}, jobConfig, {
+            lastRan,
+            status
         });
     }
 

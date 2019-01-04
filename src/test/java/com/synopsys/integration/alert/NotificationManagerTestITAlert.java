@@ -39,7 +39,6 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
     @BeforeEach
     public void init() {
         notificationContentRepository.deleteAllInBatch();
-        notificationContentRepository.flush();
     }
 
     @AfterEach
@@ -67,10 +66,10 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
 
     @Test
     public void testFindByIdsInvalidIds() {
-        final NotificationContent model = createNotificationContent();
-        notificationManager.saveNotification(model);
+        NotificationContent model = createNotificationContent();
+        model = notificationManager.saveNotification(model);
 
-        final List<Long> notificationIds = Arrays.asList(34L, 22L, 10L);
+        final List<Long> notificationIds = Arrays.asList(model.getId() + 10, model.getId() + 20, model.getId() + 30);
         final List<NotificationContent> notificationModelList = notificationManager.findByIds(notificationIds);
         assertTrue(notificationModelList.isEmpty());
     }
