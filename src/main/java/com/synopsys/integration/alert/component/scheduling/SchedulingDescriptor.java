@@ -23,10 +23,15 @@
  */
 package com.synopsys.integration.alert.component.scheduling;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.database.api.configuration.DefinedFieldModel;
 
 @Component
 public class SchedulingDescriptor extends ComponentDescriptor {
@@ -35,6 +40,11 @@ public class SchedulingDescriptor extends ComponentDescriptor {
     @Autowired
     public SchedulingDescriptor(final SchedulingDescriptorActionApi componentRestApi, final SchedulingUIConfig schedulingUIConfig) {
         super(SCHEDULING_COMPONENT, componentRestApi, schedulingUIConfig);
+    }
+
+    @Override
+    public Collection<DefinedFieldModel> getDefinedFields(final ConfigContextEnum context) {
+        return Collections.emptyList();
     }
 
 }
