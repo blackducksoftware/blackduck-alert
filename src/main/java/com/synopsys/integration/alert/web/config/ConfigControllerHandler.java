@@ -75,7 +75,7 @@ public class ConfigControllerHandler extends ControllerHandler {
         return null;
     }
 
-    public ResponseEntity<String> postConfig(final FieldModel restModel, final ConfigContextEnum context) {
+    public ResponseEntity<String> postConfig(final FieldModel restModel) {
         if (restModel == null) {
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing");
         }
@@ -84,7 +84,7 @@ public class ConfigControllerHandler extends ControllerHandler {
             if (!descriptorConfigActions.doesConfigExist(id)) {
                 try {
                     descriptorConfigActions.validateConfig(restModel, new HashMap<>());
-                    final ConfigurationModel updatedEntity = descriptorConfigActions.saveConfig(restModel, context);
+                    final ConfigurationModel updatedEntity = descriptorConfigActions.saveConfig(restModel);
                     return createResponse(HttpStatus.CREATED, updatedEntity.getConfigurationId(), "Created");
                 } catch (final AlertFieldException e) {
                     return fieldError(id, "There were errors with the configuration.", e.getFieldErrors());

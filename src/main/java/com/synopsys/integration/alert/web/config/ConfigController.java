@@ -53,19 +53,19 @@ public class ConfigController extends BaseController {
         this.controllerHandler = controllerHandler;
     }
 
-    @GetMapping("/{context}")
-    public List<FieldModel> getConfigs(final @PathVariable ConfigContextEnum context, @RequestParam(required = false) final String descriptorName) {
+    @GetMapping
+    public List<FieldModel> getConfigs(final @RequestParam ConfigContextEnum context, @RequestParam(required = false) final String descriptorName) {
         return controllerHandler.getConfigs(context, descriptorName);
     }
 
-    @GetMapping
-    public FieldModel getConfig(final Long id) {
+    @GetMapping("/{id}")
+    public FieldModel getConfig(@PathVariable final Long id) {
         return controllerHandler.getConfig(id);
     }
 
     @PostMapping
-    public ResponseEntity<String> postConfig(@RequestBody(required = true) final FieldModel restModel, @RequestParam final ConfigContextEnum context) {
-        return controllerHandler.postConfig(restModel, context);
+    public ResponseEntity<String> postConfig(@RequestBody(required = true) final FieldModel restModel) {
+        return controllerHandler.postConfig(restModel);
     }
 
     @PutMapping
@@ -78,8 +78,8 @@ public class ConfigController extends BaseController {
         return controllerHandler.validateConfig(restModel);
     }
 
-    @DeleteMapping
-    public ResponseEntity<String> deleteConfig(final Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteConfig(@PathVariable final Long id) {
         return controllerHandler.deleteConfig(id);
     }
 

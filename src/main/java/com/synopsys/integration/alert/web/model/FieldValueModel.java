@@ -23,17 +23,16 @@
  */
 package com.synopsys.integration.alert.web.model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 
 public class FieldValueModel {
     private Collection<String> values;
     private boolean isSet;
 
-    public FieldValueModel() {
-        this(new ArrayList<>(), false);
+    private FieldValueModel() {
+        this(null, false);
     }
 
     public FieldValueModel(final Collection<String> values, final boolean isSet) {
@@ -54,7 +53,7 @@ public class FieldValueModel {
     }
 
     public void setValue(final String value) {
-        values = Arrays.asList(value);
+        values = Set.of(value);
     }
 
     public boolean isSet() {
