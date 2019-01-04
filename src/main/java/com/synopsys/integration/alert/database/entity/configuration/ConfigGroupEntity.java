@@ -21,26 +21,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.configuration;
+package com.synopsys.integration.alert.database.entity.configuration;
 
-import javax.validation.constraints.NotNull;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
+import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 
-public class Configuration {
-    private final Long id;
-    private final FieldAccessor fieldAccessor;
+@Entity
+@Table(schema = "ALERT", name = "CONFIG_GROUPS")
+public class ConfigGroupEntity extends DatabaseEntity {
+    @Column(name = "CONFIG_ID")
+    private Long configId;
 
-    public Configuration(@NotNull final ConfigurationModel configurationModel) {
-        fieldAccessor = new FieldAccessor(configurationModel.getCopyOfKeyToFieldMap());
-        id = configurationModel.getConfigurationId();
+    public ConfigGroupEntity() {
+        // JPA requires default constructor definitions
     }
 
-    public Long getId() {
-        return id;
+    public ConfigGroupEntity(final Long configId) {
+        this.configId = configId;
     }
 
-    public FieldAccessor getFieldAccessor() {
-        return fieldAccessor;
+    public Long getConfigId() {
+        return configId;
     }
 }

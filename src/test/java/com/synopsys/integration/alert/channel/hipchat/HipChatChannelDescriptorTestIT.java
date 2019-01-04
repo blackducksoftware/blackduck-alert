@@ -28,9 +28,9 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.DateRange;
 import com.synopsys.integration.alert.common.model.LinkableItem;
-import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor;
-import com.synopsys.integration.alert.database.api.configuration.ConfigurationFieldModel;
-import com.synopsys.integration.alert.database.api.configuration.DefinedFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
+import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
@@ -63,7 +63,7 @@ public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
     }
 
     @Override
-    public Optional<ConfigurationAccessor.ConfigurationModel> saveGlobalConfiguration() throws Exception {
+    public Optional<ConfigurationModel> saveGlobalConfiguration() throws Exception {
         final Map<String, String> valueMap = new HashMap<>();
         final String apiToken = properties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY);
         valueMap.put(HipChatDescriptor.KEY_API_KEY, apiToken);
@@ -73,7 +73,7 @@ public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
     }
 
     @Override
-    public ConfigurationAccessor.ConfigurationModel saveDistributionConfiguration() throws Exception {
+    public ConfigurationModel saveDistributionConfiguration() throws Exception {
         final List<ConfigurationFieldModel> models = new LinkedList<>();
         models.addAll(MockConfigurationModelFactory.createHipChatDistributionFields());
         return configurationAccessor.createConfiguration(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION, models);
@@ -83,7 +83,7 @@ public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
     public DistributionEvent createChannelEvent() {
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
-        List<ConfigurationAccessor.ConfigurationModel> models = List.of();
+        List<ConfigurationModel> models = List.of();
         try {
             models = configurationAccessor.getConfigurationsByDescriptorName(HipChatChannel.COMPONENT_NAME);
         } catch (final AlertDatabaseConstraintException e) {
@@ -91,7 +91,7 @@ public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
         }
 
         final Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
-        for (final ConfigurationAccessor.ConfigurationModel model : models) {
+        for (final ConfigurationModel model : models) {
             fieldMap.putAll(model.getCopyOfKeyToFieldMap());
         }
 

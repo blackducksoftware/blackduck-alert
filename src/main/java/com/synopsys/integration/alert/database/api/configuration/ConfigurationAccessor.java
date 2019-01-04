@@ -26,14 +26,10 @@ package com.synopsys.integration.alert.database.api.configuration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +41,9 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigJobModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.entity.configuration.ConfigContextEntity;
 import com.synopsys.integration.alert.database.entity.configuration.DefinedFieldEntity;
@@ -52,34 +51,66 @@ import com.synopsys.integration.alert.database.entity.configuration.DescriptorCo
 import com.synopsys.integration.alert.database.entity.configuration.FieldValueEntity;
 import com.synopsys.integration.alert.database.entity.configuration.RegisteredDescriptorEntity;
 import com.synopsys.integration.alert.database.repository.configuration.ConfigContextRepository;
+import com.synopsys.integration.alert.database.repository.configuration.ConfigGroupRepository;
 import com.synopsys.integration.alert.database.repository.configuration.DefinedFieldRepository;
 import com.synopsys.integration.alert.database.repository.configuration.DescriptorConfigRepository;
 import com.synopsys.integration.alert.database.repository.configuration.DescriptorTypeRepository;
 import com.synopsys.integration.alert.database.repository.configuration.FieldValueRepository;
 import com.synopsys.integration.alert.database.repository.configuration.RegisteredDescriptorRepository;
-import com.synopsys.integration.util.Stringable;
 
 @Component
 @Transactional
 public class ConfigurationAccessor implements BaseConfigurationAccessor {
     private final RegisteredDescriptorRepository registeredDescriptorRepository;
+    private final DescriptorTypeRepository descriptorTypeRepository;
     private final DefinedFieldRepository definedFieldRepository;
     private final DescriptorConfigRepository descriptorConfigsRepository;
+    private final ConfigGroupRepository configGroupRepository;
     private final ConfigContextRepository configContextRepository;
     private final FieldValueRepository fieldValueRepository;
     private final EncryptionUtility encryptionUtility;
-    private final DescriptorTypeRepository descriptorTypeRepository;
 
     @Autowired
-    public ConfigurationAccessor(final RegisteredDescriptorRepository registeredDescriptorRepository, final DefinedFieldRepository definedFieldRepository, final DescriptorConfigRepository descriptorConfigsRepository,
-        final ConfigContextRepository configContextRepository, final FieldValueRepository fieldValueRepository, final EncryptionUtility encryptionUtility, final DescriptorTypeRepository descriptorTypeRepository) {
+    public ConfigurationAccessor(final RegisteredDescriptorRepository registeredDescriptorRepository, final DescriptorTypeRepository descriptorTypeRepository, final DefinedFieldRepository definedFieldRepository,
+        final DescriptorConfigRepository descriptorConfigsRepository, final ConfigGroupRepository configGroupRepository, final ConfigContextRepository configContextRepository, final FieldValueRepository fieldValueRepository,
+        final EncryptionUtility encryptionUtility) {
         this.registeredDescriptorRepository = registeredDescriptorRepository;
+        this.descriptorTypeRepository = descriptorTypeRepository;
         this.definedFieldRepository = definedFieldRepository;
         this.descriptorConfigsRepository = descriptorConfigsRepository;
+        this.configGroupRepository = configGroupRepository;
         this.configContextRepository = configContextRepository;
         this.fieldValueRepository = fieldValueRepository;
         this.encryptionUtility = encryptionUtility;
-        this.descriptorTypeRepository = descriptorTypeRepository;
+    }
+
+    @Override
+    public List<ConfigJobModel> getAllJobs() {
+        // TODO implement this
+        return null;
+    }
+
+    @Override
+    public Optional<ConfigJobModel> getJobById(final Long jobId) {
+        // TODO implement this
+        return Optional.empty();
+    }
+
+    @Override
+    public ConfigJobModel createJob(final String providerDescriptorName, final String distributionDescriptorName, final Collection<ConfigurationFieldModel> configuredFields) {
+        // TODO implement this
+        return null;
+    }
+
+    @Override
+    public ConfigJobModel updateJob(final Long jobId, final Collection<ConfigurationFieldModel> configuredFields) {
+        // TODO implement this
+        return null;
+    }
+
+    @Override
+    public void deleteJob(final Long jobId) {
+        // TODO implement this
     }
 
     @Override
@@ -176,7 +207,8 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
                         fieldValueRepository.save(newFieldValueEntity);
                     }
                 }
-                createdConfig.configuredFields.put(fieldKey, configuredField);
+                // TODO find out if this had a different result: createdConfig.configuredFields.put(fieldKey, configuredField);
+                createdConfig.put(configuredField);
             }
         }
         return createdConfig;
@@ -306,63 +338,4 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
         return value;
     }
 
-    public final class ConfigurationModel extends Stringable {
-        private final Long descriptorId;
-        private final Long configurationId;
-        private final ConfigContextEnum context;
-        private final Map<String, ConfigurationFieldModel> configuredFields;
-
-        private ConfigurationModel(final Long registeredDescriptorId, final Long descriptorConfigId, final String context) {
-            this(registeredDescriptorId, descriptorConfigId, ConfigContextEnum.valueOf(context));
-        }
-
-        private ConfigurationModel(final Long registeredDescriptorId, final Long descriptorConfigId, final ConfigContextEnum context) {
-            descriptorId = registeredDescriptorId;
-            configurationId = descriptorConfigId;
-            this.context = context;
-            configuredFields = new HashMap<>();
-        }
-
-        public Long getDescriptorId() {
-            return descriptorId;
-        }
-
-        public Long getConfigurationId() {
-            return configurationId;
-        }
-
-        public ConfigContextEnum getDescriptorContext() {
-            return context;
-        }
-
-        public Optional<ConfigurationFieldModel> getField(final String fieldKey) {
-            Objects.requireNonNull(fieldKey);
-            return Optional.ofNullable(configuredFields.get(fieldKey));
-        }
-
-        public List<ConfigurationFieldModel> getCopyOfFieldList() {
-            return new ArrayList<>(configuredFields.values());
-        }
-
-        public Map<String, ConfigurationFieldModel> getCopyOfKeyToFieldMap() {
-            return new HashMap<>(configuredFields);
-        }
-
-        private void put(final ConfigurationFieldModel configFieldModel) {
-            Objects.requireNonNull(configFieldModel);
-            final String fieldKey = configFieldModel.getFieldKey();
-            Objects.requireNonNull(fieldKey);
-            if (configuredFields.containsKey(fieldKey)) {
-                final ConfigurationFieldModel oldConfigField = configuredFields.get(fieldKey);
-                final List<String> values = combine(oldConfigField, configFieldModel);
-                oldConfigField.setFieldValues(values);
-            } else {
-                configuredFields.put(fieldKey, configFieldModel);
-            }
-        }
-
-        private List<String> combine(final ConfigurationFieldModel first, final ConfigurationFieldModel second) {
-            return Stream.concat(first.getFieldValues().stream(), second.getFieldValues().stream()).collect(Collectors.toList());
-        }
-    }
 }

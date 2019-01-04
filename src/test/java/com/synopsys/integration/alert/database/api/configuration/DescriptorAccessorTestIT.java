@@ -17,7 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.database.api.configuration.DescriptorAccessor.RegisteredDescriptorModel;
+import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.database.repository.configuration.ConfigContextRepository;
 import com.synopsys.integration.alert.database.repository.configuration.DefinedFieldRepository;
 import com.synopsys.integration.alert.database.repository.configuration.DescriptorFieldRepository;
@@ -75,8 +76,8 @@ public class DescriptorAccessorTestIT extends AlertIntegrationTest {
     public void registerAndGetDescriptorTest() throws AlertDatabaseConstraintException {
         descriptorAccessor.registerDescriptorWithoutFields(DESCRIPTOR_NAME, DescriptorType.CHANNEL);
         final RegisteredDescriptorModel registeredDescriptorModel = descriptorAccessor
-                                                                            .getRegisteredDescriptorByName(DESCRIPTOR_NAME)
-                                                                            .orElseThrow(() -> new AlertDatabaseConstraintException("This descriptor should exist"));
+                                                                        .getRegisteredDescriptorByName(DESCRIPTOR_NAME)
+                                                                        .orElseThrow(() -> new AlertDatabaseConstraintException("This descriptor should exist"));
         assertNotNull(registeredDescriptorModel.getId());
         assertEquals(DESCRIPTOR_NAME, registeredDescriptorModel.getName());
     }
