@@ -45,13 +45,15 @@ import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIComponent;
+import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 
 @RestController
 @RequestMapping(UIComponentController.DESCRIPTOR_PATH)
+@Deprecated
+// FIXME this class should be deleted once the UI switches to the new endpoints
 public class UIComponentController extends BaseController {
     public static final String DESCRIPTOR_PATH = BASE_PATH + "/descriptor";
     private final DescriptorMap descriptorMap;
@@ -62,7 +64,7 @@ public class UIComponentController extends BaseController {
     }
 
     @GetMapping
-    public Collection<UIComponent> getDescriptors(@RequestParam(value = "descriptorName", required = false) final String descriptorName, @RequestParam(value = "context", required = false) final String context) {
+    public Collection<DescriptorMetadata> getDescriptors(@RequestParam(value = "descriptorName", required = false) final String descriptorName, @RequestParam(value = "context", required = false) final String context) {
         // filter by name
         if (StringUtils.isNotBlank(descriptorName)) {
             final Descriptor descriptor = descriptorMap.getDescriptor(descriptorName);
@@ -72,20 +74,20 @@ public class UIComponentController extends BaseController {
                     final ConfigContextEnum contextType = EnumUtils.getEnum(ConfigContextEnum.class, context);
                     final UIConfig uiConfig = descriptor.getUIConfig(contextType);
                     if (uiConfig != null) {
-                        return Arrays.asList(uiConfig.generateUIComponent());
+                        return Arrays.asList(uiConfig.generateDescriptorMetadata());
                     } else {
                         return Collections.emptyList();
                     }
                 } else {
                     // name only
-                    return descriptor.getAllUIConfigs().stream().map(UIConfig::generateUIComponent).collect(Collectors.toList());
+                    return descriptor.getAllUIConfigs().stream().map(UIConfig::generateDescriptorMetadata).collect(Collectors.toList());
                 }
             } else {
                 return Collections.emptyList();
             }
         } else if (StringUtils.isNotBlank(context)) {
             final ConfigContextEnum contextType = EnumUtils.getEnum(ConfigContextEnum.class, context);
-            return descriptorMap.getUIComponents(contextType);
+            return descriptorMap.getDescriptorMetadataList(contextType);
         } else {
             return descriptorMap.getAllUIComponents();
         }
@@ -93,7 +95,7 @@ public class UIComponentController extends BaseController {
 
     // TODO split out provider and distribution endpoints
     @GetMapping("/distribution")
-    public UIComponent getDistributionUIComponent(@RequestParam(value = "providerName", required = true) final String providerName, @RequestParam(value = "channelName", required = true) final String channelName) {
+    public DescriptorMetadata getDistributionUIComponent(@RequestParam(value = "providerName", required = true) final String providerName, @RequestParam(value = "channelName", required = true) final String channelName) {
         if (StringUtils.isBlank(providerName) || StringUtils.isBlank(channelName)) {
             return null;
         } else {
@@ -101,19 +103,19 @@ public class UIComponentController extends BaseController {
             final ChannelDescriptor channelDescriptor = descriptorMap.getChannelDescriptor(channelName);
             final UIConfig channelUIConfig = channelDescriptor.getUIConfig(ConfigContextEnum.DISTRIBUTION);
             final UIConfig providerUIConfig = providerDescriptor.getUIConfig(ConfigContextEnum.DISTRIBUTION);
-            final UIComponent channelUIComponent = channelUIConfig.generateUIComponent();
-            final UIComponent providerUIComponent = providerUIConfig.generateUIComponent();
+            final DescriptorMetadata channelDescriptorMetadata = channelUIConfig.generateDescriptorMetadata();
+            final DescriptorMetadata providerDescriptorMetadata = providerUIConfig.generateDescriptorMetadata();
             final List<ConfigField> combinedFields = new ArrayList<>();
             final ConfigField name = TextInputConfigField.createRequired("name", "Name");
             final ConfigField frequency = SelectConfigField.createRequired("frequency", "Frequency", Arrays.stream(FrequencyType.values()).map(type -> type.getDisplayName()).collect(Collectors.toList()));
             combinedFields.add(name);
             combinedFields.add(frequency);
-            combinedFields.addAll(channelUIComponent.getFields());
-            combinedFields.addAll(providerUIComponent.getFields());
+            combinedFields.addAll(channelDescriptorMetadata.getFields());
+            combinedFields.addAll(providerDescriptorMetadata.getFields());
 
-            final UIComponent combinedUIComponent = new UIComponent(channelUIComponent.getLabel(), channelUIComponent.getUrlName(), channelUIComponent.getDescriptorName(), channelUIComponent.getFontAwesomeIcon(),
-                channelUIComponent.isAutomaticallyGenerateUI(), combinedFields);
-            return combinedUIComponent;
+            final DescriptorMetadata combinedDescriptorMetadata = new DescriptorMetadata(channelDescriptorMetadata.getLabel(), channelDescriptorMetadata.getUrlName(), channelDescriptorMetadata.getName(), channelDescriptorMetadata.getType(),
+                channelDescriptorMetadata.getContext(), channelDescriptorMetadata.getFontAwesomeIcon(), channelDescriptorMetadata.isAutomaticallyGenerateUI(), combinedFields);
+            return combinedDescriptorMetadata;
         }
     }
 }

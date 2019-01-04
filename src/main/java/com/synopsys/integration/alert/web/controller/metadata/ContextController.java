@@ -21,10 +21,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.enumeration;
+package com.synopsys.integration.alert.web.controller.metadata;
 
-public enum DescriptorType {
-    CHANNEL,
-    PROVIDER,
-    COMPONENT
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+
+@RestController
+public class ContextController extends MetadataController {
+    public static final String CONTEXTS_PATH = "/contexts";
+
+    @GetMapping(CONTEXTS_PATH)
+    public ConfigContextEnum[] getContexts() {
+        return ConfigContextEnum.values();
+    }
 }
