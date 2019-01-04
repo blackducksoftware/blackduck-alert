@@ -59,6 +59,10 @@ public abstract class DescriptorActionApi {
         return new AggregateMessageContent("testTopic", "Alert Test Message", null, subTopic, Collections.emptyList());
     }
 
+    public void readConfig(final FieldModel fieldModel) {
+
+    }
+
     public void updateConfig(final FieldModel fieldModel) {
 
     }

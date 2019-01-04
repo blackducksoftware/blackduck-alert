@@ -87,7 +87,10 @@ public class ConfigActions {
             final List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationByDescriptorNameAndContext(descriptorName, context);
             if (configurationModels != null) {
                 for (final ConfigurationModel configurationModel : configurationModels) {
-                    fields.add(convertToFieldModel(configurationModel));
+                    final FieldModel fieldModel = convertToFieldModel(configurationModel);
+                    final DescriptorActionApi descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
+                    descriptorActionApi.readConfig(fieldModel);
+                    fields.add(fieldModel);
                 }
             }
         }
@@ -95,14 +98,15 @@ public class ConfigActions {
     }
 
     public FieldModel getConfigById(final Long id) throws AlertException {
+        FieldModel fieldModel = null;
         final Optional<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationById(id);
         if (configurationModels.isPresent()) {
             final ConfigurationModel configurationModel = configurationModels.get();
-            if (configurationModel != null) {
-                return convertToFieldModel(configurationModel);
-            }
+            fieldModel = convertToFieldModel(configurationModel);
+            final DescriptorActionApi descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
+            descriptorActionApi.readConfig(fieldModel);
         }
-        return null;
+        return fieldModel;
     }
 
     public void deleteConfig(final String id) throws AlertException {
