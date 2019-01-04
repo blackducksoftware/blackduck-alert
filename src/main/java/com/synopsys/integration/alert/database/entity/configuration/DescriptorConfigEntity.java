@@ -28,6 +28,7 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -44,6 +45,10 @@ public class DescriptorConfigEntity extends DatabaseEntity {
     @OneToMany
     @JoinColumn(name = "CONFIG_ID", insertable = false, updatable = false)
     private List<FieldValueEntity> fieldValueEntities;
+
+    @ManyToOne
+    @JoinColumn(name = "CONFIG_ID", insertable = false, updatable = false)
+    private ConfigGroupEntity configGroupEntity;
 
     public DescriptorConfigEntity() {
         // JPA requires default constructor definitions
@@ -64,5 +69,9 @@ public class DescriptorConfigEntity extends DatabaseEntity {
 
     public List<FieldValueEntity> getFieldValueEntities() {
         return fieldValueEntities;
+    }
+
+    public ConfigGroupEntity getConfigGroupEntity() {
+        return configGroupEntity;
     }
 }

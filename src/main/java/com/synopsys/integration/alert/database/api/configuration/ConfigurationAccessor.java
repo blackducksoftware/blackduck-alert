@@ -134,16 +134,10 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
         if (jobId == null) {
             throw new AlertDatabaseConstraintException("The job id cannot be null");
         }
-        // TODO maybe don't do this...
-        final Set<String> descriptorNames = configGroupRepository.findByJobId(jobId)
+        final Set<String> descriptorNames = registeredDescriptorRepository.findByJobId(jobId)
                                                 .stream()
-                                                .map(jobEntity -> descriptorConfigsRepository.findById(jobEntity.getConfigId()))
-                                                .map(Optional::orElseThrow)
-                                                .map(configEntity -> registeredDescriptorRepository.findById(configEntity.getDescriptorId()))
-                                                .map(Optional::orElseThrow)
                                                 .map(RegisteredDescriptorEntity::getName)
                                                 .collect(Collectors.toSet());
-
         configGroupRepository.deleteByJobId(jobId);
         return createJob(descriptorNames, configuredFields);
     }
