@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.web.controller.metadata;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -37,7 +38,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 
@@ -95,9 +95,9 @@ public class DescriptorController extends MetadataController {
         final Set<DescriptorMetadata> descriptorMetadata = new HashSet<>();
         for (final ConfigContextEnum applicableContext : applicableContexts) {
             for (final Descriptor descriptor : filteredDescriptors) {
-                final UIConfig uiConfig = descriptor.getUIConfig(applicableContext);
-                if (uiConfig != null) {
-                    descriptorMetadata.add(uiConfig.generateDescriptorMetadata());
+                final Optional<DescriptorMetadata> uiConfig = descriptor.getMetaData(applicableContext);
+                if (uiConfig.isPresent()) {
+                    descriptorMetadata.add(uiConfig.get());
                 }
             }
         }

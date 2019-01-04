@@ -67,7 +67,7 @@ public class DescriptorMap {
         return descriptorMapping.values()
                    .stream()
                    .filter(descriptor -> descriptor.hasUIConfigForType(configType))
-                   .map(descriptor -> descriptor.getUIConfig(configType).generateDescriptorMetadata())
+                   .map(descriptor -> descriptor.getMetaData(configType).get())
                    .collect(Collectors.toList());
     }
 

@@ -27,27 +27,22 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.slack.SlackChannel;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 
 @Component
 public class SlackUIConfig extends UIConfig {
 
-    @Override
-    public DescriptorMetadata generateDescriptorMetadata() {
-        return new DescriptorMetadata("Slack", "slack", SlackChannel.COMPONENT_NAME, DescriptorType.CHANNEL, ConfigContextEnum.DISTRIBUTION, "slack", setupFields());
+    public SlackUIConfig() {
+        super("Slack", "slack", "slack");
     }
 
-    public List<ConfigField> setupFields() {
+    @Override
+    public List<ConfigField> createFields() {
         final ConfigField webhook = TextInputConfigField.createRequired(SlackDescriptor.KEY_WEBHOOK, "Webhook");
         final ConfigField channelName = TextInputConfigField.createRequired(SlackDescriptor.KEY_CHANNEL_NAME, "Channel Name");
         final ConfigField channelUsername = TextInputConfigField.create(SlackDescriptor.KEY_CHANNEL_USERNAME, "Channel Username");
         return List.of(webhook, channelName, channelUsername);
     }
-
 }

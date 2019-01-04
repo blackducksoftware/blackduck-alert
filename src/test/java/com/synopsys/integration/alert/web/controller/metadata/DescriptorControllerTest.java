@@ -6,11 +6,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -197,19 +199,20 @@ public class DescriptorControllerTest {
         }
 
         @Override
-        public UIConfig getUIConfig(final ConfigContextEnum context) {
+        public Optional<UIConfig> getUIConfig(final ConfigContextEnum context) {
             if (!contexts.contains(context)) {
-                return null;
+                return Optional.empty();
             }
             final String descriptorName = getName();
             final DescriptorType descriptorType = getType();
 
-            return new UIConfig() {
+            return Optional.of(new UIConfig("Label", "urlName", "fontAwesomeIcon") {
+
                 @Override
-                public DescriptorMetadata generateDescriptorMetadata() {
-                    return new DescriptorMetadata("Label", "urlName", descriptorName, descriptorType, context, "fontAwesomeIcon", List.of());
+                public List<ConfigField> createFields() {
+                    return List.of();
                 }
-            };
+            });
         }
     }
 }
