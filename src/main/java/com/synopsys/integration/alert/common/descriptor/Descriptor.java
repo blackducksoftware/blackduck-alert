@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.common.descriptor;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,8 +49,8 @@ public abstract class Descriptor {
     public Descriptor(final String name, final DescriptorType type) {
         this.name = name;
         this.type = type;
-        restApis = new HashMap<>();
-        uiConfigs = new HashMap<>();
+        restApis = new EnumMap<>(ConfigContextEnum.class);
+        uiConfigs = new EnumMap<>(ConfigContextEnum.class);
     }
 
     public String getName() {

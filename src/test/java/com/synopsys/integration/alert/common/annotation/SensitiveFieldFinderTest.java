@@ -16,7 +16,7 @@ import static org.junit.Assert.assertEquals;
 import java.lang.reflect.Field;
 import java.util.Set;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.database.annotation.EncryptedStringField;
 

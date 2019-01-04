@@ -12,9 +12,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.data.domain.Page;
@@ -42,12 +42,12 @@ import com.synopsys.integration.exception.IntegrationException;
 public class AuditEntryActionsTest {
     private OutputLogger outputLogger;
 
-    @Before
+    @BeforeEach
     public void init() throws IOException {
         outputLogger = new OutputLogger();
     }
 
-    @After
+    @AfterEach
     public void cleanup() throws IOException {
         outputLogger.cleanup();
     }
@@ -68,7 +68,7 @@ public class AuditEntryActionsTest {
         final NotificationContentRepository notificationRepository = Mockito.mock(NotificationContentRepository.class);
         final AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
         final JobConfigReader jobConfigReader = Mockito.mock(JobConfigReader.class);
-        final MockAuditEntryEntity mockAuditEntryEntity = new MockAuditEntryEntity();
+        final MockAuditEntryEntity mockAuditEntryEntity = MockAuditEntryEntity.createDefault();
         final MockNotificationContent mockNotificationEntity = new MockNotificationContent();
         Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(mockAuditEntryEntity.createEmptyEntity()));
         Mockito.when(jobConfigReader.getPopulatedConfig(Mockito.anyLong())).thenReturn(null);

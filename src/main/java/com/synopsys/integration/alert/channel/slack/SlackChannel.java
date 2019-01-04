@@ -82,25 +82,19 @@ public class SlackChannel extends RestDistributionChannel {
     @Override
     public List<Request> createRequests(final DistributionEvent event) throws IntegrationException {
         final FieldAccessor fields = event.getFieldAccessor();
-        final Optional<String> webhook = fields.getString(SlackDescriptor.KEY_WEBHOOK);
-        final Optional<String> channelName = fields.getString(SlackDescriptor.KEY_CHANNEL_NAME);
+        final String webhook = fields.getString(SlackDescriptor.KEY_WEBHOOK).orElseThrow(() -> new AlertException("Missing Webhook URL"));
+        final String channelName = fields.getString(SlackDescriptor.KEY_CHANNEL_NAME).orElseThrow(() -> new AlertException("Missing channel name"));
         final Optional<String> channelUsername = fields.getString(SlackDescriptor.KEY_CHANNEL_USERNAME);
-        if (webhook.isEmpty()) {
-            throw new AlertException("Missing Webhook URL");
-        } else if (channelName.isEmpty()) {
-            throw new AlertException("Missing channel name");
+        if (StringUtils.isBlank(event.getContent().getValue())) {
+            return Collections.emptyList();
         } else {
-            if (StringUtils.isBlank(event.getContent().getValue())) {
-                return Collections.emptyList();
-            } else {
-                final String slackUrl = webhook.get();
-                final String mrkdwnMessage = createMrkdwnMessage(event.getContent());
-                final String jsonString = getJsonString(mrkdwnMessage, channelName.get(), channelUsername.orElse(""));
+            final String mrkdwnMessage = createMrkdwnMessage(event.getContent());
+            final String jsonString = getJsonString(mrkdwnMessage, channelName, channelUsername.orElse(""));
 
-                final Map<String, String> requestHeaders = new HashMap<>();
-                requestHeaders.put("Content-Type", "application/json");
-                return Arrays.asList(createPostMessageRequest(slackUrl, requestHeaders, jsonString));
-            }
+            final Map<String, String> requestHeaders = new HashMap<>();
+            requestHeaders.put("Content-Type", "application/json");
+            return Arrays.asList(createPostMessageRequest(webhook, requestHeaders, jsonString));
+
         }
     }
 

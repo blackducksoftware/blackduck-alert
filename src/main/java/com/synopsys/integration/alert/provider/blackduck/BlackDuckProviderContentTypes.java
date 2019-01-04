@@ -176,7 +176,7 @@ public class BlackDuckProviderContentTypes {
         RULE_VIOLATION_FIELD_LIST
     );
 
-    public static final List<ProviderContentType> ALL = Arrays.asList(BOM_EDIT, LICENSE_LIMIT, POLICY_OVERRIDE, RULE_VIOLATION, RULE_VIOLATION_CLEARED, VULNERABILITY);
+    public static final List<ProviderContentType> ALL = List.of(BOM_EDIT, LICENSE_LIMIT, POLICY_OVERRIDE, RULE_VIOLATION, RULE_VIOLATION_CLEARED, VULNERABILITY);
 
     private BlackDuckProviderContentTypes() {
         // This class should not be instantiated

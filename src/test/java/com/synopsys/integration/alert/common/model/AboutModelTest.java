@@ -2,7 +2,7 @@ package com.synopsys.integration.alert.common.model;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.web.model.AboutModel;
 

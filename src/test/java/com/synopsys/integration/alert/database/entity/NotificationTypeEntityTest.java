@@ -1,7 +1,7 @@
 package com.synopsys.integration.alert.database.entity;
 
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
