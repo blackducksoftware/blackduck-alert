@@ -21,29 +21,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.entity.configuration;
+package com.synopsys.integration.alert.web.audit;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import com.synopsys.integration.alert.web.model.MaskedModel;
 
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+public class JobAuditModel extends MaskedModel {
+    private String timeAuditCreated;
+    private String timeLastSent;
+    private String status;
 
-@Entity
-@Table(schema = "ALERT", name = "DESCRIPTOR_TYPES")
-public class DescriptorTypeEntity extends DatabaseEntity {
-    @Column(name = "TYPE")
-    private String type;
-
-    public DescriptorTypeEntity() {
+    public JobAuditModel() {
     }
 
-    public DescriptorTypeEntity(final String type) {
-        this.type = type;
+    public JobAuditModel(final String timeAuditCreated, final String timeLastSent, final String status) {
+        this.timeAuditCreated = timeAuditCreated;
+        this.timeLastSent = timeLastSent;
+        this.status = status;
     }
 
-    public String getType() {
-        return type;
+    public String getTimeAuditCreated() {
+        return timeAuditCreated;
     }
 
+    public String getTimeLastSent() {
+        return timeLastSent;
+    }
+
+    public String getStatus() {
+        return status;
+    }
 }

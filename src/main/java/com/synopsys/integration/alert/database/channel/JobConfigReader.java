@@ -37,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.synopsys.integration.alert.common.configuration.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 
@@ -54,6 +55,19 @@ public class JobConfigReader {
     public List<CommonDistributionConfiguration> getPopulatedConfigs() {
         try {
             final List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationsByDescriptorType(DescriptorType.CHANNEL);
+            return configurationModels.stream()
+                       .map(CommonDistributionConfiguration::new)
+                       .collect(Collectors.toList());
+        } catch (final AlertDatabaseConstraintException e) {
+            logger.error("Was not able to retrieve configurations", e);
+            return Collections.emptyList();
+        }
+    }
+
+    @Transactional
+    public List<CommonDistributionConfiguration> getPopulatedConfigs(FrequencyType frequency) {
+        try {
+            final List<ConfigurationModel> configurationModels = configurationAccessor.getChannelConfigurationsByFrequency(frequency);
             return configurationModels.stream()
                        .map(CommonDistributionConfiguration::new)
                        .collect(Collectors.toList());

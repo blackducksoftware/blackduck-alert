@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.database.api.configuration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -14,8 +15,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
@@ -161,6 +164,69 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
     public void getConfigurationsWithEmptyDescriptorNameTest() {
         getConfigByNameWithEmptyDescriptorNameTestHelper(null);
         getConfigByNameWithEmptyDescriptorNameTestHelper("");
+    }
+
+    @Test
+    public void getConfigurationsByDescriptorTypeNullTest() {
+        try {
+            configurationAccessor.getConfigurationsByDescriptorType(null);
+            fail("Expected exception to be thrown");
+        } catch (final AlertDatabaseConstraintException e) {
+            assertEquals("Descriptor type cannot be null", e.getMessage());
+        }
+    }
+
+    @Test
+    public void getConfigurationsByDescriptorTypeTest() throws Exception {
+        List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationsByDescriptorType(DescriptorType.CHANNEL);
+        assertTrue(configurationModels.isEmpty());
+        configurationModels = configurationAccessor.getConfigurationsByDescriptorType(DescriptorType.PROVIDER);
+        assertFalse(configurationModels.isEmpty());
+    }
+
+    @Test
+    public void getConfigurationsByFrequencyTypeNullTest() {
+        try {
+            configurationAccessor.getChannelConfigurationsByFrequency(null);
+            fail("Expected exception to be thrown");
+        } catch (final AlertDatabaseConstraintException e) {
+            assertEquals("Frequency type cannot be null", e.getMessage());
+        }
+    }
+
+    @Test
+    public void getConfigurationsByFrequencyTypeTest() throws Exception {
+        // No descriptor of Channel type registered
+        List<ConfigurationModel> configurationModels = configurationAccessor.getChannelConfigurationsByFrequency(FrequencyType.DAILY);
+        assertTrue(configurationModels.isEmpty());
+        configurationModels = configurationAccessor.getChannelConfigurationsByFrequency(FrequencyType.REAL_TIME);
+        assertTrue(configurationModels.isEmpty());
+        ///////////////////////////////////////////
+
+        final String descriptorName = "Unique Descriptor";
+        try {
+            // Register a custom descriptor of Channel type
+            descriptorAccessor.registerDescriptor(descriptorName, DescriptorType.CHANNEL, Arrays.asList(new DefinedFieldModel(CommonDistributionUIConfig.KEY_FREQUENCY, ConfigContextEnum.DISTRIBUTION, Boolean.FALSE)));
+
+            configurationModels = configurationAccessor.getChannelConfigurationsByFrequency(FrequencyType.DAILY);
+            assertTrue(configurationModels.isEmpty());
+            configurationModels = configurationAccessor.getChannelConfigurationsByFrequency(FrequencyType.REAL_TIME);
+            assertTrue(configurationModels.isEmpty());
+            ////////////////////////////////////////////////
+
+            // Add a configuration for the custom descriptor with a Frequency field
+            final ConfigurationFieldModel realTimeField = ConfigurationFieldModel.create(CommonDistributionUIConfig.KEY_FREQUENCY);
+            realTimeField.setFieldValue(FrequencyType.REAL_TIME.name());
+            configurationAccessor.createConfiguration(descriptorName, ConfigContextEnum.DISTRIBUTION, Arrays.asList(realTimeField));
+
+            configurationModels = configurationAccessor.getChannelConfigurationsByFrequency(FrequencyType.DAILY);
+            assertTrue(configurationModels.isEmpty());
+            configurationModels = configurationAccessor.getChannelConfigurationsByFrequency(FrequencyType.REAL_TIME);
+            assertFalse(configurationModels.isEmpty());
+            ////////////////////////////////////////////////////////////////////////
+        } finally {
+            descriptorAccessor.unregisterDescriptor(descriptorName);
+        }
     }
 
     @Test

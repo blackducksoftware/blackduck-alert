@@ -65,8 +65,6 @@ public class ConfigActions {
     private final BaseDescriptorAccessor descriptorAccessor;
     private final DescriptorMap descriptorMap;
 
-    // TODO Add a new Audit controller to add audit info to distributino jobs
-
     @Autowired
     public ConfigActions(final ContentConverter contentConverter, final BaseConfigurationAccessor configurationAccessor, final BaseDescriptorAccessor descriptorAccessor, final DescriptorMap descriptorMap) {
         this.contentConverter = contentConverter;

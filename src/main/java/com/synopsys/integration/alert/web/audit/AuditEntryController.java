@@ -54,13 +54,23 @@ public class AuditEntryController extends BaseController {
     }
 
     @GetMapping(value = "/{id}")
-    public AuditEntryModel get(@PathVariable(value = "id") final Long id) {
+    public ResponseEntity<String> get(@PathVariable(value = "id") final Long id) {
         return auditEntryHandler.get(id);
     }
 
-    @PostMapping(value = "/{id}/resend")
-    public ResponseEntity<String> post(@PathVariable(value = "id") final Long notificationdId, @RequestParam(value = "commonConfigId", required = false) final Long commonConfigId) {
-        return auditEntryHandler.resendNotification(notificationdId, commonConfigId);
+    @GetMapping(value = "/job/{jobId}")
+    public ResponseEntity<String> getAuditInfoForJob(@PathVariable(value = "jobId") final Long jobId) {
+        return auditEntryHandler.getAuditInfoForJob(jobId);
+    }
+
+    @PostMapping(value = "/resend/{id}/")
+    public ResponseEntity<String> post(@PathVariable(value = "id") final Long notificationId) {
+        return auditEntryHandler.resendNotification(notificationId, null);
+    }
+
+    @PostMapping(value = "/resend/{id}/job/{jobId}")
+    public ResponseEntity<String> post(@PathVariable(value = "id") final Long notificationId, @PathVariable(value = "jobId") final Long jobId) {
+        return auditEntryHandler.resendNotification(notificationId, jobId);
     }
 
 }

@@ -43,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
@@ -186,6 +187,19 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
                                 .map(DatabaseEntity::getId)
                                 .orElseThrow(() -> new AlertDatabaseConstraintException("Descriptor type has not been registered"));
         final List<RegisteredDescriptorEntity> registeredDescriptorEntities = registeredDescriptorRepository.findByTypeId(typeId);
+        return createConfigModels(registeredDescriptorEntities);
+    }
+
+    @Override
+    public List<ConfigurationModel> getChannelConfigurationsByFrequency(final FrequencyType frequencyType) throws AlertDatabaseConstraintException {
+        if (null == frequencyType) {
+            throw new AlertDatabaseConstraintException("Frequency type cannot be null");
+        }
+        final Long typeId = descriptorTypeRepository
+                                .findFirstByType(DescriptorType.CHANNEL.name())
+                                .map(DatabaseEntity::getId)
+                                .orElseThrow(() -> new AlertDatabaseConstraintException("Descriptor type has not been registered"));
+        final List<RegisteredDescriptorEntity> registeredDescriptorEntities = registeredDescriptorRepository.findByTypeIdAndFrequency(typeId, frequencyType.name());
         return createConfigModels(registeredDescriptorEntities);
     }
 

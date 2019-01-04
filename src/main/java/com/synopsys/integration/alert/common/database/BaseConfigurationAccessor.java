@@ -30,6 +30,7 @@ import java.util.UUID;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationJobModel;
@@ -45,6 +46,8 @@ public interface BaseConfigurationAccessor {
     ConfigurationJobModel updateJob(final UUID jobId, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException;
 
     void deleteJob(final UUID jobId) throws AlertDatabaseConstraintException;
+
+    List<ConfigurationModel> getChannelConfigurationsByFrequency(final FrequencyType frequencyType) throws AlertDatabaseConstraintException;
 
     Optional<ConfigurationModel> getConfigurationById(final Long id) throws AlertDatabaseConstraintException;
 

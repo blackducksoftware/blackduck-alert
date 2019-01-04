@@ -5,6 +5,7 @@ import java.util.Date;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.mock.model.MockRestModelUtil;
+import com.synopsys.integration.alert.web.audit.JobAuditModel;
 import com.synopsys.integration.alert.web.audit.JobModel;
 
 public class MockJobModel extends MockRestModelUtil<JobModel> {
@@ -52,7 +53,7 @@ public class MockJobModel extends MockRestModelUtil<JobModel> {
 
     @Override
     public JobModel createRestModel() {
-        return new JobModel(id, configId, name, eventType, timeAuditCreated, timeLastSent, status, errorMessage, errorStackTrace);
+        return new JobModel(id, configId, name, eventType, new JobAuditModel(timeAuditCreated, timeLastSent, status), errorMessage, errorStackTrace);
     }
 
     @Override
@@ -67,9 +68,13 @@ public class MockJobModel extends MockRestModelUtil<JobModel> {
         json.addProperty("configId", configId);
         json.addProperty("name", name);
         json.addProperty("eventType", eventType);
-        json.addProperty("timeAuditCreated", timeAuditCreated);
-        json.addProperty("timeLastSent", timeLastSent);
-        json.addProperty("status", status);
+
+        final JsonObject auditInfo = new JsonObject();
+        auditInfo.addProperty("timeAuditCreated", timeAuditCreated);
+        auditInfo.addProperty("timeLastSent", timeLastSent);
+        auditInfo.addProperty("status", status);
+
+        json.add("jobAuditModel", auditInfo);
         json.addProperty("errorMessage", errorMessage);
         json.addProperty("errorStackTrace", errorStackTrace);
         return json.toString();
