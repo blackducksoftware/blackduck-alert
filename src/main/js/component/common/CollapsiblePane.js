@@ -14,11 +14,17 @@ class CollapsiblePane extends Component {
 
     render() {
         const contentClass = this.state.expanded ? 'shown' : 'hidden';
+        const iconClass = this.state.expanded ? 'fa-minus' : 'fa-plus';
         return (
-            <div className="collapsiblePane">
-                <div className="title" onClick={this.toggleDisplay}>
-                    {this.props.titleComponent}
-                </div>
+            <div className="collapsiblePanel">
+                <button
+                    id="collapsiblePaneButton"
+                    type="button"
+                    className="btn btn-link"
+                    onClick={this.toggleDisplay}>
+                    <span className={`fa ${iconClass} icon`} aria-hidden="true" />
+                    {this.props.title}
+                </button>
                 <div className={contentClass}>
                     {this.props.children}
                 </div>
@@ -28,12 +34,13 @@ class CollapsiblePane extends Component {
 }
 
 CollapsiblePane.propTypes = {
-    titleComponent: PropTypes.object.isRequired,
+    title: PropTypes.string.isRequired,
     expanded: PropTypes.bool
+
 };
 
 CollapsiblePane.defaultProps = {
-    titleComponent: '',
+    title: '',
     expanded: false
 };
 

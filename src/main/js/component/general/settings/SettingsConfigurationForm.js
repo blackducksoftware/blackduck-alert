@@ -1,10 +1,10 @@
 import PasswordInput from "../../../field/input/PasswordInput";
 import CheckboxInput from "../../../field/input/CheckboxInput";
 import TextInput from "../../../field/input/TextInput";
-import SubmitButton from "../../../field/input/SubmitButton";
 import PropTypes from "prop-types";
 import React, { Component } from "react";
 import CollapsiblePane from "../../common/CollapsiblePane";
+import ConfigButtons from "../../common/ConfigButtons";
 
 
 class SettingsConfigurationForm extends Component {
@@ -93,7 +93,7 @@ class SettingsConfigurationForm extends Component {
             <form method="POST" className="form-horizontal loginForm" onSubmit={this.handleSubmit}>
                 <div className="form-group">
                     <div className="col-sm-12">
-                        <h2>Default Admin Configuration</h2>
+                        <h2>Default System Administrator Configuration</h2>
                         <PasswordInput
                             id="defaultAdminPassword"
                             label="Password"
@@ -133,7 +133,7 @@ class SettingsConfigurationForm extends Component {
                 </div>
                 <div className="form-group">
                     <div className="col-sm-12">
-                        <CollapsiblePane titleComponent={<h2>Proxy Configuration</h2>}>
+                        <CollapsiblePane title="Proxy Configuration">
                             <TextInput
                                 id="proxyHost"
                                 label="Host Name"
@@ -176,7 +176,7 @@ class SettingsConfigurationForm extends Component {
                 </div>
                 <div className="form-group">
                     <div className="col-sm-12">
-                        <CollapsiblePane titleComponent={<h2>LDAP Configuration</h2>}>
+                        <CollapsiblePane title="LDAP Configuration">
                             <CheckboxInput
                                 id="ldapEnabled"
                                 label="Enabled"
@@ -307,16 +307,7 @@ class SettingsConfigurationForm extends Component {
                         </CollapsiblePane>
                     </div>
                 </div>
-                <div className="row">
-                    <div className="col-sm-11 text-right">
-                        {this.props.fetchingSetup &&
-                        <div className="progressIcon">
-                            <span className="fa fa-spinner fa-pulse" aria-hidden="true" />
-                        </div>
-                        }
-                        <SubmitButton id="setupSubmit">Save</SubmitButton>
-                    </div>
-                </div>
+                <ConfigButtons isFixed={false} includeSave type="submit" />
             </form>
         )
     }
