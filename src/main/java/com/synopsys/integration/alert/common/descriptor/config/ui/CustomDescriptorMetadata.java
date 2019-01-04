@@ -25,11 +25,14 @@ package com.synopsys.integration.alert.common.descriptor.config.ui;
 
 import java.util.Collections;
 
-public class CustomUIComponent extends UIComponent {
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.enumeration.DescriptorType;
+
+public class CustomDescriptorMetadata extends DescriptorMetadata {
     private String uiComponentName;
 
-    public CustomUIComponent(final String label, final String urlName, final String descriptorName, final String fontAwesomeIcon, final String uiComponentName) {
-        super(label, urlName, descriptorName, fontAwesomeIcon, false, Collections.emptyList());
+    public CustomDescriptorMetadata(final String label, final String urlName, final String name, final DescriptorType type, final ConfigContextEnum context, final String fontAwesomeIcon, final String uiComponentName) {
+        super(label, urlName, name, type, context, fontAwesomeIcon, false, Collections.emptyList());
         this.uiComponentName = uiComponentName;
     }
 
