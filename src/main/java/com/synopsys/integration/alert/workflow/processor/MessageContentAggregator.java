@@ -77,14 +77,15 @@ public class MessageContentAggregator {
             return Collections.emptyMap();
         }
 
+        // TODO JR jobConfigReader should be able to get jobs by frequency
         final List<CommonDistributionConfiguration> unfilteredDistributionConfigs = jobConfigReader.getPopulatedConfigs();
         if (unfilteredDistributionConfigs.isEmpty()) {
             return Collections.emptyMap();
         }
         final List<CommonDistributionConfiguration> distributionConfigs = unfilteredDistributionConfigs
-                                                                                  .stream()
-                                                                                  .filter(config -> frequency.equals(config.getFrequencyType()))
-                                                                                  .collect(Collectors.toList());
+                                                                              .stream()
+                                                                              .filter(config -> frequency.equals(config.getFrequencyType()))
+                                                                              .collect(Collectors.toList());
         if (distributionConfigs.isEmpty()) {
             return Collections.emptyMap();
         }
@@ -97,8 +98,8 @@ public class MessageContentAggregator {
             return Collections.emptyMap();
         }
         return distributionConfigs
-                       .stream()
-                       .collect(Collectors.toConcurrentMap(Function.identity(), jobConfig -> collectTopics(jobConfig, notificationList)));
+                   .stream()
+                   .collect(Collectors.toConcurrentMap(Function.identity(), jobConfig -> collectTopics(jobConfig, notificationList)));
     }
 
     private List<AggregateMessageContent> collectTopics(final CommonDistributionConfiguration jobConfiguration, final Collection<NotificationContent> notificationCollection) {
@@ -113,12 +114,12 @@ public class MessageContentAggregator {
             final Set<MessageContentCollector> providerMessageContentCollectors = providerDescriptor.get().createTopicCollectors();
             final Map<String, MessageContentCollector> collectorMap = createCollectorMap(providerMessageContentCollectors);
             notificationsForJob.stream()
-                    .filter(notificationContent -> collectorMap.containsKey(notificationContent.getNotificationType()))
-                    .forEach(notificationContent -> collectorMap.get(notificationContent.getNotificationType()).insert(notificationContent));
+                .filter(notificationContent -> collectorMap.containsKey(notificationContent.getNotificationType()))
+                .forEach(notificationContent -> collectorMap.get(notificationContent.getNotificationType()).insert(notificationContent));
             final List<AggregateMessageContent> collectedTopics = providerMessageContentCollectors
-                                                                          .stream()
-                                                                          .flatMap(collector -> collector.collect(formatType).stream())
-                                                                          .collect(Collectors.toList());
+                                                                      .stream()
+                                                                      .flatMap(collector -> collector.collect(formatType).stream())
+                                                                      .collect(Collectors.toList());
             return collectedTopics;
         }
         return Collections.emptyList();
@@ -126,8 +127,8 @@ public class MessageContentAggregator {
 
     private Optional<ProviderDescriptor> getProviderDescriptorByName(final String name) {
         return providerDescriptors.stream()
-                       .filter(descriptor -> name.equals(descriptor.getName()))
-                       .findFirst();
+                   .filter(descriptor -> name.equals(descriptor.getName()))
+                   .findFirst();
     }
 
     private Collection<NotificationContent> filterNotifications(final ProviderDescriptor providerDescriptor, final CommonDistributionConfiguration jobConfiguration, final Collection<NotificationContent> notificationCollection) {
@@ -151,8 +152,8 @@ public class MessageContentAggregator {
 
     private <T> List<T> applyFilter(final Collection<T> notificationList, final Predicate<T> filter) {
         return notificationList
-                       .stream()
-                       .filter(filter)
-                       .collect(Collectors.toList());
+                   .stream()
+                   .filter(filter)
+                   .collect(Collectors.toList());
     }
 }

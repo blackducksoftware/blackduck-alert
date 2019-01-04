@@ -50,6 +50,7 @@ public class JobConfigReader {
         this.configurationAccessor = configurationAccessor;
     }
 
+    // TODO JR There should be a getPopulatedConfigs(FrequencyType frequency)
     @Transactional
     public List<CommonDistributionConfiguration> getPopulatedConfigs() {
         try {

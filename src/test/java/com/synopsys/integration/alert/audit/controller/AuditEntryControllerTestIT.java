@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.audit.controller;
 
 import java.util.Collection;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,20 +53,14 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
     @Autowired
     private WebApplicationContext webApplicationContext;
     private MockMvc mockMvc;
-    private MockAuditEntryEntity mockAuditEntity;
 
     @BeforeEach
     public void setup() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).apply(SecurityMockMvcConfigurers.springSecurity()).build();
-
-        auditEntryRepository.deleteAllInBatch();
-        auditNotificationRepository.deleteAllInBatch();
-        notificationRepository.deleteAllInBatch();
-
-        mockAuditEntity = MockAuditEntryEntity.createDefault();
         cleanup();
     }
 
+    @AfterEach
     public void cleanup() {
         auditEntryRepository.deleteAllInBatch();
         descriptorConfigRepository.deleteAllInBatch();
@@ -86,9 +81,29 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     public void testGetConfigWithId() throws Exception {
-        AuditEntryEntity entity = mockAuditEntity.createEntity();
+        MockAuditEntryEntity mockAuditEntryEntity = new MockAuditEntryEntity();
+        AuditEntryEntity entity = mockAuditEntryEntity.createEntity();
         entity = auditEntryRepository.save(entity);
-        final String getUrl = auditUrl + "/" + String.valueOf(entity.getId());
+
+        MockNotificationContent mockNotificationContent = new MockNotificationContent();
+        NotificationContent notificationContent = mockNotificationContent.createEntity();
+        notificationContent = notificationRepository.save(notificationContent);
+
+        auditNotificationRepository.save(new AuditNotificationRelation(entity.getId(), notificationContent.getId()));
+
+        final String getUrl = auditUrl + "/" + String.valueOf(notificationContent.getId());
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(getUrl)
+                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
+        mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    public void testGetAuditInfoForJob() throws Exception {
+        AuditEntryEntity entity = new MockAuditEntryEntity().createEntity();
+        entity = auditEntryRepository.save(entity);
+        final String getUrl = auditUrl + "/job/" + String.valueOf(entity.getCommonConfigId());
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(getUrl)
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -104,12 +119,13 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
         final MockNotificationContent mockNotifications = new MockNotificationContent();
         NotificationContent notificationEntity = mockNotifications.createEntity();
         notificationEntity = notificationRepository.save(notificationEntity);
-        mockAuditEntity.setCommonConfigId(configurationModel.getConfigurationId());
-        AuditEntryEntity auditEntity = mockAuditEntity.createEntity();
+        MockAuditEntryEntity mockAuditEntryEntity = new MockAuditEntryEntity();
+        mockAuditEntryEntity.setCommonConfigId(configurationModel.getConfigurationId());
+        AuditEntryEntity auditEntity = mockAuditEntryEntity.createEntity();
         auditEntity = auditEntryRepository.save(auditEntity);
         auditNotificationRepository.save(new AuditNotificationRelation(auditEntity.getId(), notificationEntity.getId()));
 
-        final String resendUrl = auditUrl + "/" + String.valueOf(notificationEntity.getId()) + "/" + "/resend";
+        final String resendUrl = auditUrl + "/resend/" + String.valueOf(notificationEntity.getId()) + "/";
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(resendUrl)
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());

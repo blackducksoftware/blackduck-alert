@@ -31,8 +31,10 @@ import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ReadOnlyConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIComponent;
+import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 
 @Component
@@ -40,8 +42,8 @@ public class BlackDuckProviderUIConfig extends UIConfig {
     private static final String PROXY_SUB_GROUP = "Proxy Configuration";
 
     @Override
-    public UIComponent generateUIComponent() {
-        return new UIComponent("Black Duck", "blackduck", BlackDuckProvider.COMPONENT_NAME, "laptop", setupFields());
+    public DescriptorMetadata generateDescriptorMetadata() {
+        return new DescriptorMetadata("Black Duck", "blackduck", BlackDuckProvider.COMPONENT_NAME, DescriptorType.PROVIDER, ConfigContextEnum.GLOBAL, "laptop", setupFields());
     }
 
     public List<ConfigField> setupFields() {

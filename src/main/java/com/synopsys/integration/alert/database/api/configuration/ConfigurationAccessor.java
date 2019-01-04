@@ -107,6 +107,7 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
         return createConfigModels(Collections.emptyList());
     }
 
+    // TODO JR add getConfigurationsByDescriptorTypeAndFrequency(final DescriptorType descriptorType, FrequencyType frequency)
     @Override
     public List<ConfigurationModel> getConfigurationsByDescriptorType(final DescriptorType descriptorType) throws AlertDatabaseConstraintException {
         if (null == descriptorType) {
