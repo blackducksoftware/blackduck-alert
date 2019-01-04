@@ -27,8 +27,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
 import com.synopsys.integration.alert.database.entity.configuration.RegisteredDescriptorEntity;
 
 @Component
@@ -36,4 +38,11 @@ public interface RegisteredDescriptorRepository extends JpaRepository<Registered
     Optional<RegisteredDescriptorEntity> findFirstByName(final String descriptorName);
 
     List<RegisteredDescriptorEntity> findByTypeId(Long descriptorTypeId);
+
+    @Query(value = "SELECT entity FROM RegisteredDescriptorEntity entity "
+                       + "JOIN entity.descriptorConfigEntities descriptorConfigEntity ON entity.id = descriptorConfigEntity.descriptorId "
+                       + "JOIN descriptorConfigEntity.fieldValueEntities fieldValueEntity ON descriptorConfigEntity.id = fieldValueEntity.configId "
+                       + "JOIN fieldValueEntity.definedFieldEntity definedFieldEntity ON definedFieldEntity.id = fieldValueEntity.fieldId "
+                       + "WHERE entity.typeId = ?1 AND definedFieldEntity.key = '" + CommonDistributionUIConfig.KEY_FREQUENCY + "' AND fieldValueEntity.value = ?2")
+    List<RegisteredDescriptorEntity> findByTypeIdAndFrequency(Long descriptorTypeId, String frequency);
 }

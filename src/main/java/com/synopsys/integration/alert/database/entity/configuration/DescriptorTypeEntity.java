@@ -32,7 +32,6 @@ import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 @Entity
 @Table(schema = "ALERT", name = "DESCRIPTOR_TYPES")
 public class DescriptorTypeEntity extends DatabaseEntity {
-
     @Column(name = "TYPE")
     private String type;
 
@@ -46,4 +45,5 @@ public class DescriptorTypeEntity extends DatabaseEntity {
     public String getType() {
         return type;
     }
+
 }
