@@ -29,7 +29,6 @@ import com.synopsys.integration.alert.web.model.Config;
 import com.synopsys.integration.alert.web.model.NotificationConfig;
 
 public class AuditEntryModel extends Config {
-
     private NotificationConfig notification;
     private List<JobModel> jobs;
     private String overallStatus;

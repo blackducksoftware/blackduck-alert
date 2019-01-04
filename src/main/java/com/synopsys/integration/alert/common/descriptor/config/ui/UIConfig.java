@@ -25,5 +25,6 @@ package com.synopsys.integration.alert.common.descriptor.config.ui;
 
 public abstract class UIConfig {
 
-    public abstract UIComponent generateUIComponent();
+    // TODO rework this to leverage what we already know about a descriptor
+    public abstract DescriptorMetadata generateDescriptorMetadata();
 }

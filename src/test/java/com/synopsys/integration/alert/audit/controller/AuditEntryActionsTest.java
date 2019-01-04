@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.util.OutputLogger;
 import com.synopsys.integration.alert.web.audit.AuditEntryActions;
 import com.synopsys.integration.alert.web.audit.AuditEntryModel;
+import com.synopsys.integration.alert.web.audit.JobAuditModel;
 import com.synopsys.integration.alert.web.model.AlertPagedModel;
 import com.synopsys.integration.alert.web.model.NotificationContentConverter;
 import com.synopsys.integration.alert.workflow.NotificationManager;
@@ -58,8 +59,18 @@ public class AuditEntryActionsTest {
         Mockito.when(notificationManager.findById(Mockito.anyLong())).thenReturn(Optional.empty());
         final AuditEntryActions auditEntryActions = new AuditEntryActions(null, notificationManager, null, null, null, null, null, null);
 
-        final AuditEntryModel restModel = auditEntryActions.get(1L);
-        assertNull(restModel);
+        final Optional<AuditEntryModel> auditEntryModel = auditEntryActions.get(1L);
+        assertTrue(auditEntryModel.isEmpty());
+    }
+
+    @Test
+    public void testGetAuditInfoForJobNull() {
+        final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
+        Mockito.when(auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(Mockito.anyLong())).thenReturn(Optional.empty());
+        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, null, null, null, null, null, null, null);
+
+        final Optional<JobAuditModel> jobAuditModel = auditEntryActions.getAuditInfoForJob(1L);
+        assertTrue(jobAuditModel.isEmpty());
     }
 
     @Test
@@ -68,7 +79,7 @@ public class AuditEntryActionsTest {
         final NotificationContentRepository notificationRepository = Mockito.mock(NotificationContentRepository.class);
         final AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
         final JobConfigReader jobConfigReader = Mockito.mock(JobConfigReader.class);
-        final MockAuditEntryEntity mockAuditEntryEntity = MockAuditEntryEntity.createDefault();
+        final MockAuditEntryEntity mockAuditEntryEntity = new MockAuditEntryEntity();
         final MockNotificationContent mockNotificationEntity = new MockNotificationContent();
         Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(mockAuditEntryEntity.createEmptyEntity()));
         Mockito.when(jobConfigReader.getPopulatedConfig(Mockito.anyLong())).thenReturn(null);

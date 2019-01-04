@@ -21,10 +21,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.enumeration;
+package com.synopsys.integration.alert.web.controller.metadata;
 
-public enum DescriptorType {
-    CHANNEL,
-    PROVIDER,
-    COMPONENT
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.synopsys.integration.alert.web.controller.BaseController;
+
+@RequestMapping(MetadataController.METADATA_BASE_PATH)
+public abstract class MetadataController {
+    public static final String METADATA_BASE_PATH = BaseController.BASE_PATH + "/metadata";
+
 }

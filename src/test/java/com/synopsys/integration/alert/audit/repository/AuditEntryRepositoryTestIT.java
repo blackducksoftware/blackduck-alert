@@ -11,10 +11,12 @@
  */
 package com.synopsys.integration.alert.audit.repository;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.Date;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,9 +44,10 @@ public class AuditEntryRepositoryTestIT extends AlertIntegrationTest {
         auditEntryRepository.save(middleEntity);
         auditEntryRepository.save(mostRecentEntity);
 
-        final AuditEntryEntity foundEntity = auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(commonConfigId);
+        final Optional<AuditEntryEntity> foundEntity = auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(commonConfigId);
         assertNotNull(foundEntity);
-        assertEquals(mostRecentEntity, foundEntity);
+        assertTrue(foundEntity.isPresent());
+        assertEquals(mostRecentEntity, foundEntity.get());
     }
 
 }

@@ -26,27 +26,22 @@ package com.synopsys.integration.alert.web.audit;
 import com.synopsys.integration.alert.web.model.Config;
 
 public class JobModel extends Config {
-
     private String configId;
     private String name;
     private String eventType;
-    private String timeAuditCreated;
-    private String timeLastSent;
-    private String status;
+    private JobAuditModel jobAuditModel;
     private String errorMessage;
     private String errorStackTrace;
 
     public JobModel() {
     }
 
-    public JobModel(final String id, final String configId, final String name, final String eventType, final String timeAuditCreated, final String timeLastSent, final String status, final String errorMessage, final String errorStackTrace) {
+    public JobModel(final String id, final String configId, final String name, final String eventType, JobAuditModel jobAuditModel, final String errorMessage, final String errorStackTrace) {
         super(id);
         this.configId = configId;
         this.name = name;
         this.eventType = eventType;
-        this.timeAuditCreated = timeAuditCreated;
-        this.timeLastSent = timeLastSent;
-        this.status = status;
+        this.jobAuditModel = jobAuditModel;
         this.errorMessage = errorMessage;
         this.errorStackTrace = errorStackTrace;
     }
@@ -63,16 +58,8 @@ public class JobModel extends Config {
         return eventType;
     }
 
-    public String getTimeAuditCreated() {
-        return timeAuditCreated;
-    }
-
-    public String getTimeLastSent() {
-        return timeLastSent;
-    }
-
-    public String getStatus() {
-        return status;
+    public JobAuditModel getJobAuditModel() {
+        return jobAuditModel;
     }
 
     public String getErrorMessage() {
