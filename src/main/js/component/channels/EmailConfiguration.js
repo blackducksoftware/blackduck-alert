@@ -9,6 +9,7 @@ import ConfigButtons from '../common/ConfigButtons';
 
 import { closeEmailConfigTest, getEmailConfig, openEmailConfigTest, sendEmailConfigTest, toggleAdvancedEmailOptions, updateEmailConfig } from '../../store/actions/emailConfig';
 import ChannelTestModal from '../common/ChannelTestModal';
+import CollapsiblePane from "../common/CollapsiblePane";
 
 class EmailConfiguration extends React.Component {
     constructor(props) {
@@ -97,7 +98,6 @@ class EmailConfiguration extends React.Component {
     }
 
     render() {
-        const showAdvancedLabel = (this.props.showAdvanced) ? 'Hide Advanced' : 'Show Advanced';
         const { errorMessage, actionMessage } = this.props;
         return (
             <div>
@@ -164,25 +164,7 @@ class EmailConfiguration extends React.Component {
                         errorName="mailSmtpPasswordError"
                         errorValue={this.props.fieldErrors.mailSmtpPassword}
                     />
-
-                    <div className="form-group">
-                        <div className="col-sm-9 offset-sm-3">
-                            <button
-                                id="emailAdvanced"
-                                type="button"
-                                className="btn btn-link"
-                                onClick={() => {
-                                    this.props.toggleAdvancedEmailOptions(!this.props.showAdvanced);
-                                    return false;
-                                }}
-                            >
-                                {showAdvancedLabel}
-                            </button>
-                        </div>
-                    </div>
-
-                    {this.props.showAdvanced &&
-                    <div>
+                    <CollapsiblePane title="Advanced Settings">
                         <NumberInput
                             id="emailSmtpPort"
                             label="SMTP Port"
@@ -602,8 +584,7 @@ class EmailConfiguration extends React.Component {
                             errorName="mailSmtpNoopStrictError"
                             errorValue={this.props.fieldErrors.mailSmtpNoopStrict}
                         />
-                    </div>
-                    }
+                    </CollapsiblePane>
                     <ConfigButtons
                         cancelId="email-cancel"
                         submitId="email-submit"
@@ -684,7 +665,6 @@ EmailConfiguration.propTypes = {
     mailSmtpMailExtension: PropTypes.string,
     mailSmtpUserSet: PropTypes.bool,
     mailSmtpNoopStrict: PropTypes.bool,
-    showAdvanced: PropTypes.bool.isRequired,
     showTestModal: PropTypes.bool.isRequired,
     toggleAdvancedEmailOptions: PropTypes.func.isRequired,
     getEmailConfig: PropTypes.func.isRequired,
@@ -798,7 +778,6 @@ const mapStateToProps = state => ({
     mailSmtpMailExtension: state.emailConfig.mailSmtpMailExtension,
     mailSmtpUserSet: state.emailConfig.mailSmtpUserSet,
     mailSmtpNoopStrict: state.emailConfig.mailSmtpNoopStrict,
-    showAdvanced: state.emailConfig.showAdvanced,
     showTestModal: state.emailConfig.showTestModal,
     id: state.emailConfig.id,
     errorMessage: state.emailConfig.error.message,
