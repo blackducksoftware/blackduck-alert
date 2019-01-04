@@ -23,6 +23,8 @@
  */
 package com.synopsys.integration.alert.web.audit;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,12 +54,22 @@ public class AuditEntryHandler extends ControllerHandler {
         return auditEntryActions.get(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications);
     }
 
-    public AuditEntryModel get(final Long id) {
-        return auditEntryActions.get(id);
+    public ResponseEntity<String> get(final Long id) {
+        Optional<AuditEntryModel> auditEntryModel = auditEntryActions.get(id);
+        if (auditEntryModel.isPresent()) {
+            return createResponse(HttpStatus.OK, id, gson.toJson(auditEntryModel.get()));
+        } else {
+            return createResponse(HttpStatus.GONE, id, "This Audit entry could not be found.");
+        }
     }
 
-    public JobAuditModel getAuditInfoForJob(final Long jobId) {
-        return auditEntryActions.getAuditInfoForJob(jobId);
+    public ResponseEntity<String> getAuditInfoForJob(final Long jobId) {
+        Optional<JobAuditModel> jobAuditModel = auditEntryActions.getAuditInfoForJob(jobId);
+        if (jobAuditModel.isPresent()) {
+            return createResponse(HttpStatus.OK, jobId, gson.toJson(jobAuditModel.get()));
+        } else {
+            return createResponse(HttpStatus.GONE, jobId, "The Audit information could not be found for this job.");
+        }
     }
 
     public ResponseEntity<String> resendNotification(final Long notificationId, final Long commonConfigId) {

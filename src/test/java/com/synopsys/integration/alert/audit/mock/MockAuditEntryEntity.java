@@ -8,27 +8,13 @@ import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.mock.entity.MockEntityUtil;
 
 public class MockAuditEntryEntity extends MockEntityUtil<AuditEntryEntity> {
-    private Long commonConfigId;
-    private Date timeCreated;
-    private Date timeLastSent;
-    private AuditEntryStatus status;
-    private String errorMessage;
-    private String errorStackTrace;
-    private Long id;
-
-    public static MockAuditEntryEntity createDefault() {
-        return new MockAuditEntryEntity(2L, new Date(400), new Date(500), AuditEntryStatus.SUCCESS, "errorMessage", "errorStackTrace", 1L);
-    }
-
-    private MockAuditEntryEntity(final Long commonConfigId, final Date timeCreated, final Date timeLastSent, final AuditEntryStatus status, final String errorMessage, final String errorStackTrace, final Long id) {
-        this.commonConfigId = commonConfigId;
-        this.timeCreated = timeCreated;
-        this.timeLastSent = timeLastSent;
-        this.status = status;
-        this.errorMessage = errorMessage;
-        this.errorStackTrace = errorStackTrace;
-        this.id = id;
-    }
+    private Long commonConfigId = 2L;
+    private Date timeCreated = new Date(400);
+    private Date timeLastSent = new Date(500);
+    private AuditEntryStatus status = AuditEntryStatus.SUCCESS;
+    private String errorMessage = "errorMessage";
+    private String errorStackTrace = "errorStackTrace";
+    private Long id = 1L;
 
     public Long getCommonConfigId() {
         return commonConfigId;
