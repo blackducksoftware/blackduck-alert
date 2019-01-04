@@ -28,14 +28,16 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIComponent;
+import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 
 @Component
 public class SettingsUIConfig extends UIConfig {
     @Override
-    public UIComponent generateUIComponent() {
-        return new UIComponent("Settings", "settings", SettingsDescriptor.SETTINGS_COMPONENT, "cog", true, createFields());
+    public DescriptorMetadata generateDescriptorMetadata() {
+        return new DescriptorMetadata("Settings", "settings", SettingsDescriptor.SETTINGS_COMPONENT, DescriptorType.COMPONENT, ConfigContextEnum.GLOBAL, "cog", true, createFields());
     }
 
     public List<ConfigField> createFields() {
