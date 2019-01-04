@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
-import com.synopsys.integration.alert.database.api.configuration.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 
 public class FieldModel extends Config {
     private final Map<String, FieldValueModel> keyToValues;
@@ -70,7 +70,7 @@ public class FieldModel extends Config {
                    .collect(Collectors.toMap(Map.Entry::getKey, entry -> createConfigurationFieldModel(entry.getKey(), entry.getValue().getValues(), entry.getValue().isSet())));
     }
 
-    public void putField(String key, FieldValueModel field) {
+    public void putField(final String key, final FieldValueModel field) {
         keyToValues.put(key, field);
     }
 

@@ -21,26 +21,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.configuration;
+package com.synopsys.integration.alert.database.api.configuration.model;
 
-import javax.validation.constraints.NotNull;
+import com.synopsys.integration.util.Stringable;
 
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
-
-public class Configuration {
-    private final Long id;
-    private final FieldAccessor fieldAccessor;
-
-    public Configuration(@NotNull final ConfigurationModel configurationModel) {
-        fieldAccessor = new FieldAccessor(configurationModel.getCopyOfKeyToFieldMap());
-        id = configurationModel.getConfigurationId();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public FieldAccessor getFieldAccessor() {
-        return fieldAccessor;
-    }
+public class ConfigJobModel extends Stringable {
+    // TODO implement this
 }

@@ -139,7 +139,25 @@
                 onDelete="CASCADE"
         />
     </changeSet>
-    <changeSet author="gkillough" id="1543499878547-7">
+    <changeSet id="1543499878547-7" author="gkillough">
+        <createTable tableName="CONFIG_GROUPS" schemaName="ALERT">
+            <column name="ID" type="BIGINT(19)" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="CONFIG_GROUPS_KEY"/>
+            </column>
+            <column name="CONFIG_ID" type="BIGINT(19)"/>
+        </createTable>
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="CONFIG_GROUPS"
+                baseColumnNames="CONFIG_ID"
+                constraintName="FK_CONFIG_GROUP_VALUE"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="DESCRIPTOR_CONFIGS"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
+    </changeSet>
+    <changeSet author="gkillough" id="1543499878547-8">
         <createTable tableName="FIELD_VALUES" schemaName="ALERT">
             <column name="ID" type="BIGINT(19)" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="CONFIG_VALUES_KEY"/>

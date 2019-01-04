@@ -21,26 +21,35 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.configuration;
+package com.synopsys.integration.alert.database.api.configuration.model;
 
-import javax.validation.constraints.NotNull;
+import com.synopsys.integration.alert.common.enumeration.DescriptorType;
+import com.synopsys.integration.util.Stringable;
 
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
-
-public class Configuration {
+public final class RegisteredDescriptorModel extends Stringable {
     private final Long id;
-    private final FieldAccessor fieldAccessor;
+    private final String name;
+    private final DescriptorType type;
 
-    public Configuration(@NotNull final ConfigurationModel configurationModel) {
-        fieldAccessor = new FieldAccessor(configurationModel.getCopyOfKeyToFieldMap());
-        id = configurationModel.getConfigurationId();
+    public RegisteredDescriptorModel(final Long registeredDescriptorId, final String registeredDescriptorName, final String registeredDescriptorType) {
+        this(registeredDescriptorId, registeredDescriptorName, DescriptorType.valueOf(registeredDescriptorType));
+    }
+
+    private RegisteredDescriptorModel(final Long registeredDescriptorId, final String registeredDescriptorName, final DescriptorType registeredDescriptorType) {
+        id = registeredDescriptorId;
+        name = registeredDescriptorName;
+        type = registeredDescriptorType;
     }
 
     public Long getId() {
         return id;
     }
 
-    public FieldAccessor getFieldAccessor() {
-        return fieldAccessor;
+    public String getName() {
+        return name;
+    }
+
+    public DescriptorType getType() {
+        return type;
     }
 }

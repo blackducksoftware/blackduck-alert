@@ -41,6 +41,8 @@ import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.database.entity.configuration.ConfigContextEntity;
 import com.synopsys.integration.alert.database.entity.configuration.DefinedFieldEntity;
 import com.synopsys.integration.alert.database.entity.configuration.DescriptorFieldRelation;
@@ -54,7 +56,6 @@ import com.synopsys.integration.alert.database.repository.configuration.Descript
 import com.synopsys.integration.alert.database.repository.configuration.DescriptorTypeRepository;
 import com.synopsys.integration.alert.database.repository.configuration.FieldContextRepository;
 import com.synopsys.integration.alert.database.repository.configuration.RegisteredDescriptorRepository;
-import com.synopsys.integration.util.Stringable;
 
 @Component
 @Transactional
@@ -389,11 +390,11 @@ public class DescriptorAccessor implements BaseDescriptorAccessor {
                    .orElseThrow(() -> new AlertDatabaseConstraintException("A descriptor with that id did not exist"));
     }
 
-    private List<DefinedFieldModel> getFieldsForDescriptorId(final Long descriptorId, final Long contextId, ConfigContextEnum context) throws AlertDatabaseConstraintException {
-        List<DefinedFieldModel> fields = definedFieldRepository.findByDescriptorIdAndContext(descriptorId, contextId)
-                                             .stream()
-                                             .map(entity -> new DefinedFieldModel(entity.getKey(), context, entity.getSensitive()))
-                                             .collect(Collectors.toList());
+    private List<DefinedFieldModel> getFieldsForDescriptorId(final Long descriptorId, final Long contextId, final ConfigContextEnum context) throws AlertDatabaseConstraintException {
+        final List<DefinedFieldModel> fields = definedFieldRepository.findByDescriptorIdAndContext(descriptorId, contextId)
+                                                   .stream()
+                                                   .map(entity -> new DefinedFieldModel(entity.getKey(), context, entity.getSensitive()))
+                                                   .collect(Collectors.toList());
 
         return fields;
     }
@@ -414,31 +415,4 @@ public class DescriptorAccessor implements BaseDescriptorAccessor {
                    .orElseThrow(() -> new AlertDatabaseConstraintException("No field with that key exists"));
     }
 
-    public final class RegisteredDescriptorModel extends Stringable {
-        private final Long id;
-        private final String name;
-        private final DescriptorType type;
-
-        private RegisteredDescriptorModel(final Long registeredDescriptorId, final String registeredDescriptorName, final String registeredDescriptorType) {
-            this(registeredDescriptorId, registeredDescriptorName, DescriptorType.valueOf(registeredDescriptorType));
-        }
-
-        private RegisteredDescriptorModel(final Long registeredDescriptorId, final String registeredDescriptorName, final DescriptorType registeredDescriptorType) {
-            id = registeredDescriptorId;
-            name = registeredDescriptorName;
-            type = registeredDescriptorType;
-        }
-
-        public Long getId() {
-            return id;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public DescriptorType getType() {
-            return type;
-        }
-    }
 }

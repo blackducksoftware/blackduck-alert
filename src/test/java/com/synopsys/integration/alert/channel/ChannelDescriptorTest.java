@@ -28,9 +28,11 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistribu
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor;
-import com.synopsys.integration.alert.database.api.configuration.ConfigurationFieldModel;
-import com.synopsys.integration.alert.database.api.configuration.DefinedFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.DescriptorAccessor;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
+import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.FieldValueModel;
@@ -49,9 +51,9 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
     @Autowired
     protected DescriptorAccessor descriptorAccessor;
 
-    protected ConfigurationAccessor.ConfigurationModel provider_global;
-    protected Optional<ConfigurationAccessor.ConfigurationModel> global_config;
-    protected ConfigurationAccessor.ConfigurationModel distribution_config;
+    protected ConfigurationModel provider_global;
+    protected Optional<ConfigurationModel> global_config;
+    protected ConfigurationModel distribution_config;
 
     @BeforeEach
     public void init() throws Exception {
@@ -77,9 +79,9 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
         if (provider_global != null) {
             configurationAccessor.deleteConfiguration(provider_global);
         }
-        final List<DescriptorAccessor.RegisteredDescriptorModel> registeredDescriptorModels = descriptorAccessor.getRegisteredDescriptors();
+        final List<RegisteredDescriptorModel> registeredDescriptorModels = descriptorAccessor.getRegisteredDescriptors();
 
-        for (final DescriptorAccessor.RegisteredDescriptorModel registeredDescriptor : registeredDescriptorModels) {
+        for (final RegisteredDescriptorModel registeredDescriptor : registeredDescriptorModels) {
             try {
                 descriptorAccessor.unregisterDescriptor(registeredDescriptor.getName());
             } catch (final AlertDatabaseConstraintException ex) {
@@ -102,7 +104,7 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
         return fieldModelMap;
     }
 
-    public FieldModel createValidFieldModel(final ConfigurationAccessor.ConfigurationModel configurationModel, final ConfigContextEnum context) {
+    public FieldModel createValidFieldModel(final ConfigurationModel configurationModel, final ConfigContextEnum context) {
         final Map<String, FieldValueModel> fieldValueMap = createFieldModelMap(configurationModel.getCopyOfFieldList());
         if (ConfigContextEnum.DISTRIBUTION == context) {
             global_config.ifPresent(globalConfig -> fieldValueMap.putAll(createFieldModelMap(globalConfig.getCopyOfFieldList())));
@@ -148,9 +150,9 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
 
     public abstract DistributionEvent createChannelEvent();
 
-    public abstract Optional<ConfigurationAccessor.ConfigurationModel> saveGlobalConfiguration() throws Exception;
+    public abstract Optional<ConfigurationModel> saveGlobalConfiguration() throws Exception;
 
-    public abstract ConfigurationAccessor.ConfigurationModel saveDistributionConfiguration() throws Exception;
+    public abstract ConfigurationModel saveDistributionConfiguration() throws Exception;
 
     public abstract ChannelDescriptor getDescriptor();
 
@@ -195,7 +197,7 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
 
     @Test
     public void testCreateChannelEvent() {
-        final DistributionEvent channelEvent = this.createChannelEvent();
+        final DistributionEvent channelEvent = createChannelEvent();
         assertEquals(String.valueOf(distribution_config.getConfigurationId()), channelEvent.getConfigId());
         assertEquals(36, channelEvent.getEventId().length());
         assertEquals(getDescriptor().getDestinationName(), channelEvent.getDestination());
@@ -208,7 +210,7 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
         final FieldValueModel jobNameField = restModel.getField(CommonDistributionUIConfig.KEY_NAME);
         jobNameField.setValue(getTestJobName());
         final HashMap<String, String> fieldErrors = new HashMap<>();
-        final List<ConfigurationAccessor.ConfigurationModel> models = configurationAccessor.getConfigurationsByDescriptorName(getDescriptor().getName());
+        final List<ConfigurationModel> models = configurationAccessor.getConfigurationsByDescriptorName(getDescriptor().getName());
         descriptorActionApi.validateConfig(restModel.convertToFieldAccessor(), fieldErrors);
         assertTrue(fieldErrors.isEmpty());
     }
