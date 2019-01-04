@@ -1,23 +1,20 @@
 package com.synopsys.integration.alert.util;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
-import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
@@ -25,41 +22,15 @@ import com.synopsys.integration.alert.database.api.configuration.ConfigurationFi
 
 public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
 
-    private final List<Descriptor> descriptors;
+    private final List<Descriptor> descriptors = new LinkedList<>();
     @Autowired
     private BaseDescriptorAccessor descriptorAccessor;
     @Autowired
     private BaseConfigurationAccessor configurationAccessor;
-    @Autowired
-    private DescriptorMap descriptorMap;
     private Set<Long> addedConfigurations;
 
-    public DatabaseConfiguredFieldTest() {
-        descriptors = new ArrayList<>();
-        descriptors.addAll(descriptorMap.getDescriptorMap().values());
-    }
-
-    public DatabaseConfiguredFieldTest(final List<Descriptor> descriptors) {
-        this.descriptors = new ArrayList<>();
-        descriptors.addAll(descriptors);
-    }
-
-    @BeforeAll
-    public void initializeDescriptors() throws AlertDatabaseConstraintException {
-        for (final Descriptor descriptor : descriptors) {
-            registerDescriptor(descriptor);
-        }
-    }
-
-    @AfterAll
-    public void removeDescriptors() throws AlertDatabaseConstraintException {
-        for (final Descriptor descriptor : descriptors) {
-            unregisterDescriptor(descriptor);
-        }
-    }
-
     @BeforeEach
-    public void initializeTest() {
+    public void initializeTest() throws AlertDatabaseConstraintException {
         addedConfigurations = new HashSet<>();
     }
 
@@ -100,7 +71,9 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
     }
 
     public void deleteConfiguration(final Long id) throws AlertDatabaseConstraintException {
-        configurationAccessor.deleteConfiguration(id);
+        if (configurationAccessor.getConfigurationById(id).isPresent()) {
+            configurationAccessor.deleteConfiguration(id);
+        }
     }
 
     public BaseDescriptorAccessor getDescriptorAccessor() {
@@ -109,10 +82,6 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
 
     public BaseConfigurationAccessor getConfigurationAccessor() {
         return configurationAccessor;
-    }
-
-    public DescriptorMap getDescriptorMap() {
-        return descriptorMap;
     }
 
     public Set<Long> getAddedConfigurations() {

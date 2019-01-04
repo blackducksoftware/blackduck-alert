@@ -145,9 +145,9 @@ class Index extends Component {
             inProgress: true
         });
 
-        let resendUrl = `/alert/api/audit/${notificationId}/resend`;
+        let resendUrl = `/alert/api/audit/resend/${notificationId}/`;
         if (commonConfigId) {
-            resendUrl += `?commonConfigId=${commonConfigId}`;
+            resendUrl += `job/${commonConfigId}/`;
         }
 
         const { csrfToken } = this.props;
