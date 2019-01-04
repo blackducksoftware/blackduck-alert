@@ -44,7 +44,7 @@ public class RegisteredDescriptorEntity extends DatabaseEntity {
 
     @OneToMany
     @JoinColumn(name = "DESCRIPTOR_ID", insertable = false, updatable = false)
-    private List<DescriptorConfigEntity> discriptorConfigs;
+    private List<DescriptorConfigEntity> descriptorConfigEntities;
 
     public RegisteredDescriptorEntity() {
         // JPA requires default constructor definitions
@@ -63,7 +63,7 @@ public class RegisteredDescriptorEntity extends DatabaseEntity {
         return typeId;
     }
 
-    public List<DescriptorConfigEntity> getDiscriptorConfigs() {
-        return discriptorConfigs;
+    public List<DescriptorConfigEntity> getDescriptorConfigEntities() {
+        return descriptorConfigEntities;
     }
 }
