@@ -88,7 +88,6 @@ const config = (state = initialState, action) => {
 
         default:
             return state;
-
     }
 };
 

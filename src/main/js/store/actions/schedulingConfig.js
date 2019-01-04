@@ -1,13 +1,13 @@
 import {
-    SCHEDULING_CONFIG_FETCHING,
-    SCHEDULING_CONFIG_FETCHED,
-    SCHEDULING_CONFIG_FETCH_ERROR,
-    SCHEDULING_CONFIG_UPDATE_ERROR,
-    SCHEDULING_CONFIG_UPDATING,
-    SCHEDULING_CONFIG_UPDATED,
     SCHEDULING_ACCUMULATOR_ERROR,
     SCHEDULING_ACCUMULATOR_RUNNING,
-    SCHEDULING_ACCUMULATOR_SUCCESS
+    SCHEDULING_ACCUMULATOR_SUCCESS,
+    SCHEDULING_CONFIG_FETCH_ERROR,
+    SCHEDULING_CONFIG_FETCHED,
+    SCHEDULING_CONFIG_FETCHING,
+    SCHEDULING_CONFIG_UPDATE_ERROR,
+    SCHEDULING_CONFIG_UPDATED,
+    SCHEDULING_CONFIG_UPDATING
 } from './types';
 
 import { verifyLoginByStatus } from './session';
@@ -42,7 +42,7 @@ function schedulingConfigFetchError(message) {
         error: {
             message
         }
-    }
+    };
 }
 
 /**
@@ -119,20 +119,20 @@ export function getSchedulingConfig() {
                 'X-CSRF-TOKEN': csrfToken
             }
         })
-        .then((response) => {
-            if(response.ok) {
-                response.json().then((body) => {
-                    if (body.length > 0) {
-                        dispatch(schedulingConfigFetched(body[0]));
-                    } else {
-                        dispatch(schedulingConfigFetched({}));
-                    }
-                });
-            } else {
-                dispatch(verifyLoginByStatus(response.status));
-            }
-        })
-        .catch(dispatch(schedulingConfigFetchError(console.error)));
+            .then((response) => {
+                if (response.ok) {
+                    response.json().then((body) => {
+                        if (body.length > 0) {
+                            dispatch(schedulingConfigFetched(body[0]));
+                        } else {
+                            dispatch(schedulingConfigFetched({}));
+                        }
+                    });
+                } else {
+                    dispatch(verifyLoginByStatus(response.status));
+                }
+            })
+            .catch(dispatch(schedulingConfigFetchError(console.error)));
     };
 }
 

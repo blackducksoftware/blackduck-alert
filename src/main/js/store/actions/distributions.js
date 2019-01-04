@@ -13,12 +13,12 @@ import {
     DISTRIBUTION_JOB_UPDATING
 } from './types';
 
-import {verifyLoginByStatus} from './session';
+import { verifyLoginByStatus } from './session';
 
 function fetchingJob() {
     return {
         type: DISTRIBUTION_JOB_FETCHING
-    }
+    };
 }
 
 function jobFetched(config) {
@@ -27,26 +27,26 @@ function jobFetched(config) {
         jobs: {
             [config.distributionConfigId]: config
         }
-    }
+    };
 }
 
 function jobFetchError() {
     return {
         type: DISTRIBUTION_JOB_FETCH_ERROR
-    }
+    };
 }
 
 function savingJobConfig() {
     return {
         type: DISTRIBUTION_JOB_SAVING
-    }
+    };
 }
 
 function saveJobSuccess(message) {
     return {
         type: DISTRIBUTION_JOB_SAVED,
         configurationMessage: message
-    }
+    };
 }
 
 function saveJobFailed(errors, message) {
@@ -54,20 +54,20 @@ function saveJobFailed(errors, message) {
         type: DISTRIBUTION_JOB_SAVE_ERROR,
         configurationMessage: message,
         errors
-    }
+    };
 }
 
 function updatingJobConfig() {
     return {
         type: DISTRIBUTION_JOB_UPDATING
-    }
+    };
 }
 
 function updateJobSuccess(message) {
     return {
         type: DISTRIBUTION_JOB_UPDATED,
         configurationMessage: message
-    }
+    };
 }
 
 function updateJobFailed(errors, message) {
@@ -75,20 +75,20 @@ function updateJobFailed(errors, message) {
         type: DISTRIBUTION_JOB_UPDATE_ERROR,
         configurationMessage: message,
         errors
-    }
+    };
 }
 
 function testingJobConfig() {
     return {
         type: DISTRIBUTION_JOB_TESTING
-    }
+    };
 }
 
 function testJobSuccess(message) {
     return {
         type: DISTRIBUTION_JOB_TEST_SUCCESS,
         configurationMessage: message
-    }
+    };
 }
 
 function testJobFailed(errors, message) {
@@ -96,7 +96,7 @@ function testJobFailed(errors, message) {
         type: DISTRIBUTION_JOB_TEST_FAILURE,
         configurationMessage: message,
         errors
-    }
+    };
 }
 
 export function getDistributionJob(url, id) {
@@ -118,8 +118,7 @@ export function getDistributionJob(url, id) {
                             dispatch(jobFetchError());
                         }
                     });
-                }
-                else {
+                } else {
                     dispatch(verifyLoginByStatus(response.status));
                 }
             }).catch(console.error);
@@ -132,7 +131,7 @@ export function getDistributionJob(url, id) {
 export function saveDistributionJob(url, config) {
     return (dispatch, getState) => {
         dispatch(savingJobConfig());
-        const {csrfToken} = getState().session;
+        const { csrfToken } = getState().session;
         fetch(url, {
             method: 'POST',
             credentials: 'same-origin',
@@ -142,35 +141,34 @@ export function saveDistributionJob(url, config) {
             },
             body: config
         }).then((response) => {
-                if (!response.ok && response.status == 401) {
-                    dispatch(verifyLoginByStatus(response.status));
-                } else {
-                    response.json().then((json) => {
-                        const jsonErrors = json.errors;
-                        if (jsonErrors) {
-                            const errors = {};
-                            for (const key in jsonErrors) {
-                                if (jsonErrors.hasOwnProperty(key)) {
-                                    const name = key.concat('Error');
-                                    const value = jsonErrors[key];
-                                    errors[name] = value;
-                                }
+            if (!response.ok && response.status === 401) {
+                dispatch(verifyLoginByStatus(response.status));
+            } else {
+                response.json().then((json) => {
+                    const jsonErrors = json.errors;
+                    if (jsonErrors) {
+                        const errors = {};
+                        for (const key in jsonErrors) {
+                            if (jsonErrors.hasOwnProperty(key)) {
+                                const name = key.concat('Error');
+                                const value = jsonErrors[key];
+                                errors[name] = value;
                             }
-                            dispatch(saveJobFailed(errors, json.message));
-                        } else {
-                            dispatch(saveJobSuccess(json.message));
                         }
-                    });
-                }
+                        dispatch(saveJobFailed(errors, json.message));
+                    } else {
+                        dispatch(saveJobSuccess(json.message));
+                    }
+                });
             }
-        ).catch(console.error);
-    }
+        }).catch(console.error);
+    };
 }
 
 export function updateDistributionJob(url, config) {
     return (dispatch, getState) => {
         dispatch(updatingJobConfig());
-        const {csrfToken} = getState().session;
+        const { csrfToken } = getState().session;
         fetch(url, {
             method: 'PUT',
             credentials: 'same-origin',
@@ -180,7 +178,7 @@ export function updateDistributionJob(url, config) {
             },
             body: config
         }).then((response) => {
-            if (!response.ok && response.status == 401) {
+            if (!response.ok && response.status === 401) {
                 dispatch(verifyLoginByStatus(response.status));
             } else {
                 response.json().then((json) => {
@@ -201,13 +199,13 @@ export function updateDistributionJob(url, config) {
                 });
             }
         }).catch(console.error);
-    }
+    };
 }
 
 export function testDistributionJob(url, config) {
     return (dispatch, getState) => {
         dispatch(testingJobConfig());
-        const {csrfToken} = getState().session;
+        const { csrfToken } = getState().session;
         fetch(url, {
             method: 'POST',
             credentials: 'same-origin',
@@ -217,7 +215,7 @@ export function testDistributionJob(url, config) {
             },
             body: config
         }).then((response) => {
-            if (!response.ok && response.status == 401) {
+            if (!response.ok && response.status === 401) {
                 dispatch(verifyLoginByStatus(response.status));
             } else {
                 response.json().then((json) => {
@@ -238,5 +236,5 @@ export function testDistributionJob(url, config) {
                 });
             }
         }).catch(console.error);
-    }
+    };
 }

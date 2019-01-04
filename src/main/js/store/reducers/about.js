@@ -1,4 +1,4 @@
-import {ABOUT_INFO_FETCH_ERROR, ABOUT_INFO_FETCHED, ABOUT_INFO_FETCHING, SERIALIZE} from '../actions/types';
+import { ABOUT_INFO_FETCH_ERROR, ABOUT_INFO_FETCHED, ABOUT_INFO_FETCHING, SERIALIZE } from '../actions/types';
 
 const initialState = {
     fetching: false,
@@ -36,6 +36,6 @@ const config = (state = initialState, action) => {
         default:
             return state;
     }
-}
+};
 
 export default config;

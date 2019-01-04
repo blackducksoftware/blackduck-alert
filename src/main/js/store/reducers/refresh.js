@@ -1,4 +1,4 @@
-import {REFRESH_DISABLE, REFRESH_ENABLE, SERIALIZE} from '../actions/types';
+import { REFRESH_DISABLE, REFRESH_ENABLE, SERIALIZE } from '../actions/types';
 
 const initialState = {
     autoRefresh: true
