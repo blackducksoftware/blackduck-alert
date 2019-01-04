@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.audit.controller;
 
 import java.util.Collection;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,13 +57,10 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
     @BeforeEach
     public void setup() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).apply(SecurityMockMvcConfigurers.springSecurity()).build();
-
-        auditEntryRepository.deleteAllInBatch();
-        auditNotificationRepository.deleteAllInBatch();
-        notificationRepository.deleteAllInBatch();
         cleanup();
     }
 
+    @AfterEach
     public void cleanup() {
         auditEntryRepository.deleteAllInBatch();
         descriptorConfigRepository.deleteAllInBatch();
