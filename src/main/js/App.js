@@ -1,19 +1,19 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
-import {withRouter} from 'react-router-dom';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 
 import 'font-awesome/scss/font-awesome.scss';
 
 import MainPage from './MainPage';
 import LoginPage from './LoginPage';
 import AboutInfoFooter from './AboutInfoFooter';
-import {getConfig} from './store/actions/config';
-import {verifyLogin} from './store/actions/session';
-import {getCurrentSystemSetup} from './store/actions/system';
+import { getConfig } from './store/actions/config';
+import { verifyLogin } from './store/actions/session';
+import { getCurrentSystemSetup } from './store/actions/system';
 
 import '../css/main.scss';
-import SetupPage from "./SetupPage";
+import SetupPage from './SetupPage';
 
 class App extends Component {
     componentDidMount() {
@@ -24,16 +24,15 @@ class App extends Component {
 
     render() {
         if (this.props.initializing) {
-            return (<div/>);
-        } else {
-            const contentPage = (this.props.systemSetupAttempted) ? ((this.props.loggedIn) ? <MainPage/> : <LoginPage/>) : <SetupPage/>;
-            return (
-                <div>
-                    {contentPage}
-                    <AboutInfoFooter/>
-                </div>
-            );
+            return (<div />);
         }
+        const contentPage = (this.props.systemSetupAttempted) ? ((this.props.loggedIn) ? <MainPage /> : <LoginPage />) : <SetupPage />;
+        return (
+            <div>
+                {contentPage}
+                <AboutInfoFooter />
+            </div>
+        );
     }
 }
 
