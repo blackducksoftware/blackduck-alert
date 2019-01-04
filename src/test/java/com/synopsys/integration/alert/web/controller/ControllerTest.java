@@ -29,7 +29,7 @@ public abstract class ControllerTest extends AlertIntegrationTest {
     //
     //    public abstract CommonDistributionConfig getConfig();
     //
-    //    public abstract String getDescriptorName();
+    //    public abstract String getName();
     //
     //    public abstract Long saveGlobalConfig();
     //
@@ -53,13 +53,13 @@ public abstract class ControllerTest extends AlertIntegrationTest {
     //        config = getConfig();
     //        entity = getEntity();
     //        entity = repositoryAccessor.saveEntity(entity);
-    //        restUrl = BaseController.BASE_PATH + "/configuration/channel/distribution/" + getDescriptorName();
+    //        restUrl = BaseController.BASE_PATH + "/configuration/channel/distribution/" + getName();
     //    }
     //
     //    @Test
     //    @WithMockUser(roles = "ADMIN")
     //    public void testGetConfig() throws Exception {
-    //        distributionMockUtil.setDistributionType(getDescriptorName());
+    //        distributionMockUtil.setDistributionType(getName());
     //        distributionMockUtil.setDistributionConfigId(entity.getId());
     //        final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.save(distributionMockUtil.createEntity());
     //        final String getUrl = restUrl + "?id=" + commonEntity.getId();
