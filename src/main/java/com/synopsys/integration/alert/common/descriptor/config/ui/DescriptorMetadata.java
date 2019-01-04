@@ -26,24 +26,31 @@ package com.synopsys.integration.alert.common.descriptor.config.ui;
 import java.util.List;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.util.Stringable;
 
-public class UIComponent extends Stringable {
+public class DescriptorMetadata extends Stringable {
     private final String label;
     private final String urlName;
-    private final String descriptorName;
+    private final String name;
+    private final DescriptorType type;
+    private final ConfigContextEnum context;
     private final String fontAwesomeIcon;
     private final boolean automaticallyGenerateUI;
     private List<ConfigField> fields;
 
-    public UIComponent(final String label, final String urlName, final String descriptorName, final String fontAwesomeIcon, final List<ConfigField> fields) {
-        this(label, urlName, descriptorName, fontAwesomeIcon, true, fields);
+    public DescriptorMetadata(final String label, final String urlName, final String name, final DescriptorType type, final ConfigContextEnum context, final String fontAwesomeIcon, final List<ConfigField> fields) {
+        this(label, urlName, name, type, context, fontAwesomeIcon, true, fields);
     }
 
-    public UIComponent(final String label, final String urlName, final String descriptorName, final String fontAwesomeIcon, final boolean automaticallyGenerateUI, final List<ConfigField> fields) {
+    public DescriptorMetadata(final String label, final String urlName, final String name, final DescriptorType type, final ConfigContextEnum context, final String fontAwesomeIcon, final boolean automaticallyGenerateUI,
+        final List<ConfigField> fields) {
         this.label = label;
         this.urlName = urlName;
-        this.descriptorName = descriptorName;
+        this.name = name;
+        this.type = type;
+        this.context = context;
         this.fontAwesomeIcon = fontAwesomeIcon;
         this.automaticallyGenerateUI = automaticallyGenerateUI;
         this.fields = fields;
@@ -57,8 +64,16 @@ public class UIComponent extends Stringable {
         return urlName;
     }
 
-    public String getDescriptorName() {
-        return descriptorName;
+    public String getName() {
+        return name;
+    }
+
+    public DescriptorType getType() {
+        return type;
+    }
+
+    public ConfigContextEnum getContext() {
+        return context;
     }
 
     public String getFontAwesomeIcon() {
