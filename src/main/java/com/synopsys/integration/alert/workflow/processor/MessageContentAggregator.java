@@ -77,15 +77,7 @@ public class MessageContentAggregator {
             return Collections.emptyMap();
         }
 
-        // TODO JR jobConfigReader should be able to get jobs by frequency
-        final List<CommonDistributionConfiguration> unfilteredDistributionConfigs = jobConfigReader.getPopulatedConfigs();
-        if (unfilteredDistributionConfigs.isEmpty()) {
-            return Collections.emptyMap();
-        }
-        final List<CommonDistributionConfiguration> distributionConfigs = unfilteredDistributionConfigs
-                                                                              .stream()
-                                                                              .filter(config -> frequency.equals(config.getFrequencyType()))
-                                                                              .collect(Collectors.toList());
+        final List<CommonDistributionConfiguration> distributionConfigs = jobConfigReader.getPopulatedConfigs(frequency);
         if (distributionConfigs.isEmpty()) {
             return Collections.emptyMap();
         }

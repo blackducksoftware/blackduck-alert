@@ -1,4 +1,4 @@
-import {REFRESH_DISABLE, REFRESH_ENABLE} from './types';
+import { REFRESH_DISABLE, REFRESH_ENABLE } from './types';
 
 /**
  * Triggers Auto Refresh

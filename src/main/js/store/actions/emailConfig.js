@@ -11,7 +11,7 @@ import {
     EMAIL_CONFIG_UPDATING
 } from './types';
 
-import {verifyLoginByStatus} from './session';
+import { verifyLoginByStatus } from './session';
 
 const CONFIG_URL = '/alert/api/configuration/channel/global/channel_email';
 const TEST_URL = `${CONFIG_URL}/test`;
@@ -87,7 +87,7 @@ function fetchingEmailConfig() {
 function emailConfigFetched(config) {
     return {
         type: EMAIL_CONFIG_FETCHED,
-        config: {...scrubConfig(config)}
+        config: { ...scrubConfig(config) }
     };
 }
 
@@ -120,7 +120,7 @@ function updatingEmailConfig() {
 function emailConfigUpdated(config) {
     return {
         type: EMAIL_CONFIG_UPDATED,
-        config: {...scrubConfig(config)}
+        config: { ...scrubConfig(config) }
     };
 }
 
@@ -142,17 +142,17 @@ function handleFailureResponse(dispatch, response) {
 
 export function toggleAdvancedEmailOptions(toggle) {
     if (toggle) {
-        return {type: EMAIL_CONFIG_SHOW_ADVANCED};
+        return { type: EMAIL_CONFIG_SHOW_ADVANCED };
     }
-    return {type: EMAIL_CONFIG_HIDE_ADVANCED};
+    return { type: EMAIL_CONFIG_HIDE_ADVANCED };
 }
 
 export function openEmailConfigTest() {
-    return {type: EMAIL_CONFIG_SHOW_TEST_MODAL};
+    return { type: EMAIL_CONFIG_SHOW_TEST_MODAL };
 }
 
 export function closeEmailConfigTest() {
-    return {type: EMAIL_CONFIG_HIDE_TEST_MODAL};
+    return { type: EMAIL_CONFIG_HIDE_TEST_MODAL };
 }
 
 export function emailConfigTestSucceeded() {
@@ -176,7 +176,7 @@ export function getEmailConfig() {
                         } else {
                             dispatch(emailConfigFetched({}));
                         }
-                    })
+                    });
                 } else {
                     dispatch(verifyLoginByStatus(response.status));
                 }
@@ -190,7 +190,7 @@ export function updateEmailConfig(config) {
         dispatch(updatingEmailConfig());
         const method = config.id ? 'PUT' : 'POST';
         const body = scrubConfig(config);
-        const {csrfToken} = getState().session;
+        const { csrfToken } = getState().session;
         fetch(CONFIG_URL, {
             credentials: 'same-origin',
             method,
@@ -203,7 +203,7 @@ export function updateEmailConfig(config) {
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
-                        dispatch(emailConfigUpdated({...config, id: data.id}));
+                        dispatch(emailConfigUpdated({ ...config, id: data.id }));
                     }).then(() => {
                         dispatch(getEmailConfig());
                     });
@@ -218,7 +218,7 @@ export function updateEmailConfig(config) {
 export function sendEmailConfigTest(config, destination) {
     return (dispatch, getState) => {
         const body = scrubConfig(config);
-        const {csrfToken} = getState().session;
+        const { csrfToken } = getState().session;
         const encodedDestination = encodeURIComponent(destination);
         const requestUrl = `${TEST_URL}?destination=${encodedDestination}`;
         fetch(requestUrl, {
@@ -234,9 +234,8 @@ export function sendEmailConfigTest(config, destination) {
                 dispatch(closeEmailConfigTest());
                 if (response.ok) {
                     return dispatch(emailConfigTestSucceeded());
-                } else {
-                    handleFailureResponse(dispatch, response);
                 }
-            })
+                handleFailureResponse(dispatch, response);
+            });
     };
 }
