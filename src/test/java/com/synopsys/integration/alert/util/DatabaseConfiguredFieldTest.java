@@ -1,8 +1,8 @@
 package com.synopsys.integration.alert.util;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,7 +22,7 @@ import com.synopsys.integration.alert.database.api.configuration.ConfigurationFi
 
 public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
 
-    private final List<Descriptor> descriptors = new ArrayList<>();
+    private final List<Descriptor> descriptors = new LinkedList<>();
     @Autowired
     private BaseDescriptorAccessor descriptorAccessor;
     @Autowired
