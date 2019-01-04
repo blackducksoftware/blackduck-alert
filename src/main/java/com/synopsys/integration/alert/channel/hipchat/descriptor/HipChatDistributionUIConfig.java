@@ -28,25 +28,21 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 
 @Component
 public class HipChatDistributionUIConfig extends UIConfig {
 
-    @Override
-    public DescriptorMetadata generateDescriptorMetadata() {
-        return new DescriptorMetadata("HipChat", "hipchat", HipChatChannel.COMPONENT_NAME, DescriptorType.CHANNEL, ConfigContextEnum.DISTRIBUTION, "comments", setupFields());
+    public HipChatDistributionUIConfig() {
+        super("HipChat", "hipchat", "comments");
     }
 
-    public List<ConfigField> setupFields() {
+    @Override
+    public List<ConfigField> createFields() {
         final ConfigField roomId = NumberConfigField.createRequired(HipChatDescriptor.KEY_ROOM_ID, "Room Id");
         final ConfigField notify = CheckboxConfigField.create(HipChatDescriptor.KEY_NOTIFY, "Notify");
         final ConfigField color = SelectConfigField.create(HipChatDescriptor.KEY_COLOR, "Color", Arrays.asList("Yellow", "Green", "Red", "Purple", "Gray", "Random"));

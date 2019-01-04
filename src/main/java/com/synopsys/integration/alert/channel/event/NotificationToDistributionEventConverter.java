@@ -26,6 +26,7 @@ package com.synopsys.integration.alert.channel.event;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +54,10 @@ public class NotificationToDistributionEventConverter {
         final List<DistributionEvent> distributionEvents = new ArrayList<>();
         for (final Map.Entry<CommonDistributionConfiguration, List<AggregateMessageContent>> entry : messageContentMap.entrySet()) {
             for (final AggregateMessageContent content : entry.getValue()) {
-                distributionEvents.add(createChannelEvent(entry.getKey(), content));
+                final DistributionEvent channelEvent = createChannelEvent(entry.getKey(), content);
+                if (null != channelEvent) {
+                    distributionEvents.add(channelEvent);
+                }
             }
         }
         logger.debug("Created {} events.", distributionEvents.size());
@@ -63,7 +67,11 @@ public class NotificationToDistributionEventConverter {
     private DistributionEvent createChannelEvent(final CommonDistributionConfiguration config, final AggregateMessageContent messageContent) {
         final ChannelDescriptor channelDescriptor = descriptorMap.getChannelDescriptor(config.getChannelName());
         logger.info("Found descriptor {}", channelDescriptor.getName());
-        final DescriptorActionApi actionApi = channelDescriptor.getRestApi(ConfigContextEnum.DISTRIBUTION);
-        return actionApi.createChannelEvent(config, messageContent);
+        final Optional<DescriptorActionApi> actionApi = channelDescriptor.getActionApi(ConfigContextEnum.DISTRIBUTION);
+        if (actionApi.isEmpty()) {
+            return null;
+        }
+
+        return actionApi.get().createChannelEvent(config, messageContent);
     }
 }

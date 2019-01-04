@@ -140,7 +140,8 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
                                                                          .filter(providerDescriptor -> providerDescriptor.getName().equals(providerName))
                                                                          .findFirst();
         if (foundProviderDescriptor.isPresent()) {
-            return foundProviderDescriptor.get().getRestApi(ConfigContextEnum.DISTRIBUTION);
+            final Optional<DescriptorActionApi> actionApi = foundProviderDescriptor.get().getActionApi(ConfigContextEnum.DISTRIBUTION);
+            return actionApi.orElse(null);
         }
 
         return null;

@@ -27,28 +27,24 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.enumeration.FieldGroup;
 
 @Component
 public class EmailGlobalUIConfig extends UIConfig {
 
-    @Override
-    public DescriptorMetadata generateDescriptorMetadata() {
-        return new DescriptorMetadata("Email", "email", EmailGroupChannel.COMPONENT_NAME, DescriptorType.CHANNEL, ConfigContextEnum.GLOBAL, "envelope", setupFields());
+    public EmailGlobalUIConfig() {
+        super("Email", "email", "envelope");
     }
 
-    public List<ConfigField> setupFields() {
+    @Override
+    public List<ConfigField> createFields() {
         // Default fields
         final ConfigField mailSmtpHost = TextInputConfigField.createRequired(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey(), "Smtp Host");
         final ConfigField mailSmtpFrom = TextInputConfigField.createRequired(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey(), "Smtp From");

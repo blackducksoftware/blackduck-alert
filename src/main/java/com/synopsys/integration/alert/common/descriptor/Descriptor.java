@@ -28,11 +28,13 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
@@ -44,13 +46,13 @@ import com.synopsys.integration.util.Stringable;
 public abstract class Descriptor extends Stringable {
     private final String name;
     private final DescriptorType type;
-    private final Map<ConfigContextEnum, DescriptorActionApi> restApis;
+    private final Map<ConfigContextEnum, DescriptorActionApi> actionApis;
     private final Map<ConfigContextEnum, UIConfig> uiConfigs;
 
     public Descriptor(final String name, final DescriptorType type) {
         this.name = name;
         this.type = type;
-        restApis = new EnumMap<>(ConfigContextEnum.class);
+        actionApis = new EnumMap<>(ConfigContextEnum.class);
         uiConfigs = new EnumMap<>(ConfigContextEnum.class);
     }
 
@@ -63,11 +65,11 @@ public abstract class Descriptor extends Stringable {
     }
 
     public void addGlobalActionApi(final DescriptorActionApi descriptorActionApi) {
-        restApis.put(ConfigContextEnum.GLOBAL, descriptorActionApi);
+        actionApis.put(ConfigContextEnum.GLOBAL, descriptorActionApi);
     }
 
     public void addDistributionActionApi(final DescriptorActionApi descriptorActionApi) {
-        restApis.put(ConfigContextEnum.DISTRIBUTION, descriptorActionApi);
+        actionApis.put(ConfigContextEnum.DISTRIBUTION, descriptorActionApi);
     }
 
     public void addGlobalUiConfig(final DescriptorActionApi descriptorActionApi, final UIConfig uiConfig) {
@@ -80,18 +82,27 @@ public abstract class Descriptor extends Stringable {
         addDistributionActionApi(descriptorActionApi);
     }
 
-    // TODO since global config is optional this should return an optional.  The lookups in the maps should return optionals since they could be null.
-    public DescriptorActionApi getRestApi(final ConfigContextEnum actionApiType) {
-        return restApis.get(actionApiType);
+    public Optional<DescriptorActionApi> getActionApi(final ConfigContextEnum actionApiType) {
+        return Optional.ofNullable(actionApis.get(actionApiType));
     }
 
-    public UIConfig getUIConfig(final ConfigContextEnum actionApiType) {
-        return uiConfigs.get(actionApiType);
+    public Optional<UIConfig> getUIConfig(final ConfigContextEnum actionApiType) {
+        return Optional.ofNullable(uiConfigs.get(actionApiType));
     }
 
-    public List<UIConfig> getAllUIConfigs() {
+    public Optional<DescriptorMetadata> getMetaData(final ConfigContextEnum context) {
+        final Optional<UIConfig> uiConfig = getUIConfig(context);
+
+        if (uiConfig.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(createMetaData(uiConfig.get(), context));
+    }
+
+    public List<DescriptorMetadata> getAllMetaData() {
         if (hasUIConfigs()) {
-            return uiConfigs.values().stream().collect(Collectors.toList());
+            return uiConfigs.entrySet().stream().map(entry -> createMetaData(entry.getValue(), entry.getKey())).collect(Collectors.toList());
         } else {
             return Collections.emptyList();
         }
@@ -110,12 +121,25 @@ public abstract class Descriptor extends Stringable {
     }
 
     public void validateConfig(final ConfigContextEnum actionApiType, final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
-        getRestApi(actionApiType).validateConfig(fieldAccessor, fieldErrors);
+        final Optional<DescriptorActionApi> actionApi = getActionApi(actionApiType);
+        if (actionApi.isPresent()) {
+            actionApi.get().validateConfig(fieldAccessor, fieldErrors);
+        }
     }
 
     public void testConfig(final ConfigContextEnum actionApiType, final TestConfigModel testConfig) throws IntegrationException {
-        getRestApi(actionApiType).testConfig(testConfig);
+        final Optional<DescriptorActionApi> actionApi = getActionApi(actionApiType);
+        if (actionApi.isPresent()) {
+            actionApi.get().testConfig(testConfig);
+        }
     }
 
     public abstract Collection<DefinedFieldModel> getDefinedFields(final ConfigContextEnum context);
+
+    private DescriptorMetadata createMetaData(final UIConfig uiConfig, final ConfigContextEnum context) {
+        final String label = uiConfig.getLabel();
+        final String urlName = uiConfig.getUrlName();
+        final String fontAwesomeIcon = uiConfig.getFontAwesomeIcon();
+        return new DescriptorMetadata(label, urlName, getName(), getType(), context, fontAwesomeIcon, uiConfig.createFields());
+    }
 }

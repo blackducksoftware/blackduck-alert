@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.EnumUtils;
@@ -46,7 +47,6 @@ import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 
@@ -72,15 +72,16 @@ public class UIComponentController extends BaseController {
                 // filter by type also
                 if (StringUtils.isNotBlank(context)) {
                     final ConfigContextEnum contextType = EnumUtils.getEnum(ConfigContextEnum.class, context);
-                    final UIConfig uiConfig = descriptor.getUIConfig(contextType);
-                    if (uiConfig != null) {
-                        return Arrays.asList(uiConfig.generateDescriptorMetadata());
+                    final Optional<DescriptorMetadata> uiConfig = descriptor.getMetaData(contextType);
+                    if (uiConfig.isPresent()) {
+                        return Arrays.asList(uiConfig.get());
                     } else {
                         return Collections.emptyList();
                     }
                 } else {
                     // name only
-                    return descriptor.getAllUIConfigs().stream().map(UIConfig::generateDescriptorMetadata).collect(Collectors.toList());
+
+                    return descriptor.getAllMetaData();
                 }
             } else {
                 return Collections.emptyList();
@@ -101,10 +102,8 @@ public class UIComponentController extends BaseController {
         } else {
             final ProviderDescriptor providerDescriptor = descriptorMap.getProviderDescriptor(providerName);
             final ChannelDescriptor channelDescriptor = descriptorMap.getChannelDescriptor(channelName);
-            final UIConfig channelUIConfig = channelDescriptor.getUIConfig(ConfigContextEnum.DISTRIBUTION);
-            final UIConfig providerUIConfig = providerDescriptor.getUIConfig(ConfigContextEnum.DISTRIBUTION);
-            final DescriptorMetadata channelDescriptorMetadata = channelUIConfig.generateDescriptorMetadata();
-            final DescriptorMetadata providerDescriptorMetadata = providerUIConfig.generateDescriptorMetadata();
+            final DescriptorMetadata channelDescriptorMetadata = channelDescriptor.getMetaData(ConfigContextEnum.DISTRIBUTION).get();
+            final DescriptorMetadata providerDescriptorMetadata = providerDescriptor.getMetaData(ConfigContextEnum.DISTRIBUTION).get();
             final List<ConfigField> combinedFields = new ArrayList<>();
             final ConfigField name = TextInputConfigField.createRequired("name", "Name");
             final ConfigField frequency = SelectConfigField.createRequired("frequency", "Frequency", Arrays.stream(FrequencyType.values()).map(type -> type.getDisplayName()).collect(Collectors.toList()));

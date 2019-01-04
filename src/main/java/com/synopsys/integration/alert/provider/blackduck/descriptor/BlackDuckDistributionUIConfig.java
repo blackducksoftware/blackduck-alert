@@ -31,20 +31,16 @@ import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxCon
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 
 @Component
 public class BlackDuckDistributionUIConfig extends UIConfig {
 
-    @Override
-    public DescriptorMetadata generateDescriptorMetadata() {
-        return new DescriptorMetadata("Black Duck", "blackduck", BlackDuckProvider.COMPONENT_NAME, DescriptorType.PROVIDER, ConfigContextEnum.DISTRIBUTION, "laptop", createFields());
+    public BlackDuckDistributionUIConfig() {
+        super("Black Duck", "blackduck", "laptop");
     }
 
+    @Override
     public List<ConfigField> createFields() {
         final ConfigField filterByProject = CheckboxConfigField.create(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT, "Filter by project");
         final ConfigField projectNamePattern = TextInputConfigField.create(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN, "Project name pattern");
