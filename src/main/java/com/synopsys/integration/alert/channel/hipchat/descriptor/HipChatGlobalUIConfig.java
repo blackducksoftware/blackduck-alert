@@ -31,8 +31,10 @@ import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIComponent;
+import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FieldGroup;
 
 @Component
@@ -45,8 +47,8 @@ public class HipChatGlobalUIConfig extends UIConfig {
     }
 
     @Override
-    public UIComponent generateUIComponent() {
-        return new UIComponent("HipChat", "hipchat", HipChatChannel.COMPONENT_NAME, "comments", setupFields());
+    public DescriptorMetadata generateDescriptorMetadata() {
+        return new DescriptorMetadata("HipChat", "hipchat", HipChatChannel.COMPONENT_NAME, DescriptorType.CHANNEL, ConfigContextEnum.GLOBAL, "comments", setupFields());
     }
 
 }
