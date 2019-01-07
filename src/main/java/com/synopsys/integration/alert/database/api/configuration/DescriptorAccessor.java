@@ -104,6 +104,7 @@ public class DescriptorAccessor implements BaseDescriptorAccessor {
     }
 
     @Override
+    // TODO write test for this
     // TODO add foreign key constraint for type on the registered descriptors table
     public List<RegisteredDescriptorModel> getRegisteredDescriptorsByType(final DescriptorType descriptorType) throws AlertDatabaseConstraintException {
         if (null == descriptorType) {
@@ -121,6 +122,7 @@ public class DescriptorAccessor implements BaseDescriptorAccessor {
     }
 
     @Override
+    // TODO write test for this
     public Optional<RegisteredDescriptorModel> getRegisteredDescriptorById(final Long descriptorId) throws AlertDatabaseConstraintException {
         final RegisteredDescriptorEntity descriptor = findDescriptorById(descriptorId);
         return Optional.of(createRegisteredDescriptorModel(descriptor));

@@ -105,7 +105,7 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
 
         return jobMap.entrySet()
                    .stream()
-                   .map(entry -> createJobModel(entry.getKey(), entry.getValue()))
+                   .map(entry -> createJobModelFromExistingConfigs(entry.getKey(), entry.getValue()))
                    .collect(Collectors.toList());
     }
 
@@ -118,21 +118,12 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
         return jobConfigEntities
                    .stream()
                    .findAny()
-                   .map(configGroupEntity -> createJobModel(configGroupEntity.getJobId(), jobConfigEntities));
+                   .map(configGroupEntity -> createJobModelFromExistingConfigs(configGroupEntity.getJobId(), jobConfigEntities));
     }
 
     @Override
     public ConfigurationJobModel createJob(final Collection<String> descriptorNames, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
-        final Set<ConfigurationModel> configurationModels = new HashSet<>();
-        for (final String descriptorName : descriptorNames) {
-            configurationModels.add(createConfigForRelevantFields(descriptorName, configuredFields));
-        }
-        final UUID newJobId = UUID.randomUUID();
-        for (final ConfigurationModel createdModel : configurationModels) {
-            final ConfigGroupEntity configGroupEntityToSave = new ConfigGroupEntity(createdModel.getConfigurationId(), newJobId);
-            configGroupRepository.save(configGroupEntityToSave);
-        }
-        return new ConfigurationJobModel(newJobId, configurationModels);
+        return createJob(null, descriptorNames, configuredFields);
     }
 
     @Override
@@ -145,7 +136,7 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
                                                 .map(RegisteredDescriptorEntity::getName)
                                                 .collect(Collectors.toSet());
         configGroupRepository.deleteByJobId(jobId);
-        return createJob(descriptorNames, configuredFields);
+        return createJob(jobId, descriptorNames, configuredFields);
     }
 
     @Override
@@ -315,7 +306,27 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
         descriptorConfigsRepository.deleteById(descriptorConfigId);
     }
 
-    private ConfigurationJobModel createJobModel(final UUID jobId, final Collection<ConfigGroupEntity> entities) {
+    private ConfigurationJobModel createJob(final UUID oldJobId, final Collection<String> descriptorNames, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
+        if (descriptorNames == null || descriptorNames.isEmpty()) {
+            throw new AlertDatabaseConstraintException("Descriptor names cannot be empty");
+        }
+        final Set<ConfigurationModel> configurationModels = new HashSet<>();
+        for (final String descriptorName : descriptorNames) {
+            configurationModels.add(createConfigForRelevantFields(descriptorName, configuredFields));
+        }
+
+        UUID newJobId = oldJobId;
+        if (newJobId == null) {
+            newJobId = UUID.randomUUID();
+        }
+        for (final ConfigurationModel createdModel : configurationModels) {
+            final ConfigGroupEntity configGroupEntityToSave = new ConfigGroupEntity(createdModel.getConfigurationId(), newJobId);
+            configGroupRepository.save(configGroupEntityToSave);
+        }
+        return new ConfigurationJobModel(newJobId, configurationModels);
+    }
+
+    private ConfigurationJobModel createJobModelFromExistingConfigs(final UUID jobId, final Collection<ConfigGroupEntity> entities) {
         final Set<ConfigurationModel> configurationModels = new HashSet<>();
         for (final ConfigGroupEntity sortedEntity : entities) {
             try {
@@ -359,6 +370,7 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
         final String configContext = getContextById(contextId);
         final ConfigurationModel newModel = new ConfigurationModel(descriptorId, configId, configContext);
         final List<FieldValueEntity> fieldValueEntities = fieldValueRepository.findByConfigId(configId);
+        // TODO should empty fields be included?
         for (final FieldValueEntity fieldValueEntity : fieldValueEntities) {
             final DefinedFieldEntity definedFieldEntity = definedFieldRepository
                                                               .findById(fieldValueEntity.getFieldId())
