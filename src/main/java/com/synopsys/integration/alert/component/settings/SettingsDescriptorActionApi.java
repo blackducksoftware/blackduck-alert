@@ -80,17 +80,17 @@ public class SettingsDescriptorActionApi extends DescriptorActionApi {
 
     @Override
     public void updateConfig(final FieldModel fieldModel) {
-        saveDefaultAdminUserPasswor(fieldModel);
+        saveDefaultAdminUserPassword(fieldModel);
         saveEncryptionProperties(fieldModel);
     }
 
     @Override
     public void saveConfig(final FieldModel fieldModel) {
-        saveDefaultAdminUserPasswor(fieldModel);
+        saveDefaultAdminUserPassword(fieldModel);
         saveEncryptionProperties(fieldModel);
     }
 
-    private void saveDefaultAdminUserPasswor(final FieldModel fieldModel) {
+    private void saveDefaultAdminUserPassword(final FieldModel fieldModel) {
         final String password = fieldModel.getField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD).getValue().orElse("");
         if (StringUtils.isNotBlank(password)) {
             userAccessor.changeUserPassword(UserAccessor.DEFAULT_ADMIN_USER, password);

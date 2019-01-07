@@ -130,7 +130,7 @@ public class ConfigActions {
         }
     }
 
-    public ConfigurationModel saveConfig(final FieldModel fieldModel) throws AlertException {
+    public FieldModel saveConfig(final FieldModel fieldModel) throws AlertException {
         final DescriptorActionApi descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
         if (null != descriptorActionApi) {
             descriptorActionApi.saveConfig(fieldModel);
@@ -140,7 +140,7 @@ public class ConfigActions {
         final String descriptorName = fieldModel.getDescriptorName();
         final String context = fieldModel.getContext();
         final Map<String, ConfigurationFieldModel> configurationFieldModelMap = fieldModel.convertToConfigurationFieldModelMap();
-        return configurationAccessor.createConfiguration(descriptorName, EnumUtils.getEnum(ConfigContextEnum.class, context), configurationFieldModelMap.values());
+        return convertToFieldModel(configurationAccessor.createConfiguration(descriptorName, EnumUtils.getEnum(ConfigContextEnum.class, context), configurationFieldModelMap.values()));
     }
 
     public String validateConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) throws AlertFieldException {
@@ -167,7 +167,7 @@ public class ConfigActions {
         }
     }
 
-    public ConfigurationModel updateConfig(final FieldModel fieldModel) throws AlertException {
+    public FieldModel updateConfig(final FieldModel fieldModel) throws AlertException {
         final DescriptorActionApi descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
         if (null != descriptorActionApi) {
             descriptorActionApi.updateConfig(fieldModel);
@@ -180,7 +180,7 @@ public class ConfigActions {
             final ConfigurationModel configurationModel = getSavedEntity(longId);
             final Map<String, ConfigurationFieldModel> fieldModels = fieldModel.convertToConfigurationFieldModelMap();
             final Collection<ConfigurationFieldModel> updatedFields = updateConfigurationWithSavedConfiguration(fieldModels, configurationModel.getCopyOfFieldList());
-            return configurationAccessor.updateConfiguration(longId, updatedFields);
+            return convertToFieldModel(configurationAccessor.updateConfiguration(longId, updatedFields));
         }
         return null;
     }

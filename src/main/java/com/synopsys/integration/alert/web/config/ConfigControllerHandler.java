@@ -38,7 +38,6 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
 import com.synopsys.integration.alert.web.controller.handler.ControllerHandler;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.FieldModel;
@@ -84,8 +83,8 @@ public class ConfigControllerHandler extends ControllerHandler {
             if (!descriptorConfigActions.doesConfigExist(id)) {
                 try {
                     descriptorConfigActions.validateConfig(restModel, new HashMap<>());
-                    final ConfigurationModel updatedEntity = descriptorConfigActions.saveConfig(restModel);
-                    return createResponse(HttpStatus.CREATED, updatedEntity.getConfigurationId(), "Created");
+                    final FieldModel updatedEntity = descriptorConfigActions.saveConfig(restModel);
+                    return createResponse(HttpStatus.CREATED, updatedEntity.getId(), "Created");
                 } catch (final AlertFieldException e) {
                     return fieldError(id, "There were errors with the configuration.", e.getFieldErrors());
                 }
@@ -106,8 +105,8 @@ public class ConfigControllerHandler extends ControllerHandler {
             if (descriptorConfigActions.doesConfigExist(id)) {
                 try {
                     descriptorConfigActions.validateConfig(restModel, new HashMap<>());
-                    final ConfigurationModel updatedEntity = descriptorConfigActions.updateConfig(restModel);
-                    return createResponse(HttpStatus.ACCEPTED, updatedEntity.getConfigurationId(), "Updated");
+                    final FieldModel updatedEntity = descriptorConfigActions.updateConfig(restModel);
+                    return createResponse(HttpStatus.ACCEPTED, updatedEntity.getId(), "Updated");
                 } catch (final AlertFieldException e) {
                     return fieldError(id, "There were errors with the configuration.", e.getFieldErrors());
                 }

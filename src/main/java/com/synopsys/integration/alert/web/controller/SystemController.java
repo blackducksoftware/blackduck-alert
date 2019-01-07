@@ -29,13 +29,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.web.controller.handler.SystemHandler;
-import com.synopsys.integration.alert.web.model.SystemSetupModel;
+import com.synopsys.integration.alert.web.model.FieldModel;
 
 @RestController
 public class SystemController extends BaseController {
@@ -63,19 +62,8 @@ public class SystemController extends BaseController {
     }
 
     @PostMapping(value = "/system/setup/initial")
-    public ResponseEntity<String> initialSystemSetup(@RequestBody final SystemSetupModel requiredSystemConfiguration) {
-        return handler.saveInitialSetup(requiredSystemConfiguration);
-    }
-
-    @GetMapping(value = "/system/setup")
-    public ResponseEntity<String> getSystemSetup(final HttpServletRequest request) {
-        final String contextPath = request.getServletContext().getContextPath();
-        return handler.getSettings(contextPath);
-    }
-
-    @PutMapping(value = "/system/setup")
-    public ResponseEntity<String> updateSystemSetup(@RequestBody final SystemSetupModel requiredSystemConfiguration) {
-        return handler.saveSettings(requiredSystemConfiguration);
+    public ResponseEntity<String> initialSystemSetup(@RequestBody final FieldModel settingsToSave) {
+        return handler.saveInitialSetup(settingsToSave);
     }
 
 }
