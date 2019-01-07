@@ -173,6 +173,10 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
     public void getConfigurationsByDescriptorTypeTest() throws Exception {
         List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationsByDescriptorType(DescriptorType.CHANNEL);
         assertTrue(configurationModels.isEmpty());
+        final ConfigurationFieldModel configField1 = ConfigurationFieldModel.create(FIELD_KEY_INSENSITIVE);
+        final ConfigurationFieldModel configField2 = ConfigurationFieldModel.createSensitive(FIELD_KEY_SENSITIVE);
+        configurationAccessor.createConfiguration(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION, Arrays.asList(configField1));
+        configurationAccessor.createConfiguration(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION, Arrays.asList(configField2));
         configurationModels = configurationAccessor.getConfigurationsByDescriptorType(DescriptorType.PROVIDER);
         assertFalse(configurationModels.isEmpty());
     }
