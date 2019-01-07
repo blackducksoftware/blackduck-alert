@@ -40,7 +40,7 @@ public class ConfigContextEntity extends DatabaseEntity {
     private String context;
 
     @OneToMany
-    @JoinColumn(name = "CONTEXT_ID", insertable = false, updatable = false)
+    @JoinColumn(name = "CONTEXT_ID", referencedColumnName = "ID", insertable = false, updatable = false)
     private List<FieldContextRelation> fieldContextRelations;
 
     public ConfigContextEntity() {

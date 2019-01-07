@@ -70,11 +70,11 @@ public class AuditEntryEntity extends DatabaseEntity {
     private String errorStackTrace;
 
     @OneToMany
-    @JoinColumn(name = "audit_entry_id", insertable = false, updatable = false)
+    @JoinColumn(name = "audit_entry_id", referencedColumnName = "id", insertable = false, updatable = false)
     private List<AuditNotificationRelation> auditNotificationRelations;
 
     @OneToOne
-    @JoinColumn(name = "common_config_id", insertable = false, updatable = false)
+    @JoinColumn(name = "common_config_id", referencedColumnName = "id", insertable = false, updatable = false)
     private DescriptorConfigEntity descriptorConfigEntity;
 
     public AuditEntryEntity() {

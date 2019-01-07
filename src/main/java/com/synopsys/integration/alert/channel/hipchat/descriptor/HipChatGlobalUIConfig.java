@@ -27,28 +27,24 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FieldGroup;
 
 @Component
 public class HipChatGlobalUIConfig extends UIConfig {
 
-    public List<ConfigField> setupFields() {
-        final ConfigField apiKey = PasswordConfigField.createRequired(HipChatDescriptor.KEY_API_KEY, "Api Key");
-        final ConfigField hostServer = TextInputConfigField.createGrouped(HipChatDescriptor.KEY_HOST_SERVER, "Host Server", FieldGroup.ADVANCED);
-        return List.of(apiKey, hostServer);
+    public HipChatGlobalUIConfig() {
+        super(HipChatDescriptor.HIP_CHAT_LABEL, HipChatDescriptor.HIP_CHAT_URL, HipChatDescriptor.HIP_CHAT_ICON);
     }
 
     @Override
-    public DescriptorMetadata generateDescriptorMetadata() {
-        return new DescriptorMetadata("HipChat", "hipchat", HipChatChannel.COMPONENT_NAME, DescriptorType.CHANNEL, ConfigContextEnum.GLOBAL, "comments", setupFields());
+    public List<ConfigField> createFields() {
+        final ConfigField apiKey = PasswordConfigField.createRequired(HipChatDescriptor.KEY_API_KEY, "Api Key");
+        final ConfigField hostServer = TextInputConfigField.createGrouped(HipChatDescriptor.KEY_HOST_SERVER, "Host Server", FieldGroup.ADVANCED);
+        return List.of(apiKey, hostServer);
     }
 
 }

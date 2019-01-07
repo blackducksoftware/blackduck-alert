@@ -231,7 +231,7 @@ public class ConfigActions {
 
         if (descriptorContext != null) {
             final Descriptor descriptor = descriptorMap.getDescriptor(descriptorName);
-            return descriptor.getRestApi(descriptorContext);
+            return descriptor.getActionApi(descriptorContext).orElse(null);
         }
         return null;
     }

@@ -129,4 +129,19 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     public String getTestJobName() {
         return UNIT_TEST_JOB_NAME;
     }
+
+    @Override
+    public void testGlobalConfig() {
+
+    }
+
+    @Override
+    public void testGlobalValidate() {
+
+    }
+
+    @Override
+    public void testGlobalValidateWithFieldErrors() {
+
+    }
 }

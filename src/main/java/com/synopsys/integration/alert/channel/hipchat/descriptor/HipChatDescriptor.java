@@ -44,6 +44,10 @@ public class HipChatDescriptor extends ChannelDescriptor {
     public static final String KEY_API_KEY = "api.key";
     public static final String KEY_HOST_SERVER = "host.server";
 
+    public static final String HIP_CHAT_LABEL = "HipChat";
+    public static final String HIP_CHAT_URL = "hipchat";
+    public static final String HIP_CHAT_ICON = "comments";
+
     @Autowired
     public HipChatDescriptor(final HipChatChannel channelListener, final HipChatDistributionDescriptorActionApi distributionRestApi, final HipChatDistributionUIConfig hipChatDistributionUIConfig,
         final HipChatGlobalDescriptorActionApi hipChatGlobalRestApi, final HipChatGlobalUIConfig hipChatGlobalUIConfig) {
