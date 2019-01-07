@@ -32,6 +32,10 @@ import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
 public class SchedulingDescriptor extends ComponentDescriptor {
     public static final String SCHEDULING_COMPONENT = "component_scheduling";
 
+    public static final String SCHEDULING_LABEL = "Scheduling";
+    public static final String SCHEDULING_URL = "scheduling";
+    public static final String SCHEDULING_ICON = "o-clock";
+
     @Autowired
     public SchedulingDescriptor(final SchedulingDescriptorActionApi componentRestApi, final SchedulingUIConfig schedulingUIConfig) {
         super(SCHEDULING_COMPONENT, componentRestApi, schedulingUIConfig);

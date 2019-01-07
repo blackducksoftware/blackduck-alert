@@ -38,7 +38,7 @@ public class BlackDuckProviderUIConfig extends UIConfig {
     private static final String PROXY_SUB_GROUP = "Proxy Configuration";
 
     public BlackDuckProviderUIConfig() {
-        super("Black Duck", "blackduck", "laptop");
+        super(BlackDuckDescriptor.BLACKDUCK_LABEL, BlackDuckDescriptor.BLACKDUCK_URL, BlackDuckDescriptor.BLACKDUCK_ICON);
     }
 
     @Override

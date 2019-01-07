@@ -91,18 +91,15 @@ public abstract class Descriptor extends Stringable {
     }
 
     public Optional<DescriptorMetadata> getMetaData(final ConfigContextEnum context) {
-        final Optional<UIConfig> uiConfig = getUIConfig(context);
-
-        if (uiConfig.isEmpty()) {
-            return Optional.empty();
-        }
-
-        return Optional.of(createMetaData(uiConfig.get(), context));
+        return getUIConfig(context).map(uiConfig -> createMetaData(uiConfig, context));
     }
 
     public List<DescriptorMetadata> getAllMetaData() {
         if (hasUIConfigs()) {
-            return uiConfigs.entrySet().stream().map(entry -> createMetaData(entry.getValue(), entry.getKey())).collect(Collectors.toList());
+            return uiConfigs.entrySet()
+                       .stream()
+                       .map(entry -> createMetaData(entry.getValue(), entry.getKey()))
+                       .collect(Collectors.toList());
         } else {
             return Collections.emptyList();
         }
@@ -122,9 +119,7 @@ public abstract class Descriptor extends Stringable {
 
     public void validateConfig(final ConfigContextEnum actionApiType, final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
         final Optional<DescriptorActionApi> actionApi = getActionApi(actionApiType);
-        if (actionApi.isPresent()) {
-            actionApi.get().validateConfig(fieldAccessor, fieldErrors);
-        }
+        actionApi.ifPresent(descriptorActionApi -> descriptorActionApi.validateConfig(fieldAccessor, fieldErrors));
     }
 
     public void testConfig(final ConfigContextEnum actionApiType, final TestConfigModel testConfig) throws IntegrationException {

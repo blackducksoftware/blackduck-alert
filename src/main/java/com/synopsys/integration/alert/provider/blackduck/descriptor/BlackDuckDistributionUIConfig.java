@@ -37,7 +37,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 public class BlackDuckDistributionUIConfig extends UIConfig {
 
     public BlackDuckDistributionUIConfig() {
-        super("Black Duck", "blackduck", "laptop");
+        super(BlackDuckDescriptor.BLACKDUCK_LABEL, BlackDuckDescriptor.BLACKDUCK_URL, BlackDuckDescriptor.BLACKDUCK_ICON);
     }
 
     @Override

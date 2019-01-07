@@ -37,7 +37,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 public class EmailDistributionUIConfig extends UIConfig {
 
     public EmailDistributionUIConfig() {
-        super("Email", "email", "envelope");
+        super(EmailDescriptor.EMAIL_LABEL, EmailDescriptor.EMAIL_URL, EmailDescriptor.EMAIL_ICON);
     }
 
     @Override
