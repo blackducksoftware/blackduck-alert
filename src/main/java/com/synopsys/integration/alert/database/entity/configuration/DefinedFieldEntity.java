@@ -42,11 +42,11 @@ public class DefinedFieldEntity extends DatabaseEntity {
     private Boolean sensitive;
 
     @OneToMany
-    @JoinColumn(name = "FIELD_ID", insertable = false, updatable = false)
+    @JoinColumn(name = "FIELD_ID", referencedColumnName = "ID", insertable = false, updatable = false)
     private List<DescriptorFieldRelation> descriptorFieldRelations;
 
     @OneToMany
-    @JoinColumn(name = "FIELD_ID", insertable = false, updatable = false)
+    @JoinColumn(name = "FIELD_ID", referencedColumnName = "ID", insertable = false, updatable = false)
     private List<FieldContextRelation> fieldContextRelations;
 
     public DefinedFieldEntity() {

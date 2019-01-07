@@ -50,6 +50,11 @@ public class BlackDuckDescriptor extends ProviderDescriptor {
     public static final String KEY_BLACKDUCK_PROXY_PORT = "blackduck.proxy.port";
     public static final String KEY_BLACKDUCK_PROXY_USERNAME = "blackduck.proxy.username";
     public static final String KEY_BLACKDUCK_PROXY_PASS = "blackduck.proxy.password";
+
+    public static final String BLACKDUCK_LABEL = "Black Duck";
+    public static final String BLACKDUCK_URL = "blackduck";
+    public static final String BLACKDUCK_ICON = "laptop";
+
     private final BlackDuckTopicCollectorFactory topicCollectorFactory;
 
     @Autowired

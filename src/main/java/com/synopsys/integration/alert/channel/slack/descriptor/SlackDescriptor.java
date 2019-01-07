@@ -41,6 +41,10 @@ public class SlackDescriptor extends ChannelDescriptor {
     public static final String KEY_CHANNEL_NAME = "channel.name";
     public static final String KEY_CHANNEL_USERNAME = "channel.username";
 
+    public static final String SLACK_LABEL = "Slack";
+    public static final String SLACK_URL = "slack";
+    public static final String SLACK_ICON = "slack";
+
     @Autowired
     public SlackDescriptor(final SlackChannel channelListener, final SlackDistributionDescriptorActionApi distributionRestApi, final SlackUIConfig slackUIConfig) {
         super(SlackChannel.COMPONENT_NAME, SlackChannel.COMPONENT_NAME, channelListener, distributionRestApi, slackUIConfig);

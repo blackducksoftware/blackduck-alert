@@ -67,6 +67,4 @@ public interface BaseConfigurationAccessor {
 
     void deleteConfiguration(final Long descriptorConfigId) throws AlertDatabaseConstraintException;
 
-    // TODO find a place for a method to pass a map of Strings to be immiediately converted to a new config
-
 }

@@ -179,12 +179,11 @@ public class StartupManager {
         logger.info("BlackDuck Webserver Host:                 {}", blackDuckProperties.getPublicBlackDuckWebserverHost().orElse(""));
         logger.info("BlackDuck Webserver Port:                 {}", blackDuckProperties.getPublicBlackDuckWebserverPort().orElse(""));
         final Optional<ConfigurationModel> optionalGlobalBlackDuckConfigEntity = blackDuckProperties.getBlackDuckConfig();
-        if (optionalGlobalBlackDuckConfigEntity.isPresent()) {
-            final ConfigurationModel globalBlackDuckConfigEntity = optionalGlobalBlackDuckConfigEntity.get();
-            final FieldAccessor fieldAccessor = new FieldAccessor(globalBlackDuckConfigEntity.getCopyOfKeyToFieldMap());
+        optionalGlobalBlackDuckConfigEntity.ifPresent(configurationModel -> {
+            final FieldAccessor fieldAccessor = new FieldAccessor(configurationModel.getCopyOfKeyToFieldMap());
             logger.info("BlackDuck API Token:           **********");
             logger.info("BlackDuck Timeout:             {}", fieldAccessor.getInteger(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT).orElse(BlackDuckProperties.DEFAULT_TIMEOUT));
-        }
+        });
         logger.info("----------------------------------------");
     }
 
