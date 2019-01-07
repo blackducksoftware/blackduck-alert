@@ -31,22 +31,18 @@ import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ReadOnlyConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 
 @Component
 public class BlackDuckProviderUIConfig extends UIConfig {
     private static final String PROXY_SUB_GROUP = "Proxy Configuration";
 
-    @Override
-    public DescriptorMetadata generateDescriptorMetadata() {
-        return new DescriptorMetadata("Black Duck", "blackduck", BlackDuckProvider.COMPONENT_NAME, DescriptorType.PROVIDER, ConfigContextEnum.GLOBAL, "laptop", setupFields());
+    public BlackDuckProviderUIConfig() {
+        super(BlackDuckDescriptor.BLACKDUCK_LABEL, BlackDuckDescriptor.BLACKDUCK_URL, BlackDuckDescriptor.BLACKDUCK_ICON);
     }
 
-    public List<ConfigField> setupFields() {
+    @Override
+    public List<ConfigField> createFields() {
         final ConfigField blackDuckUrl = ReadOnlyConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_URL, "Url");
         final ConfigField blackDuckApiKey = PasswordConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, "API Token");
         final ConfigField blackDuckTimeout = NumberConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, "Timeout (in seconds)");
