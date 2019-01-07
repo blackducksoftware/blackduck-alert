@@ -13,8 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
 import com.synopsys.integration.alert.web.actions.SystemActions;
-import com.synopsys.integration.alert.web.model.SystemSetupModel;
+import com.synopsys.integration.alert.web.model.FieldModel;
 
 public class SystemHandlerTest {
     private SystemActions systemActions;
@@ -108,7 +109,7 @@ public class SystemHandlerTest {
 
     @Test
     public void testSaveNotAllowed() {
-        final SystemSetupModel model = new SystemSetupModel();
+        final FieldModel model = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, "GLOBAL", Map.of());
         Mockito.when(systemActions.isSystemInitialized()).thenReturn(Boolean.TRUE);
         final SystemHandler handler = new SystemHandler(contentConverter, systemActions);
         final ResponseEntity<String> response = handler.saveInitialSetup(model);
@@ -119,65 +120,29 @@ public class SystemHandlerTest {
 
     @Test
     public void testSaveWithErrors() {
-        final String defaultAdminPassword = "defaultPassword";
-        final boolean defaultAdminPasswordSet = true;
-        final String blackDuckProviderUrl = "url";
-        final Integer blackDuckConnectionTimeout = 100;
-        final String blackDuckApiToken = "token";
-        final boolean blackDuckApiTokenSet = true;
-        final String globalEncryptionPassword = "password";
-        final boolean isGlobalEncryptionPasswordSet = true;
-        final String globalEncryptionSalt = "salt";
-        final boolean isGlobalEncryptionSaltSet = true;
-        final String proxyHost = "host";
-        final String proxyPort = "port";
-        final String proxyUsername = "username";
-        final String proxyPassword = "password";
-        final boolean proxyPasswordSet = true;
-
-        final SystemSetupModel model = SystemSetupModel.of(defaultAdminPassword, defaultAdminPasswordSet, blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet,
-            globalEncryptionPassword, isGlobalEncryptionPasswordSet, globalEncryptionSalt, isGlobalEncryptionSaltSet,
-            proxyHost, proxyPort, proxyUsername, proxyPassword, proxyPasswordSet);
+        final FieldModel model = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, "GLOBAL", Map.of());
         Mockito.when(systemActions.isSystemInitialized()).thenReturn(Boolean.FALSE);
         Mockito.doAnswer(invocation -> {
             final Map<String, String> fieldErrors = invocation.getArgument(1);
             fieldErrors.put("propertyKey", "error");
             return invocation.getArgument(0);
-        }).when(systemActions).saveRequiredInformation(Mockito.any(SystemSetupModel.class), Mockito.anyMap());
+        }).when(systemActions).saveRequiredInformation(Mockito.any(FieldModel.class), Mockito.anyMap());
         final SystemHandler handler = new SystemHandler(contentConverter, systemActions);
         final ResponseEntity<String> response = handler.saveInitialSetup(model);
         Mockito.verify(systemActions).isSystemInitialized();
-        Mockito.verify(systemActions).saveRequiredInformation(Mockito.any(SystemSetupModel.class), Mockito.anyMap());
+        Mockito.verify(systemActions).saveRequiredInformation(Mockito.any(FieldModel.class), Mockito.anyMap());
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test
     public void testSave() {
-        final String defaultAdminPassword = "defaultPassword";
-        final boolean defaultAdminPasswordSet = true;
-        final String blackDuckProviderUrl = "url";
-        final Integer blackDuckConnectionTimeout = 100;
-        final String blackDuckApiToken = "token";
-        final boolean blackDuckApiTokenSet = true;
-        final String globalEncryptionPassword = "password";
-        final boolean isGlobalEncryptionPasswordSet = true;
-        final String globalEncryptionSalt = "salt";
-        final boolean isGlobalEncryptionSaltSet = true;
-        final String proxyHost = "host";
-        final String proxyPort = "port";
-        final String proxyUsername = "username";
-        final String proxyPassword = "password";
-        final boolean proxyPasswordSet = true;
-
-        final SystemSetupModel model = SystemSetupModel.of(defaultAdminPassword, defaultAdminPasswordSet, blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet,
-            globalEncryptionPassword, isGlobalEncryptionPasswordSet, globalEncryptionSalt, isGlobalEncryptionSaltSet,
-            proxyHost, proxyPort, proxyUsername, proxyPassword, proxyPasswordSet);
+        final FieldModel model = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, "GLOBAL", Map.of());
         Mockito.when(systemActions.isSystemInitialized()).thenReturn(Boolean.FALSE);
         final SystemHandler handler = new SystemHandler(contentConverter, systemActions);
         final ResponseEntity<String> response = handler.saveInitialSetup(model);
         Mockito.verify(systemActions).isSystemInitialized();
-        Mockito.verify(systemActions).saveRequiredInformation(Mockito.any(SystemSetupModel.class), Mockito.anyMap());
+        Mockito.verify(systemActions).saveRequiredInformation(Mockito.any(FieldModel.class), Mockito.anyMap());
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }

@@ -1,7 +1,6 @@
 package com.synopsys.integration.alert.web.actions;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -16,23 +15,24 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
 import com.synopsys.integration.alert.database.system.SystemMessage;
 import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
-import com.synopsys.integration.alert.web.model.SystemSetupModel;
-import com.synopsys.integration.alert.workflow.startup.install.RequiredSystemConfiguration;
-import com.synopsys.integration.alert.workflow.startup.install.SystemInitializer;
+import com.synopsys.integration.alert.web.config.ConfigActions;
+import com.synopsys.integration.alert.web.model.FieldModel;
+import com.synopsys.integration.alert.web.model.FieldValueModel;
 
 public class SystemActionsTest {
     private SystemStatusUtility systemStatusUtility;
     private SystemMessageUtility systemMessageUtility;
-    private SystemInitializer systemInitializer;
+    private ConfigActions configActions;
 
     @BeforeEach
     public void initiailize() {
         systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         systemMessageUtility = Mockito.mock(SystemMessageUtility.class);
-        systemInitializer = Mockito.mock(SystemInitializer.class);
+        configActions = Mockito.mock(ConfigActions.class);
         final List<SystemMessage> messages = createSystemMessageList();
         Mockito.when(systemMessageUtility.getSystemMessages()).thenReturn(messages);
         Mockito.when(systemMessageUtility.getSystemMessagesAfter(Mockito.any())).thenReturn(messages);
@@ -40,7 +40,7 @@ public class SystemActionsTest {
 
     @Test
     public void getSystemMessagesSinceStartup() {
-        final SystemActions systemActions = new SystemActions(systemStatusUtility, systemMessageUtility, systemInitializer);
+        final SystemActions systemActions = new SystemActions(systemStatusUtility, systemMessageUtility, configActions);
         systemActions.getSystemMessagesSinceStartup();
         Mockito.verify(systemStatusUtility).getStartupTime();
         Mockito.verify(systemMessageUtility).getSystemMessagesAfter(Mockito.any());
@@ -48,28 +48,28 @@ public class SystemActionsTest {
 
     @Test
     public void testGetSystemMessagesAfter() throws Exception {
-        final SystemActions systemActions = new SystemActions(systemStatusUtility, systemMessageUtility, systemInitializer);
+        final SystemActions systemActions = new SystemActions(systemStatusUtility, systemMessageUtility, configActions);
         systemActions.getSystemMessagesAfter("2018-11-13T00:00:00.000Z");
         Mockito.verify(systemMessageUtility).getSystemMessagesAfter(Mockito.any());
     }
 
     @Test
     public void testGetSystemMessagesBefore() throws Exception {
-        final SystemActions systemActions = new SystemActions(systemStatusUtility, systemMessageUtility, systemInitializer);
+        final SystemActions systemActions = new SystemActions(systemStatusUtility, systemMessageUtility, configActions);
         systemActions.getSystemMessagesBefore("2018-11-13T00:00:00.000Z");
         Mockito.verify(systemMessageUtility).getSystemMessagesBefore(Mockito.any());
     }
 
     @Test
     public void testGetSystemMessagesBetween() throws Exception {
-        final SystemActions systemActions = new SystemActions(systemStatusUtility, systemMessageUtility, systemInitializer);
+        final SystemActions systemActions = new SystemActions(systemStatusUtility, systemMessageUtility, configActions);
         systemActions.getSystemMessagesBetween("2018-11-13T00:00:00.000Z", "2018-11-13T01:00:00.000Z");
         Mockito.verify(systemMessageUtility).findBetween(Mockito.any());
     }
 
     @Test
     public void testGetSystemMessages() {
-        final SystemActions systemActions = new SystemActions(systemStatusUtility, systemMessageUtility, systemInitializer);
+        final SystemActions systemActions = new SystemActions(systemStatusUtility, systemMessageUtility, configActions);
         systemActions.getSystemMessages();
         Mockito.verify(systemMessageUtility).getSystemMessages();
     }
@@ -82,80 +82,69 @@ public class SystemActionsTest {
 
     @Test
     public void testIsInitiailzed() {
-        final SystemActions systemActions = new SystemActions(systemStatusUtility, systemMessageUtility, systemInitializer);
+        final SystemActions systemActions = new SystemActions(systemStatusUtility, systemMessageUtility, configActions);
 
         assertFalse(systemActions.isSystemInitialized());
         Mockito.when(systemStatusUtility.isSystemInitialized()).thenReturn(Boolean.TRUE);
-        Mockito.when(systemInitializer.isSystemInitialized()).thenReturn(Boolean.TRUE);
         assertTrue(systemActions.isSystemInitialized());
     }
 
     @Test
-    public void testGetCurrentSystemSetup() {
-        final SystemActions systemActions = new SystemActions(systemStatusUtility, systemMessageUtility, systemInitializer);
+    public void testGetCurrentSystemSetup() throws Exception {
+        final SystemActions systemActions = new SystemActions(systemStatusUtility, systemMessageUtility, configActions);
         final String defaultAdminPassword = "defaultPassword";
-        final boolean defaultAdminPasswordSet = true;
-        final String blackDuckProviderUrl = "url";
-        final Integer blackDuckConnectionTimeout = 100;
-        final String blackDuckApiToken = "token";
         final String globalEncryptionPassword = "password";
-        final boolean isGlobalEncryptionPasswordSet = true;
         final String globalEncryptionSalt = "salt";
-        final boolean isGlobalEncryptionSaltSet = true;
         final String proxyHost = "host";
         final String proxyPort = "port";
         final String proxyUsername = "username";
         final String proxyPassword = "password";
 
-        final RequiredSystemConfiguration expected = new RequiredSystemConfiguration(defaultAdminPassword, defaultAdminPasswordSet, blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken,
-            globalEncryptionPassword, isGlobalEncryptionPasswordSet, globalEncryptionSalt, isGlobalEncryptionSaltSet,
-            proxyHost, proxyPort, proxyUsername, proxyPassword);
+        final Map<String, FieldValueModel> valueMap = new HashMap<>();
+        final FieldModel expected = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, "GLOBAL", valueMap);
+        expected.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, new FieldValueModel(List.of(defaultAdminPassword), true));
+        expected.putField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, new FieldValueModel(List.of(globalEncryptionPassword), true));
+        expected.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(globalEncryptionSalt), true));
+        expected.putField(SettingsDescriptor.KEY_PROXY_HOST, new FieldValueModel(List.of(proxyHost), true));
+        expected.putField(SettingsDescriptor.KEY_PROXY_PORT, new FieldValueModel(List.of(proxyPort), true));
+        expected.putField(SettingsDescriptor.KEY_PROXY_USERNAME, new FieldValueModel(List.of(proxyUsername), true));
+        expected.putField(SettingsDescriptor.KEY_PROXY_PASSWORD, new FieldValueModel(List.of(proxyPassword), true));
 
-        Mockito.when(systemInitializer.getCurrentSystemSetup()).thenReturn(expected);
+        Mockito.when(configActions.getConfigs(Mockito.any(), Mockito.anyString())).thenReturn(List.of(expected));
 
-        final SystemSetupModel actual = systemActions.getCurrentSystemSetup();
+        final FieldModel actual = systemActions.getCurrentSystemSetup();
 
-        assertEquals(blackDuckProviderUrl, actual.getBlackDuckProviderUrl());
-        assertEquals(blackDuckConnectionTimeout, actual.getBlackDuckConnectionTimeout());
-        assertNull(actual.getBlackDuckApiToken());
-        assertTrue(actual.isBlackDuckApiTokenSet());
-        assertNull(actual.getGlobalEncryptionPassword());
-        assertTrue(actual.isGlobalEncryptionPasswordSet());
-        assertNull(actual.getGlobalEncryptionSalt());
-        assertTrue(actual.isGlobalEncryptionSaltSet());
-        assertEquals(proxyHost, actual.getProxyHost());
-        assertEquals(proxyPort, actual.getProxyPort());
-        assertEquals(proxyUsername, actual.getProxyUsername());
-        assertNull(actual.getProxyPassword());
-        assertTrue(actual.isProxyPasswordSet());
+        assertEquals(globalEncryptionPassword, actual.getField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD).getValue().orElse(null));
+        assertEquals(globalEncryptionSalt, actual.getField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT).getValue().orElse(null));
+        assertEquals(proxyHost, actual.getField(SettingsDescriptor.KEY_PROXY_HOST).getValue().orElse(null));
+        assertEquals(proxyPort, actual.getField(SettingsDescriptor.KEY_PROXY_PORT).getValue().orElse(null));
+        assertEquals(proxyUsername, actual.getField(SettingsDescriptor.KEY_PROXY_USERNAME).getValue().orElse(null));
+        assertEquals(proxyPassword, actual.getField(SettingsDescriptor.KEY_PROXY_PASSWORD).getValue().orElse(null));
     }
 
     @Test
     public void testSaveRequiredInformation() {
-        final SystemActions systemActions = new SystemActions(systemStatusUtility, systemMessageUtility, systemInitializer);
+        final SystemActions systemActions = new SystemActions(systemStatusUtility, systemMessageUtility, configActions);
         final String defaultAdminPassword = "defaultPassword";
-        final boolean defaultAdminPasswordSet = true;
-        final String blackDuckProviderUrl = "url";
-        final Integer blackDuckConnectionTimeout = 100;
-        final String blackDuckApiToken = "token";
-        final boolean blackDuckApiTokenSet = true;
         final String globalEncryptionPassword = "password";
-        final boolean isGlobalEncryptionPasswordSet = true;
         final String globalEncryptionSalt = "salt";
-        final boolean isGlobalEncryptionSaltSet = true;
         final String proxyHost = "host";
         final String proxyPort = "port";
         final String proxyUsername = "username";
         final String proxyPassword = "password";
-        final boolean proxyPasswordSet = true;
 
-        final SystemSetupModel configuration = SystemSetupModel.of(defaultAdminPassword, defaultAdminPasswordSet, blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet,
-            globalEncryptionPassword, isGlobalEncryptionPasswordSet, globalEncryptionSalt, isGlobalEncryptionSaltSet,
-            proxyHost, proxyPort, proxyUsername, proxyPassword, proxyPasswordSet);
+        final Map<String, FieldValueModel> valueMap = new HashMap<>();
+        final FieldModel model = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, "GLOBAL", valueMap);
+        model.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, new FieldValueModel(List.of(defaultAdminPassword), true));
+        model.putField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, new FieldValueModel(List.of(globalEncryptionPassword), true));
+        model.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(globalEncryptionSalt), true));
+        model.putField(SettingsDescriptor.KEY_PROXY_HOST, new FieldValueModel(List.of(proxyHost), true));
+        model.putField(SettingsDescriptor.KEY_PROXY_PORT, new FieldValueModel(List.of(proxyPort), true));
+        model.putField(SettingsDescriptor.KEY_PROXY_USERNAME, new FieldValueModel(List.of(proxyUsername), true));
+        model.putField(SettingsDescriptor.KEY_PROXY_PASSWORD, new FieldValueModel(List.of(proxyPassword), true));
 
         final Map<String, String> fieldErrors = new HashMap<>();
-        systemActions.saveRequiredInformation(configuration, fieldErrors);
-        Mockito.verify(systemInitializer).updateRequiredConfiguration(Mockito.any(), Mockito.any());
+        systemActions.saveRequiredInformation(model, fieldErrors);
         assertTrue(fieldErrors.isEmpty());
     }
 }
