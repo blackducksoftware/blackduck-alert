@@ -30,13 +30,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.database.entity.configuration.ConfigGroupEntity;
-import com.synopsys.integration.alert.database.relation.key.ConfigGroupEntityKey;
 
 @Component
-public interface ConfigGroupRepository extends JpaRepository<ConfigGroupEntity, ConfigGroupEntityKey> {
+public interface ConfigGroupRepository extends JpaRepository<ConfigGroupEntity, Long> {
     List<ConfigGroupEntity> findByJobId(final UUID jobId);
-
-    List<ConfigGroupEntity> findByConfigId(final Long configId);
 
     void deleteByJobId(final UUID jobId);
 }

@@ -27,35 +27,44 @@ import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.IdClass;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.synopsys.integration.alert.database.entity.BaseEntity;
-import com.synopsys.integration.alert.database.relation.key.ConfigGroupEntityKey;
 
 @Entity
 @Table(schema = "ALERT", name = "CONFIG_GROUPS")
-@IdClass(ConfigGroupEntityKey.class)
 public class ConfigGroupEntity extends BaseEntity {
-    @Column(name = "JOB_ID")
-    private UUID jobId;
+    @Id
     @Column(name = "CONFIG_ID")
     private Long configId;
+    @Column(name = "JOB_ID")
+    private UUID jobId;
+
+    @OneToOne
+    @JoinColumn(name = "CONFIG_ID", referencedColumnName = "ID", insertable = false, updatable = false)
+    private DescriptorConfigEntity descriptorConfigEntity;
 
     public ConfigGroupEntity() {
         // JPA requires default constructor definitions
     }
 
-    public ConfigGroupEntity(final UUID jobId, final Long configId) {
+    public ConfigGroupEntity(final Long configId, final UUID jobId) {
         this.jobId = jobId;
         this.configId = configId;
+    }
+
+    public Long getConfigId() {
+        return configId;
     }
 
     public UUID getJobId() {
         return jobId;
     }
 
-    public Long getConfigId() {
-        return configId;
+    public DescriptorConfigEntity getDescriptorConfigEntity() {
+        return descriptorConfigEntity;
     }
 }

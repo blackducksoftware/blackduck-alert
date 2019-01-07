@@ -47,9 +47,9 @@ public interface RegisteredDescriptorRepository extends JpaRepository<Registered
     List<RegisteredDescriptorEntity> findByJobId(final UUID jobId);
 
     @Query(value = "SELECT entity FROM RegisteredDescriptorEntity entity "
-                       + "JOIN entity.descriptorConfigEntities descriptorConfigEntity ON entity.id = descriptorConfigEntity.descriptorId "
-                       + "JOIN descriptorConfigEntity.fieldValueEntities fieldValueEntity ON descriptorConfigEntity.id = fieldValueEntity.configId "
-                       + "JOIN fieldValueEntity.definedFieldEntity definedFieldEntity ON definedFieldEntity.id = fieldValueEntity.fieldId "
+                       + "INNER JOIN entity.descriptorConfigEntities descriptorConfigEntity ON entity.id = descriptorConfigEntity.descriptorId "
+                       + "INNER JOIN descriptorConfigEntity.fieldValueEntities fieldValueEntity ON descriptorConfigEntity.id = fieldValueEntity.configId "
+                       + "INNER JOIN fieldValueEntity.definedFieldEntity definedFieldEntity ON definedFieldEntity.id = fieldValueEntity.fieldId "
                        + "WHERE entity.typeId = ?1 AND definedFieldEntity.key = '" + CommonDistributionUIConfig.KEY_FREQUENCY + "' AND fieldValueEntity.value = ?2")
     List<RegisteredDescriptorEntity> findByTypeIdAndFrequency(Long descriptorTypeId, String frequency);
 }
