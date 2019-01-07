@@ -44,6 +44,10 @@ public class EmailDescriptor extends ChannelDescriptor {
     public static final String KEY_PROJECT_OWNER_ONLY = "project.owner.only";
     public static final String KEY_EMAIL_ADDRESSES = "email.addresses";
 
+    public static final String EMAIL_LABEL = "Email";
+    public static final String EMAIL_URL = "email";
+    public static final String EMAIL_ICON = "envelope";
+
     @Autowired
     public EmailDescriptor(final EmailGroupChannel channelListener, final EmailGlobalDescriptorActionApi globalRestApi, final EmailGlobalUIConfig emailGlobalUIConfig,
         final EmailDistributionDescriptorActionApi distributionRestApi, final EmailDistributionUIConfig emailDistributionUIConfig) {
