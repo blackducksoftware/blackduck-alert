@@ -139,12 +139,21 @@
                 onDelete="CASCADE"
         />
     </changeSet>
-    <changeSet id="1543499878547-7" author="gkillough">
+    <changeSet author="gkillough" id="1543499878547-7">
         <createTable tableName="CONFIG_GROUPS" schemaName="ALERT">
-            <column name="JOB_ID" type="UUID"/>
-            <column name="CONFIG_ID" type="BIGINT(19)"/>
+            <column name="CONFIG_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="JOB_ID" type="UUID">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
-        <addPrimaryKey tableName="CONFIG_GROUPS" columnNames="JOB_ID, CONFIG_ID"/>
+        <addPrimaryKey
+                schemaName="ALERT"
+                tableName="CONFIG_GROUPS"
+                columnNames="CONFIG_ID"
+                constraintName="CONFIG_GROUPS_KEY"
+        />
         <addForeignKeyConstraint
                 baseTableSchemaName="ALERT"
                 baseTableName="CONFIG_GROUPS"

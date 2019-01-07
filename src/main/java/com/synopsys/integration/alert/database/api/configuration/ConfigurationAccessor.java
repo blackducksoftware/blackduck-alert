@@ -127,7 +127,12 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
         for (final String descriptorName : descriptorNames) {
             configurationModels.add(createConfigForRelevantFields(descriptorName, configuredFields));
         }
-        return new ConfigurationJobModel(UUID.randomUUID(), configurationModels);
+        final UUID newJobId = UUID.randomUUID();
+        for (final ConfigurationModel createdModel : configurationModels) {
+            final ConfigGroupEntity configGroupEntityToSave = new ConfigGroupEntity(createdModel.getConfigurationId(), newJobId);
+            configGroupRepository.save(configGroupEntityToSave);
+        }
+        return new ConfigurationJobModel(newJobId, configurationModels);
     }
 
     @Override

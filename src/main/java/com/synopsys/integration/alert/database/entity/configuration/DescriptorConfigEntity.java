@@ -28,8 +28,8 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
@@ -46,8 +46,8 @@ public class DescriptorConfigEntity extends DatabaseEntity {
     @JoinColumn(name = "CONFIG_ID", insertable = false, updatable = false)
     private List<FieldValueEntity> fieldValueEntities;
 
-    @ManyToOne
-    @JoinColumn(name = "CONFIG_ID", insertable = false, updatable = false)
+    @OneToOne
+    @JoinColumn(name = "ID", referencedColumnName = "CONFIG_ID", insertable = false, updatable = false)
     private ConfigGroupEntity configGroupEntity;
 
     public DescriptorConfigEntity() {
