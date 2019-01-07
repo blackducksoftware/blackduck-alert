@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.repository.configuration;
+package com.synopsys.integration.alert.database.repository.configuration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -15,12 +15,6 @@ import com.synopsys.integration.alert.database.entity.configuration.DescriptorCo
 import com.synopsys.integration.alert.database.entity.configuration.DescriptorFieldRelation;
 import com.synopsys.integration.alert.database.entity.configuration.FieldValueEntity;
 import com.synopsys.integration.alert.database.entity.configuration.RegisteredDescriptorEntity;
-import com.synopsys.integration.alert.database.repository.configuration.ConfigContextRepository;
-import com.synopsys.integration.alert.database.repository.configuration.DefinedFieldRepository;
-import com.synopsys.integration.alert.database.repository.configuration.DescriptorConfigRepository;
-import com.synopsys.integration.alert.database.repository.configuration.DescriptorFieldRepository;
-import com.synopsys.integration.alert.database.repository.configuration.FieldValueRepository;
-import com.synopsys.integration.alert.database.repository.configuration.RegisteredDescriptorRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 public class FieldValueRepositoryTestIT extends AlertIntegrationTest {
@@ -39,7 +33,7 @@ public class FieldValueRepositoryTestIT extends AlertIntegrationTest {
     private DescriptorConfigRepository descriptorConfigRepository;
     @Autowired
     private FieldValueRepository fieldValueRepository;
-     
+
     @BeforeEach
     public void init() {
         registeredDescriptorRepository.deleteAllInBatch();

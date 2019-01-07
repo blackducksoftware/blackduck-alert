@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.repository.configuration;
+package com.synopsys.integration.alert.database.repository.configuration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -12,9 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.synopsys.integration.alert.database.entity.configuration.ConfigContextEntity;
 import com.synopsys.integration.alert.database.entity.configuration.DescriptorConfigEntity;
 import com.synopsys.integration.alert.database.entity.configuration.RegisteredDescriptorEntity;
-import com.synopsys.integration.alert.database.repository.configuration.ConfigContextRepository;
-import com.synopsys.integration.alert.database.repository.configuration.DescriptorConfigRepository;
-import com.synopsys.integration.alert.database.repository.configuration.RegisteredDescriptorRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 public class DescriptorConfigRepositoryTestIT extends AlertIntegrationTest {

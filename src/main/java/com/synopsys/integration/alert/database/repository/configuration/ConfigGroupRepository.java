@@ -21,26 +21,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.configuration;
+package com.synopsys.integration.alert.database.repository.configuration;
 
-import javax.validation.constraints.NotNull;
+import java.util.List;
+import java.util.UUID;
 
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Component;
 
-public class Configuration {
-    private final Long id;
-    private final FieldAccessor fieldAccessor;
+import com.synopsys.integration.alert.database.entity.configuration.ConfigGroupEntity;
 
-    public Configuration(@NotNull final ConfigurationModel configurationModel) {
-        fieldAccessor = new FieldAccessor(configurationModel.getCopyOfKeyToFieldMap());
-        id = configurationModel.getConfigurationId();
-    }
+@Component
+public interface ConfigGroupRepository extends JpaRepository<ConfigGroupEntity, Long> {
+    List<ConfigGroupEntity> findByJobId(final UUID jobId);
 
-    public Long getId() {
-        return id;
-    }
-
-    public FieldAccessor getFieldAccessor() {
-        return fieldAccessor;
-    }
+    void deleteByJobId(final UUID jobId);
 }

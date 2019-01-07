@@ -20,8 +20,8 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.component.scheduling.SchedulingDescriptor;
 import com.synopsys.integration.alert.component.scheduling.SchedulingUIConfig;
-import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor;
-import com.synopsys.integration.alert.database.api.configuration.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties;
 import com.synopsys.integration.alert.util.OutputLogger;
@@ -88,7 +88,7 @@ public class StartupManagerTest {
         final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final BaseDescriptorAccessor baseDescriptorAccessor = Mockito.mock(BaseDescriptorAccessor.class);
-        final ConfigurationAccessor.ConfigurationModel schedulingModel = Mockito.mock(ConfigurationAccessor.ConfigurationModel.class);
+        final ConfigurationModel schedulingModel = Mockito.mock(ConfigurationModel.class);
         Mockito.when(baseConfigurationAccessor.createConfiguration(Mockito.anyString(), Mockito.any(ConfigContextEnum.class), Mockito.anyCollection())).thenReturn(schedulingModel);
         final StartupManager startupManager = new StartupManager(testAlertProperties, null, dailyTask, onDemandTask, purgeTask, phoneHomeTask, null, Collections.emptyList(), systemStatusUtility, systemValidator, baseConfigurationAccessor,
             encryptionUtility, Collections.emptyList(), baseDescriptorAccessor);
@@ -118,7 +118,7 @@ public class StartupManagerTest {
         final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final BaseDescriptorAccessor baseDescriptorAccessor = Mockito.mock(BaseDescriptorAccessor.class);
-        final ConfigurationAccessor.ConfigurationModel schedulingModel = Mockito.mock(ConfigurationAccessor.ConfigurationModel.class);
+        final ConfigurationModel schedulingModel = Mockito.mock(ConfigurationModel.class);
         final Map<String, ConfigurationFieldModel> configuredFields = new HashMap<>();
         final ConfigurationFieldModel hourOfDayField = ConfigurationFieldModel.create(SchedulingUIConfig.KEY_DAILY_DIGEST_HOUR_OF_DAY);
         hourOfDayField.setFieldValue("1");
@@ -127,7 +127,7 @@ public class StartupManagerTest {
         purgeFrequencyField.setFieldValue("2");
         configuredFields.put(SchedulingUIConfig.KEY_PURGE_DATA_FREQUENCY_DAYS, purgeFrequencyField);
         Mockito.when(schedulingModel.getCopyOfKeyToFieldMap()).thenReturn(configuredFields);
-        final List<ConfigurationAccessor.ConfigurationModel> configList = List.of(schedulingModel);
+        final List<ConfigurationModel> configList = List.of(schedulingModel);
         Mockito.when(baseConfigurationAccessor.getConfigurationsByDescriptorName(SchedulingDescriptor.SCHEDULING_COMPONENT)).thenReturn(configList);
 
         final StartupManager startupManager = new StartupManager(testAlertProperties, null, dailyTask, onDemandTask, purgeTask, phoneHomeTask, null, Collections.emptyList(), systemStatusUtility, systemValidator, baseConfigurationAccessor,

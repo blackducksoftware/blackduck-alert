@@ -30,8 +30,8 @@ import java.util.Optional;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.database.api.configuration.DefinedFieldModel;
-import com.synopsys.integration.alert.database.api.configuration.DescriptorAccessor.RegisteredDescriptorModel;
+import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.RegisteredDescriptorModel;
 
 public interface BaseDescriptorAccessor {
 

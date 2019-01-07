@@ -31,7 +31,7 @@ import java.util.Set;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.alert.database.api.configuration.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 
 public class FieldAccessor {
     private final Map<String, ConfigurationFieldModel> fields;

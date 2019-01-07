@@ -27,13 +27,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,42 +45,106 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.entity.configuration.ConfigContextEntity;
+import com.synopsys.integration.alert.database.entity.configuration.ConfigGroupEntity;
 import com.synopsys.integration.alert.database.entity.configuration.DefinedFieldEntity;
 import com.synopsys.integration.alert.database.entity.configuration.DescriptorConfigEntity;
 import com.synopsys.integration.alert.database.entity.configuration.FieldValueEntity;
 import com.synopsys.integration.alert.database.entity.configuration.RegisteredDescriptorEntity;
 import com.synopsys.integration.alert.database.repository.configuration.ConfigContextRepository;
+import com.synopsys.integration.alert.database.repository.configuration.ConfigGroupRepository;
 import com.synopsys.integration.alert.database.repository.configuration.DefinedFieldRepository;
 import com.synopsys.integration.alert.database.repository.configuration.DescriptorConfigRepository;
 import com.synopsys.integration.alert.database.repository.configuration.DescriptorTypeRepository;
 import com.synopsys.integration.alert.database.repository.configuration.FieldValueRepository;
 import com.synopsys.integration.alert.database.repository.configuration.RegisteredDescriptorRepository;
-import com.synopsys.integration.util.Stringable;
 
 @Component
 @Transactional
 public class ConfigurationAccessor implements BaseConfigurationAccessor {
     private final RegisteredDescriptorRepository registeredDescriptorRepository;
+    private final DescriptorTypeRepository descriptorTypeRepository;
     private final DefinedFieldRepository definedFieldRepository;
     private final DescriptorConfigRepository descriptorConfigsRepository;
+    private final ConfigGroupRepository configGroupRepository;
     private final ConfigContextRepository configContextRepository;
     private final FieldValueRepository fieldValueRepository;
     private final EncryptionUtility encryptionUtility;
-    private final DescriptorTypeRepository descriptorTypeRepository;
 
     @Autowired
-    public ConfigurationAccessor(final RegisteredDescriptorRepository registeredDescriptorRepository, final DefinedFieldRepository definedFieldRepository, final DescriptorConfigRepository descriptorConfigsRepository,
-        final ConfigContextRepository configContextRepository, final FieldValueRepository fieldValueRepository, final EncryptionUtility encryptionUtility, final DescriptorTypeRepository descriptorTypeRepository) {
+    public ConfigurationAccessor(final RegisteredDescriptorRepository registeredDescriptorRepository, final DescriptorTypeRepository descriptorTypeRepository, final DefinedFieldRepository definedFieldRepository,
+        final DescriptorConfigRepository descriptorConfigsRepository, final ConfigGroupRepository configGroupRepository, final ConfigContextRepository configContextRepository, final FieldValueRepository fieldValueRepository,
+        final EncryptionUtility encryptionUtility) {
         this.registeredDescriptorRepository = registeredDescriptorRepository;
+        this.descriptorTypeRepository = descriptorTypeRepository;
         this.definedFieldRepository = definedFieldRepository;
         this.descriptorConfigsRepository = descriptorConfigsRepository;
+        this.configGroupRepository = configGroupRepository;
         this.configContextRepository = configContextRepository;
         this.fieldValueRepository = fieldValueRepository;
         this.encryptionUtility = encryptionUtility;
-        this.descriptorTypeRepository = descriptorTypeRepository;
+    }
+
+    @Override
+    public List<ConfigurationJobModel> getAllJobs() {
+        final List<ConfigGroupEntity> jobEntities = configGroupRepository.findAll();
+        final Map<UUID, Set<ConfigGroupEntity>> jobMap = new HashMap<>();
+        for (final ConfigGroupEntity entity : jobEntities) {
+            final UUID entityJobId = entity.getJobId();
+            if (!jobMap.containsKey(entityJobId)) {
+                jobMap.put(entityJobId, new HashSet<>());
+            }
+            jobMap.get(entityJobId).add(entity);
+        }
+
+        return jobMap.entrySet()
+                   .stream()
+                   .map(entry -> createJobModelFromExistingConfigs(entry.getKey(), entry.getValue()))
+                   .collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<ConfigurationJobModel> getJobById(final UUID jobId) throws AlertDatabaseConstraintException {
+        if (jobId == null) {
+            throw new AlertDatabaseConstraintException("The job id cannot be null");
+        }
+        final List<ConfigGroupEntity> jobConfigEntities = configGroupRepository.findByJobId(jobId);
+        return jobConfigEntities
+                   .stream()
+                   .findAny()
+                   .map(configGroupEntity -> createJobModelFromExistingConfigs(configGroupEntity.getJobId(), jobConfigEntities));
+    }
+
+    @Override
+    public ConfigurationJobModel createJob(final Collection<String> descriptorNames, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
+        return createJob(null, descriptorNames, configuredFields);
+    }
+
+    @Override
+    public ConfigurationJobModel updateJob(final UUID jobId, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
+        if (jobId == null) {
+            throw new AlertDatabaseConstraintException("The job id cannot be null");
+        }
+        final Set<String> descriptorNames = registeredDescriptorRepository.findByJobId(jobId)
+                                                .stream()
+                                                .map(RegisteredDescriptorEntity::getName)
+                                                .collect(Collectors.toSet());
+        configGroupRepository.deleteByJobId(jobId);
+        return createJob(jobId, descriptorNames, configuredFields);
+    }
+
+    @Override
+    public void deleteJob(final UUID jobId) throws AlertDatabaseConstraintException {
+        if (jobId == null) {
+            throw new AlertDatabaseConstraintException("The job id cannot be null");
+        }
+        configGroupRepository.deleteByJobId(jobId);
     }
 
     @Override
@@ -98,7 +162,7 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
 
     @Override
     public List<ConfigurationModel> getConfigurationsByDescriptorName(final String descriptorName) throws AlertDatabaseConstraintException {
-        if (StringUtils.isEmpty(descriptorName)) {
+        if (StringUtils.isBlank(descriptorName)) {
             throw new AlertDatabaseConstraintException("Descriptor name cannot be empty");
         }
         final Optional<RegisteredDescriptorEntity> registeredDescriptorEntity = registeredDescriptorRepository.findFirstByName(descriptorName);
@@ -190,7 +254,8 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
                         fieldValueRepository.save(newFieldValueEntity);
                     }
                 }
-                createdConfig.configuredFields.put(fieldKey, configuredField);
+                // TODO find out if this had a different result: createdConfig.configuredFields.put(fieldKey, configuredField);
+                createdConfig.put(configuredField);
             }
         }
         return createdConfig;
@@ -225,6 +290,7 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
         return updatedConfig;
     }
 
+    @Override
     public void deleteConfiguration(final ConfigurationModel configModel) throws AlertDatabaseConstraintException {
         if (configModel == null) {
             throw new AlertDatabaseConstraintException("Cannot delete a null object from the database");
@@ -238,6 +304,54 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
             throw new AlertDatabaseConstraintException("The config id cannot be null");
         }
         descriptorConfigsRepository.deleteById(descriptorConfigId);
+    }
+
+    private ConfigurationJobModel createJob(final UUID oldJobId, final Collection<String> descriptorNames, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
+        if (descriptorNames == null || descriptorNames.isEmpty()) {
+            throw new AlertDatabaseConstraintException("Descriptor names cannot be empty");
+        }
+        final Set<ConfigurationModel> configurationModels = new HashSet<>();
+        for (final String descriptorName : descriptorNames) {
+            configurationModels.add(createConfigForRelevantFields(descriptorName, configuredFields));
+        }
+
+        UUID newJobId = oldJobId;
+        if (newJobId == null) {
+            newJobId = UUID.randomUUID();
+        }
+        for (final ConfigurationModel createdModel : configurationModels) {
+            final ConfigGroupEntity configGroupEntityToSave = new ConfigGroupEntity(createdModel.getConfigurationId(), newJobId);
+            configGroupRepository.save(configGroupEntityToSave);
+        }
+        return new ConfigurationJobModel(newJobId, configurationModels);
+    }
+
+    private ConfigurationJobModel createJobModelFromExistingConfigs(final UUID jobId, final Collection<ConfigGroupEntity> entities) {
+        final Set<ConfigurationModel> configurationModels = new HashSet<>();
+        for (final ConfigGroupEntity sortedEntity : entities) {
+            try {
+                getConfigurationById(sortedEntity.getConfigId()).ifPresent(configurationModels::add);
+            } catch (final AlertDatabaseConstraintException e) {
+                // This case should be impossible based on database constraints
+                throw new AlertRuntimeException(e);
+            }
+        }
+        return new ConfigurationJobModel(jobId, configurationModels);
+    }
+
+    private ConfigurationModel createConfigForRelevantFields(final String descriptorName, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
+        final Long descriptorId = getDescriptorIdOrThrowException(descriptorName);
+        final Long contextId = getConfigContextIdOrThrowException(ConfigContextEnum.DISTRIBUTION);
+        final Set<String> descriptorFields = definedFieldRepository.findByDescriptorIdAndContext(descriptorId, contextId)
+                                                 .stream()
+                                                 .map(DefinedFieldEntity::getKey)
+                                                 .collect(Collectors.toSet());
+
+        final Set<ConfigurationFieldModel> relevantFields = configuredFields
+                                                                .stream()
+                                                                .filter(field -> descriptorFields.contains(field.getFieldKey()))
+                                                                .collect(Collectors.toSet());
+        return createConfiguration(descriptorName, ConfigContextEnum.DISTRIBUTION, relevantFields);
     }
 
     private List<ConfigurationModel> createConfigModels(final Collection<RegisteredDescriptorEntity> descriptors) throws AlertDatabaseConstraintException {
@@ -256,6 +370,7 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
         final String configContext = getContextById(contextId);
         final ConfigurationModel newModel = new ConfigurationModel(descriptorId, configId, configContext);
         final List<FieldValueEntity> fieldValueEntities = fieldValueRepository.findByConfigId(configId);
+        // TODO should empty fields be included?
         for (final FieldValueEntity fieldValueEntity : fieldValueEntities) {
             final DefinedFieldEntity definedFieldEntity = definedFieldRepository
                                                               .findById(fieldValueEntity.getFieldId())
@@ -270,7 +385,7 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
     }
 
     private Long getDescriptorIdOrThrowException(final String descriptorName) throws AlertDatabaseConstraintException {
-        if (StringUtils.isEmpty(descriptorName)) {
+        if (StringUtils.isBlank(descriptorName)) {
             throw new AlertDatabaseConstraintException("Descriptor name cannot be empty");
         }
         return registeredDescriptorRepository
@@ -297,7 +412,7 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
     }
 
     private Long getFieldIdOrThrowException(final String fieldKey) throws AlertDatabaseConstraintException {
-        if (StringUtils.isEmpty(fieldKey)) {
+        if (StringUtils.isBlank(fieldKey)) {
             throw new AlertDatabaseConstraintException("Field key cannot be empty");
         }
         return definedFieldRepository
@@ -320,63 +435,4 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
         return value;
     }
 
-    public final class ConfigurationModel extends Stringable {
-        private final Long descriptorId;
-        private final Long configurationId;
-        private final ConfigContextEnum context;
-        private final Map<String, ConfigurationFieldModel> configuredFields;
-
-        private ConfigurationModel(final Long registeredDescriptorId, final Long descriptorConfigId, final String context) {
-            this(registeredDescriptorId, descriptorConfigId, ConfigContextEnum.valueOf(context));
-        }
-
-        private ConfigurationModel(final Long registeredDescriptorId, final Long descriptorConfigId, final ConfigContextEnum context) {
-            descriptorId = registeredDescriptorId;
-            configurationId = descriptorConfigId;
-            this.context = context;
-            configuredFields = new HashMap<>();
-        }
-
-        public Long getDescriptorId() {
-            return descriptorId;
-        }
-
-        public Long getConfigurationId() {
-            return configurationId;
-        }
-
-        public ConfigContextEnum getDescriptorContext() {
-            return context;
-        }
-
-        public Optional<ConfigurationFieldModel> getField(final String fieldKey) {
-            Objects.requireNonNull(fieldKey);
-            return Optional.ofNullable(configuredFields.get(fieldKey));
-        }
-
-        public List<ConfigurationFieldModel> getCopyOfFieldList() {
-            return new ArrayList<>(configuredFields.values());
-        }
-
-        public Map<String, ConfigurationFieldModel> getCopyOfKeyToFieldMap() {
-            return new HashMap<>(configuredFields);
-        }
-
-        private void put(final ConfigurationFieldModel configFieldModel) {
-            Objects.requireNonNull(configFieldModel);
-            final String fieldKey = configFieldModel.getFieldKey();
-            Objects.requireNonNull(fieldKey);
-            if (configuredFields.containsKey(fieldKey)) {
-                final ConfigurationFieldModel oldConfigField = configuredFields.get(fieldKey);
-                final List<String> values = combine(oldConfigField, configFieldModel);
-                oldConfigField.setFieldValues(values);
-            } else {
-                configuredFields.put(fieldKey, configFieldModel);
-            }
-        }
-
-        private List<String> combine(final ConfigurationFieldModel first, final ConfigurationFieldModel second) {
-            return Stream.concat(first.getFieldValues().stream(), second.getFieldValues().stream()).collect(Collectors.toList());
-        }
-    }
 }

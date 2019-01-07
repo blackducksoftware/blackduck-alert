@@ -21,8 +21,8 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistribu
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor;
-import com.synopsys.integration.alert.database.api.configuration.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
@@ -118,9 +118,9 @@ public class MockConfigurationModelFactory {
         return fields;
     }
 
-    public static ConfigurationAccessor.ConfigurationModel createCommonConfigModel(final Long id, final Long descriptorId, final String distributionType, final String name, final String providerName, final String frequency,
+    public static ConfigurationModel createCommonConfigModel(final Long id, final Long descriptorId, final String distributionType, final String name, final String providerName, final String frequency,
         final String filterByProject, final String projectNamePattern, final List<String> configuredProjects, final List<String> notificationTypes, final String formatType) {
-        final ConfigurationAccessor.ConfigurationModel configurationModel = Mockito.mock(ConfigurationAccessor.ConfigurationModel.class);
+        final ConfigurationModel configurationModel = Mockito.mock(ConfigurationModel.class);
 
         Mockito.when(configurationModel.getConfigurationId()).thenReturn(id);
         Mockito.when(configurationModel.getDescriptorId()).thenReturn(descriptorId);
@@ -146,11 +146,11 @@ public class MockConfigurationModelFactory {
         return configurationModel;
     }
 
-    private static void mockField(final List<ConfigurationFieldModel> fieldList, final ConfigurationAccessor.ConfigurationModel configurationModel, final String key, final String value) {
+    private static void mockField(final List<ConfigurationFieldModel> fieldList, final ConfigurationModel configurationModel, final String key, final String value) {
         mockField(fieldList, configurationModel, key, List.of(value));
     }
 
-    private static void mockField(final List<ConfigurationFieldModel> fieldList, final ConfigurationAccessor.ConfigurationModel configurationModel, final String key, final Collection<String> values) {
+    private static void mockField(final List<ConfigurationFieldModel> fieldList, final ConfigurationModel configurationModel, final String key, final Collection<String> values) {
         final ConfigurationFieldModel field = ConfigurationFieldModel.create(key);
         field.setFieldValues(values);
         Mockito.when(configurationModel.getField(key)).thenReturn(Optional.of(field));

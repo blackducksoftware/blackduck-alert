@@ -23,55 +23,48 @@
  */
 package com.synopsys.integration.alert.database.entity.configuration;
 
-import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
+import com.synopsys.integration.alert.database.entity.BaseEntity;
 
 @Entity
-@Table(schema = "ALERT", name = "DESCRIPTOR_CONFIGS")
-public class DescriptorConfigEntity extends DatabaseEntity {
-    @Column(name = "DESCRIPTOR_ID")
-    private Long descriptorId;
-    @Column(name = "CONTEXT_ID")
-    private Long contextId;
-
-    @OneToMany
-    @JoinColumn(name = "CONFIG_ID", referencedColumnName = "ID", insertable = false, updatable = false)
-    private List<FieldValueEntity> fieldValueEntities;
+@Table(schema = "ALERT", name = "CONFIG_GROUPS")
+public class ConfigGroupEntity extends BaseEntity {
+    @Id
+    @Column(name = "CONFIG_ID")
+    private Long configId;
+    @Column(name = "JOB_ID")
+    private UUID jobId;
 
     @OneToOne
-    @JoinColumn(name = "ID", referencedColumnName = "CONFIG_ID", insertable = false, updatable = false)
-    private ConfigGroupEntity configGroupEntity;
+    @JoinColumn(name = "CONFIG_ID", referencedColumnName = "ID", insertable = false, updatable = false)
+    private DescriptorConfigEntity descriptorConfigEntity;
 
-    public DescriptorConfigEntity() {
+    public ConfigGroupEntity() {
         // JPA requires default constructor definitions
     }
 
-    public DescriptorConfigEntity(final Long descriptorId, final Long contextId) {
-        this.descriptorId = descriptorId;
-        this.contextId = contextId;
+    public ConfigGroupEntity(final Long configId, final UUID jobId) {
+        this.jobId = jobId;
+        this.configId = configId;
     }
 
-    public Long getDescriptorId() {
-        return descriptorId;
+    public Long getConfigId() {
+        return configId;
     }
 
-    public Long getContextId() {
-        return contextId;
+    public UUID getJobId() {
+        return jobId;
     }
 
-    public List<FieldValueEntity> getFieldValueEntities() {
-        return fieldValueEntities;
-    }
-
-    public ConfigGroupEntity getConfigGroupEntity() {
-        return configGroupEntity;
+    public DescriptorConfigEntity getDescriptorConfigEntity() {
+        return descriptorConfigEntity;
     }
 }
