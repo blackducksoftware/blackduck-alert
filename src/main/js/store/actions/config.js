@@ -1,6 +1,6 @@
-import {CONFIG_FETCHED, CONFIG_FETCHING, CONFIG_TEST_FAILED, CONFIG_TEST_SUCCESS, CONFIG_TESTING, CONFIG_UPDATE_ERROR, CONFIG_UPDATED, CONFIG_UPDATING} from './types';
+import { CONFIG_FETCHED, CONFIG_FETCHING, CONFIG_TEST_FAILED, CONFIG_TEST_SUCCESS, CONFIG_TESTING, CONFIG_UPDATE_ERROR, CONFIG_UPDATED, CONFIG_UPDATING } from './types';
 
-import {verifyLoginByStatus} from './session';
+import { verifyLoginByStatus } from './session';
 
 const CONFIG_URL = '/alert/api/configuration/provider/provider_blackduck';
 const TEST_URL = '/alert/api/configuration/provider/provider_blackduck/test';
@@ -94,7 +94,7 @@ function testFailed(message, errors) {
 export function getConfig() {
     return (dispatch, getState) => {
         dispatch(fetchingConfig());
-        const {csrfToken} = getState().session;
+        const { csrfToken } = getState().session;
         fetch(CONFIG_URL, {
             credentials: 'same-origin',
             headers: {
@@ -109,7 +109,7 @@ export function getConfig() {
                         } else {
                             dispatch(configFetched({}));
                         }
-                    })
+                    });
                 } else {
                     dispatch(verifyLoginByStatus(response.status));
                 }
@@ -121,7 +121,7 @@ export function getConfig() {
 export function updateConfig(config) {
     return (dispatch, getState) => {
         dispatch(updatingConfig());
-        const {csrfToken} = getState().session;
+        const { csrfToken } = getState().session;
         const method = config.id ? 'PUT' : 'POST';
         const body = scrubConfig(config);
 
@@ -137,7 +137,7 @@ export function updateConfig(config) {
             .then((response) => {
                 if (response.ok) {
                     response.json().then((data) => {
-                        dispatch(configUpdated({...config, id: data.id}));
+                        dispatch(configUpdated({ ...config, id: data.id }));
                     }).then(() => dispatch(getConfig()));
                 } else {
                     response.json().then((data) => {
@@ -148,7 +148,7 @@ export function updateConfig(config) {
                                 return dispatch(configError(data.message, data.errors));
                             default: {
                                 dispatch(configError(data.message));
-                                return dispatch(verifyLoginByStatus(response.status))
+                                return dispatch(verifyLoginByStatus(response.status));
                             }
                         }
                     });
@@ -162,7 +162,7 @@ export function updateConfig(config) {
 export function testConfig(config) {
     return (dispatch, getState) => {
         dispatch(testingConfig());
-        const {csrfToken} = getState().session;
+        const { csrfToken } = getState().session;
         fetch(TEST_URL, {
             credentials: 'same-origin',
             method: 'POST',

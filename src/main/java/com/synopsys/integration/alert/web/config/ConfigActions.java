@@ -78,7 +78,7 @@ public class ConfigActions {
     }
 
     public boolean doesConfigExist(final Long id) throws AlertException {
-        return id != null && !configurationAccessor.getConfigurationById(id).isPresent();
+        return id != null && configurationAccessor.getConfigurationById(id).isPresent();
     }
 
     public List<FieldModel> getConfigs(final ConfigContextEnum context, final String descriptorName) throws AlertException {
@@ -126,7 +126,7 @@ public class ConfigActions {
         }
     }
 
-    public ConfigurationModel saveConfig(final FieldModel fieldModel, final ConfigContextEnum context) throws AlertException {
+    public ConfigurationModel saveConfig(final FieldModel fieldModel) throws AlertException {
         final DescriptorActionApi descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
         if (null != descriptorActionApi) {
             descriptorActionApi.saveConfig(fieldModel);
@@ -134,8 +134,9 @@ public class ConfigActions {
             logger.error("Could not find a Descriptor with the name: " + fieldModel.getDescriptorName());
         }
         final String descriptorName = fieldModel.getDescriptorName();
+        final String context = fieldModel.getContext();
         final Map<String, ConfigurationFieldModel> configurationFieldModelMap = fieldModel.convertToConfigurationFieldModelMap();
-        return configurationAccessor.createConfiguration(descriptorName, context, configurationFieldModelMap.values());
+        return configurationAccessor.createConfiguration(descriptorName, EnumUtils.getEnum(ConfigContextEnum.class, context), configurationFieldModelMap.values());
     }
 
     public String validateConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) throws AlertFieldException {

@@ -1,10 +1,10 @@
-import connect from "react-redux/es/connect/connect";
-import React, {Component} from "react";
-import SubmitButton from "./field/input/SubmitButton";
-import TextInput from "./field/input/TextInput";
-import PasswordInput from "./field/input/PasswordInput";
-import PropTypes from "prop-types";
-import {saveSystemSetup} from "./store/actions/system"
+import connect from 'react-redux/es/connect/connect';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import SubmitButton from './field/input/SubmitButton';
+import TextInput from './field/input/TextInput';
+import PasswordInput from './field/input/PasswordInput';
+import { saveSystemSetup } from './store/actions/system';
 
 class SetupPage extends Component {
     constructor(props) {
@@ -29,7 +29,7 @@ class SetupPage extends Component {
                 proxyPassword: '',
                 proxyPasswordSet: false
             }
-        }
+        };
     }
 
     componentWillReceiveProps(nextProps) {
@@ -54,11 +54,11 @@ class SetupPage extends Component {
             });
             this.setState({
                 setupData: newState
-            })
+            });
         }
     }
 
-    handleChange({target}) {
+    handleChange({ target }) {
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const newState = Object.assign({}, this.state.setupData, {
             [target.name]: value
@@ -161,7 +161,7 @@ class SetupPage extends Component {
                                 <div className="col-sm-11 text-right">
                                     {this.props.fetchingSetup &&
                                     <div className="progressIcon">
-                                        <span className="fa fa-spinner fa-pulse" aria-hidden="true"/>
+                                        <span className="fa fa-spinner fa-pulse" aria-hidden="true" />
                                     </div>
                                     }
                                     <SubmitButton id="setupSubmit">Apply</SubmitButton>
@@ -171,12 +171,14 @@ class SetupPage extends Component {
                     </div>
                 </div>
             </div>
-        )
+        );
     }
 }
 
 SetupPage.propTypes = {
+    saveSystemSetup: PropTypes.func.isRequired,
     fetchingSetupStatus: PropTypes.string.isRequired,
+    fetchingSetup: PropTypes.bool.isRequired,
     updateStatus: PropTypes.string,
     currentSetupData: PropTypes.object,
     fieldErrors: PropTypes.object
@@ -185,7 +187,6 @@ SetupPage.propTypes = {
 SetupPage.defaultProps = {
     currentSetupData: {},
     fieldErrors: {},
-    fetchingSetupStatus: '',
     updateStatus: ''
 };
 
@@ -197,7 +198,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    saveSystemSetup: (setupData) => dispatch(saveSystemSetup(setupData))
+    saveSystemSetup: setupData => dispatch(saveSystemSetup(setupData))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SetupPage);

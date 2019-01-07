@@ -1,6 +1,6 @@
-import {AUDIT_FETCH_ERROR, AUDIT_FETCHED, AUDIT_FETCHING} from './types';
+import { AUDIT_FETCH_ERROR, AUDIT_FETCHED, AUDIT_FETCHING } from './types';
 
-import {verifyLoginByStatus} from './session';
+import { verifyLoginByStatus } from './session';
 
 const FETCH_URL = '/alert/api/audit';
 
@@ -32,7 +32,7 @@ function auditDataFetchError(message) {
         error: {
             message
         }
-    }
+    };
 }
 
 function createPagedQueryURL(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications) {
@@ -48,7 +48,7 @@ function createPagedQueryURL(pageNumber, pageSize, searchTerm, sortField, sortOr
 export function getAuditData(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications) {
     return (dispatch, getState) => {
         dispatch(fetchingAuditData());
-        const {csrfToken} = getState().session;
+        const { csrfToken } = getState().session;
         const fetchUrl = createPagedQueryURL(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications);
         fetch(fetchUrl, {
             credentials: 'same-origin',
