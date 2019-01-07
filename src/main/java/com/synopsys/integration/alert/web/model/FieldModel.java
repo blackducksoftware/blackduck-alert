@@ -35,6 +35,16 @@ public class FieldModel extends Config {
     private final String descriptorName;
     private final String context;
 
+    private FieldModel() {
+        this(null, null, null);
+    }
+
+    public FieldModel(final String descriptorName, final String context, final Map<String, FieldValueModel> keyToValues) {
+        this.descriptorName = descriptorName;
+        this.context = context;
+        this.keyToValues = keyToValues;
+    }
+
     public FieldModel(final String configId, final String descriptorName, final String context, final Map<String, FieldValueModel> keyToValues) {
         super(configId);
         this.descriptorName = descriptorName;

@@ -13,7 +13,7 @@ import SlackConfiguration from './component/channels/SlackConfiguration';
 import EmailConfiguration from './component/channels/EmailConfiguration';
 import HipChatConfiguration from './component/channels/HipChatConfiguration';
 import LogoutConfirmation from './component/common/LogoutConfirmation';
-import BlackDuckConfiguration from "./component/providers/BlackDuckConfiguration";
+import BlackDuckConfiguration from './component/providers/BlackDuckConfiguration';
 
 
 class MainPage extends Component {
@@ -37,36 +37,32 @@ class MainPage extends Component {
         const { descriptors } = this.props;
         if (!descriptors.items) {
             return null;
-        } else {
-            const descriptorList = descriptors.items[decriptorTypeKey];
-            if (!descriptorList) {
-                return null;
-            } else {
-                const routeList = descriptorList.map((component) => {
-                    if (component.urlName === 'blackduck') {
-                        return <Route path={`${uriPrefix}${component.urlName}`} component={BlackDuckConfiguration} />
-                    } else if (component.urlName === 'email') {
-                        return <Route path={`${uriPrefix}${component.urlName}`} component={EmailConfiguration} />
-                    } else if (component.urlName === 'hipchat') {
-                        return <Route path={`${uriPrefix}${component.urlName}`} component={HipChatConfiguration} />
-                    } else if (component.urlName === 'slack') {
-                        return <Route path={`${uriPrefix}${component.urlName}`} component={SlackConfiguration} />
-                    } else {
-                        return null;
-                    }
-                });
-
-                routeList.unshift(
-                    <Route
-                        exact
-                        path="/alert/"
-                        render={() => (
-                            <Redirect to={`${uriPrefix}${descriptorList[0].urlName}`} />
-                        )} />
-                );
-                return routeList;
-            }
         }
+        const descriptorList = descriptors.items[decriptorTypeKey];
+        if (!descriptorList) {
+            return null;
+        }
+        const routeList = descriptorList.map((component) => {
+            if (component.urlName === 'blackduck') {
+                return <Route path={`${uriPrefix}${component.urlName}`} component={BlackDuckConfiguration} />;
+            } else if (component.urlName === 'email') {
+                return <Route path={`${uriPrefix}${component.urlName}`} component={EmailConfiguration} />;
+            } else if (component.urlName === 'hipchat') {
+                return <Route path={`${uriPrefix}${component.urlName}`} component={HipChatConfiguration} />;
+            } else if (component.urlName === 'slack') {
+                return <Route path={`${uriPrefix}${component.urlName}`} component={SlackConfiguration} />;
+            }
+            return null;
+        });
+
+        routeList.unshift(<Route
+            exact
+            path="/alert/"
+            render={() => (
+                <Redirect to={`${uriPrefix}${descriptorList[0].urlName}`} />
+            )}
+        />);
+        return routeList;
     }
 
     render() {
@@ -92,14 +88,15 @@ class MainPage extends Component {
 
 MainPage.propTypes = {
     getDescriptorByType: PropTypes.func.isRequired,
-    getDescriptorsByTypeAndContext: PropTypes.func.isRequired
+    getDescriptorsByTypeAndContext: PropTypes.func.isRequired,
+    descriptors: PropTypes.object.isRequired
 };
 const mapStateToProps = state => ({
     descriptors: state.descriptors
 });
 
 const mapDispatchToProps = dispatch => ({
-    getDescriptorByType: (descriptorType) => dispatch(getDescriptorByType(descriptorType)),
+    getDescriptorByType: descriptorType => dispatch(getDescriptorByType(descriptorType)),
     getDescriptorsByTypeAndContext: (descriptorType, configContextName) => dispatch(getDescriptorsByTypeAndContext(descriptorType, configContextName))
 });
 
