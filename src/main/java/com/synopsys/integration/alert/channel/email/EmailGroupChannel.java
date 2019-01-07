@@ -32,9 +32,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +56,6 @@ import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuck
 import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelation;
 import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelationRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 //FIXME fix emails with either their own table or reference their own hidden fields
@@ -104,25 +100,6 @@ public class EmailGroupChannel extends DistributionChannel {
         final EmailProperties emailProperties = new EmailProperties(fieldAccessor);
         final String subjectLine = fieldAccessor.getString(EmailDescriptor.KEY_SUBJECT_LINE).orElse("");
         sendMessage(emailProperties, emailAddresses, subjectLine, event.getProvider(), event.getFormatType(), event.getContent(), event.getContent().getValue());
-    }
-
-    public String testGlobalConfig(final TestConfigModel testConfig) throws IntegrationException {
-        Set<String> emailAddresses = null;
-        final String testEmailAddress = testConfig.getDestination().orElse(null);
-        if (StringUtils.isNotBlank(testEmailAddress)) {
-            try {
-                final InternetAddress emailAddr = new InternetAddress(testEmailAddress);
-                emailAddr.validate();
-            } catch (final AddressException ex) {
-                throw new AlertException(String.format("%s is not a valid email address. %s", testEmailAddress, ex.getMessage()));
-            }
-            emailAddresses = Collections.singleton(testEmailAddress);
-        }
-        final FieldAccessor fieldAccessor = testConfig.getFieldModel().convertToFieldAccessor();
-        final EmailProperties emailProperties = new EmailProperties(fieldAccessor);
-        final AggregateMessageContent messageContent = new AggregateMessageContent("Message Content", "Test from Alert", Collections.emptyList());
-        sendMessage(emailProperties, emailAddresses, "Test from Alert", "Global Configuration", "", messageContent, "N/A");
-        return "Success!";
     }
 
     public void sendMessage(final EmailProperties emailProperties, final Set<String> emailAddresses, final String subjectLine, final String provider, final String formatType, final AggregateMessageContent content,
