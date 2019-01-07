@@ -7,8 +7,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,8 +26,10 @@ import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
+import com.synopsys.integration.alert.database.entity.configuration.ConfigGroupEntity;
 import com.synopsys.integration.alert.database.entity.configuration.DescriptorConfigEntity;
 import com.synopsys.integration.alert.database.repository.configuration.ConfigContextRepository;
 import com.synopsys.integration.alert.database.repository.configuration.ConfigGroupRepository;
@@ -78,7 +84,133 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
         definedFieldRepository.deleteAllInBatch();
         configContextRepository.deleteAllInBatch();
         descriptorConfigsRepository.deleteAllInBatch();
+        configGroupRepository.deleteAllInBatch();
         // No need to delete relations as they will be deleted by the tables they reference (CASCADE)
+    }
+
+    @Test
+    public void getAllJobsTest() throws AlertDatabaseConstraintException {
+        final ConfigurationFieldModel configField1 = ConfigurationFieldModel.create(FIELD_KEY_INSENSITIVE);
+        final ConfigurationFieldModel configField2 = ConfigurationFieldModel.createSensitive(FIELD_KEY_SENSITIVE);
+        final ConfigurationModel configurationModel1 = configurationAccessor.createConfiguration(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION, List.of(configField1));
+        final ConfigurationModel configurationModel2 = configurationAccessor.createConfiguration(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION, List.of(configField2));
+
+        final UUID jobId = UUID.randomUUID();
+        final ConfigGroupEntity entityToSave1 = new ConfigGroupEntity(configurationModel1.getConfigurationId(), jobId);
+        configGroupRepository.save(entityToSave1);
+        final ConfigGroupEntity entityToSave2 = new ConfigGroupEntity(configurationModel2.getConfigurationId(), jobId);
+        configGroupRepository.save(entityToSave2);
+        assertEquals(2, configGroupRepository.findAll().size());
+
+        final List<ConfigurationJobModel> allJobs = configurationAccessor.getAllJobs();
+        assertEquals(1, allJobs.size());
+        assertEquals(jobId, allJobs.get(0).getJobId());
+    }
+
+    @Test
+    public void getJobByIdTest() throws AlertDatabaseConstraintException {
+        final ConfigurationFieldModel configField1 = ConfigurationFieldModel.create(FIELD_KEY_INSENSITIVE);
+        final ConfigurationFieldModel configField2 = ConfigurationFieldModel.createSensitive(FIELD_KEY_SENSITIVE);
+        final ConfigurationModel configurationModel1 = configurationAccessor.createConfiguration(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION, List.of(configField1));
+        final ConfigurationModel configurationModel2 = configurationAccessor.createConfiguration(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION, List.of(configField2));
+
+        final UUID jobId = UUID.randomUUID();
+        final ConfigGroupEntity entityToSave1 = new ConfigGroupEntity(configurationModel1.getConfigurationId(), jobId);
+        configGroupRepository.save(entityToSave1);
+        final ConfigGroupEntity entityToSave2 = new ConfigGroupEntity(configurationModel2.getConfigurationId(), UUID.randomUUID());
+        configGroupRepository.save(entityToSave2);
+        assertEquals(2, configGroupRepository.findAll().size());
+
+        final ConfigurationJobModel foundJob = configurationAccessor.getJobById(jobId).orElseThrow();
+        assertEquals(jobId, foundJob.getJobId());
+        final ConfigurationModel firstModel = foundJob.getCopyOfConfigurations().stream().findFirst().orElseThrow();
+        assertEquals(firstModel.getConfigurationId(), configurationModel1.getConfigurationId());
+        // TODO add this when it is clear that we should return fields with no values: assertEquals(configurationModel1.getCopyOfFieldList().size(), firstModel.getCopyOfFieldList().size());
+    }
+
+    @Test
+    public void createJobWithNoFieldsTest() throws AlertDatabaseConstraintException {
+        final ConfigurationJobModel job = configurationAccessor.createJob(Set.of(DESCRIPTOR_NAME), Set.of());
+        assertEquals(1, configGroupRepository.findByJobId(job.getJobId()).size());
+    }
+
+    @Test
+    public void createJobWithFieldsTest() throws AlertDatabaseConstraintException {
+        final String fieldValue = "example value";
+        final ConfigurationFieldModel configField1 = ConfigurationFieldModel.create(FIELD_KEY_INSENSITIVE);
+        configField1.setFieldValue(fieldValue);
+
+        final ConfigurationJobModel job = configurationAccessor.createJob(Set.of(DESCRIPTOR_NAME), Set.of(configField1));
+        assertEquals(1, configGroupRepository.findByJobId(job.getJobId()).size());
+
+        final ConfigurationModel foundConfig = job.getCopyOfConfigurations().stream().findFirst().orElseThrow();
+        final ConfigurationFieldModel foundField = foundConfig.getCopyOfFieldList().stream().findFirst().orElseThrow();
+        assertEquals(configField1.getFieldKey(), foundField.getFieldKey());
+        assertEquals(configField1.getFieldValue().orElseThrow(), foundField.getFieldValue().orElseThrow());
+    }
+
+    @Test
+    public void createJobWithEmptyDescriptorNamesTest() {
+        createJobWithEmptyDescriptorNamesTestHelper(null);
+        createJobWithEmptyDescriptorNamesTestHelper(Set.of());
+    }
+
+    @Test
+    public void getJobByIdWithNullTest() {
+        try {
+            configurationAccessor.getJobById(null);
+            fail("Expected exception to be thrown");
+        } catch (final AlertDatabaseConstraintException e) {
+            assertEquals("The job id cannot be null", e.getMessage());
+        }
+    }
+
+    @Test
+    public void updateJobTest() throws AlertDatabaseConstraintException {
+        final ConfigurationFieldModel configField1 = ConfigurationFieldModel.create(FIELD_KEY_INSENSITIVE);
+        configField1.setFieldValue("example");
+        final ConfigurationFieldModel configField2 = ConfigurationFieldModel.createSensitive(FIELD_KEY_SENSITIVE);
+        configField2.setFieldValue("other example");
+        final ConfigurationJobModel job = configurationAccessor.createJob(Set.of(DESCRIPTOR_NAME), Set.of(configField1, configField2));
+
+        final String newValue = "newValue";
+        configField1.setFieldValue(newValue);
+        final ConfigurationJobModel updatedJob = configurationAccessor.updateJob(job.getJobId(), Set.of(configField1, configField2));
+        assertEquals(job.getJobId(), updatedJob.getJobId());
+
+        final Map<String, ConfigurationFieldModel> originalFieldMap = job.createKeyToFieldMap();
+        final Map<String, ConfigurationFieldModel> newFieldMap = updatedJob.createKeyToFieldMap();
+        assertEquals(newValue, newFieldMap.get(configField1.getFieldKey()).getFieldValue().orElseThrow());
+        assertEquals(originalFieldMap.get(configField2.getFieldKey()), newFieldMap.get(configField2.getFieldKey()));
+    }
+
+    @Test
+    public void updateJobWithNullIdTest() {
+        try {
+            configurationAccessor.updateJob(null, Set.of());
+            fail("Expected exception to be thrown");
+        } catch (final AlertDatabaseConstraintException e) {
+            assertEquals("The job id cannot be null", e.getMessage());
+        }
+    }
+
+    @Test
+    public void deleteJobTest() throws AlertDatabaseConstraintException {
+        final ConfigurationJobModel job = configurationAccessor.createJob(Set.of(DESCRIPTOR_NAME), Set.of());
+        assertTrue(!configGroupRepository.findByJobId(job.getJobId()).isEmpty());
+
+        configurationAccessor.deleteJob(job.getJobId());
+        assertTrue(configGroupRepository.findByJobId(job.getJobId()).isEmpty());
+    }
+
+    @Test
+    public void deleteJobWithNullIdTest() {
+        try {
+            configurationAccessor.deleteJob(null);
+            fail("Expected exception to be thrown");
+        } catch (final AlertDatabaseConstraintException e) {
+            assertEquals("The job id cannot be null", e.getMessage());
+        }
     }
 
     @Test
@@ -86,7 +218,7 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
         final ConfigurationFieldModel configField1 = ConfigurationFieldModel.create(FIELD_KEY_INSENSITIVE);
         final ConfigurationFieldModel configField2 = ConfigurationFieldModel.createSensitive(FIELD_KEY_SENSITIVE);
 
-        final ConfigurationModel createdConfig = configurationAccessor.createConfiguration(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION, Arrays.asList(configField1, configField2));
+        final ConfigurationModel createdConfig = configurationAccessor.createConfiguration(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION, List.of(configField1, configField2));
         assertTrue(createdConfig.getCopyOfFieldList().contains(configField1));
         assertTrue(createdConfig.getCopyOfFieldList().contains(configField2));
 
@@ -331,6 +463,15 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
         assertNotNull(configurationModel.getDescriptorId());
         assertNotNull(configurationModel.getCopyOfFieldList());
         assertNotNull(configurationModel.getCopyOfKeyToFieldMap());
+    }
+
+    private void createJobWithEmptyDescriptorNamesTestHelper(final Collection<String> descriptorNames) {
+        try {
+            configurationAccessor.createJob(descriptorNames, Set.of());
+            fail("Expected exception to be thrown");
+        } catch (final AlertDatabaseConstraintException e) {
+            assertEquals("Descriptor names cannot be empty", e.getMessage());
+        }
     }
 
     private void createConfigWithEmptyDescriptorNameTestHelper(final String descriptorName) {
