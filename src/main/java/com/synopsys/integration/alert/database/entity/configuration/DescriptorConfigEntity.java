@@ -42,7 +42,7 @@ public class DescriptorConfigEntity extends DatabaseEntity {
     private Long contextId;
 
     @OneToMany
-    @JoinColumn(name = "CONFIG_ID", insertable = false, updatable = false)
+    @JoinColumn(name = "CONFIG_ID", referencedColumnName = "ID", insertable = false, updatable = false)
     private List<FieldValueEntity> fieldValueEntities;
 
     public DescriptorConfigEntity() {
