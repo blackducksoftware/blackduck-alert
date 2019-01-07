@@ -26,31 +26,44 @@ package com.synopsys.integration.alert.common.database;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
-import com.synopsys.integration.alert.database.api.configuration.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 
 public interface BaseConfigurationAccessor {
+    List<ConfigurationJobModel> getAllJobs();
 
-    Optional<ConfigurationModel> getConfigurationById(Long id) throws AlertDatabaseConstraintException;
+    Optional<ConfigurationJobModel> getJobById(final UUID jobId) throws AlertDatabaseConstraintException;
 
-    List<ConfigurationModel> getConfigurationsByDescriptorName(String descriptorName) throws AlertDatabaseConstraintException;
+    ConfigurationJobModel createJob(final Collection<String> descriptorNames, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException;
 
-    List<ConfigurationModel> getConfigurationsByDescriptorType(DescriptorType descriptorType) throws AlertDatabaseConstraintException;
+    ConfigurationJobModel updateJob(final UUID jobId, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException;
 
-    List<ConfigurationModel> getChannelConfigurationsByFrequency(FrequencyType frequencyType) throws AlertDatabaseConstraintException;
+    void deleteJob(final UUID jobId) throws AlertDatabaseConstraintException;
 
-    List<ConfigurationModel> getConfigurationByDescriptorNameAndContext(String descriptorName, ConfigContextEnum context) throws AlertDatabaseConstraintException;
+    List<ConfigurationModel> getChannelConfigurationsByFrequency(final FrequencyType frequencyType) throws AlertDatabaseConstraintException;
 
-    ConfigurationModel createEmptyConfiguration(String descriptorName, ConfigContextEnum context) throws AlertDatabaseConstraintException;
+    Optional<ConfigurationModel> getConfigurationById(final Long id) throws AlertDatabaseConstraintException;
 
-    ConfigurationModel createConfiguration(String descriptorName, ConfigContextEnum context, Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException;
+    List<ConfigurationModel> getConfigurationsByDescriptorName(final String descriptorName) throws AlertDatabaseConstraintException;
+
+    List<ConfigurationModel> getConfigurationsByDescriptorType(final DescriptorType descriptorType) throws AlertDatabaseConstraintException;
+
+    List<ConfigurationModel> getConfigurationByDescriptorNameAndContext(final String descriptorName, final ConfigContextEnum context) throws AlertDatabaseConstraintException;
+
+    ConfigurationModel createEmptyConfiguration(final String descriptorName, final ConfigContextEnum context) throws AlertDatabaseConstraintException;
+
+    ConfigurationModel createConfiguration(final String descriptorName, final ConfigContextEnum context, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException;
 
     ConfigurationModel updateConfiguration(final Long descriptorConfigId, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException;
+
+    void deleteConfiguration(final ConfigurationModel configModel) throws AlertDatabaseConstraintException;
 
     void deleteConfiguration(final Long descriptorConfigId) throws AlertDatabaseConstraintException;
 

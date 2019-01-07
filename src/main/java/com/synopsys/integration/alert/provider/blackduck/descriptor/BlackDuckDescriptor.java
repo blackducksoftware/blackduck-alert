@@ -34,7 +34,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentCollector;
-import com.synopsys.integration.alert.database.api.configuration.DefinedFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 
 @Component

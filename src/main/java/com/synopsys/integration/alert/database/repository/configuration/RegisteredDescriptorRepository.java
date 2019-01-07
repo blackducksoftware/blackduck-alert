@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.database.repository.configuration;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -38,6 +39,12 @@ public interface RegisteredDescriptorRepository extends JpaRepository<Registered
     Optional<RegisteredDescriptorEntity> findFirstByName(final String descriptorName);
 
     List<RegisteredDescriptorEntity> findByTypeId(Long descriptorTypeId);
+
+    @Query(value = "SELECT entity FROM RegisteredDescriptorEntity entity "
+                       + "INNER JOIN entity.descriptorConfigEntities config ON entity.id = config.descriptorId "
+                       + "INNER JOIN config.configGroupEntity configGroup ON config.id = configGroup.configId "
+                       + "WHERE configGroup.jobId = ?1")
+    List<RegisteredDescriptorEntity> findByJobId(final UUID jobId);
 
     @Query(value = "SELECT entity FROM RegisteredDescriptorEntity entity "
                        + "INNER JOIN entity.descriptorConfigEntities descriptorConfigEntity ON entity.id = descriptorConfigEntity.descriptorId "
