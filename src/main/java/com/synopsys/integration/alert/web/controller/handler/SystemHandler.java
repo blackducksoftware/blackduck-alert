@@ -38,9 +38,9 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.web.actions.SystemActions;
+import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.ResponseBodyBuilder;
 import com.synopsys.integration.alert.web.model.SystemMessageModel;
-import com.synopsys.integration.alert.web.model.SystemSetupModel;
 
 @Component
 public class SystemHandler extends ControllerHandler {
@@ -89,40 +89,22 @@ public class SystemHandler extends ControllerHandler {
         }
     }
 
-    public ResponseEntity<String> saveInitialSetup(final SystemSetupModel requiredSystemConfiguration) {
+    public ResponseEntity<String> saveInitialSetup(final FieldModel settingsToSave) {
         final ResponseEntity<String> response;
         if (actions.isSystemInitialized()) {
             final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder("System Setup has already occurred");
             final String responseBody = responseBodyBuilder.build();
             response = new ResponseEntity<>(responseBody, HttpStatus.CONFLICT);
         } else {
-            response = saveSystemSettings(requiredSystemConfiguration);
+            response = saveSystemSettings(settingsToSave);
         }
         return response;
     }
 
-    public ResponseEntity<String> getSettings(final String contextPath) {
-        if (actions.isSystemInitialized()) {
-            return new ResponseEntity<>(getContentConverter().getJsonString(actions.getCurrentSystemSetup()), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-
-    public ResponseEntity<String> saveSettings(final SystemSetupModel requiredSystemConfiguration) {
-        final ResponseEntity<String> response;
-        if (actions.isSystemInitialized()) {
-            response = saveSystemSettings(requiredSystemConfiguration);
-        } else {
-            response = new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        return response;
-    }
-
-    private ResponseEntity<String> saveSystemSettings(final SystemSetupModel model) {
+    private ResponseEntity<String> saveSystemSettings(final FieldModel model) {
         final ResponseEntity<String> response;
         final HashMap<String, String> fieldErrors = new HashMap<>();
-        final SystemSetupModel savedConfig = actions.saveRequiredInformation(model, fieldErrors);
+        final FieldModel savedConfig = actions.saveRequiredInformation(model, fieldErrors);
         if (fieldErrors.isEmpty()) {
             response = new ResponseEntity<>(getContentConverter().getJsonString(savedConfig), HttpStatus.OK);
         } else {
