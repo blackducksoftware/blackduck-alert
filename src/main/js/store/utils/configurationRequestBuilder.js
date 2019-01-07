@@ -1,12 +1,15 @@
 const CONFIG_API_URL = '/alert/api/configuration'
 
+export function createReadAllGlobalContextRequest(csrfToken, descriptorName) {
+    return createReadAllRequest(csrfToken, "GLOBAL", descriptorName);
+}
 
 export function createReadAllRequest(csrfToken, context, descriptorName) {
     const queryParams = Object.assign({}, { context, descriptorName });
     const parameters = [];
     for (let key in queryParams) {
         const value = queryParams[key];
-        if(value) {
+        if (value) {
             parameters.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
         }
     }
@@ -30,11 +33,11 @@ export function createReadRequest(csrfToken, configurationId) {
     });
 }
 
-export function createNewConfigurationRequest(csrfToken, content) {
+export function createNewConfigurationRequest(csrfToken, fieldModel) {
     return fetch(CONFIG_API_URL, {
         credentials: 'same-origin',
         method: 'POST',
-        body: JSON.stringify(content),
+        body: JSON.stringify(fieldModel),
         headers: {
             'content-type': 'application/json',
             'X-CSRF-TOKEN': csrfToken
@@ -42,12 +45,12 @@ export function createNewConfigurationRequest(csrfToken, content) {
     });
 }
 
-export function createUpdateRequest(csrfToken, configurationId, content) {
+export function createUpdateRequest(csrfToken, configurationId, fieldModel) {
     const url = `${CONFIG_API_URL}/${configurationId}`;
     return fetch(url, {
         credentials: 'same-origin',
         method: 'PUT',
-        body: JSON.stringify(content),
+        body: JSON.stringify(fieldModel),
         headers: {
             'content-type': 'application/json',
             'X-CSRF-TOKEN': csrfToken
@@ -66,12 +69,12 @@ export function createDeleteRequest(csrfToken, configurationId) {
     });
 }
 
-export function createValidateRequest(csrfToken, content) {
+export function createValidateRequest(csrfToken, fieldModel) {
     const url = `${CONFIG_API_URL}/validate`;
     return fetch(url, {
         credentials: 'same-origin',
         method: 'POST',
-        body: JSON.stringify(content),
+        body: JSON.stringify(fieldModel),
         headers: {
             'content-type': 'application/json',
             'X-CSRF-TOKEN': csrfToken
@@ -79,12 +82,12 @@ export function createValidateRequest(csrfToken, content) {
     });
 }
 
-export function createTestRequest(csrfToken, content, destination) {
+export function createTestRequest(csrfToken, fieldModel, destination) {
     const url = `${CONFIG_API_URL}/test?destination=${encodeURIComponent(destination)}`;
     return fetch(url, {
         credentials: 'same-origin',
         method: 'POST',
-        body: JSON.stringify(content),
+        body: JSON.stringify(fieldModel),
         headers: {
             'content-type': 'application/json',
             'X-CSRF-TOKEN': csrfToken

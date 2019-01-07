@@ -12,28 +12,56 @@ class SettingsConfigurationForm extends Component {
         super(props);
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        const fieldNames = [
+            'user.default.admin.password',
+            'encryption.password',
+            'encryption.global.salt',
+            'proxy.host',
+            'proxy.port',
+            'proxy.username',
+            'proxy.password',
+            'ldap.enabled',
+            'ldap.server',
+            'ldap.manager.dn',
+            'ldap.manager.password',
+            'ldap.authentication.type',
+            'ldap.referral',
+            'ldap.user.search.base',
+            'ldap.user.search.filter',
+            'ldap.user.dn.patterns',
+            'ldap.user.attributes',
+            'ldap.group.search.base',
+            'ldap.group.search.filter',
+            'ldap.group.role.attribute',
+            'ldap.role.prefix'
+        ];
         this.state = {
-            setupData: {
-                defaultAdminPassword: '',
-                defaultAdminPasswordSet: false,
-                globalEncryptionPassword: '',
-                globalEncryptionPasswordSet: false,
-                globalEncryptionSalt: '',
-                globalEncryptionSaltSet: false,
-                blackDuckProviderUrl: '',
-                blackDuckApiToken: '',
-                blackDuckApiTokenSet: false,
-                blackDuckConnectionTimeout: 300,
-                proxyHost: '',
-                proxyPort: '',
-                proxyUsername: '',
-                proxyPassword: '',
-                proxyPasswordSet: false
-            },
-            proxyPaneOpen: false,
-            ldapPaneOpen: false
+            settingsData: this.createEmptyFieldModel(fieldNames)
         }
     }
+
+    createEmptyFieldModel(fields) {
+        const emptySettings = {};
+        emptySettings['context'] = 'GLOBAL';
+        emptySettings['descriptorName'] = 'component_settings';
+        emptySettings['keyToValues'] = {};
+        for (let index in fields) {
+            emptySettings.keyToValues[fields[index]] = {
+                values: [''],
+                isSet: false
+            };
+        }
+        return emptySettings;
+    }
+
+    getFieldModelSingleValue(key) {
+        return this.state.settingsData.keyToValues[key].values[0];
+    }
+
+    getFieldModelValueSet(key) {
+        return this.state.settingsData.keyToValues[key].isSet;
+    }
+
 
     componentWillMount() {
         this.props.getSettings();
@@ -42,50 +70,27 @@ class SettingsConfigurationForm extends Component {
     componentWillReceiveProps(nextProps) {
         if (nextProps.fetchingSetupStatus === 'SYSTEM SETUP FETCHED' && nextProps.updateStatus === 'FETCHED' ||
             this.props.fetchingSetupStatus === 'SYSTEM SETUP FETCHED' && this.props.updateStatus === 'FETCHED') {
-            const newState = Object.assign({}, this.state.setupData, {
-                defaultAdminPassword: nextProps.currentSetupData.defaultAdminPassword || '',
-                defaultAdminPasswordSet: nextProps.currentSetupData.defaultAdminPasswordSet || false,
-                globalEncryptionPassword: nextProps.currentSetupData.globalEncryptionPassword || '',
-                globalEncryptionPasswordSet: nextProps.currentSetupData.globalEncryptionPasswordSet || false,
-                globalEncryptionSalt: nextProps.currentSetupData.globalEncryptionSalt || '',
-                globalEncryptionSaltSet: nextProps.currentSetupData.globalEncryptionSaltSet || false,
-                blackDuckProviderUrl: nextProps.currentSetupData.blackDuckProviderUrl || '',
-                blackDuckApiToken: nextProps.currentSetupData.blackDuckApiToken || '',
-                blackDuckApiTokenSet: nextProps.currentSetupData.blackDuckApiTokenSet || false,
-                blackDuckConnectionTimeout: nextProps.currentSetupData.blackDuckConnectionTimeout || 300,
-                proxyHost: nextProps.currentSetupData.proxyHost || '',
-                proxyPort: nextProps.currentSetupData.proxyPort || '',
-                proxyUsername: nextProps.currentSetupData.proxyUsername || '',
-                proxyPassword: nextProps.currentSetupData.proxyPassword || '',
-                proxyPasswordSet: nextProps.currentSetupData.proxyPasswordSet || false
-            });
+            console.log("Next props: ", nextProps);
+            const newState = Object.assign({}, this.state.settingsData, {});
             this.setState({
-                setupData: newState
+                settingsData: newState
             })
         }
     }
 
     handleChange({ target }) {
         const value = target.type === 'checkbox' ? target.checked : target.value;
-        const newState = Object.assign({}, this.state.setupData, {
+        const newState = Object.assign({}, this.state.settingsData, {
             [target.name]: value
         });
         this.setState({
-            setupData: newState
+            settingsData: newState
         });
     }
 
     handleSubmit(evt) {
         evt.preventDefault();
-        this.props.saveSettings(this.state.setupData);
-    }
-
-    toggleProxyPane() {
-        this.setState({ proxyPaneOpen: !this.state.proxyPaneOpen })
-    }
-
-    toggleLdapPane() {
-        this.setState({ ldapPaneOpen: !this.state.ldapPaneOpen })
+        this.props.saveSettings(this.state.settingsData);
     }
 
     render() {
@@ -98,8 +103,8 @@ class SettingsConfigurationForm extends Component {
                             id="defaultAdminPassword"
                             label="Password"
                             name="defaultAdminPassword"
-                            value={this.state.setupData.defaultAdminPassword}
-                            isSet={this.state.setupData.defaultAdminPasswordSet}
+                            value={this.getFieldModelSingleValue('user.default.admin.password')}
+                            isSet={this.getFieldModelValueSet('user.default.admin.password')}
                             onChange={this.handleChange}
                             errorName="defaultAdminPasswordError"
                             errorValue={this.props.fieldErrors.defaultAdminPassword}
@@ -113,8 +118,8 @@ class SettingsConfigurationForm extends Component {
                             id="encryptionPassword"
                             label="Password"
                             name="globalEncryptionPassword"
-                            value={this.state.setupData.globalEncryptionPassword}
-                            isSet={this.state.setupData.globalEncryptionPasswordSet}
+                            value={this.getFieldModelSingleValue('encryption.password')}
+                            isSet={this.getFieldModelValueSet('encryption.password')}
                             onChange={this.handleChange}
                             errorName="globalEncryptionPasswordError"
                             errorValue={this.props.fieldErrors.globalEncryptionPasswordError}
@@ -123,8 +128,8 @@ class SettingsConfigurationForm extends Component {
                             id="encryptionSalt"
                             label="Salt"
                             name="globalEncryptionSalt"
-                            value={this.state.setupData.globalEncryptionSalt}
-                            isSet={this.state.setupData.globalEncryptionSaltSet}
+                            value={this.getFieldModelSingleValue('encryption.global.salt')}
+                            isSet={this.getFieldModelValueSet('encryption.global.salt')}
                             onChange={this.handleChange}
                             errorName="globalEncryptionSaltError"
                             errorValue={this.props.fieldErrors.globalEncryptionSaltError}
@@ -138,7 +143,7 @@ class SettingsConfigurationForm extends Component {
                                 id="proxyHost"
                                 label="Host Name"
                                 name="proxyHost"
-                                value={this.state.setupData.proxyHost}
+                                value={this.getFieldModelSingleValue('proxy.host')}
                                 onChange={this.handleChange}
                                 errorName="proxyHostError"
                                 errorValue={this.props.fieldErrors.proxyHostError}
@@ -147,7 +152,7 @@ class SettingsConfigurationForm extends Component {
                                 id="proxyPort"
                                 label="Port"
                                 name="proxyPort"
-                                value={this.state.setupData.proxyPort}
+                                value={this.getFieldModelSingleValue('proxy.port')}
                                 onChange={this.handleChange}
                                 errorName="proxyPortError"
                                 errorValue={this.props.fieldErrors.proxyPortError}
@@ -156,7 +161,7 @@ class SettingsConfigurationForm extends Component {
                                 id="proxyUserName"
                                 label="Username"
                                 name="proxyUsername"
-                                value={this.state.setupData.proxyUsername}
+                                value={this.getFieldModelSingleValue('proxy.username')}
                                 onChange={this.handleChange}
                                 errorName="proxyUsernameError"
                                 errorValue={this.props.fieldErrors.proxyUsernameError}
@@ -165,8 +170,8 @@ class SettingsConfigurationForm extends Component {
                                 id="proxyPassword"
                                 label="Password"
                                 name="proxyPassword"
-                                value={this.state.setupData.proxyPassword}
-                                isSet={this.state.setupData.proxyPasswordSet}
+                                value={this.getFieldModelSingleValue('proxy.password')}
+                                isSet={this.getFieldModelValueSet('proxy.password')}
                                 onChange={this.handleChange}
                                 errorName="proxyPasswordError"
                                 errorValue={this.props.fieldErrors.proxyPasswordError}
@@ -181,7 +186,7 @@ class SettingsConfigurationForm extends Component {
                                 id="ldapEnabled"
                                 label="Enabled"
                                 name="ldapEnabled"
-                                value={this.state.setupData.ldapEnabled}
+                                value={this.getFieldModelSingleValue('ldap.enabled')}
                                 onChange={this.handleChange}
                                 errorName="ldapEnabledError"
                                 errorValue={this.props.fieldErrors.ldapEnabledError}
@@ -190,7 +195,7 @@ class SettingsConfigurationForm extends Component {
                                 id="ldapServer"
                                 label="Server"
                                 name="ldapServer"
-                                value={this.state.setupData.ldapServer}
+                                value={this.getFieldModelSingleValue('ldap.server')}
                                 onChange={this.handleChange}
                                 errorName="ldapServerError"
                                 errorValue={this.props.fieldErrors.ldapServerError}
@@ -199,7 +204,7 @@ class SettingsConfigurationForm extends Component {
                                 id="ldapManagerDn"
                                 label="Manager DN"
                                 name="ldapManagerDn"
-                                value={this.state.setupData.ldapManagerDn}
+                                value={this.getFieldModelSingleValue('ldap.manager.dn')}
                                 onChange={this.handleChange}
                                 errorName="ldapManagerDnError"
                                 errorValue={this.props.fieldErrors.ldapManagerDnError}
@@ -208,17 +213,18 @@ class SettingsConfigurationForm extends Component {
                                 id="ldapManagerPassword"
                                 label="Manager Password"
                                 name="ldapManagerPassword"
-                                value={this.state.setupData.ldapManagerPassword}
-                                isSet={this.state.setupData.ldapManagerPasswordSet}
+                                value={this.getFieldModelSingleValue('ldap.manager.password')}
+                                isSet={this.getFieldModelValueSet('ldap.manager.password')}
                                 onChange={this.handleChange}
                                 errorName="ldapManagerPasswordError"
                                 errorValue={this.props.fieldErrors.ldapManagerPasswordError}
                             />
+                            // TODO: this should be a multi-select field
                             <TextInput
                                 id="ldapAuthenticationType"
                                 label="Authentication Type"
                                 name="ldapAuthenticationType"
-                                value={this.state.setupData.ldapAuthenticationType}
+                                value={this.getFieldModelSingleValue('ldap.authentication.type')}
                                 onChange={this.handleChange}
                                 errorName="ldapAuthenticationTypeError"
                                 errorValue={this.props.fieldErrors.ldapAuthenticationTypeError}
@@ -227,7 +233,7 @@ class SettingsConfigurationForm extends Component {
                                 id="ldapReferral"
                                 label="Referral"
                                 name="ldapReferral"
-                                value={this.state.setupData.ldapReferral}
+                                value={this.getFieldModelSingleValue('ldap.referral')}
                                 onChange={this.handleChange}
                                 errorName="ldapReferralError"
                                 errorValue={this.props.fieldErrors.ldapReferralError}
@@ -236,7 +242,7 @@ class SettingsConfigurationForm extends Component {
                                 id="ldapUserSearchBase"
                                 label="User Search Base"
                                 name="ldapUserSearchBase"
-                                value={this.state.setupData.ldapUserSearchBase}
+                                value={this.getFieldModelSingleValue('ldap.user.search.base')}
                                 onChange={this.handleChange}
                                 errorName="ldapUserSearchBaseError"
                                 errorValue={this.props.fieldErrors.ldapUserSearchBaseError}
@@ -245,7 +251,7 @@ class SettingsConfigurationForm extends Component {
                                 id="ldapUserSearchFilter"
                                 label="User Search Filter"
                                 name="ldapUserSearchFilter"
-                                value={this.state.setupData.ldapUserSearchFilter}
+                                value={this.getFieldModelSingleValue('ldap.user.search.filter')}
                                 onChange={this.handleChange}
                                 errorName="ldapUserSearchFilterError"
                                 errorValue={this.props.fieldErrors.ldapUserSearchFilterError}
@@ -254,7 +260,7 @@ class SettingsConfigurationForm extends Component {
                                 id="ldapUserDnPatterns"
                                 label="User DN Patterns"
                                 name="ldapUserDnPatterns"
-                                value={this.state.setupData.ldapUserDnPatterns}
+                                value={this.getFieldModelSingleValue('ldap.user.dn.patterns')}
                                 onChange={this.handleChange}
                                 errorName="ldapUserDnPatternsError"
                                 errorValue={this.props.fieldErrors.ldapUserDnPatternsError}
@@ -263,7 +269,7 @@ class SettingsConfigurationForm extends Component {
                                 id="ldapUserAttributes"
                                 label="User Attributes"
                                 name="ldapUserAttributes"
-                                value={this.state.setupData.ldapUserAttributes}
+                                value={this.getFieldModelSingleValue('ldap.user.attributes')}
                                 onChange={this.handleChange}
                                 errorName="ldapUserAttributesError"
                                 errorValue={this.props.fieldErrors.ldapUserAttributesError}
@@ -272,7 +278,7 @@ class SettingsConfigurationForm extends Component {
                                 id="ldapGroupSearchBase"
                                 label="Group Search Base"
                                 name="ldapGroupSearchBase"
-                                value={this.state.setupData.ldapGroupSearchBase}
+                                value={this.getFieldModelSingleValue('ldap.group.search.base')}
                                 onChange={this.handleChange}
                                 errorName="ldapGroupSearchBaseError"
                                 errorValue={this.props.fieldErrors.ldapGroupSearchBaseError}
@@ -281,7 +287,7 @@ class SettingsConfigurationForm extends Component {
                                 id="ldapGroupSearchFilter"
                                 label="Group Search Filter"
                                 name="ldapGroupSearchFilter"
-                                value={this.state.setupData.ldapGroupSearchFilter}
+                                value={this.getFieldModelSingleValue('ldap.group.search.filter')}
                                 onChange={this.handleChange}
                                 errorName="ldapGroupSearchFilterError"
                                 errorValue={this.props.fieldErrors.ldapGroupSearchFilterError}
@@ -290,7 +296,7 @@ class SettingsConfigurationForm extends Component {
                                 id="ldapGroupRoleAttribute"
                                 label="Group Role Attribute"
                                 name="ldapGroupRoleAttribute"
-                                value={this.state.setupData.ldapGroupRoleAttribute}
+                                value={this.getFieldModelSingleValue('ldap.group.role.attribute')}
                                 onChange={this.handleChange}
                                 errorName="ldapGroupRoleAttributeError"
                                 errorValue={this.props.fieldErrors.ldapGroupRoleAttributeError}
@@ -299,7 +305,7 @@ class SettingsConfigurationForm extends Component {
                                 id="ldapRolePrefix"
                                 label="Role Prefix"
                                 name="ldapRolePrefix"
-                                value={this.state.setupData.ldapRolePrefix}
+                                value={this.getFieldModelSingleValue('ldap.role.prefix')}
                                 onChange={this.handleChange}
                                 errorName="ldapRolePrefixError"
                                 errorValue={this.props.fieldErrors.ldapRolePrefixError}
@@ -318,12 +324,12 @@ SettingsConfigurationForm.propTypes = {
     getSettings: PropTypes.func.isRequired,
     saveSettings: PropTypes.func.isRequired,
     updateStatus: PropTypes.string,
-    currentSetupData: PropTypes.object,
+    currentSettingsData: PropTypes.object,
     fieldErrors: PropTypes.object
 };
 
 SettingsConfigurationForm.defaultProps = {
-    currentSetupData: {},
+    currentSettingsData: {},
     fieldErrors: {},
     fetchingSetupStatus: '',
     updateStatus: ''

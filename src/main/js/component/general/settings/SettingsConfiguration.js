@@ -19,7 +19,7 @@ class SettingsConfiguration extends Component {
                 </h1>
                 <SettingsConfigurationForm fetchingSetupStatus={this.props.fetchingSetupStatus}
                                            updateStatus={this.props.updateStatus}
-                                           currentSetupData={this.props.currentSetupData}
+                                           currentSetupData={this.props.currentSettingsData}
                                            fieldErrors={this.props.fieldErrors}
                                            getSettings={this.getSettings}
                                            saveSettings={this.saveSettings} />
@@ -39,7 +39,7 @@ class SettingsConfiguration extends Component {
 const mapStateToProps = state => ({
     fetchingSetupStatus: state.system.fetchingSetupStatus,
     updateStatus: state.system.updateStatus,
-    currentSetupData: state.system.setupData,
+    currentSettingsData: state.system.settingsData,
     fieldErrors: state.system.error
 });
 
