@@ -18,7 +18,7 @@ const initialState = {
     updateStatus: '',
     latestMessages: [],
     errorMessage: '',
-    setupData: {},
+    settingsData: {},
     setupRedirect: false,
     error: {
         message: ''
@@ -58,7 +58,7 @@ const config = (state = initialState, action) => {
             return Object.assign({}, state, {
                 fetchingSetupStatus: 'SYSTEM SETUP FETCHED',
                 updateStatus: 'FETCHED',
-                setupData: action.setupData
+                settingsData: action.settingsData
             });
         case SYSTEM_SETUP_FETCH_ERROR:
             return Object.assign({}, state, {
