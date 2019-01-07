@@ -98,28 +98,7 @@ public class SystemActions {
     public FieldModel getCurrentSystemSetup() {
         final Map<String, FieldValueModel> valueMap = new HashMap<>();
         FieldModel model = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, "GLOBAL", valueMap);
-        model.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, new FieldValueModel(List.of(""), false));
-        model.putField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, new FieldValueModel(List.of(""), false));
-        model.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(""), false));
-        model.putField(SettingsDescriptor.KEY_PROXY_HOST, new FieldValueModel(List.of(""), false));
-        model.putField(SettingsDescriptor.KEY_PROXY_PORT, new FieldValueModel(List.of(""), false));
-        model.putField(SettingsDescriptor.KEY_PROXY_USERNAME, new FieldValueModel(List.of(""), false));
-        model.putField(SettingsDescriptor.KEY_PROXY_PASSWORD, new FieldValueModel(List.of(""), false));
-        model.putField(SettingsDescriptor.KEY_LDAP_ENABLED, new FieldValueModel(List.of(""), false));
-        model.putField(SettingsDescriptor.KEY_LDAP_SERVER, new FieldValueModel(List.of(""), false));
-        model.putField(SettingsDescriptor.KEY_LDAP_MANAGER_DN, new FieldValueModel(List.of(""), false));
-        model.putField(SettingsDescriptor.KEY_LDAP_MANAGER_PASSWORD, new FieldValueModel(List.of(""), false));
-        model.putField(SettingsDescriptor.KEY_LDAP_AUTHENTICATION_TYPE, new FieldValueModel(List.of(""), false));
-        model.putField(SettingsDescriptor.KEY_LDAP_REFERRAL, new FieldValueModel(List.of(""), false));
-        model.putField(SettingsDescriptor.KEY_LDAP_USER_SEARCH_BASE, new FieldValueModel(List.of(""), false));
-        model.putField(SettingsDescriptor.KEY_LDAP_USER_SEARCH_FILTER, new FieldValueModel(List.of(""), false));
-        model.putField(SettingsDescriptor.KEY_LDAP_USER_DN_PATTERNS, new FieldValueModel(List.of(""), false));
-        model.putField(SettingsDescriptor.KEY_LDAP_USER_ATTRIBUTES, new FieldValueModel(List.of(""), false));
-        model.putField(SettingsDescriptor.KEY_LDAP_GROUP_SEARCH_BASE, new FieldValueModel(List.of(""), false));
-        model.putField(SettingsDescriptor.KEY_LDAP_GROUP_SEARCH_FILTER, new FieldValueModel(List.of(""), false));
-        model.putField(SettingsDescriptor.KEY_LDAP_GROUP_ROLE_ATTRIBUTE, new FieldValueModel(List.of(""), false));
-        model.putField(SettingsDescriptor.KEY_LDAP_ROLE_PREFIX, new FieldValueModel(List.of(""), false));
-        
+
         try {
             final List<FieldModel> fieldModels = configActions.getConfigs(ConfigContextEnum.GLOBAL, SettingsDescriptor.SETTINGS_COMPONENT);
             if (fieldModels.size() == 1) {
