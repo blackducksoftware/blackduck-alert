@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 public class SlackUIConfig extends UIConfig {
 
     public SlackUIConfig() {
-        super("Slack", "slack", "slack");
+        super(SlackDescriptor.SLACK_LABEL, SlackDescriptor.SLACK_URL, SlackDescriptor.SLACK_ICON);
     }
 
     @Override

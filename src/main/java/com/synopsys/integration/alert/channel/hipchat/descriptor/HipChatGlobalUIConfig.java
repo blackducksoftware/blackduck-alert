@@ -37,7 +37,7 @@ import com.synopsys.integration.alert.common.enumeration.FieldGroup;
 public class HipChatGlobalUIConfig extends UIConfig {
 
     public HipChatGlobalUIConfig() {
-        super("HipChat", "hipchat", "comments");
+        super(HipChatDescriptor.HIP_CHAT_LABEL, HipChatDescriptor.HIP_CHAT_URL, HipChatDescriptor.HIP_CHAT_ICON);
     }
 
     @Override

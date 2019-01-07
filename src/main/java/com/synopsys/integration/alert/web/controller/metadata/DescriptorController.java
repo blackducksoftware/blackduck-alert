@@ -96,9 +96,7 @@ public class DescriptorController extends MetadataController {
         for (final ConfigContextEnum applicableContext : applicableContexts) {
             for (final Descriptor descriptor : filteredDescriptors) {
                 final Optional<DescriptorMetadata> uiConfig = descriptor.getMetaData(applicableContext);
-                if (uiConfig.isPresent()) {
-                    descriptorMetadata.add(uiConfig.get());
-                }
+                uiConfig.ifPresent(descriptorMetadata::add);
             }
         }
         return descriptorMetadata;

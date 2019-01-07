@@ -40,7 +40,7 @@ import com.synopsys.integration.alert.common.enumeration.FieldGroup;
 public class EmailGlobalUIConfig extends UIConfig {
 
     public EmailGlobalUIConfig() {
-        super("Email", "email", "envelope");
+        super(EmailDescriptor.EMAIL_LABEL, EmailDescriptor.EMAIL_URL, EmailDescriptor.EMAIL_ICON);
     }
 
     @Override

@@ -41,7 +41,7 @@ public class SchedulingUIConfig extends UIConfig {
     public static final String KEY_PURGE_DATA_NEXT_RUN = "purge.data.next.run";
 
     public SchedulingUIConfig() {
-        super("Scheduling", "scheduling", "clock-o");
+        super(SchedulingDescriptor.SCHEDULING_LABEL, SchedulingDescriptor.SCHEDULING_URL, SchedulingDescriptor.SCHEDULING_ICON);
     }
 
     @Override

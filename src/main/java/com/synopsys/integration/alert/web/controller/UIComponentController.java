@@ -74,7 +74,7 @@ public class UIComponentController extends BaseController {
                     final ConfigContextEnum contextType = EnumUtils.getEnum(ConfigContextEnum.class, context);
                     final Optional<DescriptorMetadata> uiConfig = descriptor.getMetaData(contextType);
                     if (uiConfig.isPresent()) {
-                        return Arrays.asList(uiConfig.get());
+                        return List.of(uiConfig.get());
                     } else {
                         return Collections.emptyList();
                     }

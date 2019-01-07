@@ -38,7 +38,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 public class HipChatDistributionUIConfig extends UIConfig {
 
     public HipChatDistributionUIConfig() {
-        super("HipChat", "hipchat", "comments");
+        super(HipChatDescriptor.HIP_CHAT_LABEL, HipChatDescriptor.HIP_CHAT_URL, HipChatDescriptor.HIP_CHAT_ICON);
     }
 
     @Override

@@ -117,33 +117,20 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
 
     @Override
     public void saveConfig(final FieldModel fieldModel) {
-        final DescriptorActionApi providerActionApi = getProviderActionApi(fieldModel);
-        if (null != providerActionApi) {
-            providerActionApi.saveConfig(fieldModel);
-        }
-        super.saveConfig(fieldModel);
+        getProviderActionApi(fieldModel).ifPresent(descriptorActionApi -> descriptorActionApi.saveConfig(fieldModel));
     }
 
     @Override
     public void deleteConfig(final FieldModel fieldModel) {
-        final DescriptorActionApi descriptorActionApi = getProviderActionApi(fieldModel);
-        if (null != descriptorActionApi) {
-            descriptorActionApi.deleteConfig(fieldModel);
-        }
-        super.deleteConfig(fieldModel);
+        getProviderActionApi(fieldModel).ifPresent(descriptorActionApi -> descriptorActionApi.deleteConfig(fieldModel));
     }
 
-    private DescriptorActionApi getProviderActionApi(final FieldModel fieldModel) {
+    private Optional<DescriptorActionApi> getProviderActionApi(final FieldModel fieldModel) {
         final FieldAccessor fieldAccessor = fieldModel.convertToFieldAccessor();
         final String providerName = fieldAccessor.getString(CommonDistributionUIConfig.KEY_PROVIDER_NAME).orElse(null);
-        final Optional<ProviderDescriptor> foundProviderDescriptor = providerDescriptors.stream()
-                                                                         .filter(providerDescriptor -> providerDescriptor.getName().equals(providerName))
-                                                                         .findFirst();
-        if (foundProviderDescriptor.isPresent()) {
-            final Optional<DescriptorActionApi> actionApi = foundProviderDescriptor.get().getActionApi(ConfigContextEnum.DISTRIBUTION);
-            return actionApi.orElse(null);
-        }
-
-        return null;
+        return providerDescriptors.stream()
+                   .filter(providerDescriptor -> providerDescriptor.getName().equals(providerName))
+                   .findFirst()
+                   .map(providerDescriptor -> providerDescriptor.getActionApi(ConfigContextEnum.DISTRIBUTION).orElse(null));
     }
 }

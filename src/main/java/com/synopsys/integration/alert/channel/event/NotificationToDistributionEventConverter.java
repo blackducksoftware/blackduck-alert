@@ -36,7 +36,6 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.configuration.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
-import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 
@@ -54,24 +53,18 @@ public class NotificationToDistributionEventConverter {
         final List<DistributionEvent> distributionEvents = new ArrayList<>();
         for (final Map.Entry<CommonDistributionConfiguration, List<AggregateMessageContent>> entry : messageContentMap.entrySet()) {
             for (final AggregateMessageContent content : entry.getValue()) {
-                final DistributionEvent channelEvent = createChannelEvent(entry.getKey(), content);
-                if (null != channelEvent) {
-                    distributionEvents.add(channelEvent);
-                }
+                final Optional<DistributionEvent> channelEvent = createChannelEvent(entry.getKey(), content);
+                channelEvent.ifPresent(distributionEvents::add);
             }
         }
         logger.debug("Created {} events.", distributionEvents.size());
         return distributionEvents;
     }
 
-    private DistributionEvent createChannelEvent(final CommonDistributionConfiguration config, final AggregateMessageContent messageContent) {
+    private Optional<DistributionEvent> createChannelEvent(final CommonDistributionConfiguration config, final AggregateMessageContent messageContent) {
         final ChannelDescriptor channelDescriptor = descriptorMap.getChannelDescriptor(config.getChannelName());
         logger.info("Found descriptor {}", channelDescriptor.getName());
-        final Optional<DescriptorActionApi> actionApi = channelDescriptor.getActionApi(ConfigContextEnum.DISTRIBUTION);
-        if (actionApi.isEmpty()) {
-            return null;
-        }
-
-        return actionApi.get().createChannelEvent(config, messageContent);
+        return channelDescriptor.getActionApi(ConfigContextEnum.DISTRIBUTION)
+                   .map(descriptorActionApi -> descriptorActionApi.createChannelEvent(config, messageContent));
     }
 }

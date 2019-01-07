@@ -173,6 +173,7 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
         final FieldValueModel jobNameField = restModel.getField(CommonDistributionUIConfig.KEY_NAME);
         jobNameField.setValue(getTestJobName());
         try {
+            assertTrue(descriptorActionApi.isPresent());
             descriptorActionApi.get().testConfig(descriptorActionApi.get().createTestConfigModel(restModel, createTestConfigDestination()));
         } catch (final IntegrationException e) {
             e.printStackTrace();
@@ -186,6 +187,7 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
         assumeTrue(descriptorActionApi.isPresent());
         final FieldModel restModel = createValidFieldModel(global_config.orElse(null), ConfigContextEnum.GLOBAL);
         try {
+            assertTrue(descriptorActionApi.isPresent());
             descriptorActionApi.get().testConfig(descriptorActionApi.get().createTestConfigModel(restModel, createTestConfigDestination()));
         } catch (final IntegrationException e) {
             e.printStackTrace();
@@ -209,6 +211,7 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
         jobNameField.setValue(getTestJobName());
         final HashMap<String, String> fieldErrors = new HashMap<>();
         final List<ConfigurationAccessor.ConfigurationModel> models = configurationAccessor.getConfigurationsByDescriptorName(getDescriptor().getName());
+        assertTrue(descriptorActionApi.isPresent());
         descriptorActionApi.get().validateConfig(restModel.convertToFieldAccessor(), fieldErrors);
         assertTrue(fieldErrors.isEmpty());
     }
@@ -218,6 +221,7 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
         final Optional<DescriptorActionApi> descriptorActionApi = getDescriptor().getActionApi(ConfigContextEnum.DISTRIBUTION);
         final FieldModel restModel = createInvalidDistributionFieldModel();
         final HashMap<String, String> fieldErrors = new HashMap<>();
+        assertTrue(descriptorActionApi.isPresent());
         descriptorActionApi.get().validateConfig(restModel.convertToFieldAccessor(), fieldErrors);
         assertEquals(restModel.getKeyToValues().size(), fieldErrors.size());
     }
@@ -228,6 +232,7 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
         assumeTrue(descriptorActionApi.isPresent());
         final FieldModel restModel = createValidFieldModel(global_config.orElse(null), ConfigContextEnum.GLOBAL);
         final HashMap<String, String> fieldErrors = new HashMap<>();
+        assertTrue(descriptorActionApi.isPresent());
         descriptorActionApi.get().validateConfig(restModel.convertToFieldAccessor(), fieldErrors);
         assertTrue(fieldErrors.isEmpty());
     }
@@ -239,6 +244,7 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
         // descriptor has a global configuration therefore continue testing
         final FieldModel restModel = createInvalidGlobalFieldModel();
         final HashMap<String, String> fieldErrors = new HashMap<>();
+        assertTrue(descriptorActionApi.isPresent());
         descriptorActionApi.get().validateConfig(restModel.convertToFieldAccessor(), fieldErrors);
         assertEquals(restModel.getKeyToValues().size(), fieldErrors.size());
     }
