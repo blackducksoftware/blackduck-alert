@@ -7,33 +7,60 @@ import CollapsiblePane from "../../common/CollapsiblePane";
 import ConfigButtons from "../../common/ConfigButtons";
 
 
+const KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD = 'user.default.admin.password';
+const KEY_ENCRYPTION_PASSWORD = 'encryption.password';
+const KEY_ENCRYPTION_GLOBAL_SALT = 'encryption.global.salt';
+
+// Proxy Keys
+const KEY_PROXY_HOST = 'proxy.host';
+const KEY_PROXY_PORT = 'proxy.port';
+const KEY_PROXY_USERNAME = 'proxy.username';
+const KEY_PROXY_PASSWORD = 'proxy.password';
+
+// LDAP Keys
+const KEY_LDAP_ENABLED = 'ldap.enabled';
+const KEY_LDAP_SERVER = 'ldap.server';
+const KEY_LDAP_MANAGER_DN = 'ldap.manager.dn';
+const KEY_LDAP_MANAGER_PASSWORD = 'ldap.manager.password';
+const KEY_LDAP_AUTHENTICATION_TYPE = 'ldap.authentication.type';
+const KEY_LDAP_REFERRAL = 'ldap.referral';
+const KEY_LDAP_USER_SEARCH_BASE = 'ldap.user.search.base';
+const KEY_LDAP_USER_SEARCH_FILTER = 'ldap.user.search.filter';
+const KEY_LDAP_USER_DN_PATTERNS = 'ldap.user.dn.patterns';
+const KEY_LDAP_USER_ATTRIBUTES = 'ldap.user.attributes';
+const KEY_LDAP_GROUP_SEARCH_BASE = 'ldap.group.search.base';
+const KEY_LDAP_GROUP_SEARCH_FILTER = 'ldap.group.search.filter';
+const KEY_LDAP_GROUP_ROLE_ATTRIBUTE = 'ldap.group.role.attribute';
+const KEY_LDAP_ROLE_PREFIX = 'ldap.role.prefix';
+
 class SettingsConfigurationForm extends Component {
+
     constructor(props) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         const fieldNames = [
-            'user.default.admin.password',
-            'encryption.password',
-            'encryption.global.salt',
-            'proxy.host',
-            'proxy.port',
-            'proxy.username',
-            'proxy.password',
-            'ldap.enabled',
-            'ldap.server',
-            'ldap.manager.dn',
-            'ldap.manager.password',
-            'ldap.authentication.type',
-            'ldap.referral',
-            'ldap.user.search.base',
-            'ldap.user.search.filter',
-            'ldap.user.dn.patterns',
-            'ldap.user.attributes',
-            'ldap.group.search.base',
-            'ldap.group.search.filter',
-            'ldap.group.role.attribute',
-            'ldap.role.prefix'
+            KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD,
+            KEY_ENCRYPTION_PASSWORD,
+            KEY_ENCRYPTION_GLOBAL_SALT,
+            KEY_PROXY_HOST,
+            KEY_PROXY_PORT,
+            KEY_PROXY_USERNAME,
+            KEY_PROXY_PASSWORD,
+            KEY_LDAP_ENABLED,
+            KEY_LDAP_SERVER,
+            KEY_LDAP_MANAGER_DN,
+            KEY_LDAP_MANAGER_PASSWORD,
+            KEY_LDAP_AUTHENTICATION_TYPE,
+            KEY_LDAP_REFERRAL,
+            KEY_LDAP_USER_SEARCH_BASE,
+            KEY_LDAP_USER_SEARCH_FILTER,
+            KEY_LDAP_USER_DN_PATTERNS,
+            KEY_LDAP_USER_ATTRIBUTES,
+            KEY_LDAP_GROUP_SEARCH_BASE,
+            KEY_LDAP_GROUP_SEARCH_FILTER,
+            KEY_LDAP_GROUP_ROLE_ATTRIBUTE,
+            KEY_LDAP_ROLE_PREFIX
         ];
         this.state = {
             settingsData: this.createEmptyFieldModel(fieldNames)
@@ -70,8 +97,7 @@ class SettingsConfigurationForm extends Component {
     componentWillReceiveProps(nextProps) {
         if (nextProps.fetchingSetupStatus === 'SYSTEM SETUP FETCHED' && nextProps.updateStatus === 'FETCHED' ||
             this.props.fetchingSetupStatus === 'SYSTEM SETUP FETCHED' && this.props.updateStatus === 'FETCHED') {
-            console.log("Next props: ", nextProps);
-            const newState = Object.assign({}, this.state.settingsData, {});
+            const newState = Object.assign({}, this.state.settingsData, nextProps.settingsData);
             this.setState({
                 settingsData: newState
             })
@@ -80,12 +106,14 @@ class SettingsConfigurationForm extends Component {
 
     handleChange({ target }) {
         const value = target.type === 'checkbox' ? target.checked : target.value;
-        const newState = Object.assign({}, this.state.settingsData, {
-            [target.name]: value
-        });
+        const stateCopy = Object.assign({}, this.state.settingsData);
+        stateCopy.keyToValues[target.name].values[0] = value;
+        const newState = Object.assign({}, stateCopy);
+        console.log("new state", newState)
         this.setState({
             settingsData: newState
         });
+        console.log("Handle Change New State", this.state);
     }
 
     handleSubmit(evt) {
@@ -100,11 +128,11 @@ class SettingsConfigurationForm extends Component {
                     <div className="col-sm-12">
                         <h2>Default System Administrator Configuration</h2>
                         <PasswordInput
-                            id="defaultAdminPassword"
+                            id={KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD}
                             label="Password"
-                            name="defaultAdminPassword"
-                            value={this.getFieldModelSingleValue('user.default.admin.password')}
-                            isSet={this.getFieldModelValueSet('user.default.admin.password')}
+                            name={KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD}
+                            value={this.getFieldModelSingleValue(KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD)}
+                            isSet={this.getFieldModelValueSet(KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD)}
                             onChange={this.handleChange}
                             errorName="defaultAdminPasswordError"
                             errorValue={this.props.fieldErrors.defaultAdminPassword}
@@ -115,21 +143,21 @@ class SettingsConfigurationForm extends Component {
                     <div className="col-sm-12">
                         <h2>Encryption Configuration</h2>
                         <PasswordInput
-                            id="encryptionPassword"
+                            id={KEY_ENCRYPTION_PASSWORD}
                             label="Password"
-                            name="globalEncryptionPassword"
-                            value={this.getFieldModelSingleValue('encryption.password')}
-                            isSet={this.getFieldModelValueSet('encryption.password')}
+                            name={KEY_ENCRYPTION_PASSWORD}
+                            value={this.getFieldModelSingleValue(KEY_ENCRYPTION_PASSWORD)}
+                            isSet={this.getFieldModelValueSet(KEY_ENCRYPTION_PASSWORD)}
                             onChange={this.handleChange}
                             errorName="globalEncryptionPasswordError"
                             errorValue={this.props.fieldErrors.globalEncryptionPasswordError}
                         />
                         <PasswordInput
-                            id="encryptionSalt"
+                            id={KEY_ENCRYPTION_GLOBAL_SALT}
                             label="Salt"
-                            name="globalEncryptionSalt"
-                            value={this.getFieldModelSingleValue('encryption.global.salt')}
-                            isSet={this.getFieldModelValueSet('encryption.global.salt')}
+                            name={KEY_ENCRYPTION_GLOBAL_SALT}
+                            value={this.getFieldModelSingleValue(KEY_ENCRYPTION_GLOBAL_SALT)}
+                            isSet={this.getFieldModelValueSet(KEY_ENCRYPTION_GLOBAL_SALT)}
                             onChange={this.handleChange}
                             errorName="globalEncryptionSaltError"
                             errorValue={this.props.fieldErrors.globalEncryptionSaltError}
@@ -140,38 +168,38 @@ class SettingsConfigurationForm extends Component {
                     <div className="col-sm-12">
                         <CollapsiblePane title="Proxy Configuration">
                             <TextInput
-                                id="proxyHost"
+                                id={KEY_PROXY_HOST}
                                 label="Host Name"
-                                name="proxyHost"
-                                value={this.getFieldModelSingleValue('proxy.host')}
+                                name={KEY_PROXY_HOST}
+                                value={this.getFieldModelSingleValue(KEY_PROXY_HOST)}
                                 onChange={this.handleChange}
                                 errorName="proxyHostError"
                                 errorValue={this.props.fieldErrors.proxyHostError}
                             />
                             <TextInput
-                                id="proxyPort"
+                                id={KEY_PROXY_PORT}
                                 label="Port"
-                                name="proxyPort"
-                                value={this.getFieldModelSingleValue('proxy.port')}
+                                name={KEY_PROXY_PORT}
+                                value={this.getFieldModelSingleValue(KEY_PROXY_PORT)}
                                 onChange={this.handleChange}
                                 errorName="proxyPortError"
                                 errorValue={this.props.fieldErrors.proxyPortError}
                             />
                             <TextInput
-                                id="proxyUserName"
+                                id={KEY_PROXY_USERNAME}
                                 label="Username"
-                                name="proxyUsername"
-                                value={this.getFieldModelSingleValue('proxy.username')}
+                                name={KEY_PROXY_USERNAME}
+                                value={this.getFieldModelSingleValue(KEY_PROXY_USERNAME)}
                                 onChange={this.handleChange}
                                 errorName="proxyUsernameError"
                                 errorValue={this.props.fieldErrors.proxyUsernameError}
                             />
                             <PasswordInput
-                                id="proxyPassword"
+                                id={KEY_PROXY_PASSWORD}
                                 label="Password"
-                                name="proxyPassword"
-                                value={this.getFieldModelSingleValue('proxy.password')}
-                                isSet={this.getFieldModelValueSet('proxy.password')}
+                                name={KEY_PROXY_PASSWORD}
+                                value={this.getFieldModelSingleValue(KEY_PROXY_PASSWORD)}
+                                isSet={this.getFieldModelValueSet(KEY_PROXY_PASSWORD)}
                                 onChange={this.handleChange}
                                 errorName="proxyPasswordError"
                                 errorValue={this.props.fieldErrors.proxyPasswordError}
@@ -183,129 +211,129 @@ class SettingsConfigurationForm extends Component {
                     <div className="col-sm-12">
                         <CollapsiblePane title="LDAP Configuration">
                             <CheckboxInput
-                                id="ldapEnabled"
+                                id={KEY_LDAP_ENABLED}
                                 label="Enabled"
-                                name="ldapEnabled"
-                                value={this.getFieldModelSingleValue('ldap.enabled')}
+                                name={KEY_LDAP_ENABLED}
+                                value={this.getFieldModelSingleValue(KEY_LDAP_ENABLED)}
                                 onChange={this.handleChange}
                                 errorName="ldapEnabledError"
                                 errorValue={this.props.fieldErrors.ldapEnabledError}
                             />
                             <TextInput
-                                id="ldapServer"
+                                id={KEY_LDAP_SERVER}
                                 label="Server"
-                                name="ldapServer"
-                                value={this.getFieldModelSingleValue('ldap.server')}
+                                name={KEY_LDAP_SERVER}
+                                value={this.getFieldModelSingleValue(KEY_LDAP_SERVER)}
                                 onChange={this.handleChange}
                                 errorName="ldapServerError"
                                 errorValue={this.props.fieldErrors.ldapServerError}
                             />
                             <TextInput
-                                id="ldapManagerDn"
+                                id={KEY_LDAP_MANAGER_DN}
                                 label="Manager DN"
-                                name="ldapManagerDn"
-                                value={this.getFieldModelSingleValue('ldap.manager.dn')}
+                                name={KEY_LDAP_MANAGER_DN}
+                                value={this.getFieldModelSingleValue(KEY_LDAP_MANAGER_DN)}
                                 onChange={this.handleChange}
                                 errorName="ldapManagerDnError"
                                 errorValue={this.props.fieldErrors.ldapManagerDnError}
                             />
                             <PasswordInput
-                                id="ldapManagerPassword"
+                                id={KEY_LDAP_MANAGER_PASSWORD}
                                 label="Manager Password"
-                                name="ldapManagerPassword"
-                                value={this.getFieldModelSingleValue('ldap.manager.password')}
-                                isSet={this.getFieldModelValueSet('ldap.manager.password')}
+                                name={KEY_LDAP_MANAGER_PASSWORD}
+                                value={this.getFieldModelSingleValue(KEY_LDAP_MANAGER_PASSWORD)}
+                                isSet={this.getFieldModelValueSet(KEY_LDAP_MANAGER_PASSWORD)}
                                 onChange={this.handleChange}
                                 errorName="ldapManagerPasswordError"
                                 errorValue={this.props.fieldErrors.ldapManagerPasswordError}
                             />
                             // TODO: this should be a multi-select field
                             <TextInput
-                                id="ldapAuthenticationType"
+                                id={KEY_LDAP_AUTHENTICATION_TYPE}
                                 label="Authentication Type"
-                                name="ldapAuthenticationType"
-                                value={this.getFieldModelSingleValue('ldap.authentication.type')}
+                                name={KEY_LDAP_AUTHENTICATION_TYPE}
+                                value={this.getFieldModelSingleValue(KEY_LDAP_AUTHENTICATION_TYPE)}
                                 onChange={this.handleChange}
                                 errorName="ldapAuthenticationTypeError"
                                 errorValue={this.props.fieldErrors.ldapAuthenticationTypeError}
                             />
                             <TextInput
-                                id="ldapReferral"
+                                id={KEY_LDAP_REFERRAL}
                                 label="Referral"
-                                name="ldapReferral"
-                                value={this.getFieldModelSingleValue('ldap.referral')}
+                                name={KEY_LDAP_REFERRAL}
+                                value={this.getFieldModelSingleValue(KEY_LDAP_REFERRAL)}
                                 onChange={this.handleChange}
                                 errorName="ldapReferralError"
                                 errorValue={this.props.fieldErrors.ldapReferralError}
                             />
                             <TextInput
-                                id="ldapUserSearchBase"
+                                id={KEY_LDAP_USER_SEARCH_BASE}
                                 label="User Search Base"
-                                name="ldapUserSearchBase"
-                                value={this.getFieldModelSingleValue('ldap.user.search.base')}
+                                name={KEY_LDAP_USER_SEARCH_BASE}
+                                value={this.getFieldModelSingleValue(KEY_LDAP_USER_SEARCH_BASE)}
                                 onChange={this.handleChange}
                                 errorName="ldapUserSearchBaseError"
                                 errorValue={this.props.fieldErrors.ldapUserSearchBaseError}
                             />
                             <TextInput
-                                id="ldapUserSearchFilter"
+                                id={KEY_LDAP_USER_SEARCH_FILTER}
                                 label="User Search Filter"
-                                name="ldapUserSearchFilter"
-                                value={this.getFieldModelSingleValue('ldap.user.search.filter')}
+                                name={KEY_LDAP_USER_SEARCH_FILTER}
+                                value={this.getFieldModelSingleValue(KEY_LDAP_USER_SEARCH_FILTER)}
                                 onChange={this.handleChange}
                                 errorName="ldapUserSearchFilterError"
                                 errorValue={this.props.fieldErrors.ldapUserSearchFilterError}
                             />
                             <TextInput
-                                id="ldapUserDnPatterns"
+                                id={KEY_LDAP_USER_DN_PATTERNS}
                                 label="User DN Patterns"
-                                name="ldapUserDnPatterns"
-                                value={this.getFieldModelSingleValue('ldap.user.dn.patterns')}
+                                name={KEY_LDAP_USER_DN_PATTERNS}
+                                value={this.getFieldModelSingleValue(KEY_LDAP_USER_DN_PATTERNS)}
                                 onChange={this.handleChange}
                                 errorName="ldapUserDnPatternsError"
                                 errorValue={this.props.fieldErrors.ldapUserDnPatternsError}
                             />
                             <TextInput
-                                id="ldapUserAttributes"
+                                id={KEY_LDAP_USER_ATTRIBUTES}
                                 label="User Attributes"
-                                name="ldapUserAttributes"
-                                value={this.getFieldModelSingleValue('ldap.user.attributes')}
+                                name={KEY_LDAP_USER_ATTRIBUTES}
+                                value={this.getFieldModelSingleValue(KEY_LDAP_USER_ATTRIBUTES)}
                                 onChange={this.handleChange}
                                 errorName="ldapUserAttributesError"
                                 errorValue={this.props.fieldErrors.ldapUserAttributesError}
                             />
                             <TextInput
-                                id="ldapGroupSearchBase"
+                                id={KEY_LDAP_GROUP_SEARCH_BASE}
                                 label="Group Search Base"
-                                name="ldapGroupSearchBase"
-                                value={this.getFieldModelSingleValue('ldap.group.search.base')}
+                                name={KEY_LDAP_GROUP_SEARCH_BASE}
+                                value={this.getFieldModelSingleValue(KEY_LDAP_GROUP_SEARCH_BASE)}
                                 onChange={this.handleChange}
                                 errorName="ldapGroupSearchBaseError"
                                 errorValue={this.props.fieldErrors.ldapGroupSearchBaseError}
                             />
                             <TextInput
-                                id="ldapGroupSearchFilter"
+                                id={KEY_LDAP_GROUP_SEARCH_FILTER}
                                 label="Group Search Filter"
-                                name="ldapGroupSearchFilter"
-                                value={this.getFieldModelSingleValue('ldap.group.search.filter')}
+                                name={KEY_LDAP_GROUP_SEARCH_FILTER}
+                                value={this.getFieldModelSingleValue(KEY_LDAP_GROUP_SEARCH_FILTER)}
                                 onChange={this.handleChange}
                                 errorName="ldapGroupSearchFilterError"
                                 errorValue={this.props.fieldErrors.ldapGroupSearchFilterError}
                             />
                             <TextInput
-                                id="ldapGroupRoleAttribute"
+                                id={KEY_LDAP_GROUP_ROLE_ATTRIBUTE}
                                 label="Group Role Attribute"
-                                name="ldapGroupRoleAttribute"
-                                value={this.getFieldModelSingleValue('ldap.group.role.attribute')}
+                                name={KEY_LDAP_GROUP_ROLE_ATTRIBUTE}
+                                value={this.getFieldModelSingleValue(KEY_LDAP_GROUP_ROLE_ATTRIBUTE)}
                                 onChange={this.handleChange}
                                 errorName="ldapGroupRoleAttributeError"
                                 errorValue={this.props.fieldErrors.ldapGroupRoleAttributeError}
                             />
                             <TextInput
-                                id="ldapRolePrefix"
+                                id={KEY_LDAP_ROLE_PREFIX}
                                 label="Role Prefix"
-                                name="ldapRolePrefix"
-                                value={this.getFieldModelSingleValue('ldap.role.prefix')}
+                                name={KEY_LDAP_ROLE_PREFIX}
+                                value={this.getFieldModelSingleValue(KEY_LDAP_ROLE_PREFIX)}
                                 onChange={this.handleChange}
                                 errorName="ldapRolePrefixError"
                                 errorValue={this.props.fieldErrors.ldapRolePrefixError}
