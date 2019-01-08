@@ -2,14 +2,15 @@ import React from 'react';
 import Enzyme, { shallow } from 'enzyme';
 import renderer from 'react-test-renderer';
 import Adapter from 'enzyme-adapter-react-15';
-import GeneralButton from '../GeneralButton';
+import GeneralButton from 'field/input/GeneralButton';
 
 beforeAll(() => {
     Enzyme.configure({ adapter: new Adapter() });
 });
 
 test('Rendering default test button snapshot', () => {
-    const button = renderer.create(<GeneralButton onClick={() => {}} />);
+    const button = renderer.create(<GeneralButton onClick={() => {
+    }} />);
     const tree = button.toJSON();
     expect(tree).toMatchSnapshot();
 });

@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import CancelButton from '../../field/input/CancelButton';
-import SubmitButton from '../../field/input/SubmitButton';
-import GeneralButton from '../../field/input/GeneralButton';
+import CancelButton from 'field/input/CancelButton';
+import SubmitButton from 'field/input/SubmitButton';
+import GeneralButton from 'field/input/GeneralButton';
 
 const ConfigButtons = props => (
     <div className="form-group">

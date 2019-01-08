@@ -4,11 +4,12 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Overlay, Popover } from 'react-bootstrap';
 
+import SystemMessage from 'component/common/SystemMessage';
+import { getAboutInfo } from 'store/actions/about';
+import { getLatestMessages } from 'store/actions/system';
 import '../css/footer.scss';
 import '../css/messages.scss';
-import SystemMessage from './component/common/SystemMessage';
-import { getAboutInfo } from './store/actions/about';
-import { getLatestMessages } from './store/actions/system';
+
 
 class AboutInfoFooter extends React.Component {
     constructor(props) {
@@ -41,6 +42,23 @@ class AboutInfoFooter extends React.Component {
         }
     }
 
+    getFontAwesomeIcon() {
+        const { latestMessages } = this.props;
+        if (this.hasErrorMessages(latestMessages) || this.hasWarninigMessages(latestMessages)) {
+            return 'fa fa-exclamation-triangle';
+        }
+        return 'fa fa-check-circle';
+    }
+
+    getIconColor() {
+        const { latestMessages } = this.props;
+        if (this.hasErrorMessages(latestMessages)) {
+            return 'statusPopoverError errorStatus';
+        } else if (this.hasWarninigMessages(latestMessages)) {
+            return 'warningStatus';
+        }
+        return 'validStatus';
+    }
 
     hasErrorMessages(messages) {
         return this.containsSeverity(messages, 'ERROR');
@@ -58,24 +76,6 @@ class AboutInfoFooter extends React.Component {
             return false;
         }
         return false;
-    }
-
-    getFontAwesomeIcon() {
-        const { latestMessages } = this.props;
-        if (this.hasErrorMessages(latestMessages) || this.hasWarninigMessages(latestMessages)) {
-            return 'fa fa-exclamation-triangle';
-        }
-        return 'fa fa-check-circle';
-    }
-
-    getIconColor() {
-        const { latestMessages } = this.props;
-        if (this.hasErrorMessages(latestMessages)) {
-            return 'statusPopoverError errorStatus';
-        } else if (this.hasWarninigMessages(latestMessages)) {
-            return 'warningStatus';
-        }
-        return 'validStatus';
     }
 
     createMessageList() {
