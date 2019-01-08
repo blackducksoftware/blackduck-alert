@@ -39,30 +39,29 @@ import com.synopsys.integration.alert.database.api.configuration.model.Configura
 
 public abstract class ProviderProperties {
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    protected final Provider provider;
+    private final String providerName;
     protected final BaseConfigurationAccessor configurationAccessor;
 
-    public ProviderProperties(final Provider provider, final BaseConfigurationAccessor configurationAccessor) {
-        this.provider = provider;
+    public ProviderProperties(final String providerName, final BaseConfigurationAccessor configurationAccessor) {
+        this.providerName = providerName;
         this.configurationAccessor = configurationAccessor;
     }
 
     // This assumes that there will only ever be one global config for a provider. This may not be the case in the future.
-    public Optional<ConfigurationModel> getGlobalConfig() {
-        List<ConfigurationModel> configurations = null;
+    public Optional<ConfigurationModel> retrieveGlobalConfig() {
         try {
-            configurations = configurationAccessor.getConfigurationByDescriptorNameAndContext(provider.getName(), ConfigContextEnum.GLOBAL);
+            final List<ConfigurationModel> configurations = configurationAccessor.getConfigurationByDescriptorNameAndContext(providerName, ConfigContextEnum.GLOBAL);
+            if (null != configurations && !configurations.isEmpty()) {
+                return Optional.of(configurations.get(0));
+            }
         } catch (final AlertDatabaseConstraintException e) {
             logger.error("Problem connecting to DB.", e);
-        }
-        if (null != configurations && !configurations.isEmpty()) {
-            return Optional.of(configurations.get(0));
         }
         return Optional.empty();
     }
 
     protected FieldAccessor createFieldAccessor() {
-        return getGlobalConfig()
+        return retrieveGlobalConfig()
                    .map(config -> new FieldAccessor(config.getCopyOfKeyToFieldMap()))
                    .orElse(new FieldAccessor(Map.of()));
     }

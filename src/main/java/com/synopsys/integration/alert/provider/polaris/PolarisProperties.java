@@ -41,8 +41,8 @@ public class PolarisProperties extends ProviderProperties {
     private final AlertProperties alertProperties;
 
     @Autowired
-    public PolarisProperties(final PolarisProvider polarisProvider, final AlertProperties alertProperties, final BaseConfigurationAccessor configurationAccessor) {
-        super(polarisProvider, configurationAccessor);
+    public PolarisProperties(final AlertProperties alertProperties, final BaseConfigurationAccessor configurationAccessor) {
+        super(PolarisProvider.COMPONENT_NAME, configurationAccessor);
         this.alertProperties = alertProperties;
     }
 
