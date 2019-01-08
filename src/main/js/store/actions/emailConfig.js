@@ -9,9 +9,9 @@ import {
     EMAIL_CONFIG_UPDATE_ERROR,
     EMAIL_CONFIG_UPDATED,
     EMAIL_CONFIG_UPDATING
-} from './types';
+} from 'store/actions/types';
 
-import { verifyLoginByStatus } from './session';
+import { verifyLoginByStatus } from 'store/actions/session';
 
 const CONFIG_URL = '/alert/api/configuration/channel/global/channel_email';
 const TEST_URL = `${CONFIG_URL}/test`;

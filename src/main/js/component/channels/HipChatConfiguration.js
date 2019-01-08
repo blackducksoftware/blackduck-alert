@@ -2,11 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import TextInput from '../../field/input/TextInput';
-import PasswordInput from '../../field/input/PasswordInput';
-import ConfigButtons from '../common/ConfigButtons';
-import { closeHipChatConfigTest, getConfig, openHipChatConfigTest, testConfig, toggleShowHostServer, updateConfig } from '../../store/actions/hipChatConfig';
-import ChannelTestModal from '../common/ChannelTestModal';
+import TextInput from 'field/input/TextInput';
+import PasswordInput from 'field/input/PasswordInput';
+import ConfigButtons from 'component/common/ConfigButtons';
+import { closeHipChatConfigTest, getConfig, openHipChatConfigTest, testConfig, toggleShowHostServer, updateConfig } from 'store/actions/hipChatConfig';
+import ChannelTestModal from 'component/common/ChannelTestModal';
 
 class HipChatConfiguration extends React.Component {
     constructor(props) {

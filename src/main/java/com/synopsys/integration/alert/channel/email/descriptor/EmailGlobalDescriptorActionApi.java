@@ -23,16 +23,24 @@
  */
 package com.synopsys.integration.alert.channel.email.descriptor;
 
+import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
+
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
+import com.synopsys.integration.alert.channel.email.EmailProperties;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -66,7 +74,21 @@ public class EmailGlobalDescriptorActionApi extends DescriptorActionApi {
 
     @Override
     public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
-        emailGroupChannel.testGlobalConfig(testConfig);
+        Set<String> emailAddresses = null;
+        final String testEmailAddress = testConfig.getDestination().orElse(null);
+        if (StringUtils.isNotBlank(testEmailAddress)) {
+            try {
+                final InternetAddress emailAddr = new InternetAddress(testEmailAddress);
+                emailAddr.validate();
+            } catch (final AddressException ex) {
+                throw new AlertException(String.format("%s is not a valid email address. %s", testEmailAddress, ex.getMessage()));
+            }
+            emailAddresses = Collections.singleton(testEmailAddress);
+        }
+        final FieldAccessor fieldAccessor = testConfig.getFieldModel().convertToFieldAccessor();
+        final EmailProperties emailProperties = new EmailProperties(fieldAccessor);
+        final AggregateMessageContent messageContent = new AggregateMessageContent("Message Content", "Test from Alert", Collections.emptyList());
+        emailGroupChannel.sendMessage(emailProperties, emailAddresses, "Test from Alert", "Global Configuration", "", messageContent, "N/A");
     }
 
 }

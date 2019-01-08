@@ -2,14 +2,15 @@ import React from 'react';
 import Enzyme, { shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-15';
 import renderer from 'react-test-renderer';
-import SubmitButton from '../SubmitButton';
+import SubmitButton from 'field/input/SubmitButton';
 
 beforeAll(() => {
     Enzyme.configure({ adapter: new Adapter() });
 });
 
 test('Rendering default save button snapshot', () => {
-    const button = renderer.create(<SubmitButton onClick={() => {}} />);
+    const button = renderer.create(<SubmitButton onClick={() => {
+    }} />);
     const tree = button.toJSON();
     expect(tree).toMatchSnapshot();
 });

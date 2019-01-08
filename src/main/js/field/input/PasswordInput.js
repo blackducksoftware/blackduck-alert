@@ -1,6 +1,6 @@
 import React from 'react';
 
-import LabeledField from '../LabeledField';
+import LabeledField from 'field/LabeledField';
 
 export default class PasswordInput extends LabeledField {
     render() {

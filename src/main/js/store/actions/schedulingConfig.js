@@ -8,9 +8,9 @@ import {
     SCHEDULING_CONFIG_UPDATE_ERROR,
     SCHEDULING_CONFIG_UPDATED,
     SCHEDULING_CONFIG_UPDATING
-} from './types';
+} from 'store/actions/types';
 
-import { verifyLoginByStatus } from './session';
+import { verifyLoginByStatus } from 'store/actions/session';
 
 const CONFIG_URL = '/alert/api/configuration/component/component_scheduling';
 const ACCUMULATOR_URL = '/alert/api/configuration/component/component_scheduling/tasks/run';

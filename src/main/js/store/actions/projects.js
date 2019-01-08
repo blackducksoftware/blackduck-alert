@@ -1,6 +1,6 @@
-import { PROJECTS_FETCH_ERROR, PROJECTS_FETCHED, PROJECTS_FETCHING } from './types';
+import { PROJECTS_FETCH_ERROR, PROJECTS_FETCHED, PROJECTS_FETCHING } from 'store/actions/types';
 
-import { verifyLoginByStatus } from './session';
+import { verifyLoginByStatus } from 'store/actions/session';
 
 const PROJECTS_URL = '/alert/api/blackduck/projects';
 

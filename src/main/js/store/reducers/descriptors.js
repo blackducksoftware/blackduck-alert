@@ -7,7 +7,7 @@ import {
     DESCRIPTORS_FETCHED,
     DESCRIPTORS_FETCHING,
     SERIALIZE
-} from '../actions/types';
+} from 'store/actions/types';
 
 const initialState = {
     fetching: false,

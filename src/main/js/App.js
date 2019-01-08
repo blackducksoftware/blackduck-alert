@@ -5,15 +5,16 @@ import { withRouter } from 'react-router-dom';
 
 import 'font-awesome/scss/font-awesome.scss';
 
-import MainPage from './MainPage';
-import LoginPage from './LoginPage';
-import AboutInfoFooter from './AboutInfoFooter';
-import { getConfig } from './store/actions/config';
-import { verifyLogin } from './store/actions/session';
-import { getCurrentSystemSetup } from './store/actions/system';
+import MainPage from 'MainPage';
+import LoginPage from 'LoginPage';
+import AboutInfoFooter from 'AboutInfoFooter';
+import { getConfig } from 'store/actions/config';
+import { verifyLogin } from 'store/actions/session';
+import { getCurrentSystemSetup } from 'store/actions/system';
+import SetupPage from 'SetupPage';
 
 import '../css/main.scss';
-import SetupPage from './SetupPage';
+
 
 class App extends Component {
     componentDidMount() {

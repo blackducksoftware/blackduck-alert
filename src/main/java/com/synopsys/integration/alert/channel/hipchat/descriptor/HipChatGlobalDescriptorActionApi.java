@@ -24,6 +24,7 @@
 package com.synopsys.integration.alert.channel.hipchat.descriptor;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,8 +33,11 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.rest.connection.RestConnection;
+import com.synopsys.integration.rest.request.Request;
 
 @Component
 public class HipChatGlobalDescriptorActionApi extends DescriptorActionApi {
@@ -54,7 +58,26 @@ public class HipChatGlobalDescriptorActionApi extends DescriptorActionApi {
 
     @Override
     public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
-        hipChatChannel.testGlobalConfig(testConfig);
+        final FieldAccessor fieldAccessor = testConfig.getFieldModel().convertToFieldAccessor();
+        final Optional<String> apiKey = fieldAccessor.getString(HipChatDescriptor.KEY_API_KEY);
+        final String configuredApiUrl = fieldAccessor.getString(HipChatDescriptor.KEY_HOST_SERVER).orElse(HipChatChannel.HIP_CHAT_API);
+        if (!apiKey.isPresent()) {
+            throw new AlertException("ERROR: Missing global config.");
+        }
+
+        final RestConnection restConnection = hipChatChannel.getChannelRestConnectionFactory().createRestConnection();
+        hipChatChannel.testApiKeyAndApiUrlConnection(restConnection, configuredApiUrl, apiKey.get());
+        final Integer parsedRoomId;
+        try {
+            final String testRoomId = testConfig.getDestination().orElse(null);
+            parsedRoomId = Integer.valueOf(testRoomId);
+        } catch (final NumberFormatException e) {
+            throw new AlertException("The provided room id is an invalid number.");
+        }
+
+        final String htmlMessage = "This is a test message sent by Alert.";
+        final Request testRequest = hipChatChannel.createRequest(configuredApiUrl, apiKey.get(), parsedRoomId, Boolean.TRUE, "red", htmlMessage);
+        hipChatChannel.sendMessageRequest(restConnection, testRequest, "test");
     }
 
 }

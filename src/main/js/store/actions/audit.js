@@ -1,6 +1,6 @@
-import { AUDIT_FETCH_ERROR, AUDIT_FETCHED, AUDIT_FETCHING } from './types';
+import { AUDIT_FETCH_ERROR, AUDIT_FETCHED, AUDIT_FETCHING } from 'store/actions/types';
 
-import { verifyLoginByStatus } from './session';
+import { verifyLoginByStatus } from 'store/actions/session';
 
 const FETCH_URL = '/alert/api/audit';
 
