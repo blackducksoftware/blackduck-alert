@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import TextInput from '../../../../field/input/TextInput';
-import BaseJobConfiguration from './BaseJobConfiguration';
-import { getDistributionJob } from '../../../../store/actions/distributions';
-import CheckboxInput from '../../../../field/input/CheckboxInput';
+import TextInput from 'field/input/TextInput';
+import BaseJobConfiguration from 'component/general/distribution/job/BaseJobConfiguration';
+import { getDistributionJob } from 'store/actions/distributions';
+import CheckboxInput from 'field/input/CheckboxInput';
 
 
 class GroupEmailJobConfiguration extends Component {

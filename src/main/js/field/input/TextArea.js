@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import LabeledField from '../LabeledField';
+import LabeledField from 'field/LabeledField';
 
 export default class TextArea extends LabeledField {
     render() {

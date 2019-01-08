@@ -1,10 +1,10 @@
 import connect from 'react-redux/es/connect/connect';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import SubmitButton from './field/input/SubmitButton';
-import TextInput from './field/input/TextInput';
-import PasswordInput from './field/input/PasswordInput';
-import { saveSystemSetup } from './store/actions/system';
+import SubmitButton from 'field/input/SubmitButton';
+import TextInput from 'field/input/TextInput';
+import PasswordInput from 'field/input/PasswordInput';
+import { saveSystemSetup } from 'store/actions/system';
 
 class SetupPage extends Component {
     constructor(props) {
