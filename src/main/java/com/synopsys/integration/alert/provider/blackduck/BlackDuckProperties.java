@@ -65,8 +65,8 @@ public class BlackDuckProperties extends ProviderProperties {
     private String publicBlackDuckWebserverPort;
 
     @Autowired
-    public BlackDuckProperties(final BlackDuckProvider blackDuckProvider, final Gson gson, final AlertProperties alertProperties, final BaseConfigurationAccessor configurationAccessor) {
-        super(blackDuckProvider, configurationAccessor);
+    public BlackDuckProperties(final Gson gson, final AlertProperties alertProperties, final BaseConfigurationAccessor configurationAccessor) {
+        super(BlackDuckProvider.COMPONENT_NAME, configurationAccessor);
         this.gson = gson;
         this.alertProperties = alertProperties;
     }
@@ -92,7 +92,7 @@ public class BlackDuckProperties extends ProviderProperties {
     }
 
     public Optional<ConfigurationModel> getBlackDuckConfig() {
-        return getGlobalConfig();
+        return retrieveGlobalConfig();
     }
 
     public BlackDuckServicesFactory createBlackDuckServicesFactory(final BlackDuckRestConnection restConnection, final IntLogger logger) {
