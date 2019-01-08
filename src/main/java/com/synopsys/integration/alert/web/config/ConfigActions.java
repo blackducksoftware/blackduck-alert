@@ -132,14 +132,15 @@ public class ConfigActions {
 
     public FieldModel saveConfig(final FieldModel fieldModel) throws AlertException {
         final DescriptorActionApi descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
+        FieldModel modelToSave = fieldModel;
         if (null != descriptorActionApi) {
-            descriptorActionApi.saveConfig(fieldModel);
+            modelToSave = descriptorActionApi.saveConfig(fieldModel);
         } else {
             logger.error("Could not find a Descriptor with the name: " + fieldModel.getDescriptorName());
         }
-        final String descriptorName = fieldModel.getDescriptorName();
-        final String context = fieldModel.getContext();
-        final Map<String, ConfigurationFieldModel> configurationFieldModelMap = fieldModel.convertToConfigurationFieldModelMap();
+        final String descriptorName = modelToSave.getDescriptorName();
+        final String context = modelToSave.getContext();
+        final Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelToSave.convertToConfigurationFieldModelMap();
         return convertToFieldModel(configurationAccessor.createConfiguration(descriptorName, EnumUtils.getEnum(ConfigContextEnum.class, context), configurationFieldModelMap.values()));
     }
 
@@ -169,8 +170,9 @@ public class ConfigActions {
 
     public FieldModel updateConfig(final FieldModel fieldModel) throws AlertException {
         final DescriptorActionApi descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
+        FieldModel modelToSave = fieldModel;
         if (null != descriptorActionApi) {
-            descriptorActionApi.updateConfig(fieldModel);
+            modelToSave = descriptorActionApi.updateConfig(fieldModel);
         } else {
             logger.error("Could not find a Descriptor with the name: " + fieldModel.getDescriptorName());
         }
@@ -178,7 +180,7 @@ public class ConfigActions {
         if (fieldModel != null && StringUtils.isNotBlank(id)) {
             final Long longId = contentConverter.getLongValue(id);
             final ConfigurationModel configurationModel = getSavedEntity(longId);
-            final Map<String, ConfigurationFieldModel> fieldModels = fieldModel.convertToConfigurationFieldModelMap();
+            final Map<String, ConfigurationFieldModel> fieldModels = modelToSave.convertToConfigurationFieldModelMap();
             final Collection<ConfigurationFieldModel> updatedFields = updateConfigurationWithSavedConfiguration(fieldModels, configurationModel.getCopyOfFieldList());
             return convertToFieldModel(configurationAccessor.updateConfiguration(longId, updatedFields));
         }

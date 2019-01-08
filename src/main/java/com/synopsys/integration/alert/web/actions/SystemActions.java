@@ -116,7 +116,7 @@ public class SystemActions {
         try {
             configActions.validateConfig(systemSettings, fieldErrors);
             if (fieldErrors.isEmpty()) {
-                systemSettings = configActions.saveConfig(systemSettings);
+                systemSettings = configActions.saveConfig(settingsToSave);
             }
         } catch (final AlertException | AlertFieldException ex) {
             logger.error("Error saving initial configuration", ex);

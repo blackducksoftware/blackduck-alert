@@ -65,6 +65,10 @@ public class SettingsDescriptor extends ComponentDescriptor {
     public static final String KEY_LDAP_GROUP_ROLE_ATTRIBUTE = "ldap.group.role.attribute";
     public static final String KEY_LDAP_ROLE_PREFIX = "ldap.role.prefix";
 
+    public static final String FIELD_ERROR_DEFAULT_USER_PASSWORD = "Default admin user password missing";
+    public static final String FIELD_ERROR_ENCRYPTION_PASSWORD = "Encryption password missing";
+    public static final String FIELD_ERROR_ENCRYPTION_GLOBAL_SALT = "Encryption global salt missing";
+
     @Autowired
     public SettingsDescriptor(final SettingsDescriptorActionApi componentRestApi, final SettingsUIConfig uiConfig) {
         super(SETTINGS_COMPONENT, componentRestApi, uiConfig);
@@ -93,6 +97,7 @@ public class SettingsDescriptor extends ComponentDescriptor {
             fields.add(DefinedFieldModel.createGlobalField(KEY_LDAP_GROUP_SEARCH_FILTER));
             fields.add(DefinedFieldModel.createGlobalField(KEY_LDAP_GROUP_ROLE_ATTRIBUTE));
             fields.add(DefinedFieldModel.createGlobalField(KEY_LDAP_ROLE_PREFIX));
+            return fields;
         }
 
         return List.of();
