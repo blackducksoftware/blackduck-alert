@@ -96,16 +96,15 @@ public class ConfigControllerHandler extends ControllerHandler {
         return createResponse(HttpStatus.CONFLICT, id, "Provided id must not be in use. To update an existing configuration, use PUT.");
     }
 
-    public ResponseEntity<String> putConfig(final FieldModel restModel) {
+    public ResponseEntity<String> putConfig(final Long id, final FieldModel restModel) {
         if (restModel == null) {
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing");
         }
-        final Long id = getContentConverter().getLongValue(restModel.getId());
         try {
             if (descriptorConfigActions.doesConfigExist(id)) {
                 try {
                     descriptorConfigActions.validateConfig(restModel, new HashMap<>());
-                    final FieldModel updatedEntity = descriptorConfigActions.updateConfig(restModel);
+                    final FieldModel updatedEntity = descriptorConfigActions.updateConfig(id, restModel);
                     return createResponse(HttpStatus.ACCEPTED, updatedEntity.getId(), "Updated");
                 } catch (final AlertFieldException e) {
                     return fieldError(id, "There were errors with the configuration.", e.getFieldErrors());

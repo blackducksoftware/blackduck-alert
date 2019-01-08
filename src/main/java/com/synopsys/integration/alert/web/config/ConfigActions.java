@@ -168,7 +168,7 @@ public class ConfigActions {
         }
     }
 
-    public FieldModel updateConfig(final FieldModel fieldModel) throws AlertException {
+    public FieldModel updateConfig(final Long id, final FieldModel fieldModel) throws AlertException {
         final DescriptorActionApi descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
         FieldModel modelToSave = fieldModel;
         if (null != descriptorActionApi) {
@@ -176,13 +176,11 @@ public class ConfigActions {
         } else {
             logger.error("Could not find a Descriptor with the name: " + fieldModel.getDescriptorName());
         }
-        final String id = fieldModel.getId();
-        if (fieldModel != null && StringUtils.isNotBlank(id)) {
-            final Long longId = contentConverter.getLongValue(id);
-            final ConfigurationModel configurationModel = getSavedEntity(longId);
+        if (fieldModel != null) {
+            final ConfigurationModel configurationModel = getSavedEntity(id);
             final Map<String, ConfigurationFieldModel> fieldModels = modelToSave.convertToConfigurationFieldModelMap();
             final Collection<ConfigurationFieldModel> updatedFields = updateConfigurationWithSavedConfiguration(fieldModels, configurationModel.getCopyOfFieldList());
-            return convertToFieldModel(configurationAccessor.updateConfiguration(longId, updatedFields));
+            return convertToFieldModel(configurationAccessor.updateConfiguration(id, updatedFields));
         }
         return null;
     }
