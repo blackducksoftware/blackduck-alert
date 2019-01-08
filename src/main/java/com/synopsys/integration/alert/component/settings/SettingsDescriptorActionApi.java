@@ -24,6 +24,7 @@
 package com.synopsys.integration.alert.component.settings;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -61,7 +62,21 @@ public class SettingsDescriptorActionApi extends DescriptorActionApi {
 
     @Override
     public void validateConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
-        //systemValidator.validate(fieldErrors);
+        final String defaultUserPassword = fieldAccessor.getString(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD).orElse(null);
+        final String encryptionPassword = fieldAccessor.getString(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD).orElse(null);
+        final String encryptionSalt = fieldAccessor.getString(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT).orElse(null);
+
+        if (StringUtils.isBlank(defaultUserPassword)) {
+            fieldErrors.put(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, SettingsDescriptor.FIELD_ERROR_DEFAULT_USER_PASSWORD);
+        }
+
+        if (StringUtils.isBlank(encryptionPassword)) {
+            fieldErrors.put(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, SettingsDescriptor.FIELD_ERROR_ENCRYPTION_PASSWORD);
+        }
+
+        if (StringUtils.isBlank(encryptionSalt)) {
+            fieldErrors.put(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, SettingsDescriptor.FIELD_ERROR_ENCRYPTION_GLOBAL_SALT);
+        }
     }
 
     @Override
@@ -79,15 +94,29 @@ public class SettingsDescriptorActionApi extends DescriptorActionApi {
     }
 
     @Override
-    public void updateConfig(final FieldModel fieldModel) {
+    public FieldModel updateConfig(final FieldModel fieldModel) {
         saveDefaultAdminUserPassword(fieldModel);
         saveEncryptionProperties(fieldModel);
+        return createScrubbedModel(fieldModel);
     }
 
     @Override
-    public void saveConfig(final FieldModel fieldModel) {
+    public FieldModel saveConfig(final FieldModel fieldModel) {
         saveDefaultAdminUserPassword(fieldModel);
         saveEncryptionProperties(fieldModel);
+        systemValidator.validate();
+        return createScrubbedModel(fieldModel);
+    }
+
+    private FieldModel createScrubbedModel(final FieldModel fieldModel) {
+        final HashMap<String, FieldValueModel> fields = new HashMap<>();
+        fields.putAll(fieldModel.getKeyToValues());
+        fields.remove(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD);
+
+        fields.remove(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD);
+        fields.remove(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT);
+        final FieldModel modelToSave = new FieldModel(fieldModel.getDescriptorName(), fieldModel.getContext(), fields);
+        return modelToSave;
     }
 
     private void saveDefaultAdminUserPassword(final FieldModel fieldModel) {

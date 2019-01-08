@@ -63,12 +63,12 @@ public abstract class DescriptorActionApi {
 
     }
 
-    public void updateConfig(final FieldModel fieldModel) {
-
+    public FieldModel updateConfig(final FieldModel fieldModel) {
+        return fieldModel;
     }
 
-    public void saveConfig(final FieldModel fieldModel) {
-
+    public FieldModel saveConfig(final FieldModel fieldModel) {
+        return fieldModel;
     }
 
     public void deleteConfig(final FieldModel fieldModel) {
