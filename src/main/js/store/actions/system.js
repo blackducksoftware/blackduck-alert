@@ -11,7 +11,7 @@ import {
     SYSTEM_SETUP_UPDATING
 } from './types';
 import { verifyLoginByStatus } from "./session";
-import * as ConfigRequestBuilder from "../utils/configurationRequestBuilder";
+import * as ConfigRequestBuilder from "../../util/configurationRequestBuilder";
 
 const LATEST_MESSAGES_URL = '/alert/api/system/messages/latest';
 const INITIAL_SYSTEM_SETUP_URL = '/alert/api/system/setup/initial';

@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import React, { Component } from "react";
 import CollapsiblePane from "../../common/CollapsiblePane";
 import ConfigButtons from "../../common/ConfigButtons";
+import * as FieldModelUtil from '../../../util/fieldModelUtilities';
 
 
 const KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD = 'user.default.admin.password';
@@ -34,34 +35,6 @@ const KEY_LDAP_GROUP_ROLE_ATTRIBUTE = 'ldap.group.role.attribute';
 const KEY_LDAP_ROLE_PREFIX = 'ldap.role.prefix';
 
 class SettingsConfigurationForm extends Component {
-    getFieldModelSingleValue(containerObject, key) {
-        return containerObject.settingsData.keyToValues[key].values[0];
-    }
-
-    getFieldModelValueSet(containerObject, key) {
-        const isFieldSet = containerObject.settingsData.keyToValues[key].set;
-        console.log(`getFieldModelValueSet: ${key}: ${isFieldSet}`);
-        return isFieldSet;
-    }
-
-    createEmptyFieldModel(fields) {
-        const emptySettings = {};
-        emptySettings.context = 'GLOBAL';
-        emptySettings.descriptorName = 'component_settings';
-        emptySettings.keyToValues = {};
-        Object.keys(fields).forEach((key) => {
-            emptySettings.keyToValues[fields[key]] = {
-                values: [''],
-                isSet: false
-            };
-        });
-        return emptySettings;
-    }
-
-    createFieldModelErrorKey(fieldKey) {
-        return fieldKey.concat('Error');
-    }
-
     constructor(props) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
@@ -90,7 +63,7 @@ class SettingsConfigurationForm extends Component {
             KEY_LDAP_ROLE_PREFIX
         ];
         this.state = {
-            settingsData: this.createEmptyFieldModel(fieldNames)
+            settingsData: FieldModelUtil.createEmptyFieldModel(fieldNames)
         };
     }
 
@@ -102,7 +75,6 @@ class SettingsConfigurationForm extends Component {
         if ((nextProps.fetchingSetupStatus === 'SYSTEM SETUP FETCHED' && nextProps.updateStatus === 'FETCHED') ||
             (this.props.fetchingSetupStatus === 'SYSTEM SETUP FETCHED' && this.props.updateStatus === 'FETCHED')) {
             const newState = Object.assign({}, this.state.settingsData, nextProps.settingsData);
-            console.log('setting new properties', nextProps);
             this.setState({
                 settingsData: newState
             });
@@ -134,11 +106,11 @@ class SettingsConfigurationForm extends Component {
                             id={KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD}
                             label="Password"
                             name={KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD}
-                            value={this.getFieldModelSingleValue(this.state, KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD)}
-                            isSet={this.getFieldModelValueSet(this.state, KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD)}
+                            value={FieldModelUtil.getFieldModelSingleValue(this.state, KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD)}
+                            isSet={FieldModelUtil.getFieldModelValueSet(this.state, KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD)}
                             onChange={this.handleChange}
-                            errorName={this.createFieldModelErrorKey(KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD)}
-                            errorValue={this.props.fieldErrors[this.createFieldModelErrorKey(KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD)]}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD)]}
                         />
                     </div>
                 </div>
@@ -149,21 +121,21 @@ class SettingsConfigurationForm extends Component {
                             id={KEY_ENCRYPTION_PASSWORD}
                             label="Password"
                             name={KEY_ENCRYPTION_PASSWORD}
-                            value={this.getFieldModelSingleValue(this.state, KEY_ENCRYPTION_PASSWORD)}
-                            isSet={this.getFieldModelValueSet(this.state, KEY_ENCRYPTION_PASSWORD)}
+                            value={FieldModelUtil.getFieldModelSingleValue(this.state, KEY_ENCRYPTION_PASSWORD)}
+                            isSet={FieldModelUtil.getFieldModelValueSet(this.state, KEY_ENCRYPTION_PASSWORD)}
                             onChange={this.handleChange}
-                            errorName={this.createFieldModelErrorKey(KEY_ENCRYPTION_PASSWORD)}
-                            errorValue={this.props.fieldErrors[this.createFieldModelErrorKey(KEY_ENCRYPTION_PASSWORD)]}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(KEY_ENCRYPTION_PASSWORD)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_ENCRYPTION_PASSWORD)]}
                         />
                         <PasswordInput
                             id={KEY_ENCRYPTION_GLOBAL_SALT}
                             label="Salt"
                             name={KEY_ENCRYPTION_GLOBAL_SALT}
-                            value={this.getFieldModelSingleValue(this.state, KEY_ENCRYPTION_GLOBAL_SALT)}
-                            isSet={this.getFieldModelValueSet(this.state, KEY_ENCRYPTION_GLOBAL_SALT)}
+                            value={FieldModelUtil.getFieldModelSingleValue(this.state, KEY_ENCRYPTION_GLOBAL_SALT)}
+                            isSet={FieldModelUtil.getFieldModelValueSet(this.state, KEY_ENCRYPTION_GLOBAL_SALT)}
                             onChange={this.handleChange}
-                            errorName={this.createFieldModelErrorKey(KEY_ENCRYPTION_GLOBAL_SALT)}
-                            errorValue={this.props.fieldErrors[this.createFieldModelErrorKey(KEY_ENCRYPTION_GLOBAL_SALT)]}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(KEY_ENCRYPTION_GLOBAL_SALT)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_ENCRYPTION_GLOBAL_SALT)]}
                         />
                     </div>
                 </div>
@@ -174,38 +146,38 @@ class SettingsConfigurationForm extends Component {
                                 id={KEY_PROXY_HOST}
                                 label="Host Name"
                                 name={KEY_PROXY_HOST}
-                                value={this.getFieldModelSingleValue(this.state, KEY_PROXY_HOST)}
+                                value={FieldModelUtil.getFieldModelSingleValue(this.state, KEY_PROXY_HOST)}
                                 onChange={this.handleChange}
-                                errorName={this.createFieldModelErrorKey(KEY_PROXY_HOST)}
-                                errorValue={this.props.fieldErrors[this.createFieldModelErrorKey(KEY_PROXY_HOST)]}
+                                errorName={FieldModelUtil.createFieldModelErrorKey(KEY_PROXY_HOST)}
+                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_PROXY_HOST)]}
                             />
                             <TextInput
                                 id={KEY_PROXY_PORT}
                                 label="Port"
                                 name={KEY_PROXY_PORT}
-                                value={this.getFieldModelSingleValue(this.state, KEY_PROXY_PORT)}
+                                value={FieldModelUtil.getFieldModelSingleValue(this.state, KEY_PROXY_PORT)}
                                 onChange={this.handleChange}
-                                errorName={this.createFieldModelErrorKey(KEY_PROXY_PORT)}
-                                errorValue={this.props.fieldErrors[this.createFieldModelErrorKey(KEY_PROXY_PORT)]}
+                                errorName={FieldModelUtil.createFieldModelErrorKey(KEY_PROXY_PORT)}
+                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_PROXY_PORT)]}
                             />
                             <TextInput
                                 id={KEY_PROXY_USERNAME}
                                 label="Username"
                                 name={KEY_PROXY_USERNAME}
-                                value={this.getFieldModelSingleValue(this.state, KEY_PROXY_USERNAME)}
+                                value={FieldModelUtil.getFieldModelSingleValue(this.state, KEY_PROXY_USERNAME)}
                                 onChange={this.handleChange}
-                                errorName={this.createFieldModelErrorKey(KEY_PROXY_USERNAME)}
-                                errorValue={this.props.fieldErrors[this.createFieldModelErrorKey(KEY_PROXY_USERNAME)]}
+                                errorName={FieldModelUtil.createFieldModelErrorKey(KEY_PROXY_USERNAME)}
+                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_PROXY_USERNAME)]}
                             />
                             <PasswordInput
                                 id={KEY_PROXY_PASSWORD}
                                 label="Password"
                                 name={KEY_PROXY_PASSWORD}
-                                value={this.getFieldModelSingleValue(this.state, KEY_PROXY_PASSWORD)}
-                                isSet={this.getFieldModelValueSet(this.state, KEY_PROXY_PASSWORD)}
+                                value={FieldModelUtil.getFieldModelSingleValue(this.state, KEY_PROXY_PASSWORD)}
+                                isSet={FieldModelUtil.getFieldModelValueSet(this.state, KEY_PROXY_PASSWORD)}
                                 onChange={this.handleChange}
-                                errorName={this.createFieldModelErrorKey(KEY_PROXY_PASSWORD)}
-                                errorValue={this.props.fieldErrors[this.createFieldModelErrorKey(KEY_PROXY_PASSWORD)]}
+                                errorName={FieldModelUtil.createFieldModelErrorKey(KEY_PROXY_PASSWORD)}
+                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_PROXY_PASSWORD)]}
                             />
                         </CollapsiblePane>
                     </div>
@@ -217,128 +189,128 @@ class SettingsConfigurationForm extends Component {
                                 id={KEY_LDAP_ENABLED}
                                 label="Enabled"
                                 name={KEY_LDAP_ENABLED}
-                                value={this.getFieldModelSingleValue(this.state, KEY_LDAP_ENABLED)}
+                                value={FieldModelUtil.getFieldModelSingleValue(this.state, KEY_LDAP_ENABLED)}
                                 onChange={this.handleChange}
-                                errorName={this.createFieldModelErrorKey(KEY_LDAP_ENABLED)}
-                                errorValue={this.props.fieldErrors[this.createFieldModelErrorKey(KEY_LDAP_ENABLED)]}
+                                errorName={FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_ENABLED)}
+                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_ENABLED)]}
                             />
                             <TextInput
                                 id={KEY_LDAP_SERVER}
                                 label="Server"
                                 name={KEY_LDAP_SERVER}
-                                value={this.getFieldModelSingleValue(this.state, KEY_LDAP_SERVER)}
+                                value={FieldModelUtil.getFieldModelSingleValue(this.state, KEY_LDAP_SERVER)}
                                 onChange={this.handleChange}
-                                errorName={this.createFieldModelErrorKey(KEY_LDAP_SERVER)}
-                                errorValue={this.props.fieldErrors[this.createFieldModelErrorKey(KEY_LDAP_SERVER)]}
+                                errorName={FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_SERVER)}
+                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_SERVER)]}
                             />
                             <TextInput
                                 id={KEY_LDAP_MANAGER_DN}
                                 label="Manager DN"
                                 name={KEY_LDAP_MANAGER_DN}
-                                value={this.getFieldModelSingleValue(this.state, KEY_LDAP_MANAGER_DN)}
+                                value={FieldModelUtil.getFieldModelSingleValue(this.state, KEY_LDAP_MANAGER_DN)}
                                 onChange={this.handleChange}
-                                errorName={this.createFieldModelErrorKey(KEY_LDAP_MANAGER_DN)}
-                                errorValue={this.props.fieldErrors[this.createFieldModelErrorKey(KEY_LDAP_MANAGER_DN)]}
+                                errorName={FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_MANAGER_DN)}
+                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_MANAGER_DN)]}
                             />
                             <PasswordInput
                                 id={KEY_LDAP_MANAGER_PASSWORD}
                                 label="Manager Password"
                                 name={KEY_LDAP_MANAGER_PASSWORD}
-                                value={this.getFieldModelSingleValue(this.state, KEY_LDAP_MANAGER_PASSWORD)}
-                                isSet={this.getFieldModelValueSet(this.state, KEY_LDAP_MANAGER_PASSWORD)}
+                                value={FieldModelUtil.getFieldModelSingleValue(this.state, KEY_LDAP_MANAGER_PASSWORD)}
+                                isSet={FieldModelUtil.getFieldModelValueSet(this.state, KEY_LDAP_MANAGER_PASSWORD)}
                                 onChange={this.handleChange}
-                                errorName={this.createFieldModelErrorKey(KEY_LDAP_MANAGER_PASSWORD)}
-                                errorValue={this.props.fieldErrors[this.createFieldModelErrorKey(KEY_LDAP_MANAGER_PASSWORD)]}
+                                errorName={FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_MANAGER_PASSWORD)}
+                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_MANAGER_PASSWORD)]}
                             />
                             <TextInput
                                 id={KEY_LDAP_AUTHENTICATION_TYPE}
                                 label="Authentication Type"
                                 name={KEY_LDAP_AUTHENTICATION_TYPE}
-                                value={this.getFieldModelSingleValue(this.state, KEY_LDAP_AUTHENTICATION_TYPE)}
+                                value={FieldModelUtil.getFieldModelSingleValue(this.state, KEY_LDAP_AUTHENTICATION_TYPE)}
                                 onChange={this.handleChange}
-                                errorName={this.createFieldModelErrorKey(KEY_LDAP_AUTHENTICATION_TYPE)}
-                                errorValue={this.props.fieldErrors[this.createFieldModelErrorKey(KEY_LDAP_AUTHENTICATION_TYPE)]}
+                                errorName={FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_AUTHENTICATION_TYPE)}
+                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_AUTHENTICATION_TYPE)]}
                             />
                             <TextInput
                                 id={KEY_LDAP_REFERRAL}
                                 label="Referral"
                                 name={KEY_LDAP_REFERRAL}
-                                value={this.getFieldModelSingleValue(this.state, KEY_LDAP_REFERRAL)}
+                                value={FieldModelUtil.getFieldModelSingleValue(this.state, KEY_LDAP_REFERRAL)}
                                 onChange={this.handleChange}
-                                errorName={this.createFieldModelErrorKey(KEY_LDAP_REFERRAL)}
-                                errorValue={this.props.fieldErrors[this.createFieldModelErrorKey(KEY_LDAP_REFERRAL)]}
+                                errorName={FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_REFERRAL)}
+                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_REFERRAL)]}
                             />
                             <TextInput
                                 id={KEY_LDAP_USER_SEARCH_BASE}
                                 label="User Search Base"
                                 name={KEY_LDAP_USER_SEARCH_BASE}
-                                value={this.getFieldModelSingleValue(this.state, KEY_LDAP_USER_SEARCH_BASE)}
+                                value={FieldModelUtil.getFieldModelSingleValue(this.state, KEY_LDAP_USER_SEARCH_BASE)}
                                 onChange={this.handleChange}
-                                errorName={this.createFieldModelErrorKey(KEY_LDAP_USER_SEARCH_BASE)}
-                                errorValue={this.props.fieldErrors[this.createFieldModelErrorKey(KEY_LDAP_USER_SEARCH_BASE)]}
+                                errorName={FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_USER_SEARCH_BASE)}
+                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_USER_SEARCH_BASE)]}
                             />
                             <TextInput
                                 id={KEY_LDAP_USER_SEARCH_FILTER}
                                 label="User Search Filter"
                                 name={KEY_LDAP_USER_SEARCH_FILTER}
-                                value={this.getFieldModelSingleValue(this.state, KEY_LDAP_USER_SEARCH_FILTER)}
+                                value={FieldModelUtil.getFieldModelSingleValue(this.state, KEY_LDAP_USER_SEARCH_FILTER)}
                                 onChange={this.handleChange}
-                                errorName={this.createFieldModelErrorKey(KEY_LDAP_USER_SEARCH_FILTER)}
-                                errorValue={this.props.fieldErrors[this.createFieldModelErrorKey(KEY_LDAP_USER_SEARCH_FILTER)]}
+                                errorName={FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_USER_SEARCH_FILTER)}
+                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_USER_SEARCH_FILTER)]}
                             />
                             <TextInput
                                 id={KEY_LDAP_USER_DN_PATTERNS}
                                 label="User DN Patterns"
                                 name={KEY_LDAP_USER_DN_PATTERNS}
-                                value={this.getFieldModelSingleValue(this.state, KEY_LDAP_USER_DN_PATTERNS)}
+                                value={FieldModelUtil.getFieldModelSingleValue(this.state, KEY_LDAP_USER_DN_PATTERNS)}
                                 onChange={this.handleChange}
-                                errorName={this.createFieldModelErrorKey(KEY_LDAP_USER_DN_PATTERNS)}
-                                errorValue={this.props.fieldErrors[this.createFieldModelErrorKey(KEY_LDAP_USER_DN_PATTERNS)]}
+                                errorName={FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_USER_DN_PATTERNS)}
+                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_USER_DN_PATTERNS)]}
                             />
                             <TextInput
                                 id={KEY_LDAP_USER_ATTRIBUTES}
                                 label="User Attributes"
                                 name={KEY_LDAP_USER_ATTRIBUTES}
-                                value={this.getFieldModelSingleValue(this.state, KEY_LDAP_USER_ATTRIBUTES)}
+                                value={FieldModelUtil.getFieldModelSingleValue(this.state, KEY_LDAP_USER_ATTRIBUTES)}
                                 onChange={this.handleChange}
-                                errorName={this.createFieldModelErrorKey(KEY_LDAP_USER_ATTRIBUTES)}
-                                errorValue={this.props.fieldErrors[this.createFieldModelErrorKey(KEY_LDAP_USER_ATTRIBUTES)]}
+                                errorName={FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_USER_ATTRIBUTES)}
+                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_USER_ATTRIBUTES)]}
                             />
                             <TextInput
                                 id={KEY_LDAP_GROUP_SEARCH_BASE}
                                 label="Group Search Base"
                                 name={KEY_LDAP_GROUP_SEARCH_BASE}
-                                value={this.getFieldModelSingleValue(this.state, KEY_LDAP_GROUP_SEARCH_BASE)}
+                                value={FieldModelUtil.getFieldModelSingleValue(this.state, KEY_LDAP_GROUP_SEARCH_BASE)}
                                 onChange={this.handleChange}
-                                errorName={this.createFieldModelErrorKey(KEY_LDAP_GROUP_SEARCH_BASE)}
-                                errorValue={this.props.fieldErrors[this.createFieldModelErrorKey(KEY_LDAP_GROUP_SEARCH_BASE)]}
+                                errorName={FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_GROUP_SEARCH_BASE)}
+                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_GROUP_SEARCH_BASE)]}
                             />
                             <TextInput
                                 id={KEY_LDAP_GROUP_SEARCH_FILTER}
                                 label="Group Search Filter"
                                 name={KEY_LDAP_GROUP_SEARCH_FILTER}
-                                value={this.getFieldModelSingleValue(this.state, KEY_LDAP_GROUP_SEARCH_FILTER)}
+                                value={FieldModelUtil.getFieldModelSingleValue(this.state, KEY_LDAP_GROUP_SEARCH_FILTER)}
                                 onChange={this.handleChange}
-                                errorName={this.createFieldModelErrorKey(KEY_LDAP_GROUP_SEARCH_FILTER)}
-                                errorValue={this.props.fieldErrors[this.createFieldModelErrorKey(KEY_LDAP_GROUP_SEARCH_FILTER)]}
+                                errorName={FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_GROUP_SEARCH_FILTER)}
+                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_GROUP_SEARCH_FILTER)]}
                             />
                             <TextInput
                                 id={KEY_LDAP_GROUP_ROLE_ATTRIBUTE}
                                 label="Group Role Attribute"
                                 name={KEY_LDAP_GROUP_ROLE_ATTRIBUTE}
-                                value={this.getFieldModelSingleValue(this.state, KEY_LDAP_GROUP_ROLE_ATTRIBUTE)}
+                                value={FieldModelUtil.getFieldModelSingleValue(this.state, KEY_LDAP_GROUP_ROLE_ATTRIBUTE)}
                                 onChange={this.handleChange}
-                                errorName={this.createFieldModelErrorKey(KEY_LDAP_GROUP_ROLE_ATTRIBUTE)}
-                                errorValue={this.props.fieldErrors[this.createFieldModelErrorKey(KEY_LDAP_GROUP_ROLE_ATTRIBUTE)]}
+                                errorName={FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_GROUP_ROLE_ATTRIBUTE)}
+                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_GROUP_ROLE_ATTRIBUTE)]}
                             />
                             <TextInput
                                 id={KEY_LDAP_ROLE_PREFIX}
                                 label="Role Prefix"
                                 name={KEY_LDAP_ROLE_PREFIX}
-                                value={this.getFieldModelSingleValue(this.state, KEY_LDAP_ROLE_PREFIX)}
+                                value={FieldModelUtil.getFieldModelSingleValue(this.state, KEY_LDAP_ROLE_PREFIX)}
                                 onChange={this.handleChange}
-                                errorName={this.createFieldModelErrorKey(KEY_LDAP_ROLE_PREFIX)}
-                                errorValue={this.props.fieldErrors[this.createFieldModelErrorKey(KEY_LDAP_ROLE_PREFIX)]}
+                                errorName={FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_ROLE_PREFIX)}
+                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_ROLE_PREFIX)]}
                             />
                         </CollapsiblePane>
                     </div>
