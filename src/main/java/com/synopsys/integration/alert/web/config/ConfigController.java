@@ -68,9 +68,9 @@ public class ConfigController extends BaseController {
         return controllerHandler.postConfig(restModel);
     }
 
-    @PutMapping
-    public ResponseEntity<String> putConfig(@RequestBody(required = true) final FieldModel restModel) {
-        return controllerHandler.putConfig(restModel);
+    @PutMapping("/{id}")
+    public ResponseEntity<String> putConfig(@PathVariable final Long id, @RequestBody(required = true) final FieldModel restModel) {
+        return controllerHandler.putConfig(id, restModel);
     }
 
     @PostMapping("/validate")
