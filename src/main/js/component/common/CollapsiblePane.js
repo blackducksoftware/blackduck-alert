@@ -1,5 +1,5 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 class CollapsiblePane extends Component {
     constructor(props) {
@@ -18,7 +18,6 @@ class CollapsiblePane extends Component {
         return (
             <div className="collapsiblePanel">
                 <button
-                    id="collapsiblePaneButton"
                     type="button"
                     className="btn btn-link"
                     onClick={this.toggleDisplay}>
@@ -40,7 +39,6 @@ CollapsiblePane.propTypes = {
 };
 
 CollapsiblePane.defaultProps = {
-    title: '',
     expanded: false
 };
 

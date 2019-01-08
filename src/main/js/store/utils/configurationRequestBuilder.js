@@ -1,18 +1,15 @@
 const CONFIG_API_URL = '/alert/api/configuration'
 
-export function createReadAllGlobalContextRequest(csrfToken, descriptorName) {
-    return createReadAllRequest(csrfToken, "GLOBAL", descriptorName);
-}
-
 export function createReadAllRequest(csrfToken, context, descriptorName) {
     const queryParams = Object.assign({}, { context, descriptorName });
     const parameters = [];
-    for (let key in queryParams) {
+    Object.keys(queryParams).forEach((key) => {
         const value = queryParams[key];
         if (value) {
-            parameters.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+            const parameterString = `${encodeURIComponent(key)}=${encodeURIComponent(value)}`;
+            parameters.push(parameterString);
         }
-    }
+    });
     const queryString = parameters.join('&');
     const url = `${CONFIG_API_URL}?${queryString}`;
     return fetch(url, {
@@ -21,6 +18,10 @@ export function createReadAllRequest(csrfToken, context, descriptorName) {
             'X-CSRF-TOKEN': csrfToken
         }
     });
+}
+
+export function createReadAllGlobalContextRequest(csrfToken, descriptorName) {
+    return createReadAllRequest(csrfToken, 'GLOBAL', descriptorName);
 }
 
 export function createReadRequest(csrfToken, configurationId) {

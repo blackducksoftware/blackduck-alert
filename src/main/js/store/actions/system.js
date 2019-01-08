@@ -54,7 +54,7 @@ function fetchSetupRedirected() {
 function systemSetupFetched(settingsData) {
     return {
         type: SYSTEM_SETUP_FETCHED,
-        settingsData: settingsData
+        settingsData
     };
 }
 
@@ -126,14 +126,18 @@ export function getSystemSetup() {
     return (dispatch, getState) => {
         dispatch(fetchingSystemSetup());
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, "component_settings");
+        const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, 'component_settings');
         request.then((response) => {
             if (response.ok) {
                 response.json().then((body) => {
-                    dispatch(systemSetupFetched(body));
+                    if (body.length === 1) {
+                        dispatch(systemSetupFetched(body[0]));
+                    } else {
+                        dispatch(systemSetupFetchError('System Settings not found'));
+                    }
                 });
             } else {
-                dispatch(systemSetupFetchError(response.statusText))
+                dispatch(systemSetupFetchError(response.statusText));
             }
         })
             .catch(console.error);
@@ -144,30 +148,39 @@ export function saveInitialSystemSetup(setupData) {
     return (dispatch, getState) => {
         dispatch(updatingSystemSetup());
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createNewConfigurationRequest(csrfToken, setupData);
-        request.then((response) => {
-            if (response.ok) {
-                dispatch(systemSetupUpdated());
-                dispatch(getInitialSystemSetup());
-            } else {
-                response.json().then((body) => {
-                    const jsonErrors = body.errors;
-                    if (jsonErrors) {
-                        const errors = {};
-                        for (const key in jsonErrors) {
-                            if (jsonErrors.hasOwnProperty(key)) {
-                                const name = key.concat('Error');
-                                const value = jsonErrors[key];
-                                errors[name] = value;
-                            }
-                        }
-                        dispatch(systemSetupUpdateError(body.message, errors))
-                    }
-                })
+        const options = {
+            credentials: 'same-origin',
+            method: 'POST',
+            body: JSON.stringify(setupData),
+            headers: {
+                'content-type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
             }
-        })
-            .catch(console.error);
+        };
 
+        fetch(INITIAL_SYSTEM_SETUP_URL, options)
+            .then((response) => {
+                if (response.ok) {
+                    dispatch(systemSetupUpdated());
+                    dispatch(getInitialSystemSetup());
+                } else {
+                    response.json().then((body) => {
+                        const jsonErrors = body.errors;
+                        if (jsonErrors) {
+                            const errors = {};
+                            for (const key in jsonErrors) {
+                                if (jsonErrors.hasOwnProperty(key)) {
+                                    const name = key.concat('Error');
+                                    const value = jsonErrors[key];
+                                    errors[name] = value;
+                                }
+                            }
+                            dispatch(systemSetupUpdateError(body.message, errors));
+                        }
+                    });
+                }
+            })
+            .catch(console.error);
     };
 }
 
