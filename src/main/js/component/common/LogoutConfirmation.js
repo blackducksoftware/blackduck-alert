@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Modal } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { cancelLogout, logout } from '../../store/actions/session';
+import { cancelLogout, logout } from 'store/actions/session';
 
 class LogoutConfirmation extends Component {
     render() {

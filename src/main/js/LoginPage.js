@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import PasswordInput from './field/input/PasswordInput';
-import TextInput from './field/input/TextInput';
-import SubmitButton from './field/input/SubmitButton';
-import Header from './component/common/Header';
-import { login } from './store/actions/session';
+import PasswordInput from 'field/input/PasswordInput';
+import TextInput from 'field/input/TextInput';
+import SubmitButton from 'field/input/SubmitButton';
+import Header from 'component/common/Header';
+import { login } from 'store/actions/session';
 
 class LoginPage extends Component {
     constructor(props) {

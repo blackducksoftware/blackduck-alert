@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Modal } from 'react-bootstrap';
-import TextInput from '../../field/input/TextInput';
+import TextInput from 'field/input/TextInput';
 
 class ChannelTestModal extends Component {
     constructor(props) {

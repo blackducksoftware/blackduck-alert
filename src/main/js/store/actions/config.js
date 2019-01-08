@@ -1,6 +1,6 @@
-import { CONFIG_FETCHED, CONFIG_FETCHING, CONFIG_TEST_FAILED, CONFIG_TEST_SUCCESS, CONFIG_TESTING, CONFIG_UPDATE_ERROR, CONFIG_UPDATED, CONFIG_UPDATING } from './types';
+import { CONFIG_FETCHED, CONFIG_FETCHING, CONFIG_TEST_FAILED, CONFIG_TEST_SUCCESS, CONFIG_TESTING, CONFIG_UPDATE_ERROR, CONFIG_UPDATED, CONFIG_UPDATING } from 'store/actions/types';
 
-import { verifyLoginByStatus } from './session';
+import { verifyLoginByStatus } from 'store/actions/session';
 
 const CONFIG_URL = '/alert/api/configuration/provider/provider_blackduck';
 const TEST_URL = '/alert/api/configuration/provider/provider_blackduck/test';

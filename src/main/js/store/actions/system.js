@@ -9,8 +9,8 @@ import {
     SYSTEM_SETUP_UPDATE_ERROR,
     SYSTEM_SETUP_UPDATED,
     SYSTEM_SETUP_UPDATING
-} from './types';
-import { verifyLoginByStatus } from './session';
+} from 'store/actions/types';
+import { verifyLoginByStatus } from 'store/actions/session';
 
 const LATEST_MESSAGES_URL = '/alert/api/system/messages/latest';
 const INITIAL_SYSTEM_SETUP_URL = '/alert/api/system/setup/initial';

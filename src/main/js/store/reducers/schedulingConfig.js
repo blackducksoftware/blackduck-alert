@@ -9,7 +9,7 @@ import {
     SCHEDULING_CONFIG_UPDATED,
     SCHEDULING_CONFIG_UPDATING,
     SERIALIZE
-} from '../actions/types';
+} from 'store/actions/types';
 
 const initialState = {
     fetching: false,

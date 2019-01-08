@@ -2,8 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
-import ReadOnlyField from '../../field/ReadOnlyField';
-import { getAboutInfo } from '../../store/actions/about';
+import ReadOnlyField from 'field/ReadOnlyField';
+import { getAboutInfo } from 'store/actions/about';
 
 class AboutInfo extends React.Component {
     componentDidMount() {

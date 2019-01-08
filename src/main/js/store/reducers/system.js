@@ -10,7 +10,7 @@ import {
     SYSTEM_SETUP_UPDATE_ERROR,
     SYSTEM_SETUP_UPDATED,
     SYSTEM_SETUP_UPDATING
-} from '../actions/types';
+} from 'store/actions/types';
 
 const initialState = {
     fetching: false,
