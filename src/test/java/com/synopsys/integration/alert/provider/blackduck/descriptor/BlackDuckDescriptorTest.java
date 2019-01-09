@@ -3,10 +3,10 @@ package com.synopsys.integration.alert.provider.blackduck.descriptor;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -15,7 +15,6 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentCollector;
-import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckVulnerabilityCollector;
@@ -72,11 +71,13 @@ public class BlackDuckDescriptorTest {
         final List<MessageContentCollector> collectorList = Arrays.asList(Mockito.mock(BlackDuckVulnerabilityCollector.class), Mockito.mock(BlackDuckPolicyCollector.class));
         final Set<MessageContentCollector> expectedCollectorSet = new HashSet<>(collectorList);
         Mockito.when(topicCollectorFactory.createTopicCollectors()).thenReturn(expectedCollectorSet);
-        final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, null, null, null, provider, topicCollectorFactory);
-        Collection<DefinedFieldModel> fields = descriptor.getDefinedFields(ConfigContextEnum.GLOBAL);
+        final BlackDuckDistributionUIConfig blackDuckDistributionUIConfig = new BlackDuckDistributionUIConfig();
+        final BlackDuckProviderUIConfig blackDuckProviderUIConfig = new BlackDuckProviderUIConfig();
+        final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, blackDuckProviderUIConfig, null, blackDuckDistributionUIConfig, provider, topicCollectorFactory);
+        Map<String, Boolean> fields = descriptor.getKeys(ConfigContextEnum.GLOBAL);
         assertEquals(7, fields.size());
 
-        fields = descriptor.getDefinedFields(ConfigContextEnum.DISTRIBUTION);
+        fields = descriptor.getKeys(ConfigContextEnum.DISTRIBUTION);
         assertEquals(3, fields.size());
     }
 }

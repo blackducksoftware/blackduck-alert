@@ -21,17 +21,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor;
+package com.synopsys.integration.alert.workflow.upgrade;
 
-import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
-import com.synopsys.integration.alert.common.enumeration.DescriptorType;
+public class AlertVersion {
+    private final String dbVersion;
+    private final String fileVersion;
 
-public class ComponentDescriptor extends Descriptor {
-
-    public ComponentDescriptor(final String name, final DescriptorActionApi componentDescriptorActionApi, final UIConfig componentUIConfig) {
-        super(name, DescriptorType.COMPONENT);
-        addGlobalUiConfig(componentDescriptorActionApi, componentUIConfig);
+    public AlertVersion(final String dbVersion, final String fileVersion) {
+        this.dbVersion = dbVersion;
+        this.fileVersion = fileVersion;
     }
 
+    public String getDbVersion() {
+        return dbVersion;
+    }
+
+    public String getFileVersion() {
+        return fileVersion;
+    }
 }

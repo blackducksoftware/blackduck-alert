@@ -2,7 +2,6 @@ package com.synopsys.integration.alert.channel.hipchat;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -108,14 +107,18 @@ public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
     }
 
     @Override
-    public boolean assertGlobalFields(final Collection<DefinedFieldModel> globalFields) {
+    public boolean assertGlobalFields(final Map<String, Boolean> globalFields) {
         boolean result = true;
         final Set<String> fieldNames = Set.of(HipChatDescriptor.KEY_API_KEY, HipChatDescriptor.KEY_HOST_SERVER);
-        result = result && globalFields.stream().map(DefinedFieldModel::getKey).allMatch(fieldNames::contains);
+        result = result && globalFields.keySet()
+                               .stream()
+                               .allMatch(fieldNames::contains);
 
-        final Optional<DefinedFieldModel> apiKeyField = globalFields.stream()
+        final Optional<DefinedFieldModel> apiKeyField = globalFields.entrySet()
+                                                            .stream()
                                                             .filter(field -> HipChatDescriptor.KEY_API_KEY.equals(field.getKey()))
-                                                            .findFirst();
+                                                            .findFirst()
+                                                            .map(entry -> new DefinedFieldModel(entry.getKey(), ConfigContextEnum.GLOBAL, entry.getValue()));
         if (apiKeyField.isPresent()) {
             result = result && apiKeyField.get().getSensitive();
         }
@@ -123,9 +126,9 @@ public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
     }
 
     @Override
-    public boolean assertDistributionFields(final Collection<DefinedFieldModel> distributionFields) {
+    public boolean assertDistributionFields(final Map<String, Boolean> distributionFields) {
         final Set<String> fieldNames = Set.of(HipChatDescriptor.KEY_ROOM_ID, HipChatDescriptor.KEY_COLOR, HipChatDescriptor.KEY_NOTIFY);
-        return distributionFields.stream().map(DefinedFieldModel::getKey).allMatch(fieldNames::contains);
+        return distributionFields.keySet().stream().allMatch(fieldNames::contains);
     }
 
     @Override

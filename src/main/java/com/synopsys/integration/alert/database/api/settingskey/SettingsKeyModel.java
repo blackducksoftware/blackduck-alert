@@ -21,17 +21,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor;
+package com.synopsys.integration.alert.database.api.settingskey;
 
-import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
-import com.synopsys.integration.alert.common.enumeration.DescriptorType;
+public class SettingsKeyModel {
+    private final Long id;
+    public String key;
+    public String value;
 
-public class ComponentDescriptor extends Descriptor {
-
-    public ComponentDescriptor(final String name, final DescriptorActionApi componentDescriptorActionApi, final UIConfig componentUIConfig) {
-        super(name, DescriptorType.COMPONENT);
-        addGlobalUiConfig(componentDescriptorActionApi, componentUIConfig);
+    public SettingsKeyModel(final Long id, final String key, final String value) {
+        this.id = id;
+        this.key = key;
+        this.value = value;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public String getValue() {
+        return value;
+    }
 }

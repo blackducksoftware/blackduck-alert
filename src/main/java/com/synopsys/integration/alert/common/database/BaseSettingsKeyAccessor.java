@@ -21,17 +21,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor;
+package com.synopsys.integration.alert.common.database;
 
-import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
-import com.synopsys.integration.alert.common.enumeration.DescriptorType;
+import java.util.List;
+import java.util.Optional;
 
-public class ComponentDescriptor extends Descriptor {
+import com.synopsys.integration.alert.database.api.settingskey.SettingsKeyModel;
 
-    public ComponentDescriptor(final String name, final DescriptorActionApi componentDescriptorActionApi, final UIConfig componentUIConfig) {
-        super(name, DescriptorType.COMPONENT);
-        addGlobalUiConfig(componentDescriptorActionApi, componentUIConfig);
-    }
+public interface BaseSettingsKeyAccessor {
+
+    List<SettingsKeyModel> getSettingsKeys();
+
+    Optional<SettingsKeyModel> getSettingsKeyByKey(final String key);
+
+    SettingsKeyModel saveSettingsKey(final String key, final String value);
+
+    void deleteSettingsKeyByKey(String key);
+
+    void deleteSettingsKeyById(Long id);
 
 }

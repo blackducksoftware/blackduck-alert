@@ -1,7 +1,6 @@
 package com.synopsys.integration.alert.channel.email;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -151,14 +150,18 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     }
 
     @Override
-    public boolean assertGlobalFields(final Collection<DefinedFieldModel> globalFields) {
+    public boolean assertGlobalFields(final Map<String, Boolean> globalFields) {
         boolean result = true;
         final Set<String> fieldNames = Arrays.stream(EmailPropertyKeys.values()).map(EmailPropertyKeys::getPropertyKey).collect(Collectors.toSet());
-        result = result && globalFields.stream().map(DefinedFieldModel::getKey).allMatch(fieldNames::contains);
+        result = result && globalFields.keySet()
+                               .stream()
+                               .allMatch(fieldNames::contains);
 
-        final Optional<DefinedFieldModel> emailPassword = globalFields.stream()
+        final Optional<DefinedFieldModel> emailPassword = globalFields.entrySet()
+                                                              .stream()
                                                               .filter(field -> EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey().equals(field.getKey()))
-                                                              .findFirst();
+                                                              .findFirst()
+                                                              .map(entry -> new DefinedFieldModel(entry.getKey(), ConfigContextEnum.GLOBAL, entry.getValue()));
         if (emailPassword.isPresent()) {
             result = result && emailPassword.get().getSensitive();
         }
@@ -166,9 +169,9 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     }
 
     @Override
-    public boolean assertDistributionFields(final Collection<DefinedFieldModel> distributionFields) {
+    public boolean assertDistributionFields(final Map<String, Boolean> distributionFields) {
         final Set<String> fieldNames = Set.of(EmailDescriptor.KEY_SUBJECT_LINE, EmailDescriptor.KEY_PROJECT_OWNER_ONLY, EmailDescriptor.KEY_EMAIL_ADDRESSES);
-        return distributionFields.stream().map(DefinedFieldModel::getKey).allMatch(fieldNames::contains);
+        return distributionFields.keySet().stream().allMatch(fieldNames::contains);
     }
 
     @Override

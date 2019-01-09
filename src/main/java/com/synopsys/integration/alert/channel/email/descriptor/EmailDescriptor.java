@@ -23,11 +23,7 @@
  */
 package com.synopsys.integration.alert.channel.email.descriptor;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -35,8 +31,6 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
-import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
 
 @Component
 public class EmailDescriptor extends ChannelDescriptor {
@@ -55,30 +49,12 @@ public class EmailDescriptor extends ChannelDescriptor {
     }
 
     @Override
-    public Collection<DefinedFieldModel> getDefinedFields(final ConfigContextEnum context) {
-        if (ConfigContextEnum.GLOBAL == context) {
-            final EnumSet<EmailPropertyKeys> emailPropertyKeys = EnumSet.allOf(EmailPropertyKeys.class);
-            emailPropertyKeys.remove(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY);
-
-            final Collection<DefinedFieldModel> fields = createFieldsFromEnum(emailPropertyKeys);
-
-            fields.add(DefinedFieldModel.createGlobalSensitiveField(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey()));
-
-            return fields;
-        } else if (ConfigContextEnum.DISTRIBUTION == context) {
-            final DefinedFieldModel subjectLine = DefinedFieldModel.createDistributionField(KEY_SUBJECT_LINE);
-            final DefinedFieldModel projectOwnerOnly = DefinedFieldModel.createDistributionField(KEY_PROJECT_OWNER_ONLY);
-            final DefinedFieldModel emailAddresses = DefinedFieldModel.createDistributionField(KEY_EMAIL_ADDRESSES);
-            return List.of(subjectLine, projectOwnerOnly, emailAddresses);
+    public Map<String, Boolean> getKeys(final ConfigContextEnum context) {
+        if (ConfigContextEnum.DISTRIBUTION.equals(context)) {
+            final Map<String, Boolean> keys = super.getKeys(context);
+            keys.put(KEY_EMAIL_ADDRESSES, false);
+            return keys;
         }
-
-        return Collections.emptyList();
+        return super.getKeys(context);
     }
-
-    private Collection<DefinedFieldModel> createFieldsFromEnum(final EnumSet<EmailPropertyKeys> emailPropertyKeys) {
-        return emailPropertyKeys.stream()
-                   .map(emailPropertyKey -> DefinedFieldModel.createGlobalField(emailPropertyKey.getPropertyKey()))
-                   .collect(Collectors.toList());
-    }
-
 }
