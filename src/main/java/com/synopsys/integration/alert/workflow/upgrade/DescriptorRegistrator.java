@@ -59,7 +59,6 @@ public class DescriptorRegistrator {
         this.allDescriptors = allDescriptors;
     }
 
-    // TODO Add a flag to only register descriptors on upgrade.
     @Transactional
     public void registerDescriptors() {
         try {
@@ -68,32 +67,13 @@ public class DescriptorRegistrator {
                 logger.info("Adding descriptor '{}'", descriptorName);
                 final DescriptorType descriptorType = descriptor.getType();
 
-                final Map<String, Boolean> globalFieldModels = descriptor.getKeys(ConfigContextEnum.GLOBAL);
-                final Map<String, Boolean> distributionFieldModels = descriptor.getKeys(ConfigContextEnum.DISTRIBUTION);
-
-                final List<DefinedFieldModel> completeDistributionFieldModels = new LinkedList<>();
-                completeDistributionFieldModels.addAll(distributionFieldModels.entrySet()
-                                                           .stream()
-                                                           .map(entry -> new DefinedFieldModel(entry.getKey(), ConfigContextEnum.DISTRIBUTION, entry.getValue()))
-                                                           .collect(Collectors.toSet()));
-                completeDistributionFieldModels.addAll(getAllCommonFields());
-
-                final Collection<DefinedFieldModel> allFieldModels = new LinkedList<>();
-                allFieldModels.addAll(globalFieldModels.entrySet()
-                                          .stream()
-                                          .map(entry -> new DefinedFieldModel(entry.getKey(), ConfigContextEnum.GLOBAL, entry.getValue()))
-                                          .collect(Collectors.toSet()));
-                allFieldModels.addAll(completeDistributionFieldModels);
-
                 final RegisteredDescriptorModel registeredDescriptorModel = descriptorAccessor.registerDescriptorWithoutFields(descriptorName, descriptorType);
-
                 final Long descriptorId = registeredDescriptorModel.getId();
-                final Set<DefinedFieldModel> alreadyDefinedFields = new HashSet<>();
-                final List<DefinedFieldModel> registeredGlobalFields = descriptorAccessor.getFieldsForDescriptorById(descriptorId, ConfigContextEnum.GLOBAL);
-                final List<DefinedFieldModel> registeredDistributionFields = descriptorAccessor.getFieldsForDescriptorById(descriptorId, ConfigContextEnum.DISTRIBUTION);
-                alreadyDefinedFields.addAll(registeredDistributionFields);
-                alreadyDefinedFields.addAll(registeredGlobalFields);
-                for (final DefinedFieldModel fieldModel : allFieldModels) {
+
+                final Set<DefinedFieldModel> alreadyDefinedFields = getAllPreviouslyDefinedFieldModels(descriptorId);
+                final Collection<DefinedFieldModel> allDescriptorFieldModels = getAllDescriptorFieldModels(descriptor);
+
+                for (final DefinedFieldModel fieldModel : allDescriptorFieldModels) {
                     descriptorAccessor.addDescriptorField(descriptorId, fieldModel);
                     alreadyDefinedFields.remove(fieldModel);
                 }
@@ -106,6 +86,38 @@ public class DescriptorRegistrator {
         } catch (final AlertDatabaseConstraintException e) {
             logger.error("Error registering descriptors.");
         }
+    }
+
+    private Set<DefinedFieldModel> getAllPreviouslyDefinedFieldModels(final Long descriptorId) throws AlertDatabaseConstraintException {
+        final Set<DefinedFieldModel> alreadyDefinedFields = new HashSet<>();
+
+        final List<DefinedFieldModel> registeredGlobalFields = descriptorAccessor.getFieldsForDescriptorById(descriptorId, ConfigContextEnum.GLOBAL);
+        final List<DefinedFieldModel> registeredDistributionFields = descriptorAccessor.getFieldsForDescriptorById(descriptorId, ConfigContextEnum.DISTRIBUTION);
+
+        alreadyDefinedFields.addAll(registeredDistributionFields);
+        alreadyDefinedFields.addAll(registeredGlobalFields);
+
+        return alreadyDefinedFields;
+    }
+
+    private Collection<DefinedFieldModel> getAllDescriptorFieldModels(final Descriptor descriptor) {
+        final Map<String, Boolean> globalFieldModels = descriptor.getKeys(ConfigContextEnum.GLOBAL);
+        final Map<String, Boolean> distributionFieldModels = descriptor.getKeys(ConfigContextEnum.DISTRIBUTION);
+
+        final List<DefinedFieldModel> completeDistributionFieldModels = new LinkedList<>();
+        completeDistributionFieldModels.addAll(distributionFieldModels.entrySet()
+                                                   .stream()
+                                                   .map(entry -> new DefinedFieldModel(entry.getKey(), ConfigContextEnum.DISTRIBUTION, entry.getValue()))
+                                                   .collect(Collectors.toSet()));
+        completeDistributionFieldModels.addAll(getAllCommonFields());
+
+        final Collection<DefinedFieldModel> allFieldModels = new LinkedList<>();
+        allFieldModels.addAll(globalFieldModels.entrySet()
+                                  .stream()
+                                  .map(entry -> new DefinedFieldModel(entry.getKey(), ConfigContextEnum.GLOBAL, entry.getValue()))
+                                  .collect(Collectors.toSet()));
+        allFieldModels.addAll(completeDistributionFieldModels);
+        return allFieldModels;
     }
 
     private Collection<DefinedFieldModel> getAllCommonFields() {
