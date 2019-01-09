@@ -109,7 +109,7 @@ class SettingsConfigurationForm extends Component {
                             label="Password"
                             name={KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD}
                             value={FieldModelUtil.getFieldModelSingleValue(this.state, KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD)}
-                            isSet={FieldModelUtil.getFieldModelValueSet(this.state, KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD)}
+                            isSet={FieldModelUtil.isFieldModelValueSet(this.state, KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD)}
                             errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD)]}
@@ -124,7 +124,7 @@ class SettingsConfigurationForm extends Component {
                             label="Password"
                             name={KEY_ENCRYPTION_PASSWORD}
                             value={FieldModelUtil.getFieldModelSingleValue(this.state, KEY_ENCRYPTION_PASSWORD)}
-                            isSet={FieldModelUtil.getFieldModelValueSet(this.state, KEY_ENCRYPTION_PASSWORD)}
+                            isSet={FieldModelUtil.isFieldModelValueSet(this.state, KEY_ENCRYPTION_PASSWORD)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(KEY_ENCRYPTION_PASSWORD)}
                             errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_ENCRYPTION_PASSWORD)]}
@@ -134,7 +134,7 @@ class SettingsConfigurationForm extends Component {
                             label="Salt"
                             name={KEY_ENCRYPTION_GLOBAL_SALT}
                             value={FieldModelUtil.getFieldModelSingleValue(this.state, KEY_ENCRYPTION_GLOBAL_SALT)}
-                            isSet={FieldModelUtil.getFieldModelValueSet(this.state, KEY_ENCRYPTION_GLOBAL_SALT)}
+                            isSet={FieldModelUtil.isFieldModelValueSet(this.state, KEY_ENCRYPTION_GLOBAL_SALT)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(KEY_ENCRYPTION_GLOBAL_SALT)}
                             errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_ENCRYPTION_GLOBAL_SALT)]}
@@ -176,7 +176,7 @@ class SettingsConfigurationForm extends Component {
                                 label="Password"
                                 name={KEY_PROXY_PASSWORD}
                                 value={FieldModelUtil.getFieldModelSingleValue(this.state, KEY_PROXY_PASSWORD)}
-                                isSet={FieldModelUtil.getFieldModelValueSet(this.state, KEY_PROXY_PASSWORD)}
+                                isSet={FieldModelUtil.isFieldModelValueSet(this.state, KEY_PROXY_PASSWORD)}
                                 onChange={this.handleChange}
                                 errorName={FieldModelUtil.createFieldModelErrorKey(KEY_PROXY_PASSWORD)}
                                 errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_PROXY_PASSWORD)]}
@@ -219,7 +219,7 @@ class SettingsConfigurationForm extends Component {
                                 label="Manager Password"
                                 name={KEY_LDAP_MANAGER_PASSWORD}
                                 value={FieldModelUtil.getFieldModelSingleValue(this.state, KEY_LDAP_MANAGER_PASSWORD)}
-                                isSet={FieldModelUtil.getFieldModelValueSet(this.state, KEY_LDAP_MANAGER_PASSWORD)}
+                                isSet={FieldModelUtil.isFieldModelValueSet(this.state, KEY_LDAP_MANAGER_PASSWORD)}
                                 onChange={this.handleChange}
                                 errorName={FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_MANAGER_PASSWORD)}
                                 errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_MANAGER_PASSWORD)]}
