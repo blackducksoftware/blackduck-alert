@@ -1,6 +1,24 @@
 package com.synopsys.integration.alert.channel.email;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.jupiter.api.Test;
+
 import com.synopsys.integration.alert.channel.ChannelTest;
+import com.synopsys.integration.alert.channel.event.DistributionEvent;
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.model.LinkableItem;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.rest.RestConstants;
 
 public class EmailChannelTestIT extends ChannelTest {
 
@@ -48,19 +66,21 @@ public class EmailChannelTestIT extends ChannelTest {
     //        emailChannel.sendAuditedMessage(event);
     //    }
 
-    //    FIXME fix test
-    //    @Test
-    //    public void sendEmailNullGlobalTest() throws Exception {
-    //        try (final OutputLogger outputLogger = new OutputLogger()) {
-    //            final EmailChannel emailChannel = new EmailChannel(gson, null, null, null, null);
-    //            final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
-    //            final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
-    //            final DistributionEvent event = new DistributionEvent(RestConstants.formatDate(new Date()), "provider", "FORMAT", content, 1L, null, null);
-    //            emailChannel.sendMessage(event);
-    //            fail();
-    //        } catch (final IntegrationException e) {
-    //            assertEquals("ERROR: Missing global config.", e.getMessage());
-    //        }
-    //    }
+    @Test
+    public void sendEmailNullGlobalTest() throws Exception {
+        try {
+            final EmailChannel emailChannel = new EmailChannel(gson, null, null, null, null);
+            final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
+            final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
+
+            final Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
+            final FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);
+            final DistributionEvent event = new DistributionEvent("1L", EmailChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, "FORMAT", content, fieldAccessor);
+            emailChannel.sendMessage(event);
+            fail();
+        } catch (final IntegrationException e) {
+            assertEquals("ERROR: Missing global config.", e.getMessage());
+        }
+    }
 
 }
