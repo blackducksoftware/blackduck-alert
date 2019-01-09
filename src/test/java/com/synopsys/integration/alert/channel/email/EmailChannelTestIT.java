@@ -30,6 +30,7 @@ import com.synopsys.integration.alert.database.audit.AuditUtility;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelationRepositoryAccessor;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckEmailHandler;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties;
 import com.synopsys.integration.alert.util.TestAlertProperties;
@@ -49,8 +50,12 @@ public class EmailChannelTestIT extends ChannelTest {
         final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(new Gson(), testAlertProperties, null);
         globalProperties.setBlackDuckUrl(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
 
-        final EmailAddressHandler emailAddressHandler = new EmailAddressHandler(Mockito.mock(BlackDuckProjectRepositoryAccessor.class), Mockito.mock(UserProjectRelationRepositoryAccessor.class),
-            Mockito.mock(BlackDuckUserRepositoryAccessor.class));
+        BlackDuckEmailHandler blackDuckEmailHandler = new BlackDuckEmailHandler(Mockito.mock(BlackDuckProjectRepositoryAccessor.class), Mockito.mock(UserProjectRelationRepositoryAccessor.class), Mockito.mock(
+            BlackDuckUserRepositoryAccessor.class));
+        BlackDuckProvider blackDuckProvider = Mockito.mock(BlackDuckProvider.class);
+        Mockito.when(blackDuckProvider.getEmailHandler()).thenReturn(blackDuckEmailHandler);
+
+        final EmailAddressHandler emailAddressHandler = new EmailAddressHandler(blackDuckProvider);
 
         final EmailChannel emailChannel = new EmailChannel(gson, testAlertProperties, globalProperties, auditUtility, emailAddressHandler);
         final AggregateMessageContent content = createMessageContent(getClass().getSimpleName());
