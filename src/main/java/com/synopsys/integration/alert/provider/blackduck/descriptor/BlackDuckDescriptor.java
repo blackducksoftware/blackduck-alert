@@ -23,18 +23,13 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentCollector;
-import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 
 @Component
@@ -69,23 +64,4 @@ public class BlackDuckDescriptor extends ProviderDescriptor {
         return topicCollectorFactory.createTopicCollectors();
     }
 
-    @Override
-    public Collection<DefinedFieldModel> getDefinedFields(final ConfigContextEnum context) {
-        if (ConfigContextEnum.GLOBAL == context) {
-            final DefinedFieldModel blackDuckUrl = DefinedFieldModel.createGlobalField(KEY_BLACKDUCK_URL);
-            final DefinedFieldModel blackDuckApiKey = DefinedFieldModel.createGlobalField(KEY_BLACKDUCK_API_KEY);
-            final DefinedFieldModel blackDuckTimeout = DefinedFieldModel.createGlobalField(KEY_BLACKDUCK_TIMEOUT);
-            final DefinedFieldModel blackDuckProxyHost = DefinedFieldModel.createGlobalField(KEY_BLACKDUCK_PROXY_HOST);
-            final DefinedFieldModel blackDuckProxyPort = DefinedFieldModel.createGlobalField(KEY_BLACKDUCK_PROXY_PORT);
-            final DefinedFieldModel blackDuckProxyUsername = DefinedFieldModel.createGlobalField(KEY_BLACKDUCK_PROXY_USERNAME);
-            final DefinedFieldModel blackDuckProxyPassword = DefinedFieldModel.createGlobalSensitiveField(KEY_BLACKDUCK_PROXY_PASS);
-            return List.of(blackDuckUrl, blackDuckApiKey, blackDuckTimeout, blackDuckProxyHost, blackDuckProxyPort, blackDuckProxyUsername, blackDuckProxyPassword);
-        } else if (ConfigContextEnum.DISTRIBUTION == context) {
-            final DefinedFieldModel filterByProject = DefinedFieldModel.createDistributionField(KEY_FILTER_BY_PROJECT);
-            final DefinedFieldModel projectNamePattern = DefinedFieldModel.createDistributionField(KEY_PROJECT_NAME_PATTERN);
-            final DefinedFieldModel configuredProject = DefinedFieldModel.createDistributionField(KEY_CONFIGURED_PROJECT);
-            return List.of(filterByProject, projectNamePattern, configuredProject);
-        }
-        return Collections.emptyList();
-    }
 }

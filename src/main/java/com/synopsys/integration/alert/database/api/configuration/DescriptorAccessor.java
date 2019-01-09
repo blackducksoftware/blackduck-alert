@@ -132,7 +132,7 @@ public class DescriptorAccessor implements BaseDescriptorAccessor {
      * @return true if a descriptor with that name was not already registered
      */
     @Override
-    public boolean registerDescriptorWithoutFields(final String descriptorName, final DescriptorType descriptorType) throws AlertDatabaseConstraintException {
+    public RegisteredDescriptorModel registerDescriptorWithoutFields(final String descriptorName, final DescriptorType descriptorType) throws AlertDatabaseConstraintException {
         return registerDescriptor(descriptorName, descriptorType, Collections.emptyList());
     }
 
@@ -140,7 +140,7 @@ public class DescriptorAccessor implements BaseDescriptorAccessor {
      * @return true if a descriptor with that name was not already registered
      */
     @Override
-    public boolean registerDescriptor(final String descriptorName, final DescriptorType descriptorType, final Collection<DefinedFieldModel> descriptorFields) throws AlertDatabaseConstraintException {
+    public RegisteredDescriptorModel registerDescriptor(final String descriptorName, final DescriptorType descriptorType, final Collection<DefinedFieldModel> descriptorFields) throws AlertDatabaseConstraintException {
         if (StringUtils.isEmpty(descriptorName)) {
             throw new AlertDatabaseConstraintException("Descriptor name cannot be empty");
         }
@@ -153,9 +153,9 @@ public class DescriptorAccessor implements BaseDescriptorAccessor {
             final RegisteredDescriptorEntity newDescriptor = new RegisteredDescriptorEntity(descriptorName, descriptorTypeId);
             final RegisteredDescriptorEntity createdDescriptor = registeredDescriptorRepository.save(newDescriptor);
             addFieldsAndUpdateRelations(createdDescriptor.getId(), descriptorFields);
-            return true;
+            return createRegisteredDescriptorModel(createdDescriptor);
         }
-        return false;
+        return createRegisteredDescriptorModel(optionalDescriptorEntity.get());
     }
 
     /**

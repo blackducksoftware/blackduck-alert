@@ -31,7 +31,6 @@ import com.synopsys.integration.alert.database.api.configuration.ConfigurationAc
 import com.synopsys.integration.alert.database.api.configuration.DescriptorAccessor;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
-import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.web.model.FieldModel;
@@ -156,9 +155,9 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
 
     public abstract ChannelDescriptor getDescriptor();
 
-    public abstract boolean assertGlobalFields(Collection<DefinedFieldModel> globalFields);
+    public abstract boolean assertGlobalFields(Map<String, Boolean> globalFields);
 
-    public abstract boolean assertDistributionFields(Collection<DefinedFieldModel> distributionFields);
+    public abstract boolean assertDistributionFields(Map<String, Boolean> distributionFields);
 
     public abstract String createTestConfigDestination();
 
@@ -253,8 +252,8 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
 
     @Test
     public void testDefinedFields() {
-        assertTrue(assertGlobalFields(getDescriptor().getDefinedFields(ConfigContextEnum.GLOBAL)));
-        assertTrue(assertDistributionFields(getDescriptor().getDefinedFields(ConfigContextEnum.DISTRIBUTION)));
-        assertTrue(getDescriptor().getDefinedFields(null).isEmpty());
+        assertTrue(assertGlobalFields(getDescriptor().getKeys(ConfigContextEnum.GLOBAL)));
+        assertTrue(assertDistributionFields(getDescriptor().getKeys(ConfigContextEnum.DISTRIBUTION)));
+        assertTrue(getDescriptor().getKeys(null).isEmpty());
     }
 }

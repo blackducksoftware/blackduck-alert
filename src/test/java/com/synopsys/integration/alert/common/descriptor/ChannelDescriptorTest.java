@@ -1,12 +1,11 @@
 package com.synopsys.integration.alert.common.descriptor;
 
-import java.util.Collection;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
 
 public class ChannelDescriptorTest {
 
@@ -16,7 +15,7 @@ public class ChannelDescriptorTest {
         final String destinationName = "hipchat";
         final ChannelDescriptor channelDescriptor = new ChannelDescriptor(name, destinationName, null, null) {
             @Override
-            public Collection<DefinedFieldModel> getDefinedFields(final ConfigContextEnum context) {
+            public Map<String, Boolean> getKeys(final ConfigContextEnum context) {
                 return null;
             }
         };
