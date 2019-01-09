@@ -2,7 +2,7 @@ export function getFieldModelSingleValue(containerObject, key) {
     return containerObject.settingsData.keyToValues[key].values[0];
 }
 
-export function getFieldModelValueSet(containerObject, key) {
+export function isFieldModelValueSet(containerObject, key) {
     return containerObject.settingsData.keyToValues[key].set;
 }
 
