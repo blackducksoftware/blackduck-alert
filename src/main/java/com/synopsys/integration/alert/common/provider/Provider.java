@@ -45,4 +45,6 @@ public abstract class Provider {
     public abstract Set<ProviderContentType> getProviderContentTypes();
 
     public abstract Set<FormatType> getSupportedFormatTypes();
+
+    public abstract EmailHandler getEmailHandler();
 }

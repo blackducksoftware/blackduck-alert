@@ -29,6 +29,7 @@ import java.util.Set;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.FormatType;
+import com.synopsys.integration.alert.common.provider.EmailHandler;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 
@@ -59,5 +60,10 @@ public class PolarisProvider extends Provider {
     @Override
     public Set<FormatType> getSupportedFormatTypes() {
         return EnumSet.of(FormatType.DEFAULT, FormatType.DIGEST);
+    }
+
+    @Override
+    public EmailHandler getEmailHandler() {
+        return null;
     }
 }
