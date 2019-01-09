@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.nio.charset.Charset;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -74,9 +73,7 @@ public class DescriptorControllerTest extends AlertIntegrationTest {
 
         final List<DescriptorMetadata> componentList = gson.fromJson(body, componentListType.getType());
         assertNotNull(componentList);
-        final List<DescriptorMetadata> expected = descriptorMap.getDescriptor("channel_email").getAllUIConfigs()
-                                                      .stream()
-                                                      .map(uiConfig -> uiConfig.generateDescriptorMetadata()).collect(Collectors.toList());
+        final List<DescriptorMetadata> expected = descriptorMap.getDescriptor("channel_email").getAllMetaData();
         assertEquals(expected.size(), componentList.size());
     }
 

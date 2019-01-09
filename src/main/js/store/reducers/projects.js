@@ -1,9 +1,4 @@
-import {
-    PROJECTS_FETCHING,
-    PROJECTS_FETCHED,
-    PROJECTS_FETCH_ERROR,
-    SERIALIZE
-} from '../actions/types';
+import { PROJECTS_FETCH_ERROR, PROJECTS_FETCHED, PROJECTS_FETCHING, SERIALIZE } from 'store/actions/types';
 
 const initialState = {
     fetching: false,

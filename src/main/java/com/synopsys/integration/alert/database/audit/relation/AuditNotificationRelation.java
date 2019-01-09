@@ -48,10 +48,10 @@ public class AuditNotificationRelation extends DatabaseRelation {
     private Long notificationId;
 
     @ManyToOne
-    @JoinColumn(name = "notification_id", insertable = false, updatable = false)
+    @JoinColumn(name = "notification_id", referencedColumnName = "id", insertable = false, updatable = false)
     public NotificationContent notificationContent;
     @ManyToOne
-    @JoinColumn(name = "audit_entry_id", insertable = false, updatable = false)
+    @JoinColumn(name = "audit_entry_id", referencedColumnName = "id", insertable = false, updatable = false)
     private AuditEntryEntity auditEntryEntity;
 
     public AuditNotificationRelation() {

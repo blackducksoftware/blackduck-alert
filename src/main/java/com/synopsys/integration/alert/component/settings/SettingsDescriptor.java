@@ -32,12 +32,14 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.database.api.configuration.DefinedFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
 
 @Component
 public class SettingsDescriptor extends ComponentDescriptor {
     public static final String SETTINGS_COMPONENT = "component_settings";
-
+    public static final String SETTINGS_LABEL = "Settings";
+    public static final String SETTINGS_URL = "settings";
+    public static final String SETTINGS_ICON = "cog";
     // KEYS not stored in the database
     public static final String KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD = "user.default.admin.password";
     public static final String KEY_ENCRYPTION_PASSWORD = "encryption.password";

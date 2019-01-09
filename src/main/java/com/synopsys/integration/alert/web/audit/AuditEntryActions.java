@@ -106,32 +106,29 @@ public class AuditEntryActions {
     public Optional<AuditEntryModel> get(final Long id) {
         if (id != null) {
             final Optional<NotificationContent> notificationContent = notificationManager.findById(id);
-            if (notificationContent.isPresent()) {
-                return Optional.of(createRestModel(notificationContent.get()));
-            }
+            return notificationContent.map(value -> createRestModel(value));
         }
         return Optional.empty();
     }
 
     public Optional<JobAuditModel> getAuditInfoForJob(final Long jobId) {
         if (jobId != null) {
-            Optional<AuditEntryEntity> optionalAuditEntryEntity = auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(jobId);
-            if (optionalAuditEntryEntity.isPresent()) {
-                AuditEntryEntity auditEntryEntity = optionalAuditEntryEntity.get();
+            final Optional<AuditEntryEntity> auditEntryEntity = auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(jobId);
+            return auditEntryEntity.map(value -> {
                 String timeCreated = null;
-                if (null != auditEntryEntity.getTimeCreated()) {
-                    timeCreated = notificationContentConverter.getContentConverter().getStringValue(auditEntryEntity.getTimeCreated());
+                if (null != value.getTimeCreated()) {
+                    timeCreated = notificationContentConverter.getContentConverter().getStringValue(value.getTimeCreated());
                 }
                 String timeLastSent = null;
-                if (null != auditEntryEntity.getTimeLastSent()) {
-                    timeLastSent = notificationContentConverter.getContentConverter().getStringValue(auditEntryEntity.getTimeLastSent());
+                if (null != value.getTimeLastSent()) {
+                    timeLastSent = notificationContentConverter.getContentConverter().getStringValue(value.getTimeLastSent());
                 }
                 String status = null;
-                if (null != auditEntryEntity.getStatus()) {
-                    status = auditEntryEntity.getStatus();
+                if (null != value.getStatus()) {
+                    status = value.getStatus();
                 }
-                return Optional.of(new JobAuditModel(timeCreated, timeLastSent, status));
-            }
+                return new JobAuditModel(timeCreated, timeLastSent, status);
+            });
         }
         return Optional.empty();
     }
@@ -256,7 +253,7 @@ public class AuditEntryActions {
             if (null != status) {
                 statusDisplayName = status.getDisplayName();
             }
-            JobAuditModel jobAuditModel = new JobAuditModel(timeCreated, timeLastSent, statusDisplayName);
+            final JobAuditModel jobAuditModel = new JobAuditModel(timeCreated, timeLastSent, statusDisplayName);
             jobModels.add(new JobModel(id, configId, distributionConfigName, eventType, jobAuditModel, errorMessage, errorStackTrace));
         }
         final String id = notificationContentConverter.getContentConverter().getStringValue(notificationContentEntry.getId());

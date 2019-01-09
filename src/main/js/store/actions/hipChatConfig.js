@@ -11,9 +11,9 @@ import {
     HIPCHAT_CONFIG_UPDATE_ERROR,
     HIPCHAT_CONFIG_UPDATED,
     HIPCHAT_CONFIG_UPDATING
-} from './types';
+} from 'store/actions/types';
 
-import { verifyLoginByStatus } from './session';
+import { verifyLoginByStatus } from 'store/actions/session';
 
 const CONFIG_URL = '/alert/api/configuration/channel/global/channel_hipchat';
 const TEST_URL = `${CONFIG_URL}/test`;

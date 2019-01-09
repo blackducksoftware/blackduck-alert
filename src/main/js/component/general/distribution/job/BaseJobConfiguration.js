@@ -2,15 +2,15 @@ import React, { Component } from 'react';
 import Select, { components } from 'react-select';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import TextInput from '../../../../field/input/TextInput';
-import ProjectConfiguration from '../ProjectConfiguration';
-import ConfigButtons from '../../../common/ConfigButtons';
+import TextInput from 'field/input/TextInput';
+import ProjectConfiguration from 'component/general/distribution/ProjectConfiguration';
+import ConfigButtons from 'component/common/ConfigButtons';
 
-import { frequencyOptions } from '../../../../util/distribution-data';
+import { frequencyOptions } from 'util/distribution-data';
 
-import { getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob } from '../../../../store/actions/distributions';
-import { getDistributionDescriptor } from '../../../../store/actions/descriptors';
-import DescriptorOption from '../../../common/DescriptorOption';
+import { getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob } from 'store/actions/distributions';
+import { getDistributionDescriptor } from 'store/actions/descriptors';
+import DescriptorOption from 'component/common/DescriptorOption';
 
 const { Option, SingleValue } = components;
 

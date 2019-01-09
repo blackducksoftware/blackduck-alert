@@ -23,8 +23,33 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.ui;
 
-public abstract class UIConfig {
+import java.util.List;
 
-    // TODO rework this to leverage what we already know about a descriptor
-    public abstract DescriptorMetadata generateDescriptorMetadata();
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+
+public abstract class UIConfig {
+    private final String label;
+    private final String urlName;
+    private final String fontAwesomeIcon;
+
+    public UIConfig(final String label, final String urlName, final String fontAwesomeIcon) {
+        this.label = label;
+        this.urlName = urlName;
+        this.fontAwesomeIcon = fontAwesomeIcon;
+    }
+
+    public abstract List<ConfigField> createFields();
+
+    public String getLabel() {
+        return label;
+    }
+
+    public String getUrlName() {
+        return urlName;
+    }
+
+    public String getFontAwesomeIcon() {
+        return fontAwesomeIcon;
+    }
+
 }

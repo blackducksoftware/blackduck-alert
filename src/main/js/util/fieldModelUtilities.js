@@ -23,3 +23,10 @@ export function createEmptyFieldModel(fields) {
 export function createFieldModelErrorKey(fieldKey) {
     return fieldKey.concat('Error');
 }
+
+export function checkModelOrCreateEmpty(fieldModel, fields) {
+    if (Object.keys(fieldModel.keyToValues).length > 0) {
+        return fieldModel;
+    }
+    return createEmptyFieldModel(fields);
+}

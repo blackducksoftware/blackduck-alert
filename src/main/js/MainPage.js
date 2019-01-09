@@ -3,18 +3,18 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Redirect, Route, withRouter } from 'react-router-dom';
 
-import { getDescriptorByType, getDescriptorsByTypeAndContext } from './store/actions/descriptors';
-import Navigation from './Navigation';
-import Audit from './component/general/audit/Index';
-import AboutInfo from './component/general/AboutInfo';
-import DistributionConfiguration from './component/general/distribution/Index';
-import SchedulingConfiguration from './component/general/SchedulingConfiguration';
-import SlackConfiguration from './component/channels/SlackConfiguration';
-import EmailConfiguration from './component/channels/EmailConfiguration';
-import HipChatConfiguration from './component/channels/HipChatConfiguration';
-import LogoutConfirmation from './component/common/LogoutConfirmation';
-import BlackDuckConfiguration from "./component/providers/BlackDuckConfiguration";
-import SettingsConfiguration from "./component/general/settings/SettingsConfiguration";
+import { getDescriptorByType, getDescriptorsByTypeAndContext } from 'store/actions/descriptors';
+import Navigation from 'Navigation';
+import Audit from 'component/general/audit/Index';
+import AboutInfo from 'component/general/AboutInfo';
+import DistributionConfiguration from 'component/general/distribution/Index';
+import SchedulingConfiguration from 'component/general/SchedulingConfiguration';
+import SlackConfiguration from 'component/channels/SlackConfiguration';
+import EmailConfiguration from 'component/channels/EmailConfiguration';
+import HipChatConfiguration from 'component/channels/HipChatConfiguration';
+import LogoutConfirmation from 'component/common/LogoutConfirmation';
+import BlackDuckConfiguration from 'component/providers/BlackDuckConfiguration';
+import SettingsConfiguration from 'component/general/settings/SettingsConfiguration';
 
 
 class MainPage extends Component {
