@@ -24,7 +24,7 @@ public class EmailChannelTestIT extends ChannelTest {
     //            testAlertProperties.setAlertTrustCertificate(Boolean.valueOf(trustCert));
     //        }
     //
-    //        EmailGroupChannel emailChannel = new EmailGroupChannel(gson, testAlertProperties, globalProperties, auditUtility, null);
+    //        EmailChannel emailChannel = new EmailChannel(gson, testAlertProperties, globalProperties, auditUtility, null);
     //        final AggregateMessageContent content = createMessageContent(getClass().getSimpleName());
     //        final Set<String> emailAddresses = Stream.of(properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT)).collect(Collectors.toSet());
     //        final String subjectLine = "Integration test subject line";
@@ -52,7 +52,7 @@ public class EmailChannelTestIT extends ChannelTest {
     //    @Test
     //    public void sendEmailNullGlobalTest() throws Exception {
     //        try (final OutputLogger outputLogger = new OutputLogger()) {
-    //            final EmailGroupChannel emailChannel = new EmailGroupChannel(gson, null, null, null, null);
+    //            final EmailChannel emailChannel = new EmailChannel(gson, null, null, null, null);
     //            final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic", null);
     //            final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
     //            final DistributionEvent event = new DistributionEvent(RestConstants.formatDate(new Date()), "provider", "FORMAT", content, 1L, null, null);

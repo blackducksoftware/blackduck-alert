@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
+import com.synopsys.integration.alert.channel.email.EmailChannel;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescriptor;
@@ -71,7 +71,7 @@ public class MockConfigurationModelFactory {
         fields.add(projectOwnerOnly);
         fields.add(subjectLine);
 
-        final Collection<ConfigurationFieldModel> commonFields = createCommonBlackDuckConfigurationFields("Email Test Job", EmailGroupChannel.COMPONENT_NAME);
+        final Collection<ConfigurationFieldModel> commonFields = createCommonBlackDuckConfigurationFields("Email Test Job", EmailChannel.COMPONENT_NAME);
         fields.addAll(commonFields);
         return fields;
     }
@@ -87,7 +87,7 @@ public class MockConfigurationModelFactory {
         fields.add(projectOwnerOnly);
         fields.add(subjectLine);
 
-        final Collection<ConfigurationFieldModel> commonFields = createCommonBlackDuckConfigurationFields("Email Test Job", EmailGroupChannel.COMPONENT_NAME);
+        final Collection<ConfigurationFieldModel> commonFields = createCommonBlackDuckConfigurationFields("Email Test Job", EmailChannel.COMPONENT_NAME);
         fields.addAll(commonFields);
         return fields;
     }
