@@ -77,14 +77,14 @@ public class FieldModel extends Config {
         return keyToValues
                    .entrySet()
                    .stream()
-                   .collect(Collectors.toMap(Map.Entry::getKey, entry -> createConfigurationFieldModel(entry.getKey(), entry.getValue().getValues(), entry.getValue().isSet())));
+                   .collect(Collectors.toMap(Map.Entry::getKey, entry -> createConfigurationFieldModel(entry.getKey(), entry.getValue().getValues())));
     }
 
     public void putField(final String key, final FieldValueModel field) {
         keyToValues.put(key, field);
     }
 
-    private ConfigurationFieldModel createConfigurationFieldModel(final String key, final Collection<String> values, final boolean isSet) {
+    private ConfigurationFieldModel createConfigurationFieldModel(final String key, final Collection<String> values) {
         final ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(key);
         configurationFieldModel.setFieldValues(values);
         return configurationFieldModel;
