@@ -23,10 +23,10 @@
  */
 package com.synopsys.integration.alert.web.config;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,22 +56,36 @@ public class ConfigControllerHandler extends ControllerHandler {
         this.descriptorConfigActions = descriptorConfigActions;
     }
 
-    public List<FieldModel> getConfigs(final ConfigContextEnum context, final String descriptorName) {
+    public ResponseEntity<String> getConfigs(final ConfigContextEnum context, final String descriptorName) {
+        ResponseEntity<String> response;
         try {
-            return descriptorConfigActions.getConfigs(context, descriptorName);
+            final List<FieldModel> models = descriptorConfigActions.getConfigs(context, descriptorName);
+            if (models.isEmpty()) {
+                response = createResponse(HttpStatus.NOT_FOUND, "Configurations not found for the context and descriptor provided");
+            } else {
+                response = new ResponseEntity<>(getContentConverter().getJsonString(models), HttpStatus.OK);
+            }
         } catch (final AlertException e) {
             logger.error("Was not able to find configurations with the context {}, and descriptorName {}", context, descriptorName);
+            response = createResponse(HttpStatus.NOT_FOUND, "Configurations not found for the context and descriptor provided");
         }
-        return Collections.emptyList();
+        return response;
     }
 
-    public FieldModel getConfig(final Long id) {
+    public ResponseEntity<String> getConfig(final Long id) {
+        ResponseEntity<String> response;
         try {
-            return descriptorConfigActions.getConfigById(id);
+            final Optional<FieldModel> optionalModel = descriptorConfigActions.getConfigById(id);
+            if (optionalModel.isPresent()) {
+                response = new ResponseEntity<>(getContentConverter().getJsonString(optionalModel.get()), HttpStatus.OK);
+            } else {
+                response = createResponse(HttpStatus.NOT_FOUND, "Configuration not found for the specified id");
+            }
         } catch (final AlertException e) {
             logger.error(e.getMessage(), e);
+            response = createResponse(HttpStatus.NOT_FOUND, "Configuration not found for the specified id");
         }
-        return null;
+        return response;
     }
 
     public ResponseEntity<String> postConfig(final FieldModel restModel) {

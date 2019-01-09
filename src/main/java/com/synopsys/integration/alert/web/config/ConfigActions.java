@@ -97,16 +97,17 @@ public class ConfigActions {
         return fields;
     }
 
-    public FieldModel getConfigById(final Long id) throws AlertException {
-        FieldModel fieldModel = null;
+    public Optional<FieldModel> getConfigById(final Long id) throws AlertException {
+        Optional<FieldModel> optionalModel = Optional.empty();
         final Optional<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationById(id);
         if (configurationModels.isPresent()) {
             final ConfigurationModel configurationModel = configurationModels.get();
-            fieldModel = convertToFieldModel(configurationModel);
+            final FieldModel fieldModel = convertToFieldModel(configurationModel);
             final DescriptorActionApi descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
             descriptorActionApi.readConfig(fieldModel);
+            optionalModel = Optional.of(fieldModel);
         }
-        return fieldModel;
+        return optionalModel;
     }
 
     public void deleteConfig(final String id) throws AlertException {
