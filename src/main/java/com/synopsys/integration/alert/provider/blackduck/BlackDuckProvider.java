@@ -36,7 +36,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.enumeration.FormatType;
-import com.synopsys.integration.alert.common.provider.EmailHandler;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
@@ -49,14 +48,12 @@ public class BlackDuckProvider extends Provider {
 
     private final BlackDuckAccumulator accumulatorTask;
     private final ProjectSyncTask projectSyncTask;
-    private final BlackDuckEmailHandler blackDuckEmailHandler;
 
     @Autowired
     public BlackDuckProvider(final BlackDuckAccumulator accumulatorTask, final ProjectSyncTask projectSyncTask, final BlackDuckEmailHandler blackDuckEmailHandler) {
-        super(BlackDuckProvider.COMPONENT_NAME);
+        super(BlackDuckProvider.COMPONENT_NAME, blackDuckEmailHandler);
         this.accumulatorTask = accumulatorTask;
         this.projectSyncTask = projectSyncTask;
-        this.blackDuckEmailHandler = blackDuckEmailHandler;
     }
 
     @Override
@@ -84,11 +81,6 @@ public class BlackDuckProvider extends Provider {
     @Override
     public Set<FormatType> getSupportedFormatTypes() {
         return EnumSet.of(FormatType.DEFAULT, FormatType.DIGEST);
-    }
-
-    @Override
-    public EmailHandler getEmailHandler() {
-        return blackDuckEmailHandler;
     }
 
 }
