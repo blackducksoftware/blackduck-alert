@@ -23,8 +23,6 @@
  */
 package com.synopsys.integration.alert.web.config;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -54,12 +52,12 @@ public class ConfigController extends BaseController {
     }
 
     @GetMapping
-    public List<FieldModel> getConfigs(final @RequestParam ConfigContextEnum context, @RequestParam(required = false) final String descriptorName) {
+    public ResponseEntity<String> getConfigs(final @RequestParam ConfigContextEnum context, @RequestParam(required = false) final String descriptorName) {
         return controllerHandler.getConfigs(context, descriptorName);
     }
 
     @GetMapping("/{id}")
-    public FieldModel getConfig(@PathVariable final Long id) {
+    public ResponseEntity<String> getConfig(@PathVariable final Long id) {
         return controllerHandler.getConfig(id);
     }
 
