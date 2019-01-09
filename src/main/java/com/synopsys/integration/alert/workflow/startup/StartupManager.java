@@ -57,10 +57,10 @@ import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.component.scheduling.SchedulingConfiguration;
 import com.synopsys.integration.alert.component.scheduling.SchedulingDescriptor;
 import com.synopsys.integration.alert.component.scheduling.SchedulingUIConfig;
-import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
-import com.synopsys.integration.alert.database.api.configuration.ConfigurationFieldModel;
-import com.synopsys.integration.alert.database.api.configuration.DefinedFieldModel;
-import com.synopsys.integration.alert.database.api.configuration.DescriptorAccessor.RegisteredDescriptorModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
+import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.database.security.StringEncryptionConverter;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -179,12 +179,11 @@ public class StartupManager {
         logger.info("BlackDuck Webserver Host:                 {}", blackDuckProperties.getPublicBlackDuckWebserverHost().orElse(""));
         logger.info("BlackDuck Webserver Port:                 {}", blackDuckProperties.getPublicBlackDuckWebserverPort().orElse(""));
         final Optional<ConfigurationModel> optionalGlobalBlackDuckConfigEntity = blackDuckProperties.getBlackDuckConfig();
-        if (optionalGlobalBlackDuckConfigEntity.isPresent()) {
-            final ConfigurationModel globalBlackDuckConfigEntity = optionalGlobalBlackDuckConfigEntity.get();
-            final FieldAccessor fieldAccessor = new FieldAccessor(globalBlackDuckConfigEntity.getCopyOfKeyToFieldMap());
+        optionalGlobalBlackDuckConfigEntity.ifPresent(configurationModel -> {
+            final FieldAccessor fieldAccessor = new FieldAccessor(configurationModel.getCopyOfKeyToFieldMap());
             logger.info("BlackDuck API Token:           **********");
             logger.info("BlackDuck Timeout:             {}", fieldAccessor.getInteger(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT).orElse(BlackDuckProperties.DEFAULT_TIMEOUT));
-        }
+        });
         logger.info("----------------------------------------");
     }
 

@@ -1,74 +1,121 @@
 {
-    "extends": "airbnb",
-    "plugins": [
-        "react",
-        "jsx-a11y",
-        "import"
+  "extends": "airbnb",
+  "plugins": [
+    "react",
+    "jsx-a11y",
+    "import"
+  ],
+  "rules": {
+    "function-paren-newline": [
+      "error",
+      "multiline"
     ],
-    "rules": {
-        "function-paren-newline": [
-            "error", "multiline"
+    "no-unused-vars": [
+      "warn"
+    ],
+    "no-plusplus": [
+      "error",
+      {
+        "allowForLoopAfterthoughts": true
+      }
+    ],
+    "indent": [
+      "error",
+      4,
+      {
+        "SwitchCase": 1
+      }
+    ],
+    "max-len": [
+      "warn",
+      120
+    ],
+    "react/forbid-prop-types": [
+      "warn",
+      {
+        "forbid": [
+          "any",
+          "array",
+          "object"
+        ]
+      }
+    ],
+    "react/jsx-filename-extension": [
+      1,
+      {
+        "extensions": [
+          ".js",
+          ".jsx"
+        ]
+      }
+    ],
+    "react/jsx-indent": [
+      "error",
+      4
+    ],
+    "react/jsx-indent-props": [
+      "error",
+      4
+    ],
+    "react/no-string-refs": [
+      "warn"
+    ],
+    "react/jsx-closing-tag-location": [
+      "warn"
+    ],
+    "comma-dangle": [
+      "error",
+      "never"
+    ],
+    "no-confusing-arrow": [
+      "error",
+      {
+        "allowParens": true
+      }
+    ],
+    "no-underscore-dangle": [
+      "warn"
+    ],
+    "import/prefer-default-export": [
+      "warn"
+    ],
+    "import/extensions": [
+      "warn"
+    ],
+    "import/no-unresolved": [
+      "warn"
+    ],
+    "jsx-a11y/anchor-is-valid": [
+      "error",
+      {
+        "components": [
+          "Link"
         ],
-        "no-unused-vars": [
-            "warn"
+        "specialLink": [
+          "to",
+          "hrefLeft",
+          "hrefRight"
         ],
-        "no-plusplus": [
-            "error", { "allowForLoopAfterthoughts": true }
-        ],
-        "indent": [
-            "error", 4, { "SwitchCase": 1 }
-        ],
-        "max-len": [
-            "warn", 120
-        ],
-        "react/forbid-prop-types": [
-            "warn", { "forbid": ["any", "array", "object"] }
-        ],
-        "react/jsx-filename-extension": [
-            1, { "extensions": [".js", ".jsx"] }
-        ],
-        "react/jsx-indent": [
-            "error", 4
-        ],
-        "react/jsx-indent-props": [
-            "error", 4
-        ],
-        "react/no-string-refs": [
-            "warn"
-        ],
-        "react/jsx-closing-tag-location": [
-            "warn"
-        ],
-        "comma-dangle": [
-            "error", "never"
-        ],
-        "no-confusing-arrow": [
-            "error", { "allowParens": true }
-        ],
-        "no-underscore-dangle": [
-            "warn"
-        ],
-        "import/prefer-default-export": [
-            "warn"
-        ],
-        "jsx-a11y/anchor-is-valid": [ "error", {
-            "components": [ "Link" ],
-            "specialLink": [ "to", "hrefLeft", "hrefRight" ],
-            "aspects": [ "noHref", "invalidHref", "preferButton" ]
-        }]
-    },
-    "env": {
-        "browser": true,
-        "node": true
-    },
-    "globals": {
-        "afterAll": true,
-        "afterEach": true,
-        "beforeAll": true,
-        "beforeEach": true,
-        "describe": true,
-        "expect": true,
-        "jest": true,
-        "test": true
-    }
+        "aspects": [
+          "noHref",
+          "invalidHref",
+          "preferButton"
+        ]
+      }
+    ]
+  },
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "globals": {
+    "afterAll": true,
+    "afterEach": true,
+    "beforeAll": true,
+    "beforeEach": true,
+    "describe": true,
+    "expect": true,
+    "jest": true,
+    "test": true
+  }
 }

@@ -33,7 +33,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.database.api.configuration.DefinedFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
 
 @Component
 public class HipChatDescriptor extends ChannelDescriptor {
@@ -43,6 +43,10 @@ public class HipChatDescriptor extends ChannelDescriptor {
 
     public static final String KEY_API_KEY = "api.key";
     public static final String KEY_HOST_SERVER = "host.server";
+
+    public static final String HIP_CHAT_LABEL = "HipChat";
+    public static final String HIP_CHAT_URL = "hipchat";
+    public static final String HIP_CHAT_ICON = "comments";
 
     @Autowired
     public HipChatDescriptor(final HipChatChannel channelListener, final HipChatDistributionDescriptorActionApi distributionRestApi, final HipChatDistributionUIConfig hipChatDistributionUIConfig,

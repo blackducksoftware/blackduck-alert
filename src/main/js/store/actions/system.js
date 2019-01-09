@@ -9,9 +9,9 @@ import {
     SYSTEM_SETUP_UPDATE_ERROR,
     SYSTEM_SETUP_UPDATED,
     SYSTEM_SETUP_UPDATING
-} from './types';
-import { verifyLoginByStatus } from "./session";
-import * as ConfigRequestBuilder from "../../util/configurationRequestBuilder";
+} from 'store/actions/types';
+import { verifyLoginByStatus } from 'store/actions/session';
+import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 
 const LATEST_MESSAGES_URL = '/alert/api/system/messages/latest';
 const INITIAL_SYSTEM_SETUP_URL = '/alert/api/system/setup/initial';
@@ -168,13 +168,13 @@ export function saveInitialSystemSetup(setupData) {
                         const jsonErrors = body.errors;
                         if (jsonErrors) {
                             const errors = {};
-                            for (const key in jsonErrors) {
-                                if (jsonErrors.hasOwnProperty(key)) {
+                            Object.keys(jsonErrors).forEach((key) => {
+                                if (jsonErrors[key]) {
                                     const name = key.concat('Error');
                                     const value = jsonErrors[key];
                                     errors[name] = value;
                                 }
-                            }
+                            });
                             dispatch(systemSetupUpdateError(body.message, errors));
                         }
                     });
@@ -199,13 +199,13 @@ export function saveSystemSetup(setupData) {
                     const jsonErrors = body.errors;
                     if (jsonErrors) {
                         const errors = {};
-                        for (const key in jsonErrors) {
-                            if (jsonErrors.hasOwnProperty(key)) {
+                        Object.keys(jsonErrors).forEach((key) => {
+                            if (jsonErrors[key]) {
                                 const name = key.concat('Error');
                                 const value = jsonErrors[key];
                                 errors[name] = value;
                             }
-                        }
+                        });
                         dispatch(systemSetupUpdateError(body.message, errors));
                     }
                 });

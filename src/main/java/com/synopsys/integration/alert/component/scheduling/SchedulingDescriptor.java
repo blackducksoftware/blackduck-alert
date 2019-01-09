@@ -31,11 +31,15 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.database.api.configuration.DefinedFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
 
 @Component
 public class SchedulingDescriptor extends ComponentDescriptor {
     public static final String SCHEDULING_COMPONENT = "component_scheduling";
+
+    public static final String SCHEDULING_LABEL = "Scheduling";
+    public static final String SCHEDULING_URL = "scheduling";
+    public static final String SCHEDULING_ICON = "o-clock";
 
     @Autowired
     public SchedulingDescriptor(final SchedulingDescriptorActionApi componentRestApi, final SchedulingUIConfig schedulingUIConfig) {

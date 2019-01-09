@@ -1,11 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import CheckboxInput from '../../field/input/CheckboxInput';
-import NumberInput from '../../field/input/NumberInput';
-import PasswordInput from '../../field/input/PasswordInput';
-import TextInput from '../../field/input/TextInput';
-import ConfigButtons from '../common/ConfigButtons';
+import CheckboxInput from 'field/input/CheckboxInput';
+import NumberInput from 'field/input/NumberInput';
+import PasswordInput from 'field/input/PasswordInput';
+import TextInput from 'field/input/TextInput';
+import ConfigButtons from 'component/common/ConfigButtons';
 
 import { closeEmailConfigTest, getEmailConfig, openEmailConfigTest, sendEmailConfigTest, toggleAdvancedEmailOptions, updateEmailConfig } from '../../store/actions/emailConfig';
 import ChannelTestModal from '../common/ChannelTestModal';

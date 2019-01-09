@@ -33,13 +33,17 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.database.api.configuration.DefinedFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
 
 @Component
 public class SlackDescriptor extends ChannelDescriptor {
     public static final String KEY_WEBHOOK = "webhook";
     public static final String KEY_CHANNEL_NAME = "channel.name";
     public static final String KEY_CHANNEL_USERNAME = "channel.username";
+
+    public static final String SLACK_LABEL = "Slack";
+    public static final String SLACK_URL = "slack";
+    public static final String SLACK_ICON = "slack";
 
     @Autowired
     public SlackDescriptor(final SlackChannel channelListener, final SlackDistributionDescriptorActionApi distributionRestApi, final SlackUIConfig slackUIConfig) {

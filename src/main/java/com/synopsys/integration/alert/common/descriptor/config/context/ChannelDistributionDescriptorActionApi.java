@@ -42,7 +42,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistri
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
-import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
@@ -117,32 +117,20 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
 
     @Override
     public FieldModel saveConfig(final FieldModel fieldModel) {
-        final DescriptorActionApi providerActionApi = getProviderActionApi(fieldModel);
-        if (null != providerActionApi) {
-            providerActionApi.saveConfig(fieldModel);
-        }
-        return super.saveConfig(fieldModel);
+        return getProviderActionApi(fieldModel).map(descriptorActionApi -> descriptorActionApi.saveConfig(fieldModel)).orElse(fieldModel);
     }
 
     @Override
     public void deleteConfig(final FieldModel fieldModel) {
-        final DescriptorActionApi descriptorActionApi = getProviderActionApi(fieldModel);
-        if (null != descriptorActionApi) {
-            descriptorActionApi.deleteConfig(fieldModel);
-        }
-        super.deleteConfig(fieldModel);
+        getProviderActionApi(fieldModel).ifPresent(descriptorActionApi -> descriptorActionApi.deleteConfig(fieldModel));
     }
 
-    private DescriptorActionApi getProviderActionApi(final FieldModel fieldModel) {
+    private Optional<DescriptorActionApi> getProviderActionApi(final FieldModel fieldModel) {
         final FieldAccessor fieldAccessor = fieldModel.convertToFieldAccessor();
         final String providerName = fieldAccessor.getString(CommonDistributionUIConfig.KEY_PROVIDER_NAME).orElse(null);
-        final Optional<ProviderDescriptor> foundProviderDescriptor = providerDescriptors.stream()
-                                                                         .filter(providerDescriptor -> providerDescriptor.getName().equals(providerName))
-                                                                         .findFirst();
-        if (foundProviderDescriptor.isPresent()) {
-            return foundProviderDescriptor.get().getRestApi(ConfigContextEnum.DISTRIBUTION);
-        }
-
-        return null;
+        return providerDescriptors.stream()
+                   .filter(providerDescriptor -> providerDescriptor.getName().equals(providerName))
+                   .findFirst()
+                   .map(providerDescriptor -> providerDescriptor.getActionApi(ConfigContextEnum.DISTRIBUTION).orElse(null));
     }
 }

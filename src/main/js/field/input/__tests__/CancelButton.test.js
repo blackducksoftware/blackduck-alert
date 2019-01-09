@@ -2,14 +2,15 @@ import React from 'react';
 import Enzyme, { shallow } from 'enzyme';
 import renderer from 'react-test-renderer';
 import Adapter from 'enzyme-adapter-react-15';
-import CancelButton from '../CancelButton';
+import CancelButton from 'field/input/CancelButton';
 
 beforeAll(() => {
     Enzyme.configure({ adapter: new Adapter() });
 });
 
 test('Rendering default cancel button snapshot', () => {
-    const button = renderer.create(<CancelButton onClick={() => {}} />);
+    const button = renderer.create(<CancelButton onClick={() => {
+    }} />);
     const tree = button.toJSON();
     expect(tree).toMatchSnapshot();
 });

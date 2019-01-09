@@ -30,10 +30,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 
 @Component
 public class SchedulingUIConfig extends UIConfig {
@@ -43,11 +40,11 @@ public class SchedulingUIConfig extends UIConfig {
     public static final String KEY_PURGE_DATA_FREQUENCY_DAYS = "purge.data.frequency";
     public static final String KEY_PURGE_DATA_NEXT_RUN = "purge.data.next.run";
 
-    @Override
-    public DescriptorMetadata generateDescriptorMetadata() {
-        return new DescriptorMetadata("Scheduling", "scheduling", SchedulingDescriptor.SCHEDULING_COMPONENT, DescriptorType.COMPONENT, ConfigContextEnum.GLOBAL, "clock-o", true, createFields());
+    public SchedulingUIConfig() {
+        super(SchedulingDescriptor.SCHEDULING_LABEL, SchedulingDescriptor.SCHEDULING_URL, SchedulingDescriptor.SCHEDULING_ICON);
     }
 
+    @Override
     public List<ConfigField> createFields() {
         final ConfigField digestHour = SelectConfigField.createRequired(KEY_DAILY_DIGEST_HOUR_OF_DAY, "Daily digest hour of day", Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "10", "11", "12"));
         final ConfigField purgeFrequency = SelectConfigField.createRequired(KEY_PURGE_DATA_FREQUENCY_DAYS, "Purge data frequency in days", Arrays.asList("1", "2", "3"));

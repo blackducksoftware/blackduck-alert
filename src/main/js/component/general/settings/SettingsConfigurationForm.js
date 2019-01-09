@@ -1,11 +1,11 @@
-import PasswordInput from "../../../field/input/PasswordInput";
-import CheckboxInput from "../../../field/input/CheckboxInput";
-import TextInput from "../../../field/input/TextInput";
-import PropTypes from "prop-types";
-import React, { Component } from "react";
-import CollapsiblePane from "../../common/CollapsiblePane";
-import ConfigButtons from "../../common/ConfigButtons";
-import * as FieldModelUtil from '../../../util/fieldModelUtilities';
+import PasswordInput from 'field/input/PasswordInput';
+import CheckboxInput from 'field/input/CheckboxInput';
+import TextInput from 'field/input/TextInput';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import CollapsiblePane from 'component/common/CollapsiblePane';
+import ConfigButtons from 'component/common/ConfigButtons';
+import * as FieldModelUtil from 'util/fieldModelUtilities';
 
 
 const KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD = 'user.default.admin.password';
@@ -34,34 +34,35 @@ const KEY_LDAP_GROUP_SEARCH_FILTER = 'ldap.group.search.filter';
 const KEY_LDAP_GROUP_ROLE_ATTRIBUTE = 'ldap.group.role.attribute';
 const KEY_LDAP_ROLE_PREFIX = 'ldap.role.prefix';
 
+const fieldNames = [
+    KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD,
+    KEY_ENCRYPTION_PASSWORD,
+    KEY_ENCRYPTION_GLOBAL_SALT,
+    KEY_PROXY_HOST,
+    KEY_PROXY_PORT,
+    KEY_PROXY_USERNAME,
+    KEY_PROXY_PASSWORD,
+    KEY_LDAP_ENABLED,
+    KEY_LDAP_SERVER,
+    KEY_LDAP_MANAGER_DN,
+    KEY_LDAP_MANAGER_PASSWORD,
+    KEY_LDAP_AUTHENTICATION_TYPE,
+    KEY_LDAP_REFERRAL,
+    KEY_LDAP_USER_SEARCH_BASE,
+    KEY_LDAP_USER_SEARCH_FILTER,
+    KEY_LDAP_USER_DN_PATTERNS,
+    KEY_LDAP_USER_ATTRIBUTES,
+    KEY_LDAP_GROUP_SEARCH_BASE,
+    KEY_LDAP_GROUP_SEARCH_FILTER,
+    KEY_LDAP_GROUP_ROLE_ATTRIBUTE,
+    KEY_LDAP_ROLE_PREFIX
+];
+
 class SettingsConfigurationForm extends Component {
     constructor(props) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        const fieldNames = [
-            KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD,
-            KEY_ENCRYPTION_PASSWORD,
-            KEY_ENCRYPTION_GLOBAL_SALT,
-            KEY_PROXY_HOST,
-            KEY_PROXY_PORT,
-            KEY_PROXY_USERNAME,
-            KEY_PROXY_PASSWORD,
-            KEY_LDAP_ENABLED,
-            KEY_LDAP_SERVER,
-            KEY_LDAP_MANAGER_DN,
-            KEY_LDAP_MANAGER_PASSWORD,
-            KEY_LDAP_AUTHENTICATION_TYPE,
-            KEY_LDAP_REFERRAL,
-            KEY_LDAP_USER_SEARCH_BASE,
-            KEY_LDAP_USER_SEARCH_FILTER,
-            KEY_LDAP_USER_DN_PATTERNS,
-            KEY_LDAP_USER_ATTRIBUTES,
-            KEY_LDAP_GROUP_SEARCH_BASE,
-            KEY_LDAP_GROUP_SEARCH_FILTER,
-            KEY_LDAP_GROUP_ROLE_ATTRIBUTE,
-            KEY_LDAP_ROLE_PREFIX
-        ];
         this.state = {
             settingsData: FieldModelUtil.createEmptyFieldModel(fieldNames)
         };
@@ -72,9 +73,10 @@ class SettingsConfigurationForm extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if ((nextProps.fetchingSetupStatus === 'SYSTEM SETUP FETCHED' && nextProps.updateStatus === 'FETCHED') ||
-            (this.props.fetchingSetupStatus === 'SYSTEM SETUP FETCHED' && this.props.updateStatus === 'FETCHED')) {
-            const newState = Object.assign({}, this.state.settingsData, nextProps.settingsData);
+        if ((nextProps.fetchingSetupStatus === 'SYSTEM_SETUP_FETCHED' && nextProps.updateStatus === 'FETCHED') ||
+            (this.props.fetchingSetupStatus === 'SYSTEM_SETUP_FETCHED' && this.props.updateStatus === 'FETCHED')) {
+            const newModel = Object.assign({}, this.state.settingsData, nextProps.settingsData);
+            const newState = FieldModelUtil.checkModelOrCreateEmpty(newModel, fieldNames);
             this.setState({
                 settingsData: newState
             });

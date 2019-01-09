@@ -24,7 +24,7 @@
 package com.synopsys.integration.alert.component.settings;
 
 import com.synopsys.integration.alert.common.configuration.Configuration;
-import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 
 public class SettingsConfiguration extends Configuration {
 

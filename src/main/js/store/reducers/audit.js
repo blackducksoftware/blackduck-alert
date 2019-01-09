@@ -1,9 +1,4 @@
-import {
-    AUDIT_FETCHING,
-    AUDIT_FETCHED,
-    AUDIT_FETCH_ERROR,
-    SERIALIZE
-} from '../actions/types';
+import { AUDIT_FETCH_ERROR, AUDIT_FETCHED, AUDIT_FETCHING, SERIALIZE } from 'store/actions/types';
 
 const initialState = {
     fetching: false,

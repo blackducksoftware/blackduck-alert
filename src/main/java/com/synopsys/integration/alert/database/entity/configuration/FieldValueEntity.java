@@ -42,11 +42,11 @@ public class FieldValueEntity extends DatabaseEntity {
     private String value;
 
     @ManyToOne
-    @JoinColumn(name = "FIELD_ID", insertable = false, updatable = false)
+    @JoinColumn(name = "FIELD_ID", referencedColumnName = "ID", insertable = false, updatable = false)
     private DefinedFieldEntity definedFieldEntity;
 
     @ManyToOne
-    @JoinColumn(name = "CONFIG_ID", insertable = false, updatable = false)
+    @JoinColumn(name = "CONFIG_ID", referencedColumnName = "ID", insertable = false, updatable = false)
     private DescriptorConfigEntity descriptorConfigEntity;
 
     public FieldValueEntity() {

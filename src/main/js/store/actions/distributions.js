@@ -11,9 +11,9 @@ import {
     DISTRIBUTION_JOB_UPDATE_ERROR,
     DISTRIBUTION_JOB_UPDATED,
     DISTRIBUTION_JOB_UPDATING
-} from './types';
+} from 'store/actions/types';
 
-import { verifyLoginByStatus } from './session';
+import { verifyLoginByStatus } from 'store/actions/session';
 
 function fetchingJob() {
     return {

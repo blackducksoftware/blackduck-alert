@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { BootstrapTable, ReactBsTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { Modal, Tab, Tabs } from 'react-bootstrap';
-import DescriptorLabel from '../../common/DescriptorLabel';
-import TextInput from '../../../field/input/TextInput';
-import TextArea from '../../../field/input/TextArea';
-import RefreshTableCellFormatter from '../../common/RefreshTableCellFormatter';
+import DescriptorLabel from 'component/common/DescriptorLabel';
+import TextInput from 'field/input/TextInput';
+import TextArea from 'field/input/TextArea';
+import RefreshTableCellFormatter from 'component/common/RefreshTableCellFormatter';
 
 class Details extends Component {
     constructor(props) {

@@ -25,7 +25,7 @@ package com.synopsys.integration.alert.common.configuration;
 
 import javax.validation.constraints.NotNull;
 
-import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor.ConfigurationModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 
 public class Configuration {
     private final Long id;

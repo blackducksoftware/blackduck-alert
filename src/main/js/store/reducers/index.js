@@ -1,18 +1,18 @@
 import { routerReducer as routing } from 'react-router-redux';
 import { combineReducers } from 'redux';
 
-import about from './about';
-import audit from './audit';
-import config from './config';
-import descriptors from './descriptors';
-import distributions from './distributions';
-import emailConfig from './emailConfig';
-import hipChatConfig from './hipChatConfig';
-import projects from './projects';
-import schedulingConfig from './schedulingConfig';
-import session from './session';
-import system from './system';
-import refresh from './refresh';
+import about from 'store/reducers/about';
+import audit from 'store/reducers/audit';
+import config from 'store/reducers/config';
+import descriptors from 'store/reducers/descriptors';
+import distributions from 'store/reducers/distributions';
+import emailConfig from 'store/reducers/emailConfig';
+import hipChatConfig from 'store/reducers/hipChatConfig';
+import projects from 'store/reducers/projects';
+import schedulingConfig from 'store/reducers/schedulingConfig';
+import session from 'store/reducers/session';
+import system from 'store/reducers/system';
+import refresh from 'store/reducers/refresh';
 
 
 const rootReducer = combineReducers({

@@ -24,7 +24,8 @@
 package com.synopsys.integration.alert.common.enumeration;
 
 public enum EmailPropertyKeys {
-
+    EMAIL_CATEGORY("emailCategory"),
+    EMAIL_CONTENT("content"),
     EMAIL_LOGO_IMAGE("logo.image"),
     // keys for alert descriptor data.
     TEMPLATE_KEY_BLACKDUCK_SERVER_URL("blackduck_server_url"),

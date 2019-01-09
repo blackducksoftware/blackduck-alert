@@ -28,9 +28,9 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.DateRange;
 import com.synopsys.integration.alert.common.model.LinkableItem;
-import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor;
-import com.synopsys.integration.alert.database.api.configuration.ConfigurationFieldModel;
-import com.synopsys.integration.alert.database.api.configuration.DefinedFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
+import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
@@ -92,7 +92,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     }
 
     @Override
-    public Optional<ConfigurationAccessor.ConfigurationModel> saveGlobalConfiguration() throws Exception {
+    public Optional<ConfigurationModel> saveGlobalConfiguration() throws Exception {
         final Map<String, String> valueMap = new HashMap<>();
         final String smtpHost = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST);
         final String smtpFrom = properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM);
@@ -116,7 +116,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     }
 
     @Override
-    public ConfigurationAccessor.ConfigurationModel saveDistributionConfiguration() throws Exception {
+    public ConfigurationModel saveDistributionConfiguration() throws Exception {
         final List<ConfigurationFieldModel> models = new LinkedList<>();
         models.addAll(MockConfigurationModelFactory.createEmailDistributionFields());
         return configurationAccessor.createConfiguration(EmailGroupChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION, models);
@@ -126,7 +126,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     public DistributionEvent createChannelEvent() {
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", UNIT_TEST_PROJECT_NAME, null, subTopic, Collections.emptyList());
-        List<ConfigurationAccessor.ConfigurationModel> models = List.of();
+        List<ConfigurationModel> models = List.of();
         try {
             models = configurationAccessor.getConfigurationsByDescriptorName(EmailGroupChannel.COMPONENT_NAME);
         } catch (final AlertDatabaseConstraintException e) {
@@ -134,7 +134,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
         }
 
         final Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
-        for (final ConfigurationAccessor.ConfigurationModel model : models) {
+        for (final ConfigurationModel model : models) {
             fieldMap.putAll(model.getCopyOfKeyToFieldMap());
         }
 
@@ -197,12 +197,12 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     public void testProjectOwner() throws Exception {
         // update the distribution jobs configuration and run the send test again
         // set the project owner field to false
-        final List<ConfigurationAccessor.ConfigurationModel> model = configurationAccessor.getConfigurationByDescriptorNameAndContext(getDescriptor().getName(), ConfigContextEnum.DISTRIBUTION);
-        for (final ConfigurationAccessor.ConfigurationModel configurationModel : model) {
+        final List<ConfigurationModel> model = configurationAccessor.getConfigurationByDescriptorNameAndContext(getDescriptor().getName(), ConfigContextEnum.DISTRIBUTION);
+        for (final ConfigurationModel configurationModel : model) {
             final Long configId = configurationModel.getConfigurationId();
             final List<ConfigurationFieldModel> fieldModels = MockConfigurationModelFactory.createEmailDistributionFieldsProjectOwnerOnly();
             configurationAccessor.updateConfiguration(configId, fieldModels);
         }
-        this.testDistributionConfig();
+        testDistributionConfig();
     }
 }

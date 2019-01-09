@@ -1,8 +1,8 @@
-import connect from "react-redux/es/connect/connect";
-import React, { Component } from "react";
-import { getInitialSystemSetup, saveInitialSystemSetup } from "./store/actions/system";
-import SettingsConfigurationForm from "./component/general/settings/SettingsConfigurationForm";
-import PropTypes from "prop-types";
+import connect from 'react-redux/es/connect/connect';
+import React, { Component } from 'react';
+import { getInitialSystemSetup, saveInitialSystemSetup } from 'store/actions/system';
+import SettingsConfigurationForm from 'component/general/settings/SettingsConfigurationForm';
+import PropTypes from 'prop-types';
 
 class SetupPage extends Component {
     constructor(props) {

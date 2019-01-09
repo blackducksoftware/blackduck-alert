@@ -43,7 +43,7 @@ public class RegisteredDescriptorEntity extends DatabaseEntity {
     private Long typeId;
 
     @OneToMany
-    @JoinColumn(name = "DESCRIPTOR_ID", insertable = false, updatable = false)
+    @JoinColumn(name = "DESCRIPTOR_ID", referencedColumnName = "ID", insertable = false, updatable = false)
     private List<DescriptorConfigEntity> descriptorConfigEntities;
 
     public RegisteredDescriptorEntity() {

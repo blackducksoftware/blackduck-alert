@@ -12,7 +12,7 @@ import {
     DISTRIBUTION_JOB_UPDATED,
     DISTRIBUTION_JOB_UPDATING,
     SERIALIZE
-} from '../actions/types';
+} from 'store/actions/types';
 
 const initialState = {
     fetching: false,

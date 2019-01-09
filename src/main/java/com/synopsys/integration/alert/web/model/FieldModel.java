@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
-import com.synopsys.integration.alert.database.api.configuration.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 
 public class FieldModel extends Config {
     private final Map<String, FieldValueModel> keyToValues;
