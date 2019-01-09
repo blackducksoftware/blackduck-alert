@@ -88,6 +88,8 @@ public class DescriptorMap {
         return descriptorMapping.get(name);
     }
 
+    //TODO a lot of these get methods may do better to return optionals
+
     public ChannelDescriptor getChannelDescriptor(final String name) {
         return channelDescriptorMapping.get(name);
     }
