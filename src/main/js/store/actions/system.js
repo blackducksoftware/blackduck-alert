@@ -184,7 +184,6 @@ export function saveInitialSystemSetup(setupData) {
     };
 }
 
-
 export function saveSystemSetup(setupData) {
     return (dispatch, getState) => {
         dispatch(updatingSystemSetup());
