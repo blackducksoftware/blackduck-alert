@@ -27,7 +27,7 @@ public class EmailTargetTest {
 
         model.put("example", new Object());
 
-        final EmailTarget target = new EmailTarget(emailAddress, templateName, model);
+        final EmailTarget target = new EmailTarget(emailAddress, templateName, model, contentIdsToFilePaths);
         assertEquals(emailAddress, target.getEmailAddress());
         assertEquals(templateName, target.getTemplateName());
         assertEquals(model, target.getModel());

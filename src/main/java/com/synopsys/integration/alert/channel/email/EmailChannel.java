@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.channel.email;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -84,9 +85,10 @@ public class EmailChannel extends DistributionChannel {
             throw new AlertException("ERROR: Could not determine what email addresses to send this content to.");
         }
         try {
-            final EmailMessagingService emailService = new EmailMessagingService(getAlertProperties(), emailProperties);
+            final EmailMessagingService emailService = new EmailMessagingService(getAlertProperties().getAlertTemplatesDir(), emailProperties);
 
             final HashMap<String, Object> model = new HashMap<>();
+            final Map<String, String> contentIdsToFilePaths = new HashMap<>();
             String templateName = "";
             if (BlackDuckProvider.COMPONENT_NAME.equals(provider)) {
                 templateName = "black_duck_message_content.ftl";
@@ -99,11 +101,21 @@ public class EmailChannel extends DistributionChannel {
 
                 model.put(EmailPropertyKeys.TEMPLATE_KEY_START_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
                 model.put(EmailPropertyKeys.TEMPLATE_KEY_END_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
+
+                final String imagesDirectory = getAlertProperties().getAlertImagesDir();
+                final String imageDirectoryPath;
+                if (StringUtils.isNotBlank(imagesDirectory)) {
+                    imageDirectoryPath = imagesDirectory + "/Ducky-80.png";
+                } else {
+                    imageDirectoryPath = System.getProperties().getProperty("user.dir") + "/src/main/resources/email/images/Ducky-80.png";
+                }
+                emailService.addTemplateImage(model, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), imageDirectoryPath);
+
             }
 
             if (!model.isEmpty() && StringUtils.isNotBlank(templateName)) {
                 for (final String emailAddress : emailAddresses) {
-                    final EmailTarget emailTarget = new EmailTarget(emailAddress, templateName, model);
+                    final EmailTarget emailTarget = new EmailTarget(emailAddress, templateName, model, contentIdsToFilePaths);
                     emailService.sendEmailMessage(emailTarget);
                 }
             }
@@ -111,4 +123,5 @@ public class EmailChannel extends DistributionChannel {
             throw new AlertException(ex);
         }
     }
+
 }
