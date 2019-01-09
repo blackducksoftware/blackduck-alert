@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.channel.email;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
@@ -37,7 +38,7 @@ public class EmailAddressHandler {
     private final DescriptorMap descriptorMap;
 
     @Autowired
-    public EmailAddressHandler(final DescriptorMap descriptorMap) {
+    public EmailAddressHandler(@Lazy final DescriptorMap descriptorMap) {
         this.descriptorMap = descriptorMap;
     }
 
