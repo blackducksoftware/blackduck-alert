@@ -52,11 +52,13 @@ import com.synopsys.integration.exception.IntegrationException;
 @Component(value = EmailChannel.COMPONENT_NAME)
 public class EmailChannel extends DistributionChannel {
     public static final String COMPONENT_NAME = "channel_email";
+    private final BlackDuckProperties blackDuckProperties;
     private final EmailAddressHandler emailAddressHandler;
 
     @Autowired
     public EmailChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditUtility auditUtility, final EmailAddressHandler emailAddressHandler) {
-        super(EmailChannel.COMPONENT_NAME, gson, alertProperties, blackDuckProperties, auditUtility);
+        super(EmailChannel.COMPONENT_NAME, gson, alertProperties, auditUtility);
+        this.blackDuckProperties = blackDuckProperties;
         this.emailAddressHandler = emailAddressHandler;
     }
 
@@ -95,7 +97,7 @@ public class EmailChannel extends DistributionChannel {
                 model.put(EmailPropertyKeys.EMAIL_CONTENT.getPropertyKey(), content);
                 model.put(EmailPropertyKeys.EMAIL_CATEGORY.getPropertyKey(), formatType);
                 model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), subjectLine);
-                final Optional<String> optionalBlackDuckUrl = getBlackDuckProperties().getBlackDuckUrl();
+                final Optional<String> optionalBlackDuckUrl = blackDuckProperties.getBlackDuckUrl();
                 model.put(EmailPropertyKeys.TEMPLATE_KEY_BLACKDUCK_SERVER_URL.getPropertyKey(), StringUtils.trimToEmpty(optionalBlackDuckUrl.orElse("#")));
                 model.put(EmailPropertyKeys.TEMPLATE_KEY_BLACKDUCK_PROJECT_NAME.getPropertyKey(), blackDuckProjectName);
 
