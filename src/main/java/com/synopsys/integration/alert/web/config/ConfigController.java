@@ -85,6 +85,6 @@ public class ConfigController extends BaseController {
 
     @PostMapping("/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = true) final FieldModel restModel, @RequestParam(required = false) final String destination) {
-        return controllerHandler.testConfig(restModel);
+        return controllerHandler.testConfig(restModel, destination);
     }
 }
