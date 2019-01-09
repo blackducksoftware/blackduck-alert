@@ -36,7 +36,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
+import com.synopsys.integration.alert.channel.email.EmailAddressHandler;
+import com.synopsys.integration.alert.channel.email.EmailChannel;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
@@ -53,14 +54,14 @@ import com.synopsys.integration.alert.web.model.TestConfigModel;
 
 @Component
 public class EmailDistributionDescriptorActionApi extends ChannelDistributionDescriptorActionApi {
-    private final EmailGroupChannel emailGroupChannel;
+    private final EmailAddressHandler emailAddressHandler;
     private final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
 
     @Autowired
-    public EmailDistributionDescriptorActionApi(final EmailGroupChannel emailGroupChannel, final BaseConfigurationAccessor configurationAccessor, final List<ProviderDescriptor> providerDescriptors,
-        final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor) {
-        super(emailGroupChannel, configurationAccessor, providerDescriptors);
-        this.emailGroupChannel = emailGroupChannel;
+    public EmailDistributionDescriptorActionApi(final EmailChannel emailChannel, final BaseConfigurationAccessor configurationAccessor, final List<ProviderDescriptor> providerDescriptors,
+        final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor, final EmailAddressHandler emailAddressHandler) {
+        super(emailChannel, configurationAccessor, providerDescriptors);
+        this.emailAddressHandler = emailAddressHandler;
         this.blackDuckProjectRepositoryAccessor = blackDuckProjectRepositoryAccessor;
     }
 
@@ -83,8 +84,8 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
             blackDuckProjectEntities = blackDuckProjectRepositoryAccessor.readEntities()
                                            .stream()
                                            .map(databaseEntity -> (BlackDuckProjectEntity) databaseEntity)
-                                           .filter(databaseEntity -> emailGroupChannel.doesProjectNameMatchThePattern(databaseEntity.getName(), projectNamePattern.orElse(""))
-                                                                         || emailGroupChannel.doesProjectNameMatchAConfiguredProject(databaseEntity.getName(), configuredProjects))
+                                           .filter(databaseEntity -> doesProjectNameMatchThePattern(databaseEntity.getName(), projectNamePattern.orElse(""))
+                                                                         || doesProjectNameMatchAConfiguredProject(databaseEntity.getName(), configuredProjects))
                                            .collect(Collectors.toSet());
         } else if (providerName.isPresent() && BlackDuckProvider.COMPONENT_NAME.equals(providerName.get())) {
             blackDuckProjectEntities = blackDuckProjectRepositoryAccessor.readEntities()
@@ -100,7 +101,7 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
             blackDuckProjectEntities
                 .stream()
                 .forEach(project -> {
-                    final Set<String> emailsForProject = emailGroupChannel.getEmailAddressesForProject(project, projectOwnerOnly);
+                    final Set<String> emailsForProject = emailAddressHandler.getBlackDuckEmailAddressesForProject(project, projectOwnerOnly);
                     if (emailsForProject.isEmpty()) {
                         projectsWithoutEmails.add(project.getName());
                     }
@@ -123,5 +124,13 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
         final FieldValueModel fieldValueModel = new FieldValueModel(emailAddresses, true);
         fieldModel.putField(EmailDescriptor.KEY_EMAIL_ADDRESSES, fieldValueModel);
         return super.createTestConfigModel(fieldModel, destination);
+    }
+
+    public boolean doesProjectNameMatchThePattern(final String currentProjectName, final String projectNamePattern) {
+        return currentProjectName.matches(projectNamePattern);
+    }
+
+    public boolean doesProjectNameMatchAConfiguredProject(final String currentProjectName, final Set<String> configuredProjectNames) {
+        return configuredProjectNames.contains(currentProjectName);
     }
 }
