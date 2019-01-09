@@ -73,7 +73,7 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
     @Override
     public TestConfigModel createTestConfigModel(final FieldModel fieldModel, final String destination) throws AlertFieldException {
         final Set<String> emailAddresses = new HashSet<>();
-      
+
         final Optional<String> filterByProject = fieldModel.getField(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT).getValue();
         final Optional<String> providerName = fieldModel.getField(CommonDistributionUIConfig.KEY_PROVIDER_NAME).getValue();
 
@@ -85,8 +85,7 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
                 blackDuckProjectEntities = blackDuckProjectRepositoryAccessor.readEntities()
                                                .stream()
                                                .map(databaseEntity -> (BlackDuckProjectEntity) databaseEntity)
-                                               .filter(databaseEntity -> doesProjectNameMatchThePattern(databaseEntity.getName(), projectNamePattern.orElse(""))
-                                                                             || doesProjectNameMatchAConfiguredProject(databaseEntity.getName(), configuredProjects))
+                                               .filter(databaseEntity -> doesProjectMatchConfiguration(databaseEntity.getName(), projectNamePattern.orElse(""), configuredProjects))
                                                .collect(Collectors.toSet());
             } else {
                 blackDuckProjectEntities = blackDuckProjectRepositoryAccessor.readEntities()
@@ -99,15 +98,13 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
                 final Optional<String> projectOwnerOnlyOptional = fieldModel.getField(EmailDescriptor.KEY_PROJECT_OWNER_ONLY).getValue();
                 final Boolean projectOwnerOnly = Boolean.parseBoolean(projectOwnerOnlyOptional.orElse("false"));
                 final Set<String> projectsWithoutEmails = new HashSet<>();
-                blackDuckProjectEntities
-                    .stream()
-                    .forEach(project -> {
-                        final Set<String> emailsForProject = blackDuckEmailHandler.getBlackDuckEmailAddressesForProject(project, projectOwnerOnly);
-                        if (emailsForProject.isEmpty()) {
-                            projectsWithoutEmails.add(project.getName());
-                        }
-                        emailAddresses.addAll(emailsForProject);
-                    });
+                for (final BlackDuckProjectEntity project : blackDuckProjectEntities) {
+                    final Set<String> emailsForProject = blackDuckEmailHandler.getBlackDuckEmailAddressesForProject(project, projectOwnerOnly);
+                    if (emailsForProject.isEmpty()) {
+                        projectsWithoutEmails.add(project.getName());
+                    }
+                    emailAddresses.addAll(emailsForProject);
+                }
                 if (!projectsWithoutEmails.isEmpty()) {
                     final String projects = StringUtils.join(projectsWithoutEmails, ", ");
                     final Map<String, String> fieldErrors = new HashMap<>();
@@ -128,11 +125,8 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
         return super.createTestConfigModel(fieldModel, destination);
     }
 
-    public boolean doesProjectNameMatchThePattern(final String currentProjectName, final String projectNamePattern) {
-        return currentProjectName.matches(projectNamePattern);
+    public boolean doesProjectMatchConfiguration(final String currentProjectName, final String projectNamePattern, final Set<String> configuredProjectNames) {
+        return currentProjectName.matches(projectNamePattern) || configuredProjectNames.contains(currentProjectName);
     }
 
-    public boolean doesProjectNameMatchAConfiguredProject(final String currentProjectName, final Set<String> configuredProjectNames) {
-        return configuredProjectNames.contains(currentProjectName);
-    }
 }
