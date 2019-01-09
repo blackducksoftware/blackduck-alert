@@ -28,24 +28,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
+import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 
 @Component
 public class EmailAddressHandler {
-    private final BlackDuckProvider blackDuckProvider;
+    private final DescriptorMap descriptorMap;
 
     @Autowired
-    public EmailAddressHandler(final BlackDuckProvider blackDuckProvider) {
-        this.blackDuckProvider = blackDuckProvider;
+    public EmailAddressHandler(final DescriptorMap descriptorMap) {
+        this.descriptorMap = descriptorMap;
     }
 
     public FieldAccessor updateEmailAddresses(final String provider, final AggregateMessageContent content, final FieldAccessor originalAccessor) {
         if (StringUtils.isBlank(provider)) {
             return originalAccessor;
         }
-        if (BlackDuckProvider.COMPONENT_NAME.equals(provider)) {
-            return blackDuckProvider.getEmailHandler().updateFieldAccessor(content, originalAccessor);
+        final ProviderDescriptor descriptor = descriptorMap.getProviderDescriptor(provider);
+        if (null != descriptor) {
+            return descriptor.getProvider().getEmailHandler().updateFieldAccessor(content, originalAccessor);
         }
         return originalAccessor;
     }
