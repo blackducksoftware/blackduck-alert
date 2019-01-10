@@ -75,8 +75,7 @@ class SettingsConfigurationForm extends Component {
     componentWillReceiveProps(nextProps) {
         if ((nextProps.fetchingSetupStatus === 'SYSTEM_SETUP_FETCHED' && nextProps.updateStatus === 'FETCHED') ||
             (this.props.fetchingSetupStatus === 'SYSTEM_SETUP_FETCHED' && this.props.updateStatus === 'FETCHED')) {
-            const newModel = Object.assign({}, this.state.settingsData, nextProps.settingsData);
-            const newState = FieldModelUtil.checkModelOrCreateEmpty(newModel, fieldNames);
+            const newState = FieldModelUtil.checkModelOrCreateEmpty(nextProps.settingsData, fieldNames);
             this.setState({
                 settingsData: newState
             });
