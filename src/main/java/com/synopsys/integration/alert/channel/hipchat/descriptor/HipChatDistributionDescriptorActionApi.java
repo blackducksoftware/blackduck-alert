@@ -31,10 +31,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
-import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.context.ChannelDistributionDescriptorActionApi;
+import com.synopsys.integration.alert.web.model.FieldModel;
 
 @Component
 public class HipChatDistributionDescriptorActionApi extends ChannelDistributionDescriptorActionApi {
@@ -45,8 +45,8 @@ public class HipChatDistributionDescriptorActionApi extends ChannelDistributionD
     }
 
     @Override
-    public void validateChannelConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
-        final String roomId = fieldAccessor.getString(HipChatDescriptor.KEY_ROOM_ID).orElse(null);
+    public void validateChannelConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) {
+        final String roomId = fieldModel.getField(HipChatDescriptor.KEY_ROOM_ID).flatMap(field -> field.getValue()).orElse(null);
         if (StringUtils.isBlank(roomId)) {
             fieldErrors.put("roomId", "A Room Id is required.");
         } else if (!StringUtils.isNumeric(roomId)) {

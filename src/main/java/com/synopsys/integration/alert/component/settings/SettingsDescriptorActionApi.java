@@ -25,9 +25,9 @@ package com.synopsys.integration.alert.component.settings;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.api.user.UserAccessor;
@@ -61,21 +60,63 @@ public class SettingsDescriptorActionApi extends DescriptorActionApi {
     }
 
     @Override
-    public void validateConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
-        final String defaultUserPassword = fieldAccessor.getString(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD).orElse(null);
-        final String encryptionPassword = fieldAccessor.getString(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD).orElse(null);
-        final String encryptionSalt = fieldAccessor.getString(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT).orElse(null);
+    public void validateConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) {
+        final Optional<FieldValueModel> defaultUserPassword = fieldModel.getField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD);
+        final Optional<FieldValueModel> encryptionPassword = fieldModel.getField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD);
+        final Optional<FieldValueModel> encryptionSalt = fieldModel.getField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT);
 
-        if (StringUtils.isBlank(defaultUserPassword)) {
-            fieldErrors.put(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, SettingsDescriptor.FIELD_ERROR_DEFAULT_USER_PASSWORD);
-        }
+        validateField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, fieldModel, (valueModel) -> {
+            if (StringUtils.isBlank(valueModel.getValue().orElse(""))) {
+                fieldErrors.put(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, SettingsDescriptor.FIELD_ERROR_DEFAULT_USER_PASSWORD);
+            }
+            return null;
+        });
 
-        if (StringUtils.isBlank(encryptionPassword)) {
-            fieldErrors.put(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, SettingsDescriptor.FIELD_ERROR_ENCRYPTION_PASSWORD);
-        }
+        validateField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, fieldModel, (valueModel) -> {
+            if (StringUtils.isBlank(valueModel.getValue().orElse(""))) {
+                fieldErrors.put(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, SettingsDescriptor.FIELD_ERROR_ENCRYPTION_PASSWORD);
+            }
+            return null;
+        });
 
-        if (StringUtils.isBlank(encryptionSalt)) {
-            fieldErrors.put(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, SettingsDescriptor.FIELD_ERROR_ENCRYPTION_GLOBAL_SALT);
+        validateField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, fieldModel, (valueModel) -> {
+            if (StringUtils.isBlank(valueModel.getValue().orElse(""))) {
+                fieldErrors.put(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, SettingsDescriptor.FIELD_ERROR_ENCRYPTION_GLOBAL_SALT);
+            }
+            return null;
+        });
+
+        //        if (defaultUserPassword.isPresent()) {
+        //            final FieldValueModel valueModel = defaultUserPassword.get();
+        //            final boolean validate = valueModel.isSet() == false || (valueModel.isSet() && valueModel.hasValues());
+        //            if (validate && StringUtils.isBlank(valueModel.getValue().orElse(""))) {
+        //                fieldErrors.put(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, SettingsDescriptor.FIELD_ERROR_DEFAULT_USER_PASSWORD);
+        //            }
+        //        }
+        //        if (encryptionPassword.isPresent()) {
+        //            final FieldValueModel valueModel = encryptionPassword.get();
+        //            final boolean validate = valueModel.isSet() == false || (valueModel.isSet() && valueModel.hasValues());
+        //            if (validate && StringUtils.isBlank(valueModel.getValue().orElse(""))) {
+        //                fieldErrors.put(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, SettingsDescriptor.FIELD_ERROR_ENCRYPTION_PASSWORD);
+        //            }
+        //        }
+        //        if (encryptionSalt.isPresent()) {
+        //            final FieldValueModel valueModel = encryptionSalt.get();
+        //            final boolean validate = valueModel.isSet() == false || (valueModel.isSet() && valueModel.hasValues());
+        //            if (validate && StringUtils.isBlank(valueModel.getValue().orElse(""))) {
+        //                fieldErrors.put(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, SettingsDescriptor.FIELD_ERROR_ENCRYPTION_GLOBAL_SALT);
+        //            }
+        //        }
+    }
+
+    private void validateField(final String fieldKey, final FieldModel fieldModel, final Function<FieldValueModel, Void> validationFunction) {
+        final Optional<FieldValueModel> optionalField = fieldModel.getField(fieldKey);
+        if (optionalField.isPresent()) {
+            final FieldValueModel valueModel = optionalField.get();
+            final boolean validateField = !valueModel.isSet() || valueModel.hasValues();
+            if (validateField) {
+                validationFunction.apply(valueModel);
+            }
         }
     }
 
@@ -88,9 +129,9 @@ public class SettingsDescriptorActionApi extends DescriptorActionApi {
     public void readConfig(final FieldModel fieldModel) {
         final Optional<UserModel> defaultUser = userAccessor.getUser("sysadmin");
         final boolean defaultUserPasswordSet = defaultUser.isPresent() && StringUtils.isNotBlank(defaultUser.get().getPassword());
-        fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, new FieldValueModel(List.of(""), defaultUserPasswordSet));
-        fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, new FieldValueModel(List.of(""), encryptionUtility.isPasswordSet()));
-        fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(""), encryptionUtility.isPasswordSet()));
+        fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, new FieldValueModel(null, defaultUserPasswordSet));
+        fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, new FieldValueModel(null, encryptionUtility.isPasswordSet()));
+        fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(null, encryptionUtility.isPasswordSet()));
     }
 
     @Override
@@ -120,22 +161,32 @@ public class SettingsDescriptorActionApi extends DescriptorActionApi {
     }
 
     private void saveDefaultAdminUserPassword(final FieldModel fieldModel) {
-        final String password = fieldModel.getField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD).getValue().orElse("");
-        if (StringUtils.isNotBlank(password)) {
-            userAccessor.changeUserPassword(UserAccessor.DEFAULT_ADMIN_USER, password);
+        final Optional<FieldValueModel> optionalPassword = fieldModel.getField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD);
+        if (optionalPassword.isPresent()) {
+            final String password = optionalPassword.get().getValue().orElse("");
+            if (StringUtils.isNotBlank(password)) {
+                userAccessor.changeUserPassword(UserAccessor.DEFAULT_ADMIN_USER, password);
+            }
         }
     }
 
     private void saveEncryptionProperties(final FieldModel fieldModel) {
         try {
-            final String passwordToSave = fieldModel.getField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD).getValue().orElse("");
-            final String saltToSave = fieldModel.getField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT).getValue().orElse("");
-            if (StringUtils.isNotBlank(passwordToSave)) {
-                encryptionUtility.updatePasswordField(passwordToSave);
+            final Optional<FieldValueModel> optionalEncryptionPassword = fieldModel.getField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD);
+            final Optional<FieldValueModel> optionalEncryptionSalt = fieldModel.getField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT);
+
+            if (optionalEncryptionPassword.isPresent()) {
+                final String passwordToSave = optionalEncryptionPassword.get().getValue().orElse("");
+                if (StringUtils.isNotBlank(passwordToSave)) {
+                    encryptionUtility.updatePasswordField(passwordToSave);
+                }
             }
 
-            if (StringUtils.isNotBlank(saltToSave)) {
-                encryptionUtility.updateSaltField(saltToSave);
+            if (optionalEncryptionSalt.isPresent()) {
+                final String saltToSave = optionalEncryptionSalt.get().getValue().orElse("");
+                if (StringUtils.isNotBlank(saltToSave)) {
+                    encryptionUtility.updateSaltField(saltToSave);
+                }
             }
         } catch (final IllegalArgumentException | IOException ex) {
             logger.error("Error saving encryption configuration.", ex);

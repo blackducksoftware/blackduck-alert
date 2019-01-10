@@ -31,10 +31,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
-import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.context.ChannelDistributionDescriptorActionApi;
+import com.synopsys.integration.alert.web.model.FieldModel;
 
 @Component
 public class SlackDistributionDescriptorActionApi extends ChannelDistributionDescriptorActionApi {
@@ -45,9 +45,9 @@ public class SlackDistributionDescriptorActionApi extends ChannelDistributionDes
     }
 
     @Override
-    public void validateChannelConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
-        final String webhook = fieldAccessor.getString(SlackDescriptor.KEY_WEBHOOK).orElse(null);
-        final String channelName = fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_NAME).orElse(null);
+    public void validateChannelConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) {
+        final String webhook = fieldModel.getField(SlackDescriptor.KEY_WEBHOOK).flatMap(field -> field.getValue()).orElse(null);
+        final String channelName = fieldModel.getField(SlackDescriptor.KEY_CHANNEL_NAME).flatMap(field -> field.getValue()).orElse(null);
         if (StringUtils.isBlank(webhook)) {
             fieldErrors.put("webhook", "A webhook is required.");
         }

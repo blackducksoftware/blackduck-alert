@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.connection.RestConnection;
@@ -49,8 +50,8 @@ public class HipChatGlobalDescriptorActionApi extends DescriptorActionApi {
     }
 
     @Override
-    public void validateConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
-        final String apiKey = fieldAccessor.getString(HipChatDescriptor.KEY_API_KEY).orElse(null);
+    public void validateConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) {
+        final String apiKey = fieldModel.getField(HipChatDescriptor.KEY_API_KEY).flatMap(field -> field.getValue()).orElse(null);
         if (StringUtils.isBlank(apiKey)) {
             fieldErrors.put("apiKey", "ApiKey can't be blank");
         }

@@ -148,7 +148,7 @@ public class ConfigActions {
     public String validateConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) throws AlertFieldException {
         final DescriptorActionApi descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
         if (null != descriptorActionApi) {
-            descriptorActionApi.validateConfig(fieldModel.convertToFieldAccessor(), fieldErrors);
+            descriptorActionApi.validateConfig(fieldModel, fieldErrors);
         } else {
             logger.error("Could not find a Descriptor with the name: " + fieldModel.getDescriptorName());
         }

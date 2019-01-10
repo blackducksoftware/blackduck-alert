@@ -29,7 +29,6 @@ import java.util.Map;
 
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.configuration.CommonDistributionConfiguration;
-import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
@@ -40,7 +39,7 @@ import com.synopsys.integration.rest.RestConstants;
 
 public abstract class DescriptorActionApi {
 
-    public abstract void validateConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors);
+    public abstract void validateConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors);
 
     public TestConfigModel createTestConfigModel(final FieldModel fieldModel, final String destination) throws AlertFieldException {
         return new TestConfigModel(fieldModel, destination);

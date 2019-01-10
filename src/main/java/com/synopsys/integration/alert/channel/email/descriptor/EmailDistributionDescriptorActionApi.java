@@ -37,7 +37,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
-import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.context.ChannelDistributionDescriptorActionApi;
@@ -65,7 +64,7 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
     }
 
     @Override
-    public void validateChannelConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
+    public void validateChannelConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) {
 
     }
 
@@ -74,12 +73,14 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
         final Set<String> emailAddresses = new HashSet<>();
         Set<BlackDuckProjectEntity> blackDuckProjectEntities = null;
 
-        final Optional<String> filterByProject = fieldModel.getField(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT).getValue();
-        final Optional<String> providerName = fieldModel.getField(CommonDistributionUIConfig.KEY_PROVIDER_NAME).getValue();
+        final Optional<String> filterByProject = fieldModel.getField(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT).flatMap(field -> field.getValue());
+        final Optional<String> providerName = fieldModel.getField(CommonDistributionUIConfig.KEY_PROVIDER_NAME).flatMap(field -> field.getValue());
 
         if (filterByProject.isPresent() && BooleanUtils.toBoolean(filterByProject.get())) {
-            final Set<String> configuredProjects = fieldModel.getField(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT).getValues().stream().collect(Collectors.toSet());
-            final Optional<String> projectNamePattern = fieldModel.getField(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN).getValue();
+            final Optional<FieldValueModel> projectField = fieldModel.getField(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT);
+
+            final Set<String> configuredProjects = projectField.map(FieldValueModel::getValues).orElse(Set.of()).stream().collect(Collectors.toSet());
+            final Optional<String> projectNamePattern = fieldModel.getField(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN).flatMap(field -> field.getValue());
             blackDuckProjectEntities = blackDuckProjectRepositoryAccessor.readEntities()
                                            .stream()
                                            .map(databaseEntity -> (BlackDuckProjectEntity) databaseEntity)
@@ -94,7 +95,7 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
 
         }
         if (null != blackDuckProjectEntities) {
-            final Optional<String> projectOwnerOnlyOptional = fieldModel.getField(EmailDescriptor.KEY_PROJECT_OWNER_ONLY).getValue();
+            final Optional<String> projectOwnerOnlyOptional = fieldModel.getField(EmailDescriptor.KEY_PROJECT_OWNER_ONLY).flatMap(field -> field.getValue());
             final Boolean projectOwnerOnly = Boolean.parseBoolean(projectOwnerOnlyOptional.orElse("false"));
             final Set<String> projectsWithoutEmails = new HashSet<>();
             blackDuckProjectEntities
