@@ -24,7 +24,7 @@
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -62,7 +62,7 @@ public class BlackDuckDistributionDescriptorActionApi extends ProviderDistributi
                 fieldErrors.put(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN, "Project name pattern is not a regular expression. " + e.getMessage());
             }
         }
-        final Collection<String> configuredProjects = fieldModel.getField(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT).flatMap(field -> Optional.ofNullable(field.getValues())).orElse(Collections.emptyList());
+        final Collection<String> configuredProjects = fieldModel.getField(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT).flatMap(field -> Optional.ofNullable(field.getValues())).orElse(List.of());
         if (contentConverter.getBooleanValue(filterByProject) && (null == configuredProjects || configuredProjects.isEmpty()) && StringUtils.isBlank(projectNamePattern)) {
             fieldErrors.put(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT, "You must select at least one project.");
         }
