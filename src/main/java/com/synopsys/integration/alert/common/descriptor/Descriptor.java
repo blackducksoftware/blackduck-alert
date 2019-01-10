@@ -32,13 +32,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
+import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.util.Stringable;
@@ -117,9 +117,9 @@ public abstract class Descriptor extends Stringable {
         return uiConfigs.containsKey(actionApiType);
     }
 
-    public void validateConfig(final ConfigContextEnum actionApiType, final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
+    public void validateConfig(final ConfigContextEnum actionApiType, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
         final Optional<DescriptorActionApi> actionApi = getActionApi(actionApiType);
-        actionApi.ifPresent(descriptorActionApi -> descriptorActionApi.validateConfig(fieldAccessor, fieldErrors));
+        actionApi.ifPresent(descriptorActionApi -> descriptorActionApi.validateConfig(fieldModel, fieldErrors));
     }
 
     public void testConfig(final ConfigContextEnum actionApiType, final TestConfigModel testConfig) throws IntegrationException {

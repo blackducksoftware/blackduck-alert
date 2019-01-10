@@ -68,14 +68,14 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
         distributionChannel.sendMessage(event);
     }
 
-    public abstract void validateChannelConfig(FieldAccessor fieldAccessor, Map<String, String> fieldErrors);
+    public abstract void validateChannelConfig(FieldModel fieldModel, Map<String, String> fieldErrors);
 
     public DistributionEvent createChannelTestEvent(final FieldModel fieldModel) {
         final AggregateMessageContent messageContent = createTestNotificationContent();
 
-        final String channelName = fieldModel.getField(CommonDistributionUIConfig.KEY_CHANNEL_NAME).getValue().orElse("");
-        final String providerName = fieldModel.getField(CommonDistributionUIConfig.KEY_PROVIDER_NAME).getValue().orElse("");
-        final String formatType = fieldModel.getField(ProviderDistributionUIConfig.KEY_FORMAT_TYPE).getValue().orElse("");
+        final String channelName = fieldModel.getField(CommonDistributionUIConfig.KEY_CHANNEL_NAME).flatMap(field -> field.getValue()).orElse("");
+        final String providerName = fieldModel.getField(CommonDistributionUIConfig.KEY_PROVIDER_NAME).flatMap(field -> field.getValue()).orElse("");
+        final String formatType = fieldModel.getField(ProviderDistributionUIConfig.KEY_FORMAT_TYPE).flatMap(field -> field.getValue()).orElse("");
 
         final FieldAccessor fieldAccessor = fieldModel.convertToFieldAccessor();
 
@@ -84,10 +84,10 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
 
     // TODO this has references to Blackduck for verification and will need to be removed.
     @Override
-    public void validateConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
+    public void validateConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) {
         final String descriptorName = distributionChannel.getDistributionType();
 
-        final String jobName = fieldAccessor.getString(CommonDistributionUIConfig.KEY_NAME).orElse(null);
+        final String jobName = fieldModel.getField(CommonDistributionUIConfig.KEY_NAME).flatMap(field -> field.getValue()).orElse(null);
         if (StringUtils.isNotBlank(jobName)) {
             try {
                 final List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorName(descriptorName);
@@ -105,14 +105,14 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
         } else {
             fieldErrors.put(CommonDistributionUIConfig.KEY_NAME, "Name cannot be blank.");
         }
-        if (StringUtils.isBlank(fieldAccessor.getString(CommonDistributionUIConfig.KEY_CHANNEL_NAME).orElse(null))) {
+        if (StringUtils.isBlank(fieldModel.getField(CommonDistributionUIConfig.KEY_CHANNEL_NAME).flatMap(field -> field.getValue()).orElse(null))) {
             fieldErrors.put(CommonDistributionUIConfig.KEY_CHANNEL_NAME, "You must choose a distribution type.");
         }
-        if (StringUtils.isBlank(fieldAccessor.getString(CommonDistributionUIConfig.KEY_PROVIDER_NAME).orElse(null))) {
+        if (StringUtils.isBlank(fieldModel.getField(CommonDistributionUIConfig.KEY_PROVIDER_NAME).flatMap(field -> field.getValue()).orElse(null))) {
             fieldErrors.put(CommonDistributionUIConfig.KEY_PROVIDER_NAME, "You must choose a provider.");
         }
 
-        validateChannelConfig(fieldAccessor, fieldErrors);
+        validateChannelConfig(fieldModel, fieldErrors);
     }
 
     @Override

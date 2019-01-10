@@ -24,12 +24,14 @@
 package com.synopsys.integration.alert.component.scheduling;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
+import com.synopsys.integration.alert.web.model.FieldModel;
+import com.synopsys.integration.alert.web.model.FieldValueModel;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -37,16 +39,22 @@ import com.synopsys.integration.exception.IntegrationException;
 public class SchedulingDescriptorActionApi extends DescriptorActionApi {
 
     @Override
-    public void validateConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
-        final String dailyDigestHourOfDay = fieldAccessor.getString(SchedulingUIConfig.KEY_DAILY_DIGEST_HOUR_OF_DAY).orElse(null);
-        final String purgeDataFrequency = fieldAccessor.getString(SchedulingUIConfig.KEY_PURGE_DATA_FREQUENCY_DAYS).orElse(null);
+    public void validateConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) {
+        final Optional<FieldValueModel> optionalDigestHourOfDay = fieldModel.getField(SchedulingUIConfig.KEY_DAILY_DIGEST_HOUR_OF_DAY);
+        final Optional<FieldValueModel> optionalPurgeDataFrequency = fieldModel.getField(SchedulingUIConfig.KEY_PURGE_DATA_FREQUENCY_DAYS);
 
-        if (isNotValid(dailyDigestHourOfDay, 0, 23)) {
-            fieldErrors.put(SchedulingUIConfig.KEY_DAILY_DIGEST_HOUR_OF_DAY, "Must be a number between 0 and 23");
+        if (optionalDigestHourOfDay.isPresent()) {
+            final String dailyDigestHourOfDay = optionalDigestHourOfDay.get().getValue().orElse(null);
+            if (isNotValid(dailyDigestHourOfDay, 0, 23)) {
+                fieldErrors.put(SchedulingUIConfig.KEY_DAILY_DIGEST_HOUR_OF_DAY, "Must be a number between 0 and 23");
+            }
         }
 
-        if (isNotValid(purgeDataFrequency, 1, 7)) {
-            fieldErrors.put(SchedulingUIConfig.KEY_PURGE_DATA_FREQUENCY_DAYS, "Must be a number between 1 and 7");
+        if (optionalPurgeDataFrequency.isPresent()) {
+            final String purgeDataFrequency = optionalPurgeDataFrequency.get().getValue().orElse(null);
+            if (isNotValid(purgeDataFrequency, 1, 7)) {
+                fieldErrors.put(SchedulingUIConfig.KEY_PURGE_DATA_FREQUENCY_DAYS, "Must be a number between 1 and 7");
+            }
         }
     }
 

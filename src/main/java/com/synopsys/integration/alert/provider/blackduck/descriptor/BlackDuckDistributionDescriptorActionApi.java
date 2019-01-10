@@ -24,7 +24,9 @@
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -33,8 +35,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.context.ProviderDistributionDescriptorActionApi;
+import com.synopsys.integration.alert.web.model.FieldModel;
 
 @Component
 public class BlackDuckDistributionDescriptorActionApi extends ProviderDistributionDescriptorActionApi {
@@ -46,12 +48,13 @@ public class BlackDuckDistributionDescriptorActionApi extends ProviderDistributi
     }
 
     @Override
-    public void validateProviderDistributionConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
-        final String filterByProject = fieldAccessor.getString(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT).orElse(null);
+    public void validateProviderDistributionConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) {
+        final String filterByProject = fieldModel.getField(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT).flatMap(field -> field.getValue()).orElse(null);
         if (StringUtils.isNotBlank(filterByProject) && !contentConverter.isBoolean(filterByProject)) {
             fieldErrors.put(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT, "Not a Boolean.");
         }
-        final String projectNamePattern = fieldAccessor.getString(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN).orElse(null);
+
+        final String projectNamePattern = fieldModel.getField(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN).flatMap(field -> field.getValue()).orElse(null);
         if (StringUtils.isNotBlank(projectNamePattern)) {
             try {
                 Pattern.compile(projectNamePattern);
@@ -59,7 +62,7 @@ public class BlackDuckDistributionDescriptorActionApi extends ProviderDistributi
                 fieldErrors.put(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN, "Project name pattern is not a regular expression. " + e.getMessage());
             }
         }
-        final Collection<String> configuredProjects = fieldAccessor.getAllStrings(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT);
+        final Collection<String> configuredProjects = fieldModel.getField(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT).flatMap(field -> Optional.ofNullable(field.getValues())).orElse(Collections.emptyList());
         if (contentConverter.getBooleanValue(filterByProject) && (null == configuredProjects || configuredProjects.isEmpty()) && StringUtils.isBlank(projectNamePattern)) {
             fieldErrors.put(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT, "You must select at least one project.");
         }

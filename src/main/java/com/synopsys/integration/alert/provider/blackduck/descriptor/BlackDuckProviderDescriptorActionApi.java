@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -64,9 +63,10 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
     }
 
     @Override
-    public void validateConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
-        final String timeout = fieldAccessor.getString(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT).orElse(null);
-        final String apiKey = fieldAccessor.getString(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY).orElse(null);
+    public void validateConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) {
+        final String timeout = fieldModel.getField(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT).flatMap(field -> field.getValue()).orElse(null);
+        final String apiKey = fieldModel.getField(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY).flatMap(field -> field.getValue()).orElse(null);
+
         if (StringUtils.isNotBlank(timeout) && !StringUtils.isNumeric(timeout)) {
             fieldErrors.put(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, "Not an Integer.");
         }
@@ -83,11 +83,11 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
         final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
 
         final FieldModel fieldModel = testConfig.getFieldModel();
-        validateFieldFormatting(fieldModel.convertToFieldAccessor());
+        validateFieldFormatting(fieldModel);
 
-        final String apiToken = fieldModel.getField(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY).getValue().orElse("");
-        final String url = fieldModel.getField(BlackDuckDescriptor.KEY_BLACKDUCK_URL).getValue().orElse("");
-        final String timeout = fieldModel.getField(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT).getValue().orElse("");
+        final String apiToken = fieldModel.getField(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY).flatMap(field -> field.getValue()).orElse("");
+        final String url = fieldModel.getField(BlackDuckDescriptor.KEY_BLACKDUCK_URL).flatMap(field -> field.getValue()).orElse("");
+        final String timeout = fieldModel.getField(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT).flatMap(field -> field.getValue()).orElse("");
         final BlackDuckServerConfigBuilder blackDuckServerConfigBuilder = blackDuckProperties.createServerConfigBuilderWithoutAuthentication(intLogger, NumberUtils.toInt(timeout, 300));
         blackDuckServerConfigBuilder.setApiToken(apiToken);
         blackDuckServerConfigBuilder.setUrl(url);
@@ -108,9 +108,9 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
         }
     }
 
-    public void validateFieldFormatting(final FieldAccessor fieldAccessor) throws AlertFieldException {
+    public void validateFieldFormatting(final FieldModel fieldModel) throws AlertFieldException {
         final Map<String, String> fieldErrors = new HashMap<>();
-        validateConfig(fieldAccessor, fieldErrors);
+        validateConfig(fieldModel, fieldErrors);
 
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
