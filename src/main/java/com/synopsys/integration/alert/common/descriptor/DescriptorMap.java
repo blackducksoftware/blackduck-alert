@@ -84,22 +84,22 @@ public class DescriptorMap {
         return restApis;
     }
 
-    public Descriptor getDescriptor(final String name) {
-        return descriptorMapping.get(name);
+    public Optional<Descriptor> getDescriptor(final String name) {
+        return Optional.ofNullable(descriptorMapping.get(name));
     }
 
     //TODO a lot of these get methods may do better to return optionals
 
-    public ChannelDescriptor getChannelDescriptor(final String name) {
-        return channelDescriptorMapping.get(name);
+    public Optional<ChannelDescriptor> getChannelDescriptor(final String name) {
+        return Optional.ofNullable(channelDescriptorMapping.get(name));
     }
 
-    public ProviderDescriptor getProviderDescriptor(final String name) {
-        return providerDescriptorMapping.get(name);
+    public Optional<ProviderDescriptor> getProviderDescriptor(final String name) {
+        return Optional.ofNullable(providerDescriptorMapping.get(name));
     }
 
-    public ComponentDescriptor getComponentDescriptor(final String name) {
-        return componentDescriptorMapping.get(name);
+    public Optional<ComponentDescriptor> getComponentDescriptor(final String name) {
+        return Optional.ofNullable(componentDescriptorMapping.get(name));
     }
 
     public Map<String, Descriptor> getDescriptorMap() {

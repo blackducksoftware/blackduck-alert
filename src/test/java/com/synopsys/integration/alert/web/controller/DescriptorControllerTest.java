@@ -2,9 +2,11 @@ package com.synopsys.integration.alert.web.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +25,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -73,7 +76,9 @@ public class DescriptorControllerTest extends AlertIntegrationTest {
 
         final List<DescriptorMetadata> componentList = gson.fromJson(body, componentListType.getType());
         assertNotNull(componentList);
-        final List<DescriptorMetadata> expected = descriptorMap.getDescriptor("channel_email").getAllMetaData();
+        final Optional<Descriptor> channelDescriptor = descriptorMap.getDescriptor("channel_email");
+        assertTrue(channelDescriptor.isPresent());
+        final List<DescriptorMetadata> expected = channelDescriptor.get().getAllMetaData();
         assertEquals(expected.size(), componentList.size());
     }
 
