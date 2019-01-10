@@ -30,12 +30,12 @@ public class UpgradeProcessorTestIT extends AlertIntegrationTest {
     public void runUpgradeTest() {
         baseSettingsKeyAccessor.deleteSettingsKeyByKey(AlertVersionUtil.KEY_ALERT_VERSION);
 
-        final DescriptorRegistrator descriptorRegistrator = Mockito.mock(DescriptorRegistrator.class);
-        Mockito.doNothing().when(descriptorRegistrator).registerDescriptors();
+        final DescriptorRegistrar descriptorRegistrar = Mockito.mock(DescriptorRegistrar.class);
+        Mockito.doNothing().when(descriptorRegistrar).registerDescriptors();
         final AboutReader aboutReader = Mockito.mock(AboutReader.class);
         Mockito.when(aboutReader.getProductVersion()).thenReturn("2");
         final AlertVersionUtil alertVersionUtil = new AlertVersionUtil(baseSettingsKeyAccessor, aboutReader);
-        final UpgradeProcessor upgradeProcessor = new UpgradeProcessor(alertVersionUtil, descriptorRegistrator);
+        final UpgradeProcessor upgradeProcessor = new UpgradeProcessor(alertVersionUtil, descriptorRegistrar);
 
         upgradeProcessor.runUpgrade();
 
@@ -48,12 +48,12 @@ public class UpgradeProcessorTestIT extends AlertIntegrationTest {
     public void shouldUpgradeTest() {
         baseSettingsKeyAccessor.saveSettingsKey(AlertVersionUtil.KEY_ALERT_VERSION, "2");
 
-        final DescriptorRegistrator descriptorRegistrator = Mockito.mock(DescriptorRegistrator.class);
-        Mockito.doNothing().when(descriptorRegistrator).registerDescriptors();
+        final DescriptorRegistrar descriptorRegistrar = Mockito.mock(DescriptorRegistrar.class);
+        Mockito.doNothing().when(descriptorRegistrar).registerDescriptors();
         final AboutReader aboutReader = Mockito.mock(AboutReader.class);
         Mockito.when(aboutReader.getProductVersion()).thenReturn("2");
         final AlertVersionUtil alertVersionUtil = new AlertVersionUtil(baseSettingsKeyAccessor, aboutReader);
-        final UpgradeProcessor upgradeProcessor = new UpgradeProcessor(alertVersionUtil, descriptorRegistrator);
+        final UpgradeProcessor upgradeProcessor = new UpgradeProcessor(alertVersionUtil, descriptorRegistrar);
 
         assertFalse(upgradeProcessor.shouldUpgrade());
     }
@@ -62,12 +62,12 @@ public class UpgradeProcessorTestIT extends AlertIntegrationTest {
     public void shouldNotUpgradeTest() {
         baseSettingsKeyAccessor.saveSettingsKey(AlertVersionUtil.KEY_ALERT_VERSION, "1");
 
-        final DescriptorRegistrator descriptorRegistrator = Mockito.mock(DescriptorRegistrator.class);
-        Mockito.doNothing().when(descriptorRegistrator).registerDescriptors();
+        final DescriptorRegistrar descriptorRegistrar = Mockito.mock(DescriptorRegistrar.class);
+        Mockito.doNothing().when(descriptorRegistrar).registerDescriptors();
         final AboutReader aboutReader = Mockito.mock(AboutReader.class);
         Mockito.when(aboutReader.getProductVersion()).thenReturn("2");
         final AlertVersionUtil alertVersionUtil = new AlertVersionUtil(baseSettingsKeyAccessor, aboutReader);
-        final UpgradeProcessor upgradeProcessor = new UpgradeProcessor(alertVersionUtil, descriptorRegistrator);
+        final UpgradeProcessor upgradeProcessor = new UpgradeProcessor(alertVersionUtil, descriptorRegistrar);
 
         assertTrue(upgradeProcessor.shouldUpgrade());
     }
