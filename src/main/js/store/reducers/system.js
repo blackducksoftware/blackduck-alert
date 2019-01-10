@@ -58,7 +58,8 @@ const config = (state = initialState, action) => {
             return Object.assign({}, state, {
                 fetchingSetupStatus: SYSTEM_SETUP_FETCHED,
                 updateStatus: 'FETCHED',
-                settingsData: action.settingsData
+                settingsData: action.settingsData,
+                error: {}
             });
         case SYSTEM_SETUP_FETCH_ERROR:
             return Object.assign({}, state, {
@@ -77,7 +78,8 @@ const config = (state = initialState, action) => {
         case SYSTEM_SETUP_UPDATED:
             return Object.assign({}, state, {
                 fetchingSetupStatus: SYSTEM_SETUP_UPDATED,
-                updateStatus: 'UPDATED'
+                updateStatus: 'UPDATED',
+                error: {}
             });
         case SYSTEM_SETUP_UPDATE_ERROR:
             return Object.assign({}, state, {

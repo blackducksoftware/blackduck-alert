@@ -3,6 +3,7 @@ import CheckboxInput from 'field/input/CheckboxInput';
 import TextInput from 'field/input/TextInput';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import Select from 'react-select';
 import CollapsiblePane from 'component/common/CollapsiblePane';
 import ConfigButtons from 'component/common/ConfigButtons';
 import * as FieldModelUtil from 'util/fieldModelUtilities';
@@ -63,6 +64,7 @@ class SettingsConfigurationForm extends Component {
         super(props);
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleSingleSelectChange = this.handleSingleSelectChange.bind(this);
         this.state = {
             settingsData: FieldModelUtil.createEmptyFieldModel(fieldNames)
         };
@@ -82,12 +84,33 @@ class SettingsConfigurationForm extends Component {
         }
     }
 
+    getAuthenticationTypes() {
+        return [{ label: 'Simple', value: 'simple' },
+            { label: 'None', value: 'none' },
+            { label: 'Digest-MD5', value: 'digest' }];
+    }
+
     handleChange({ target }) {
-        const value = target.type === 'checkbox' ? target.checked : target.value;
+        const value = target.type === 'checkbox' ? target.checked.toString() : target.value;
         const newState = FieldModelUtil.updateFieldModelSingleValue(this.state.settingsData, target.name, value);
         this.setState({
             settingsData: newState
         });
+    }
+
+    handleSingleSelectChange(selectedValue) {
+        if (selectedValue) {
+            const selected = selectedValue.value;
+            const newState = FieldModelUtil.updateFieldModelSingleValue(this.state.settingsData, KEY_LDAP_AUTHENTICATION_TYPE, selected);
+            this.setState({
+                settingsData: newState
+            });
+        } else {
+            const newState = FieldModelUtil.updateFieldModelSingleValue(this.state.settingsData, KEY_LDAP_AUTHENTICATION_TYPE, null);
+            this.setState({
+                settingsData: newState
+            });
+        }
     }
 
     handleSubmit(evt) {
@@ -97,6 +120,9 @@ class SettingsConfigurationForm extends Component {
 
     render() {
         const fieldModel = this.state.settingsData;
+        const selectedAuthenticationType = FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_LDAP_AUTHENTICATION_TYPE);
+        const authenticationTypeOptions = this.getAuthenticationTypes();
+        const selectedAuthenticationOption = authenticationTypeOptions.filter(option => option.value === selectedAuthenticationType);
         return (
             <form method="POST" className="form-horizontal loginForm" onSubmit={this.handleSubmit}>
                 <div className="form-group">
@@ -189,7 +215,7 @@ class SettingsConfigurationForm extends Component {
                                 id={KEY_LDAP_ENABLED}
                                 label="Enabled"
                                 name={KEY_LDAP_ENABLED}
-                                value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_LDAP_ENABLED)}
+                                isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, KEY_LDAP_ENABLED)}
                                 onChange={this.handleChange}
                                 errorName={FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_ENABLED)}
                                 errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_ENABLED)]}
@@ -222,15 +248,17 @@ class SettingsConfigurationForm extends Component {
                                 errorName={FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_MANAGER_PASSWORD)}
                                 errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_MANAGER_PASSWORD)]}
                             />
-                            <TextInput
-                                id={KEY_LDAP_AUTHENTICATION_TYPE}
-                                label="Authentication Type"
-                                name={KEY_LDAP_AUTHENTICATION_TYPE}
-                                value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_LDAP_AUTHENTICATION_TYPE)}
-                                onChange={this.handleChange}
-                                errorName={FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_AUTHENTICATION_TYPE)}
-                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_AUTHENTICATION_TYPE)]}
-                            />
+                            <label className="col-sm-3 col-form-label text-right">Authentication Type</label>
+                            <div className="d-inline-flex flex-column p-2 col-sm-9">
+                                <Select
+                                    id={KEY_LDAP_AUTHENTICATION_TYPE}
+                                    className="typeAheadField"
+                                    onChange={this.handleSingleSelectChange}
+                                    options={this.getAuthenticationTypes()}
+                                    placeholder="Choose authentication type"
+                                    value={selectedAuthenticationOption}
+                                />
+                            </div>
                             <TextInput
                                 id={KEY_LDAP_REFERRAL}
                                 label="Referral"
