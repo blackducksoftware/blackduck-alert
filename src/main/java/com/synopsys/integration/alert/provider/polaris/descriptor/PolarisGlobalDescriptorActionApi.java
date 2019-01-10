@@ -87,11 +87,10 @@ public class PolarisGlobalDescriptorActionApi extends DescriptorActionApi {
                                        .getString(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN)
                                        .orElseThrow(() -> new AlertException(String.format(errorMessageFormat, PolarisGlobalUIConfig.LABEL_POLARIS_ACCESS_TOKEN)));
         final Integer timeout = fieldAccessor
-                                    .getInteger(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN)
+                                    .getInteger(PolarisDescriptor.KEY_POLARIS_TIMEOUT)
                                     .orElseThrow(() -> new AlertException(String.format(errorMessageFormat, PolarisGlobalUIConfig.LABEL_POLARIS_TIMEOUT)));
 
         final AccessTokenRestConnection accessTokenRestConnection = polarisProperties.createRestConnection(intLogger, url, accessToken, timeout);
-
         try (final Response response = accessTokenRestConnection.attemptAuthentication()) {
             response.throwExceptionForError();
         } catch (final IOException ioException) {
