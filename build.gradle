@@ -61,6 +61,8 @@ dependencies {
         exclude group: 'org.apache.pdfbox:pdfbox'
     }
 
+    // TODO we might need to require this soon: implementation 'com.synopsys.integration:polaris-common:0.2.0'
+
     // Spring boot
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-devtools'

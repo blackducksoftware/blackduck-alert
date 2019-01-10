@@ -5,11 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
@@ -94,7 +94,7 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
         final Map<String, FieldValueModel> fieldModelMap = new HashMap<>();
         for (final ConfigurationFieldModel model : configFieldModels) {
             final String key = model.getFieldKey();
-            Collection<String> values = Collections.emptyList();
+            Collection<String> values = List.of();
             if (!model.isSensitive()) {
                 values = model.getFieldValues();
             }
@@ -156,9 +156,9 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
 
     public abstract ChannelDescriptor getDescriptor();
 
-    public abstract boolean assertGlobalFields(Collection<DefinedFieldModel> globalFields);
+    public abstract boolean assertGlobalFields(Set<DefinedFieldModel> globalFields);
 
-    public abstract boolean assertDistributionFields(Collection<DefinedFieldModel> distributionFields);
+    public abstract boolean assertDistributionFields(Set<DefinedFieldModel> distributionFields);
 
     public abstract String createTestConfigDestination();
 
@@ -253,8 +253,8 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
 
     @Test
     public void testDefinedFields() {
-        assertTrue(assertGlobalFields(getDescriptor().getDefinedFields(ConfigContextEnum.GLOBAL)));
-        assertTrue(assertDistributionFields(getDescriptor().getDefinedFields(ConfigContextEnum.DISTRIBUTION)));
-        assertTrue(getDescriptor().getDefinedFields(null).isEmpty());
+        assertTrue(assertGlobalFields(getDescriptor().getAllDefinedFields(ConfigContextEnum.GLOBAL)));
+        assertTrue(assertDistributionFields(getDescriptor().getAllDefinedFields(ConfigContextEnum.DISTRIBUTION)));
+        assertTrue(getDescriptor().getAllDefinedFields(null).isEmpty());
     }
 }

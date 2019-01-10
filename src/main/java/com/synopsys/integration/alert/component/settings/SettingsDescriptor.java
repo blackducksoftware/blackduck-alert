@@ -23,16 +23,10 @@
  */
 package com.synopsys.integration.alert.component.settings;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
 
 @Component
 public class SettingsDescriptor extends ComponentDescriptor {
@@ -75,34 +69,5 @@ public class SettingsDescriptor extends ComponentDescriptor {
     @Autowired
     public SettingsDescriptor(final SettingsDescriptorActionApi componentRestApi, final SettingsUIConfig uiConfig) {
         super(SETTINGS_COMPONENT, componentRestApi, uiConfig);
-    }
-
-    @Override
-    public Collection<DefinedFieldModel> getDefinedFields(final ConfigContextEnum context) {
-        if (ConfigContextEnum.GLOBAL == context) {
-            final Collection<DefinedFieldModel> fields = new LinkedList<>();
-            fields.add(DefinedFieldModel.createGlobalField(KEY_PROXY_HOST));
-            fields.add(DefinedFieldModel.createGlobalField(KEY_PROXY_PORT));
-            fields.add(DefinedFieldModel.createGlobalField(KEY_PROXY_USERNAME));
-            fields.add(DefinedFieldModel.createGlobalSensitiveField(KEY_PROXY_PASSWORD));
-
-            fields.add(DefinedFieldModel.createGlobalField(KEY_LDAP_ENABLED));
-            fields.add(DefinedFieldModel.createGlobalField(KEY_LDAP_SERVER));
-            fields.add(DefinedFieldModel.createGlobalField(KEY_LDAP_MANAGER_DN));
-            fields.add(DefinedFieldModel.createGlobalSensitiveField(KEY_LDAP_MANAGER_PASSWORD));
-            fields.add(DefinedFieldModel.createGlobalField(KEY_LDAP_AUTHENTICATION_TYPE));
-            fields.add(DefinedFieldModel.createGlobalField(KEY_LDAP_REFERRAL));
-            fields.add(DefinedFieldModel.createGlobalField(KEY_LDAP_USER_SEARCH_BASE));
-            fields.add(DefinedFieldModel.createGlobalField(KEY_LDAP_USER_SEARCH_FILTER));
-            fields.add(DefinedFieldModel.createGlobalField(KEY_LDAP_USER_DN_PATTERNS));
-            fields.add(DefinedFieldModel.createGlobalField(KEY_LDAP_USER_ATTRIBUTES));
-            fields.add(DefinedFieldModel.createGlobalField(KEY_LDAP_GROUP_SEARCH_BASE));
-            fields.add(DefinedFieldModel.createGlobalField(KEY_LDAP_GROUP_SEARCH_FILTER));
-            fields.add(DefinedFieldModel.createGlobalField(KEY_LDAP_GROUP_ROLE_ATTRIBUTE));
-            fields.add(DefinedFieldModel.createGlobalField(KEY_LDAP_ROLE_PREFIX));
-            return fields;
-        }
-
-        return List.of();
     }
 }

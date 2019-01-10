@@ -23,17 +23,11 @@
  */
 package com.synopsys.integration.alert.channel.slack.descriptor;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
 
 @Component
 public class SlackDescriptor extends ChannelDescriptor {
@@ -50,14 +44,4 @@ public class SlackDescriptor extends ChannelDescriptor {
         super(SlackChannel.COMPONENT_NAME, SlackChannel.COMPONENT_NAME, channelListener, distributionRestApi, slackUIConfig);
     }
 
-    @Override
-    public Collection<DefinedFieldModel> getDefinedFields(final ConfigContextEnum context) {
-        if (ConfigContextEnum.DISTRIBUTION == context) {
-            final DefinedFieldModel webhook = DefinedFieldModel.createDistributionField(SlackDescriptor.KEY_WEBHOOK);
-            final DefinedFieldModel channelUsername = DefinedFieldModel.createDistributionField(SlackDescriptor.KEY_CHANNEL_USERNAME);
-            final DefinedFieldModel channelName = DefinedFieldModel.createDistributionField(SlackDescriptor.KEY_CHANNEL_NAME);
-            return List.of(webhook, channelUsername, channelName);
-        }
-        return Collections.emptyList();
-    }
 }

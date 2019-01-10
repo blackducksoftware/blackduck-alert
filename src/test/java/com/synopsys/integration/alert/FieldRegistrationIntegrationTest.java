@@ -3,13 +3,13 @@ package com.synopsys.integration.alert;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
-import com.synopsys.integration.alert.workflow.startup.StartupManager;
+import com.synopsys.integration.alert.workflow.upgrade.DescriptorRegistrar;
 
 public class FieldRegistrationIntegrationTest extends AlertIntegrationTest {
     @Autowired
-    protected StartupManager startupManager;
+    protected DescriptorRegistrar descriptorRegistrar;
 
     public void registerDescriptors() {
-        startupManager.registerDescriptors();
+        descriptorRegistrar.registerDescriptors();
     }
 }
