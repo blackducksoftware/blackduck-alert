@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,7 +50,7 @@ public class DescriptorRegistratorTestIT extends AlertIntegrationTest {
         final List<DefinedFieldModel> globalFields = descriptorAccessor.getFieldsForDescriptorById(foundDescriptor.get().getId(), ConfigContextEnum.GLOBAL);
         final List<DefinedFieldModel> distributionFields = descriptorAccessor.getFieldsForDescriptorById(foundDescriptor.get().getId(), ConfigContextEnum.DISTRIBUTION);
 
-        assertEquals(hipChatDescriptor.getKeys(ConfigContextEnum.GLOBAL).keySet().size(), globalFields.size());
+        assertEquals(hipChatDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL).size(), globalFields.size());
 
         //        CommonDistributionUIConfig commonDistributionUIConfig = new CommonDistributionUIConfig();
         //        commonDistributionUIConfig.createCommonConfigFields(Set.of(), Set.of()).size();
@@ -59,7 +59,7 @@ public class DescriptorRegistratorTestIT extends AlertIntegrationTest {
         //        providerDistributionUIConfig.createCommonConfigFields()
 
         // FIXME When we find out the best way to add common fields to descriptors, update this accordingly and remove the + 6
-        assertEquals(hipChatDescriptor.getKeys(ConfigContextEnum.DISTRIBUTION).keySet().size() + 6, distributionFields.size());
+        assertEquals(hipChatDescriptor.getAllDefinedFields(ConfigContextEnum.DISTRIBUTION).size() + 6, distributionFields.size());
     }
 
     @Test
@@ -75,19 +75,19 @@ public class DescriptorRegistratorTestIT extends AlertIntegrationTest {
         assertTrue(foundDescriptor.isPresent());
 
         final List<DefinedFieldModel> globalFields = descriptorAccessor.getFieldsForDescriptorById(foundDescriptor.get().getId(), ConfigContextEnum.GLOBAL);
-        assertEquals(hipChatDescriptor.getKeys(ConfigContextEnum.GLOBAL).keySet().size(), globalFields.size());
+        assertEquals(hipChatDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL).size(), globalFields.size());
 
         final HipChatDescriptor spyHipChatDescriptor = Mockito.spy(hipChatDescriptor);
-        final Map<String, Boolean> keys = hipChatDescriptor.getKeys(ConfigContextEnum.GLOBAL);
-        keys.put("newkey", true);
-        Mockito.doReturn(keys).when(spyHipChatDescriptor).getKeys(ConfigContextEnum.GLOBAL);
+        final Set<DefinedFieldModel> keys = hipChatDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL);
+        keys.add(new DefinedFieldModel("newkey", ConfigContextEnum.GLOBAL, true));
+        Mockito.doReturn(keys).when(spyHipChatDescriptor).getAllDefinedFields(ConfigContextEnum.GLOBAL);
 
         final DescriptorRegistrator spiedDescriptorRegistrator = new DescriptorRegistrator(descriptorAccessor, List.of(spyHipChatDescriptor));
         spiedDescriptorRegistrator.registerDescriptors();
 
         final List<DefinedFieldModel> updatedGlobalFields = descriptorAccessor.getFieldsForDescriptorById(foundDescriptor.get().getId(), ConfigContextEnum.GLOBAL);
 
-        assertEquals(hipChatDescriptor.getKeys(ConfigContextEnum.GLOBAL).keySet().size() + 1, updatedGlobalFields.size());
+        assertEquals(hipChatDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL).size() + 1, updatedGlobalFields.size());
     }
 
     @Test
@@ -103,19 +103,19 @@ public class DescriptorRegistratorTestIT extends AlertIntegrationTest {
         assertTrue(foundDescriptor.isPresent());
 
         final List<DefinedFieldModel> globalFields = descriptorAccessor.getFieldsForDescriptorById(foundDescriptor.get().getId(), ConfigContextEnum.GLOBAL);
-        assertEquals(hipChatDescriptor.getKeys(ConfigContextEnum.GLOBAL).keySet().size(), globalFields.size());
+        assertEquals(hipChatDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL).size(), globalFields.size());
 
         final HipChatDescriptor spyHipChatDescriptor = Mockito.spy(hipChatDescriptor);
-        final Map<String, Boolean> keys = hipChatDescriptor.getKeys(ConfigContextEnum.GLOBAL);
-        keys.remove(HipChatDescriptor.KEY_API_KEY);
-        Mockito.doReturn(keys).when(spyHipChatDescriptor).getKeys(ConfigContextEnum.GLOBAL);
+        final Set<DefinedFieldModel> keys = hipChatDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL);
+        keys.remove(new DefinedFieldModel(HipChatDescriptor.KEY_API_KEY, ConfigContextEnum.GLOBAL, true));
+        Mockito.doReturn(keys).when(spyHipChatDescriptor).getAllDefinedFields(ConfigContextEnum.GLOBAL);
 
         final DescriptorRegistrator spiedDescriptorRegistrator = new DescriptorRegistrator(descriptorAccessor, List.of(spyHipChatDescriptor));
         spiedDescriptorRegistrator.registerDescriptors();
 
         final List<DefinedFieldModel> updatedGlobalFields = descriptorAccessor.getFieldsForDescriptorById(foundDescriptor.get().getId(), ConfigContextEnum.GLOBAL);
 
-        assertEquals(hipChatDescriptor.getKeys(ConfigContextEnum.GLOBAL).keySet().size() - 1, updatedGlobalFields.size());
+        assertEquals(hipChatDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL).size() - 1, updatedGlobalFields.size());
     }
 
 }

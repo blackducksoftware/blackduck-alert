@@ -33,11 +33,11 @@ import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
-import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
+import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.util.Stringable;
@@ -93,12 +93,13 @@ public abstract class Descriptor extends Stringable {
         return getUIConfig(context).map(uiConfig -> createMetaData(uiConfig, context));
     }
 
-    public Map<String, Boolean> getKeys(final ConfigContextEnum context) {
+    public Set<DefinedFieldModel> getAllDefinedFields(final ConfigContextEnum context) {
         return getUIConfig(context)
                    .map(uiConfig -> uiConfig.createFields())
-                   .orElse(Collections.emptyList())
+                   .orElse(List.of())
                    .stream()
-                   .collect(Collectors.toMap(ConfigField::getKey, ConfigField::isSensitive));
+                   .map(configField -> new DefinedFieldModel(configField.getKey(), context, configField.isSensitive()))
+                   .collect(Collectors.toSet());
     }
 
     public List<DescriptorMetadata> getAllMetaData() {

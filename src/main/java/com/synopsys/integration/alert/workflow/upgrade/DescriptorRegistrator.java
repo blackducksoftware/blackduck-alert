@@ -27,9 +27,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,7 +82,7 @@ public class DescriptorRegistrator {
 
             }
         } catch (final AlertDatabaseConstraintException e) {
-            logger.error("Error registering descriptors.");
+            logger.error("Error registering descriptors.", e);
         }
     }
 
@@ -101,22 +99,16 @@ public class DescriptorRegistrator {
     }
 
     private Collection<DefinedFieldModel> getAllDescriptorFieldModels(final Descriptor descriptor) {
-        final Map<String, Boolean> globalFieldModels = descriptor.getKeys(ConfigContextEnum.GLOBAL);
-        final Map<String, Boolean> distributionFieldModels = descriptor.getKeys(ConfigContextEnum.DISTRIBUTION);
-
         final List<DefinedFieldModel> completeDistributionFieldModels = new LinkedList<>();
-        completeDistributionFieldModels.addAll(distributionFieldModels.entrySet()
-                                                   .stream()
-                                                   .map(entry -> new DefinedFieldModel(entry.getKey(), ConfigContextEnum.DISTRIBUTION, entry.getValue()))
-                                                   .collect(Collectors.toSet()));
+        final Set<DefinedFieldModel> distributionFieldModels = descriptor.getAllDefinedFields(ConfigContextEnum.DISTRIBUTION);
+        completeDistributionFieldModels.addAll(distributionFieldModels);
         completeDistributionFieldModels.addAll(getAllCommonFields());
 
         final Collection<DefinedFieldModel> allFieldModels = new LinkedList<>();
-        allFieldModels.addAll(globalFieldModels.entrySet()
-                                  .stream()
-                                  .map(entry -> new DefinedFieldModel(entry.getKey(), ConfigContextEnum.GLOBAL, entry.getValue()))
-                                  .collect(Collectors.toSet()));
+        final Set<DefinedFieldModel> globalFieldModels = descriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL);
+        allFieldModels.addAll(globalFieldModels);
         allFieldModels.addAll(completeDistributionFieldModels);
+
         return allFieldModels;
     }
 

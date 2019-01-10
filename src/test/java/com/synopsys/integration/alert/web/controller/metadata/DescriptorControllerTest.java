@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -17,6 +16,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMeta
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
+import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
 
 public class DescriptorControllerTest {
     private final Set<Descriptor> descriptors = createComprehensiveSetOfDescriptors();
@@ -183,8 +183,8 @@ public class DescriptorControllerTest {
         }
 
         @Override
-        public Map<String, Boolean> getKeys(final ConfigContextEnum context) {
-            return Map.of();
+        public Set<DefinedFieldModel> getAllDefinedFields(final ConfigContextEnum context) {
+            return Set.of();
         }
 
         @Override
