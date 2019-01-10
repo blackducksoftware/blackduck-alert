@@ -85,7 +85,7 @@ public class FieldAccessor {
     }
 
     private Optional<String> getValue(final String key) {
-        if (StringUtils.isNotEmpty(key) && fields.containsKey(key)) {
+        if (StringUtils.isNotBlank(key) && fields.containsKey(key)) {
             final ConfigurationFieldModel fieldModel = fields.get(key);
             return fieldModel.getFieldValue();
         }

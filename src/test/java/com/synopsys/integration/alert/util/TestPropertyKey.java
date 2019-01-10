@@ -10,14 +10,22 @@ public enum TestPropertyKey {
     TEST_BLACKDUCK_PROVIDER_TIMEOUT("blackduck.provider.timeout"),
     TEST_BLACKDUCK_PROVIDER_ACTIVE_USER("blackduck.provider.active.user"),
     TEST_BLACKDUCK_PROVIDER_INACTIVE_USER("blackduck.provider.inactive.user"),
+
+    TEST_POLARIS_PROVIDER_URL("polaris.provider.url"),
+    TEST_POLARIS_PROVIDER_ACCESS_TOKEN("polaris.provider.access.token"),
+    TEST_POLARIS_PROVIDER_TIMEOUT("polaris.provider.timeout"),
+
     TEST_CRON("alert.tasks.cron"),
     TEST_DAILY_DIGEST("alert.digest.daily.cron"),
     TEST_REALTIME_DIGEST("alert.digest.realtime.cron"),
+
     TEST_HIPCHAT_ROOM_ID("hipchat.room.id"),
     TEST_HIPCHAT_API_KEY("hipchat.api.key"),
+
     TEST_SLACK_CHANNEL_NAME("slack.channel.name"),
     TEST_SLACK_USERNAME("slack.username"),
     TEST_SLACK_WEBHOOK("slack.web.hook"),
+
     TEST_EMAIL_RECIPIENT("mail.recipient"),
     TEST_EMAIL_SMTP_HOST("mail.smtp.host"),
     TEST_EMAIL_SMTP_FROM("mail.smtp.from"),
