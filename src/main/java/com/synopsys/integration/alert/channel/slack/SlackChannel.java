@@ -55,6 +55,7 @@ import com.synopsys.integration.rest.request.Request;
 public class SlackChannel extends RestDistributionChannel {
     public static final String COMPONENT_NAME = "channel_slack";
     public static final String SLACK_API = "https://hooks.slack.com";
+    public static final String SLACK_DEFAULT_USERNAME = "Alert";
 
     private static final String SLACK_LINE_SEPARATOR = "\n";
     private static final Map<String, String> SLACK_CHARACTER_ENCODING_MAP;
@@ -81,14 +82,14 @@ public class SlackChannel extends RestDistributionChannel {
     @Override
     public List<Request> createRequests(final DistributionEvent event) throws IntegrationException {
         final FieldAccessor fields = event.getFieldAccessor();
-        final String webhook = fields.getString(SlackDescriptor.KEY_WEBHOOK).orElseThrow(() -> new AlertException("Missing Webhook URL"));
-        final String channelName = fields.getString(SlackDescriptor.KEY_CHANNEL_NAME).orElseThrow(() -> new AlertException("Missing channel name"));
+        final String webhook = fields.getRequiredStringOrThrow(SlackDescriptor.KEY_WEBHOOK, new AlertException("Missing Webhook URL"));
+        final String channelName = fields.getRequiredStringOrThrow(SlackDescriptor.KEY_CHANNEL_NAME, new AlertException("Missing channel name"));
         final Optional<String> channelUsername = fields.getString(SlackDescriptor.KEY_CHANNEL_USERNAME);
         if (StringUtils.isBlank(event.getContent().getValue())) {
             return Collections.emptyList();
         } else {
             final String mrkdwnMessage = createMrkdwnMessage(event.getContent());
-            final String jsonString = getJsonString(mrkdwnMessage, channelName, channelUsername.orElse(""));
+            final String jsonString = getJsonString(mrkdwnMessage, channelName, channelUsername.orElse(SLACK_DEFAULT_USERNAME));
 
             final Map<String, String> requestHeaders = new HashMap<>();
             requestHeaders.put("Content-Type", "application/json");
