@@ -21,28 +21,26 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.api.settingskey;
+package com.synopsys.integration.alert.provider.polaris.descriptor;
 
-public class SettingsKeyModel {
-    private final Long id;
-    private final String key;
-    private final String value;
+import java.util.Map;
 
-    public SettingsKeyModel(final Long id, final String key, final String value) {
-        this.id = id;
-        this.key = key;
-        this.value = value;
+import org.springframework.stereotype.Component;
+
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
+import com.synopsys.integration.alert.web.model.TestConfigModel;
+import com.synopsys.integration.exception.IntegrationException;
+
+@Component
+public class PolarisDistributionDescriptorActionApi extends DescriptorActionApi {
+    @Override
+    public void validateConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
+        // FIXME implement
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public String getValue() {
-        return value;
+    @Override
+    public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
+        // FIXME implement
     }
 }

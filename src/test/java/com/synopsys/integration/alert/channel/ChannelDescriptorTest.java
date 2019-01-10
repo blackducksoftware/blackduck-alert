@@ -5,11 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
@@ -31,6 +31,7 @@ import com.synopsys.integration.alert.database.api.configuration.ConfigurationAc
 import com.synopsys.integration.alert.database.api.configuration.DescriptorAccessor;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
+import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.web.model.FieldModel;
@@ -93,7 +94,7 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
         final Map<String, FieldValueModel> fieldModelMap = new HashMap<>();
         for (final ConfigurationFieldModel model : configFieldModels) {
             final String key = model.getFieldKey();
-            Collection<String> values = Collections.emptyList();
+            Collection<String> values = List.of();
             if (!model.isSensitive()) {
                 values = model.getFieldValues();
             }
@@ -155,9 +156,9 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
 
     public abstract ChannelDescriptor getDescriptor();
 
-    public abstract boolean assertGlobalFields(Map<String, Boolean> globalFields);
+    public abstract boolean assertGlobalFields(Set<DefinedFieldModel> globalFields);
 
-    public abstract boolean assertDistributionFields(Map<String, Boolean> distributionFields);
+    public abstract boolean assertDistributionFields(Set<DefinedFieldModel> distributionFields);
 
     public abstract String createTestConfigDestination();
 
@@ -252,8 +253,8 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
 
     @Test
     public void testDefinedFields() {
-        assertTrue(assertGlobalFields(getDescriptor().getKeys(ConfigContextEnum.GLOBAL)));
-        assertTrue(assertDistributionFields(getDescriptor().getKeys(ConfigContextEnum.DISTRIBUTION)));
-        assertTrue(getDescriptor().getKeys(null).isEmpty());
+        assertTrue(assertGlobalFields(getDescriptor().getAllDefinedFields(ConfigContextEnum.GLOBAL)));
+        assertTrue(assertDistributionFields(getDescriptor().getAllDefinedFields(ConfigContextEnum.DISTRIBUTION)));
+        assertTrue(getDescriptor().getAllDefinedFields(null).isEmpty());
     }
 }

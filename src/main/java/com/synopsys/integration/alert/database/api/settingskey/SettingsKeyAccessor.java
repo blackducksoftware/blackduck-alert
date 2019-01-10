@@ -78,7 +78,9 @@ public class SettingsKeyAccessor implements BaseSettingsKeyAccessor {
 
     @Override
     public void deleteSettingsKeyById(final Long id) {
-        settingsKeyRepository.deleteById(id);
+        if (null != id) {
+            settingsKeyRepository.deleteById(id);
+        }
     }
 
     private SettingsKeyModel convertToSettingsKeyModel(final SettingsKeyEntity settingsKeyEntity) {

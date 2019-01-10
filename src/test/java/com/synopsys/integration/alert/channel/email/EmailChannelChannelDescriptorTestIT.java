@@ -150,18 +150,18 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     }
 
     @Override
-    public boolean assertGlobalFields(final Map<String, Boolean> globalFields) {
+    public boolean assertGlobalFields(final Set<DefinedFieldModel> globalFields) {
         boolean result = true;
         final Set<String> fieldNames = Arrays.stream(EmailPropertyKeys.values()).map(EmailPropertyKeys::getPropertyKey).collect(Collectors.toSet());
-        result = result && globalFields.keySet()
+        result = result && globalFields
                                .stream()
+                               .map(DefinedFieldModel::getKey)
                                .allMatch(fieldNames::contains);
 
-        final Optional<DefinedFieldModel> emailPassword = globalFields.entrySet()
+        final Optional<DefinedFieldModel> emailPassword = globalFields
                                                               .stream()
                                                               .filter(field -> EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey().equals(field.getKey()))
-                                                              .findFirst()
-                                                              .map(entry -> new DefinedFieldModel(entry.getKey(), ConfigContextEnum.GLOBAL, entry.getValue()));
+                                                              .findFirst();
         if (emailPassword.isPresent()) {
             result = result && emailPassword.get().getSensitive();
         }
@@ -169,9 +169,9 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     }
 
     @Override
-    public boolean assertDistributionFields(final Map<String, Boolean> distributionFields) {
+    public boolean assertDistributionFields(final Set<DefinedFieldModel> distributionFields) {
         final Set<String> fieldNames = Set.of(EmailDescriptor.KEY_SUBJECT_LINE, EmailDescriptor.KEY_PROJECT_OWNER_ONLY, EmailDescriptor.KEY_EMAIL_ADDRESSES);
-        return distributionFields.keySet().stream().allMatch(fieldNames::contains);
+        return distributionFields.stream().map(DefinedFieldModel::getKey).allMatch(fieldNames::contains);
     }
 
     @Override

@@ -19,7 +19,6 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
-import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
 
 public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
 
@@ -44,11 +43,7 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
 
     public void registerDescriptor(final Descriptor descriptor) throws AlertDatabaseConstraintException {
         for (final ConfigContextEnum context : descriptor.getAppliedUIContexts()) {
-            descriptorAccessor.registerDescriptor(descriptor.getName(), descriptor.getType(), descriptor.getKeys(context)
-                                                                                                  .entrySet()
-                                                                                                  .stream()
-                                                                                                  .map(entry -> new DefinedFieldModel(entry.getKey(), context, entry.getValue()))
-                                                                                                  .collect(Collectors.toSet()));
+            descriptorAccessor.registerDescriptor(descriptor.getName(), descriptor.getType(), descriptor.getAllDefinedFields(context));
         }
         descriptors.add(descriptor);
     }

@@ -21,28 +21,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.api.settingskey;
+package com.synopsys.integration.alert.provider.polaris.descriptor;
 
-public class SettingsKeyModel {
-    private final Long id;
-    private final String key;
-    private final String value;
+import java.util.List;
 
-    public SettingsKeyModel(final Long id, final String key, final String value) {
-        this.id = id;
-        this.key = key;
-        this.value = value;
+import org.springframework.stereotype.Component;
+
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+
+@Component
+public class PolarisDistributionUIConfig extends UIConfig {
+    public PolarisDistributionUIConfig() {
+        super(PolarisDescriptor.POLARIS_LABEL, PolarisDescriptor.POLARIS_URL_NAME, PolarisDescriptor.POLARIS_ICON);
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public String getValue() {
-        return value;
+    @Override
+    public List<ConfigField> createFields() {
+        // FIXME implement
+        return List.of();
     }
 }

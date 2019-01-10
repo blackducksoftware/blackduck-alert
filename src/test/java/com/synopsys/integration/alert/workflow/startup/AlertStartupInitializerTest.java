@@ -4,7 +4,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -21,7 +20,6 @@ import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
 
 public class AlertStartupInitializerTest {
 
@@ -33,10 +31,7 @@ public class AlertStartupInitializerTest {
         final EmailGlobalDescriptorActionApi descriptorConfig = Mockito.mock(EmailGlobalDescriptorActionApi.class);
         final List<DescriptorActionApi> restApis = List.of(descriptorConfig);
         final ChannelDescriptor channelDescriptor = new HipChatDescriptor(null, null, null, null, new HipChatGlobalUIConfig());
-        Mockito.when(baseDescriptorAccessor.getFieldsForDescriptor(Mockito.anyString(), Mockito.any(ConfigContextEnum.class))).thenReturn(List.copyOf(channelDescriptor.getKeys(ConfigContextEnum.GLOBAL).entrySet()
-                                                                                                                                                          .stream().map(
-                entry -> new DefinedFieldModel(entry.getKey(), ConfigContextEnum.DISTRIBUTION, entry.getValue()))
-                                                                                                                                                          .collect(Collectors.toSet())));
+        Mockito.when(baseDescriptorAccessor.getFieldsForDescriptor(Mockito.anyString(), Mockito.any(ConfigContextEnum.class))).thenReturn(List.copyOf(channelDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL)));
         final List<ChannelDescriptor> channelDescriptors = List.of(channelDescriptor);
         final List<ProviderDescriptor> providerDescriptors = List.of();
         final List<ComponentDescriptor> componentDescriptors = List.of();
@@ -67,10 +62,7 @@ public class AlertStartupInitializerTest {
         final EmailGlobalDescriptorActionApi descriptorConfig = Mockito.mock(EmailGlobalDescriptorActionApi.class);
         final List<DescriptorActionApi> restApis = List.of(descriptorConfig);
         final ChannelDescriptor channelDescriptor = new HipChatDescriptor(null, null, null, null, new HipChatGlobalUIConfig());
-        Mockito.when(descriptorAccessor.getFieldsForDescriptor(Mockito.anyString(), Mockito.any(ConfigContextEnum.class))).thenReturn(List.copyOf(channelDescriptor.getKeys(ConfigContextEnum.GLOBAL).entrySet()
-                                                                                                                                                      .stream().map(
-                entry -> new DefinedFieldModel(entry.getKey(), ConfigContextEnum.DISTRIBUTION, entry.getValue()))
-                                                                                                                                                      .collect(Collectors.toSet())));
+        Mockito.when(descriptorAccessor.getFieldsForDescriptor(Mockito.anyString(), Mockito.any(ConfigContextEnum.class))).thenReturn(List.copyOf(channelDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL)));
         final List<ChannelDescriptor> channelDescriptors = List.of(channelDescriptor);
         final List<ProviderDescriptor> providerDescriptors = List.of();
         final List<ComponentDescriptor> componentDescriptors = List.of();

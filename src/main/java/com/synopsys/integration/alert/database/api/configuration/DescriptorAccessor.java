@@ -148,14 +148,15 @@ public class DescriptorAccessor implements BaseDescriptorAccessor {
             throw new AlertDatabaseConstraintException("Descriptor type cannot be empty");
         }
         final Optional<RegisteredDescriptorEntity> optionalDescriptorEntity = registeredDescriptorRepository.findFirstByName(descriptorName);
-        if (optionalDescriptorEntity.isEmpty()) {
-            final Long descriptorTypeId = saveDescriptorTypeAndReturnId(descriptorType);
-            final RegisteredDescriptorEntity newDescriptor = new RegisteredDescriptorEntity(descriptorName, descriptorTypeId);
-            final RegisteredDescriptorEntity createdDescriptor = registeredDescriptorRepository.save(newDescriptor);
-            addFieldsAndUpdateRelations(createdDescriptor.getId(), descriptorFields);
-            return createRegisteredDescriptorModel(createdDescriptor);
+        if (optionalDescriptorEntity.isPresent()) {
+            return createRegisteredDescriptorModel(optionalDescriptorEntity.get());
         }
-        return createRegisteredDescriptorModel(optionalDescriptorEntity.get());
+
+        final Long descriptorTypeId = saveDescriptorTypeAndReturnId(descriptorType);
+        final RegisteredDescriptorEntity newDescriptor = new RegisteredDescriptorEntity(descriptorName, descriptorTypeId);
+        final RegisteredDescriptorEntity createdDescriptor = registeredDescriptorRepository.save(newDescriptor);
+        addFieldsAndUpdateRelations(createdDescriptor.getId(), descriptorFields);
+        return createRegisteredDescriptorModel(createdDescriptor);
     }
 
     /**
@@ -218,6 +219,7 @@ public class DescriptorAccessor implements BaseDescriptorAccessor {
     /**
      * @return true if the descriptor field was present
      */
+    @Override
     public boolean removeDescriptorField(final Long descriptorId, final DefinedFieldModel descriptorField) throws AlertDatabaseConstraintException {
         final RegisteredDescriptorEntity descriptor = findDescriptorById(descriptorId);
         if (descriptorField == null) {

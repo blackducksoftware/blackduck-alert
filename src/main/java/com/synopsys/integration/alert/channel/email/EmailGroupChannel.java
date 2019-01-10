@@ -113,9 +113,8 @@ public class EmailGroupChannel extends DistributionChannel {
             final HashMap<String, Object> model = new HashMap<>();
 
             final String contentTitle = provider;
-            model.put("content", content);
-            model.put("contentTitle", contentTitle);
-            model.put("emailCategory", formatType);
+            model.put(EmailPropertyKeys.EMAIL_CONTENT.getPropertyKey(), content);
+            model.put(EmailPropertyKeys.EMAIL_CATEGORY.getPropertyKey(), formatType);
             model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), subjectLine);
             final Optional<String> optionalBlackDuckUrl = getBlackDuckProperties().getBlackDuckUrl();
             model.put(EmailPropertyKeys.TEMPLATE_KEY_BLACKDUCK_SERVER_URL.getPropertyKey(), StringUtils.trimToEmpty(optionalBlackDuckUrl.orElse("#")));

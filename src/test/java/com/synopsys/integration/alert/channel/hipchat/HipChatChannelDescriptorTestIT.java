@@ -107,18 +107,18 @@ public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
     }
 
     @Override
-    public boolean assertGlobalFields(final Map<String, Boolean> globalFields) {
+    public boolean assertGlobalFields(final Set<DefinedFieldModel> globalFields) {
         boolean result = true;
         final Set<String> fieldNames = Set.of(HipChatDescriptor.KEY_API_KEY, HipChatDescriptor.KEY_HOST_SERVER);
-        result = result && globalFields.keySet()
+        result = result && globalFields
                                .stream()
+                               .map(DefinedFieldModel::getKey)
                                .allMatch(fieldNames::contains);
 
-        final Optional<DefinedFieldModel> apiKeyField = globalFields.entrySet()
+        final Optional<DefinedFieldModel> apiKeyField = globalFields
                                                             .stream()
                                                             .filter(field -> HipChatDescriptor.KEY_API_KEY.equals(field.getKey()))
-                                                            .findFirst()
-                                                            .map(entry -> new DefinedFieldModel(entry.getKey(), ConfigContextEnum.GLOBAL, entry.getValue()));
+                                                            .findFirst();
         if (apiKeyField.isPresent()) {
             result = result && apiKeyField.get().getSensitive();
         }
@@ -126,9 +126,9 @@ public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
     }
 
     @Override
-    public boolean assertDistributionFields(final Map<String, Boolean> distributionFields) {
+    public boolean assertDistributionFields(final Set<DefinedFieldModel> distributionFields) {
         final Set<String> fieldNames = Set.of(HipChatDescriptor.KEY_ROOM_ID, HipChatDescriptor.KEY_COLOR, HipChatDescriptor.KEY_NOTIFY);
-        return distributionFields.keySet().stream().allMatch(fieldNames::contains);
+        return distributionFields.stream().map(DefinedFieldModel::getKey).allMatch(fieldNames::contains);
     }
 
     @Override
