@@ -23,7 +23,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -40,6 +39,7 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.common.model.CategoryKey;
@@ -65,8 +65,7 @@ public class SlackChannelTest extends ChannelTest {
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties);
         final SlackChannel slackChannel = new SlackChannel(gson, testAlertProperties, auditUtility, channelRestConnectionFactory);
 
-        final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
-        final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "", null, subTopic, List.of());
+        final AggregateMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Request");
 
         final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
         addToMap(fieldModels, SlackDescriptor.KEY_WEBHOOK, properties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK));
@@ -99,11 +98,15 @@ public class SlackChannelTest extends ChannelTest {
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, channelRestConnectionFactory);
 
-        final FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
-        Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.empty());
+        final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
+        final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
+
         final DistributionEvent event = Mockito.mock(DistributionEvent.class);
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
 
+        final AggregateMessageContent content = Mockito.mock(AggregateMessageContent.class);
+        Mockito.when(content.getValue()).thenReturn("Value");
+        Mockito.when(event.getContent()).thenReturn(content);
         try {
             channel.createRequests(event);
             fail("Expected an exception for missing webhook");
@@ -116,30 +119,36 @@ public class SlackChannelTest extends ChannelTest {
         final ChannelRestConnectionFactory channelRestConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
-        final FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
-        Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of("webhook"));
-        Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_NAME)).thenReturn(Optional.empty());
+
+        final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
+        addToMap(fieldModels, SlackDescriptor.KEY_WEBHOOK, "webhook");
+        final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
+
         final DistributionEvent event = Mockito.mock(DistributionEvent.class);
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
+
+        final AggregateMessageContent content = Mockito.mock(AggregateMessageContent.class);
+        Mockito.when(content.getValue()).thenReturn("Value");
+        Mockito.when(event.getContent()).thenReturn(content);
 
         final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, channelRestConnectionFactory);
 
         try {
             channel.createRequests(event);
-            fail("Expected an exception for missing webhook");
+            fail("Expected an exception for missing channel name");
         } catch (final IntegrationException e) {
         }
     }
 
     @Test
-    public void testCreateRequestMissingContent() {
+    public void testCreateRequestMissingContent() throws Exception {
         final ChannelRestConnectionFactory channelRestConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
-        Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of("webhook"));
-        Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_NAME)).thenReturn(Optional.of("slack_channel"));
-        Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_USERNAME)).thenReturn(Optional.of("user_name"));
+        Mockito.when(fieldAccessor.getRequiredStringOrThrow(Mockito.eq(SlackDescriptor.KEY_WEBHOOK), Mockito.any(AlertException.class))).thenReturn("webhook");
+        Mockito.when(fieldAccessor.getRequiredStringOrThrow(Mockito.eq(SlackDescriptor.KEY_CHANNEL_NAME), Mockito.any(AlertException.class))).thenReturn("slack_channel");
+        Mockito.when(fieldAccessor.getRequiredStringOrThrow(Mockito.eq(SlackDescriptor.KEY_CHANNEL_USERNAME), Mockito.any(AlertException.class))).thenReturn("user_name");
         final AggregateMessageContent content = Mockito.mock(AggregateMessageContent.class);
         Mockito.when(content.getValue()).thenReturn(null);
         final DistributionEvent event = Mockito.mock(DistributionEvent.class);
@@ -160,9 +169,9 @@ public class SlackChannelTest extends ChannelTest {
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
-        Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of("webhook"));
-        Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_NAME)).thenReturn(Optional.of("slack_channel"));
-        Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_USERNAME)).thenReturn(Optional.of("user_name"));
+        Mockito.when(fieldAccessor.getRequiredStringOrThrow(Mockito.eq(SlackDescriptor.KEY_WEBHOOK), Mockito.any(AlertException.class))).thenReturn("webhook");
+        Mockito.when(fieldAccessor.getRequiredStringOrThrow(Mockito.eq(SlackDescriptor.KEY_CHANNEL_NAME), Mockito.any(AlertException.class))).thenReturn("slack_channel");
+        Mockito.when(fieldAccessor.getRequiredStringOrThrow(Mockito.eq(SlackDescriptor.KEY_CHANNEL_USERNAME), Mockito.any(AlertException.class))).thenReturn("user_name");
         final SortedSet<LinkableItem> items = new TreeSet<>();
         items.add(new LinkableItem("itemName", "itemvalue"));
         final CategoryItem categoryItem = new CategoryItem(CategoryKey.from("type", "Key"), ItemOperation.ADD, 1L, items);
@@ -187,9 +196,9 @@ public class SlackChannelTest extends ChannelTest {
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
-        Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of("webhook"));
-        Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_NAME)).thenReturn(Optional.of("slack_channel"));
-        Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_USERNAME)).thenReturn(Optional.of("user_name"));
+        Mockito.when(fieldAccessor.getRequiredStringOrThrow(Mockito.eq(SlackDescriptor.KEY_WEBHOOK), Mockito.any(AlertException.class))).thenReturn("webhook");
+        Mockito.when(fieldAccessor.getRequiredStringOrThrow(Mockito.eq(SlackDescriptor.KEY_CHANNEL_NAME), Mockito.any(AlertException.class))).thenReturn("slack_channel");
+        Mockito.when(fieldAccessor.getRequiredStringOrThrow(Mockito.eq(SlackDescriptor.KEY_CHANNEL_USERNAME), Mockito.any(AlertException.class))).thenReturn("user_name");
         final SortedSet<LinkableItem> items = new TreeSet<>();
         items.add(new LinkableItem("itemName", "itemvalue", "url"));
         final CategoryItem categoryItem = new CategoryItem(CategoryKey.from("type", "Key"), ItemOperation.ADD, 1L, items);
@@ -214,9 +223,9 @@ public class SlackChannelTest extends ChannelTest {
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
-        Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of("webhook"));
-        Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_NAME)).thenReturn(Optional.of("slack_channel"));
-        Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_USERNAME)).thenReturn(Optional.of("user_name"));
+        Mockito.when(fieldAccessor.getRequiredStringOrThrow(Mockito.eq(SlackDescriptor.KEY_WEBHOOK), Mockito.any(AlertException.class))).thenReturn("webhook");
+        Mockito.when(fieldAccessor.getRequiredStringOrThrow(Mockito.eq(SlackDescriptor.KEY_CHANNEL_NAME), Mockito.any(AlertException.class))).thenReturn("slack_channel");
+        Mockito.when(fieldAccessor.getRequiredStringOrThrow(Mockito.eq(SlackDescriptor.KEY_CHANNEL_USERNAME), Mockito.any(AlertException.class))).thenReturn("user_name");
         final SortedSet<LinkableItem> items = new TreeSet<>();
         items.add(new LinkableItem("itemName", "itemvalue_1"));
         items.add(new LinkableItem("itemName", "itemvalue_2"));
@@ -243,9 +252,9 @@ public class SlackChannelTest extends ChannelTest {
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
-        Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of("webhook"));
-        Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_NAME)).thenReturn(Optional.of("slack_channel"));
-        Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_CHANNEL_USERNAME)).thenReturn(Optional.of("user_name"));
+        Mockito.when(fieldAccessor.getRequiredStringOrThrow(Mockito.eq(SlackDescriptor.KEY_WEBHOOK), Mockito.any(AlertException.class))).thenReturn("webhook");
+        Mockito.when(fieldAccessor.getRequiredStringOrThrow(Mockito.eq(SlackDescriptor.KEY_CHANNEL_NAME), Mockito.any(AlertException.class))).thenReturn("slack_channel");
+        Mockito.when(fieldAccessor.getRequiredStringOrThrow(Mockito.eq(SlackDescriptor.KEY_CHANNEL_USERNAME), Mockito.any(AlertException.class))).thenReturn("user_name");
         final SortedSet<LinkableItem> items = new TreeSet<>();
         items.add(new LinkableItem("itemName", "itemvalue_1", "itemUrl"));
         items.add(new LinkableItem("itemName", "itemvalue_2", "itemUrl"));
@@ -309,7 +318,7 @@ public class SlackChannelTest extends ChannelTest {
     public void testCreateHtmlMessage() throws IntegrationException {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final SlackChannel slackChannel = new SlackChannel(gson, testAlertProperties, null, null);
-        final AggregateMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Chunked Request");
+        final AggregateMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Request");
 
         final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
         addToMap(fieldModels, SlackDescriptor.KEY_WEBHOOK, "Webhook");
