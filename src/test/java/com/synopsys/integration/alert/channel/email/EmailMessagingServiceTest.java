@@ -12,7 +12,6 @@ import javax.mail.internet.MimeMessage;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
@@ -22,12 +21,10 @@ public class EmailMessagingServiceTest {
 
     @Test
     public void sendAuthenticatedMessage() throws IOException, MessagingException {
-        final AlertProperties alertProperties = new AlertProperties();
-
         final TestProperties testProperties = new TestProperties();
         final EmailProperties emailProperties = new EmailProperties(createEmailGlobalConfigEntity());
 
-        final EmailMessagingService emailMessagingService = new EmailMessagingService(alertProperties, emailProperties);
+        final EmailMessagingService emailMessagingService = new EmailMessagingService("", emailProperties);
 
         final Session mockSession = Mockito.mock(Session.class);
         final Transport mockTransport = Mockito.mock(Transport.class);

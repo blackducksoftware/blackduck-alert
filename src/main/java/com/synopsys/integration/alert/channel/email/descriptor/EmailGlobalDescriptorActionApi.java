@@ -34,7 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
+import com.synopsys.integration.alert.channel.email.EmailChannel;
 import com.synopsys.integration.alert.channel.email.EmailProperties;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
@@ -47,11 +47,11 @@ import com.synopsys.integration.exception.IntegrationException;
 @Component
 public class EmailGlobalDescriptorActionApi extends DescriptorActionApi {
     public static final String NOT_AN_INTEGER = "Not an Integer.";
-    private final EmailGroupChannel emailGroupChannel;
+    private final EmailChannel emailChannel;
 
     @Autowired
-    public EmailGlobalDescriptorActionApi(final EmailGroupChannel emailGroupChannel) {
-        this.emailGroupChannel = emailGroupChannel;
+    public EmailGlobalDescriptorActionApi(final EmailChannel emailChannel) {
+        this.emailChannel = emailChannel;
     }
 
     // TODO Global email config doesn't validate properly or give any indication that saving was successful
@@ -88,7 +88,7 @@ public class EmailGlobalDescriptorActionApi extends DescriptorActionApi {
         final FieldAccessor fieldAccessor = testConfig.getFieldModel().convertToFieldAccessor();
         final EmailProperties emailProperties = new EmailProperties(fieldAccessor);
         final AggregateMessageContent messageContent = new AggregateMessageContent("Message Content", "Test from Alert", Collections.emptyList());
-        emailGroupChannel.sendMessage(emailProperties, emailAddresses, "Test from Alert", "Global Configuration", "", messageContent, "N/A");
+        emailChannel.sendMessage(emailProperties, emailAddresses, "Test from Alert", "Global Configuration", "", messageContent, "N/A");
     }
 
 }

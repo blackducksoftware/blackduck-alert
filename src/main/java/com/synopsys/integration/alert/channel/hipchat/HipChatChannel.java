@@ -53,7 +53,6 @@ import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.database.audit.AuditUtility;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.connection.RestConnection;
@@ -70,9 +69,9 @@ public class HipChatChannel extends RestDistributionChannel {
     private final Logger logger = LoggerFactory.getLogger(HipChatChannel.class);
 
     @Autowired
-    public HipChatChannel(final Gson gson, final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final AuditUtility auditUtility,
+    public HipChatChannel(final Gson gson, final AlertProperties alertProperties, final AuditUtility auditUtility,
         final ChannelRestConnectionFactory channelRestConnectionFactory) {
-        super(HipChatChannel.COMPONENT_NAME, gson, alertProperties, blackDuckProperties, auditUtility, channelRestConnectionFactory);
+        super(HipChatChannel.COMPONENT_NAME, gson, alertProperties, auditUtility, channelRestConnectionFactory);
     }
 
     @Override

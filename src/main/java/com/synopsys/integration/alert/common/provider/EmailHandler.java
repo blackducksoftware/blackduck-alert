@@ -21,12 +21,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.email.template;
+package com.synopsys.integration.alert.common.provider;
 
-import java.util.ArrayList;
-import java.util.Map;
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 
-public class FreemarkerTarget extends ArrayList<Map<String, String>> {
-    private static final long serialVersionUID = 9127715639930741374L;
+public abstract class EmailHandler {
+    public abstract FieldAccessor updateFieldAccessor(final AggregateMessageContent content, final FieldAccessor originalAccessor);
 
 }
