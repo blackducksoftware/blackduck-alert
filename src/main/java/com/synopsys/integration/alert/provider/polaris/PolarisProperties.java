@@ -86,8 +86,13 @@ public class PolarisProperties extends ProviderProperties {
                                    .orElseThrow(() -> new IntegrationException(String.format(errorFormat, "baseUrl")));
         final String accessToken = getAccessToken()
                                        .orElseThrow(() -> new IntegrationException(String.format(errorFormat, "accessToken")));
-
         final Integer timeout = getTimeout();
+
+        return createRestConnection(intLogger, baseUrl, accessToken, timeout);
+
+    }
+
+    public AccessTokenRestConnection createRestConnection(final IntLogger intLogger, final String baseUrl, final String accessToken, final Integer timeout) {
         final Boolean alwaysTrustCertificate = alertProperties.getAlertTrustCertificate().orElse(Boolean.FALSE);
         final ProxyInfo proxyInfo = alertProperties.createProxyInfo();
 
