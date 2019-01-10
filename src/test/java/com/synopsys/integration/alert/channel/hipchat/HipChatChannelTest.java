@@ -150,7 +150,6 @@ public class HipChatChannelTest extends ChannelTest {
         final TestAlertProperties alertProperties = new TestAlertProperties();
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, alertProperties, auditUtility, null);
 
-        final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final AggregateMessageContent messageContent = createLargeMessageContent();
 
         final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
