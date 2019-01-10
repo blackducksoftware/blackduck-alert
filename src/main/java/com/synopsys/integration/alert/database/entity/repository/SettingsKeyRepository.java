@@ -21,17 +21,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor;
+package com.synopsys.integration.alert.database.entity.repository;
 
-import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
-import com.synopsys.integration.alert.common.enumeration.DescriptorType;
+import java.util.Optional;
 
-public class ComponentDescriptor extends Descriptor {
+import org.springframework.data.jpa.repository.JpaRepository;
 
-    public ComponentDescriptor(final String name, final DescriptorActionApi componentDescriptorActionApi, final UIConfig componentUIConfig) {
-        super(name, DescriptorType.COMPONENT);
-        addGlobalUiConfig(componentDescriptorActionApi, componentUIConfig);
-    }
+import com.synopsys.integration.alert.database.entity.SettingsKeyEntity;
 
+public interface SettingsKeyRepository extends JpaRepository<SettingsKeyEntity, Long> {
+
+    Optional<SettingsKeyEntity> findByKey(String key);
 }

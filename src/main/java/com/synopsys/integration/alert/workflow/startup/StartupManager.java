@@ -24,14 +24,10 @@
 package com.synopsys.integration.alert.workflow.startup;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -44,13 +40,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
-import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
-import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
@@ -59,8 +50,6 @@ import com.synopsys.integration.alert.component.scheduling.SchedulingDescriptor;
 import com.synopsys.integration.alert.component.scheduling.SchedulingUIConfig;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
-import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
-import com.synopsys.integration.alert.database.api.configuration.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.database.security.StringEncryptionConverter;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
@@ -69,6 +58,7 @@ import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.OnDemandTask;
+import com.synopsys.integration.alert.workflow.upgrade.UpgradeProcessor;
 
 @Component
 public class StartupManager {
@@ -86,8 +76,7 @@ public class StartupManager {
     private final SystemValidator systemValidator;
     private final BaseConfigurationAccessor configurationAccessor;
     private final EncryptionUtility encryptionUtility;
-    private final List<Descriptor> allDescriptors;
-    private final BaseDescriptorAccessor descriptorAccessor;
+    private final UpgradeProcessor upgradeProcessor;
 
     @Value("${logging.level.com.blackducksoftware.integration:}")
     private String loggingLevel;
@@ -121,7 +110,7 @@ public class StartupManager {
     public StartupManager(final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
         final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer,
         final List<ProviderDescriptor> providerDescriptorList, final SystemStatusUtility systemStatusUtility, final SystemValidator systemValidator, final BaseConfigurationAccessor configurationAccessor,
-        final EncryptionUtility encryptionUtility, final List<Descriptor> allDescriptors, final BaseDescriptorAccessor descriptorAccessor) {
+        final EncryptionUtility encryptionUtility, final UpgradeProcessor upgradeProcessor) {
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
         this.dailyTask = dailyTask;
@@ -134,15 +123,16 @@ public class StartupManager {
         this.systemValidator = systemValidator;
         this.configurationAccessor = configurationAccessor;
         this.encryptionUtility = encryptionUtility;
-        this.allDescriptors = allDescriptors;
-        this.descriptorAccessor = descriptorAccessor;
+        this.upgradeProcessor = upgradeProcessor;
     }
 
     @Transactional
     public void startup() {
         logger.info("Alert Starting...");
         systemStatusUtility.startupOccurred();
-        registerDescriptors();
+        if (upgradeProcessor.shouldUpgrade()) {
+            upgradeProcessor.runUpgrade();
+        }
         initializeChannelPropertyManagers();
         validate();
         logConfiguration();
@@ -278,49 +268,4 @@ public class StartupManager {
         return loggingLevel;
     }
 
-    @Transactional
-    public void registerDescriptors() {
-        try {
-            final Set<String> registeredDescriptors = descriptorAccessor
-                                                          .getRegisteredDescriptors()
-                                                          .stream()
-                                                          .map(RegisteredDescriptorModel::getName)
-                                                          .collect(Collectors.toSet());
-            final List<Descriptor> missingDescriptors = allDescriptors.stream()
-                                                            .filter(descriptor -> !registeredDescriptors.contains(descriptor.getName()))
-                                                            .collect(Collectors.toList());
-            for (final Descriptor descriptor : missingDescriptors) {
-                final String descriptorName = descriptor.getName();
-                logger.info("Adding descriptor '{}'", descriptorName);
-                final DescriptorType descriptorType = descriptor.getType();
-
-                final Collection<DefinedFieldModel> globalFieldModels = descriptor.getDefinedFields(ConfigContextEnum.GLOBAL);
-                final Collection<DefinedFieldModel> distributionFieldModels = descriptor.getDefinedFields(ConfigContextEnum.DISTRIBUTION);
-
-                final List<DefinedFieldModel> completeDistributionFieldModels = new LinkedList<>();
-                completeDistributionFieldModels.addAll(distributionFieldModels);
-
-                final DefinedFieldModel name = DefinedFieldModel.createDistributionField(CommonDistributionUIConfig.KEY_NAME);
-                final DefinedFieldModel frequency = DefinedFieldModel.createDistributionField(CommonDistributionUIConfig.KEY_FREQUENCY);
-                final DefinedFieldModel channelName = DefinedFieldModel.createDistributionField(CommonDistributionUIConfig.KEY_CHANNEL_NAME);
-                final DefinedFieldModel providerName = DefinedFieldModel.createDistributionField(CommonDistributionUIConfig.KEY_PROVIDER_NAME);
-
-                final DefinedFieldModel formatType = DefinedFieldModel.createDistributionField(ProviderDistributionUIConfig.KEY_FORMAT_TYPE);
-                final DefinedFieldModel notificationTypes = DefinedFieldModel.createDistributionField(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES);
-                completeDistributionFieldModels.addAll(List.of(name, frequency, channelName, providerName, formatType, notificationTypes));
-
-                final Collection<DefinedFieldModel> allFieldModels = new LinkedList<>();
-                allFieldModels.addAll(globalFieldModels);
-                allFieldModels.addAll(completeDistributionFieldModels);
-
-                //TODO add methods to descriptor accessor to add multiple fields to a registered descriptor
-                // TODO add a method to add fields to a descriptor by name.
-
-                descriptorAccessor.registerDescriptor(descriptorName, descriptorType, allFieldModels);
-
-            }
-        } catch (final AlertDatabaseConstraintException e) {
-            logger.error("Error registering descriptors.");
-        }
-    }
 }
