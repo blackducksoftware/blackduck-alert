@@ -23,7 +23,9 @@
  */
 package com.synopsys.integration.alert.database.api.settingskey;
 
-public class SettingsKeyModel {
+import com.synopsys.integration.util.Stringable;
+
+public class SettingsKeyModel extends Stringable {
     private final Long id;
     private final String key;
     private final String value;
