@@ -13,7 +13,7 @@ package com.synopsys.integration.alert.util;
 
 import java.util.Properties;
 
-import org.junit.Assume;
+import org.junit.jupiter.api.Assumptions;
 
 public class TestProperties {
     private final ResourceLoader resourceLoader;
@@ -71,7 +71,7 @@ public class TestProperties {
     }
 
     public void assumeTrue(final String propertyKey) {
-        Assume.assumeTrue(getProperties().containsKey(propertyKey));
+        Assumptions.assumeTrue(getProperties().containsKey(propertyKey));
     }
 
     public boolean containsKey(final TestPropertyKey propertyKey) {

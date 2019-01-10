@@ -34,6 +34,9 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 
 @Component
 public class PolarisGlobalUIConfig extends UIConfig {
+    public static final String LABEL_POLARIS_URL = "Url";
+    public static final String LABEL_POLARIS_ACCESS_TOKEN = "Access Token";
+    public static final String LABEL_POLARIS_TIMEOUT = "Timeout";
 
     public PolarisGlobalUIConfig() {
         super(PolarisDescriptor.POLARIS_LABEL, PolarisDescriptor.POLARIS_URL_NAME, PolarisDescriptor.POLARIS_ICON);
@@ -41,9 +44,9 @@ public class PolarisGlobalUIConfig extends UIConfig {
 
     @Override
     public List<ConfigField> createFields() {
-        final ConfigField polarisUrl = TextInputConfigField.createRequired(PolarisDescriptor.KEY_POLARIS_URL, "Url");
-        final ConfigField polarisAccessToken = TextInputConfigField.createRequired(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN, "Access Token");
-        final ConfigField polarisTimeout = NumberConfigField.createRequired(PolarisDescriptor.KEY_POLARIS_TIMEOUT, "Timeout");
+        final ConfigField polarisUrl = TextInputConfigField.createRequired(PolarisDescriptor.KEY_POLARIS_URL, LABEL_POLARIS_URL);
+        final ConfigField polarisAccessToken = TextInputConfigField.createRequired(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN, LABEL_POLARIS_ACCESS_TOKEN);
+        final ConfigField polarisTimeout = NumberConfigField.createRequired(PolarisDescriptor.KEY_POLARIS_TIMEOUT, LABEL_POLARIS_TIMEOUT);
 
         return List.of(polarisUrl, polarisAccessToken, polarisTimeout);
     }

@@ -24,7 +24,6 @@
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -38,7 +37,6 @@ import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
@@ -105,15 +103,6 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
             }
         } catch (final IOException ioException) {
             throw new IntegrationException(ioException.getMessage(), ioException);
-        }
-    }
-
-    public void validateFieldFormatting(final FieldAccessor fieldAccessor) throws AlertFieldException {
-        final Map<String, String> fieldErrors = new HashMap<>();
-        validateConfig(fieldAccessor, fieldErrors);
-
-        if (!fieldErrors.isEmpty()) {
-            throw new AlertFieldException(fieldErrors);
         }
     }
 
