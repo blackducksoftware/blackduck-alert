@@ -89,8 +89,7 @@ public class ConfigActions {
                 for (final ConfigurationModel configurationModel : configurationModels) {
                     final FieldModel fieldModel = convertToFieldModel(configurationModel);
                     final DescriptorActionApi descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
-                    descriptorActionApi.readConfig(fieldModel);
-                    fields.add(fieldModel);
+                    fields.add(descriptorActionApi.readConfig(fieldModel));
                 }
             }
         }

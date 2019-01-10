@@ -66,7 +66,7 @@ class SettingsConfigurationForm extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleSingleSelectChange = this.handleSingleSelectChange.bind(this);
         this.state = {
-            settingsData: FieldModelUtil.createEmptyFieldModel(fieldNames)
+            settingsData: FieldModelUtil.createEmptyFieldModel(fieldNames, 'GLOBAL', 'component_settings')
         };
     }
 

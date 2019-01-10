@@ -42,10 +42,10 @@ export function updateFieldModelSingleValue(fieldModel, key, value) {
 }
 
 
-export function createEmptyFieldModel(fields) {
+export function createEmptyFieldModel(fields, context, descriptorName) {
     const emptySettings = {};
-    emptySettings.context = 'GLOBAL';
-    emptySettings.descriptorName = 'component_settings';
+    emptySettings.context = context;
+    emptySettings.descriptorName = descriptorName;
     emptySettings.keyToValues = {};
     Object.keys(fields).forEach((key) => {
         emptySettings.keyToValues[fields[key]] = {
@@ -61,7 +61,7 @@ export function createFieldModelErrorKey(fieldKey) {
 }
 
 export function checkModelOrCreateEmpty(fieldModel, fields) {
-    const emptyFieldModel = createEmptyFieldModel(fields);
+    const emptyFieldModel = createEmptyFieldModel(fields, fieldModel.context, fieldModel.descriptorName);
     const newModel = Object.assign({}, emptyFieldModel, fieldModel);
     const newKeyToValues = emptyFieldModel.keyToValues;
     Object.keys(fieldModel.keyToValues).forEach((key) => {

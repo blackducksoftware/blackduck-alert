@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.common.descriptor.config.context;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
@@ -33,6 +34,7 @@ import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.FieldModel;
+import com.synopsys.integration.alert.web.model.FieldValueModel;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
@@ -58,8 +60,17 @@ public abstract class DescriptorActionApi {
         return new AggregateMessageContent("testTopic", "Alert Test Message", null, subTopic, Collections.emptyList());
     }
 
-    public void readConfig(final FieldModel fieldModel) {
+    protected FieldModel createFieldModelCopy(final FieldModel fieldModel) {
+        final HashMap<String, FieldValueModel> fields = new HashMap<>();
+        fields.putAll(fieldModel.getKeyToValues());
 
+        final FieldModel modelToSave = new FieldModel(fieldModel.getDescriptorName(), fieldModel.getContext(), fields);
+        modelToSave.setId(fieldModel.getId());
+        return modelToSave;
+    }
+
+    public FieldModel readConfig(final FieldModel fieldModel) {
+        return fieldModel;
     }
 
     public FieldModel updateConfig(final FieldModel fieldModel) {
@@ -70,8 +81,8 @@ public abstract class DescriptorActionApi {
         return fieldModel;
     }
 
-    public void deleteConfig(final FieldModel fieldModel) {
-
+    public FieldModel deleteConfig(final FieldModel fieldModel) {
+        return fieldModel;
     }
 
 }
