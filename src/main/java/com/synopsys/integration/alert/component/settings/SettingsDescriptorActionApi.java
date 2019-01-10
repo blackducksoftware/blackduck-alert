@@ -137,12 +137,14 @@ public class SettingsDescriptorActionApi extends DescriptorActionApi {
     }
 
     @Override
-    public void readConfig(final FieldModel fieldModel) {
+    public FieldModel readConfig(final FieldModel fieldModel) {
         final Optional<UserModel> defaultUser = userAccessor.getUser("sysadmin");
+        final FieldModel newModel = createFieldModelCopy(fieldModel);
         final boolean defaultUserPasswordSet = defaultUser.isPresent() && StringUtils.isNotBlank(defaultUser.get().getPassword());
-        fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, new FieldValueModel(null, defaultUserPasswordSet));
-        fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, new FieldValueModel(null, encryptionUtility.isPasswordSet()));
-        fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(null, encryptionUtility.isPasswordSet()));
+        newModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, new FieldValueModel(null, defaultUserPasswordSet));
+        newModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, new FieldValueModel(null, encryptionUtility.isPasswordSet()));
+        newModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(null, encryptionUtility.isPasswordSet()));
+        return newModel;
     }
 
     @Override
@@ -164,9 +166,9 @@ public class SettingsDescriptorActionApi extends DescriptorActionApi {
         final HashMap<String, FieldValueModel> fields = new HashMap<>();
         fields.putAll(fieldModel.getKeyToValues());
         fields.remove(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD);
-
         fields.remove(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD);
         fields.remove(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT);
+
         final FieldModel modelToSave = new FieldModel(fieldModel.getDescriptorName(), fieldModel.getContext(), fields);
         return modelToSave;
     }

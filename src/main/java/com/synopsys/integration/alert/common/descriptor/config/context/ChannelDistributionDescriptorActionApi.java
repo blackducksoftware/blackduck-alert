@@ -121,8 +121,8 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
     }
 
     @Override
-    public void deleteConfig(final FieldModel fieldModel) {
-        getProviderActionApi(fieldModel).ifPresent(descriptorActionApi -> descriptorActionApi.deleteConfig(fieldModel));
+    public FieldModel deleteConfig(final FieldModel fieldModel) {
+        return getProviderActionApi(fieldModel).map(descriptorActionApi -> descriptorActionApi.deleteConfig(fieldModel)).orElse(fieldModel);
     }
 
     private Optional<DescriptorActionApi> getProviderActionApi(final FieldModel fieldModel) {
