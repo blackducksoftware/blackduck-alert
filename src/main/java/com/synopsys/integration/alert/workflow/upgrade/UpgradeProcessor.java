@@ -33,17 +33,17 @@ public class UpgradeProcessor {
     private final Logger logger = LoggerFactory.getLogger(UpgradeProcessor.class);
 
     private final AlertVersionUtil alertVersionUtil;
-    private final DescriptorRegistrator descriptorRegistrator;
+    private final DescriptorRegistrar descriptorRegistrar;
 
     @Autowired
-    public UpgradeProcessor(final AlertVersionUtil alertVersionUtil, final DescriptorRegistrator descriptorRegistrator) {
+    public UpgradeProcessor(final AlertVersionUtil alertVersionUtil, final DescriptorRegistrar descriptorRegistrar) {
         this.alertVersionUtil = alertVersionUtil;
-        this.descriptorRegistrator = descriptorRegistrator;
+        this.descriptorRegistrar = descriptorRegistrar;
     }
 
     public void runUpgrade() {
         logger.info("Upgrading alert...");
-        descriptorRegistrator.registerDescriptors();
+        descriptorRegistrar.registerDescriptors();
         alertVersionUtil.updateVersionInDB(alertVersionUtil.findFileVersion());
     }
 

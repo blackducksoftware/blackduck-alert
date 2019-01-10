@@ -21,7 +21,7 @@ import com.synopsys.integration.alert.database.api.configuration.model.DefinedFi
 import com.synopsys.integration.alert.database.api.configuration.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
-public class DescriptorRegistratorTestIT extends AlertIntegrationTest {
+public class DescriptorRegistrarTestIT extends AlertIntegrationTest {
 
     @Autowired
     BaseDescriptorAccessor descriptorAccessor;
@@ -41,8 +41,8 @@ public class DescriptorRegistratorTestIT extends AlertIntegrationTest {
         final Optional<RegisteredDescriptorModel> descriptor = descriptorAccessor.getRegisteredDescriptorByName(hipChatDescriptor.getName());
         assertTrue(descriptor.isEmpty());
 
-        final DescriptorRegistrator descriptorRegistrator = new DescriptorRegistrator(descriptorAccessor, List.of(hipChatDescriptor));
-        descriptorRegistrator.registerDescriptors();
+        final DescriptorRegistrar descriptorRegistrar = new DescriptorRegistrar(descriptorAccessor, List.of(hipChatDescriptor));
+        descriptorRegistrar.registerDescriptors();
 
         final Optional<RegisteredDescriptorModel> foundDescriptor = descriptorAccessor.getRegisteredDescriptorByName(hipChatDescriptor.getName());
         assertTrue(foundDescriptor.isPresent());
@@ -68,8 +68,8 @@ public class DescriptorRegistratorTestIT extends AlertIntegrationTest {
         final Optional<RegisteredDescriptorModel> descriptor = descriptorAccessor.getRegisteredDescriptorByName(hipChatDescriptor.getName());
         assertTrue(descriptor.isEmpty());
 
-        final DescriptorRegistrator descriptorRegistrator = new DescriptorRegistrator(descriptorAccessor, List.of(hipChatDescriptor));
-        descriptorRegistrator.registerDescriptors();
+        final DescriptorRegistrar descriptorRegistrar = new DescriptorRegistrar(descriptorAccessor, List.of(hipChatDescriptor));
+        descriptorRegistrar.registerDescriptors();
 
         final Optional<RegisteredDescriptorModel> foundDescriptor = descriptorAccessor.getRegisteredDescriptorByName(hipChatDescriptor.getName());
         assertTrue(foundDescriptor.isPresent());
@@ -82,8 +82,8 @@ public class DescriptorRegistratorTestIT extends AlertIntegrationTest {
         keys.add(new DefinedFieldModel("newkey", ConfigContextEnum.GLOBAL, true));
         Mockito.doReturn(keys).when(spyHipChatDescriptor).getAllDefinedFields(ConfigContextEnum.GLOBAL);
 
-        final DescriptorRegistrator spiedDescriptorRegistrator = new DescriptorRegistrator(descriptorAccessor, List.of(spyHipChatDescriptor));
-        spiedDescriptorRegistrator.registerDescriptors();
+        final DescriptorRegistrar spiedDescriptorRegistrar = new DescriptorRegistrar(descriptorAccessor, List.of(spyHipChatDescriptor));
+        spiedDescriptorRegistrar.registerDescriptors();
 
         final List<DefinedFieldModel> updatedGlobalFields = descriptorAccessor.getFieldsForDescriptorById(foundDescriptor.get().getId(), ConfigContextEnum.GLOBAL);
 
@@ -96,8 +96,8 @@ public class DescriptorRegistratorTestIT extends AlertIntegrationTest {
         final Optional<RegisteredDescriptorModel> descriptor = descriptorAccessor.getRegisteredDescriptorByName(hipChatDescriptor.getName());
         assertTrue(descriptor.isEmpty());
 
-        final DescriptorRegistrator descriptorRegistrator = new DescriptorRegistrator(descriptorAccessor, List.of(hipChatDescriptor));
-        descriptorRegistrator.registerDescriptors();
+        final DescriptorRegistrar descriptorRegistrar = new DescriptorRegistrar(descriptorAccessor, List.of(hipChatDescriptor));
+        descriptorRegistrar.registerDescriptors();
 
         final Optional<RegisteredDescriptorModel> foundDescriptor = descriptorAccessor.getRegisteredDescriptorByName(hipChatDescriptor.getName());
         assertTrue(foundDescriptor.isPresent());
@@ -110,8 +110,8 @@ public class DescriptorRegistratorTestIT extends AlertIntegrationTest {
         keys.remove(new DefinedFieldModel(HipChatDescriptor.KEY_API_KEY, ConfigContextEnum.GLOBAL, true));
         Mockito.doReturn(keys).when(spyHipChatDescriptor).getAllDefinedFields(ConfigContextEnum.GLOBAL);
 
-        final DescriptorRegistrator spiedDescriptorRegistrator = new DescriptorRegistrator(descriptorAccessor, List.of(spyHipChatDescriptor));
-        spiedDescriptorRegistrator.registerDescriptors();
+        final DescriptorRegistrar spiedDescriptorRegistrar = new DescriptorRegistrar(descriptorAccessor, List.of(spyHipChatDescriptor));
+        spiedDescriptorRegistrar.registerDescriptors();
 
         final List<DefinedFieldModel> updatedGlobalFields = descriptorAccessor.getFieldsForDescriptorById(foundDescriptor.get().getId(), ConfigContextEnum.GLOBAL);
 

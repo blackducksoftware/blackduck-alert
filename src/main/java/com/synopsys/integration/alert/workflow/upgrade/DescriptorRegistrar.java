@@ -46,13 +46,13 @@ import com.synopsys.integration.alert.database.api.configuration.model.DefinedFi
 import com.synopsys.integration.alert.database.api.configuration.model.RegisteredDescriptorModel;
 
 @Component
-public class DescriptorRegistrator {
-    private final Logger logger = LoggerFactory.getLogger(DescriptorRegistrator.class);
+public class DescriptorRegistrar {
+    private final Logger logger = LoggerFactory.getLogger(DescriptorRegistrar.class);
     private final List<Descriptor> allDescriptors;
     private final BaseDescriptorAccessor descriptorAccessor;
 
     @Autowired
-    public DescriptorRegistrator(final BaseDescriptorAccessor descriptorAccessor, final List<Descriptor> allDescriptors) {
+    public DescriptorRegistrar(final BaseDescriptorAccessor descriptorAccessor, final List<Descriptor> allDescriptors) {
         this.descriptorAccessor = descriptorAccessor;
         this.allDescriptors = allDescriptors;
     }
