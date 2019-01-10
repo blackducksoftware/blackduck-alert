@@ -40,6 +40,10 @@ public class FieldAccessor {
         this.fields = fields;
     }
 
+    public Map<String, ConfigurationFieldModel> getFields() {
+        return fields;
+    }
+
     public Optional<Long> getLong(final String key) {
         final Optional<String> value = getValue(key);
         return value.map(Long::parseLong);
@@ -72,7 +76,7 @@ public class FieldAccessor {
     }
 
     private Optional<String> getValue(final String key) {
-        if (StringUtils.isNotEmpty(key) && fields.containsKey(key)) {
+        if (StringUtils.isNotBlank(key) && fields.containsKey(key)) {
             final ConfigurationFieldModel fieldModel = fields.get(key);
             return fieldModel.getFieldValue();
         }

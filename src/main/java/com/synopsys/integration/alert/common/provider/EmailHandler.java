@@ -21,17 +21,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor;
+package com.synopsys.integration.alert.common.provider;
 
-import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
-import com.synopsys.integration.alert.common.enumeration.DescriptorType;
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 
-public class ComponentDescriptor extends Descriptor {
-
-    public ComponentDescriptor(final String name, final DescriptorActionApi componentDescriptorActionApi, final UIConfig componentUIConfig) {
-        super(name, DescriptorType.COMPONENT);
-        addGlobalUiConfig(componentDescriptorActionApi, componentUIConfig);
-    }
+public abstract class EmailHandler {
+    public abstract FieldAccessor updateFieldAccessor(final AggregateMessageContent content, final FieldAccessor originalAccessor);
 
 }

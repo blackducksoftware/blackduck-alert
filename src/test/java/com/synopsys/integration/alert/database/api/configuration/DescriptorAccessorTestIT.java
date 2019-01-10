@@ -96,10 +96,9 @@ public class DescriptorAccessorTestIT extends AlertIntegrationTest {
 
     @Test
     public void registerDescriptorThatAlreadyExistsTest() throws AlertDatabaseConstraintException {
-        final boolean initialResult = descriptorAccessor.registerDescriptorWithoutFields(DESCRIPTOR_NAME, DescriptorType.CHANNEL);
-        assertTrue(initialResult);
-        final boolean reAddResult = descriptorAccessor.registerDescriptorWithoutFields(DESCRIPTOR_NAME, DescriptorType.CHANNEL);
-        assertFalse(reAddResult);
+        final RegisteredDescriptorModel initialResult = descriptorAccessor.registerDescriptorWithoutFields(DESCRIPTOR_NAME, DescriptorType.CHANNEL);
+        final RegisteredDescriptorModel reAddResult = descriptorAccessor.registerDescriptorWithoutFields(DESCRIPTOR_NAME, DescriptorType.CHANNEL);
+        assertEquals(initialResult.getId(), reAddResult.getId());
     }
 
     @Test

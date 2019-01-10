@@ -21,12 +21,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.email.template;
+package com.synopsys.integration.alert.database.entity.repository;
 
-import java.util.ArrayList;
-import java.util.Map;
+import java.util.Optional;
 
-public class FreemarkerTarget extends ArrayList<Map<String, String>> {
-    private static final long serialVersionUID = 9127715639930741374L;
+import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.synopsys.integration.alert.database.entity.SettingsKeyEntity;
+
+public interface SettingsKeyRepository extends JpaRepository<SettingsKeyEntity, Long> {
+
+    Optional<SettingsKeyEntity> findByKey(String key);
 }

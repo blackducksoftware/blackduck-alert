@@ -21,39 +21,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.email.template;
+package com.synopsys.integration.alert.database.api.settingskey;
 
-import java.util.Map;
+import com.synopsys.integration.util.Stringable;
 
-public class EmailTarget {
-    private final String emailAddress;
+public class SettingsKeyModel extends Stringable {
+    private final Long id;
+    private final String key;
+    private final String value;
 
-    private final String templateName;
-
-    private final Map<String, Object> model;
-
-    private final Map<String, String> contentIdsToFilePaths;
-
-    public EmailTarget(final String emailAddress, final String templateName, final Map<String, Object> model, final Map<String, String> contentIdsToFilePaths) {
-        this.emailAddress = emailAddress;
-        this.templateName = templateName;
-        this.model = model;
-        this.contentIdsToFilePaths = contentIdsToFilePaths;
+    public SettingsKeyModel(final Long id, final String key, final String value) {
+        this.id = id;
+        this.key = key;
+        this.value = value;
     }
 
-    public String getEmailAddress() {
-        return emailAddress;
+    public Long getId() {
+        return id;
     }
 
-    public String getTemplateName() {
-        return templateName;
+    public String getKey() {
+        return key;
     }
 
-    public Map<String, Object> getModel() {
-        return model;
-    }
-
-    public Map<String, String> getContentIdsToFilePaths() {
-        return contentIdsToFilePaths;
+    public String getValue() {
+        return value;
     }
 }
