@@ -88,8 +88,6 @@ public class DescriptorMap {
         return Optional.ofNullable(descriptorMapping.get(name));
     }
 
-    //TODO a lot of these get methods may do better to return optionals
-
     public Optional<ChannelDescriptor> getChannelDescriptor(final String name) {
         return Optional.ofNullable(channelDescriptorMapping.get(name));
     }
