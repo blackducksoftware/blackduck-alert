@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.channel.email;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -46,10 +45,9 @@ import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.synopsys.integration.alert.channel.ChannelFreemarkerTemplatingService;
 import com.synopsys.integration.alert.channel.email.template.EmailTarget;
 import com.synopsys.integration.alert.channel.email.template.MimeMultipartBuilder;
-import com.synopsys.integration.alert.channel.ChannelFreemarkerTemplatingService;
-import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertException;
 
@@ -58,14 +56,11 @@ import freemarker.template.TemplateException;
 public class EmailMessagingService {
     private final Logger logger = LoggerFactory.getLogger(EmailMessagingService.class);
 
-    private final AlertProperties alertProperties;
     private final EmailProperties emailProperties;
     private final ChannelFreemarkerTemplatingService freemarkerTemplatingService;
 
-    public EmailMessagingService(final AlertProperties alertProperties, final EmailProperties emailProperties) throws IOException {
-        this.alertProperties = alertProperties;
+    public EmailMessagingService(final String templatesDirectory, final EmailProperties emailProperties) throws IOException {
         this.emailProperties = emailProperties;
-        final String templatesDirectory = alertProperties.getAlertTemplatesDir();
         final String templateDirectoryPath;
         if (StringUtils.isNotBlank(templatesDirectory)) {
             templateDirectoryPath = templatesDirectory + "/email";
@@ -86,21 +81,13 @@ public class EmailMessagingService {
             }
 
             final Session session = createMailSession(emailProperties);
-            final Map<String, String> contentIdsToFilePaths = new HashMap<>();
-            final String imagesDirectory = alertProperties.getAlertImagesDir();
-            final String imageDirectoryPath;
-            if (StringUtils.isNotBlank(imagesDirectory)) {
-                imageDirectoryPath = imagesDirectory + "/Ducky-80.png";
-            } else {
-                imageDirectoryPath = System.getProperties().getProperty("user.dir") + "/src/main/resources/email/images/Ducky-80.png";
-            }
-            addTemplateImage(model, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), imageDirectoryPath);
+
             final String html = freemarkerTemplatingService.getResolvedTemplate(model, templateName);
 
             final MimeMultipartBuilder mimeMultipartBuilder = new MimeMultipartBuilder();
             mimeMultipartBuilder.addHtmlContent(html);
             mimeMultipartBuilder.addTextContent(Jsoup.parse(html).text());
-            mimeMultipartBuilder.addEmbeddedImages(contentIdsToFilePaths);
+            mimeMultipartBuilder.addEmbeddedImages(emailTarget.getContentIdsToFilePaths());
             final MimeMultipart mimeMultipart = mimeMultipartBuilder.build();
 
             final String resolvedSubjectLine = freemarkerTemplatingService.getResolvedSubjectLine(model);
@@ -111,7 +98,7 @@ public class EmailMessagingService {
         }
     }
 
-    private void addTemplateImage(final Map<String, Object> model, final Map<String, String> contentIdsToFilePaths, final String key, final String value) {
+    public void addTemplateImage(final Map<String, Object> model, final Map<String, String> contentIdsToFilePaths, final String key, final String value) {
         final String cid = generateContentId(key);
         model.put(cleanForFreemarker(key), cid);
         contentIdsToFilePaths.put("<" + cid + ">", value);

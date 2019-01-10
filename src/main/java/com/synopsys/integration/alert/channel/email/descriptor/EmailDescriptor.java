@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
+import com.synopsys.integration.alert.channel.email.EmailChannel;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
@@ -49,9 +49,9 @@ public class EmailDescriptor extends ChannelDescriptor {
     public static final String EMAIL_ICON = "envelope";
 
     @Autowired
-    public EmailDescriptor(final EmailGroupChannel channelListener, final EmailGlobalDescriptorActionApi globalRestApi, final EmailGlobalUIConfig emailGlobalUIConfig,
+    public EmailDescriptor(final EmailChannel channelListener, final EmailGlobalDescriptorActionApi globalRestApi, final EmailGlobalUIConfig emailGlobalUIConfig,
         final EmailDistributionDescriptorActionApi distributionRestApi, final EmailDistributionUIConfig emailDistributionUIConfig) {
-        super(EmailGroupChannel.COMPONENT_NAME, EmailGroupChannel.COMPONENT_NAME, channelListener, distributionRestApi, emailDistributionUIConfig, globalRestApi, emailGlobalUIConfig);
+        super(EmailChannel.COMPONENT_NAME, EmailChannel.COMPONENT_NAME, channelListener, distributionRestApi, emailDistributionUIConfig, globalRestApi, emailGlobalUIConfig);
     }
 
     @Override

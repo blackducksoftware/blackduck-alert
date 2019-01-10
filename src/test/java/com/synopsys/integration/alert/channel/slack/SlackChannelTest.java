@@ -38,7 +38,6 @@ import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.common.model.CategoryKey;
 import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.audit.AuditUtility;
-import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.request.Request;
 
@@ -48,9 +47,8 @@ public class SlackChannelTest extends ChannelTest {
     public void testGetApiUrl() {
         final ChannelRestConnectionFactory channelRestConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
-        final BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
-        final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, blackDuckProperties, auditUtility, channelRestConnectionFactory);
+        final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, channelRestConnectionFactory);
         final DistributionEvent event = Mockito.mock(DistributionEvent.class);
         assertEquals(SlackChannel.SLACK_API, channel.getApiUrl(event));
     }
@@ -59,9 +57,8 @@ public class SlackChannelTest extends ChannelTest {
     public void testCreateRequestMissingWebhook() {
         final ChannelRestConnectionFactory channelRestConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
-        final BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
-        final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, blackDuckProperties, auditUtility, channelRestConnectionFactory);
+        final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, channelRestConnectionFactory);
 
         final FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.empty());
@@ -79,7 +76,6 @@ public class SlackChannelTest extends ChannelTest {
     public void testCreateRequestMissingChannelName() {
         final ChannelRestConnectionFactory channelRestConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
-        final BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of("webhook"));
@@ -87,7 +83,7 @@ public class SlackChannelTest extends ChannelTest {
         final DistributionEvent event = Mockito.mock(DistributionEvent.class);
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
 
-        final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, blackDuckProperties, auditUtility, channelRestConnectionFactory);
+        final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, channelRestConnectionFactory);
 
         try {
             channel.createRequests(event);
@@ -100,7 +96,6 @@ public class SlackChannelTest extends ChannelTest {
     public void testCreateRequestMissingContent() {
         final ChannelRestConnectionFactory channelRestConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
-        final BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of("webhook"));
@@ -112,7 +107,7 @@ public class SlackChannelTest extends ChannelTest {
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
         Mockito.when(event.getContent()).thenReturn(content);
 
-        final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, blackDuckProperties, auditUtility, channelRestConnectionFactory);
+        final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, channelRestConnectionFactory);
 
         try {
             assertTrue(channel.createRequests(event).isEmpty());
@@ -124,7 +119,6 @@ public class SlackChannelTest extends ChannelTest {
     public void testCreateRequestSingleCategory() throws Exception {
         final ChannelRestConnectionFactory channelRestConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
-        final BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of("webhook"));
@@ -138,7 +132,7 @@ public class SlackChannelTest extends ChannelTest {
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
         Mockito.when(event.getContent()).thenReturn(content);
 
-        final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, blackDuckProperties, auditUtility, channelRestConnectionFactory);
+        final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, channelRestConnectionFactory);
 
         final List<Request> requests = channel.createRequests(event);
         assertFalse(requests.isEmpty());
@@ -152,7 +146,6 @@ public class SlackChannelTest extends ChannelTest {
     public void testCreateRequestSingleCategoryWithItemUrl() throws Exception {
         final ChannelRestConnectionFactory channelRestConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
-        final BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of("webhook"));
@@ -166,7 +159,7 @@ public class SlackChannelTest extends ChannelTest {
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
         Mockito.when(event.getContent()).thenReturn(content);
 
-        final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, blackDuckProperties, auditUtility, channelRestConnectionFactory);
+        final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, channelRestConnectionFactory);
 
         final List<Request> requests = channel.createRequests(event);
         assertFalse(requests.isEmpty());
@@ -180,7 +173,6 @@ public class SlackChannelTest extends ChannelTest {
     public void testCreateRequestMultipleCategory() throws Exception {
         final ChannelRestConnectionFactory channelRestConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
-        final BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of("webhook"));
@@ -196,7 +188,7 @@ public class SlackChannelTest extends ChannelTest {
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
         Mockito.when(event.getContent()).thenReturn(content);
 
-        final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, blackDuckProperties, auditUtility, channelRestConnectionFactory);
+        final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, channelRestConnectionFactory);
 
         final List<Request> requests = channel.createRequests(event);
         assertFalse(requests.isEmpty());
@@ -210,7 +202,6 @@ public class SlackChannelTest extends ChannelTest {
     public void testCreateRequestMultipleCategoryWithItemUrls() throws Exception {
         final ChannelRestConnectionFactory channelRestConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
-        final BlackDuckProperties blackDuckProperties = Mockito.mock(BlackDuckProperties.class);
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final FieldAccessor fieldAccessor = Mockito.mock(FieldAccessor.class);
         Mockito.when(fieldAccessor.getString(SlackDescriptor.KEY_WEBHOOK)).thenReturn(Optional.of("webhook"));
@@ -226,7 +217,7 @@ public class SlackChannelTest extends ChannelTest {
         Mockito.when(event.getFieldAccessor()).thenReturn(fieldAccessor);
         Mockito.when(event.getContent()).thenReturn(content);
 
-        final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, blackDuckProperties, auditUtility, channelRestConnectionFactory);
+        final SlackChannel channel = new SlackChannel(new Gson(), alertProperties, auditUtility, channelRestConnectionFactory);
 
         final List<Request> requests = channel.createRequests(event);
         assertFalse(requests.isEmpty());

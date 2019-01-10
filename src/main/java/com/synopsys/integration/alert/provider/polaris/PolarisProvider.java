@@ -37,7 +37,7 @@ public class PolarisProvider extends Provider {
     public static final String COMPONENT_NAME = "provider_polaris";
 
     public PolarisProvider() {
-        super(PolarisProvider.COMPONENT_NAME);
+        super(PolarisProvider.COMPONENT_NAME, null);
     }
 
     @Override
@@ -60,4 +60,5 @@ public class PolarisProvider extends Provider {
     public Set<FormatType> getSupportedFormatTypes() {
         return EnumSet.of(FormatType.DEFAULT, FormatType.DIGEST);
     }
+
 }
