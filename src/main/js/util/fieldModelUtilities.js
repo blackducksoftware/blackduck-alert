@@ -52,8 +52,8 @@ export function createFieldModelErrorKey(fieldKey) {
 }
 
 export function checkModelOrCreateEmpty(fieldModel, fields) {
-    if (Object.keys(fieldModel.keyToValues).length > 0) {
-        return fieldModel;
-    }
-    return createEmptyFieldModel(fields);
+    const emptyFieldModel = createEmptyFieldModel(fields);
+    const newModel = Object.assign({}, emptyFieldModel, fieldModel);
+    newModel.keyToValues = Object.assign({}, emptyFieldModel.keyToValues, fieldModel.keyToValues);
+    return newModel;
 }
