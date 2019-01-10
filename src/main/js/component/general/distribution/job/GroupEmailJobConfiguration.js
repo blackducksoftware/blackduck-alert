@@ -76,7 +76,7 @@ class GroupEmailJobConfiguration extends Component {
                     id="projectOwnerOnly"
                     label="Project Owner Only"
                     name="projectOwnerOnly"
-                    value={this.state.projectOwnerOnly}
+                    isChecked={this.state.projectOwnerOnly}
                     onChange={this.handleChange}
                     errorName="projectOwnerOnlyError"
                     errorValue={this.props.error.projectOwnerOnlyError}

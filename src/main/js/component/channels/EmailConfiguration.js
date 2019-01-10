@@ -138,7 +138,7 @@ class EmailConfiguration extends React.Component {
                         id="emailSmtpAuth"
                         label="SMTP Auth"
                         name="mailSmtpAuth"
-                        value={this.state.mailSmtpAuth}
+                        isChecked={this.state.mailSmtpAuth}
                         onChange={this.handleChange}
                         errorName="mailSmtpAuthError"
                         errorValue={this.props.fieldErrors.mailSmtpAuth}
@@ -239,7 +239,7 @@ class EmailConfiguration extends React.Component {
                             id="emailSmtpEhlo"
                             label="SMTP Ehlo"
                             name="mailSmtpEhlo"
-                            value={this.state.mailSmtpEhlo}
+                            isChecked={this.state.mailSmtpEhlo}
                             onChange={this.handleChange}
                             errorName="mailSmtpEhloError"
                             errorValue={this.props.fieldErrors.mailSmtpEhlo}
@@ -259,7 +259,7 @@ class EmailConfiguration extends React.Component {
                             id="emailSmtpAuthLoginDisable"
                             label="SMTP Auth Login Disable"
                             name="mailSmtpAuthLoginDisable"
-                            value={this.state.mailSmtpAuthLoginDisable}
+                            isChecked={this.state.mailSmtpAuthLoginDisable}
                             onChange={this.handleChange}
                             errorName="mailSmtpAuthLoginDisableError"
                             errorValue={this.props.fieldErrors.mailSmtpAuthLoginDisable}
@@ -269,7 +269,7 @@ class EmailConfiguration extends React.Component {
                             id="emailSmtpAuthPlainDisable"
                             label="SMTP Auth Plain Disable"
                             name="mailSmtpAuthPlainDisable"
-                            value={this.state.mailSmtpAuthPlainDisable}
+                            isChecked={this.state.mailSmtpAuthPlainDisable}
                             onChange={this.handleChange}
                             errorName="mailSmtpAuthPlainDisableError"
                             errorValue={this.props.fieldErrors.mailSmtpAuthPlainDisable}
@@ -279,7 +279,7 @@ class EmailConfiguration extends React.Component {
                             id="emailSmtpAuthDigestDisable"
                             label="SMTP Auth Digest MD5 Disable"
                             name="mailSmtpAuthDigestMd5Disable"
-                            value={this.state.mailSmtpAuthDigestMd5Disable}
+                            isChecked={this.state.mailSmtpAuthDigestMd5Disable}
                             onChange={this.handleChange}
                             errorName="mailSmtpAuthDigestMd5DisableError"
                             errorValue={this.props.fieldErrors.mailSmtpAuthDigestMd5Disable}
@@ -289,7 +289,7 @@ class EmailConfiguration extends React.Component {
                             id="emailSmtpAuthNtlmDisable"
                             label="SMTP Auth NTLM Disable"
                             name="mailSmtpAuthNtlmDisable"
-                            value={this.state.mailSmtpAuthNtlmDisable}
+                            isChecked={this.state.mailSmtpAuthNtlmDisable}
                             onChange={this.handleChange}
                             errorName="mailSmtpAuthNtlmDisableError"
                             errorValue={this.props.fieldErrors.mailSmtpAuthNtlmDisable}
@@ -319,7 +319,7 @@ class EmailConfiguration extends React.Component {
                             id="emailSmtpAuthXoauth2Disable"
                             label="SMTP Auth XOAuth2 Disable"
                             name="mailSmtpAuthXoauth2Disable"
-                            value={this.state.mailSmtpAuthXoauth2Disable}
+                            isChecked={this.state.mailSmtpAuthXoauth2Disable}
                             onChange={this.handleChange}
                             errorName="mailSmtpAuthXoauth2DisableError"
                             errorValue={this.props.fieldErrors.mailSmtpAuthXoauth2Disable}
@@ -359,7 +359,7 @@ class EmailConfiguration extends React.Component {
                             id="emailSmtpAllowMime"
                             label="SMTP Allow 8-bit Mime"
                             name="mailSmtpAllow8bitmime"
-                            value={this.state.mailSmtpAllow8bitmime}
+                            isChecked={this.state.mailSmtpAllow8bitmime}
                             onChange={this.handleChange}
                             errorName="mailSmtpAllow8bitmimeError"
                             errorValue={this.props.fieldErrors.mailSmtpAllow8bitmime}
@@ -369,7 +369,7 @@ class EmailConfiguration extends React.Component {
                             id="emailSmtpSendPartial"
                             label="SMTP Send Partial"
                             name="mailSmtpSendPartial"
-                            value={this.state.mailSmtpSendPartial}
+                            isChecked={this.state.mailSmtpSendPartial}
                             onChange={this.handleChange}
                             errorName="mailSmtpSendPartialError"
                             errorValue={this.props.fieldErrors.mailSmtpSendPartial}
@@ -379,7 +379,7 @@ class EmailConfiguration extends React.Component {
                             id="emailSmtpSaslEnable"
                             label="SMTP SASL Enable"
                             name="mailSmtpSaslEnable"
-                            value={this.state.mailSmtpSaslEnable}
+                            isChecked={this.state.mailSmtpSaslEnable}
                             onChange={this.handleChange}
                             errorName="mailSmtpSaslEnableError"
                             errorValue={this.props.fieldErrors.mailSmtpSaslEnable}
@@ -419,7 +419,7 @@ class EmailConfiguration extends React.Component {
                             id="emailSmtpSaslUseCanonicalHostname"
                             label="SMTP SASL Use Canonical Hostname"
                             name="mailSmtpSaslUseCanonicalHostname"
-                            value={this.state.mailSmtpSaslUseCanonicalHostname}
+                            isChecked={this.state.mailSmtpSaslUseCanonicalHostname}
                             onChange={this.handleChange}
                             errorName="mailSmtpSaslUseCanonicalHostnameError"
                             errorValue={this.props.fieldErrors.mailSmtpSaslUseCanonicalHostname}
@@ -429,7 +429,7 @@ class EmailConfiguration extends React.Component {
                             id="emailSmtpQuitwait"
                             label="SMTP QuitWait"
                             name="mailSmtpQuitwait"
-                            value={this.state.mailSmtpQuitwait}
+                            isChecked={this.state.mailSmtpQuitwait}
                             onChange={this.handleChange}
                             errorName="mailSmtpQuitwaitError"
                             errorValue={this.props.fieldErrors.mailSmtpQuitwait}
@@ -439,7 +439,7 @@ class EmailConfiguration extends React.Component {
                             id="emailSmtpReportSuccess"
                             label="SMTP Report Success"
                             name="mailSmtpReportSuccess"
-                            value={this.state.mailSmtpReportSuccess}
+                            isChecked={this.state.mailSmtpReportSuccess}
                             onChange={this.handleChange}
                             errorName="mailSmtpReportSuccessError"
                             errorValue={this.props.fieldErrors.mailSmtpReportSuccess}
@@ -449,7 +449,7 @@ class EmailConfiguration extends React.Component {
                             id="emailSmtpSslEnable"
                             label="SMTP SSL Enable"
                             name="mailSmtpSslEnable"
-                            value={this.state.mailSmtpSslEnable}
+                            isChecked={this.state.mailSmtpSslEnable}
                             onChange={this.handleChange}
                             errorName="mailSmtpSslEnableError"
                             errorValue={this.props.fieldErrors.mailSmtpSslEnable}
@@ -459,7 +459,7 @@ class EmailConfiguration extends React.Component {
                             id="emailSmtpSslCheckServerIdentity"
                             label="SMTP SSL Check Server Identity"
                             name="mailSmtpSslCheckServerIdentity"
-                            value={this.state.mailSmtpSslCheckServerIdentity}
+                            isChecked={this.state.mailSmtpSslCheckServerIdentity}
                             onChange={this.handleChange}
                             errorName="mailSmtpSslCheckServerIdentityError"
                             errorValue={this.props.fieldErrors.mailSmtpSslCheckServerIdentity}
@@ -499,7 +499,7 @@ class EmailConfiguration extends React.Component {
                             id="emailSmtpStartTlsEnabled"
                             label="SMTP Start TLS Enabled"
                             name="mailSmtpStartTlsEnable"
-                            value={this.state.mailSmtpStartTlsEnable}
+                            isChecked={this.state.mailSmtpStartTlsEnable}
                             onChange={this.handleChange}
                             errorName="mailSmtpStartTlsEnableError"
                             errorValue={this.props.fieldErrors.mailSmtpStartTlsEnable}
@@ -509,7 +509,7 @@ class EmailConfiguration extends React.Component {
                             id="emailSmtpStartTlsRequired"
                             label="SMTP Start TLS Required"
                             name="mailSmtpStartTlsRequired"
-                            value={this.state.mailSmtpStartTlsRequired}
+                            isChecked={this.state.mailSmtpStartTlsRequired}
                             onChange={this.handleChange}
                             errorName="mailSmtpStartTlsRequiredError"
                             errorValue={this.props.fieldErrors.mailSmtpStartTlsRequired}
@@ -569,7 +569,7 @@ class EmailConfiguration extends React.Component {
                             id="emailSmtpUserSet"
                             label="SMTP User Set"
                             name="mailSmtpUserSet"
-                            value={this.state.mailSmtpUserSet}
+                            isChecked={this.state.mailSmtpUserSet}
                             onChange={this.handleChange}
                             errorName="mailSmtpUserSetError"
                             errorValue={this.props.fieldErrors.mailSmtpUserSet}
@@ -579,7 +579,7 @@ class EmailConfiguration extends React.Component {
                             id="emailSmtpNoopStrict"
                             label="SMTP NoOp Strict"
                             name="mailSmtpNoopStrict"
-                            value={this.state.mailSmtpNoopStrict}
+                            isChecked={this.state.mailSmtpNoopStrict}
                             onChange={this.handleChange}
                             errorName="mailSmtpNoopStrictError"
                             errorValue={this.props.fieldErrors.mailSmtpNoopStrict}

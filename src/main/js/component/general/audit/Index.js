@@ -375,7 +375,7 @@ class Index extends Component {
                             id="showSentNotificationsID"
                             label="Only show sent notifications"
                             name="onlyShowSentNotifications"
-                            value={this.state.onlyShowSentNotifications}
+                            isChecked={this.state.onlyShowSentNotifications}
                             onChange={this.onOnlyShowSentNotificationsChange}
                         />
                     </small>

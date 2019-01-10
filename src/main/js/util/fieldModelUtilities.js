@@ -8,6 +8,15 @@ export function getFieldModelSingleValue(fieldModel, key) {
     return null;
 }
 
+export function getFieldModelBooleanValue(fieldModel, key) {
+    const fieldValue = getFieldModelSingleValue(fieldModel, key);
+    if (fieldValue) {
+        const result = fieldValue === 'true';
+        return result;
+    }
+    return false;
+}
+
 export function isFieldModelValueSet(fieldModel, key) {
     const fieldObject = fieldModel.keyToValues[key];
     if (fieldObject) {
@@ -54,6 +63,10 @@ export function createFieldModelErrorKey(fieldKey) {
 export function checkModelOrCreateEmpty(fieldModel, fields) {
     const emptyFieldModel = createEmptyFieldModel(fields);
     const newModel = Object.assign({}, emptyFieldModel, fieldModel);
-    newModel.keyToValues = Object.assign({}, emptyFieldModel.keyToValues, fieldModel.keyToValues);
+    const newKeyToValues = emptyFieldModel.keyToValues;
+    Object.keys(fieldModel.keyToValues).forEach((key) => {
+        newKeyToValues[key] = fieldModel.keyToValues[key];
+    });
+    newModel.keyToValues = newKeyToValues;
     return newModel;
 }
