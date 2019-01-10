@@ -43,7 +43,7 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
 
     public void registerDescriptor(final Descriptor descriptor) throws AlertDatabaseConstraintException {
         for (final ConfigContextEnum context : descriptor.getAppliedUIContexts()) {
-            descriptorAccessor.registerDescriptor(descriptor.getName(), descriptor.getType(), descriptor.getDefinedFields(context));
+            descriptorAccessor.registerDescriptor(descriptor.getName(), descriptor.getType(), descriptor.getAllDefinedFields(context));
         }
         descriptors.add(descriptor);
     }

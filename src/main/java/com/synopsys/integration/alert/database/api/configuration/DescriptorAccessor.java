@@ -132,7 +132,7 @@ public class DescriptorAccessor implements BaseDescriptorAccessor {
      * @return true if a descriptor with that name was not already registered
      */
     @Override
-    public boolean registerDescriptorWithoutFields(final String descriptorName, final DescriptorType descriptorType) throws AlertDatabaseConstraintException {
+    public RegisteredDescriptorModel registerDescriptorWithoutFields(final String descriptorName, final DescriptorType descriptorType) throws AlertDatabaseConstraintException {
         return registerDescriptor(descriptorName, descriptorType, Collections.emptyList());
     }
 
@@ -140,7 +140,7 @@ public class DescriptorAccessor implements BaseDescriptorAccessor {
      * @return true if a descriptor with that name was not already registered
      */
     @Override
-    public boolean registerDescriptor(final String descriptorName, final DescriptorType descriptorType, final Collection<DefinedFieldModel> descriptorFields) throws AlertDatabaseConstraintException {
+    public RegisteredDescriptorModel registerDescriptor(final String descriptorName, final DescriptorType descriptorType, final Collection<DefinedFieldModel> descriptorFields) throws AlertDatabaseConstraintException {
         if (StringUtils.isEmpty(descriptorName)) {
             throw new AlertDatabaseConstraintException("Descriptor name cannot be empty");
         }
@@ -148,14 +148,15 @@ public class DescriptorAccessor implements BaseDescriptorAccessor {
             throw new AlertDatabaseConstraintException("Descriptor type cannot be empty");
         }
         final Optional<RegisteredDescriptorEntity> optionalDescriptorEntity = registeredDescriptorRepository.findFirstByName(descriptorName);
-        if (optionalDescriptorEntity.isEmpty()) {
-            final Long descriptorTypeId = saveDescriptorTypeAndReturnId(descriptorType);
-            final RegisteredDescriptorEntity newDescriptor = new RegisteredDescriptorEntity(descriptorName, descriptorTypeId);
-            final RegisteredDescriptorEntity createdDescriptor = registeredDescriptorRepository.save(newDescriptor);
-            addFieldsAndUpdateRelations(createdDescriptor.getId(), descriptorFields);
-            return true;
+        if (optionalDescriptorEntity.isPresent()) {
+            return createRegisteredDescriptorModel(optionalDescriptorEntity.get());
         }
-        return false;
+
+        final Long descriptorTypeId = saveDescriptorTypeAndReturnId(descriptorType);
+        final RegisteredDescriptorEntity newDescriptor = new RegisteredDescriptorEntity(descriptorName, descriptorTypeId);
+        final RegisteredDescriptorEntity createdDescriptor = registeredDescriptorRepository.save(newDescriptor);
+        addFieldsAndUpdateRelations(createdDescriptor.getId(), descriptorFields);
+        return createRegisteredDescriptorModel(createdDescriptor);
     }
 
     /**
@@ -218,6 +219,7 @@ public class DescriptorAccessor implements BaseDescriptorAccessor {
     /**
      * @return true if the descriptor field was present
      */
+    @Override
     public boolean removeDescriptorField(final Long descriptorId, final DefinedFieldModel descriptorField) throws AlertDatabaseConstraintException {
         final RegisteredDescriptorEntity descriptor = findDescriptorById(descriptorId);
         if (descriptorField == null) {

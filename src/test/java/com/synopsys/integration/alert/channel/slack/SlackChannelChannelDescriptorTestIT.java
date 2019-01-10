@@ -1,6 +1,5 @@
 package com.synopsys.integration.alert.channel.slack;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -99,12 +98,12 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     }
 
     @Override
-    public boolean assertGlobalFields(final Collection<DefinedFieldModel> globalFields) {
+    public boolean assertGlobalFields(final Set<DefinedFieldModel> globalFields) {
         return globalFields.isEmpty(); // no global fields for slack
     }
 
     @Override
-    public boolean assertDistributionFields(final Collection<DefinedFieldModel> distributionFields) {
+    public boolean assertDistributionFields(final Set<DefinedFieldModel> distributionFields) {
         final Set<String> fieldNames = Set.of(SlackDescriptor.KEY_CHANNEL_NAME, SlackDescriptor.KEY_CHANNEL_USERNAME, SlackDescriptor.KEY_WEBHOOK);
         return distributionFields.stream().map(DefinedFieldModel::getKey).allMatch(fieldNames::contains);
     }

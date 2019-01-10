@@ -23,8 +23,6 @@
  */
 package com.synopsys.integration.alert.provider.polaris.descriptor;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 import javax.validation.constraints.NotNull;
@@ -33,9 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentCollector;
-import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
 import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
 
 @Component
@@ -60,17 +56,4 @@ public class PolarisDescriptor extends ProviderDescriptor {
         return Set.of();
     }
 
-    @Override
-    public Collection<DefinedFieldModel> getDefinedFields(final ConfigContextEnum context) {
-        if (ConfigContextEnum.GLOBAL.equals(context)) {
-            final DefinedFieldModel polarisUrl = DefinedFieldModel.createGlobalField(KEY_POLARIS_URL);
-            final DefinedFieldModel polarisAccessToken = DefinedFieldModel.createGlobalField(KEY_POLARIS_ACCESS_TOKEN);
-            final DefinedFieldModel polarisTimeout = DefinedFieldModel.createGlobalField(KEY_POLARIS_TIMEOUT);
-
-            return List.of(polarisUrl, polarisAccessToken, polarisTimeout);
-        } else if (ConfigContextEnum.DISTRIBUTION.equals(context)) {
-            // FIXME add distribution fields
-        }
-        return List.of();
-    }
 }
