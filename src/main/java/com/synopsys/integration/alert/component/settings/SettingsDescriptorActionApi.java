@@ -61,52 +61,63 @@ public class SettingsDescriptorActionApi extends DescriptorActionApi {
 
     @Override
     public void validateConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) {
-        final Optional<FieldValueModel> defaultUserPassword = fieldModel.getField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD);
-        final Optional<FieldValueModel> encryptionPassword = fieldModel.getField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD);
-        final Optional<FieldValueModel> encryptionSalt = fieldModel.getField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT);
+        validateRequiredFields(fieldModel, fieldErrors);
+        validateProxySettings(fieldModel, fieldErrors);
+        validateLDAPSettings(fieldModel, fieldErrors);
+    }
 
-        validateField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, fieldModel, (valueModel) -> {
+    private void validateRequiredFields(final FieldModel fieldModel, final Map<String, String> fieldErrors) {
+        validateRequiredField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, fieldModel, fieldErrors, SettingsDescriptor.FIELD_ERROR_DEFAULT_USER_PASSWORD, (valueModel) -> {
             if (StringUtils.isBlank(valueModel.getValue().orElse(""))) {
                 fieldErrors.put(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, SettingsDescriptor.FIELD_ERROR_DEFAULT_USER_PASSWORD);
             }
             return null;
         });
 
-        validateField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, fieldModel, (valueModel) -> {
+        validateRequiredField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, fieldModel, fieldErrors, SettingsDescriptor.FIELD_ERROR_ENCRYPTION_PASSWORD, (valueModel) -> {
             if (StringUtils.isBlank(valueModel.getValue().orElse(""))) {
                 fieldErrors.put(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, SettingsDescriptor.FIELD_ERROR_ENCRYPTION_PASSWORD);
             }
             return null;
         });
 
-        validateField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, fieldModel, (valueModel) -> {
+        validateRequiredField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, fieldModel, fieldErrors, SettingsDescriptor.FIELD_ERROR_ENCRYPTION_GLOBAL_SALT, (valueModel) -> {
             if (StringUtils.isBlank(valueModel.getValue().orElse(""))) {
                 fieldErrors.put(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, SettingsDescriptor.FIELD_ERROR_ENCRYPTION_GLOBAL_SALT);
             }
             return null;
         });
+    }
 
-        //        if (defaultUserPassword.isPresent()) {
-        //            final FieldValueModel valueModel = defaultUserPassword.get();
-        //            final boolean validate = valueModel.isSet() == false || (valueModel.isSet() && valueModel.hasValues());
-        //            if (validate && StringUtils.isBlank(valueModel.getValue().orElse(""))) {
-        //                fieldErrors.put(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, SettingsDescriptor.FIELD_ERROR_DEFAULT_USER_PASSWORD);
-        //            }
-        //        }
-        //        if (encryptionPassword.isPresent()) {
-        //            final FieldValueModel valueModel = encryptionPassword.get();
-        //            final boolean validate = valueModel.isSet() == false || (valueModel.isSet() && valueModel.hasValues());
-        //            if (validate && StringUtils.isBlank(valueModel.getValue().orElse(""))) {
-        //                fieldErrors.put(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, SettingsDescriptor.FIELD_ERROR_ENCRYPTION_PASSWORD);
-        //            }
-        //        }
-        //        if (encryptionSalt.isPresent()) {
-        //            final FieldValueModel valueModel = encryptionSalt.get();
-        //            final boolean validate = valueModel.isSet() == false || (valueModel.isSet() && valueModel.hasValues());
-        //            if (validate && StringUtils.isBlank(valueModel.getValue().orElse(""))) {
-        //                fieldErrors.put(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, SettingsDescriptor.FIELD_ERROR_ENCRYPTION_GLOBAL_SALT);
-        //            }
-        //        }
+    private void validateProxySettings(final FieldModel fieldModel, final Map<String, String> fieldErrors) {
+
+    }
+
+    private void validateLDAPSettings(final FieldModel fieldModel, final Map<String, String> fieldErrors) {
+        final Optional<FieldValueModel> ldapEnabled = fieldModel.getField(SettingsDescriptor.KEY_LDAP_ENABLED);
+        if (ldapEnabled.isPresent()) {
+            final Boolean isLdapEnabled = Boolean.valueOf(ldapEnabled.get().getValue().orElse("false"));
+            if (isLdapEnabled) {
+                validateRequiredField(SettingsDescriptor.KEY_LDAP_SERVER, fieldModel, fieldErrors, SettingsDescriptor.FIELD_ERROR_LDAP_SERVER_MISSING, (valueModel) -> {
+                    if (StringUtils.isBlank(valueModel.getValue().orElse(""))) {
+                        fieldErrors.put(SettingsDescriptor.KEY_LDAP_SERVER, SettingsDescriptor.FIELD_ERROR_LDAP_SERVER_MISSING);
+                    }
+                    return null;
+                });
+            }
+        }
+    }
+
+    private void validateRequiredField(final String fieldKey, final FieldModel fieldModel, final Map<String, String> fieldErrors, final String fieldMissingMessage, final Function<FieldValueModel, Void> validationFunction) {
+        if (isFieldMissing(fieldKey, fieldModel)) {
+            fieldErrors.put(fieldKey, fieldMissingMessage);
+        } else {
+            validateField(fieldKey, fieldModel, validationFunction);
+        }
+    }
+
+    private boolean isFieldMissing(final String key, final FieldModel fieldModel) {
+        return fieldModel.getField(key).isEmpty();
     }
 
     private void validateField(final String fieldKey, final FieldModel fieldModel, final Function<FieldValueModel, Void> validationFunction) {
