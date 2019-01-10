@@ -52,7 +52,7 @@ import com.synopsys.integration.alert.common.field.JsonField;
 
 @Component
 public class JsonExtractor {
-    private final static Logger logger = LoggerFactory.getLogger(JsonExtractor.class);
+    private static final Logger logger = LoggerFactory.getLogger(JsonExtractor.class);
     private final Gson gson;
 
     @Autowired

@@ -50,8 +50,8 @@ public class BlackDuckProvider extends Provider {
     private final ProjectSyncTask projectSyncTask;
 
     @Autowired
-    public BlackDuckProvider(final BlackDuckAccumulator accumulatorTask, final ProjectSyncTask projectSyncTask) {
-        super(BlackDuckProvider.COMPONENT_NAME);
+    public BlackDuckProvider(final BlackDuckAccumulator accumulatorTask, final ProjectSyncTask projectSyncTask, final BlackDuckEmailHandler blackDuckEmailHandler) {
+        super(BlackDuckProvider.COMPONENT_NAME, blackDuckEmailHandler);
         this.accumulatorTask = accumulatorTask;
         this.projectSyncTask = projectSyncTask;
     }
@@ -82,4 +82,5 @@ public class BlackDuckProvider extends Provider {
     public Set<FormatType> getSupportedFormatTypes() {
         return EnumSet.of(FormatType.DEFAULT, FormatType.DIGEST);
     }
+
 }
