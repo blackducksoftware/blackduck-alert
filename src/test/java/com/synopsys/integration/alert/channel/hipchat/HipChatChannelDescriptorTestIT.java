@@ -2,7 +2,6 @@ package com.synopsys.integration.alert.channel.hipchat;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -108,12 +107,16 @@ public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
     }
 
     @Override
-    public boolean assertGlobalFields(final Collection<DefinedFieldModel> globalFields) {
+    public boolean assertGlobalFields(final Set<DefinedFieldModel> globalFields) {
         boolean result = true;
         final Set<String> fieldNames = Set.of(HipChatDescriptor.KEY_API_KEY, HipChatDescriptor.KEY_HOST_SERVER);
-        result = result && globalFields.stream().map(DefinedFieldModel::getKey).allMatch(fieldNames::contains);
+        result = result && globalFields
+                               .stream()
+                               .map(DefinedFieldModel::getKey)
+                               .allMatch(fieldNames::contains);
 
-        final Optional<DefinedFieldModel> apiKeyField = globalFields.stream()
+        final Optional<DefinedFieldModel> apiKeyField = globalFields
+                                                            .stream()
                                                             .filter(field -> HipChatDescriptor.KEY_API_KEY.equals(field.getKey()))
                                                             .findFirst();
         if (apiKeyField.isPresent()) {
@@ -123,7 +126,7 @@ public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
     }
 
     @Override
-    public boolean assertDistributionFields(final Collection<DefinedFieldModel> distributionFields) {
+    public boolean assertDistributionFields(final Set<DefinedFieldModel> distributionFields) {
         final Set<String> fieldNames = Set.of(HipChatDescriptor.KEY_ROOM_ID, HipChatDescriptor.KEY_COLOR, HipChatDescriptor.KEY_NOTIFY);
         return distributionFields.stream().map(DefinedFieldModel::getKey).allMatch(fieldNames::contains);
     }

@@ -1,7 +1,6 @@
 package com.synopsys.integration.alert.channel.email;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -151,12 +150,16 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     }
 
     @Override
-    public boolean assertGlobalFields(final Collection<DefinedFieldModel> globalFields) {
+    public boolean assertGlobalFields(final Set<DefinedFieldModel> globalFields) {
         boolean result = true;
         final Set<String> fieldNames = Arrays.stream(EmailPropertyKeys.values()).map(EmailPropertyKeys::getPropertyKey).collect(Collectors.toSet());
-        result = result && globalFields.stream().map(DefinedFieldModel::getKey).allMatch(fieldNames::contains);
+        result = result && globalFields
+                               .stream()
+                               .map(DefinedFieldModel::getKey)
+                               .allMatch(fieldNames::contains);
 
-        final Optional<DefinedFieldModel> emailPassword = globalFields.stream()
+        final Optional<DefinedFieldModel> emailPassword = globalFields
+                                                              .stream()
                                                               .filter(field -> EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey().equals(field.getKey()))
                                                               .findFirst();
         if (emailPassword.isPresent()) {
@@ -166,8 +169,8 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     }
 
     @Override
-    public boolean assertDistributionFields(final Collection<DefinedFieldModel> distributionFields) {
-        final Set<String> fieldNames = Set.of(EmailDescriptor.KEY_SUBJECT_LINE, EmailDescriptor.KEY_PROJECT_OWNER_ONLY, EmailDescriptor.KEY_EMAIL_ADDRESSES);
+    public boolean assertDistributionFields(final Set<DefinedFieldModel> distributionFields) {
+        final Set<String> fieldNames = Set.of(EmailDescriptor.KEY_SUBJECT_LINE, EmailDescriptor.KEY_PROJECT_OWNER_ONLY);
         return distributionFields.stream().map(DefinedFieldModel::getKey).allMatch(fieldNames::contains);
     }
 

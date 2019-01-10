@@ -3,7 +3,8 @@ package com.synopsys.integration.alert.provider.polaris.descriptor;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -23,12 +24,13 @@ public class PolarisDescriptorTest {
 
     @Test
     public void getDefinedGlobalFieldsTest() {
-        final PolarisDescriptor polarisDescriptor = new PolarisDescriptor(null, null, null, null, polarisProvider);
-        final Collection<DefinedFieldModel> fields = polarisDescriptor.getDefinedFields(ConfigContextEnum.GLOBAL);
+        final PolarisGlobalUIConfig polarisGlobalUIConfig = new PolarisGlobalUIConfig();
+        final PolarisDescriptor polarisDescriptor = new PolarisDescriptor(null, polarisGlobalUIConfig, null, null, polarisProvider);
+        final Set<String> fields = polarisDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL).stream().map(DefinedFieldModel::getKey).collect(Collectors.toSet());
         assertNotNull(fields);
-        assertContainsFieldWithKey(fields, PolarisDescriptor.KEY_POLARIS_URL);
-        assertContainsFieldWithKey(fields, PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN);
-        assertContainsFieldWithKey(fields, PolarisDescriptor.KEY_POLARIS_TIMEOUT);
+        assertTrue(fields.contains(PolarisDescriptor.KEY_POLARIS_URL));
+        assertTrue(fields.contains(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN));
+        assertTrue(fields.contains(PolarisDescriptor.KEY_POLARIS_TIMEOUT));
     }
 
     @Disabled
@@ -40,13 +42,6 @@ public class PolarisDescriptorTest {
     @Test
     public void getDefinedFieldsForInvalidContextTest() {
         final PolarisDescriptor polarisDescriptor = new PolarisDescriptor(null, null, null, null, polarisProvider);
-        assertTrue(polarisDescriptor.getDefinedFields(null).isEmpty());
-    }
-
-    private void assertContainsFieldWithKey(final Collection<DefinedFieldModel> fields, final String fieldKey) {
-        final boolean containsField = fields
-                                          .stream()
-                                          .anyMatch(field -> field.getKey().equals(fieldKey));
-        assertTrue(containsField, "Did not contain field with key: " + fieldKey);
+        assertTrue(polarisDescriptor.getAllDefinedFields(null).isEmpty());
     }
 }

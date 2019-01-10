@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 
 @Component
 public class PolarisGlobalUIConfig extends UIConfig {
+
     public PolarisGlobalUIConfig() {
         super(PolarisDescriptor.POLARIS_LABEL, PolarisDescriptor.POLARIS_URL_NAME, PolarisDescriptor.POLARIS_ICON);
     }

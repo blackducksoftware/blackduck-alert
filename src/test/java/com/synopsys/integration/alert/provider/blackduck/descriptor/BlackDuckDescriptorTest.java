@@ -3,7 +3,6 @@ package com.synopsys.integration.alert.provider.blackduck.descriptor;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -72,11 +71,13 @@ public class BlackDuckDescriptorTest {
         final List<MessageContentCollector> collectorList = Arrays.asList(Mockito.mock(BlackDuckVulnerabilityCollector.class), Mockito.mock(BlackDuckPolicyCollector.class));
         final Set<MessageContentCollector> expectedCollectorSet = new HashSet<>(collectorList);
         Mockito.when(topicCollectorFactory.createTopicCollectors()).thenReturn(expectedCollectorSet);
-        final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, null, null, null, provider, topicCollectorFactory);
-        Collection<DefinedFieldModel> fields = descriptor.getDefinedFields(ConfigContextEnum.GLOBAL);
+        final BlackDuckDistributionUIConfig blackDuckDistributionUIConfig = new BlackDuckDistributionUIConfig();
+        final BlackDuckProviderUIConfig blackDuckProviderUIConfig = new BlackDuckProviderUIConfig();
+        final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, blackDuckProviderUIConfig, null, blackDuckDistributionUIConfig, provider, topicCollectorFactory);
+        Set<DefinedFieldModel> fields = descriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL);
         assertEquals(7, fields.size());
 
-        fields = descriptor.getDefinedFields(ConfigContextEnum.DISTRIBUTION);
+        fields = descriptor.getAllDefinedFields(ConfigContextEnum.DISTRIBUTION);
         assertEquals(3, fields.size());
     }
 }
