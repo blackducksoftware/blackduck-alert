@@ -32,10 +32,13 @@ public class EmailTarget {
 
     private final Map<String, Object> model;
 
-    public EmailTarget(final String emailAddress, final String templateName, final Map<String, Object> model) {
+    private final Map<String, String> contentIdsToFilePaths;
+
+    public EmailTarget(final String emailAddress, final String templateName, final Map<String, Object> model, final Map<String, String> contentIdsToFilePaths) {
         this.emailAddress = emailAddress;
         this.templateName = templateName;
         this.model = model;
+        this.contentIdsToFilePaths = contentIdsToFilePaths;
     }
 
     public String getEmailAddress() {
@@ -48,5 +51,9 @@ public class EmailTarget {
 
     public Map<String, Object> getModel() {
         return model;
+    }
+
+    public Map<String, String> getContentIdsToFilePaths() {
+        return contentIdsToFilePaths;
     }
 }

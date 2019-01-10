@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
+import com.synopsys.integration.alert.channel.email.EmailChannel;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescriptor;
@@ -63,15 +63,15 @@ public class MockConfigurationModelFactory {
     public static List<ConfigurationFieldModel> createEmailDistributionFieldsProjectOwnerOnly() {
         final List<ConfigurationFieldModel> fields = new ArrayList<>();
 
-        final ConfigurationFieldModel emailAddresses = createFieldModel(EmailDescriptor.KEY_EMAIL_ADDRESSES, List.of("noreply@blackducksoftware.com"));
+        //        final ConfigurationFieldModel emailAddresses = createFieldModel(EmailDescriptor.KEY_EMAIL_ADDRESSES, List.of("noreply@blackducksoftware.com"));
         final ConfigurationFieldModel projectOwnerOnly = createFieldModel(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, "true");
         final ConfigurationFieldModel subjectLine = createFieldModel(EmailDescriptor.KEY_SUBJECT_LINE, "Alert unit test subject line");
 
-        fields.add(emailAddresses);
+        //        fields.add(emailAddresses);
         fields.add(projectOwnerOnly);
         fields.add(subjectLine);
 
-        final Collection<ConfigurationFieldModel> commonFields = createCommonBlackDuckConfigurationFields("Email Test Job", EmailGroupChannel.COMPONENT_NAME);
+        final Collection<ConfigurationFieldModel> commonFields = createCommonBlackDuckConfigurationFields("Email Test Job", EmailChannel.COMPONENT_NAME);
         fields.addAll(commonFields);
         return fields;
     }
@@ -79,15 +79,15 @@ public class MockConfigurationModelFactory {
     public static List<ConfigurationFieldModel> createEmailDistributionFields() {
         final List<ConfigurationFieldModel> fields = new ArrayList<>();
 
-        final ConfigurationFieldModel emailAddresses = createFieldModel(EmailDescriptor.KEY_EMAIL_ADDRESSES, List.of("noreply@blackducksoftware.com"));
+        //        final ConfigurationFieldModel emailAddresses = createFieldModel(EmailDescriptor.KEY_EMAIL_ADDRESSES, List.of("noreply@blackducksoftware.com"));
         final ConfigurationFieldModel projectOwnerOnly = createFieldModel(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, "false");
         final ConfigurationFieldModel subjectLine = createFieldModel(EmailDescriptor.KEY_SUBJECT_LINE, "Alert unit test subject line");
 
-        fields.add(emailAddresses);
+        //        fields.add(emailAddresses);
         fields.add(projectOwnerOnly);
         fields.add(subjectLine);
 
-        final Collection<ConfigurationFieldModel> commonFields = createCommonBlackDuckConfigurationFields("Email Test Job", EmailGroupChannel.COMPONENT_NAME);
+        final Collection<ConfigurationFieldModel> commonFields = createCommonBlackDuckConfigurationFields("Email Test Job", EmailChannel.COMPONENT_NAME);
         fields.addAll(commonFields);
         return fields;
     }

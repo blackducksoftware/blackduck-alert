@@ -23,7 +23,6 @@
  */
 package com.synopsys.integration.alert.common.descriptor;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
@@ -94,6 +93,15 @@ public abstract class Descriptor extends Stringable {
         return getUIConfig(context).map(uiConfig -> createMetaData(uiConfig, context));
     }
 
+    public Set<DefinedFieldModel> getAllDefinedFields(final ConfigContextEnum context) {
+        return getUIConfig(context)
+                   .map(uiConfig -> uiConfig.createFields())
+                   .orElse(List.of())
+                   .stream()
+                   .map(configField -> new DefinedFieldModel(configField.getKey(), context, configField.isSensitive()))
+                   .collect(Collectors.toSet());
+    }
+
     public List<DescriptorMetadata> getAllMetaData() {
         if (hasUIConfigs()) {
             return uiConfigs.entrySet()
@@ -128,8 +136,6 @@ public abstract class Descriptor extends Stringable {
             actionApi.get().testConfig(testConfig);
         }
     }
-
-    public abstract Collection<DefinedFieldModel> getDefinedFields(final ConfigContextEnum context);
 
     private DescriptorMetadata createMetaData(final UIConfig uiConfig, final ConfigContextEnum context) {
         final String label = uiConfig.getLabel();

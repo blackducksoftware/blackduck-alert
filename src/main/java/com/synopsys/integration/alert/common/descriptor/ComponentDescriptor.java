@@ -27,10 +27,11 @@ import com.synopsys.integration.alert.common.descriptor.config.context.Descripto
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 
-public abstract class ComponentDescriptor extends Descriptor {
+public class ComponentDescriptor extends Descriptor {
 
     public ComponentDescriptor(final String name, final DescriptorActionApi componentDescriptorActionApi, final UIConfig componentUIConfig) {
         super(name, DescriptorType.COMPONENT);
         addGlobalUiConfig(componentDescriptorActionApi, componentUIConfig);
     }
+
 }

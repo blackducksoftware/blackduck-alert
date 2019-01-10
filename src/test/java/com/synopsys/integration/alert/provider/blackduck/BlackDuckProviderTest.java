@@ -21,7 +21,7 @@ public class BlackDuckProviderTest {
     public void testInitialize() {
         final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
         final ProjectSyncTask projectSyncTask = Mockito.mock(ProjectSyncTask.class);
-        final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask);
+        final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask, null);
         provider.initialize();
         Mockito.verify(accumulatorTask).scheduleExecution(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION);
         Mockito.verify(projectSyncTask).scheduleExecution(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION);
@@ -32,7 +32,7 @@ public class BlackDuckProviderTest {
     public void testDestroy() {
         final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
         final ProjectSyncTask projectSyncTask = Mockito.mock(ProjectSyncTask.class);
-        final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask);
+        final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask, null);
         provider.destroy();
         Mockito.verify(accumulatorTask).scheduleExecution(BlackDuckAccumulator.STOP_SCHEDULE_EXPRESSION);
         Mockito.verify(projectSyncTask).scheduleExecution(BlackDuckAccumulator.STOP_SCHEDULE_EXPRESSION);
@@ -43,7 +43,7 @@ public class BlackDuckProviderTest {
     public void testGetNotificationTypes() {
         final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
         final ProjectSyncTask projectSyncTask = Mockito.mock(ProjectSyncTask.class);
-        final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask);
+        final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask, null);
         final Set<String> expectedNotificationTypes = new LinkedHashSet<>();
         expectedNotificationTypes.add(NotificationType.POLICY_OVERRIDE.name());
         expectedNotificationTypes.add(NotificationType.RULE_VIOLATION.name());
@@ -57,7 +57,7 @@ public class BlackDuckProviderTest {
     public void testGetSupportedFormatTypes() {
         final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
         final ProjectSyncTask projectSyncTask = Mockito.mock(ProjectSyncTask.class);
-        final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask);
+        final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask, null);
         final Set<FormatType> expectedNotificationTypes = EnumSet.of(FormatType.DEFAULT, FormatType.DIGEST);
         final Set<FormatType> providerNotificationTypes = provider.getSupportedFormatTypes();
         assertEquals(expectedNotificationTypes, providerNotificationTypes);

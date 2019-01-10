@@ -23,7 +23,6 @@
  */
 package com.synopsys.integration.alert.provider.blackduck;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -38,8 +37,8 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.provider.ProviderProperties;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
@@ -50,12 +49,11 @@ import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 
 @Component
-public class BlackDuckProperties {
+public class BlackDuckProperties extends ProviderProperties {
     public static final int DEFAULT_TIMEOUT = 300;
 
     private final Gson gson;
     private final AlertProperties alertProperties;
-    private final BaseConfigurationAccessor configurationAccessor;
     private final Logger classLogger = LoggerFactory.getLogger(getClass());
 
     // the blackduck product hasn't renamed their environment variables from hub to blackduck
@@ -68,51 +66,33 @@ public class BlackDuckProperties {
 
     @Autowired
     public BlackDuckProperties(final Gson gson, final AlertProperties alertProperties, final BaseConfigurationAccessor configurationAccessor) {
+        super(BlackDuckProvider.COMPONENT_NAME, configurationAccessor);
         this.gson = gson;
         this.alertProperties = alertProperties;
-        this.configurationAccessor = configurationAccessor;
     }
 
     public Optional<String> getBlackDuckUrl() {
-        final Optional<ConfigurationModel> optionalGlobalBlackDuckConfigEntity = getBlackDuckConfig();
-        if (optionalGlobalBlackDuckConfigEntity.isPresent()) {
-            final ConfigurationModel blackDuckConfigEntity = optionalGlobalBlackDuckConfigEntity.get();
-            final FieldAccessor fieldAccessor = new FieldAccessor(blackDuckConfigEntity.getCopyOfKeyToFieldMap());
-            final Optional<String> url = fieldAccessor.getString(BlackDuckDescriptor.KEY_BLACKDUCK_URL);
-            return url.filter(StringUtils::isNotBlank);
-        }
-        return Optional.empty();
-    }
-
-    public Optional<String> getPublicBlackDuckWebserverHost() {
-        return getOptionalString(publicBlackDuckWebserverHost);
-    }
-
-    public Optional<String> getPublicBlackDuckWebserverPort() {
-        return getOptionalString(publicBlackDuckWebserverPort);
+        return createFieldAccessor()
+                   .getString(BlackDuckDescriptor.KEY_BLACKDUCK_URL)
+                   .filter(StringUtils::isNotBlank);
     }
 
     public Integer getBlackDuckTimeout() {
-        final Optional<ConfigurationModel> optionalGlobalBlackDuckConfigEntity = getBlackDuckConfig();
-        if (optionalGlobalBlackDuckConfigEntity.isPresent()) {
-            final ConfigurationModel blackDuckConfigEntity = optionalGlobalBlackDuckConfigEntity.get();
-            final FieldAccessor fieldAccessor = new FieldAccessor(blackDuckConfigEntity.getCopyOfKeyToFieldMap());
-            return fieldAccessor.getInteger(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT).orElse(DEFAULT_TIMEOUT);
-        }
-        return DEFAULT_TIMEOUT;
+        return createFieldAccessor()
+                   .getInteger(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT)
+                   .orElse(DEFAULT_TIMEOUT);
+    }
+
+    public Optional<String> getPublicBlackDuckWebserverHost() {
+        return createOptionalString(publicBlackDuckWebserverHost);
+    }
+
+    public Optional<String> getPublicBlackDuckWebserverPort() {
+        return createOptionalString(publicBlackDuckWebserverPort);
     }
 
     public Optional<ConfigurationModel> getBlackDuckConfig() {
-        List<ConfigurationModel> configurations = null;
-        try {
-            configurations = configurationAccessor.getConfigurationsByDescriptorName(BlackDuckProvider.COMPONENT_NAME);
-        } catch (final AlertDatabaseConstraintException e) {
-            classLogger.error("Problem connecting to DB.");
-        }
-        if (null != configurations && !configurations.isEmpty()) {
-            return Optional.of(configurations.get(0));
-        }
-        return Optional.empty();
+        return retrieveGlobalConfig();
     }
 
     public BlackDuckServicesFactory createBlackDuckServicesFactory(final BlackDuckRestConnection restConnection, final IntLogger logger) {
@@ -197,13 +177,6 @@ public class BlackDuckProperties {
         blackDuckServerConfigBuilder.setUrl(getBlackDuckUrl().orElse(""));
 
         return blackDuckServerConfigBuilder;
-    }
-
-    private Optional<String> getOptionalString(final String value) {
-        if (StringUtils.isNotBlank(value)) {
-            return Optional.of(value);
-        }
-        return Optional.empty();
     }
 
     private Properties getBlackDuckProperties() {

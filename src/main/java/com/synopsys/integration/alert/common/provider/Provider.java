@@ -29,9 +29,11 @@ import com.synopsys.integration.alert.common.enumeration.FormatType;
 
 public abstract class Provider {
     private final String name;
+    private final EmailHandler emailHandler;
 
-    public Provider(final String name) {
+    public Provider(final String name, final EmailHandler emailHandler) {
         this.name = name;
+        this.emailHandler = emailHandler;
     }
 
     public String getName() {
@@ -45,4 +47,8 @@ public abstract class Provider {
     public abstract Set<ProviderContentType> getProviderContentTypes();
 
     public abstract Set<FormatType> getSupportedFormatTypes();
+
+    public EmailHandler getEmailHandler() {
+        return emailHandler;
+    }
 }

@@ -3,7 +3,6 @@ package com.synopsys.integration.alert.web.controller.metadata;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -184,7 +183,7 @@ public class DescriptorControllerTest {
         }
 
         @Override
-        public Collection<DefinedFieldModel> getDefinedFields(final ConfigContextEnum context) {
+        public Set<DefinedFieldModel> getAllDefinedFields(final ConfigContextEnum context) {
             return Set.of();
         }
 
