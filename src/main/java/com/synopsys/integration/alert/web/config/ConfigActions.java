@@ -42,7 +42,6 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
-import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -230,8 +229,9 @@ public class ConfigActions {
         final ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
 
         if (descriptorContext != null) {
-            final Descriptor descriptor = descriptorMap.getDescriptor(descriptorName);
-            return descriptor.getActionApi(descriptorContext).orElse(null);
+            return descriptorMap.getDescriptor(descriptorName)
+                       .flatMap(foundDescriptor -> foundDescriptor.getActionApi(descriptorContext))
+                       .orElse(null);
         }
         return null;
     }

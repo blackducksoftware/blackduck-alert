@@ -82,7 +82,6 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
         return new DistributionEvent(fieldModel.getId(), channelName, RestConstants.formatDate(new Date()), providerName, formatType, messageContent, fieldAccessor);
     }
 
-    // TODO this has references to Blackduck for verification and will need to be removed.
     @Override
     public void validateConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
         final String descriptorName = distributionChannel.getDistributionType();

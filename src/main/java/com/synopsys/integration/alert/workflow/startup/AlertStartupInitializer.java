@@ -24,10 +24,10 @@
 package com.synopsys.integration.alert.workflow.startup;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -61,10 +61,9 @@ public class AlertStartupInitializer {
         this.environment = environment;
         this.descriptorAccessor = descriptorAccessor;
         this.fieldConfigurationAccessor = fieldConfigurationAccessor;
-        alertStartupFields = new HashSet<>();
+        alertStartupFields = new TreeSet<>();
     }
 
-    // TODO sort property values here
     public void initializeConfigs(final boolean overwriteCurrentConfig) throws IllegalArgumentException, SecurityException, AlertDatabaseConstraintException {
         final Set<String> descriptorNames = descriptorMap.getDescriptorMap().keySet();
         for (final String descriptorName : descriptorNames) {
