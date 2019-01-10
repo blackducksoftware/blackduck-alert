@@ -3,7 +3,6 @@ package com.synopsys.integration.alert.channel.email;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -52,15 +51,15 @@ public class EmailChannelTestIT extends ChannelTest {
         final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(new Gson(), testAlertProperties, null);
         globalProperties.setBlackDuckUrl(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
 
-        BlackDuckEmailHandler blackDuckEmailHandler = new BlackDuckEmailHandler(Mockito.mock(BlackDuckProjectRepositoryAccessor.class), Mockito.mock(UserProjectRelationRepositoryAccessor.class), Mockito.mock(
+        final BlackDuckEmailHandler blackDuckEmailHandler = new BlackDuckEmailHandler(Mockito.mock(BlackDuckProjectRepositoryAccessor.class), Mockito.mock(UserProjectRelationRepositoryAccessor.class), Mockito.mock(
             BlackDuckUserRepositoryAccessor.class));
-        BlackDuckProvider blackDuckProvider = Mockito.mock(BlackDuckProvider.class);
+        final BlackDuckProvider blackDuckProvider = Mockito.mock(BlackDuckProvider.class);
         Mockito.when(blackDuckProvider.getEmailHandler()).thenReturn(blackDuckEmailHandler);
 
-        BlackDuckDescriptor blackDuckDescriptor = Mockito.mock(BlackDuckDescriptor.class);
+        final BlackDuckDescriptor blackDuckDescriptor = Mockito.mock(BlackDuckDescriptor.class);
         Mockito.when(blackDuckDescriptor.getProvider()).thenReturn(blackDuckProvider);
 
-        DescriptorMap descriptorMap = Mockito.mock(DescriptorMap.class);
+        final DescriptorMap descriptorMap = Mockito.mock(DescriptorMap.class);
         Mockito.when(descriptorMap.getProviderDescriptor(Mockito.anyString())).thenReturn(blackDuckDescriptor);
 
         final EmailAddressHandler emailAddressHandler = new EmailAddressHandler(descriptorMap);
@@ -105,24 +104,5 @@ public class EmailChannelTestIT extends ChannelTest {
             assertEquals("ERROR: Missing global config.", e.getMessage());
         }
     }
-
-    private void addToMap(final Map<String, ConfigurationFieldModel> map, final String key, final String value) {
-        map.put(key, createFieldModel(key, value));
-    }
-
-    private void addToMap(final Map<String, ConfigurationFieldModel> map, final String key, final Collection<String> values) {
-        map.put(key, createFieldModel(key, values));
-    }
-
-    private ConfigurationFieldModel createFieldModel(final String key, final Collection<String> values) {
-        final ConfigurationFieldModel field = ConfigurationFieldModel.create(key);
-        field.setFieldValues(values);
-        return field;
-    }
-
-    private ConfigurationFieldModel createFieldModel(final String key, final String value) {
-        final ConfigurationFieldModel field = ConfigurationFieldModel.create(key);
-        field.setFieldValue(value);
-        return field;
-    }
 }
+
