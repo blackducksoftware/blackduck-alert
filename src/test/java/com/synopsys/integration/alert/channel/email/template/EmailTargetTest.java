@@ -24,13 +24,16 @@ public class EmailTargetTest {
         final String emailAddress = "blah@blah.blah";
         final String templateName = "myTemplate";
         final Map<String, Object> model = new HashMap<>();
+        final Map<String, String> contentIdsToFilePaths = new HashMap<>();
 
         model.put("example", new Object());
+        contentIdsToFilePaths.put("test", "value");
 
-        final EmailTarget target = new EmailTarget(emailAddress, templateName, model);
+        final EmailTarget target = new EmailTarget(emailAddress, templateName, model, contentIdsToFilePaths);
         assertEquals(emailAddress, target.getEmailAddress());
         assertEquals(templateName, target.getTemplateName());
         assertEquals(model, target.getModel());
+        assertEquals(contentIdsToFilePaths, target.getContentIdsToFilePaths());
     }
 
 }

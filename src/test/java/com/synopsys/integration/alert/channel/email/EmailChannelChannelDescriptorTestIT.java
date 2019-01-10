@@ -111,14 +111,14 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
 
         final Map<String, ConfigurationFieldModel> fieldModelMap = MockConfigurationModelFactory.mapStringsToFields(valueMap);
 
-        return Optional.of(configurationAccessor.createConfiguration(EmailGroupChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL, fieldModelMap.values()));
+        return Optional.of(configurationAccessor.createConfiguration(EmailChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL, fieldModelMap.values()));
     }
 
     @Override
     public ConfigurationModel saveDistributionConfiguration() throws Exception {
         final List<ConfigurationFieldModel> models = new LinkedList<>();
         models.addAll(MockConfigurationModelFactory.createEmailDistributionFields());
-        return configurationAccessor.createConfiguration(EmailGroupChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION, models);
+        return configurationAccessor.createConfiguration(EmailChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION, models);
     }
 
     @Override
@@ -127,7 +127,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", UNIT_TEST_PROJECT_NAME, null, subTopic, Collections.emptyList());
         List<ConfigurationModel> models = List.of();
         try {
-            models = configurationAccessor.getConfigurationsByDescriptorName(EmailGroupChannel.COMPONENT_NAME);
+            models = configurationAccessor.getConfigurationsByDescriptorName(EmailChannel.COMPONENT_NAME);
         } catch (final AlertDatabaseConstraintException e) {
             e.printStackTrace();
         }
@@ -139,7 +139,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
 
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);
         final String createdAt = RestConstants.formatDate(DateRange.createCurrentDateTimestamp());
-        final DistributionEvent event = new DistributionEvent(String.valueOf(distribution_config.getConfigurationId()), EmailGroupChannel.COMPONENT_NAME, createdAt, BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), content,
+        final DistributionEvent event = new DistributionEvent(String.valueOf(distribution_config.getConfigurationId()), EmailChannel.COMPONENT_NAME, createdAt, BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), content,
             fieldAccessor);
         return event;
     }
