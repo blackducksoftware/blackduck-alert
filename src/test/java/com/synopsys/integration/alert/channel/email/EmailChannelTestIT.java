@@ -52,15 +52,15 @@ public class EmailChannelTestIT extends ChannelTest {
         final TestBlackDuckProperties globalProperties = new TestBlackDuckProperties(new Gson(), testAlertProperties, null);
         globalProperties.setBlackDuckUrl(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL));
 
-        BlackDuckEmailHandler blackDuckEmailHandler = new BlackDuckEmailHandler(Mockito.mock(BlackDuckProjectRepositoryAccessor.class), Mockito.mock(UserProjectRelationRepositoryAccessor.class), Mockito.mock(
+        final BlackDuckEmailHandler blackDuckEmailHandler = new BlackDuckEmailHandler(Mockito.mock(BlackDuckProjectRepositoryAccessor.class), Mockito.mock(UserProjectRelationRepositoryAccessor.class), Mockito.mock(
             BlackDuckUserRepositoryAccessor.class));
-        BlackDuckProvider blackDuckProvider = Mockito.mock(BlackDuckProvider.class);
+        final BlackDuckProvider blackDuckProvider = Mockito.mock(BlackDuckProvider.class);
         Mockito.when(blackDuckProvider.getEmailHandler()).thenReturn(blackDuckEmailHandler);
 
-        BlackDuckDescriptor blackDuckDescriptor = Mockito.mock(BlackDuckDescriptor.class);
+        final BlackDuckDescriptor blackDuckDescriptor = Mockito.mock(BlackDuckDescriptor.class);
         Mockito.when(blackDuckDescriptor.getProvider()).thenReturn(blackDuckProvider);
 
-        DescriptorMap descriptorMap = Mockito.mock(DescriptorMap.class);
+        final DescriptorMap descriptorMap = Mockito.mock(DescriptorMap.class);
         Mockito.when(descriptorMap.getProviderDescriptor(Mockito.anyString())).thenReturn(blackDuckDescriptor);
 
         final EmailAddressHandler emailAddressHandler = new EmailAddressHandler(descriptorMap);

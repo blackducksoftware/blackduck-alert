@@ -23,15 +23,11 @@
  */
 package com.synopsys.integration.alert.channel.email.descriptor;
 
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.EmailChannel;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
 
 @Component
 public class EmailDescriptor extends ChannelDescriptor {
@@ -49,13 +45,4 @@ public class EmailDescriptor extends ChannelDescriptor {
         super(EmailChannel.COMPONENT_NAME, EmailChannel.COMPONENT_NAME, channelListener, distributionRestApi, emailDistributionUIConfig, globalRestApi, emailGlobalUIConfig);
     }
 
-    @Override
-    public Set<DefinedFieldModel> getAllDefinedFields(final ConfigContextEnum context) {
-        if (ConfigContextEnum.DISTRIBUTION.equals(context)) {
-            final Set<DefinedFieldModel> definedFieldModels = super.getAllDefinedFields(context);
-            definedFieldModels.add(new DefinedFieldModel(KEY_EMAIL_ADDRESSES, context, false));
-            return definedFieldModels;
-        }
-        return super.getAllDefinedFields(context);
-    }
 }
