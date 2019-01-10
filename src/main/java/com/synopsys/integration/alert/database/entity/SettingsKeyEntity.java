@@ -21,39 +21,36 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.channel.email.template;
+package com.synopsys.integration.alert.database.entity;
 
-import java.util.Map;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-public class EmailTarget {
-    private final String emailAddress;
+@Entity
+@Table(schema = "alert", name = "settings_key")
+public class SettingsKeyEntity extends DatabaseEntity {
 
-    private final String templateName;
+    @Column
+    private String key;
 
-    private final Map<String, Object> model;
+    @Column
+    private String value;
 
-    private final Map<String, String> contentIdsToFilePaths;
-
-    public EmailTarget(final String emailAddress, final String templateName, final Map<String, Object> model, final Map<String, String> contentIdsToFilePaths) {
-        this.emailAddress = emailAddress;
-        this.templateName = templateName;
-        this.model = model;
-        this.contentIdsToFilePaths = contentIdsToFilePaths;
+    public SettingsKeyEntity() {
+        // JPA requires default constructor definitions
     }
 
-    public String getEmailAddress() {
-        return emailAddress;
+    public SettingsKeyEntity(final String key, final String value) {
+        this.key = key;
+        this.value = value;
     }
 
-    public String getTemplateName() {
-        return templateName;
+    public String getKey() {
+        return key;
     }
 
-    public Map<String, Object> getModel() {
-        return model;
-    }
-
-    public Map<String, String> getContentIdsToFilePaths() {
-        return contentIdsToFilePaths;
+    public String getValue() {
+        return value;
     }
 }

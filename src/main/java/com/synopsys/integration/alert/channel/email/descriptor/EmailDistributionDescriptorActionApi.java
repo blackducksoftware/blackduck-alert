@@ -36,7 +36,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.email.EmailGroupChannel;
+import com.synopsys.integration.alert.channel.email.EmailChannel;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
@@ -44,6 +44,7 @@ import com.synopsys.integration.alert.common.descriptor.config.context.ChannelDi
 import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckEmailHandler;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
@@ -53,14 +54,14 @@ import com.synopsys.integration.alert.web.model.TestConfigModel;
 
 @Component
 public class EmailDistributionDescriptorActionApi extends ChannelDistributionDescriptorActionApi {
-    private final EmailGroupChannel emailGroupChannel;
+    private final BlackDuckEmailHandler blackDuckEmailHandler;
     private final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor;
 
     @Autowired
-    public EmailDistributionDescriptorActionApi(final EmailGroupChannel emailGroupChannel, final BaseConfigurationAccessor configurationAccessor, final List<ProviderDescriptor> providerDescriptors,
-        final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor) {
-        super(emailGroupChannel, configurationAccessor, providerDescriptors);
-        this.emailGroupChannel = emailGroupChannel;
+    public EmailDistributionDescriptorActionApi(final EmailChannel emailChannel, final BaseConfigurationAccessor configurationAccessor, final List<ProviderDescriptor> providerDescriptors,
+        final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor, final BlackDuckEmailHandler blackDuckEmailHandler) {
+        super(emailChannel, configurationAccessor, providerDescriptors);
+        this.blackDuckEmailHandler = blackDuckEmailHandler;
         this.blackDuckProjectRepositoryAccessor = blackDuckProjectRepositoryAccessor;
     }
 
@@ -72,51 +73,50 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
     @Override
     public TestConfigModel createTestConfigModel(final FieldModel fieldModel, final String destination) throws AlertFieldException {
         final Set<String> emailAddresses = new HashSet<>();
-        Set<BlackDuckProjectEntity> blackDuckProjectEntities = null;
 
         final Optional<String> filterByProject = fieldModel.getField(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT).getValue();
         final Optional<String> providerName = fieldModel.getField(CommonDistributionUIConfig.KEY_PROVIDER_NAME).getValue();
 
-        if (filterByProject.isPresent() && BooleanUtils.toBoolean(filterByProject.get())) {
-            final Set<String> configuredProjects = fieldModel.getField(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT).getValues().stream().collect(Collectors.toSet());
-            final Optional<String> projectNamePattern = fieldModel.getField(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN).getValue();
-            blackDuckProjectEntities = blackDuckProjectRepositoryAccessor.readEntities()
-                                           .stream()
-                                           .map(databaseEntity -> (BlackDuckProjectEntity) databaseEntity)
-                                           .filter(databaseEntity -> emailGroupChannel.doesProjectNameMatchThePattern(databaseEntity.getName(), projectNamePattern.orElse(""))
-                                                                         || emailGroupChannel.doesProjectNameMatchAConfiguredProject(databaseEntity.getName(), configuredProjects))
-                                           .collect(Collectors.toSet());
-        } else if (providerName.isPresent() && BlackDuckProvider.COMPONENT_NAME.equals(providerName.get())) {
-            blackDuckProjectEntities = blackDuckProjectRepositoryAccessor.readEntities()
-                                           .stream()
-                                           .map(databaseEntity -> (BlackDuckProjectEntity) databaseEntity)
-                                           .collect(Collectors.toSet());
+        if (providerName.isPresent() && BlackDuckProvider.COMPONENT_NAME.equals(providerName.get())) {
+            Set<BlackDuckProjectEntity> blackDuckProjectEntities = null;
+            if (filterByProject.isPresent() && BooleanUtils.toBoolean(filterByProject.get())) {
+                final Set<String> configuredProjects = fieldModel.getField(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT).getValues().stream().collect(Collectors.toSet());
+                final Optional<String> projectNamePattern = fieldModel.getField(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN).getValue();
+                blackDuckProjectEntities = blackDuckProjectRepositoryAccessor.readEntities()
+                                               .stream()
+                                               .map(databaseEntity -> (BlackDuckProjectEntity) databaseEntity)
+                                               .filter(databaseEntity -> doesProjectMatchConfiguration(databaseEntity.getName(), projectNamePattern.orElse(""), configuredProjects))
+                                               .collect(Collectors.toSet());
+            } else {
+                blackDuckProjectEntities = blackDuckProjectRepositoryAccessor.readEntities()
+                                               .stream()
+                                               .map(databaseEntity -> (BlackDuckProjectEntity) databaseEntity)
+                                               .collect(Collectors.toSet());
 
-        }
-        if (null != blackDuckProjectEntities) {
-            final Optional<String> projectOwnerOnlyOptional = fieldModel.getField(EmailDescriptor.KEY_PROJECT_OWNER_ONLY).getValue();
-            final Boolean projectOwnerOnly = Boolean.parseBoolean(projectOwnerOnlyOptional.orElse("false"));
-            final Set<String> projectsWithoutEmails = new HashSet<>();
-            blackDuckProjectEntities
-                .stream()
-                .forEach(project -> {
-                    final Set<String> emailsForProject = emailGroupChannel.getEmailAddressesForProject(project, projectOwnerOnly);
+            }
+            if (null != blackDuckProjectEntities) {
+                final Optional<String> projectOwnerOnlyOptional = fieldModel.getField(EmailDescriptor.KEY_PROJECT_OWNER_ONLY).getValue();
+                final Boolean projectOwnerOnly = Boolean.parseBoolean(projectOwnerOnlyOptional.orElse("false"));
+                final Set<String> projectsWithoutEmails = new HashSet<>();
+                for (final BlackDuckProjectEntity project : blackDuckProjectEntities) {
+                    final Set<String> emailsForProject = blackDuckEmailHandler.getBlackDuckEmailAddressesForProject(project, projectOwnerOnly);
                     if (emailsForProject.isEmpty()) {
                         projectsWithoutEmails.add(project.getName());
                     }
                     emailAddresses.addAll(emailsForProject);
-                });
-            if (!projectsWithoutEmails.isEmpty()) {
-                final String projects = StringUtils.join(projectsWithoutEmails, ", ");
-                final Map<String, String> fieldErrors = new HashMap<>();
-                final String errorMessage;
-                if (projectOwnerOnly) {
-                    errorMessage = String.format("Could not find Project owners for the projects: %s", projects);
-                } else {
-                    errorMessage = String.format("Could not find any email addresses for the projects: %s", projects);
                 }
-                fieldErrors.put("configuredProjects", errorMessage);
-                throw new AlertFieldException(fieldErrors);
+                if (!projectsWithoutEmails.isEmpty()) {
+                    final String projects = StringUtils.join(projectsWithoutEmails, ", ");
+                    final Map<String, String> fieldErrors = new HashMap<>();
+                    final String errorMessage;
+                    if (projectOwnerOnly) {
+                        errorMessage = String.format("Could not find Project owners for the projects: %s", projects);
+                    } else {
+                        errorMessage = String.format("Could not find any email addresses for the projects: %s", projects);
+                    }
+                    fieldErrors.put("configuredProjects", errorMessage);
+                    throw new AlertFieldException(fieldErrors);
+                }
             }
         }
 
@@ -124,4 +124,9 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
         fieldModel.putField(EmailDescriptor.KEY_EMAIL_ADDRESSES, fieldValueModel);
         return super.createTestConfigModel(fieldModel, destination);
     }
+
+    public boolean doesProjectMatchConfiguration(final String currentProjectName, final String projectNamePattern, final Set<String> configuredProjectNames) {
+        return currentProjectName.matches(projectNamePattern) || configuredProjectNames.contains(currentProjectName);
+    }
+
 }
