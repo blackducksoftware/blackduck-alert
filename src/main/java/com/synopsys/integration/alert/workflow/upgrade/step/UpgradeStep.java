@@ -21,24 +21,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.component.scheduling;
+package com.synopsys.integration.alert.workflow.upgrade.step;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import com.synopsys.integration.alert.common.exception.AlertUpgradeException;
 
-import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
+public abstract class UpgradeStep {
+    private final String version;
 
-@Component
-public class SchedulingDescriptor extends ComponentDescriptor {
-    public static final String SCHEDULING_COMPONENT = "component_scheduling";
-
-    public static final String SCHEDULING_LABEL = "Scheduling";
-    public static final String SCHEDULING_URL = "scheduling";
-    public static final String SCHEDULING_ICON = "clock-o";
-
-    @Autowired
-    public SchedulingDescriptor(final SchedulingDescriptorActionApi componentRestApi, final SchedulingUIConfig schedulingUIConfig) {
-        super(SCHEDULING_COMPONENT, componentRestApi, schedulingUIConfig);
+    public UpgradeStep(final String version) {
+        this.version = version;
     }
 
+    public abstract void runUpgrade() throws AlertUpgradeException;
+
+    public String getVersion() {
+        return version;
+    }
 }

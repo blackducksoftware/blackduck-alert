@@ -23,35 +23,65 @@
  */
 package com.synopsys.integration.alert.workflow.upgrade;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.synopsys.integration.alert.common.exception.AlertUpgradeException;
+import com.synopsys.integration.alert.workflow.upgrade.step.UpgradeStep;
 
 @Component
 public class UpgradeProcessor {
     private final Logger logger = LoggerFactory.getLogger(UpgradeProcessor.class);
 
     private final AlertVersionUtil alertVersionUtil;
-    private final DescriptorRegistrar descriptorRegistrar;
+    private final List<UpgradeStep> upgradeSteps;
 
     @Autowired
-    public UpgradeProcessor(final AlertVersionUtil alertVersionUtil, final DescriptorRegistrar descriptorRegistrar) {
+    public UpgradeProcessor(final AlertVersionUtil alertVersionUtil, final List<UpgradeStep> upgradeSteps) {
         this.alertVersionUtil = alertVersionUtil;
-        this.descriptorRegistrar = descriptorRegistrar;
+        this.upgradeSteps = upgradeSteps;
     }
 
-    public void runUpgrade() {
+    public void runUpgrade() throws AlertUpgradeException {
         logger.info("Upgrading alert...");
-        descriptorRegistrar.registerDescriptors();
-        alertVersionUtil.updateVersionInDB(alertVersionUtil.findFileVersion());
+        final Map<SemanticVersion, UpgradeStep> upgradeProcessSteps = initializeUpgradeMap(upgradeSteps);
+        final List<SemanticVersion> sortedVersions = upgradeProcessSteps.keySet()
+                                                         .stream()
+                                                         .sorted()
+                                                         .collect(Collectors.toList());
+        for (final SemanticVersion semanticVersion : sortedVersions) {
+            final UpgradeStep upgradeStep = upgradeProcessSteps.get(semanticVersion);
+            final String version = semanticVersion.getVersionString();
+            logger.info("Running upgrade for {}", version);
+            upgradeStep.runUpgrade();
+            alertVersionUtil.updateVersionInDB(version);
+        }
     }
 
     public boolean shouldUpgrade() {
-        final AlertVersion alertVersion = alertVersionUtil.findAlertVersion();
-        final String buildVersion = alertVersion.getFileVersion();
-        final String serverVersion = alertVersion.getDbVersion();
+        final String buildVersion = alertVersionUtil.findFileVersion();
+        final String serverVersion = alertVersionUtil.findDBVersion();
         logger.info("Alert build version is {} and the server version is {}.", buildVersion, serverVersion);
-        return !alertVersionUtil.doVersionsMatch(serverVersion, buildVersion);
+        return !buildVersion.equals(serverVersion);
+    }
+
+    private Map<SemanticVersion, UpgradeStep> initializeUpgradeMap(final List<UpgradeStep> upgradeSteps) {
+        final SemanticVersion buildVersion = new SemanticVersion(alertVersionUtil.findFileVersion());
+        final SemanticVersion serverVersion = new SemanticVersion(alertVersionUtil.findDBVersion());
+        final Map<SemanticVersion, UpgradeStep> stepMap = new HashMap<>();
+        for (final UpgradeStep upgradeStep : upgradeSteps) {
+            final SemanticVersion stepVersion = new SemanticVersion(upgradeStep.getVersion());
+            if (stepVersion.isGreaterThan(serverVersion) && stepVersion.isLessThanOrEqual(buildVersion)) {
+                stepMap.put(new SemanticVersion(upgradeStep.getVersion()), upgradeStep);
+            }
+        }
+        return stepMap;
     }
 }

@@ -21,10 +21,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.workflow.upgrade;
+package com.synopsys.integration.alert.workflow.upgrade.step._4_0_0;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -58,44 +57,21 @@ public class DescriptorRegistrar {
     }
 
     @Transactional
-    public void registerDescriptors() {
-        try {
-            for (final Descriptor descriptor : allDescriptors) {
-                final String descriptorName = descriptor.getName();
-                logger.info("Adding descriptor '{}'", descriptorName);
-                final DescriptorType descriptorType = descriptor.getType();
+    public void registerDescriptors() throws AlertDatabaseConstraintException {
+        for (final Descriptor descriptor : allDescriptors) {
+            final String descriptorName = descriptor.getName();
+            logger.info("Adding descriptor '{}'", descriptorName);
+            final DescriptorType descriptorType = descriptor.getType();
 
-                final RegisteredDescriptorModel registeredDescriptorModel = descriptorAccessor.registerDescriptorWithoutFields(descriptorName, descriptorType);
-                final Long descriptorId = registeredDescriptorModel.getId();
+            final RegisteredDescriptorModel registeredDescriptorModel = descriptorAccessor.registerDescriptorWithoutFields(descriptorName, descriptorType);
+            final Long descriptorId = registeredDescriptorModel.getId();
 
-                final Set<DefinedFieldModel> alreadyDefinedFields = getAllPreviouslyDefinedFieldModels(descriptorId);
-                final Collection<DefinedFieldModel> allDescriptorFieldModels = getAllDescriptorFieldModels(descriptor);
+            final Collection<DefinedFieldModel> allDescriptorFieldModels = getAllDescriptorFieldModels(descriptor);
 
-                for (final DefinedFieldModel fieldModel : allDescriptorFieldModels) {
-                    descriptorAccessor.addDescriptorField(descriptorId, fieldModel);
-                    alreadyDefinedFields.remove(fieldModel);
-                }
-
-                for (final DefinedFieldModel fieldModel : alreadyDefinedFields) {
-                    descriptorAccessor.removeDescriptorField(descriptorId, fieldModel);
-                }
-
+            for (final DefinedFieldModel fieldModel : allDescriptorFieldModels) {
+                descriptorAccessor.addDescriptorField(descriptorId, fieldModel);
             }
-        } catch (final AlertDatabaseConstraintException e) {
-            logger.error("Error registering descriptors.", e);
         }
-    }
-
-    private Set<DefinedFieldModel> getAllPreviouslyDefinedFieldModels(final Long descriptorId) throws AlertDatabaseConstraintException {
-        final Set<DefinedFieldModel> alreadyDefinedFields = new HashSet<>();
-
-        final List<DefinedFieldModel> registeredGlobalFields = descriptorAccessor.getFieldsForDescriptorById(descriptorId, ConfigContextEnum.GLOBAL);
-        final List<DefinedFieldModel> registeredDistributionFields = descriptorAccessor.getFieldsForDescriptorById(descriptorId, ConfigContextEnum.DISTRIBUTION);
-
-        alreadyDefinedFields.addAll(registeredDistributionFields);
-        alreadyDefinedFields.addAll(registeredGlobalFields);
-
-        return alreadyDefinedFields;
     }
 
     private Collection<DefinedFieldModel> getAllDescriptorFieldModels(final Descriptor descriptor) {

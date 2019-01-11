@@ -21,22 +21,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.workflow.upgrade;
+package com.synopsys.integration.alert.common.exception;
 
-public class AlertVersion {
-    private final String dbVersion;
-    private final String fileVersion;
+public class AlertUpgradeException extends AlertException {
 
-    public AlertVersion(final String dbVersion, final String fileVersion) {
-        this.dbVersion = dbVersion;
-        this.fileVersion = fileVersion;
+    public AlertUpgradeException(final String message, final Throwable cause) {
+        super(message, cause);
     }
 
-    public String getDbVersion() {
-        return dbVersion;
-    }
-
-    public String getFileVersion() {
-        return fileVersion;
+    public AlertUpgradeException(final String message) {
+        super(message);
     }
 }
