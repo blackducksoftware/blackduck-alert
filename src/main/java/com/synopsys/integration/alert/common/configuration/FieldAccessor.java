@@ -31,7 +31,6 @@ import java.util.Set;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 
 public class FieldAccessor {
@@ -64,14 +63,6 @@ public class FieldAccessor {
         return getValue(key);
     }
 
-    public String getRequiredStringOrThrow(final String key, final AlertException toThrow) throws AlertException {
-        final String value = getValue(key).orElseThrow(() -> toThrow);
-        if (StringUtils.isBlank(value)) {
-            throw toThrow;
-        }
-        return value;
-    }
-
     public Collection<String> getAllStrings(final String key) {
         if (fields.containsKey(key)) {
             return fields.get(key).getFieldValues();
@@ -85,7 +76,7 @@ public class FieldAccessor {
     }
 
     private Optional<String> getValue(final String key) {
-        if (StringUtils.isNotEmpty(key) && fields.containsKey(key)) {
+        if (StringUtils.isNotBlank(key) && fields.containsKey(key)) {
             final ConfigurationFieldModel fieldModel = fields.get(key);
             return fieldModel.getFieldValue();
         }

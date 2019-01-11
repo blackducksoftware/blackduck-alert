@@ -26,8 +26,13 @@ package com.synopsys.integration.alert.common;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import com.synopsys.integration.rest.credentials.CredentialsBuilder;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
+import com.synopsys.integration.rest.proxy.ProxyInfoBuilder;
 
 @Component
 public class AlertProperties {
@@ -122,5 +127,29 @@ public class AlertProperties {
 
     public void setAlertProxyPassword(final String alertProxyPassword) {
         this.alertProxyPassword = alertProxyPassword;
+    }
+
+    public ProxyInfo createProxyInfo() throws IllegalArgumentException {
+        final Optional<String> alertProxyHost = getAlertProxyHost();
+        final Optional<String> alertProxyPort = getAlertProxyPort();
+        final Optional<String> alertProxyUsername = getAlertProxyUsername();
+        final Optional<String> alertProxyPassword = getAlertProxyPassword();
+
+        final ProxyInfoBuilder proxyBuilder = new ProxyInfoBuilder();
+        if (alertProxyHost.isPresent()) {
+            proxyBuilder.setHost(alertProxyHost.get());
+        }
+        if (alertProxyPort.isPresent()) {
+            proxyBuilder.setPort(NumberUtils.toInt(alertProxyPort.get()));
+        }
+        final CredentialsBuilder credentialsBuilder = new CredentialsBuilder();
+        if (alertProxyUsername.isPresent()) {
+            credentialsBuilder.setUsername(alertProxyUsername.get());
+        }
+        if (alertProxyPassword.isPresent()) {
+            credentialsBuilder.setPassword(alertProxyPassword.get());
+        }
+        proxyBuilder.setCredentials(credentialsBuilder.build());
+        return proxyBuilder.build();
     }
 }

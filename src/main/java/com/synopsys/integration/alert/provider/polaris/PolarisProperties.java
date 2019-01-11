@@ -26,6 +26,7 @@ package com.synopsys.integration.alert.provider.polaris;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -33,6 +34,11 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.provider.ProviderProperties;
 import com.synopsys.integration.alert.provider.polaris.descriptor.PolarisDescriptor;
+import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.log.IntLogger;
+import com.synopsys.integration.log.Slf4jIntLogger;
+import com.synopsys.integration.polaris.common.rest.AccessTokenRestConnection;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 @Component
 public class PolarisProperties extends ProviderProperties {
@@ -56,6 +62,47 @@ public class PolarisProperties extends ProviderProperties {
         return createFieldAccessor()
                    .getInteger(PolarisDescriptor.KEY_POLARIS_TIMEOUT)
                    .orElse(DEFAULT_TIMEOUT);
+    }
+
+    public Optional<AccessTokenRestConnection> createRestConnectionSafely(final Logger logger) {
+        return createRestConnectionSafely(new Slf4jIntLogger(logger));
+    }
+
+    public Optional<AccessTokenRestConnection> createRestConnectionSafely(final IntLogger intLogger) {
+        try {
+            return Optional.of(createRestConnection(intLogger));
+        } catch (final IntegrationException e) {
+            return Optional.empty();
+        }
+    }
+
+    public AccessTokenRestConnection createRestConnection(final Logger logger) throws IntegrationException {
+        return createRestConnection(new Slf4jIntLogger(logger));
+    }
+
+    public AccessTokenRestConnection createRestConnection(final IntLogger intLogger) throws IntegrationException {
+        final String errorFormat = "The field %s cannot be blank";
+        final String baseUrl = getUrl()
+                                   .orElseThrow(() -> new IntegrationException(String.format(errorFormat, "baseUrl")));
+        final String accessToken = getAccessToken()
+                                       .orElseThrow(() -> new IntegrationException(String.format(errorFormat, "accessToken")));
+        final Integer timeout = getTimeout();
+
+        return createRestConnection(intLogger, baseUrl, accessToken, timeout);
+
+    }
+
+    public AccessTokenRestConnection createRestConnection(final IntLogger intLogger, final String baseUrl, final String accessToken, final Integer timeout) {
+        final Boolean alwaysTrustCertificate = alertProperties.getAlertTrustCertificate().orElse(Boolean.FALSE);
+        final ProxyInfo proxyInfo = alertProperties.createProxyInfo();
+
+        return new AccessTokenRestConnection(intLogger, timeout, alwaysTrustCertificate, proxyInfo, baseUrl, accessToken);
+    }
+
+    private Optional<String> getAccessToken() {
+        return createFieldAccessor()
+                   .getString(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN)
+                   .filter(StringUtils::isNotBlank);
     }
 
 }

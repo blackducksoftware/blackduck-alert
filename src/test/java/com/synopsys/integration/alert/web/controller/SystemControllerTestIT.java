@@ -17,11 +17,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.web.model.SystemSetupModel;
-import com.synopsys.integration.alert.workflow.startup.install.SystemInitializer;
 
 public class SystemControllerTestIT extends AlertIntegrationTest {
     protected final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
@@ -31,7 +31,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     @Autowired
     private WebApplicationContext webApplicationContext;
     @Autowired
-    private SystemInitializer systemInitializer;
+    private SystemStatusUtility systemStatusUtility;
     private MockMvc mockMvc;
 
     @BeforeEach
@@ -42,7 +42,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     @Test
     public void testGetLatestMessages() throws Exception {
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(systemMessageBaseUrl + "/latest")
-                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
+                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -50,16 +50,16 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     @WithMockUser(roles = "ADMIN")
     public void testGetMessages() throws Exception {
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(systemMessageBaseUrl)
-                                                              .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
-                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
+                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
+                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
     public void testGetInitialSystemSetup() throws Exception {
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(systemInitialSetupBaseUrl)
-                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
-        if (systemInitializer.isSystemInitialized()) {
+                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
+        if (systemStatusUtility.isSystemInitialized()) {
             // the spring-test.properties file sets the encryption and in order to run a hub URL is needed therefore the environment is setup.
             mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isFound());
         } else {
@@ -87,14 +87,14 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
         final boolean proxyPasswordSet = false;
 
         final SystemSetupModel configuration = SystemSetupModel.of(defaultAdminPassword, defaultAdminPasswordSet, blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet,
-                globalEncryptionPassword, isGlobalEncryptionPasswordSet, globalEncryptionSalt, isGlobalEncryptionSaltSet,
-                proxyHost, proxyPort, proxyUsername, proxyPassword, proxyPasswordSet);
+            globalEncryptionPassword, isGlobalEncryptionPasswordSet, globalEncryptionSalt, isGlobalEncryptionSaltSet,
+            proxyHost, proxyPort, proxyUsername, proxyPassword, proxyPasswordSet);
 
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(systemInitialSetupBaseUrl)
-                                                              .with(SecurityMockMvcRequestPostProcessors.csrf());
+                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
         request.content(gson.toJson(configuration));
         request.contentType(contentType);
-        if (systemInitializer.isSystemInitialized()) {
+        if (systemStatusUtility.isSystemInitialized()) {
             // the spring-test.properties file sets the encryption and in order to run a hub URL is needed therefore the environment is setup.
             mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isConflict());
         } else {

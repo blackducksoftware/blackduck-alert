@@ -82,8 +82,8 @@ public class SlackChannel extends RestDistributionChannel {
     @Override
     public List<Request> createRequests(final DistributionEvent event) throws IntegrationException {
         final FieldAccessor fields = event.getFieldAccessor();
-        final String webhook = fields.getRequiredStringOrThrow(SlackDescriptor.KEY_WEBHOOK, new AlertException("Missing Webhook URL"));
-        final String channelName = fields.getRequiredStringOrThrow(SlackDescriptor.KEY_CHANNEL_NAME, new AlertException("Missing channel name"));
+        final String webhook = fields.getString(SlackDescriptor.KEY_WEBHOOK).orElseThrow(() -> new AlertException("Missing Webhook URL"));
+        final String channelName = fields.getString(SlackDescriptor.KEY_CHANNEL_NAME).orElseThrow(() -> new AlertException("Missing channel name"));
         final Optional<String> channelUsername = fields.getString(SlackDescriptor.KEY_CHANNEL_USERNAME);
         if (StringUtils.isBlank(event.getContent().getValue())) {
             return Collections.emptyList();
