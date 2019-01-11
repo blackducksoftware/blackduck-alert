@@ -21,24 +21,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.component.scheduling;
+package com.synopsys.integration.alert.workflow.upgrade.step._4_0_0;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertUpgradeException;
+import com.synopsys.integration.alert.workflow.upgrade.step.UpgradeStep;
 
 @Component
-public class SchedulingDescriptor extends ComponentDescriptor {
-    public static final String SCHEDULING_COMPONENT = "component_scheduling";
-
-    public static final String SCHEDULING_LABEL = "Scheduling";
-    public static final String SCHEDULING_URL = "scheduling";
-    public static final String SCHEDULING_ICON = "clock-o";
+public class UpgradeStep_4_0_0 extends UpgradeStep {
+    private final DescriptorRegistrar descriptorRegistrar;
 
     @Autowired
-    public SchedulingDescriptor(final SchedulingDescriptorActionApi componentRestApi, final SchedulingUIConfig schedulingUIConfig) {
-        super(SCHEDULING_COMPONENT, componentRestApi, schedulingUIConfig);
+    public UpgradeStep_4_0_0(final DescriptorRegistrar descriptorRegistrar) {
+        super("4.0.0");
+        this.descriptorRegistrar = descriptorRegistrar;
     }
 
+    @Override
+    public void runUpgrade() throws AlertUpgradeException {
+        try {
+            descriptorRegistrar.registerDescriptors();
+        } catch (final AlertDatabaseConstraintException e) {
+            throw new AlertUpgradeException("Error when registering descriptors and fields", e);
+        }
+    }
 }

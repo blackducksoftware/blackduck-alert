@@ -54,6 +54,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.synopsys.integration.alert.common.exception.AlertUpgradeException;
 import com.synopsys.integration.alert.web.security.authentication.database.UserDatabaseService;
 import com.synopsys.integration.alert.workflow.startup.StartupManager;
 import com.synopsys.integration.rest.RestConstants;
@@ -78,7 +79,7 @@ public class Application {
     }
 
     @PostConstruct
-    void init() {
+    void init() throws AlertUpgradeException {
         startupManager.startup();
     }
 

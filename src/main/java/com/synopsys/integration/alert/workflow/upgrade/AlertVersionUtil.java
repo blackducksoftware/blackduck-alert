@@ -43,23 +43,14 @@ public class AlertVersionUtil {
         this.aboutReader = aboutReader;
     }
 
-    public AlertVersion findAlertVersion() {
-        final String dbVersion = findDBVersion();
-        final String fileVersion = findFileVersion();
-
-        return new AlertVersion(dbVersion, fileVersion);
-    }
-
     public String findDBVersion() {
-        return settingsKeyAccessor.getSettingsKeyByKey(KEY_ALERT_VERSION).map(SettingsKeyModel::getValue).orElse(AboutReader.PRODUCT_VERSION_UNKNOWN);
+        return settingsKeyAccessor.getSettingsKeyByKey(KEY_ALERT_VERSION)
+                   .map(SettingsKeyModel::getValue)
+                   .orElse(AboutReader.PRODUCT_VERSION_UNKNOWN);
     }
 
     public String findFileVersion() {
         return aboutReader.getProductVersion();
-    }
-
-    public boolean doVersionsMatch(final String dbVersion, final String fileVersion) {
-        return dbVersion.equals(fileVersion);
     }
 
     public void updateVersionInDB(final String newVersion) {
