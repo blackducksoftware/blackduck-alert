@@ -108,7 +108,7 @@ public class UIComponentController extends BaseController {
                 final DescriptorMetadata providerDescriptorMetadata = providerDescriptor.get().getMetaData(ConfigContextEnum.DISTRIBUTION).get();
                 final List<ConfigField> combinedFields = new ArrayList<>();
                 final ConfigField name = TextInputConfigField.createRequired("name", "Name");
-                final ConfigField frequency = SelectConfigField.createRequired("frequency", "Frequency", Arrays.stream(FrequencyType.values()).map(type -> type.getDisplayName()).collect(Collectors.toList()));
+                final ConfigField frequency = SelectConfigField.createRequired("frequency", "Frequency", Arrays.stream(FrequencyType.values()).map(FrequencyType::getDisplayName).collect(Collectors.toList()));
                 combinedFields.add(name);
                 combinedFields.add(frequency);
                 combinedFields.addAll(channelDescriptorMetadata.getFields());
