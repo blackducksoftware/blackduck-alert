@@ -23,9 +23,9 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.context;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
@@ -51,13 +51,12 @@ public abstract class DescriptorActionApi {
 
     public DistributionEvent createChannelEvent(final CommonDistributionConfiguration commmonDistributionConfig, final AggregateMessageContent messageContent) {
         return new DistributionEvent(commmonDistributionConfig.getId().toString(), commmonDistributionConfig.getChannelName(), RestConstants.formatDate(new Date()), commmonDistributionConfig.getProviderName(),
-            commmonDistributionConfig.getFormatType().name(), messageContent,
-            commmonDistributionConfig.getFieldAccessor());
+            commmonDistributionConfig.getFormatType().name(), messageContent, commmonDistributionConfig.getFieldAccessor());
     }
 
     public AggregateMessageContent createTestNotificationContent() {
         final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
-        return new AggregateMessageContent("testTopic", "Alert Test Message", null, subTopic, Collections.emptyList());
+        return new AggregateMessageContent("testTopic", "Alert Test Message", null, subTopic, List.of());
     }
 
     protected FieldModel createFieldModelCopy(final FieldModel fieldModel) {
@@ -83,6 +82,15 @@ public abstract class DescriptorActionApi {
 
     public FieldModel deleteConfig(final FieldModel fieldModel) {
         return fieldModel;
+    }
+
+    protected void validateFieldFormatting(final FieldModel fieldModel) throws AlertFieldException {
+        final Map<String, String> fieldErrors = new HashMap<>();
+        validateConfig(fieldModel, fieldErrors);
+
+        if (!fieldErrors.isEmpty()) {
+            throw new AlertFieldException(fieldErrors);
+        }
     }
 
 }

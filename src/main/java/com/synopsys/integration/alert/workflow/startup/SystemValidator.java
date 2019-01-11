@@ -31,7 +31,6 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,9 +48,7 @@ import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.blackduck.service.model.BlackDuckServerVerifier;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.rest.credentials.CredentialsBuilder;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
-import com.synopsys.integration.rest.proxy.ProxyInfoBuilder;
 
 @Component
 public class SystemValidator {
@@ -146,7 +143,7 @@ public class SystemValidator {
         boolean valid = true;
         try {
             final BlackDuckServerVerifier verifier = new BlackDuckServerVerifier();
-            final ProxyInfo proxyInfo = createProxyInfo();
+            final ProxyInfo proxyInfo = alertProperties.createProxyInfo();
             final Optional<String> blackDuckUrlOptional = blackDuckProperties.getBlackDuckUrl();
             if (!blackDuckUrlOptional.isPresent()) {
                 logger.error("  -> BlackDuck Provider Invalid; cause: Black Duck URL missing...");
@@ -183,29 +180,5 @@ public class SystemValidator {
             systemMessageUtility.removeSystemMessagesByType(SystemMessageType.BLACKDUCK_PROVIDER_LOCALHOST);
         }
         return true;
-    }
-
-    private ProxyInfo createProxyInfo() {
-        final Optional<String> alertProxyHost = alertProperties.getAlertProxyHost();
-        final Optional<String> alertProxyPort = alertProperties.getAlertProxyPort();
-        final Optional<String> alertProxyUsername = alertProperties.getAlertProxyUsername();
-        final Optional<String> alertProxyPassword = alertProperties.getAlertProxyPassword();
-
-        final ProxyInfoBuilder proxyBuilder = new ProxyInfoBuilder();
-        if (alertProxyHost.isPresent()) {
-            proxyBuilder.setHost(alertProxyHost.get());
-        }
-        if (alertProxyPort.isPresent()) {
-            proxyBuilder.setPort(NumberUtils.toInt(alertProxyPort.get()));
-        }
-        final CredentialsBuilder credentialsBuilder = new CredentialsBuilder();
-        if (alertProxyUsername.isPresent()) {
-            credentialsBuilder.setUsername(alertProxyUsername.get());
-        }
-        if (alertProxyPassword.isPresent()) {
-            credentialsBuilder.setPassword(alertProxyPassword.get());
-        }
-        proxyBuilder.setCredentials(credentialsBuilder.build());
-        return proxyBuilder.build();
     }
 }

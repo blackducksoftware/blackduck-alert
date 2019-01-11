@@ -1,6 +1,8 @@
 package com.synopsys.integration.alert.provider.polaris;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.List;
 import java.util.Map;
@@ -8,17 +10,27 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.provider.polaris.descriptor.PolarisDescriptor;
+import com.synopsys.integration.exception.IntegrationException;
+import com.synopsys.integration.log.IntLogger;
+import com.synopsys.integration.log.LogLevel;
+import com.synopsys.integration.log.PrintStreamIntLogger;
+import com.synopsys.integration.polaris.common.rest.AccessTokenRestConnection;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class PolarisPropertiesTest {
     private static final String POLARIS_URL = "https://polaris";
     private static final Integer POLARIS_TIMEOUT = 100;
+    private static final String POLARIS_ACCESS_TOKEN = "access_token";
 
     private final BaseConfigurationAccessor configurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
     private final ConfigurationModel configurationModel = Mockito.mock(ConfigurationModel.class);
@@ -71,5 +83,118 @@ public class PolarisPropertiesTest {
 
         final PolarisProperties polarisProperties = new PolarisProperties(null, configurationAccessor);
         assertEquals(PolarisProperties.DEFAULT_TIMEOUT, polarisProperties.getTimeout());
+    }
+
+    @Test
+    public void createRestConnectionTest() throws IntegrationException {
+        final ConfigurationFieldModel urlField = ConfigurationFieldModel.create(PolarisDescriptor.KEY_POLARIS_URL);
+        urlField.setFieldValue(POLARIS_URL);
+        final ConfigurationFieldModel timeoutField = ConfigurationFieldModel.create(PolarisDescriptor.KEY_POLARIS_TIMEOUT);
+        timeoutField.setFieldValue(POLARIS_TIMEOUT.toString());
+        final ConfigurationFieldModel accessTokenField = ConfigurationFieldModel.create(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN);
+        accessTokenField.setFieldValue(POLARIS_ACCESS_TOKEN);
+
+        Mockito.when(configurationModel.getCopyOfKeyToFieldMap()).thenReturn(
+            Map.of(
+                PolarisDescriptor.KEY_POLARIS_URL, urlField,
+                PolarisDescriptor.KEY_POLARIS_TIMEOUT, timeoutField,
+                PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN, accessTokenField
+            )
+        );
+        Mockito.when(configurationAccessor.getConfigurationByDescriptorNameAndContext(PolarisProvider.COMPONENT_NAME, ConfigContextEnum.GLOBAL)).thenReturn(List.of(configurationModel));
+
+        final AlertProperties mockAlertProperties = Mockito.mock(AlertProperties.class);
+        Mockito.when(mockAlertProperties.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
+
+        final Logger logger = LoggerFactory.getLogger(getClass());
+        final PolarisProperties polarisProperties = new PolarisProperties(mockAlertProperties, configurationAccessor);
+        try {
+            polarisProperties.createRestConnection(logger);
+        } catch (final IntegrationException e) {
+            fail("Did not expect an exception to be thrown");
+        }
+    }
+
+    @Test
+    public void createRestConnectionThrowsExceptionsTest() throws AlertDatabaseConstraintException {
+        final IntLogger intLogger = new PrintStreamIntLogger(System.out, LogLevel.INFO);
+        final AlertProperties mockAlertProperties = Mockito.mock(AlertProperties.class);
+        Mockito.when(mockAlertProperties.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
+
+        final ConfigurationFieldModel urlField = ConfigurationFieldModel.create(PolarisDescriptor.KEY_POLARIS_URL);
+        urlField.setFieldValue(POLARIS_URL);
+        final ConfigurationFieldModel timeoutField = ConfigurationFieldModel.create(PolarisDescriptor.KEY_POLARIS_TIMEOUT);
+        timeoutField.setFieldValue(POLARIS_TIMEOUT.toString());
+        final ConfigurationFieldModel accessTokenField = ConfigurationFieldModel.create(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN);
+        accessTokenField.setFieldValue(POLARIS_ACCESS_TOKEN);
+
+        Mockito.when(configurationModel.getCopyOfKeyToFieldMap()).thenReturn(
+            Map.of(
+                PolarisDescriptor.KEY_POLARIS_TIMEOUT, timeoutField,
+                PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN, accessTokenField
+            )
+        );
+        Mockito.when(configurationAccessor.getConfigurationByDescriptorNameAndContext(PolarisProvider.COMPONENT_NAME, ConfigContextEnum.GLOBAL)).thenReturn(List.of(configurationModel));
+
+        final PolarisProperties polarisProperties1 = new PolarisProperties(mockAlertProperties, configurationAccessor);
+        try {
+            polarisProperties1.createRestConnection(intLogger);
+            fail("Expected exception to be thrown");
+        } catch (final IntegrationException urlException) {
+            assertEquals("The field baseUrl cannot be blank", urlException.getMessage());
+        }
+
+        Mockito.when(configurationModel.getCopyOfKeyToFieldMap()).thenReturn(
+            Map.of(
+                PolarisDescriptor.KEY_POLARIS_URL, urlField,
+                PolarisDescriptor.KEY_POLARIS_TIMEOUT, timeoutField
+            )
+        );
+        Mockito.when(configurationAccessor.getConfigurationByDescriptorNameAndContext(PolarisProvider.COMPONENT_NAME, ConfigContextEnum.GLOBAL)).thenReturn(List.of(configurationModel));
+        final PolarisProperties polarisProperties2 = new PolarisProperties(mockAlertProperties, configurationAccessor);
+        try {
+            polarisProperties2.createRestConnection(intLogger);
+            fail("Expected exception to be thrown");
+        } catch (final IntegrationException accessTokenException) {
+            assertEquals("The field accessToken cannot be blank", accessTokenException.getMessage());
+        }
+    }
+
+    @Test
+    public void createRestConnectionSafelyTest() throws AlertDatabaseConstraintException {
+        final ConfigurationFieldModel urlField = ConfigurationFieldModel.create(PolarisDescriptor.KEY_POLARIS_URL);
+        urlField.setFieldValue(POLARIS_URL);
+        final ConfigurationFieldModel timeoutField = ConfigurationFieldModel.create(PolarisDescriptor.KEY_POLARIS_TIMEOUT);
+        timeoutField.setFieldValue(POLARIS_TIMEOUT.toString());
+        final ConfigurationFieldModel accessTokenField = ConfigurationFieldModel.create(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN);
+        accessTokenField.setFieldValue(POLARIS_ACCESS_TOKEN);
+
+        Mockito.when(configurationModel.getCopyOfKeyToFieldMap()).thenReturn(
+            Map.of(
+                PolarisDescriptor.KEY_POLARIS_URL, urlField,
+                PolarisDescriptor.KEY_POLARIS_TIMEOUT, timeoutField,
+                PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN, accessTokenField
+            )
+        );
+        Mockito.when(configurationAccessor.getConfigurationByDescriptorNameAndContext(PolarisProvider.COMPONENT_NAME, ConfigContextEnum.GLOBAL)).thenReturn(List.of(configurationModel));
+
+        final AlertProperties mockAlertProperties = Mockito.mock(AlertProperties.class);
+        Mockito.when(mockAlertProperties.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
+
+        final Logger logger = LoggerFactory.getLogger(getClass());
+        final PolarisProperties polarisProperties = new PolarisProperties(mockAlertProperties, configurationAccessor);
+        final Optional<AccessTokenRestConnection> restConnection = polarisProperties.createRestConnectionSafely(logger);
+        assertTrue(restConnection.isPresent(), "Expected optional RestConnection to be present");
+    }
+
+    @Test
+    public void createRestConnectionSafelyReturnsEmptyTest() throws AlertDatabaseConstraintException {
+        Mockito.when(configurationModel.getCopyOfKeyToFieldMap()).thenReturn(
+            Map.of()
+        );
+        Mockito.when(configurationAccessor.getConfigurationByDescriptorNameAndContext(PolarisProvider.COMPONENT_NAME, ConfigContextEnum.GLOBAL)).thenReturn(List.of(configurationModel));
+
+        final PolarisProperties polarisProperties = new PolarisProperties(null, configurationAccessor);
+        assertEquals(Optional.empty(), polarisProperties.createRestConnectionSafely((IntLogger) null));
     }
 }
