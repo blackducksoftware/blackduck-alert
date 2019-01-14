@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 
@@ -45,7 +46,7 @@ public class PolarisGlobalUIConfig extends UIConfig {
     @Override
     public List<ConfigField> createFields() {
         final ConfigField polarisUrl = TextInputConfigField.createRequired(PolarisDescriptor.KEY_POLARIS_URL, LABEL_POLARIS_URL);
-        final ConfigField polarisAccessToken = TextInputConfigField.createRequired(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN, LABEL_POLARIS_ACCESS_TOKEN);
+        final ConfigField polarisAccessToken = PasswordConfigField.createRequired(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN, LABEL_POLARIS_ACCESS_TOKEN);
         final ConfigField polarisTimeout = NumberConfigField.createRequired(PolarisDescriptor.KEY_POLARIS_TIMEOUT, LABEL_POLARIS_TIMEOUT);
 
         return List.of(polarisUrl, polarisAccessToken, polarisTimeout);
