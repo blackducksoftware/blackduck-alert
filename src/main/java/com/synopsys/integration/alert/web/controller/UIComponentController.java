@@ -67,9 +67,10 @@ public class UIComponentController extends BaseController {
     public Collection<DescriptorMetadata> getDescriptors(@RequestParam(value = "descriptorName", required = false) final String descriptorName, @RequestParam(value = "context", required = false) final String context) {
         // filter by name
         if (StringUtils.isNotBlank(descriptorName)) {
-            final Descriptor descriptor = descriptorMap.getDescriptor(descriptorName);
-            if (descriptor != null) {
+            final Optional<Descriptor> optionalDescriptor = descriptorMap.getDescriptor(descriptorName);
+            if (optionalDescriptor.isPresent()) {
                 // filter by type also
+                final Descriptor descriptor = optionalDescriptor.get();
                 if (StringUtils.isNotBlank(context)) {
                     final ConfigContextEnum contextType = EnumUtils.getEnum(ConfigContextEnum.class, context);
                     final Optional<DescriptorMetadata> uiConfig = descriptor.getMetaData(contextType);
@@ -100,21 +101,26 @@ public class UIComponentController extends BaseController {
         if (StringUtils.isBlank(providerName) || StringUtils.isBlank(channelName)) {
             return null;
         } else {
-            final ProviderDescriptor providerDescriptor = descriptorMap.getProviderDescriptor(providerName);
-            final ChannelDescriptor channelDescriptor = descriptorMap.getChannelDescriptor(channelName);
-            final DescriptorMetadata channelDescriptorMetadata = channelDescriptor.getMetaData(ConfigContextEnum.DISTRIBUTION).get();
-            final DescriptorMetadata providerDescriptorMetadata = providerDescriptor.getMetaData(ConfigContextEnum.DISTRIBUTION).get();
-            final List<ConfigField> combinedFields = new ArrayList<>();
-            final ConfigField name = TextInputConfigField.createRequired("name", "Name");
-            final ConfigField frequency = SelectConfigField.createRequired("frequency", "Frequency", Arrays.stream(FrequencyType.values()).map(type -> type.getDisplayName()).collect(Collectors.toList()));
-            combinedFields.add(name);
-            combinedFields.add(frequency);
-            combinedFields.addAll(channelDescriptorMetadata.getFields());
-            combinedFields.addAll(providerDescriptorMetadata.getFields());
+            final Optional<ProviderDescriptor> providerDescriptor = descriptorMap.getProviderDescriptor(providerName);
+            final Optional<ChannelDescriptor> channelDescriptor = descriptorMap.getChannelDescriptor(channelName);
+            if (providerDescriptor.isPresent() && channelDescriptor.isPresent()) {
+                final DescriptorMetadata channelDescriptorMetadata = channelDescriptor.get().getMetaData(ConfigContextEnum.DISTRIBUTION).get();
+                final DescriptorMetadata providerDescriptorMetadata = providerDescriptor.get().getMetaData(ConfigContextEnum.DISTRIBUTION).get();
+                final List<ConfigField> combinedFields = new ArrayList<>();
+                final ConfigField name = TextInputConfigField.createRequired("name", "Name");
+                final ConfigField frequency = SelectConfigField.createRequired("frequency", "Frequency", Arrays.stream(FrequencyType.values()).map(FrequencyType::getDisplayName).collect(Collectors.toList()));
+                combinedFields.add(name);
+                combinedFields.add(frequency);
+                combinedFields.addAll(channelDescriptorMetadata.getFields());
+                combinedFields.addAll(providerDescriptorMetadata.getFields());
 
-            final DescriptorMetadata combinedDescriptorMetadata = new DescriptorMetadata(channelDescriptorMetadata.getLabel(), channelDescriptorMetadata.getUrlName(), channelDescriptorMetadata.getName(), channelDescriptorMetadata.getType(),
-                channelDescriptorMetadata.getContext(), channelDescriptorMetadata.getFontAwesomeIcon(), channelDescriptorMetadata.isAutomaticallyGenerateUI(), combinedFields);
-            return combinedDescriptorMetadata;
+                final DescriptorMetadata combinedDescriptorMetadata = new DescriptorMetadata(channelDescriptorMetadata.getLabel(), channelDescriptorMetadata.getUrlName(), channelDescriptorMetadata.getName(),
+                    channelDescriptorMetadata.getType(),
+                    channelDescriptorMetadata.getContext(), channelDescriptorMetadata.getFontAwesomeIcon(), channelDescriptorMetadata.isAutomaticallyGenerateUI(), combinedFields);
+                return combinedDescriptorMetadata;
+            }
         }
+
+        return null;
     }
 }
