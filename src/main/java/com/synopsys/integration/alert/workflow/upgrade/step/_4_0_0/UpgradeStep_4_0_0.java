@@ -26,28 +26,20 @@ package com.synopsys.integration.alert.workflow.upgrade.step._4_0_0;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertUpgradeException;
 import com.synopsys.integration.alert.workflow.upgrade.step.UpgradeStep;
 
 @Component
 public class UpgradeStep_4_0_0 extends UpgradeStep {
-    private final DescriptorRegistrar descriptorRegistrar;
 
     @Autowired
-    public UpgradeStep_4_0_0(final DescriptorRegistrar descriptorRegistrar) {
+    public UpgradeStep_4_0_0() {
         super("4.0.0");
-        this.descriptorRegistrar = descriptorRegistrar;
     }
 
     @Override
     public void runUpgrade() throws AlertUpgradeException {
-        try {
-            descriptorRegistrar.registerDescriptors();
-        } catch (final AlertDatabaseConstraintException e) {
-            throw new AlertUpgradeException("Error when registering descriptors and fields", e);
-        }
+        // TODO Move all of our data from our old config tables to our new ones here.
     }
 
-    // TODO Move all of our data from our old config tables to our new ones here.
 }
