@@ -32,6 +32,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.FieldValueModel;
 
 @Component
@@ -49,16 +50,16 @@ public class SlackUIConfig extends UIConfig {
         return List.of(webhook, channelName, channelUsername);
     }
 
-    private Collection<String> validateWebHook(final FieldValueModel fieldValueModel) {
-        final String webhook = fieldValueModel.getValue().orElse(null);
+    private Collection<String> validateWebHook(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        final String webhook = fieldToValidate.getValue().orElse(null);
         if (StringUtils.isBlank(webhook)) {
             return List.of("A webhook is required.");
         }
         return List.of();
     }
 
-    private Collection<String> validateChannelName(final FieldValueModel fieldValueModel) {
-        final String channelName = fieldValueModel.getValue().orElse(null);
+    private Collection<String> validateChannelName(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        final String channelName = fieldToValidate.getValue().orElse(null);
         if (StringUtils.isBlank(channelName)) {
             return List.of("A channel name is required.");
         }

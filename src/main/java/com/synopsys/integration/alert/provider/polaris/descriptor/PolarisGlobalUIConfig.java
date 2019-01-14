@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.FieldValueModel;
 
 @Component
@@ -55,8 +56,8 @@ public class PolarisGlobalUIConfig extends UIConfig {
         return List.of(polarisUrl, polarisAccessToken, polarisTimeout);
     }
 
-    private Collection<String> validateAPIToken(final FieldValueModel fieldValueModel) {
-        final String accessToken = fieldValueModel.getValue().orElse(null);
+    private Collection<String> validateAPIToken(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        final String accessToken = fieldToValidate.getValue().orElse(null);
         if (StringUtils.isNotBlank(accessToken)) {
             if (accessToken.length() < 32 || accessToken.length() > 64) {
                 return List.of("Invalid Polaris Access Token.");
@@ -65,8 +66,8 @@ public class PolarisGlobalUIConfig extends UIConfig {
         return List.of();
     }
 
-    private Collection<String> validateTimeout(final FieldValueModel fieldValueModel) {
-        final String polarisTimeout = fieldValueModel.getValue().orElse(null);
+    private Collection<String> validateTimeout(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        final String polarisTimeout = fieldToValidate.getValue().orElse(null);
         if (StringUtils.isNotBlank(polarisTimeout)) {
             if (!StringUtils.isNumeric(polarisTimeout) || NumberUtils.toInt(polarisTimeout.trim()) < 0) {
                 return List.of("Must be an Integer greater than zero (0).");

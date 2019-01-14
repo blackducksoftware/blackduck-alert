@@ -37,6 +37,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.TextInputCo
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.enumeration.FieldGroup;
+import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.FieldValueModel;
 
 @Component
@@ -111,8 +112,8 @@ public class EmailGlobalUIConfig extends UIConfig {
         return fields;
     }
 
-    private Collection<String> validateNumericField(final FieldValueModel fieldValueModel) {
-        final String port = fieldValueModel.getValue().orElse(null);
+    private Collection<String> validateNumericField(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        final String port = fieldToValidate.getValue().orElse(null);
         if (StringUtils.isNotBlank(port) && !StringUtils.isNumeric(port)) {
             return List.of(NOT_AN_INTEGER);
         }

@@ -33,6 +33,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.FieldValueModel;
 
 @Component
@@ -54,16 +55,16 @@ public class SchedulingUIConfig extends UIConfig {
         return Arrays.asList(digestHour, purgeFrequency);
     }
 
-    private Collection<String> validateDigestHourOfDay(final FieldValueModel fieldValueModel) {
-        final String dailyDigestHourOfDay = fieldValueModel.getValue().orElse(null);
+    private Collection<String> validateDigestHourOfDay(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        final String dailyDigestHourOfDay = fieldToValidate.getValue().orElse(null);
         if (isNotValid(dailyDigestHourOfDay, 0, 23)) {
             return List.of("Must be a number between 0 and 23");
         }
         return List.of();
     }
 
-    private Collection<String> validatePurgeFrequency(final FieldValueModel fieldValueModel) {
-        final String purgeDataFrequency = fieldValueModel.getValue().orElse(null);
+    private Collection<String> validatePurgeFrequency(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        final String purgeDataFrequency = fieldToValidate.getValue().orElse(null);
         if (isNotValid(purgeDataFrequency, 1, 7)) {
             return List.of("Must be a number between 1 and 7");
         }

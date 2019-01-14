@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.PasswordCon
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.FieldGroup;
+import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.FieldValueModel;
 
 @Component
@@ -50,8 +51,8 @@ public class HipChatGlobalUIConfig extends UIConfig {
         return List.of(apiKey, hostServer);
     }
 
-    private Collection<String> validateApiKey(final FieldValueModel fieldValueModel) {
-        final String apiKey = fieldValueModel.getValue().orElse(null);
+    private Collection<String> validateApiKey(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        final String apiKey = fieldToValidate.getValue().orElse(null);
         if (StringUtils.isBlank(apiKey)) {
             return List.of("API Key can't be blank");
         }

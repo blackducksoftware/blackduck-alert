@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.channel.DistributionChannel;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
@@ -44,6 +43,7 @@ import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
+import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.FieldValueModel;
 
 @Component
@@ -54,12 +54,10 @@ public class CommonDistributionUIConfig {
     public static final String KEY_PROVIDER_NAME = "channel.common.provider.name";
     public static final String KEY_FREQUENCY = "channel.common.frequency";
 
-    private final DistributionChannel distributionChannel;
     private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public CommonDistributionUIConfig(final DistributionChannel distributionChannel, final ConfigurationAccessor configurationAccessor) {
-        this.distributionChannel = distributionChannel;
+    public CommonDistributionUIConfig(final ConfigurationAccessor configurationAccessor) {
         this.configurationAccessor = configurationAccessor;
     }
 
@@ -73,10 +71,10 @@ public class CommonDistributionUIConfig {
         return List.of(name, channelName, frequency, providerName);
     }
 
-    private Collection<String> validateJobName(final FieldValueModel fieldValueModel) {
+    private Collection<String> validateJobName(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
         final Collection<String> errors = new ArrayList<>(1);
-        final String descriptorName = distributionChannel.getDistributionType();
-        final String jobName = fieldValueModel.getValue().orElse(null);
+        final String descriptorName = fieldModel.getDescriptorName();
+        final String jobName = fieldToValidate.getValue().orElse(null);
         if (StringUtils.isNotBlank(jobName)) {
             try {
                 final List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorName(descriptorName);
@@ -98,8 +96,8 @@ public class CommonDistributionUIConfig {
         return errors;
     }
 
-    private Collection<String> validateChannelName(final FieldValueModel fieldValueModel) {
-        final String value = fieldValueModel.getValue().orElse(null);
+    private Collection<String> validateChannelName(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        final String value = fieldToValidate.getValue().orElse(null);
         if (StringUtils.isBlank(value)) {
             return List.of("You must choose a distribution type.");
         }
@@ -107,8 +105,8 @@ public class CommonDistributionUIConfig {
         return List.of();
     }
 
-    private Collection<String> validatedProviderName(final FieldValueModel fieldValueModel) {
-        final String value = fieldValueModel.getValue().orElse(null);
+    private Collection<String> validatedProviderName(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        final String value = fieldToValidate.getValue().orElse(null);
         if (StringUtils.isBlank(value)) {
             return List.of("You must choose a provider.");
         }

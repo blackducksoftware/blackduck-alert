@@ -59,7 +59,7 @@ public abstract class DescriptorActionApi {
 
             // field is present now validate the field
             if (!fieldErrors.containsKey(fieldKey) && optionalField.isPresent()) {
-                final Collection<String> validationErrors = field.validate(optionalField.get());
+                final Collection<String> validationErrors = field.validate(optionalField.get(), fieldModel);
                 if (!validationErrors.isEmpty()) {
                     fieldErrors.put(fieldKey, StringUtils.join(validationErrors, ","));
                 }

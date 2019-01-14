@@ -35,6 +35,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.FieldValueModel;
 
 @Component
@@ -52,8 +53,8 @@ public class HipChatDistributionUIConfig extends UIConfig {
         return List.of(roomId, notify, color);
     }
 
-    private Collection<String> validateRoomID(final FieldValueModel fieldValueModel) {
-        final String roomId = fieldValueModel.getValue().orElse(null);
+    private Collection<String> validateRoomID(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        final String roomId = fieldToValidate.getValue().orElse(null);
         if (StringUtils.isBlank(roomId)) {
             return List.of("A Room Id is required.");
         } else if (!StringUtils.isNumeric(roomId)) {

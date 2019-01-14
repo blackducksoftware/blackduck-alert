@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.component.settings;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -34,6 +35,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.PasswordCon
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.FieldValueModel;
 
 @Component
@@ -55,7 +57,7 @@ public class SettingsUIConfig extends UIConfig {
         final ConfigField proxyPassword = PasswordConfigField.create(SettingsDescriptor.KEY_PROXY_PASSWORD, "Proxy Password");
 
         final ConfigField ldapEnabled = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_ENABLED, "LDAP Enabled");
-        final ConfigField ldapServer = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_SERVER, "LDAP Server");
+        final ConfigField ldapServer = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_SERVER, "LDAP Server", this::validateLDAPServer);
         final ConfigField ldapManagerDn = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_MANAGER_DN, "LDAP Manager DN");
         final ConfigField ldapManagerPassword = PasswordConfigField.create(SettingsDescriptor.KEY_LDAP_MANAGER_PASSWORD, "LDAP Manager Password");
         final ConfigField ldapAuthenticationType = SelectConfigField.create(SettingsDescriptor.KEY_LDAP_AUTHENTICATION_TYPE, "LDAP Authentication Type", List.of("simple", "none", "digest"));
@@ -73,23 +75,36 @@ public class SettingsUIConfig extends UIConfig {
             ldapUserSearchBase, ldapUserSearchFilter, ldapUserDNPatterns, ldapUserAttributes, ldapGroupSearchBase, ldapGroupSearchFilter, ldapGroupRoleAttribute, ldapRolePrefix);
     }
 
-    private Collection<String> validateDefaultPassword(final FieldValueModel fieldValueModel) {
-        if (StringUtils.isBlank(fieldValueModel.getValue().orElse(""))) {
+    private Collection<String> validateDefaultPassword(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        if (StringUtils.isBlank(fieldToValidate.getValue().orElse(""))) {
             return List.of(SettingsDescriptor.FIELD_ERROR_DEFAULT_USER_PASSWORD);
         }
         return List.of();
     }
 
-    private Collection<String> validateEncryptionPassword(final FieldValueModel fieldValueModel) {
-        if (StringUtils.isBlank(fieldValueModel.getValue().orElse(""))) {
+    private Collection<String> validateEncryptionPassword(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        if (StringUtils.isBlank(fieldToValidate.getValue().orElse(""))) {
             return List.of(SettingsDescriptor.FIELD_ERROR_ENCRYPTION_PASSWORD);
         }
         return List.of();
     }
 
-    private Collection<String> validateEncryptionGlobalSalt(final FieldValueModel fieldValueModel) {
-        if (StringUtils.isBlank(fieldValueModel.getValue().orElse(""))) {
+    private Collection<String> validateEncryptionGlobalSalt(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        if (StringUtils.isBlank(fieldToValidate.getValue().orElse(""))) {
             return List.of(SettingsDescriptor.FIELD_ERROR_ENCRYPTION_GLOBAL_SALT);
+        }
+        return List.of();
+    }
+
+    private Collection<String> validateLDAPServer(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        final Optional<FieldValueModel> ldapEnabled = fieldModel.getField(SettingsDescriptor.KEY_LDAP_ENABLED);
+        if (ldapEnabled.isPresent()) {
+            final Boolean isLdapEnabled = Boolean.valueOf(ldapEnabled.get().getValue().orElse("false"));
+            if (isLdapEnabled) {
+                if (!fieldToValidate.hasValues() || StringUtils.isBlank(fieldToValidate.getValue().orElse(""))) {
+                    return List.of(SettingsDescriptor.FIELD_ERROR_LDAP_SERVER_MISSING);
+                }
+            }
         }
         return List.of();
     }

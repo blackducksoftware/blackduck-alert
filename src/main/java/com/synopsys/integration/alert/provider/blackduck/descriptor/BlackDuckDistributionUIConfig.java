@@ -37,6 +37,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.FieldValueModel;
 
 @Component
@@ -57,8 +58,8 @@ public class BlackDuckDistributionUIConfig extends UIConfig {
         return List.of(filterByProject, projectNamePattern, configuredProject);
     }
 
-    private Collection<String> validateProjectNamePattern(final FieldValueModel fieldValueModel) {
-        final String projectNamePattern = fieldValueModel.getValue().orElse(null);
+    private Collection<String> validateProjectNamePattern(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        final String projectNamePattern = fieldToValidate.getValue().orElse(null);
         if (StringUtils.isNotBlank(projectNamePattern)) {
             try {
                 Pattern.compile(projectNamePattern);
@@ -69,10 +70,16 @@ public class BlackDuckDistributionUIConfig extends UIConfig {
         return List.of();
     }
 
-    private Collection<String> validateConfiguredProject(final FieldValueModel fieldValueModel) {
-        final Collection<String> configuredProjects = Optional.ofNullable(fieldValueModel.getValues()).orElse(List.of());
-        if (null == configuredProjects || configuredProjects.isEmpty()) {
-            return List.of("You must select at least one project.");
+    private Collection<String> validateConfiguredProject(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        final Collection<String> configuredProjects = Optional.ofNullable(fieldToValidate.getValues()).orElse(List.of());
+        final String filterByProject = fieldModel.getField(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT).flatMap(field -> field.getValue()).orElse(null);
+        final String projectNamePattern = fieldModel.getField(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN).flatMap(field -> field.getValue()).orElse(null);
+        final boolean trueTextPresent = Boolean.TRUE.toString().equalsIgnoreCase(filterByProject);
+        final boolean falseTextPresent = Boolean.FALSE.toString().equalsIgnoreCase(filterByProject);
+        if (!trueTextPresent && !falseTextPresent) {
+            if ((null == configuredProjects || configuredProjects.isEmpty()) && StringUtils.isBlank(projectNamePattern)) {
+                return List.of("You must select at least one project.");
+            }
         }
         return List.of();
     }
