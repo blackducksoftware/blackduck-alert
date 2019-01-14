@@ -51,7 +51,7 @@ public class UpgradeProcessor {
 
     public void runUpgrade() throws AlertUpgradeException {
         logger.info("Upgrading alert...");
-        final Map<SemanticVersion, UpgradeStep> upgradeProcessSteps = initializeUpgradeMap(upgradeSteps);
+        final Map<SemanticVersion, UpgradeStep> upgradeProcessSteps = initializeUpgradeMap();
         final List<SemanticVersion> sortedVersions = upgradeProcessSteps.keySet()
                                                          .stream()
                                                          .sorted()
@@ -72,7 +72,7 @@ public class UpgradeProcessor {
         return !buildVersion.equals(serverVersion);
     }
 
-    private Map<SemanticVersion, UpgradeStep> initializeUpgradeMap(final List<UpgradeStep> upgradeSteps) {
+    private Map<SemanticVersion, UpgradeStep> initializeUpgradeMap() {
         final SemanticVersion buildVersion = new SemanticVersion(alertVersionUtil.findFileVersion());
         final SemanticVersion serverVersion = new SemanticVersion(alertVersionUtil.findDBVersion());
         final Map<SemanticVersion, UpgradeStep> stepMap = new HashMap<>();

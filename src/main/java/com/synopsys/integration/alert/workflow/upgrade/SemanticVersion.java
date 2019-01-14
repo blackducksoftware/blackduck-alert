@@ -83,11 +83,11 @@ public class SemanticVersion extends Stringable implements Comparable<SemanticVe
     }
 
     public boolean isGreaterThanOrEqual(final SemanticVersion comparedTo) {
-        return isGreaterThan(comparedTo) && isEqual(comparedTo);
+        return isGreaterThan(comparedTo) || isEqual(comparedTo);
     }
 
     public boolean isLessThanOrEqual(final SemanticVersion comparedTo) {
-        return isLessThan(comparedTo) && isEqual(comparedTo);
+        return isLessThan(comparedTo) || isEqual(comparedTo);
     }
 
     @Override
