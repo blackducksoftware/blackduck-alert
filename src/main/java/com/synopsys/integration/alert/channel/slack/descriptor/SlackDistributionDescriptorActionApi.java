@@ -24,9 +24,7 @@
 package com.synopsys.integration.alert.channel.slack.descriptor;
 
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,7 +32,6 @@ import com.synopsys.integration.alert.channel.slack.SlackChannel;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.context.ChannelDistributionDescriptorActionApi;
-import com.synopsys.integration.alert.web.model.FieldModel;
 
 @Component
 public class SlackDistributionDescriptorActionApi extends ChannelDistributionDescriptorActionApi {
@@ -43,17 +40,4 @@ public class SlackDistributionDescriptorActionApi extends ChannelDistributionDes
     public SlackDistributionDescriptorActionApi(final SlackChannel slackChannel, final BaseConfigurationAccessor configurationAccessor, final List<ProviderDescriptor> providerDescriptors) {
         super(slackChannel, configurationAccessor, providerDescriptors);
     }
-
-    @Override
-    public void validateChannelConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) {
-        final String webhook = fieldModel.getField(SlackDescriptor.KEY_WEBHOOK).flatMap(field -> field.getValue()).orElse(null);
-        final String channelName = fieldModel.getField(SlackDescriptor.KEY_CHANNEL_NAME).flatMap(field -> field.getValue()).orElse(null);
-        if (StringUtils.isBlank(webhook)) {
-            fieldErrors.put("webhook", "A webhook is required.");
-        }
-        if (StringUtils.isBlank(channelName)) {
-            fieldErrors.put("channelName", "A channel name is required.");
-        }
-    }
-
 }

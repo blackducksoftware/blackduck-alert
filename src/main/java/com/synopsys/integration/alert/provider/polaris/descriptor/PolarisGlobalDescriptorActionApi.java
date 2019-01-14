@@ -24,10 +24,8 @@
 package com.synopsys.integration.alert.provider.polaris.descriptor;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.Collection;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +33,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
 import com.synopsys.integration.alert.web.model.FieldModel;
@@ -55,30 +54,12 @@ public class PolarisGlobalDescriptorActionApi extends DescriptorActionApi {
     }
 
     @Override
-    public void validateConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) {
-        final String accessToken = fieldModel.getField(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN).flatMap(field -> field.getValue()).orElse(null);
-        if (StringUtils.isNotBlank(accessToken)) {
-            if (accessToken.length() < 32 || accessToken.length() > 64) {
-                fieldErrors.put(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN, "Invalid Polaris Access Token.");
-            }
-        }
-
-        final String polarisTimeout = fieldModel.getField(PolarisDescriptor.KEY_POLARIS_TIMEOUT).flatMap(field -> field.getValue()).orElse(null);
-        if (StringUtils.isNotBlank(polarisTimeout)) {
-            if (!StringUtils.isNumeric(polarisTimeout) || NumberUtils.toInt(polarisTimeout.trim()) < 0) {
-                fieldErrors.put(PolarisDescriptor.KEY_POLARIS_TIMEOUT, "Must be an Integer greater than zero (0).");
-            }
-        }
-    }
-
-    @Override
-    public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
+    public void testConfig(final Collection<ConfigField> configFields, final TestConfigModel testConfig) throws IntegrationException {
         final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
 
         final FieldModel fieldModel = testConfig.getFieldModel();
         final FieldAccessor fieldAccessor = fieldModel.convertToFieldAccessor();
-        validateFieldFormatting(fieldModel);
-
+        validateFieldFormatting(configFields, fieldModel);
         final String errorMessageFormat = "The field %s is required";
         final String url = fieldAccessor
                                .getString(PolarisDescriptor.KEY_POLARIS_URL)

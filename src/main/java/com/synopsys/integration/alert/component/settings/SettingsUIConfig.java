@@ -23,8 +23,10 @@
  */
 package com.synopsys.integration.alert.component.settings;
 
+import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
@@ -32,6 +34,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.PasswordCon
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.web.model.FieldValueModel;
 
 @Component
 public class SettingsUIConfig extends UIConfig {
@@ -42,9 +45,9 @@ public class SettingsUIConfig extends UIConfig {
     @Override
     public List<ConfigField> createFields() {
 
-        final ConfigField defaultUserPassword = PasswordConfigField.createRequired(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, "Default System Adminstrator Password");
-        final ConfigField encryptionPassword = PasswordConfigField.createRequired(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, "Encryption Password");
-        final ConfigField encryptionSalt = PasswordConfigField.createRequired(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, "Encryption Global Salt");
+        final ConfigField defaultUserPassword = PasswordConfigField.createRequired(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, "Default System Adminstrator Password", this::validateDefaultPassword);
+        final ConfigField encryptionPassword = PasswordConfigField.createRequired(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, "Encryption Password", this::validateEncryptionPassword);
+        final ConfigField encryptionSalt = PasswordConfigField.createRequired(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, "Encryption Global Salt", this::validateEncryptionGlobalSalt);
 
         final ConfigField proxyHost = TextInputConfigField.create(SettingsDescriptor.KEY_PROXY_HOST, "Proxy Host");
         final ConfigField proxyPort = TextInputConfigField.create(SettingsDescriptor.KEY_PROXY_PORT, "Proxy Port");
@@ -68,5 +71,26 @@ public class SettingsUIConfig extends UIConfig {
 
         return List.of(defaultUserPassword, encryptionPassword, encryptionSalt, proxyHost, proxyPort, proxyUsername, proxyPassword, ldapEnabled, ldapServer, ldapManagerDn, ldapManagerPassword, ldapAuthenticationType, ldapReferral,
             ldapUserSearchBase, ldapUserSearchFilter, ldapUserDNPatterns, ldapUserAttributes, ldapGroupSearchBase, ldapGroupSearchFilter, ldapGroupRoleAttribute, ldapRolePrefix);
+    }
+
+    private Collection<String> validateDefaultPassword(final FieldValueModel fieldValueModel) {
+        if (StringUtils.isBlank(fieldValueModel.getValue().orElse(""))) {
+            return List.of(SettingsDescriptor.FIELD_ERROR_DEFAULT_USER_PASSWORD);
+        }
+        return List.of();
+    }
+
+    private Collection<String> validateEncryptionPassword(final FieldValueModel fieldValueModel) {
+        if (StringUtils.isBlank(fieldValueModel.getValue().orElse(""))) {
+            return List.of(SettingsDescriptor.FIELD_ERROR_ENCRYPTION_PASSWORD);
+        }
+        return List.of();
+    }
+
+    private Collection<String> validateEncryptionGlobalSalt(final FieldValueModel fieldValueModel) {
+        if (StringUtils.isBlank(fieldValueModel.getValue().orElse(""))) {
+            return List.of(SettingsDescriptor.FIELD_ERROR_ENCRYPTION_GLOBAL_SALT);
+        }
+        return List.of();
     }
 }

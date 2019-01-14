@@ -23,26 +23,21 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.context;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.channel.DistributionChannel;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
@@ -51,7 +46,6 @@ import com.synopsys.integration.rest.RestConstants;
 public abstract class ChannelDistributionDescriptorActionApi extends DescriptorActionApi {
     private final DistributionChannel distributionChannel;
     private final BaseConfigurationAccessor configurationAccessor;
-    private final Logger logger = LoggerFactory.getLogger(getClass());
     private final List<ProviderDescriptor> providerDescriptors;
 
     public ChannelDistributionDescriptorActionApi(final DistributionChannel distributionChannel, final BaseConfigurationAccessor configurationAccessor,
@@ -62,13 +56,11 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
     }
 
     @Override
-    public void testConfig(final TestConfigModel testConfigModel) throws IntegrationException {
+    public void testConfig(final Collection<ConfigField> configFields, final TestConfigModel testConfigModel) throws IntegrationException {
         final FieldModel fieldModel = testConfigModel.getFieldModel();
         final DistributionEvent event = createChannelTestEvent(fieldModel);
         distributionChannel.sendMessage(event);
     }
-
-    public abstract void validateChannelConfig(FieldModel fieldModel, Map<String, String> fieldErrors);
 
     public DistributionEvent createChannelTestEvent(final FieldModel fieldModel) {
         final AggregateMessageContent messageContent = createTestNotificationContent();
@@ -80,39 +72,6 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
         final FieldAccessor fieldAccessor = fieldModel.convertToFieldAccessor();
 
         return new DistributionEvent(fieldModel.getId(), channelName, RestConstants.formatDate(new Date()), providerName, formatType, messageContent, fieldAccessor);
-    }
-
-    // TODO this has references to Blackduck for verification and will need to be removed.
-    @Override
-    public void validateConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) {
-        final String descriptorName = distributionChannel.getDistributionType();
-
-        final String jobName = fieldModel.getField(CommonDistributionUIConfig.KEY_NAME).flatMap(field -> field.getValue()).orElse(null);
-        if (StringUtils.isNotBlank(jobName)) {
-            try {
-                final List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorName(descriptorName);
-                final Boolean foundDuplicateName = configurations.stream()
-                                                       .map(configurationModel -> configurationModel.getField(CommonDistributionUIConfig.KEY_NAME).orElse(null))
-                                                       .filter(configurationFieldModel -> (null != configurationFieldModel) && configurationFieldModel.getFieldValue().isPresent())
-                                                       .anyMatch(configurationFieldModel -> jobName.equals(configurationFieldModel.getFieldValue().get()));
-                if (foundDuplicateName) {
-                    fieldErrors.put(CommonDistributionUIConfig.KEY_NAME, "A distribution configuration with this name already exists.");
-                }
-            } catch (final AlertDatabaseConstraintException e) {
-                logger.error("Could not retrieve distributions of {}", jobName);
-            }
-
-        } else {
-            fieldErrors.put(CommonDistributionUIConfig.KEY_NAME, "Name cannot be blank.");
-        }
-        if (StringUtils.isBlank(fieldModel.getField(CommonDistributionUIConfig.KEY_CHANNEL_NAME).flatMap(field -> field.getValue()).orElse(null))) {
-            fieldErrors.put(CommonDistributionUIConfig.KEY_CHANNEL_NAME, "You must choose a distribution type.");
-        }
-        if (StringUtils.isBlank(fieldModel.getField(CommonDistributionUIConfig.KEY_PROVIDER_NAME).flatMap(field -> field.getValue()).orElse(null))) {
-            fieldErrors.put(CommonDistributionUIConfig.KEY_PROVIDER_NAME, "You must choose a provider.");
-        }
-
-        validateChannelConfig(fieldModel, fieldErrors);
     }
 
     @Override
