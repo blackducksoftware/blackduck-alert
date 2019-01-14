@@ -24,6 +24,7 @@
 package com.synopsys.integration.alert.component.settings;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -36,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.api.user.UserAccessor;
 import com.synopsys.integration.alert.database.api.user.UserModel;
@@ -60,39 +62,11 @@ public class SettingsDescriptorActionApi extends DescriptorActionApi {
     }
 
     @Override
-    public void validateConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) {
-        validateRequiredFields(fieldModel, fieldErrors);
-        validateProxySettings(fieldModel, fieldErrors);
+    public void validateConfig(final Collection<ConfigField> descriptorFields, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
+        super.validateConfig(descriptorFields, fieldModel, fieldErrors);
         validateLDAPSettings(fieldModel, fieldErrors);
     }
-
-    private void validateRequiredFields(final FieldModel fieldModel, final Map<String, String> fieldErrors) {
-        validateRequiredField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, fieldModel, fieldErrors, SettingsDescriptor.FIELD_ERROR_DEFAULT_USER_PASSWORD, (valueModel) -> {
-            if (StringUtils.isBlank(valueModel.getValue().orElse(""))) {
-                fieldErrors.put(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, SettingsDescriptor.FIELD_ERROR_DEFAULT_USER_PASSWORD);
-            }
-            return null;
-        });
-
-        validateRequiredField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, fieldModel, fieldErrors, SettingsDescriptor.FIELD_ERROR_ENCRYPTION_PASSWORD, (valueModel) -> {
-            if (StringUtils.isBlank(valueModel.getValue().orElse(""))) {
-                fieldErrors.put(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, SettingsDescriptor.FIELD_ERROR_ENCRYPTION_PASSWORD);
-            }
-            return null;
-        });
-
-        validateRequiredField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, fieldModel, fieldErrors, SettingsDescriptor.FIELD_ERROR_ENCRYPTION_GLOBAL_SALT, (valueModel) -> {
-            if (StringUtils.isBlank(valueModel.getValue().orElse(""))) {
-                fieldErrors.put(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, SettingsDescriptor.FIELD_ERROR_ENCRYPTION_GLOBAL_SALT);
-            }
-            return null;
-        });
-    }
-
-    private void validateProxySettings(final FieldModel fieldModel, final Map<String, String> fieldErrors) {
-
-    }
-
+    
     private void validateLDAPSettings(final FieldModel fieldModel, final Map<String, String> fieldErrors) {
         final Optional<FieldValueModel> ldapEnabled = fieldModel.getField(SettingsDescriptor.KEY_LDAP_ENABLED);
         if (ldapEnabled.isPresent()) {
@@ -132,7 +106,7 @@ public class SettingsDescriptorActionApi extends DescriptorActionApi {
     }
 
     @Override
-    public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
+    public void testConfig(final Collection<ConfigField> descriptorFields, final TestConfigModel testConfig) throws IntegrationException {
 
     }
 

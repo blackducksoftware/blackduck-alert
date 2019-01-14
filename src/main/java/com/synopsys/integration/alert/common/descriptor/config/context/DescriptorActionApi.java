@@ -23,13 +23,18 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.context;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.configuration.CommonDistributionConfiguration;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
@@ -41,13 +46,32 @@ import com.synopsys.integration.rest.RestConstants;
 
 public abstract class DescriptorActionApi {
 
-    public abstract void validateConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors);
+    public void validateConfig(final Collection<ConfigField> descriptorFields, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
+        for (final ConfigField field : descriptorFields) {
+            final String fieldKey = field.getKey();
+            final Optional<FieldValueModel> optionalField = fieldModel.getField(fieldKey);
+            if (field.isRequired()) {
+                final boolean missingValue = optionalField.isEmpty() || optionalField.filter(valueModel -> valueModel.hasValues()).isEmpty();
+                if (missingValue) {
+                    fieldErrors.put(fieldKey, "Required Field Missing");
+                }
+            }
+
+            // field is present now validate the field
+            if (!fieldErrors.containsKey(fieldKey) && optionalField.isPresent()) {
+                final Collection<String> validationErrors = field.validate(optionalField.get());
+                if (!validationErrors.isEmpty()) {
+                    fieldErrors.put(fieldKey, StringUtils.join(validationErrors, ","));
+                }
+            }
+        }
+    }
 
     public TestConfigModel createTestConfigModel(final FieldModel fieldModel, final String destination) throws AlertFieldException {
         return new TestConfigModel(fieldModel, destination);
     }
 
-    public abstract void testConfig(final TestConfigModel testConfig) throws IntegrationException;
+    public abstract void testConfig(final Collection<ConfigField> configFields, final TestConfigModel testConfig) throws IntegrationException;
 
     public DistributionEvent createChannelEvent(final CommonDistributionConfiguration commmonDistributionConfig, final AggregateMessageContent messageContent) {
         return new DistributionEvent(commmonDistributionConfig.getId().toString(), commmonDistributionConfig.getChannelName(), RestConstants.formatDate(new Date()), commmonDistributionConfig.getProviderName(),
@@ -84,9 +108,9 @@ public abstract class DescriptorActionApi {
         return fieldModel;
     }
 
-    protected void validateFieldFormatting(final FieldModel fieldModel) throws AlertFieldException {
+    protected void validateFieldFormatting(final Collection<ConfigField> descriptorFields, final FieldModel fieldModel) throws AlertFieldException {
         final Map<String, String> fieldErrors = new HashMap<>();
-        validateConfig(fieldModel, fieldErrors);
+        validateConfig(descriptorFields, fieldModel, fieldErrors);
 
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);

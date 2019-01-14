@@ -24,9 +24,12 @@
 package com.synopsys.integration.alert.common.descriptor.config.ui;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
@@ -34,6 +37,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfi
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
+import com.synopsys.integration.alert.web.model.FieldValueModel;
 
 @Component
 public class ProviderDistributionUIConfig {
@@ -44,9 +48,26 @@ public class ProviderDistributionUIConfig {
     // TODO pass the notification types and formats
     public List<ConfigField> createCommonConfigFields(final Provider provider) {
         final ConfigField notificationTypesField = SelectConfigField.createRequired(KEY_NOTIFICATION_TYPES, "Notification Types", provider.getProviderContentTypes().stream().map(ProviderContentType::getNotificationType).collect(
-            Collectors.toList()));
-        final ConfigField formatField = SelectConfigField.createRequired(KEY_FORMAT_TYPE, "Format", provider.getSupportedFormatTypes().stream().map(FormatType::name).collect(Collectors.toList()));
+            Collectors.toList()), this::validateNotificationTypes);
+        final ConfigField formatField = SelectConfigField.createRequired(KEY_FORMAT_TYPE, "Format", provider.getSupportedFormatTypes().stream().map(FormatType::name).collect(Collectors.toList()), this::validateFormatType);
 
         return Arrays.asList(notificationTypesField, formatField);
+    }
+
+    private Collection<String> validateFormatType(final FieldValueModel fieldValueModel) {
+        final String formatType = fieldValueModel.getValue().orElse(null);
+        if (StringUtils.isBlank(formatType)) {
+            return List.of("You must choose a format.");
+        }
+        return List.of();
+    }
+
+    private Collection<String> validateNotificationTypes(final FieldValueModel fieldValueModel) {
+        final Collection<String> notificationTypes = Optional.ofNullable(fieldValueModel.getValues()).orElse(List.of());
+        if (notificationTypes == null || notificationTypes.size() <= 0) {
+            return List.of("Must have at least one notification type.");
+        }
+
+        return List.of();
     }
 }

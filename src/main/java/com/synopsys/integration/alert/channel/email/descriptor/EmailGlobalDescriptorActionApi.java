@@ -23,8 +23,8 @@
  */
 package com.synopsys.integration.alert.channel.email.descriptor;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Set;
 
 import javax.mail.internet.AddressException;
@@ -38,16 +38,14 @@ import com.synopsys.integration.alert.channel.email.EmailChannel;
 import com.synopsys.integration.alert.channel.email.EmailProperties;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
-import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
-import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class EmailGlobalDescriptorActionApi extends DescriptorActionApi {
-    public static final String NOT_AN_INTEGER = "Not an Integer.";
     private final EmailChannel emailChannel;
 
     @Autowired
@@ -55,26 +53,8 @@ public class EmailGlobalDescriptorActionApi extends DescriptorActionApi {
         this.emailChannel = emailChannel;
     }
 
-    // TODO Global email config doesn't validate properly or give any indication that saving was successful
     @Override
-    public void validateConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) {
-        final String port = fieldModel.getField(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey()).flatMap(field -> field.getValue()).orElse(null);
-        final String connectionTimeout = fieldModel.getField(EmailPropertyKeys.JAVAMAIL_CONNECTION_TIMEOUT_KEY.getPropertyKey()).flatMap(field -> field.getValue()).orElse(null);
-        final String timeout = fieldModel.getField(EmailPropertyKeys.JAVAMAIL_TIMEOUT_KEY.getPropertyKey()).flatMap(field -> field.getValue()).orElse(null);
-
-        if (StringUtils.isNotBlank(port) && !StringUtils.isNumeric(port)) {
-            fieldErrors.put("mailSmtpPort", NOT_AN_INTEGER);
-        }
-        if (StringUtils.isNotBlank(connectionTimeout) && !StringUtils.isNumeric(connectionTimeout)) {
-            fieldErrors.put("mailSmtpConnectionTimeout", NOT_AN_INTEGER);
-        }
-        if (StringUtils.isNotBlank(timeout) && !StringUtils.isNumeric(timeout)) {
-            fieldErrors.put("mailSmtpTimeout", NOT_AN_INTEGER);
-        }
-    }
-
-    @Override
-    public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
+    public void testConfig(final Collection<ConfigField> configFields, final TestConfigModel testConfig) throws IntegrationException {
         Set<String> emailAddresses = null;
         final String testEmailAddress = testConfig.getDestination().orElse(null);
         if (StringUtils.isNotBlank(testEmailAddress)) {
