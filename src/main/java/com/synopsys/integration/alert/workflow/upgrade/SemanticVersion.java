@@ -102,14 +102,13 @@ public class SemanticVersion extends Stringable implements Comparable<SemanticVe
             return LESS_THAN;
         }
 
-        if (!greaterThan && !lessThan) {
-            if (isSnapshot() && !comparedTo.isSnapshot()) {
-                return GREATER_THAN;
-            }
-            if (!isSnapshot() && comparedTo.isSnapshot()) {
-                return LESS_THAN;
-            }
+        if (isSnapshot() && !comparedTo.isSnapshot()) {
+            return GREATER_THAN;
         }
+        if (!isSnapshot() && comparedTo.isSnapshot()) {
+            return LESS_THAN;
+        }
+
         return EQUALS;
     }
 
