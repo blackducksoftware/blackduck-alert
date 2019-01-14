@@ -63,7 +63,7 @@ public class MockConfigurationModelFactory {
     public static List<ConfigurationFieldModel> createEmailDistributionFieldsProjectOwnerOnly() {
         final List<ConfigurationFieldModel> fields = new ArrayList<>();
 
-        //        final ConfigurationFieldModel emailAddresses = createFieldModel(EmailDescriptor.KEY_EMAIL_ADDRESSES, List.of("noreply@blackducksoftware.com"));
+        //        final ConfigurationFieldModel emailAddresses = createConfigurationFieldModel(EmailDescriptor.KEY_EMAIL_ADDRESSES, List.of("noreply@blackducksoftware.com"));
         final ConfigurationFieldModel projectOwnerOnly = createFieldModel(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, "true");
         final ConfigurationFieldModel subjectLine = createFieldModel(EmailDescriptor.KEY_SUBJECT_LINE, "Alert unit test subject line");
 
@@ -79,7 +79,7 @@ public class MockConfigurationModelFactory {
     public static List<ConfigurationFieldModel> createEmailDistributionFields() {
         final List<ConfigurationFieldModel> fields = new ArrayList<>();
 
-        //        final ConfigurationFieldModel emailAddresses = createFieldModel(EmailDescriptor.KEY_EMAIL_ADDRESSES, List.of("noreply@blackducksoftware.com"));
+        //        final ConfigurationFieldModel emailAddresses = createConfigurationFieldModel(EmailDescriptor.KEY_EMAIL_ADDRESSES, List.of("noreply@blackducksoftware.com"));
         final ConfigurationFieldModel projectOwnerOnly = createFieldModel(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, "false");
         final ConfigurationFieldModel subjectLine = createFieldModel(EmailDescriptor.KEY_SUBJECT_LINE, "Alert unit test subject line");
 
