@@ -11,6 +11,7 @@
  */
 package com.synopsys.integration.alert.channel.hipchat;
 
+import static com.synopsys.integration.alert.util.FieldModelUtil.addConfigurationFieldToMap;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -35,6 +36,7 @@ import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.audit.AuditUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.util.FieldModelUtil;
 import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
@@ -58,10 +60,10 @@ public class HipChatChannelTest extends ChannelTest {
         final String color = "random";
 
         final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
-        addToMap(fieldModels, HipChatDescriptor.KEY_API_KEY, properties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY));
-        addToMap(fieldModels, HipChatDescriptor.KEY_COLOR, color);
-        addToMap(fieldModels, HipChatDescriptor.KEY_NOTIFY, notify.toString());
-        addToMap(fieldModels, HipChatDescriptor.KEY_ROOM_ID, properties.getProperty(TestPropertyKey.TEST_HIPCHAT_ROOM_ID));
+        addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_API_KEY, properties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY));
+        addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_COLOR, color);
+        addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_NOTIFY, notify.toString());
+        addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_ROOM_ID, properties.getProperty(TestPropertyKey.TEST_HIPCHAT_ROOM_ID));
 
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
 
@@ -100,9 +102,9 @@ public class HipChatChannelTest extends ChannelTest {
         final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "", null, subTopic, List.of());
 
         final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
-        addToMap(fieldModels, HipChatDescriptor.KEY_NOTIFY, "false");
-        addToMap(fieldModels, HipChatDescriptor.KEY_ROOM_ID, "12345");
-        addToMap(fieldModels, HipChatDescriptor.KEY_API_KEY, "bogusAPIKey");
+        addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_NOTIFY, "false");
+        addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_ROOM_ID, "12345");
+        addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_API_KEY, "bogusAPIKey");
 
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
         final DistributionEvent event = new DistributionEvent("1L", HipChatChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), messageContent, fieldAccessor);
@@ -132,10 +134,10 @@ public class HipChatChannelTest extends ChannelTest {
         final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "", null, subTopic, List.of());
 
         final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
-        addToMap(fieldModels, HipChatDescriptor.KEY_NOTIFY, "false");
-        addToMap(fieldModels, HipChatDescriptor.KEY_COLOR, "random");
-        addToMap(fieldModels, HipChatDescriptor.KEY_ROOM_ID, "12345");
-        addToMap(fieldModels, HipChatDescriptor.KEY_API_KEY, "bogusAPIKey");
+        addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_NOTIFY, "false");
+        addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_COLOR, "random");
+        addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_ROOM_ID, "12345");
+        addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_API_KEY, "bogusAPIKey");
 
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
         final DistributionEvent event = new DistributionEvent("1L", HipChatChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), messageContent, fieldAccessor);
@@ -153,10 +155,10 @@ public class HipChatChannelTest extends ChannelTest {
         final AggregateMessageContent messageContent = createLargeMessageContent();
 
         final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
-        addToMap(fieldModels, HipChatDescriptor.KEY_NOTIFY, "false");
-        addToMap(fieldModels, HipChatDescriptor.KEY_COLOR, "random");
-        addToMap(fieldModels, HipChatDescriptor.KEY_ROOM_ID, "12345");
-        addToMap(fieldModels, HipChatDescriptor.KEY_API_KEY, "bogusAPIKey");
+        addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_NOTIFY, "false");
+        addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_COLOR, "random");
+        addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_ROOM_ID, "12345");
+        addConfigurationFieldToMap(fieldModels, HipChatDescriptor.KEY_API_KEY, "bogusAPIKey");
 
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
         final DistributionEvent event = new DistributionEvent("1L", HipChatChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), messageContent, fieldAccessor);
