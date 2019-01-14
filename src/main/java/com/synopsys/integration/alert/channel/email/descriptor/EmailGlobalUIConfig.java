@@ -23,10 +23,8 @@
  */
 package com.synopsys.integration.alert.channel.email.descriptor;
 
-import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
@@ -37,8 +35,6 @@ import com.synopsys.integration.alert.common.descriptor.config.field.TextInputCo
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.enumeration.FieldGroup;
-import com.synopsys.integration.alert.web.model.FieldModel;
-import com.synopsys.integration.alert.web.model.FieldValueModel;
 
 @Component
 public class EmailGlobalUIConfig extends UIConfig {
@@ -59,9 +55,9 @@ public class EmailGlobalUIConfig extends UIConfig {
         final ConfigField mailSmtpPassword = PasswordConfigField.create(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey(), "Smtp Password");
 
         // Advanced fields
-        final ConfigField mailSmtpPort = NumberConfigField.createGrouped(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), "Smtp Port", FieldGroup.ADVANCED, this::validateNumericField);
-        final ConfigField mailSmtpConnectionTimeout = NumberConfigField.createGrouped(EmailPropertyKeys.JAVAMAIL_CONNECTION_TIMEOUT_KEY.getPropertyKey(), "Smtp Connection Timeout", FieldGroup.ADVANCED, this::validateNumericField);
-        final ConfigField mailSmtpTimeout = NumberConfigField.createGrouped(EmailPropertyKeys.JAVAMAIL_TIMEOUT_KEY.getPropertyKey(), "Smtp Timeout", FieldGroup.ADVANCED, this::validateNumericField);
+        final ConfigField mailSmtpPort = NumberConfigField.createGrouped(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), "Smtp Port", FieldGroup.ADVANCED);
+        final ConfigField mailSmtpConnectionTimeout = NumberConfigField.createGrouped(EmailPropertyKeys.JAVAMAIL_CONNECTION_TIMEOUT_KEY.getPropertyKey(), "Smtp Connection Timeout", FieldGroup.ADVANCED);
+        final ConfigField mailSmtpTimeout = NumberConfigField.createGrouped(EmailPropertyKeys.JAVAMAIL_TIMEOUT_KEY.getPropertyKey(), "Smtp Timeout", FieldGroup.ADVANCED);
         final ConfigField mailSmtpWriteTimeout = NumberConfigField.createGrouped(EmailPropertyKeys.JAVAMAIL_WRITETIMEOUT_KEY.getPropertyKey(), "Smtp Write Timeout", FieldGroup.ADVANCED);
         final ConfigField mailSmtpLocalhost = TextInputConfigField.createGrouped(EmailPropertyKeys.JAVAMAIL_LOCALHOST_KEY.getPropertyKey(), "Smtp Localhost", FieldGroup.ADVANCED);
         final ConfigField mailSmtpLocalAddress = TextInputConfigField.createGrouped(EmailPropertyKeys.JAVAMAIL_LOCALHOST_ADDRESS_KEY.getPropertyKey(), "Smtp Local Address", FieldGroup.ADVANCED);
@@ -110,13 +106,5 @@ public class EmailGlobalUIConfig extends UIConfig {
         );
 
         return fields;
-    }
-
-    private Collection<String> validateNumericField(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-        final String port = fieldToValidate.getValue().orElse(null);
-        if (StringUtils.isNotBlank(port) && !StringUtils.isNumeric(port)) {
-            return List.of(NOT_AN_INTEGER);
-        }
-        return List.of();
     }
 }

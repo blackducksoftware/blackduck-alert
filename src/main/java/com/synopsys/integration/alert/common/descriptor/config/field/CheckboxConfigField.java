@@ -67,7 +67,13 @@ public class CheckboxConfigField extends ConfigField {
 
     @Override
     public Collection<String> validate(final FieldValueModel fieldValueModel, final FieldModel fieldModel) {
-        return validate(fieldValueModel, fieldModel, List.of(this::validateValueIsBoolean, getValidationFunction()));
+        final List<BiFunction<FieldValueModel, FieldModel, Collection<String>>> validationFunctions;
+        if (null != getValidationFunction()) {
+            validationFunctions = List.of(this::validateValueIsBoolean, getValidationFunction());
+        } else {
+            validationFunctions = List.of(this::validateValueIsBoolean);
+        }
+        return validate(fieldValueModel, fieldModel, validationFunctions);
     }
 
     private Collection<String> validateValueIsBoolean(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {

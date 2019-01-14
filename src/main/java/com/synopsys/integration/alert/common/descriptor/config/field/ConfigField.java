@@ -41,7 +41,7 @@ public class ConfigField extends Stringable {
     private boolean sensitive;
     private FieldGroup group;
     private String subGroup;
-    private BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction;
+    private transient BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction;
 
     public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive, final FieldGroup group, final String subGroup,
         final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
@@ -80,14 +80,18 @@ public class ConfigField extends Stringable {
     }
 
     public Collection<String> validate(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-        return validate(fieldToValidate, fieldModel, List.of(validationFunction));
+        List<BiFunction<FieldValueModel, FieldModel, Collection<String>>> validationFunctions = List.of();
+        if (null != validationFunction) {
+            validationFunctions = List.of(validationFunction);
+        }
+        return validate(fieldToValidate, fieldModel, validationFunctions);
     }
 
     Collection<String> validate(final FieldValueModel fieldToValidate, final FieldModel fieldModel, final List<BiFunction<FieldValueModel, FieldModel, Collection<String>>> validationFunctions) {
+        final Collection<String> errors = new LinkedList<>();
         final boolean performValidation = !fieldToValidate.isSet() || fieldToValidate.hasValues();
         if (performValidation) {
             if (fieldToValidate.hasValues()) {
-                final Collection<String> errors = new LinkedList<>();
                 for (final BiFunction<FieldValueModel, FieldModel, Collection<String>> validation : validationFunctions) {
                     if (null != validation) {
                         errors.addAll(validation.apply(fieldToValidate, fieldModel));
@@ -96,7 +100,7 @@ public class ConfigField extends Stringable {
             }
         }
 
-        return List.of();
+        return errors;
     }
 
     public String getKey() {

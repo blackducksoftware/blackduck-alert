@@ -46,6 +46,8 @@ import com.synopsys.integration.rest.RestConstants;
 
 public abstract class DescriptorActionApi {
 
+    public static final String REQUIRED_FIELD_MISSING = "Required field missing";
+
     public void validateConfig(final Collection<ConfigField> descriptorFields, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
         for (final ConfigField field : descriptorFields) {
             final String fieldKey = field.getKey();
@@ -53,7 +55,7 @@ public abstract class DescriptorActionApi {
             if (field.isRequired()) {
                 final boolean missingValue = optionalField.isEmpty() || optionalField.filter(valueModel -> valueModel.hasValues()).isEmpty();
                 if (missingValue) {
-                    fieldErrors.put(fieldKey, "Required Field Missing");
+                    fieldErrors.put(fieldKey, REQUIRED_FIELD_MISSING);
                 }
             }
 
