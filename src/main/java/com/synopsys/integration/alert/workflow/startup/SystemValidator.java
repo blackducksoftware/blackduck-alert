@@ -135,7 +135,7 @@ public class SystemValidator {
         return valid;
     }
 
-    // TODO add this validation to provider descriptors so we can run this when it's defined
+    // TODO add this validation to provider descriptors so we can run this when it's defined (Or delete it entirely as we no longer require a BD setup)
     public boolean validateBlackDuckProvider() {
         logger.info("Validating BlackDuck Provider...");
         boolean valid = true;

@@ -2,7 +2,7 @@ package com.synopsys.integration.alert.common.descriptor;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 
@@ -41,7 +41,7 @@ public class DescriptorMapTest {
         assertNotNull(descriptorMap.getChannelDescriptor(channelDescriptor1Name));
         assertNotNull(descriptorMap.getDescriptor(providerDescriptorName));
 
-        assertNull(descriptorMap.getChannelDescriptor(providerDescriptorName));
-        assertNull(descriptorMap.getDescriptor("Random name"));
+        assertTrue(descriptorMap.getChannelDescriptor(providerDescriptorName).isEmpty());
+        assertTrue(descriptorMap.getDescriptor("Random name").isEmpty());
     }
 }

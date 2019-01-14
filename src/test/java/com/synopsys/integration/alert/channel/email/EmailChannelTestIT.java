@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -62,7 +63,7 @@ public class EmailChannelTestIT extends ChannelTest {
         Mockito.when(blackDuckDescriptor.getProvider()).thenReturn(blackDuckProvider);
 
         final DescriptorMap descriptorMap = Mockito.mock(DescriptorMap.class);
-        Mockito.when(descriptorMap.getProviderDescriptor(Mockito.anyString())).thenReturn(blackDuckDescriptor);
+        Mockito.when(descriptorMap.getProviderDescriptor(Mockito.anyString())).thenReturn(Optional.of(blackDuckDescriptor));
 
         final EmailAddressHandler emailAddressHandler = new EmailAddressHandler(descriptorMap);
 
