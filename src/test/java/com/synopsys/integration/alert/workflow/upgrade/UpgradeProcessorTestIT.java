@@ -19,7 +19,6 @@ import com.synopsys.integration.alert.common.exception.AlertUpgradeException;
 import com.synopsys.integration.alert.database.api.settingskey.SettingsKeyModel;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.workflow.upgrade.step.UpgradeStep;
-import com.synopsys.integration.alert.workflow.upgrade.step._4_0_0.DescriptorRegistrar;
 
 public class UpgradeProcessorTestIT extends AlertIntegrationTest {
     private int upgradeCounter = 0;

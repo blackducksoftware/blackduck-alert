@@ -20,7 +20,6 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
-import com.synopsys.integration.alert.workflow.upgrade.step._4_0_0.DescriptorRegistrar;
 
 public class DescriptorRegistrarTestIT extends AlertIntegrationTest {
 

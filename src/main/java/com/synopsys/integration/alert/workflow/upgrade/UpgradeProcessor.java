@@ -36,7 +36,6 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertUpgradeException;
 import com.synopsys.integration.alert.workflow.upgrade.step.UpgradeStep;
-import com.synopsys.integration.alert.workflow.upgrade.step._4_0_0.DescriptorRegistrar;
 
 @Component
 public class UpgradeProcessor {
@@ -44,10 +43,10 @@ public class UpgradeProcessor {
 
     private final AlertVersionUtil alertVersionUtil;
     private final List<UpgradeStep> upgradeSteps;
-    private DescriptorRegistrar descriptorRegistrar;
+    private final DescriptorRegistrar descriptorRegistrar;
 
     @Autowired
-    public UpgradeProcessor(final AlertVersionUtil alertVersionUtil, DescriptorRegistrar descriptorRegistrar, final List<UpgradeStep> upgradeSteps) {
+    public UpgradeProcessor(final AlertVersionUtil alertVersionUtil, final DescriptorRegistrar descriptorRegistrar, final List<UpgradeStep> upgradeSteps) {
         this.alertVersionUtil = alertVersionUtil;
         this.descriptorRegistrar = descriptorRegistrar;
         this.upgradeSteps = upgradeSteps;
@@ -75,10 +74,7 @@ public class UpgradeProcessor {
     }
 
     public boolean shouldUpgrade() {
-        final String buildVersion = alertVersionUtil.findFileVersion();
-        final String serverVersion = alertVersionUtil.findDBVersion();
-        logger.info("Alert build version is {} and the server version is {}.", buildVersion, serverVersion);
-        return !buildVersion.equals(serverVersion);
+        return !alertVersionUtil.doVersionsMatch();
     }
 
     private Map<SemanticVersion, UpgradeStep> initializeUpgradeMap() {
