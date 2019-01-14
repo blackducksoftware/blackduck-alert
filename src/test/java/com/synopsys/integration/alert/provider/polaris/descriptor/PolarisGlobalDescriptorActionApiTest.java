@@ -33,6 +33,8 @@ public class PolarisGlobalDescriptorActionApiTest {
     private static final String ERROR_POLARIS_ACCESS_TOKEN = "Invalid Polaris Access Token.";
     private static final String ERROR_POLARIS_TIMEOUT = "Must be an Integer greater than zero (0).";
 
+    private final PolarisGlobalUIConfig polarisGlobalUIConfig = new PolarisGlobalUIConfig();
+
     @Test
     public void validateConfigWhenValidTest() {
         final PolarisGlobalDescriptorActionApi actionApi = new PolarisGlobalDescriptorActionApi(null);
@@ -46,7 +48,7 @@ public class PolarisGlobalDescriptorActionApiTest {
         Mockito.when(fieldModel.getField(PolarisDescriptor.KEY_POLARIS_TIMEOUT)).thenReturn(Optional.of(timeoutField));
         Mockito.when(timeoutField.getValue()).thenReturn(Optional.of("100"));
 
-        actionApi.validateConfig(fieldModel, fieldErrors);
+        actionApi.validateConfig(polarisGlobalUIConfig.createFields(), fieldModel, fieldErrors);
         assertEquals(null, fieldErrors.get(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN));
         assertEquals(null, fieldErrors.get(PolarisDescriptor.KEY_POLARIS_TIMEOUT));
     }
@@ -65,7 +67,7 @@ public class PolarisGlobalDescriptorActionApiTest {
         Mockito.when(fieldModel.getField(PolarisDescriptor.KEY_POLARIS_TIMEOUT)).thenReturn(Optional.of(timeoutField));
         Mockito.when(timeoutField.getValue()).thenReturn(Optional.of("invalid integer"));
 
-        actionApi.validateConfig(fieldModel, fieldErrors);
+        actionApi.validateConfig(polarisGlobalUIConfig.createFields(), fieldModel, fieldErrors);
         assertEquals(ERROR_POLARIS_ACCESS_TOKEN, fieldErrors.get(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN));
         assertEquals(ERROR_POLARIS_TIMEOUT, fieldErrors.get(PolarisDescriptor.KEY_POLARIS_TIMEOUT));
 
@@ -75,7 +77,7 @@ public class PolarisGlobalDescriptorActionApiTest {
         Mockito.when(fieldModel.getField(PolarisDescriptor.KEY_POLARIS_TIMEOUT)).thenReturn(Optional.of(timeoutField));
         Mockito.when(timeoutField.getValue()).thenReturn(Optional.of("-10"));
 
-        actionApi.validateConfig(fieldModel, fieldErrors);
+        actionApi.validateConfig(polarisGlobalUIConfig.createFields(), fieldModel, fieldErrors);
         assertEquals(ERROR_POLARIS_ACCESS_TOKEN, fieldErrors.get(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN));
         assertEquals(ERROR_POLARIS_TIMEOUT, fieldErrors.get(PolarisDescriptor.KEY_POLARIS_TIMEOUT));
     }
@@ -104,7 +106,7 @@ public class PolarisGlobalDescriptorActionApiTest {
 
         final PolarisGlobalDescriptorActionApi actionApi = new PolarisGlobalDescriptorActionApi(polarisProperties);
         try {
-            actionApi.testConfig(testConfigModel);
+            actionApi.testConfig(polarisGlobalUIConfig.createFields(), testConfigModel);
         } catch (final Exception e) {
             fail("An exception was thrown while testing (seemingly) valid config");
         }
@@ -120,7 +122,7 @@ public class PolarisGlobalDescriptorActionApiTest {
 
         fieldMap.put(PolarisDescriptor.KEY_POLARIS_URL, new FieldValueModel(Set.of(), false));
         try {
-            actionApi.testConfig(testConfigModel);
+            actionApi.testConfig(polarisGlobalUIConfig.createFields(), testConfigModel);
             fail("Expected exception to be thrown");
         } catch (final IntegrationException e) {
         }
@@ -128,7 +130,7 @@ public class PolarisGlobalDescriptorActionApiTest {
         fieldMap.put(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN, new FieldValueModel(Set.of(), false));
         fieldMap.put(PolarisDescriptor.KEY_POLARIS_URL, new FieldValueModel(Set.of("good enough to satisfy the check"), true));
         try {
-            actionApi.testConfig(testConfigModel);
+            actionApi.testConfig(polarisGlobalUIConfig.createFields(), testConfigModel);
             fail("Expected exception to be thrown");
         } catch (final IntegrationException e) {
         }
@@ -136,7 +138,7 @@ public class PolarisGlobalDescriptorActionApiTest {
         fieldMap.put(PolarisDescriptor.KEY_POLARIS_TIMEOUT, new FieldValueModel(Set.of(), false));
         fieldMap.put(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN, new FieldValueModel(Set.of("good enough to satisfy the check"), true));
         try {
-            actionApi.testConfig(testConfigModel);
+            actionApi.testConfig(polarisGlobalUIConfig.createFields(), testConfigModel);
             fail("Expected exception to be thrown");
         } catch (final IntegrationException e) {
         }
@@ -161,7 +163,7 @@ public class PolarisGlobalDescriptorActionApiTest {
         fieldMap.put(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN, new FieldValueModel(Set.of("good enough to satisfy the check"), true));
 
         try {
-            actionApi.testConfig(testConfigModel);
+            actionApi.testConfig(polarisGlobalUIConfig.createFields(), testConfigModel);
             fail("Expected wrapped IOException to be thrown");
         } catch (final IntegrationException e) {
             assertTrue(IOException.class.isInstance(e.getCause()));
