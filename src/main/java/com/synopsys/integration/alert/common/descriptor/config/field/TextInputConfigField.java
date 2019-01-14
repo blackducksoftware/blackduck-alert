@@ -24,10 +24,11 @@
 package com.synopsys.integration.alert.common.descriptor.config.field;
 
 import java.util.Collection;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 import com.synopsys.integration.alert.common.enumeration.FieldGroup;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
+import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.FieldValueModel;
 
 public class TextInputConfigField extends ConfigField {
@@ -35,7 +36,7 @@ public class TextInputConfigField extends ConfigField {
         return new TextInputConfigField(key, label, false, false);
     }
 
-    public static TextInputConfigField create(final String key, final String label, final Function<FieldValueModel, Collection<String>> validationFunction) {
+    public static TextInputConfigField create(final String key, final String label, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
         return new TextInputConfigField(key, label, false, false, validationFunction);
     }
 
@@ -43,7 +44,7 @@ public class TextInputConfigField extends ConfigField {
         return new TextInputConfigField(key, label, false, false, group);
     }
 
-    public static TextInputConfigField createGrouped(final String key, final String label, final FieldGroup group, final Function<FieldValueModel, Collection<String>> validationFunction) {
+    public static TextInputConfigField createGrouped(final String key, final String label, final FieldGroup group, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
         return new TextInputConfigField(key, label, false, false, group, validationFunction);
     }
 
@@ -51,7 +52,7 @@ public class TextInputConfigField extends ConfigField {
         return new TextInputConfigField(key, label, true, false);
     }
 
-    public static TextInputConfigField createRequired(final String key, final String label, final Function<FieldValueModel, Collection<String>> validationFunction) {
+    public static TextInputConfigField createRequired(final String key, final String label, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
         return new TextInputConfigField(key, label, true, false, validationFunction);
     }
 
@@ -59,7 +60,7 @@ public class TextInputConfigField extends ConfigField {
         super(key, label, FieldType.TEXT_INPUT.getFieldTypeName(), required, sensitive, group);
     }
 
-    public TextInputConfigField(final String key, final String label, final boolean required, final boolean sensitive, final FieldGroup group, final Function<FieldValueModel, Collection<String>> validationFunction) {
+    public TextInputConfigField(final String key, final String label, final boolean required, final boolean sensitive, final FieldGroup group, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
         super(key, label, FieldType.TEXT_INPUT.getFieldTypeName(), required, sensitive, group, validationFunction);
     }
 
@@ -67,7 +68,7 @@ public class TextInputConfigField extends ConfigField {
         super(key, label, FieldType.TEXT_INPUT.getFieldTypeName(), required, sensitive);
     }
 
-    public TextInputConfigField(final String key, final String label, final boolean required, final boolean sensitive, final Function<FieldValueModel, Collection<String>> validationFunction) {
+    public TextInputConfigField(final String key, final String label, final boolean required, final boolean sensitive, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
         super(key, label, FieldType.TEXT_INPUT.getFieldTypeName(), required, sensitive, validationFunction);
     }
 

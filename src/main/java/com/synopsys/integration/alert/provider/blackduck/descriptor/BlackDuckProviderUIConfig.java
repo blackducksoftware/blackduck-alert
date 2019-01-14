@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfi
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ReadOnlyConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.FieldValueModel;
 
 @Component
@@ -57,8 +58,8 @@ public class BlackDuckProviderUIConfig extends UIConfig {
         return List.of(blackDuckUrl, blackDuckApiKey, blackDuckTimeout, blackDuckProxyHost, blackDuckProxyPort, blackDuckProxyUsername, blackDuckProxyPassword);
     }
 
-    private Collection<String> validateAPIToken(final FieldValueModel fieldValueModel) {
-        final String apiKey = fieldValueModel.getValue().orElse(null);
+    private Collection<String> validateAPIToken(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        final String apiKey = fieldToValidate.getValue().orElse(null);
         if (StringUtils.isNotBlank(apiKey)) {
             if (apiKey.length() < 64 || apiKey.length() > 256) {
                 return List.of("Invalid Black Duck API Token.");
@@ -67,8 +68,8 @@ public class BlackDuckProviderUIConfig extends UIConfig {
         return List.of();
     }
 
-    private Collection<String> validateTimeout(final FieldValueModel fieldValueModel) {
-        final String timeout = fieldValueModel.getValue().orElse(null);
+    private Collection<String> validateTimeout(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        final String timeout = fieldToValidate.getValue().orElse(null);
         if (StringUtils.isNotBlank(timeout) && !StringUtils.isNumeric(timeout)) {
             return List.of("Not an Integer.");
         }

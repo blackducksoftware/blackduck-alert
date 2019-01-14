@@ -26,9 +26,10 @@ package com.synopsys.integration.alert.common.descriptor.config.field;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 import com.synopsys.integration.alert.common.enumeration.FieldGroup;
+import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.FieldValueModel;
 import com.synopsys.integration.util.Stringable;
 
@@ -40,10 +41,10 @@ public class ConfigField extends Stringable {
     private boolean sensitive;
     private FieldGroup group;
     private String subGroup;
-    private Function<FieldValueModel, Collection<String>> validationFunction;
+    private BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction;
 
     public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive, final FieldGroup group, final String subGroup,
-        final Function<FieldValueModel, Collection<String>> validationFunction) {
+        final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
         this.key = key;
         this.label = label;
         this.type = type;
@@ -58,7 +59,7 @@ public class ConfigField extends Stringable {
         this(key, label, type, required, sensitive, group, "", null);
     }
 
-    public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive, final FieldGroup group, final Function<FieldValueModel, Collection<String>> validationFunction) {
+    public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive, final FieldGroup group, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
         this(key, label, type, required, sensitive, group, "", validationFunction);
     }
 
@@ -66,7 +67,7 @@ public class ConfigField extends Stringable {
         this(key, label, type, required, sensitive, FieldGroup.DEFAULT, subGroup, null);
     }
 
-    public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive, final String subGroup, final Function<FieldValueModel, Collection<String>> validationFunction) {
+    public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive, final String subGroup, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
         this(key, label, type, required, sensitive, FieldGroup.DEFAULT, subGroup, validationFunction);
     }
 
@@ -74,22 +75,22 @@ public class ConfigField extends Stringable {
         this(key, label, type, required, sensitive, FieldGroup.DEFAULT, "", null);
     }
 
-    public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive, final Function<FieldValueModel, Collection<String>> validationFunction) {
+    public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
         this(key, label, type, required, sensitive, FieldGroup.DEFAULT, "", validationFunction);
     }
 
-    public Collection<String> validate(final FieldValueModel fieldValueModel) {
-        return validate(fieldValueModel, List.of(validationFunction));
+    public Collection<String> validate(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        return validate(fieldToValidate, fieldModel, List.of(validationFunction));
     }
 
-    Collection<String> validate(final FieldValueModel fieldValueModel, final List<Function<FieldValueModel, Collection<String>>> validationFunctions) {
-        final boolean performValidation = !fieldValueModel.isSet() || fieldValueModel.hasValues();
+    Collection<String> validate(final FieldValueModel fieldToValidate, final FieldModel fieldModel, final List<BiFunction<FieldValueModel, FieldModel, Collection<String>>> validationFunctions) {
+        final boolean performValidation = !fieldToValidate.isSet() || fieldToValidate.hasValues();
         if (performValidation) {
-            if (fieldValueModel.hasValues()) {
+            if (fieldToValidate.hasValues()) {
                 final Collection<String> errors = new LinkedList<>();
-                for (final Function<FieldValueModel, Collection<String>> validation : validationFunctions) {
+                for (final BiFunction<FieldValueModel, FieldModel, Collection<String>> validation : validationFunctions) {
                     if (null != validation) {
-                        errors.addAll(validation.apply(fieldValueModel));
+                        errors.addAll(validation.apply(fieldToValidate, fieldModel));
                     }
                 }
             }
@@ -154,11 +155,11 @@ public class ConfigField extends Stringable {
         this.subGroup = subGroup;
     }
 
-    public Function<FieldValueModel, Collection<String>> getValidationFunction() {
+    public BiFunction<FieldValueModel, FieldModel, Collection<String>> getValidationFunction() {
         return validationFunction;
     }
 
-    public void setValidationFunction(final Function<FieldValueModel, Collection<String>> validationFunction) {
+    public void setValidationFunction(final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
         this.validationFunction = validationFunction;
     }
 }

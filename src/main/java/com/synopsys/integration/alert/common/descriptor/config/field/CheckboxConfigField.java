@@ -25,10 +25,11 @@ package com.synopsys.integration.alert.common.descriptor.config.field;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 import com.synopsys.integration.alert.common.enumeration.FieldGroup;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
+import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.FieldValueModel;
 
 public class CheckboxConfigField extends ConfigField {
@@ -36,7 +37,7 @@ public class CheckboxConfigField extends ConfigField {
         return new CheckboxConfigField(key, label, false);
     }
 
-    public static CheckboxConfigField create(final String key, final String label, final Function<FieldValueModel, Collection<String>> validationFunction) {
+    public static CheckboxConfigField create(final String key, final String label, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
         return new CheckboxConfigField(key, label, false, validationFunction);
     }
 
@@ -44,7 +45,7 @@ public class CheckboxConfigField extends ConfigField {
         return new CheckboxConfigField(key, label, false, group);
     }
 
-    public static CheckboxConfigField createGrouped(final String key, final String label, final FieldGroup group, final Function<FieldValueModel, Collection<String>> validationFunction) {
+    public static CheckboxConfigField createGrouped(final String key, final String label, final FieldGroup group, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
         return new CheckboxConfigField(key, label, false, group, validationFunction);
     }
 
@@ -52,7 +53,7 @@ public class CheckboxConfigField extends ConfigField {
         super(key, label, FieldType.CHECKBOX_INPUT.getFieldTypeName(), required, false, group);
     }
 
-    public CheckboxConfigField(final String key, final String label, final boolean required, final FieldGroup group, final Function<FieldValueModel, Collection<String>> validationFunction) {
+    public CheckboxConfigField(final String key, final String label, final boolean required, final FieldGroup group, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
         super(key, label, FieldType.CHECKBOX_INPUT.getFieldTypeName(), required, false, group, validationFunction);
     }
 
@@ -60,18 +61,18 @@ public class CheckboxConfigField extends ConfigField {
         super(key, label, FieldType.CHECKBOX_INPUT.getFieldTypeName(), required, false);
     }
 
-    public CheckboxConfigField(final String key, final String label, final boolean required, final Function<FieldValueModel, Collection<String>> validationFunction) {
+    public CheckboxConfigField(final String key, final String label, final boolean required, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
         super(key, label, FieldType.CHECKBOX_INPUT.getFieldTypeName(), required, false, validationFunction);
     }
 
     @Override
-    public Collection<String> validate(final FieldValueModel fieldValueModel) {
-        return validate(fieldValueModel, List.of(this::validateValueIsBoolean, getValidationFunction()));
+    public Collection<String> validate(final FieldValueModel fieldValueModel, final FieldModel fieldModel) {
+        return validate(fieldValueModel, fieldModel, List.of(this::validateValueIsBoolean, getValidationFunction()));
     }
 
-    private Collection<String> validateValueIsBoolean(final FieldValueModel fieldValueModel) {
-        if (fieldValueModel.hasValues()) {
-            final String value = fieldValueModel.getValue().orElse("");
+    private Collection<String> validateValueIsBoolean(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        if (fieldToValidate.hasValues()) {
+            final String value = fieldToValidate.getValue().orElse("");
             final boolean trueTextPresent = Boolean.TRUE.toString().equalsIgnoreCase(value);
             final boolean falseTextPresent = Boolean.FALSE.toString().equalsIgnoreCase(value);
             if (!trueTextPresent && !falseTextPresent) {

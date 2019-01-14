@@ -37,6 +37,7 @@ import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfi
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
+import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.FieldValueModel;
 
 @Component
@@ -54,16 +55,16 @@ public class ProviderDistributionUIConfig {
         return Arrays.asList(notificationTypesField, formatField);
     }
 
-    private Collection<String> validateFormatType(final FieldValueModel fieldValueModel) {
-        final String formatType = fieldValueModel.getValue().orElse(null);
+    private Collection<String> validateFormatType(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        final String formatType = fieldToValidate.getValue().orElse(null);
         if (StringUtils.isBlank(formatType)) {
             return List.of("You must choose a format.");
         }
         return List.of();
     }
 
-    private Collection<String> validateNotificationTypes(final FieldValueModel fieldValueModel) {
-        final Collection<String> notificationTypes = Optional.ofNullable(fieldValueModel.getValues()).orElse(List.of());
+    private Collection<String> validateNotificationTypes(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        final Collection<String> notificationTypes = Optional.ofNullable(fieldToValidate.getValues()).orElse(List.of());
         if (notificationTypes == null || notificationTypes.size() <= 0) {
             return List.of("Must have at least one notification type.");
         }
