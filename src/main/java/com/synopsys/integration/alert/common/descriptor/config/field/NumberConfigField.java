@@ -75,7 +75,13 @@ public class NumberConfigField extends ConfigField {
 
     @Override
     public Collection<String> validate(final FieldValueModel fieldValueModel, final FieldModel fieldModel) {
-        return validate(fieldValueModel, fieldModel, List.of(this::validateIsNumber, getValidationFunction()));
+        final List<BiFunction<FieldValueModel, FieldModel, Collection<String>>> validationFunctions;
+        if (null != getValidationFunction()) {
+            validationFunctions = List.of(this::validateIsNumber, getValidationFunction());
+        } else {
+            validationFunctions = List.of(this::validateIsNumber);
+        }
+        return validate(fieldValueModel, fieldModel, validationFunctions);
     }
 
     private Collection<String> validateIsNumber(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {

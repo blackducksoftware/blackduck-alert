@@ -11,6 +11,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.api.user.UserAccessor;
@@ -155,18 +156,18 @@ public class SettingsDescriptorActionApiTest {
         actionaApi.validateConfig(settingsUIConfig.createFields(), fieldModel, fieldErrors);
 
         assertFalse(fieldErrors.isEmpty());
-        assertEquals(fieldErrors.get(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD), SettingsDescriptor.FIELD_ERROR_DEFAULT_USER_PASSWORD);
-        assertEquals(fieldErrors.get(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD), SettingsDescriptor.FIELD_ERROR_ENCRYPTION_PASSWORD);
-        assertEquals(fieldErrors.get(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT), SettingsDescriptor.FIELD_ERROR_ENCRYPTION_GLOBAL_SALT);
+        assertEquals(DescriptorActionApi.REQUIRED_FIELD_MISSING, fieldErrors.get(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD));
+        assertEquals(DescriptorActionApi.REQUIRED_FIELD_MISSING, fieldErrors.get(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD));
+        assertEquals(DescriptorActionApi.REQUIRED_FIELD_MISSING, fieldErrors.get(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT));
 
         fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldErrors = new HashMap<>();
         actionaApi.validateConfig(settingsUIConfig.createFields(), fieldModel, fieldErrors);
 
         assertFalse(fieldErrors.isEmpty());
-        assertEquals(fieldErrors.get(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD), SettingsDescriptor.FIELD_ERROR_DEFAULT_USER_PASSWORD);
-        assertEquals(fieldErrors.get(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD), SettingsDescriptor.FIELD_ERROR_ENCRYPTION_PASSWORD);
-        assertEquals(fieldErrors.get(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT), SettingsDescriptor.FIELD_ERROR_ENCRYPTION_GLOBAL_SALT);
+        assertEquals(DescriptorActionApi.REQUIRED_FIELD_MISSING, fieldErrors.get(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD));
+        assertEquals(DescriptorActionApi.REQUIRED_FIELD_MISSING, fieldErrors.get(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD));
+        assertEquals(DescriptorActionApi.REQUIRED_FIELD_MISSING, fieldErrors.get(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT));
     }
 
     @Test
@@ -183,9 +184,9 @@ public class SettingsDescriptorActionApiTest {
         actionaApi.validateConfig(settingsUIConfig.createFields(), fieldModel, fieldErrors);
 
         assertFalse(fieldErrors.isEmpty());
-        assertEquals(fieldErrors.get(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD), SettingsDescriptor.FIELD_ERROR_DEFAULT_USER_PASSWORD);
-        assertEquals(fieldErrors.get(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD), SettingsDescriptor.FIELD_ERROR_ENCRYPTION_PASSWORD);
-        assertEquals(fieldErrors.get(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT), SettingsDescriptor.FIELD_ERROR_ENCRYPTION_GLOBAL_SALT);
+        assertEquals(DescriptorActionApi.REQUIRED_FIELD_MISSING, fieldErrors.get(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD));
+        assertEquals(DescriptorActionApi.REQUIRED_FIELD_MISSING, fieldErrors.get(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD));
+        assertEquals(DescriptorActionApi.REQUIRED_FIELD_MISSING, fieldErrors.get(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT));
     }
 
     @Test
