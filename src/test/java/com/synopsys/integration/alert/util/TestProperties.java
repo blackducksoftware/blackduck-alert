@@ -48,12 +48,11 @@ public class TestProperties {
             properties = new Properties();
             try {
                 properties = resourceLoader.loadProperties(propertiesLocation);
-                populatePropertiesFromEnv();
             } catch (final Exception ex) {
                 System.out.println("Couldn't load " + propertiesLocation + " file!");
                 System.out.println("Reading from the environment...");
-                populatePropertiesFromEnv();
             }
+            populatePropertiesFromEnv();
         }
     }
 
