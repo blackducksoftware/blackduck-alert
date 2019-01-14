@@ -48,4 +48,6 @@ public class UpgradeStep_4_0_0 extends UpgradeStep {
             throw new AlertUpgradeException("Error when registering descriptors and fields", e);
         }
     }
+
+    // TODO Move all of our data from our old config tables to our new ones here.
 }
