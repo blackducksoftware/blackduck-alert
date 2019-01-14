@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
-import com.synopsys.integration.alert.workflow.upgrade.step._4_0_0.DescriptorRegistrar;
+import com.synopsys.integration.alert.workflow.upgrade.DescriptorRegistrar;
 
 public class FieldRegistrationIntegrationTest extends AlertIntegrationTest {
     @Autowired

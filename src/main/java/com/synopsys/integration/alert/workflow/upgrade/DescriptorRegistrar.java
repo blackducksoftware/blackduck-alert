@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.workflow.upgrade.step._4_0_0;
+package com.synopsys.integration.alert.workflow.upgrade;
 
 import java.util.Collection;
 import java.util.LinkedList;

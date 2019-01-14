@@ -57,4 +57,8 @@ public class AlertVersionUtil {
         settingsKeyAccessor.saveSettingsKey(KEY_ALERT_VERSION, newVersion);
     }
 
+    public boolean doVersionsMatch() {
+        return findDBVersion().equals(findFileVersion());
+    }
+
 }
