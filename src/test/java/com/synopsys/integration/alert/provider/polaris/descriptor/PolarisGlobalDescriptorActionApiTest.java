@@ -71,8 +71,9 @@ public class PolarisGlobalDescriptorActionApiTest {
     }
 
     @Test
+    @Tag(TestTags.DEFAULT_INTEGRATION)
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
-    public void testConfigWithRealConnectionTest() {
+    public void testConfigWithRealConnectionTestIT() {
         final TestProperties testProperties = new TestProperties();
 
         final String polarisUrl = testProperties.getProperty(TestPropertyKey.TEST_POLARIS_PROVIDER_URL);
@@ -96,7 +97,7 @@ public class PolarisGlobalDescriptorActionApiTest {
         try {
             actionApi.testConfig(testConfigModel);
         } catch (final Exception e) {
-            fail("An exception was thrown while testing (seemingly) valid config");
+            fail("An exception was thrown while testing (seemingly) valid config. " + e.toString());
         }
     }
 
