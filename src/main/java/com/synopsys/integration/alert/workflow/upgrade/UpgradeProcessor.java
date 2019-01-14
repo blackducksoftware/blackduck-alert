@@ -33,8 +33,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertUpgradeException;
 import com.synopsys.integration.alert.workflow.upgrade.step.UpgradeStep;
+import com.synopsys.integration.alert.workflow.upgrade.step._4_0_0.DescriptorRegistrar;
 
 @Component
 public class UpgradeProcessor {
@@ -42,15 +44,22 @@ public class UpgradeProcessor {
 
     private final AlertVersionUtil alertVersionUtil;
     private final List<UpgradeStep> upgradeSteps;
+    private DescriptorRegistrar descriptorRegistrar;
 
     @Autowired
-    public UpgradeProcessor(final AlertVersionUtil alertVersionUtil, final List<UpgradeStep> upgradeSteps) {
+    public UpgradeProcessor(final AlertVersionUtil alertVersionUtil, DescriptorRegistrar descriptorRegistrar, final List<UpgradeStep> upgradeSteps) {
         this.alertVersionUtil = alertVersionUtil;
+        this.descriptorRegistrar = descriptorRegistrar;
         this.upgradeSteps = upgradeSteps;
     }
 
     public void runUpgrade() throws AlertUpgradeException {
         logger.info("Upgrading alert...");
+        try {
+            descriptorRegistrar.registerDescriptors();
+        } catch (final AlertDatabaseConstraintException e) {
+            throw new AlertUpgradeException("Error when registering descriptors and fields", e);
+        }
         final Map<SemanticVersion, UpgradeStep> upgradeProcessSteps = initializeUpgradeMap();
         final List<SemanticVersion> sortedVersions = upgradeProcessSteps.keySet()
                                                          .stream()

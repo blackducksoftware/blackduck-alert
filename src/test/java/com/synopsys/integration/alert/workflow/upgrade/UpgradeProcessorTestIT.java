@@ -14,10 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.common.AboutReader;
 import com.synopsys.integration.alert.common.database.BaseSettingsKeyAccessor;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertUpgradeException;
 import com.synopsys.integration.alert.database.api.settingskey.SettingsKeyModel;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.workflow.upgrade.step.UpgradeStep;
+import com.synopsys.integration.alert.workflow.upgrade.step._4_0_0.DescriptorRegistrar;
 
 public class UpgradeProcessorTestIT extends AlertIntegrationTest {
     private int upgradeCounter = 0;
@@ -31,14 +33,16 @@ public class UpgradeProcessorTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void runUpgradeTest() throws AlertUpgradeException {
+    public void runUpgradeTest() throws AlertUpgradeException, AlertDatabaseConstraintException {
         baseSettingsKeyAccessor.deleteSettingsKeyByKey(AlertVersionUtil.KEY_ALERT_VERSION);
 
         final AboutReader aboutReader = Mockito.mock(AboutReader.class);
         Mockito.when(aboutReader.getProductVersion()).thenReturn("2.0.0");
+        final DescriptorRegistrar descriptorRegistrar = Mockito.mock(DescriptorRegistrar.class);
+        Mockito.doNothing().when(descriptorRegistrar).registerDescriptors();
         final AlertVersionUtil alertVersionUtil = new AlertVersionUtil(baseSettingsKeyAccessor, aboutReader);
         final BooleanStep booleanStep = new BooleanStep();
-        final UpgradeProcessor upgradeProcessor = new UpgradeProcessor(alertVersionUtil, List.of(booleanStep, new NothingStep()));
+        final UpgradeProcessor upgradeProcessor = new UpgradeProcessor(alertVersionUtil, descriptorRegistrar, List.of(booleanStep, new NothingStep()));
 
         upgradeProcessor.runUpgrade();
 
@@ -52,17 +56,19 @@ public class UpgradeProcessorTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void runMidwayUpgradeTest() throws AlertUpgradeException {
+    public void runMidwayUpgradeTest() throws AlertUpgradeException, AlertDatabaseConstraintException {
         final BooleanStep booleanStep = new BooleanStep();
         final NothingStep nothingStep = new NothingStep();
 
         final AboutReader aboutReader = Mockito.mock(AboutReader.class);
         Mockito.when(aboutReader.getProductVersion()).thenReturn(nothingStep.getVersion());
+        final DescriptorRegistrar descriptorRegistrar = Mockito.mock(DescriptorRegistrar.class);
+        Mockito.doNothing().when(descriptorRegistrar).registerDescriptors();
 
         final AlertVersionUtil alertVersionUtil = new AlertVersionUtil(baseSettingsKeyAccessor, aboutReader);
         alertVersionUtil.updateVersionInDB(booleanStep.getVersion());
 
-        final UpgradeProcessor upgradeProcessor = new UpgradeProcessor(alertVersionUtil, List.of(booleanStep, nothingStep));
+        final UpgradeProcessor upgradeProcessor = new UpgradeProcessor(alertVersionUtil, descriptorRegistrar, List.of(booleanStep, nothingStep));
 
         upgradeProcessor.runUpgrade();
 
@@ -82,7 +88,7 @@ public class UpgradeProcessorTestIT extends AlertIntegrationTest {
         final AboutReader aboutReader = Mockito.mock(AboutReader.class);
         Mockito.when(aboutReader.getProductVersion()).thenReturn("2");
         final AlertVersionUtil alertVersionUtil = new AlertVersionUtil(baseSettingsKeyAccessor, aboutReader);
-        final UpgradeProcessor upgradeProcessor = new UpgradeProcessor(alertVersionUtil, List.of());
+        final UpgradeProcessor upgradeProcessor = new UpgradeProcessor(alertVersionUtil, null, List.of());
 
         assertFalse(upgradeProcessor.shouldUpgrade());
     }
@@ -94,7 +100,7 @@ public class UpgradeProcessorTestIT extends AlertIntegrationTest {
         final AboutReader aboutReader = Mockito.mock(AboutReader.class);
         Mockito.when(aboutReader.getProductVersion()).thenReturn("2");
         final AlertVersionUtil alertVersionUtil = new AlertVersionUtil(baseSettingsKeyAccessor, aboutReader);
-        final UpgradeProcessor upgradeProcessor = new UpgradeProcessor(alertVersionUtil, List.of());
+        final UpgradeProcessor upgradeProcessor = new UpgradeProcessor(alertVersionUtil, null, List.of());
 
         assertTrue(upgradeProcessor.shouldUpgrade());
     }
