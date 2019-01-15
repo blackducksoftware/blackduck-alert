@@ -78,11 +78,11 @@ public class EmailChannel extends DistributionChannel {
         final Set<String> emailAddresses = updatedFieldAccessor.getAllStrings(EmailDescriptor.KEY_EMAIL_ADDRESSES).stream().collect(Collectors.toSet());
         final EmailProperties emailProperties = new EmailProperties(updatedFieldAccessor);
         final String subjectLine = fieldAccessor.getString(EmailDescriptor.KEY_SUBJECT_LINE).orElse("");
-        sendMessage(emailProperties, emailAddresses, subjectLine, event.getProvider(), event.getFormatType(), event.getContent(), event.getContent().getValue());
+        sendMessage(emailProperties, emailAddresses, subjectLine, event.getProvider(), event.getFormatType(), event.getContent());
     }
 
-    public void sendMessage(final EmailProperties emailProperties, final Set<String> emailAddresses, final String subjectLine, final String provider, final String formatType, final AggregateMessageContent content,
-        final String blackDuckProjectName) throws IntegrationException {
+    public void sendMessage(final EmailProperties emailProperties, final Set<String> emailAddresses, final String subjectLine, final String provider, final String formatType, final AggregateMessageContent content)
+        throws IntegrationException {
         if (null == emailAddresses || emailAddresses.isEmpty()) {
             throw new AlertException("ERROR: Could not determine what email addresses to send this content to.");
         }
@@ -99,7 +99,7 @@ public class EmailChannel extends DistributionChannel {
                 model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), subjectLine);
                 final Optional<String> optionalBlackDuckUrl = blackDuckProperties.getBlackDuckUrl();
                 model.put(EmailPropertyKeys.TEMPLATE_KEY_BLACKDUCK_SERVER_URL.getPropertyKey(), StringUtils.trimToEmpty(optionalBlackDuckUrl.orElse("#")));
-                model.put(EmailPropertyKeys.TEMPLATE_KEY_BLACKDUCK_PROJECT_NAME.getPropertyKey(), blackDuckProjectName);
+                model.put(EmailPropertyKeys.TEMPLATE_KEY_BLACKDUCK_PROJECT_NAME.getPropertyKey(), content.getValue());
 
                 model.put(EmailPropertyKeys.TEMPLATE_KEY_START_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
                 model.put(EmailPropertyKeys.TEMPLATE_KEY_END_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
@@ -112,7 +112,11 @@ public class EmailChannel extends DistributionChannel {
                     imageDirectoryPath = System.getProperties().getProperty("user.dir") + "/src/main/resources/email/images/Ducky-80.png";
                 }
                 emailService.addTemplateImage(model, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), imageDirectoryPath);
-
+            } else {
+                templateName = "message_content.ftl";
+                model.put(EmailPropertyKeys.EMAIL_CONTENT.getPropertyKey(), content);
+                model.put(EmailPropertyKeys.EMAIL_CATEGORY.getPropertyKey(), formatType);
+                model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), subjectLine);
             }
 
             if (!model.isEmpty() && StringUtils.isNotBlank(templateName)) {

@@ -236,7 +236,7 @@ public class ConfigActions {
     }
 
     private Optional<Descriptor> retrieveDescriptor(final String descriptorName) {
-        return Optional.ofNullable(descriptorMap.getDescriptor(descriptorName));
+        return descriptorMap.getDescriptor(descriptorName);
     }
 
     private Optional<Descriptor> retrieveDescriptor(final FieldModel fieldModel) {
