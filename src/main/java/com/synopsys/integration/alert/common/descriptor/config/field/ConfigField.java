@@ -34,6 +34,7 @@ import com.synopsys.integration.alert.web.model.FieldValueModel;
 import com.synopsys.integration.util.Stringable;
 
 public class ConfigField extends Stringable {
+    public static final BiFunction<FieldValueModel, FieldModel, Collection<String>> NO_VALIDATION = (fieldToValidate, fieldModel) -> List.of();
     private String key;
     private String label;
     private String type;
@@ -56,7 +57,7 @@ public class ConfigField extends Stringable {
     }
 
     public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive, final FieldGroup group) {
-        this(key, label, type, required, sensitive, group, "", null);
+        this(key, label, type, required, sensitive, group, "", NO_VALIDATION);
     }
 
     public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive, final FieldGroup group, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
@@ -64,7 +65,7 @@ public class ConfigField extends Stringable {
     }
 
     public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive, final String subGroup) {
-        this(key, label, type, required, sensitive, FieldGroup.DEFAULT, subGroup, null);
+        this(key, label, type, required, sensitive, FieldGroup.DEFAULT, subGroup, NO_VALIDATION);
     }
 
     public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive, final String subGroup, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
@@ -72,7 +73,7 @@ public class ConfigField extends Stringable {
     }
 
     public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive) {
-        this(key, label, type, required, sensitive, FieldGroup.DEFAULT, "", null);
+        this(key, label, type, required, sensitive, FieldGroup.DEFAULT, "", NO_VALIDATION);
     }
 
     public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
@@ -80,11 +81,7 @@ public class ConfigField extends Stringable {
     }
 
     public Collection<String> validate(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-        List<BiFunction<FieldValueModel, FieldModel, Collection<String>>> validationFunctions = List.of();
-        if (null != validationFunction) {
-            validationFunctions = List.of(validationFunction);
-        }
-        return validate(fieldToValidate, fieldModel, validationFunctions);
+        return validate(fieldToValidate, fieldModel, List.of(validationFunction));
     }
 
     Collection<String> validate(final FieldValueModel fieldToValidate, final FieldModel fieldModel, final List<BiFunction<FieldValueModel, FieldModel, Collection<String>>> validationFunctions) {

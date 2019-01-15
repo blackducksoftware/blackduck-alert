@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
@@ -50,17 +49,9 @@ public class ProviderDistributionUIConfig {
     public List<ConfigField> createCommonConfigFields(final Provider provider) {
         final ConfigField notificationTypesField = SelectConfigField.createRequired(KEY_NOTIFICATION_TYPES, "Notification Types", provider.getProviderContentTypes().stream().map(ProviderContentType::getNotificationType).collect(
             Collectors.toList()), this::validateNotificationTypes);
-        final ConfigField formatField = SelectConfigField.createRequired(KEY_FORMAT_TYPE, "Format", provider.getSupportedFormatTypes().stream().map(FormatType::name).collect(Collectors.toList()), this::validateFormatType);
+        final ConfigField formatField = SelectConfigField.createRequired(KEY_FORMAT_TYPE, "Format", provider.getSupportedFormatTypes().stream().map(FormatType::name).collect(Collectors.toList()));
 
         return Arrays.asList(notificationTypesField, formatField);
-    }
-
-    private Collection<String> validateFormatType(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-        final String formatType = fieldToValidate.getValue().orElse(null);
-        if (StringUtils.isBlank(formatType)) {
-            return List.of("You must choose a format.");
-        }
-        return List.of();
     }
 
     private Collection<String> validateNotificationTypes(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {

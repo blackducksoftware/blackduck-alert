@@ -23,10 +23,8 @@
  */
 package com.synopsys.integration.alert.channel.hipchat.descriptor;
 
-import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
@@ -34,8 +32,6 @@ import com.synopsys.integration.alert.common.descriptor.config.field.PasswordCon
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.FieldGroup;
-import com.synopsys.integration.alert.web.model.FieldModel;
-import com.synopsys.integration.alert.web.model.FieldValueModel;
 
 @Component
 public class HipChatGlobalUIConfig extends UIConfig {
@@ -46,17 +42,8 @@ public class HipChatGlobalUIConfig extends UIConfig {
 
     @Override
     public List<ConfigField> createFields() {
-        final ConfigField apiKey = PasswordConfigField.createRequired(HipChatDescriptor.KEY_API_KEY, "Api Key", this::validateApiKey);
+        final ConfigField apiKey = PasswordConfigField.createRequired(HipChatDescriptor.KEY_API_KEY, "Api Key");
         final ConfigField hostServer = TextInputConfigField.createGrouped(HipChatDescriptor.KEY_HOST_SERVER, "Host Server", FieldGroup.ADVANCED);
         return List.of(apiKey, hostServer);
     }
-
-    private Collection<String> validateApiKey(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-        final String apiKey = fieldToValidate.getValue().orElse(null);
-        if (StringUtils.isBlank(apiKey)) {
-            return List.of("API Key can't be blank");
-        }
-        return List.of();
-    }
-
 }

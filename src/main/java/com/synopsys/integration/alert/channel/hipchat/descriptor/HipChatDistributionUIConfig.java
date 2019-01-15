@@ -55,9 +55,7 @@ public class HipChatDistributionUIConfig extends UIConfig {
 
     private Collection<String> validateRoomID(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
         final String roomId = fieldToValidate.getValue().orElse(null);
-        if (StringUtils.isBlank(roomId)) {
-            return List.of("A Room Id is required.");
-        } else if (!StringUtils.isNumeric(roomId)) {
+        if (!StringUtils.isNumeric(roomId)) {
             return List.of("Room Id must be an integer value");
         }
 

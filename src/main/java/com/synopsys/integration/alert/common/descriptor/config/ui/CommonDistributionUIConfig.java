@@ -65,8 +65,8 @@ public class CommonDistributionUIConfig {
     public List<ConfigField> createCommonConfigFields(final Set<String> channelDescriptors, final Set<String> providerDescriptors) {
         final ConfigField name = TextInputConfigField.createRequired(KEY_NAME, "Name");
         final ConfigField frequency = SelectConfigField.createRequired(KEY_FREQUENCY, "Frequency", Arrays.stream(FrequencyType.values()).map(type -> type.getDisplayName()).collect(Collectors.toList()), this::validateJobName);
-        final ConfigField channelName = SelectConfigField.createRequired(KEY_CHANNEL_NAME, "Channel Type", channelDescriptors, this::validateChannelName);
-        final ConfigField providerName = SelectConfigField.createRequired(KEY_PROVIDER_NAME, "Provider Type", providerDescriptors, this::validatedProviderName);
+        final ConfigField channelName = SelectConfigField.createRequired(KEY_CHANNEL_NAME, "Channel Type", channelDescriptors);
+        final ConfigField providerName = SelectConfigField.createRequired(KEY_PROVIDER_NAME, "Provider Type", providerDescriptors);
 
         return List.of(name, channelName, frequency, providerName);
     }
@@ -94,24 +94,6 @@ public class CommonDistributionUIConfig {
         }
 
         return errors;
-    }
-
-    private Collection<String> validateChannelName(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-        final String value = fieldToValidate.getValue().orElse(null);
-        if (StringUtils.isBlank(value)) {
-            return List.of("You must choose a distribution type.");
-        }
-
-        return List.of();
-    }
-
-    private Collection<String> validatedProviderName(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-        final String value = fieldToValidate.getValue().orElse(null);
-        if (StringUtils.isBlank(value)) {
-            return List.of("You must choose a provider.");
-        }
-
-        return List.of();
     }
 
 }
