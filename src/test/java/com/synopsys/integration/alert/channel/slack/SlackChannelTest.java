@@ -11,6 +11,7 @@
  */
 package com.synopsys.integration.alert.channel.slack;
 
+import static com.synopsys.integration.alert.util.FieldModelUtil.addConfigurationFieldToMap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -47,6 +48,7 @@ import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.audit.AuditUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
+import com.synopsys.integration.alert.util.FieldModelUtil;
 import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
@@ -68,9 +70,9 @@ public class SlackChannelTest extends ChannelTest {
         final AggregateMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Request");
 
         final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
-        addToMap(fieldModels, SlackDescriptor.KEY_WEBHOOK, properties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK));
-        addToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_NAME, properties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME));
-        addToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_USERNAME, properties.getProperty(TestPropertyKey.TEST_SLACK_USERNAME));
+        addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_WEBHOOK, properties.getProperty(TestPropertyKey.TEST_SLACK_WEBHOOK));
+        addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_NAME, properties.getProperty(TestPropertyKey.TEST_SLACK_CHANNEL_NAME));
+        addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_USERNAME, properties.getProperty(TestPropertyKey.TEST_SLACK_USERNAME));
 
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
         final DistributionEvent event = new DistributionEvent("1L", SlackChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), messageContent, fieldAccessor);
@@ -121,7 +123,7 @@ public class SlackChannelTest extends ChannelTest {
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
 
         final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
-        addToMap(fieldModels, SlackDescriptor.KEY_WEBHOOK, "webhook");
+        addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_WEBHOOK, "webhook");
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
 
         final DistributionEvent event = Mockito.mock(DistributionEvent.class);
@@ -284,9 +286,9 @@ public class SlackChannelTest extends ChannelTest {
         final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "", null, subTopic, List.of());
 
         Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
-        addToMap(fieldModels, SlackDescriptor.KEY_WEBHOOK, "");
-        addToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_NAME, "");
-        addToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_USERNAME, "ChannelUsername");
+        addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_WEBHOOK, "");
+        addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_NAME, "");
+        addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_USERNAME, "ChannelUsername");
 
         FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
         DistributionEvent event = new DistributionEvent("1L", SlackChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), messageContent, fieldAccessor);
@@ -299,9 +301,9 @@ public class SlackChannelTest extends ChannelTest {
         }
 
         fieldModels = new HashMap<>();
-        addToMap(fieldModels, SlackDescriptor.KEY_WEBHOOK, "Webhook");
-        addToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_NAME, "");
-        addToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_USERNAME, "ChannelUsername");
+        addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_WEBHOOK, "Webhook");
+        addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_NAME, "");
+        addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_USERNAME, "ChannelUsername");
 
         fieldAccessor = new FieldAccessor(fieldModels);
         event = new DistributionEvent("1L", SlackChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), messageContent, fieldAccessor);
@@ -321,9 +323,9 @@ public class SlackChannelTest extends ChannelTest {
         final AggregateMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Request");
 
         final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
-        addToMap(fieldModels, SlackDescriptor.KEY_WEBHOOK, "Webhook");
-        addToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_NAME, "ChannelName");
-        addToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_USERNAME, "ChannelUsername");
+        addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_WEBHOOK, "Webhook");
+        addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_NAME, "ChannelName");
+        addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_USERNAME, "ChannelUsername");
 
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
         final DistributionEvent event = new DistributionEvent("1L", SlackChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), messageContent, fieldAccessor);
@@ -342,9 +344,9 @@ public class SlackChannelTest extends ChannelTest {
         final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "", null, subTopic, List.of());
 
         final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
-        addToMap(fieldModels, SlackDescriptor.KEY_WEBHOOK, "Webhook");
-        addToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_NAME, "ChannelName");
-        addToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_USERNAME, "ChannelUsername");
+        addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_WEBHOOK, "Webhook");
+        addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_NAME, "ChannelName");
+        addConfigurationFieldToMap(fieldModels, SlackDescriptor.KEY_CHANNEL_USERNAME, "ChannelUsername");
 
         final FieldAccessor fieldAccessor = new FieldAccessor(fieldModels);
         final DistributionEvent event = new DistributionEvent("1L", SlackChannel.COMPONENT_NAME, RestConstants.formatDate(new Date()), BlackDuckProvider.COMPONENT_NAME, FormatType.DEFAULT.name(), messageContent, fieldAccessor);

@@ -21,22 +21,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.descriptor;
+package com.synopsys.integration.alert.workflow.upgrade.step;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import com.synopsys.integration.alert.common.exception.AlertUpgradeException;
 
-import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.common.descriptor.config.context.ProviderDistributionDescriptorActionApi;
+public abstract class UpgradeStep {
+    private final String version;
 
-@Component
-public class BlackDuckDistributionDescriptorActionApi extends ProviderDistributionDescriptorActionApi {
-    private final ContentConverter contentConverter;
-
-    @Autowired
-    public BlackDuckDistributionDescriptorActionApi(final ContentConverter contentConverter) {
-        this.contentConverter = contentConverter;
+    public UpgradeStep(final String version) {
+        this.version = version;
     }
 
-    // TODO Add the Delete/update/save overrides here to customize what Blackduck does in each scenario(Modifying projects)
+    public abstract void runUpgrade() throws AlertUpgradeException;
+
+    public String getVersion() {
+        return version;
+    }
 }

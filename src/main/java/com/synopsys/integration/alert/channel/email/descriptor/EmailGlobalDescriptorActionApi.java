@@ -24,8 +24,10 @@
 package com.synopsys.integration.alert.channel.email.descriptor;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -41,6 +43,9 @@ import com.synopsys.integration.alert.common.descriptor.config.context.Descripto
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.model.CategoryItem;
+import com.synopsys.integration.alert.common.model.CategoryKey;
+import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -55,7 +60,7 @@ public class EmailGlobalDescriptorActionApi extends DescriptorActionApi {
 
     @Override
     public void testConfig(final Collection<ConfigField> configFields, final TestConfigModel testConfig) throws IntegrationException {
-        Set<String> emailAddresses = null;
+        Set<String> emailAddresses = Set.of();
         final String testEmailAddress = testConfig.getDestination().orElse(null);
         if (StringUtils.isNotBlank(testEmailAddress)) {
             try {
@@ -64,12 +69,17 @@ public class EmailGlobalDescriptorActionApi extends DescriptorActionApi {
             } catch (final AddressException ex) {
                 throw new AlertException(String.format("%s is not a valid email address. %s", testEmailAddress, ex.getMessage()));
             }
-            emailAddresses = Collections.singleton(testEmailAddress);
+            emailAddresses = Set.of(testEmailAddress);
         }
         final FieldAccessor fieldAccessor = testConfig.getFieldModel().convertToFieldAccessor();
         final EmailProperties emailProperties = new EmailProperties(fieldAccessor);
-        final AggregateMessageContent messageContent = new AggregateMessageContent("Message Content", "Test from Alert", Collections.emptyList());
-        emailChannel.sendMessage(emailProperties, emailAddresses, "Test from Alert", "Global Configuration", "", messageContent, "N/A");
+
+        final SortedSet<LinkableItem> set = new TreeSet<>();
+        final LinkableItem linkableItem = new LinkableItem("Message", "This is a test message from the Alert global email configuration.", null);
+        set.add(linkableItem);
+        final CategoryItem categoryItem = new CategoryItem(CategoryKey.from("TYPE"), null, 1L, set);
+        final AggregateMessageContent messageContent = new AggregateMessageContent("Message Content", "Test from Alert", List.of(categoryItem));
+        emailChannel.sendMessage(emailProperties, emailAddresses, "Test from Alert", "Global Configuration", "", messageContent);
     }
 
 }

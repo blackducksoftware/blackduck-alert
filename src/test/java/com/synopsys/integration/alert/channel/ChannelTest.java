@@ -13,8 +13,6 @@ package com.synopsys.integration.alert.channel;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -29,7 +27,6 @@ import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.common.model.CategoryKey;
 import com.synopsys.integration.alert.common.model.LinkableItem;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.util.OutputLogger;
 import com.synopsys.integration.alert.util.TestProperties;
 
@@ -66,26 +63,6 @@ public class ChannelTest {
         final CategoryItem categoryItem3 = new CategoryItem(CategoryKey.from("TYPE", "data1", "data2"), ItemOperation.DELETE, 1L, asSet(linkableItem3, linkableItem4, linkableItem5));
         final LinkableItem subTopic = new LinkableItem("Sub Topic", "Sub Topic Value", "https://google.com");
         return new AggregateMessageContent("Topic", testName, "https://google.com", subTopic, Arrays.asList(categoryItem1, categoryItem2, categoryItem3));
-    }
-
-    public void addToMap(final Map<String, ConfigurationFieldModel> map, final String key, final String value) {
-        map.put(key, createFieldModel(key, value));
-    }
-
-    public void addToMap(final Map<String, ConfigurationFieldModel> map, final String key, final Collection<String> values) {
-        map.put(key, createFieldModel(key, values));
-    }
-
-    public ConfigurationFieldModel createFieldModel(final String key, final Collection<String> values) {
-        final ConfigurationFieldModel field = ConfigurationFieldModel.create(key);
-        field.setFieldValues(values);
-        return field;
-    }
-
-    public ConfigurationFieldModel createFieldModel(final String key, final String value) {
-        final ConfigurationFieldModel field = ConfigurationFieldModel.create(key);
-        field.setFieldValue(value);
-        return field;
     }
 
     private SortedSet<LinkableItem> asSet(final LinkableItem... items) {

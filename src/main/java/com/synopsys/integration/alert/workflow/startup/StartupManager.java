@@ -43,6 +43,7 @@ import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertUpgradeException;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.component.scheduling.SchedulingConfiguration;
@@ -127,7 +128,7 @@ public class StartupManager {
     }
 
     @Transactional
-    public void startup() {
+    public void startup() throws AlertUpgradeException {
         logger.info("Alert Starting...");
         systemStatusUtility.startupOccurred();
         if (upgradeProcessor.shouldUpgrade()) {

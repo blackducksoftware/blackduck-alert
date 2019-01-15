@@ -23,6 +23,8 @@
  */
 package com.synopsys.integration.alert.channel.email;
 
+import java.util.Optional;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -32,6 +34,7 @@ import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.provider.Provider;
 
 @Component
 public class EmailAddressHandler {
@@ -46,10 +49,11 @@ public class EmailAddressHandler {
         if (StringUtils.isBlank(provider)) {
             return originalAccessor;
         }
-        final ProviderDescriptor descriptor = descriptorMap.getProviderDescriptor(provider);
-        if (null != descriptor) {
-            return descriptor.getProvider().getEmailHandler().updateFieldAccessor(content, originalAccessor);
-        }
-        return originalAccessor;
+        final Optional<ProviderDescriptor> descriptor = descriptorMap.getProviderDescriptor(provider);
+        return descriptor
+                   .map(ProviderDescriptor::getProvider)
+                   .map(Provider::getEmailHandler)
+                   .map(emailHandler -> emailHandler.updateFieldAccessor(content, originalAccessor))
+                   .orElse(originalAccessor);
     }
 }
