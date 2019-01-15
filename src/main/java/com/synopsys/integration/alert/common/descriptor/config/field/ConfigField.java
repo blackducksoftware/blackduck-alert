@@ -28,13 +28,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BiFunction;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.synopsys.integration.alert.common.enumeration.FieldGroup;
 import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.FieldValueModel;
 import com.synopsys.integration.util.Stringable;
 
 public class ConfigField extends Stringable {
+    public static final String REQUIRED_FIELD_MISSING = "Required field missing";
     public static final BiFunction<FieldValueModel, FieldModel, Collection<String>> NO_VALIDATION = (fieldToValidate, fieldModel) -> List.of();
+
     private String key;
     private String label;
     private String type;
@@ -86,7 +90,8 @@ public class ConfigField extends Stringable {
 
     Collection<String> validate(final FieldValueModel fieldToValidate, final FieldModel fieldModel, final List<BiFunction<FieldValueModel, FieldModel, Collection<String>>> validationFunctions) {
         final Collection<String> errors = new LinkedList<>();
-        final boolean performValidation = !fieldToValidate.isSet() || fieldToValidate.hasValues();
+        final Collection<String> requiredFieldErrors = validateRequiredField(fieldToValidate);
+        final boolean performValidation = requiredFieldErrors.isEmpty() && (!fieldToValidate.isSet() || fieldToValidate.hasValues());
         if (performValidation) {
             if (fieldToValidate.hasValues()) {
                 for (final BiFunction<FieldValueModel, FieldModel, Collection<String>> validation : validationFunctions) {
@@ -97,6 +102,23 @@ public class ConfigField extends Stringable {
             }
         }
 
+        return errors;
+    }
+
+    private Collection<String> validateRequiredField(final FieldValueModel fieldToValidate) {
+        final Collection<String> errors = new LinkedList<>();
+        if (isRequired()) {
+            if (fieldToValidate.hasValues()) {
+                final boolean valuesAllEmpty = fieldToValidate.getValues().stream().allMatch(value -> StringUtils.isBlank(value));
+                if (valuesAllEmpty) {
+                    errors.add(REQUIRED_FIELD_MISSING);
+                }
+            } else {
+                if (!fieldToValidate.isSet()) {
+                    errors.add(REQUIRED_FIELD_MISSING);
+                }
+            }
+        }
         return errors;
     }
 

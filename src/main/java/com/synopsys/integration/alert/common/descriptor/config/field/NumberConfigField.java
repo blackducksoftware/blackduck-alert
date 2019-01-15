@@ -33,6 +33,8 @@ import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.FieldValueModel;
 
 public class NumberConfigField extends ConfigField {
+    public static final String NOT_AN_INTEGER_VALUE = "Not an integer value";
+
     public static NumberConfigField create(final String key, final String label) {
         return new NumberConfigField(key, label, false, false);
     }
@@ -90,7 +92,7 @@ public class NumberConfigField extends ConfigField {
             try {
                 Integer.valueOf(value);
             } catch (final NumberFormatException ex) {
-                return List.of("Not an integer value");
+                return List.of(NOT_AN_INTEGER_VALUE);
             }
         }
 
