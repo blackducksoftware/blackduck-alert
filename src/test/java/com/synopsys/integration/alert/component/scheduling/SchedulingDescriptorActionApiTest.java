@@ -10,7 +10,7 @@ import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.FieldValueModel;
@@ -64,8 +64,8 @@ public class SchedulingDescriptorActionApiTest {
         FIELD_HOUR_OF_DAY.setValue("");
         FIELD_PURGE_FREQUENCY.setValue("");
         actionApi.validateConfig(schedulingUIConfig.createFields(), FIELD_MODEL, fieldErrors);
-        assertEquals(DescriptorActionApi.REQUIRED_FIELD_MISSING, fieldErrors.get(SchedulingUIConfig.KEY_DAILY_DIGEST_HOUR_OF_DAY));
-        assertEquals(DescriptorActionApi.REQUIRED_FIELD_MISSING, fieldErrors.get(SchedulingUIConfig.KEY_PURGE_DATA_FREQUENCY_DAYS));
+        assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SchedulingUIConfig.KEY_DAILY_DIGEST_HOUR_OF_DAY));
+        assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SchedulingUIConfig.KEY_PURGE_DATA_FREQUENCY_DAYS));
     }
 
     @Test

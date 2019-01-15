@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
 import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
@@ -53,8 +53,8 @@ public class PolarisGlobalDescriptorActionApiTest {
         Mockito.when(timeoutField.hasValues()).thenReturn(true);
 
         actionApi.validateConfig(polarisGlobalUIConfig.createFields(), fieldModel, fieldErrors);
-        assertEquals(DescriptorActionApi.REQUIRED_FIELD_MISSING, fieldErrors.get(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN));
-        assertEquals(DescriptorActionApi.REQUIRED_FIELD_MISSING, fieldErrors.get(PolarisDescriptor.KEY_POLARIS_TIMEOUT));
+        assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN));
+        assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(PolarisDescriptor.KEY_POLARIS_TIMEOUT));
     }
 
     @Test

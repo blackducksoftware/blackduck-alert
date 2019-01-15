@@ -38,9 +38,6 @@ import com.synopsys.integration.alert.common.enumeration.FieldGroup;
 
 @Component
 public class EmailGlobalUIConfig extends UIConfig {
-
-    public static final String NOT_AN_INTEGER = "Not an Integer.";
-
     public EmailGlobalUIConfig() {
         super(EmailDescriptor.EMAIL_LABEL, EmailDescriptor.EMAIL_URL, EmailDescriptor.EMAIL_ICON);
     }
