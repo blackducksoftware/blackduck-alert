@@ -91,13 +91,11 @@ public class ConfigField extends Stringable {
     Collection<String> validate(final FieldValueModel fieldToValidate, final FieldModel fieldModel, final List<BiFunction<FieldValueModel, FieldModel, Collection<String>>> validationFunctions) {
         final Collection<String> errors = new LinkedList<>();
         errors.addAll(validateRequiredField(fieldToValidate));
-        final boolean performValidation = errors.isEmpty() && (!fieldToValidate.isSet() || fieldToValidate.hasValues());
+        final boolean performValidation = errors.isEmpty() && fieldToValidate.hasValues();
         if (performValidation) {
-            if (fieldToValidate.hasValues()) {
-                for (final BiFunction<FieldValueModel, FieldModel, Collection<String>> validation : validationFunctions) {
-                    if (null != validation) {
-                        errors.addAll(validation.apply(fieldToValidate, fieldModel));
-                    }
+            for (final BiFunction<FieldValueModel, FieldModel, Collection<String>> validation : validationFunctions) {
+                if (null != validation) {
+                    errors.addAll(validation.apply(fieldToValidate, fieldModel));
                 }
             }
         }
