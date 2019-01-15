@@ -38,7 +38,6 @@ import com.synopsys.integration.alert.common.enumeration.FieldGroup;
 
 @Component
 public class EmailGlobalUIConfig extends UIConfig {
-
     public EmailGlobalUIConfig() {
         super(EmailDescriptor.EMAIL_LABEL, EmailDescriptor.EMAIL_URL, EmailDescriptor.EMAIL_ICON);
     }
@@ -105,5 +104,4 @@ public class EmailGlobalUIConfig extends UIConfig {
 
         return fields;
     }
-
 }

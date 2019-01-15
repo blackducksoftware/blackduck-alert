@@ -23,8 +23,13 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
@@ -32,6 +37,8 @@ import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.web.model.FieldModel;
+import com.synopsys.integration.alert.web.model.FieldValueModel;
 
 @Component
 public class BlackDuckDistributionUIConfig extends UIConfig {
@@ -43,11 +50,37 @@ public class BlackDuckDistributionUIConfig extends UIConfig {
     @Override
     public List<ConfigField> createFields() {
         final ConfigField filterByProject = CheckboxConfigField.create(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT, "Filter by project");
-        final ConfigField projectNamePattern = TextInputConfigField.create(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN, "Project name pattern");
+        final ConfigField projectNamePattern = TextInputConfigField.create(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN, "Project name pattern", this::validateProjectNamePattern);
 
         // TODO figure out how to create a project listing (Perhaps a new field type called table)
         // TODO create a linkedField that is an endpoint the UI hits to generate a field
-        final ConfigField configuredProject = SelectConfigField.createRequiredEmpty(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT, "Projects");
+        final ConfigField configuredProject = SelectConfigField.createRequiredEmpty(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT, "Projects", this::validateConfiguredProject);
         return List.of(filterByProject, projectNamePattern, configuredProject);
+    }
+
+    private Collection<String> validateProjectNamePattern(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        final String projectNamePattern = fieldToValidate.getValue().orElse(null);
+        if (StringUtils.isNotBlank(projectNamePattern)) {
+            try {
+                Pattern.compile(projectNamePattern);
+            } catch (final PatternSyntaxException e) {
+                return List.of("Project name pattern is not a regular expression. " + e.getMessage());
+            }
+        }
+        return List.of();
+    }
+
+    private Collection<String> validateConfiguredProject(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        final Collection<String> configuredProjects = Optional.ofNullable(fieldToValidate.getValues()).orElse(List.of());
+        final String filterByProject = fieldModel.getField(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT).flatMap(field -> field.getValue()).orElse(null);
+        final String projectNamePattern = fieldModel.getField(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN).flatMap(field -> field.getValue()).orElse(null);
+        final boolean trueTextPresent = Boolean.TRUE.toString().equalsIgnoreCase(filterByProject);
+        final boolean falseTextPresent = Boolean.FALSE.toString().equalsIgnoreCase(filterByProject);
+        if (!trueTextPresent && !falseTextPresent) {
+            if ((null == configuredProjects || configuredProjects.isEmpty()) && StringUtils.isBlank(projectNamePattern)) {
+                return List.of("You must select at least one project.");
+            }
+        }
+        return List.of();
     }
 }

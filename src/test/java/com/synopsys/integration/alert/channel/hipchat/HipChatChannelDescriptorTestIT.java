@@ -161,8 +161,8 @@ public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
         final HashMap<String, String> fieldErrors = new HashMap<>();
         final DescriptorActionApi descriptorActionApi = getDescriptor().getActionApi(ConfigContextEnum.DISTRIBUTION).get();
         final DescriptorActionApi spyDescriptorConfig = Mockito.spy(descriptorActionApi);
-        spyDescriptorConfig.validateConfig(model, fieldErrors);
+        spyDescriptorConfig.validateConfig(getDescriptor().getUIConfig(ConfigContextEnum.DISTRIBUTION).get().createFields(), model, fieldErrors);
         assertEquals(model.getKeyToValues().size(), fieldErrors.size());
-        Mockito.verify(spyDescriptorConfig).validateConfig(Mockito.any(), Mockito.anyMap());
+        Mockito.verify(spyDescriptorConfig).validateConfig(Mockito.any(), Mockito.any(), Mockito.anyMap());
     }
 }

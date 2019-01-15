@@ -23,14 +23,19 @@
  */
 package com.synopsys.integration.alert.provider.polaris.descriptor;
 
+import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.web.model.FieldModel;
+import com.synopsys.integration.alert.web.model.FieldValueModel;
 
 @Component
 public class PolarisGlobalUIConfig extends UIConfig {
@@ -45,9 +50,25 @@ public class PolarisGlobalUIConfig extends UIConfig {
     @Override
     public List<ConfigField> createFields() {
         final ConfigField polarisUrl = TextInputConfigField.createRequired(PolarisDescriptor.KEY_POLARIS_URL, LABEL_POLARIS_URL);
-        final ConfigField polarisAccessToken = TextInputConfigField.createRequired(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN, LABEL_POLARIS_ACCESS_TOKEN);
-        final ConfigField polarisTimeout = NumberConfigField.createRequired(PolarisDescriptor.KEY_POLARIS_TIMEOUT, LABEL_POLARIS_TIMEOUT);
+        final ConfigField polarisAccessToken = TextInputConfigField.createRequired(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN, LABEL_POLARIS_ACCESS_TOKEN, this::validateAPIToken);
+        final ConfigField polarisTimeout = NumberConfigField.createRequired(PolarisDescriptor.KEY_POLARIS_TIMEOUT, LABEL_POLARIS_TIMEOUT, this::validateTimeout);
 
         return List.of(polarisUrl, polarisAccessToken, polarisTimeout);
+    }
+
+    private Collection<String> validateAPIToken(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        final String accessToken = fieldToValidate.getValue().orElse(null);
+        if (accessToken.length() < 32 || accessToken.length() > 64) {
+            return List.of("Invalid Polaris Access Token.");
+        }
+        return List.of();
+    }
+
+    private Collection<String> validateTimeout(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        final String polarisTimeout = fieldToValidate.getValue().orElse(null);
+        if (!StringUtils.isNumeric(polarisTimeout) || NumberUtils.toInt(polarisTimeout.trim()) < 0) {
+            return List.of("Must be an Integer greater than zero (0).");
+        }
+        return List.of();
     }
 }
