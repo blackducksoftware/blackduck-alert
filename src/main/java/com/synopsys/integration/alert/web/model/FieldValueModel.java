@@ -27,8 +27,6 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringUtils;
-
 public class FieldValueModel {
     private Collection<String> values;
     private boolean isSet;
@@ -71,6 +69,6 @@ public class FieldValueModel {
     }
 
     public boolean hasValues() {
-        return values != null && !values.isEmpty() && values.stream().anyMatch(value -> StringUtils.isNotBlank(value));
+        return values != null && !values.isEmpty();
     }
 }

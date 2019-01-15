@@ -47,8 +47,10 @@ public class PolarisGlobalDescriptorActionApiTest {
         final FieldValueModel timeoutField = Mockito.mock(FieldValueModel.class);
         Mockito.when(fieldModel.getField(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN)).thenReturn(Optional.of(accessTokenField));
         Mockito.when(accessTokenField.getValue()).thenReturn(Optional.of("X".repeat(40)));
+        Mockito.when(accessTokenField.hasValues()).thenReturn(true);
         Mockito.when(fieldModel.getField(PolarisDescriptor.KEY_POLARIS_TIMEOUT)).thenReturn(Optional.of(timeoutField));
         Mockito.when(timeoutField.getValue()).thenReturn(Optional.of("100"));
+        Mockito.when(timeoutField.hasValues()).thenReturn(true);
 
         actionApi.validateConfig(polarisGlobalUIConfig.createFields(), fieldModel, fieldErrors);
         assertEquals(DescriptorActionApi.REQUIRED_FIELD_MISSING, fieldErrors.get(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN));
@@ -68,24 +70,28 @@ public class PolarisGlobalDescriptorActionApiTest {
         final String shortTokenString = "too short";
         Mockito.when(accessTokenField.getValue()).thenReturn(Optional.of(shortTokenString));
         Mockito.when(accessTokenField.getValues()).thenReturn(List.of(shortTokenString));
+        Mockito.when(accessTokenField.hasValues()).thenReturn(true);
         Mockito.when(fieldModel.getField(PolarisDescriptor.KEY_POLARIS_TIMEOUT)).thenReturn(Optional.of(timeoutField));
         final String textTimeout = "invalid integer";
         Mockito.when(timeoutField.getValue()).thenReturn(Optional.of(textTimeout));
         Mockito.when(timeoutField.getValues()).thenReturn(List.of(textTimeout));
+        Mockito.when(timeoutField.hasValues()).thenReturn(true);
 
         actionApi.validateConfig(polarisGlobalUIConfig.createFields(), fieldModel, fieldErrors);
         assertEquals(ERROR_POLARIS_ACCESS_TOKEN, fieldErrors.get(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN));
-        assertEquals(ERROR_POLARIS_TIMEOUT, fieldErrors.get(PolarisDescriptor.KEY_POLARIS_TIMEOUT));
+        assertTrue(fieldErrors.get(PolarisDescriptor.KEY_POLARIS_TIMEOUT).contains(ERROR_POLARIS_TIMEOUT));
 
         fieldErrors.clear();
         Mockito.when(fieldModel.getField(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN)).thenReturn(Optional.of(accessTokenField));
         final String longTokenString = "too long";
         Mockito.when(accessTokenField.getValue()).thenReturn(Optional.of(longTokenString.repeat(64)));
         Mockito.when(accessTokenField.getValues()).thenReturn(List.of(longTokenString.repeat(64)));
+        Mockito.when(accessTokenField.hasValues()).thenReturn(true);
         Mockito.when(fieldModel.getField(PolarisDescriptor.KEY_POLARIS_TIMEOUT)).thenReturn(Optional.of(timeoutField));
         final String negativeValue = "-10";
         Mockito.when(timeoutField.getValue()).thenReturn(Optional.of(negativeValue));
         Mockito.when(timeoutField.getValues()).thenReturn(List.of(negativeValue));
+        Mockito.when(timeoutField.hasValues()).thenReturn(true);
 
         actionApi.validateConfig(polarisGlobalUIConfig.createFields(), fieldModel, fieldErrors);
         assertEquals(ERROR_POLARIS_ACCESS_TOKEN, fieldErrors.get(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN));
