@@ -53,9 +53,19 @@ public abstract class DescriptorActionApi {
             final String fieldKey = field.getKey();
             final Optional<FieldValueModel> optionalField = fieldModel.getField(fieldKey);
             if (field.isRequired()) {
-                final boolean missingValue = optionalField.isEmpty() || optionalField.filter(valueModel -> valueModel.hasValues()).isEmpty();
-                if (missingValue) {
+                if (optionalField.isEmpty()) {
                     fieldErrors.put(fieldKey, REQUIRED_FIELD_MISSING);
+                } else {
+                    if (optionalField.get().hasValues()) {
+                        final boolean valuesAllEmpty = optionalField.get().getValues().stream().allMatch(value -> StringUtils.isBlank(value));
+                        if (valuesAllEmpty) {
+                            fieldErrors.put(fieldKey, REQUIRED_FIELD_MISSING);
+                        }
+                    } else {
+                        if (!optionalField.get().isSet()) {
+                            fieldErrors.put(fieldKey, REQUIRED_FIELD_MISSING);
+                        }
+                    }
                 }
             }
 
