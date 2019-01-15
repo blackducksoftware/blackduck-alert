@@ -6,14 +6,17 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor;
 
 public class CommonDistributionUIConfigTest {
 
     @Test
     public void createCommonConfigFieldsTest() {
-        final CommonDistributionUIConfig commonDistributionUIConfig = new CommonDistributionUIConfig();
+        final ConfigurationAccessor accessor = Mockito.mock(ConfigurationAccessor.class);
+        final CommonDistributionUIConfig commonDistributionUIConfig = new CommonDistributionUIConfig(accessor);
 
         final List<ConfigField> commonConfigFields = commonDistributionUIConfig.createCommonConfigFields(Set.of("example channel"), Set.of("example provider"));
         assertContains(commonConfigFields, CommonDistributionUIConfig.KEY_NAME);

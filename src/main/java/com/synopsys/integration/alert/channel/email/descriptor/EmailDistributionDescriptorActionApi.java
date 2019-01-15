@@ -65,11 +65,6 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
     }
 
     @Override
-    public void validateChannelConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) {
-
-    }
-
-    @Override
     public TestConfigModel createTestConfigModel(final FieldModel fieldModel, final String destination) throws AlertFieldException {
         final Set<String> emailAddresses = new HashSet<>();
 

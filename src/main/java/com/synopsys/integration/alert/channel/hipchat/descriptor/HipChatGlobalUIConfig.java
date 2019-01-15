@@ -46,5 +46,4 @@ public class HipChatGlobalUIConfig extends UIConfig {
         final ConfigField hostServer = TextInputConfigField.createGrouped(HipChatDescriptor.KEY_HOST_SERVER, "Host Server", FieldGroup.ADVANCED);
         return List.of(apiKey, hostServer);
     }
-
 }

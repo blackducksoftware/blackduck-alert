@@ -176,7 +176,9 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
 
     @Override
     public Map<String, String> createInvalidGlobalFieldMap() {
-        return Map.of(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), "abc",
+        return Map.of(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey(), "",
+            EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey(), "",
+            EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), "abc",
             EmailPropertyKeys.JAVAMAIL_CONNECTION_TIMEOUT_KEY.getPropertyKey(), "def",
             EmailPropertyKeys.JAVAMAIL_TIMEOUT_KEY.getPropertyKey(), "xyz");
     }
