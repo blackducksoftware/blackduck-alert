@@ -66,5 +66,4 @@ public class BlackDuckDistributionDescriptorActionApi extends ProviderDistributi
     }
 
     // TODO Add the Delete/update/save overrides here to customize what Blackduck does in each scenario(Modifying projects)
-    // TODO Create a ProviderDescriptorActionApi which updates NotificationTypes in the Table (If we decide to keep this table)
 }

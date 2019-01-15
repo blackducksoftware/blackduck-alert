@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
@@ -51,7 +52,7 @@ public class AlertStartupInitializer {
     private final Logger logger = LoggerFactory.getLogger(AlertStartupInitializer.class);
     private final Environment environment;
     private final DescriptorMap descriptorMap;
-    private final Set<String> alertStartupFields;
+    private final SortedSet<String> alertStartupFields;
     private final BaseDescriptorAccessor descriptorAccessor;
     private final BaseConfigurationAccessor fieldConfigurationAccessor;
 
@@ -93,7 +94,7 @@ public class AlertStartupInitializer {
         }
     }
 
-    public Set<String> getAlertPropertyNameSet() {
+    public SortedSet<String> getAlertPropertyNameSet() {
         return alertStartupFields;
     }
 

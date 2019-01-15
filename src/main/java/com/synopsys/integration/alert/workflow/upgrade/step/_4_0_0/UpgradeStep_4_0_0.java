@@ -21,22 +21,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.workflow.upgrade;
+package com.synopsys.integration.alert.workflow.upgrade.step._4_0_0;
 
-public class AlertVersion {
-    private final String dbVersion;
-    private final String fileVersion;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-    public AlertVersion(final String dbVersion, final String fileVersion) {
-        this.dbVersion = dbVersion;
-        this.fileVersion = fileVersion;
+import com.synopsys.integration.alert.common.exception.AlertUpgradeException;
+import com.synopsys.integration.alert.workflow.upgrade.step.UpgradeStep;
+
+@Component
+public class UpgradeStep_4_0_0 extends UpgradeStep {
+
+    @Autowired
+    public UpgradeStep_4_0_0() {
+        super("4.0.0");
     }
 
-    public String getDbVersion() {
-        return dbVersion;
+    @Override
+    public void runUpgrade() throws AlertUpgradeException {
+        // TODO Move all of our data from our old config tables to our new ones here.
     }
 
-    public String getFileVersion() {
-        return fileVersion;
-    }
 }
