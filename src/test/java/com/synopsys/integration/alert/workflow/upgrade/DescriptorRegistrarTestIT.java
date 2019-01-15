@@ -90,32 +90,4 @@ public class DescriptorRegistrarTestIT extends AlertIntegrationTest {
         assertEquals(hipChatDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL).size() + 1, updatedGlobalFields.size());
     }
 
-    @Test
-    public void removeFieldTest() throws AlertDatabaseConstraintException {
-        descriptorAccessor.unregisterDescriptor(hipChatDescriptor.getName());
-        final Optional<RegisteredDescriptorModel> descriptor = descriptorAccessor.getRegisteredDescriptorByName(hipChatDescriptor.getName());
-        assertTrue(descriptor.isEmpty());
-
-        final DescriptorRegistrar descriptorRegistrar = new DescriptorRegistrar(descriptorAccessor, List.of(hipChatDescriptor));
-        descriptorRegistrar.registerDescriptors();
-
-        final Optional<RegisteredDescriptorModel> foundDescriptor = descriptorAccessor.getRegisteredDescriptorByName(hipChatDescriptor.getName());
-        assertTrue(foundDescriptor.isPresent());
-
-        final List<DefinedFieldModel> globalFields = descriptorAccessor.getFieldsForDescriptorById(foundDescriptor.get().getId(), ConfigContextEnum.GLOBAL);
-        assertEquals(hipChatDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL).size(), globalFields.size());
-
-        final HipChatDescriptor spyHipChatDescriptor = Mockito.spy(hipChatDescriptor);
-        final Set<DefinedFieldModel> keys = hipChatDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL);
-        keys.remove(new DefinedFieldModel(HipChatDescriptor.KEY_API_KEY, ConfigContextEnum.GLOBAL, true));
-        Mockito.doReturn(keys).when(spyHipChatDescriptor).getAllDefinedFields(ConfigContextEnum.GLOBAL);
-
-        final DescriptorRegistrar spiedDescriptorRegistrar = new DescriptorRegistrar(descriptorAccessor, List.of(spyHipChatDescriptor));
-        spiedDescriptorRegistrar.registerDescriptors();
-
-        final List<DefinedFieldModel> updatedGlobalFields = descriptorAccessor.getFieldsForDescriptorById(foundDescriptor.get().getId(), ConfigContextEnum.GLOBAL);
-
-        assertEquals(hipChatDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL).size() - 1, updatedGlobalFields.size());
-    }
-
 }
