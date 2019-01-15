@@ -26,7 +26,6 @@ package com.synopsys.integration.alert.provider.blackduck.descriptor;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
@@ -49,7 +48,7 @@ public class BlackDuckProviderUIConfig extends UIConfig {
     public List<ConfigField> createFields() {
         final ConfigField blackDuckUrl = ReadOnlyConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_URL, "Url");
         final ConfigField blackDuckApiKey = PasswordConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, "API Token", this::validateAPIToken);
-        final ConfigField blackDuckTimeout = NumberConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, "Timeout (in seconds)", this::validateTimeout);
+        final ConfigField blackDuckTimeout = NumberConfigField.createRequired(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, "Timeout (in seconds)");
         final ConfigField blackDuckProxyHost = ReadOnlyConfigField.createGrouped(BlackDuckDescriptor.KEY_BLACKDUCK_PROXY_HOST, "Host Name", PROXY_SUB_GROUP);
         final ConfigField blackDuckProxyPort = ReadOnlyConfigField.createGrouped(BlackDuckDescriptor.KEY_BLACKDUCK_PROXY_PORT, "Port", PROXY_SUB_GROUP);
         final ConfigField blackDuckProxyUsername = ReadOnlyConfigField.createGrouped(BlackDuckDescriptor.KEY_BLACKDUCK_PROXY_USERNAME, "Username", PROXY_SUB_GROUP);
@@ -60,18 +59,8 @@ public class BlackDuckProviderUIConfig extends UIConfig {
 
     private Collection<String> validateAPIToken(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
         final String apiKey = fieldToValidate.getValue().orElse(null);
-        if (StringUtils.isNotBlank(apiKey)) {
-            if (apiKey.length() < 64 || apiKey.length() > 256) {
-                return List.of("Invalid Black Duck API Token.");
-            }
-        }
-        return List.of();
-    }
-
-    private Collection<String> validateTimeout(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-        final String timeout = fieldToValidate.getValue().orElse(null);
-        if (StringUtils.isNotBlank(timeout) && !StringUtils.isNumeric(timeout)) {
-            return List.of("Not an Integer.");
+        if (apiKey.length() < 64 || apiKey.length() > 256) {
+            return List.of("Invalid Black Duck API Token.");
         }
         return List.of();
     }

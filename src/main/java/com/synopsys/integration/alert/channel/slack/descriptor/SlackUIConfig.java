@@ -23,17 +23,13 @@
  */
 package com.synopsys.integration.alert.channel.slack.descriptor;
 
-import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
-import com.synopsys.integration.alert.web.model.FieldModel;
-import com.synopsys.integration.alert.web.model.FieldValueModel;
 
 @Component
 public class SlackUIConfig extends UIConfig {
@@ -44,25 +40,9 @@ public class SlackUIConfig extends UIConfig {
 
     @Override
     public List<ConfigField> createFields() {
-        final ConfigField webhook = TextInputConfigField.createRequired(SlackDescriptor.KEY_WEBHOOK, "Webhook", this::validateWebHook);
-        final ConfigField channelName = TextInputConfigField.createRequired(SlackDescriptor.KEY_CHANNEL_NAME, "Channel Name", this::validateChannelName);
+        final ConfigField webhook = TextInputConfigField.createRequired(SlackDescriptor.KEY_WEBHOOK, "Webhook");
+        final ConfigField channelName = TextInputConfigField.createRequired(SlackDescriptor.KEY_CHANNEL_NAME, "Channel Name");
         final ConfigField channelUsername = TextInputConfigField.create(SlackDescriptor.KEY_CHANNEL_USERNAME, "Channel Username");
         return List.of(webhook, channelName, channelUsername);
-    }
-
-    private Collection<String> validateWebHook(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-        final String webhook = fieldToValidate.getValue().orElse(null);
-        if (StringUtils.isBlank(webhook)) {
-            return List.of("A webhook is required.");
-        }
-        return List.of();
-    }
-
-    private Collection<String> validateChannelName(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-        final String channelName = fieldToValidate.getValue().orElse(null);
-        if (StringUtils.isBlank(channelName)) {
-            return List.of("A channel name is required.");
-        }
-        return List.of();
     }
 }
