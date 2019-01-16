@@ -52,7 +52,8 @@ const config = (state = initialState, action) => {
             return Object.assign({}, state, {
                 fetchingSetupStatus: '',
                 setupRedirect: true,
-                updateStatus: ''
+                updateStatus: '',
+                error: {}
             });
         case SYSTEM_SETUP_FETCHED:
             return Object.assign({}, state, {
