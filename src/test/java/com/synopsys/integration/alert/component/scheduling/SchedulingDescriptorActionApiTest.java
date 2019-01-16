@@ -44,18 +44,6 @@ public class SchedulingDescriptorActionApiTest {
         assertEquals(null, fieldErrors.get(SchedulingUIConfig.KEY_PURGE_DATA_FREQUENCY_DAYS));
     }
 
-    //    @Test
-    //    public void validateConfigHasErrorWhenNullTest() {
-    //        final Map<String, String> fieldErrors = new HashMap<>();
-    //        final SchedulingDescriptorActionApi actionApi = new SchedulingDescriptorActionApi();
-    //
-    //        FIELD_HOUR_OF_DAY.setValue(null);
-    //        FIELD_PURGE_FREQUENCY.setValue(null);
-    //        actionApi.validateConfig(FIELD_MODEL, fieldErrors);
-    //        assertEquals("Must be a number between 0 and 23", fieldErrors.get(SchedulingUIConfig.KEY_DAILY_DIGEST_HOUR_OF_DAY));
-    //        assertEquals("Must be a number between 1 and 7", fieldErrors.get(SchedulingUIConfig.KEY_PURGE_DATA_FREQUENCY_DAYS));
-    //    }
-
     @Test
     public void validateConfigHasErrorWhenEmptyStringTest() {
         final Map<String, String> fieldErrors = new HashMap<>();

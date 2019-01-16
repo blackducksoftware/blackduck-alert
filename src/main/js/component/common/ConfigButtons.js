@@ -6,7 +6,14 @@ import GeneralButton from 'field/input/GeneralButton';
 
 const ConfigButtons = props => (
     <div className="form-group">
-        <div className="offset-sm-3 col-sm-9">
+        <div className="d-inline-flex offset-sm-3 col-sm-9">
+            <div className="progressContainer">
+                <div className="progressIcon">
+                    {props.performingAction &&
+                    <span className="fa fa-spinner fa-pulse" aria-hidden="true" />
+                    }
+                </div>
+            </div>
             {props.includeTest &&
             <div style={{
                 display: 'inline-block', paddingRight: '12px', marginRight: '12px', borderRight: '1px solid #aaa'
@@ -30,13 +37,15 @@ ConfigButtons.propTypes = {
     includeSave: PropTypes.bool,
     includeTest: PropTypes.bool,
     onCancelClick: PropTypes.func,
-    onTestClick: PropTypes.func
+    onTestClick: PropTypes.func,
+    performingAction: PropTypes.bool
 };
 
 ConfigButtons.defaultProps = {
     includeCancel: false,
     includeSave: true,
     includeTest: false,
+    performingAction: false,
     onCancelClick: () => {
     },
     onTestClick: (evt) => {
