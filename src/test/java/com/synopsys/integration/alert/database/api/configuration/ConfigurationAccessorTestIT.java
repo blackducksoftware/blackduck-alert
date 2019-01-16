@@ -31,6 +31,7 @@ import com.synopsys.integration.alert.database.api.configuration.model.Configura
 import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
 import com.synopsys.integration.alert.database.entity.configuration.ConfigGroupEntity;
 import com.synopsys.integration.alert.database.entity.configuration.DescriptorConfigEntity;
+import com.synopsys.integration.alert.database.entity.configuration.FieldValueEntity;
 import com.synopsys.integration.alert.database.repository.configuration.ConfigContextRepository;
 import com.synopsys.integration.alert.database.repository.configuration.ConfigGroupRepository;
 import com.synopsys.integration.alert.database.repository.configuration.DefinedFieldRepository;
@@ -366,7 +367,7 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void updateConfigurationTest() throws AlertDatabaseConstraintException {
+    public void updateConfigurationMultipleValueTest() throws AlertDatabaseConstraintException {
         final String initialValue = "initial value";
         final ConfigurationFieldModel originalField = ConfigurationFieldModel.create(FIELD_KEY_INSENSITIVE);
         originalField.setFieldValue(initialValue);
@@ -389,6 +390,38 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
         assertEquals(originalField, configuredField);
         assertTrue(configuredField.getFieldValues().contains(initialValue));
         assertTrue(configuredField.getFieldValues().contains(additionalValue));
+        final List<FieldValueEntity> databaseFieldValues = fieldValueRepository.findByConfigId(updatedModel.getConfigurationId());
+        assertNotNull(databaseFieldValues);
+        assertEquals(2, databaseFieldValues.size());
+        assertEquals(configuredField.getFieldValues().size(), databaseFieldValues.size());
+    }
+
+    @Test
+    public void updateConfigurationReplaceValueTest() throws AlertDatabaseConstraintException {
+        final String initialValue = "initial value";
+        final ConfigurationFieldModel originalField = ConfigurationFieldModel.create(FIELD_KEY_INSENSITIVE);
+        originalField.setFieldValue(initialValue);
+
+        final ConfigurationModel createdModel = configurationAccessor.createConfiguration(DESCRIPTOR_NAME, ConfigContextEnum.DISTRIBUTION, Arrays.asList(originalField));
+        final List<ConfigurationFieldModel> copyOfFieldList = createdModel.getCopyOfFieldList();
+        assertEquals(1, copyOfFieldList.size());
+        final Optional<String> optionalValue = copyOfFieldList.get(0).getFieldValue();
+        assertTrue(optionalValue.isPresent());
+        assertEquals(initialValue, optionalValue.get());
+
+        final String additionalValue = "additional value";
+        final ConfigurationFieldModel newFieldWithSameKey = ConfigurationFieldModel.create(FIELD_KEY_INSENSITIVE);
+        newFieldWithSameKey.setFieldValue(additionalValue);
+
+        final ConfigurationModel updatedModel = configurationAccessor.updateConfiguration(createdModel.getConfigurationId(), Arrays.asList(newFieldWithSameKey));
+        final List<ConfigurationFieldModel> configuredFields = updatedModel.getCopyOfFieldList();
+        assertEquals(1, configuredFields.size());
+        final ConfigurationFieldModel configuredField = configuredFields.get(0);
+        assertEquals(originalField, configuredField);
+        assertTrue(configuredField.getFieldValues().contains(additionalValue));
+        final List<FieldValueEntity> databaseFieldValues = fieldValueRepository.findByConfigId(updatedModel.getConfigurationId());
+        assertNotNull(databaseFieldValues);
+        assertEquals(1, databaseFieldValues.size());
     }
 
     @Test
