@@ -14,6 +14,7 @@ import EmailConfiguration from 'component/channels/EmailConfiguration';
 import HipChatConfiguration from 'component/channels/HipChatConfiguration';
 import LogoutConfirmation from 'component/common/LogoutConfirmation';
 import BlackDuckConfiguration from 'component/providers/BlackDuckConfiguration';
+import SettingsConfiguration from 'component/general/settings/SettingsConfiguration';
 
 
 class MainPage extends Component {
@@ -76,6 +77,7 @@ class MainPage extends Component {
                     {channels}
                     <Route path="/alert/jobs/scheduling" component={SchedulingConfiguration} />
                     <Route path="/alert/jobs/distribution" component={DistributionConfiguration} />
+                    <Route path="/alert/general/settings" component={SettingsConfiguration} />
                     <Route path="/alert/general/audit" component={Audit} />
                     <Route path="/alert/general/about" component={AboutInfo} />
                 </div>

@@ -283,6 +283,11 @@ form.form-horizontal.loginForm {
   margin-top: 65px;
 }
 
+.progressContainer {
+  width: 30px;
+  height: 30px;
+}
+
 .progressIcon {
   display: inline;
   margin: 0 10px;
@@ -300,4 +305,20 @@ form.form-horizontal.loginForm {
 
 .blackduckLogo {
   margin-top: 4px;
+}
+
+.collapsiblePanel {
+  .icon {
+    margin-right: 5px;
+  }
+
+  .shown {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  .hidden {
+    visibility: hidden;
+    opacity: 0;
+  }
 }

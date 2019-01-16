@@ -23,10 +23,10 @@
  */
 package com.synopsys.integration.alert.web.config;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +38,6 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.web.controller.handler.ControllerHandler;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.FieldModel;
@@ -57,22 +56,36 @@ public class ConfigControllerHandler extends ControllerHandler {
         this.descriptorConfigActions = descriptorConfigActions;
     }
 
-    public List<FieldModel> getConfigs(final ConfigContextEnum context, final String descriptorName) {
+    public ResponseEntity<String> getConfigs(final ConfigContextEnum context, final String descriptorName) {
+        ResponseEntity<String> response;
         try {
-            return descriptorConfigActions.getConfigs(context, descriptorName);
+            final List<FieldModel> models = descriptorConfigActions.getConfigs(context, descriptorName);
+            if (models.isEmpty()) {
+                response = createResponse(HttpStatus.NOT_FOUND, "Configurations not found for the context and descriptor provided");
+            } else {
+                response = new ResponseEntity<>(getContentConverter().getJsonString(models), HttpStatus.OK);
+            }
         } catch (final AlertException e) {
             logger.error("Was not able to find configurations with the context {}, and descriptorName {}", context, descriptorName);
+            response = createResponse(HttpStatus.NOT_FOUND, "Configurations not found for the context and descriptor provided");
         }
-        return Collections.emptyList();
+        return response;
     }
 
-    public FieldModel getConfig(final Long id) {
+    public ResponseEntity<String> getConfig(final Long id) {
+        ResponseEntity<String> response;
         try {
-            return descriptorConfigActions.getConfigById(id);
+            final Optional<FieldModel> optionalModel = descriptorConfigActions.getConfigById(id);
+            if (optionalModel.isPresent()) {
+                response = new ResponseEntity<>(getContentConverter().getJsonString(optionalModel.get()), HttpStatus.OK);
+            } else {
+                response = createResponse(HttpStatus.NOT_FOUND, "Configuration not found for the specified id");
+            }
         } catch (final AlertException e) {
             logger.error(e.getMessage(), e);
+            response = createResponse(HttpStatus.NOT_FOUND, "Configuration not found for the specified id");
         }
-        return null;
+        return response;
     }
 
     public ResponseEntity<String> postConfig(final FieldModel restModel) {
@@ -84,8 +97,8 @@ public class ConfigControllerHandler extends ControllerHandler {
             if (!descriptorConfigActions.doesConfigExist(id)) {
                 try {
                     descriptorConfigActions.validateConfig(restModel, new HashMap<>());
-                    final ConfigurationModel updatedEntity = descriptorConfigActions.saveConfig(restModel);
-                    return createResponse(HttpStatus.CREATED, updatedEntity.getConfigurationId(), "Created");
+                    final FieldModel updatedEntity = descriptorConfigActions.saveConfig(restModel);
+                    return createResponse(HttpStatus.CREATED, updatedEntity.getId(), "Created");
                 } catch (final AlertFieldException e) {
                     return fieldError(id, "There were errors with the configuration.", e.getFieldErrors());
                 }
@@ -97,17 +110,16 @@ public class ConfigControllerHandler extends ControllerHandler {
         return createResponse(HttpStatus.CONFLICT, id, "Provided id must not be in use. To update an existing configuration, use PUT.");
     }
 
-    public ResponseEntity<String> putConfig(final FieldModel restModel) {
+    public ResponseEntity<String> putConfig(final Long id, final FieldModel restModel) {
         if (restModel == null) {
             return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing");
         }
-        final Long id = getContentConverter().getLongValue(restModel.getId());
         try {
             if (descriptorConfigActions.doesConfigExist(id)) {
                 try {
                     descriptorConfigActions.validateConfig(restModel, new HashMap<>());
-                    final ConfigurationModel updatedEntity = descriptorConfigActions.updateConfig(restModel);
-                    return createResponse(HttpStatus.ACCEPTED, updatedEntity.getConfigurationId(), "Updated");
+                    final FieldModel updatedEntity = descriptorConfigActions.updateConfig(id, restModel);
+                    return createResponse(HttpStatus.ACCEPTED, updatedEntity.getId(), "Updated");
                 } catch (final AlertFieldException e) {
                     return fieldError(id, "There were errors with the configuration.", e.getFieldErrors());
                 }

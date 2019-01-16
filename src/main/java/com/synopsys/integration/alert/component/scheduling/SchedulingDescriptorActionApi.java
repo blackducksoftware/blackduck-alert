@@ -23,13 +23,12 @@
  */
 package com.synopsys.integration.alert.component.scheduling;
 
-import java.util.Map;
+import java.util.Collection;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -37,30 +36,7 @@ import com.synopsys.integration.exception.IntegrationException;
 public class SchedulingDescriptorActionApi extends DescriptorActionApi {
 
     @Override
-    public void validateConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
-        final String dailyDigestHourOfDay = fieldAccessor.getString(SchedulingUIConfig.KEY_DAILY_DIGEST_HOUR_OF_DAY).orElse(null);
-        final String purgeDataFrequency = fieldAccessor.getString(SchedulingUIConfig.KEY_PURGE_DATA_FREQUENCY_DAYS).orElse(null);
-
-        if (isNotValid(dailyDigestHourOfDay, 0, 23)) {
-            fieldErrors.put(SchedulingUIConfig.KEY_DAILY_DIGEST_HOUR_OF_DAY, "Must be a number between 0 and 23");
-        }
-
-        if (isNotValid(purgeDataFrequency, 1, 7)) {
-            fieldErrors.put(SchedulingUIConfig.KEY_PURGE_DATA_FREQUENCY_DAYS, "Must be a number between 1 and 7");
-        }
-    }
-
-    @Override
-    public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
+    public void testConfig(final Collection<ConfigField> configFields, final TestConfigModel testConfig) throws IntegrationException {
         throw new IntegrationException("Should not be implemented");
     }
-
-    private boolean isNotValid(final String actualValue, final Integer minimumAllowedValue, final Integer maximumAllowedValue) {
-        return StringUtils.isBlank(actualValue) || !StringUtils.isNumeric(actualValue) || isOutOfRange(Integer.valueOf(actualValue), minimumAllowedValue, maximumAllowedValue);
-    }
-
-    private boolean isOutOfRange(final Integer number, final Integer minimumAllowedValue, final Integer maximumAllowedValue) {
-        return number < minimumAllowedValue || maximumAllowedValue < number;
-    }
-
 }

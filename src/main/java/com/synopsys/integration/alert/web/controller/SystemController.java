@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.web.controller.handler.SystemHandler;
-import com.synopsys.integration.alert.web.model.SystemSetupModel;
+import com.synopsys.integration.alert.web.model.FieldModel;
 
 @RestController
 public class SystemController extends BaseController {
@@ -58,11 +58,12 @@ public class SystemController extends BaseController {
     @GetMapping(value = "/system/setup/initial")
     public ResponseEntity<String> getInitialSystemSetup(final HttpServletRequest request) {
         final String contextPath = request.getServletContext().getContextPath();
-        return handler.getCurrentSetup(contextPath);
+        return handler.getInitialSetup(contextPath);
     }
 
     @PostMapping(value = "/system/setup/initial")
-    public ResponseEntity<String> initialSystemSetup(@RequestBody final SystemSetupModel requiredSystemConfiguration) {
-        return handler.saveRequiredInformation(requiredSystemConfiguration);
+    public ResponseEntity<String> initialSystemSetup(@RequestBody final FieldModel settingsToSave) {
+        return handler.saveInitialSetup(settingsToSave);
     }
+
 }

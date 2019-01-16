@@ -38,9 +38,9 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.web.actions.SystemActions;
+import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.ResponseBodyBuilder;
 import com.synopsys.integration.alert.web.model.SystemMessageModel;
-import com.synopsys.integration.alert.web.model.SystemSetupModel;
 
 @Component
 public class SystemHandler extends ControllerHandler {
@@ -79,7 +79,7 @@ public class SystemHandler extends ControllerHandler {
         }
     }
 
-    public ResponseEntity<String> getCurrentSetup(final String contextPath) {
+    public ResponseEntity<String> getInitialSetup(final String contextPath) {
         if (actions.isSystemInitialized()) {
             final HttpHeaders headers = new HttpHeaders();
             headers.add("Location", contextPath);
@@ -89,24 +89,31 @@ public class SystemHandler extends ControllerHandler {
         }
     }
 
-    public ResponseEntity<String> saveRequiredInformation(final SystemSetupModel requiredSystemConfiguration) {
+    public ResponseEntity<String> saveInitialSetup(final FieldModel settingsToSave) {
         final ResponseEntity<String> response;
         if (actions.isSystemInitialized()) {
             final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder("System Setup has already occurred");
             final String responseBody = responseBodyBuilder.build();
             response = new ResponseEntity<>(responseBody, HttpStatus.CONFLICT);
         } else {
-            final HashMap<String, String> fieldErrors = new HashMap<>();
-            final SystemSetupModel savedConfig = actions.saveRequiredInformation(requiredSystemConfiguration, fieldErrors);
-            if (fieldErrors.isEmpty()) {
-                response = new ResponseEntity<>(getContentConverter().getJsonString(savedConfig), HttpStatus.OK);
-            } else {
-                final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder("Invalid System Setup");
-                responseBodyBuilder.putErrors(fieldErrors);
-                final String responseBody = responseBodyBuilder.build();
-                response = new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
-            }
+            response = saveSystemSettings(settingsToSave);
         }
+        return response;
+    }
+
+    private ResponseEntity<String> saveSystemSettings(final FieldModel model) {
+        final ResponseEntity<String> response;
+        final HashMap<String, String> fieldErrors = new HashMap<>();
+        final FieldModel savedConfig = actions.saveRequiredInformation(model, fieldErrors);
+        if (fieldErrors.isEmpty()) {
+            response = new ResponseEntity<>(getContentConverter().getJsonString(savedConfig), HttpStatus.OK);
+        } else {
+            final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder("Invalid System Setup");
+            responseBodyBuilder.putErrors(fieldErrors);
+            final String responseBody = responseBodyBuilder.build();
+            response = new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
+        }
+
         return response;
     }
 }

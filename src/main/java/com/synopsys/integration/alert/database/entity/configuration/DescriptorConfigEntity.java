@@ -68,6 +68,9 @@ public class DescriptorConfigEntity extends DatabaseEntity {
     }
 
     public List<FieldValueEntity> getFieldValueEntities() {
+        if (null == fieldValueEntities) {
+            return List.of();
+        }
         return fieldValueEntities;
     }
 

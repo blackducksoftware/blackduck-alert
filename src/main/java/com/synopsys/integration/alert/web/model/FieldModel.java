@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.web.model;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
@@ -64,8 +65,8 @@ public class FieldModel extends Config {
         return keyToValues;
     }
 
-    public FieldValueModel getField(final String key) {
-        return keyToValues.get(key);
+    public Optional<FieldValueModel> getField(final String key) {
+        return Optional.ofNullable(keyToValues.get(key));
     }
 
     public FieldAccessor convertToFieldAccessor() {
@@ -77,14 +78,14 @@ public class FieldModel extends Config {
         return keyToValues
                    .entrySet()
                    .stream()
-                   .collect(Collectors.toMap(Map.Entry::getKey, entry -> createConfigurationFieldModel(entry.getKey(), entry.getValue().getValues(), entry.getValue().isSet())));
+                   .collect(Collectors.toMap(Map.Entry::getKey, entry -> createConfigurationFieldModel(entry.getKey(), entry.getValue().getValues())));
     }
 
     public void putField(final String key, final FieldValueModel field) {
         keyToValues.put(key, field);
     }
 
-    private ConfigurationFieldModel createConfigurationFieldModel(final String key, final Collection<String> values, final boolean isSet) {
+    private ConfigurationFieldModel createConfigurationFieldModel(final String key, final Collection<String> values) {
         final ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(key);
         configurationFieldModel.setFieldValues(values);
         return configurationFieldModel;
