@@ -23,31 +23,54 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.context;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.configuration.CommonDistributionConfiguration;
-import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.FieldModel;
+import com.synopsys.integration.alert.web.model.FieldValueModel;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
 
 public abstract class DescriptorActionApi {
 
-    public abstract void validateConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors);
+    public void validateConfig(final Collection<ConfigField> descriptorFields, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
+        for (final ConfigField field : descriptorFields) {
+            final String fieldKey = field.getKey();
+            final Optional<FieldValueModel> optionalField = fieldModel.getField(fieldKey);
+            if (field.isRequired()) {
+                if (optionalField.isEmpty()) {
+                    fieldErrors.put(fieldKey, ConfigField.REQUIRED_FIELD_MISSING);
+                }
+            }
+
+            // field is present now validate the field
+            if (!fieldErrors.containsKey(fieldKey) && optionalField.isPresent()) {
+                final Collection<String> validationErrors = field.validate(optionalField.get(), fieldModel);
+                if (!validationErrors.isEmpty()) {
+                    fieldErrors.put(fieldKey, StringUtils.join(validationErrors, ","));
+                }
+            }
+        }
+    }
 
     public TestConfigModel createTestConfigModel(final FieldModel fieldModel, final String destination) throws AlertFieldException {
         return new TestConfigModel(fieldModel, destination);
     }
 
-    public abstract void testConfig(final TestConfigModel testConfig) throws IntegrationException;
+    public abstract void testConfig(final Collection<ConfigField> configFields, final TestConfigModel testConfig) throws IntegrationException;
 
     public DistributionEvent createChannelEvent(final CommonDistributionConfiguration commmonDistributionConfig, final AggregateMessageContent messageContent) {
         return new DistributionEvent(commmonDistributionConfig.getId().toString(), commmonDistributionConfig.getChannelName(), RestConstants.formatDate(new Date()), commmonDistributionConfig.getProviderName(),
@@ -59,21 +82,34 @@ public abstract class DescriptorActionApi {
         return new AggregateMessageContent("testTopic", "Alert Test Message", null, subTopic, List.of());
     }
 
-    public void updateConfig(final FieldModel fieldModel) {
+    protected FieldModel createFieldModelCopy(final FieldModel fieldModel) {
+        final HashMap<String, FieldValueModel> fields = new HashMap<>();
+        fields.putAll(fieldModel.getKeyToValues());
 
+        final FieldModel modelToSave = new FieldModel(fieldModel.getDescriptorName(), fieldModel.getContext(), fields);
+        modelToSave.setId(fieldModel.getId());
+        return modelToSave;
     }
 
-    public void saveConfig(final FieldModel fieldModel) {
-
+    public FieldModel readConfig(final FieldModel fieldModel) {
+        return fieldModel;
     }
 
-    public void deleteConfig(final FieldModel fieldModel) {
-
+    public FieldModel updateConfig(final FieldModel fieldModel) {
+        return fieldModel;
     }
 
-    protected void validateFieldFormatting(final FieldAccessor fieldAccessor) throws AlertFieldException {
+    public FieldModel saveConfig(final FieldModel fieldModel) {
+        return fieldModel;
+    }
+
+    public FieldModel deleteConfig(final FieldModel fieldModel) {
+        return fieldModel;
+    }
+
+    protected void validateFieldFormatting(final Collection<ConfigField> descriptorFields, final FieldModel fieldModel) throws AlertFieldException {
         final Map<String, String> fieldErrors = new HashMap<>();
-        validateConfig(fieldAccessor, fieldErrors);
+        validateConfig(descriptorFields, fieldModel, fieldErrors);
 
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);

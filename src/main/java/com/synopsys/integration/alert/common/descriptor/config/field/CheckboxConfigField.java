@@ -23,24 +23,68 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.function.BiFunction;
+
 import com.synopsys.integration.alert.common.enumeration.FieldGroup;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
+import com.synopsys.integration.alert.web.model.FieldModel;
+import com.synopsys.integration.alert.web.model.FieldValueModel;
 
 public class CheckboxConfigField extends ConfigField {
     public static CheckboxConfigField create(final String key, final String label) {
         return new CheckboxConfigField(key, label, false);
     }
 
+    public static CheckboxConfigField create(final String key, final String label, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
+        return new CheckboxConfigField(key, label, false, validationFunction);
+    }
+
     public static CheckboxConfigField createGrouped(final String key, final String label, final FieldGroup group) {
         return new CheckboxConfigField(key, label, false, group);
+    }
+
+    public static CheckboxConfigField createGrouped(final String key, final String label, final FieldGroup group, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
+        return new CheckboxConfigField(key, label, false, group, validationFunction);
     }
 
     public CheckboxConfigField(final String key, final String label, final boolean required, final FieldGroup group) {
         super(key, label, FieldType.CHECKBOX_INPUT.getFieldTypeName(), required, false, group);
     }
 
+    public CheckboxConfigField(final String key, final String label, final boolean required, final FieldGroup group, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
+        super(key, label, FieldType.CHECKBOX_INPUT.getFieldTypeName(), required, false, group, validationFunction);
+    }
+
     public CheckboxConfigField(final String key, final String label, final boolean required) {
         super(key, label, FieldType.CHECKBOX_INPUT.getFieldTypeName(), required, false);
     }
 
+    public CheckboxConfigField(final String key, final String label, final boolean required, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
+        super(key, label, FieldType.CHECKBOX_INPUT.getFieldTypeName(), required, false, validationFunction);
+    }
+
+    @Override
+    public Collection<String> validate(final FieldValueModel fieldValueModel, final FieldModel fieldModel) {
+        final List<BiFunction<FieldValueModel, FieldModel, Collection<String>>> validationFunctions;
+        if (null != getValidationFunction()) {
+            validationFunctions = List.of(this::validateValueIsBoolean, getValidationFunction());
+        } else {
+            validationFunctions = List.of(this::validateValueIsBoolean);
+        }
+        return validate(fieldValueModel, fieldModel, validationFunctions);
+    }
+
+    private Collection<String> validateValueIsBoolean(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        if (fieldToValidate.hasValues()) {
+            final String value = fieldToValidate.getValue().orElse("");
+            final boolean trueTextPresent = Boolean.TRUE.toString().equalsIgnoreCase(value);
+            final boolean falseTextPresent = Boolean.FALSE.toString().equalsIgnoreCase(value);
+            if (!trueTextPresent && !falseTextPresent) {
+                List.of("Not a boolean value 'true' or 'false'");
+            }
+        }
+        return List.of();
+    }
 }

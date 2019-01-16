@@ -40,6 +40,7 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
+import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
 import com.synopsys.integration.alert.database.api.user.UserAccessor;
 import com.synopsys.integration.alert.database.api.user.UserModel;
 import com.synopsys.integration.alert.database.system.SystemMessageUtility;
@@ -90,11 +91,12 @@ public class SystemValidator {
     public boolean validateDefaultAdminPasswordSet(final Map<String, String> fieldErrors) {
         final Optional<UserModel> userModel = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER);
         final boolean valid;
+        systemMessageUtility.removeSystemMessagesByType(SystemMessageType.DEFAULT_ADMIN_USER_ERROR);
         if (userModel.isPresent()) {
             valid = StringUtils.isNotBlank(userModel.get().getPassword());
             if (!valid) {
-                final String errorMessage = "Default admin user password missing";
-                fieldErrors.put("defaultAdminPassword", errorMessage);
+                final String errorMessage = SettingsDescriptor.FIELD_ERROR_DEFAULT_USER_PASSWORD;
+                fieldErrors.put(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, errorMessage);
                 systemMessageUtility.addSystemMessage(errorMessage, SystemMessageSeverity.ERROR, SystemMessageType.DEFAULT_ADMIN_USER_ERROR);
             }
         } else {
@@ -106,21 +108,21 @@ public class SystemValidator {
 
     public boolean validateEncryptionProperties(final Map<String, String> fieldErrors) {
         final boolean valid;
+        systemMessageUtility.removeSystemMessagesByType(SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR);
         if (encryptionUtility.isInitialized()) {
             logger.info("Encryption utilities: Initialized");
             valid = true;
-            systemMessageUtility.removeSystemMessagesByType(SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR);
         } else {
             logger.error("Encryption utilities: Not Initialized");
             if (!encryptionUtility.isPasswordSet()) {
-                final String errorMessage = "Encryption password missing";
-                fieldErrors.put("globalEncryptionPassword", errorMessage);
+                final String errorMessage = SettingsDescriptor.FIELD_ERROR_ENCRYPTION_PASSWORD;
+                fieldErrors.put(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, errorMessage);
                 systemMessageUtility.addSystemMessage(errorMessage, SystemMessageSeverity.ERROR, SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR);
             }
 
             if (!encryptionUtility.isGlobalSaltSet()) {
-                final String errorMessage = "Encryption global salt missing";
-                fieldErrors.put("globalEncryptionSalt", errorMessage);
+                final String errorMessage = SettingsDescriptor.FIELD_ERROR_ENCRYPTION_GLOBAL_SALT;
+                fieldErrors.put(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, errorMessage);
                 systemMessageUtility.addSystemMessage(errorMessage, SystemMessageSeverity.ERROR, SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR);
             }
             valid = false;

@@ -24,14 +24,11 @@
 package com.synopsys.integration.alert.channel.hipchat.descriptor;
 
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
-import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.context.ChannelDistributionDescriptorActionApi;
@@ -43,15 +40,4 @@ public class HipChatDistributionDescriptorActionApi extends ChannelDistributionD
     public HipChatDistributionDescriptorActionApi(final HipChatChannel hipChatChannel, final BaseConfigurationAccessor configurationAccessor, final List<ProviderDescriptor> providerDescriptors) {
         super(hipChatChannel, configurationAccessor, providerDescriptors);
     }
-
-    @Override
-    public void validateChannelConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
-        final String roomId = fieldAccessor.getString(HipChatDescriptor.KEY_ROOM_ID).orElse(null);
-        if (StringUtils.isBlank(roomId)) {
-            fieldErrors.put("roomId", "A Room Id is required.");
-        } else if (!StringUtils.isNumeric(roomId)) {
-            fieldErrors.put("roomId", "Room Id must be an integer value");
-        }
-    }
-
 }

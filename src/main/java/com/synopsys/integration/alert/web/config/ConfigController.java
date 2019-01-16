@@ -23,8 +23,6 @@
  */
 package com.synopsys.integration.alert.web.config;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -54,12 +52,12 @@ public class ConfigController extends BaseController {
     }
 
     @GetMapping
-    public List<FieldModel> getConfigs(final @RequestParam ConfigContextEnum context, @RequestParam(required = false) final String descriptorName) {
+    public ResponseEntity<String> getConfigs(final @RequestParam ConfigContextEnum context, @RequestParam(required = false) final String descriptorName) {
         return controllerHandler.getConfigs(context, descriptorName);
     }
 
     @GetMapping("/{id}")
-    public FieldModel getConfig(@PathVariable final Long id) {
+    public ResponseEntity<String> getConfig(@PathVariable final Long id) {
         return controllerHandler.getConfig(id);
     }
 
@@ -68,9 +66,9 @@ public class ConfigController extends BaseController {
         return controllerHandler.postConfig(restModel);
     }
 
-    @PutMapping
-    public ResponseEntity<String> putConfig(@RequestBody(required = true) final FieldModel restModel) {
-        return controllerHandler.putConfig(restModel);
+    @PutMapping("/{id}")
+    public ResponseEntity<String> putConfig(@PathVariable final Long id, @RequestBody(required = true) final FieldModel restModel) {
+        return controllerHandler.putConfig(id, restModel);
     }
 
     @PostMapping("/validate")
@@ -85,6 +83,6 @@ public class ConfigController extends BaseController {
 
     @PostMapping("/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = true) final FieldModel restModel, @RequestParam(required = false) final String destination) {
-        return controllerHandler.testConfig(restModel);
+        return controllerHandler.testConfig(restModel, destination);
     }
 }

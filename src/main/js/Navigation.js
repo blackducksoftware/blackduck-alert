@@ -63,6 +63,11 @@ class Navigation extends Component {
                         </li>
                         <li className="divider" />
                         <li>
+                            <NavLink to="/alert/general/settings" activeClassName="activeNav">
+                                <FontAwesome name="cog" fixedWidth /> Settings
+                            </NavLink>
+                        </li>
+                        <li>
                             <NavLink to="/alert/general/audit" activeClassName="activeNav">
                                 <FontAwesome name="history" fixedWidth /> Audit
                             </NavLink>

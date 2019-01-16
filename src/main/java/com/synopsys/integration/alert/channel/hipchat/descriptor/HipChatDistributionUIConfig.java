@@ -24,8 +24,10 @@
 package com.synopsys.integration.alert.channel.hipchat.descriptor;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
@@ -33,6 +35,8 @@ import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.web.model.FieldModel;
+import com.synopsys.integration.alert.web.model.FieldValueModel;
 
 @Component
 public class HipChatDistributionUIConfig extends UIConfig {
@@ -43,9 +47,18 @@ public class HipChatDistributionUIConfig extends UIConfig {
 
     @Override
     public List<ConfigField> createFields() {
-        final ConfigField roomId = NumberConfigField.createRequired(HipChatDescriptor.KEY_ROOM_ID, "Room Id");
+        final ConfigField roomId = NumberConfigField.createRequired(HipChatDescriptor.KEY_ROOM_ID, "Room Id", this::validateRoomID);
         final ConfigField notify = CheckboxConfigField.create(HipChatDescriptor.KEY_NOTIFY, "Notify");
         final ConfigField color = SelectConfigField.create(HipChatDescriptor.KEY_COLOR, "Color", Arrays.asList("Yellow", "Green", "Red", "Purple", "Gray", "Random"));
         return List.of(roomId, notify, color);
+    }
+
+    private Collection<String> validateRoomID(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        final String roomId = fieldToValidate.getValue().orElse(null);
+        if (!StringUtils.isNumeric(roomId)) {
+            return List.of("Room Id must be an integer value");
+        }
+
+        return List.of();
     }
 }
