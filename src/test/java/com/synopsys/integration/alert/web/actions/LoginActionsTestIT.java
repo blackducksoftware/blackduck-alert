@@ -21,19 +21,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.ldap.authentication.LdapAuthenticationProvider;
 
-import com.synopsys.integration.alert.common.LdapProperties;
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
 import com.synopsys.integration.alert.database.api.user.UserAccessor;
 import com.synopsys.integration.alert.database.api.user.UserModel;
-import com.synopsys.integration.alert.database.user.UserRepository;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.TestProperties;
@@ -43,24 +39,18 @@ import com.synopsys.integration.alert.web.security.authentication.ldap.LdapManag
 
 @Tag(TestTags.CUSTOM_BLACKDUCK_CONNECTION)
 public class LoginActionsTestIT extends AlertIntegrationTest {
-    private final Logger logger = LoggerFactory.getLogger(LoginActionsTestIT.class);
     private final MockLoginRestModel mockLoginRestModel = new MockLoginRestModel();
     private final TestProperties properties = new TestProperties();
     @Autowired
     private DaoAuthenticationProvider alertDatabaseAuthProvider;
     @Autowired
     private UserAccessor userAccessor;
-
-    @Autowired
-    private UserRepository userRepository;
     @Autowired
     private LdapManager ldapManager;
 
     @BeforeEach
     public void init() throws Exception {
-        final LdapProperties ldapProperties = new LdapProperties();
-        ldapProperties.setEnabled(false);
-        ldapManager.updateConfiguration(ldapProperties);
+        ldapManager.updateContext();
         mockLoginRestModel.setBlackDuckUsername(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_USERNAME));
         mockLoginRestModel.setBlackDuckPassword(properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PASSWORD));
     }
