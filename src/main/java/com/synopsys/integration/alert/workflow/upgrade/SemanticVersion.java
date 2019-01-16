@@ -102,10 +102,10 @@ public class SemanticVersion extends Stringable implements Comparable<SemanticVe
             return LESS_THAN;
         }
 
-        if (isSnapshot() && !comparedTo.isSnapshot()) {
+        if (!isSnapshot() && comparedTo.isSnapshot()) {
             return GREATER_THAN;
         }
-        if (!isSnapshot() && comparedTo.isSnapshot()) {
+        if (isSnapshot() && !comparedTo.isSnapshot()) {
             return LESS_THAN;
         }
 
@@ -122,19 +122,19 @@ public class SemanticVersion extends Stringable implements Comparable<SemanticVe
                    || (patchVersion == status && majorVersion == EQUALS && minorVersion == EQUALS);
     }
 
-    private void parseVersion(final String version) {
+    private void parseVersion(String version) {
         if (StringUtils.isBlank(version)) {
             return;
         }
-        final String[] versionParts = StringUtils.split(version, '.');
 
         if (version.contains(SNAPSHOT_SUFFIX)) {
             snapshot = true;
-            version.replace(SNAPSHOT_SUFFIX, "");
+            version = version.replace(SNAPSHOT_SUFFIX, "");
         } else {
             snapshot = false;
         }
 
+        final String[] versionParts = StringUtils.split(version, '.');
         if (3 == versionParts.length) {
             majorVersion = parseStringWithDefault(versionParts[0], 0);
             minorVersion = parseStringWithDefault(versionParts[1], 0);

@@ -23,23 +23,39 @@
  */
 package com.synopsys.integration.alert.workflow.upgrade.step._4_0_0;
 
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertUpgradeException;
 import com.synopsys.integration.alert.workflow.upgrade.step.UpgradeStep;
+import com.synopsys.integration.alert.workflow.upgrade.step._4_0_0.conversion.DataUpgrade;
 
 @Component
 public class UpgradeStep_4_0_0 extends UpgradeStep {
+    private final Logger logger = LoggerFactory.getLogger(UpgradeStep_4_0_0.class);
+    private final List<DataUpgrade> dataTransfers;
 
     @Autowired
-    public UpgradeStep_4_0_0() {
+    public UpgradeStep_4_0_0(final List<DataUpgrade> dataTransfers) {
         super("4.0.0");
+        this.dataTransfers = dataTransfers;
     }
 
     @Override
     public void runUpgrade() throws AlertUpgradeException {
-        // TODO Move all of our data from our old config tables to our new ones here.
+        logger.warn("Email global configuration environment variable changed from 'ALERT_CHANNEL_EMAIL_MAIL_SMTP_DNS_RET' to 'ALERT_CHANNEL_EMAIL_MAIL_SMTP_DSN_RET'. Please change this variable if in use.");
+        for (final DataUpgrade dataUpgrade : dataTransfers) {
+            try {
+                dataUpgrade.upgrade();
+            } catch (final AlertDatabaseConstraintException e) {
+                throw new AlertUpgradeException("Error moving data for descriptor " + dataUpgrade.getDescriptorName());
+            }
+        }
     }
 
 }
