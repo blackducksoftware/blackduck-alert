@@ -123,6 +123,7 @@ class SettingsConfigurationForm extends Component {
         const selectedAuthenticationType = FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_LDAP_AUTHENTICATION_TYPE);
         const authenticationTypeOptions = this.getAuthenticationTypes();
         const selectedAuthenticationOption = authenticationTypeOptions.filter(option => option.value === selectedAuthenticationType);
+        const saving = this.props.updateStatus === 'UPDATING' || this.props.updateStatus === 'FETCHING';
         return (
             <form method="POST" className="form-horizontal loginForm" onSubmit={this.handleSubmit}>
                 <div className="form-group">
@@ -343,7 +344,7 @@ class SettingsConfigurationForm extends Component {
                         </CollapsiblePane>
                     </div>
                 </div>
-                <ConfigButtons isFixed={false} includeSave type="submit" />
+                <ConfigButtons isFixed={false} includeSave type="submit" performingAction={saving} />
             </form>
         );
     }

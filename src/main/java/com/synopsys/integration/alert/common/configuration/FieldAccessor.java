@@ -84,7 +84,7 @@ public class FieldAccessor {
     }
 
     public boolean isSet(final String key) {
-        if (StringUtils.isNotEmpty(key) && fields.containsKey(key)) {
+        if (StringUtils.isNotBlank(key) && fields.containsKey(key)) {
             final ConfigurationFieldModel fieldModel = fields.get(key);
             return fieldModel.isSet();
         }
