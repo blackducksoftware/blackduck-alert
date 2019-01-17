@@ -16,7 +16,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.LdapProperties;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
@@ -39,10 +38,7 @@ public class LoginControllerTestIT extends AlertIntegrationTest {
     private MockMvc mockMvc;
 
     @BeforeEach
-    public void setup() throws Exception {
-        final LdapProperties ldapProperties = new LdapProperties();
-        ldapProperties.setEnabled("false");
-        ldapManager.updateConfiguration(ldapProperties);
+    public void setup() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 

@@ -24,6 +24,8 @@
 package com.synopsys.integration.alert.web.security.authentication.ldap;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ldap.core.support.DigestMd5DirContextAuthenticationStrategy;
 import org.springframework.ldap.core.support.DirContextAuthenticationStrategy;
@@ -38,64 +40,81 @@ import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopul
 import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.LdapProperties;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
+import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
+import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 
 @Component
 public class LdapManager {
+    private static final Logger logger = LoggerFactory.getLogger(LdapManager.class);
     private LdapContextSource contextSource;
     private LdapAuthenticationProvider authenticationProvider;
-    private LdapProperties currentConfiguration;
+    private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public LdapManager(final LdapProperties ldapProperties) {
-        this.currentConfiguration = ldapProperties;
+    public LdapManager(final ConfigurationAccessor configurationAccessor) {
+        this.configurationAccessor = configurationAccessor;
     }
 
     public boolean isLdapEnabled() {
-        return currentConfiguration != null && currentConfiguration.isEnabled();
+        boolean enabled = false;
+        try {
+            enabled = Boolean.valueOf(getFieldValueOrEmpty(getCurrentConfiguration(), SettingsDescriptor.KEY_LDAP_ENABLED));
+        } catch (final AlertDatabaseConstraintException | AlertLDAPConfigurationException ex) {
+            logger.error("Error checking if Ldap is enabled", ex);
+        }
+
+        return enabled;
     }
 
-    public LdapProperties getCurrentConfiguration() {
-        return currentConfiguration;
+    public ConfigurationModel getCurrentConfiguration() throws AlertDatabaseConstraintException, AlertLDAPConfigurationException {
+        return configurationAccessor.getConfigurationsByDescriptorName(SettingsDescriptor.SETTINGS_COMPONENT)
+                   .stream()
+                   .findFirst()
+                   .orElseThrow(() -> new AlertLDAPConfigurationException("Settings configuration missing"));
     }
 
     public LdapAuthenticationProvider getAuthenticationProvider() throws AlertLDAPConfigurationException {
-        if (authenticationProvider == null) {
-            updateConfiguration(currentConfiguration);
-        }
+        updateContext();
         return authenticationProvider;
     }
 
-    public void updateConfiguration(final LdapProperties configuration) throws AlertLDAPConfigurationException {
-        this.currentConfiguration = configuration;
-        if (currentConfiguration.isEnabled()) {
-            updateContext();
-        }
-    }
-
     public void updateContext() throws AlertLDAPConfigurationException {
-        final LdapProperties configuration = getCurrentConfiguration();
-        final LdapContextSource ldapContextSource = new LdapContextSource();
-
         try {
-            if (StringUtils.isNotBlank(configuration.getServer())) {
-                ldapContextSource.setUrl(configuration.getServer());
-                ldapContextSource.setUserDn(configuration.getManagerDN());
-                ldapContextSource.setPassword(configuration.getManagerPassword());
-                ldapContextSource.setReferral(configuration.getLdapReferral());
-                ldapContextSource.setAuthenticationStrategy(createAuthenticationStrategy(configuration));
+            if (!isLdapEnabled()) {
+                return;
+            } else {
+                final ConfigurationModel configuration = getCurrentConfiguration();
+                final LdapContextSource ldapContextSource = new LdapContextSource();
+
+                final String ldapServer = getFieldValueOrEmpty(configuration, SettingsDescriptor.KEY_LDAP_SERVER);
+                final String managerDN = getFieldValueOrEmpty(configuration, SettingsDescriptor.KEY_LDAP_MANAGER_DN);
+                final String managerPassword = getFieldValueOrEmpty(configuration, SettingsDescriptor.KEY_LDAP_MANAGER_PASSWORD);
+                final String ldapReferral = getFieldValueOrEmpty(configuration, SettingsDescriptor.KEY_LDAP_REFERRAL);
+                if (StringUtils.isNotBlank(ldapServer)) {
+                    ldapContextSource.setUrl(ldapServer);
+                    ldapContextSource.setUserDn(managerDN);
+                    ldapContextSource.setPassword(managerPassword);
+                    ldapContextSource.setReferral(ldapReferral);
+                    ldapContextSource.setAuthenticationStrategy(createAuthenticationStrategy(configuration));
+                }
+                contextSource = ldapContextSource;
+                contextSource.afterPropertiesSet();
+                updateAuthenticationProvider(configuration);
             }
-            contextSource = ldapContextSource;
-            contextSource.afterPropertiesSet();
-            updateAuthenticationProvider();
-        } catch (final IllegalArgumentException ex) {
+        } catch (final IllegalArgumentException | AlertDatabaseConstraintException ex) {
             throw new AlertLDAPConfigurationException("Error creating LDAP Context Source", ex);
         }
     }
 
-    private DirContextAuthenticationStrategy createAuthenticationStrategy(final LdapProperties configuration) {
-        final String authenticationType = configuration.getAuthenticationType();
+    private String getFieldValueOrEmpty(final ConfigurationModel configurationModel, final String fieldKey) {
+        return configurationModel.getField(fieldKey).flatMap(field -> field.getFieldValue()).orElse("");
+    }
+
+    private DirContextAuthenticationStrategy createAuthenticationStrategy(final ConfigurationModel configuration) {
+        final String authenticationType = getFieldValueOrEmpty(configuration, SettingsDescriptor.KEY_LDAP_AUTHENTICATION_TYPE);
         DirContextAuthenticationStrategy strategy = null;
         if (StringUtils.isNotBlank(authenticationType)) {
             if ("digest".equals(authenticationType)) {
@@ -108,19 +127,20 @@ public class LdapManager {
         return strategy;
     }
 
-    private void updateAuthenticationProvider() throws AlertLDAPConfigurationException {
-        final LdapAuthenticator authenticator = createAuthenticator();
-        final LdapAuthoritiesPopulator authoritiesPopulator = createAuthoritiesPopulator();
+    private void updateAuthenticationProvider(final ConfigurationModel configurationModel) throws AlertLDAPConfigurationException {
+        final LdapAuthenticator authenticator = createAuthenticator(configurationModel);
+        final LdapAuthoritiesPopulator authoritiesPopulator = createAuthoritiesPopulator(configurationModel);
         authenticationProvider = new LdapAuthenticationProvider(authenticator, authoritiesPopulator);
     }
 
-    private LdapAuthenticator createAuthenticator() throws AlertLDAPConfigurationException {
+    private LdapAuthenticator createAuthenticator(final ConfigurationModel configurationModel) throws AlertLDAPConfigurationException {
         final BindAuthenticator authenticator = new BindAuthenticator(contextSource);
         try {
-
-            authenticator.setUserSearch(createLdapUserSearch(contextSource));
-            authenticator.setUserDnPatterns(currentConfiguration.getUserDNPatternArray());
-            authenticator.setUserAttributes(currentConfiguration.getUserAttributeArray());
+            final String[] userDnArray = createArrayFromCSV(getFieldValueOrEmpty(configurationModel, SettingsDescriptor.KEY_LDAP_USER_DN_PATTERNS));
+            final String[] userAttributeArray = createArrayFromCSV(getFieldValueOrEmpty(configurationModel, SettingsDescriptor.KEY_LDAP_USER_ATTRIBUTES));
+            authenticator.setUserSearch(createLdapUserSearch(configurationModel, contextSource));
+            authenticator.setUserDnPatterns(userDnArray);
+            authenticator.setUserAttributes(userAttributeArray);
             authenticator.afterPropertiesSet();
         } catch (final Exception ex) {
             throw new AlertLDAPConfigurationException("Error creating LDAP authenticator", ex);
@@ -128,19 +148,28 @@ public class LdapManager {
         return authenticator;
     }
 
-    private LdapAuthoritiesPopulator createAuthoritiesPopulator() {
-        final DefaultLdapAuthoritiesPopulator authoritiesPopulator = new DefaultLdapAuthoritiesPopulator(contextSource, currentConfiguration.getGroupSearchBase());
-        authoritiesPopulator.setGroupSearchFilter(currentConfiguration.getGroupSearchFilter());
-        authoritiesPopulator.setGroupRoleAttribute(currentConfiguration.getGroupRoleAttribute());
-        authoritiesPopulator.setRolePrefix(currentConfiguration.getRolePrefix());
+    private String[] createArrayFromCSV(final String commaSeparatedString) {
+        return StringUtils.split(commaSeparatedString, ",");
+    }
+
+    private LdapAuthoritiesPopulator createAuthoritiesPopulator(final ConfigurationModel configurationModel) {
+        final String groupSearchBase = getFieldValueOrEmpty(configurationModel, SettingsDescriptor.KEY_LDAP_GROUP_SEARCH_BASE);
+        final String groupSearchFilter = getFieldValueOrEmpty(configurationModel, SettingsDescriptor.KEY_LDAP_GROUP_SEARCH_FILTER);
+        final String groupRoleAttribute = getFieldValueOrEmpty(configurationModel, SettingsDescriptor.KEY_LDAP_GROUP_ROLE_ATTRIBUTE);
+        final String rolePrefix = getFieldValueOrEmpty(configurationModel, SettingsDescriptor.KEY_LDAP_ROLE_PREFIX);
+        final DefaultLdapAuthoritiesPopulator authoritiesPopulator = new DefaultLdapAuthoritiesPopulator(contextSource, groupSearchBase);
+        authoritiesPopulator.setGroupSearchFilter(groupSearchFilter);
+        authoritiesPopulator.setGroupRoleAttribute(groupRoleAttribute);
+        authoritiesPopulator.setRolePrefix(rolePrefix);
         return authoritiesPopulator;
     }
 
-    private LdapUserSearch createLdapUserSearch(final LdapContextSource contextSource) {
-        final LdapProperties configuration = getCurrentConfiguration();
+    private LdapUserSearch createLdapUserSearch(final ConfigurationModel configurationModel, final LdapContextSource contextSource) {
         LdapUserSearch userSearch = null;
-        if (StringUtils.isNotBlank(configuration.getUserSearchFilter())) {
-            userSearch = new FilterBasedLdapUserSearch(configuration.getUserSearchBase(), configuration.getUserSearchFilter(), contextSource);
+        final String userSearchFilter = getFieldValueOrEmpty(configurationModel, SettingsDescriptor.KEY_LDAP_USER_SEARCH_FILTER);
+        final String userSearchBase = getFieldValueOrEmpty(configurationModel, SettingsDescriptor.KEY_LDAP_USER_SEARCH_BASE);
+        if (StringUtils.isNotBlank(userSearchFilter)) {
+            userSearch = new FilterBasedLdapUserSearch(userSearchBase, userSearchFilter, contextSource);
         }
         return userSearch;
     }

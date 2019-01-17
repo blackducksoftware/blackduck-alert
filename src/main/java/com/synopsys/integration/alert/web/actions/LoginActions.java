@@ -78,6 +78,9 @@ public class LoginActions {
             } catch (final AlertLDAPConfigurationException ex) {
                 logger.error("LDAP Configuration error", ex);
                 result = pendingAuthentication;
+            } catch (final Exception ex) {
+                logger.error("LDAP Authentication error", ex);
+                result = pendingAuthentication;
             }
         } else {
             logger.info("LDAP authentication disabled");
