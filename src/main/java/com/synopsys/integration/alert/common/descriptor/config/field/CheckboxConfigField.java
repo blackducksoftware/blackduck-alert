@@ -37,7 +37,7 @@ public class CheckboxConfigField extends ConfigField {
         return new CheckboxConfigField(key, label, false);
     }
 
-    public static CheckboxConfigField create(final String key, final String label, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
+    public static CheckboxConfigField create(final String key, final String label, final ConfigValidationFunction validationFunction) {
         return new CheckboxConfigField(key, label, false, validationFunction);
     }
 
@@ -45,7 +45,7 @@ public class CheckboxConfigField extends ConfigField {
         return new CheckboxConfigField(key, label, false, group);
     }
 
-    public static CheckboxConfigField createGrouped(final String key, final String label, final FieldGroup group, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
+    public static CheckboxConfigField createGrouped(final String key, final String label, final FieldGroup group, final ConfigValidationFunction validationFunction) {
         return new CheckboxConfigField(key, label, false, group, validationFunction);
     }
 
@@ -53,7 +53,7 @@ public class CheckboxConfigField extends ConfigField {
         super(key, label, FieldType.CHECKBOX_INPUT.getFieldTypeName(), required, false, group);
     }
 
-    public CheckboxConfigField(final String key, final String label, final boolean required, final FieldGroup group, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
+    public CheckboxConfigField(final String key, final String label, final boolean required, final FieldGroup group, final ConfigValidationFunction validationFunction) {
         super(key, label, FieldType.CHECKBOX_INPUT.getFieldTypeName(), required, false, group, validationFunction);
     }
 
@@ -61,13 +61,13 @@ public class CheckboxConfigField extends ConfigField {
         super(key, label, FieldType.CHECKBOX_INPUT.getFieldTypeName(), required, false);
     }
 
-    public CheckboxConfigField(final String key, final String label, final boolean required, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
+    public CheckboxConfigField(final String key, final String label, final boolean required, final ConfigValidationFunction validationFunction) {
         super(key, label, FieldType.CHECKBOX_INPUT.getFieldTypeName(), required, false, validationFunction);
     }
 
     @Override
     public Collection<String> validate(final FieldValueModel fieldValueModel, final FieldModel fieldModel) {
-        final List<BiFunction<FieldValueModel, FieldModel, Collection<String>>> validationFunctions;
+        final List<ConfigValidationFunction> validationFunctions;
         if (null != getValidationFunction()) {
             validationFunctions = List.of(this::validateValueIsBoolean, getValidationFunction());
         } else {
