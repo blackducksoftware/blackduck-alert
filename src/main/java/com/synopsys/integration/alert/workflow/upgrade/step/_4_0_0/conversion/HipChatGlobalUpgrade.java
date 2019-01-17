@@ -50,7 +50,7 @@ public class HipChatGlobalUpgrade extends DataUpgrade {
     }
 
     @Override
-    public List<ConfigurationFieldModel> convertEntityToFieldList(final DatabaseEntity databaseEntity) {
+    protected List<ConfigurationFieldModel> convertEntityToFieldList(final DatabaseEntity databaseEntity) {
         final HipChatGlobalConfigEntity entity = (HipChatGlobalConfigEntity) databaseEntity;
         final List<ConfigurationFieldModel> fieldModels = new LinkedList<>();
         final String apiKey = entity.getApiKey();

@@ -51,7 +51,7 @@ public class SlackDistributionUpgrade extends DataUpgrade {
     }
 
     @Override
-    public List<ConfigurationFieldModel> convertEntityToFieldList(final DatabaseEntity databaseEntity) {
+    protected List<ConfigurationFieldModel> convertEntityToFieldList(final DatabaseEntity databaseEntity) {
         final SlackDistributionConfigEntity entity = (SlackDistributionConfigEntity) databaseEntity;
         final List<ConfigurationFieldModel> configurationFieldModels = commonDistributionFieldCreator.createCommonFields(SlackChannel.COMPONENT_NAME, entity.getId());
         final String webhook = entity.getWebhook();

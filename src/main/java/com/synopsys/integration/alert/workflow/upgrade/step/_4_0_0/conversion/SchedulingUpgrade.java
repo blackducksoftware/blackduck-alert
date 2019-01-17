@@ -49,7 +49,7 @@ public class SchedulingUpgrade extends DataUpgrade {
     }
 
     @Override
-    public List<ConfigurationFieldModel> convertEntityToFieldList(final DatabaseEntity databaseEntity) {
+    protected List<ConfigurationFieldModel> convertEntityToFieldList(final DatabaseEntity databaseEntity) {
         final SchedulingConfigEntity entity = (SchedulingConfigEntity) databaseEntity;
         final List<ConfigurationFieldModel> fieldModels = new LinkedList<>();
 

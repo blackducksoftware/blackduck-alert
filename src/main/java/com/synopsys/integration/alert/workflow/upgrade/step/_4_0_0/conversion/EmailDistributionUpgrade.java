@@ -51,7 +51,7 @@ public class EmailDistributionUpgrade extends DataUpgrade {
     }
 
     @Override
-    public List<ConfigurationFieldModel> convertEntityToFieldList(final DatabaseEntity databaseEntity) {
+    protected List<ConfigurationFieldModel> convertEntityToFieldList(final DatabaseEntity databaseEntity) {
         final EmailGroupDistributionConfigEntity entity = (EmailGroupDistributionConfigEntity) databaseEntity;
         final List<ConfigurationFieldModel> commonFields = commonDistributionFieldCreator.createCommonFields(getDescriptorName(), entity.getId());
 

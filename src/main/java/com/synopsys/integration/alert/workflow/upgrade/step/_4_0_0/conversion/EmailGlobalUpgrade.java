@@ -49,7 +49,7 @@ public class EmailGlobalUpgrade extends DataUpgrade {
     }
 
     @Override
-    public List<ConfigurationFieldModel> convertEntityToFieldList(final DatabaseEntity databaseEntity) {
+    protected List<ConfigurationFieldModel> convertEntityToFieldList(final DatabaseEntity databaseEntity) {
         final EmailGlobalConfigEntity entity = (EmailGlobalConfigEntity) databaseEntity;
         final List<ConfigurationFieldModel> fieldModels = new LinkedList<>();
 

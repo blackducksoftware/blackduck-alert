@@ -58,6 +58,6 @@ public abstract class DataUpgrade {
         }
     }
 
-    public abstract List<ConfigurationFieldModel> convertEntityToFieldList(DatabaseEntity databaseEntity);
+    protected abstract List<ConfigurationFieldModel> convertEntityToFieldList(DatabaseEntity databaseEntity);
 
 }

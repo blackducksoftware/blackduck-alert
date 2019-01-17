@@ -51,7 +51,7 @@ public class HipChatDistributionUpgrade extends DataUpgrade {
     }
 
     @Override
-    public List<ConfigurationFieldModel> convertEntityToFieldList(final DatabaseEntity databaseEntity) {
+    protected List<ConfigurationFieldModel> convertEntityToFieldList(final DatabaseEntity databaseEntity) {
         final HipChatDistributionConfigEntity entity = (HipChatDistributionConfigEntity) databaseEntity;
         final List<ConfigurationFieldModel> fieldModels = commonDistributionFieldCreator.createCommonFields(getDescriptorName(), entity.getId());
         final String color = entity.getColor();

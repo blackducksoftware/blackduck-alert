@@ -26,6 +26,7 @@ package com.synopsys.integration.alert.workflow.upgrade.step._4_0_0.conversion;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
@@ -43,6 +44,7 @@ public class CommonDistributionFieldCreator {
     private final NotificationTypeRepository notificationTypeRepository;
     private final FieldCreatorUtil fieldCreatorUtil;
 
+    @Autowired
     public CommonDistributionFieldCreator(final CommonDistributionRepository commonDistributionRepository, final DistributionNotificationTypeRepository distributionNotificationTypeRepository,
         final NotificationTypeRepository notificationTypeRepository, final FieldCreatorUtil fieldCreatorUtil) {
         this.commonDistributionRepository = commonDistributionRepository;
