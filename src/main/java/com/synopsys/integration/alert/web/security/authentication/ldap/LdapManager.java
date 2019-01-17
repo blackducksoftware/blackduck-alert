@@ -23,8 +23,6 @@
  */
 package com.synopsys.integration.alert.web.security.authentication.ldap;
 
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,11 +70,10 @@ public class LdapManager {
     }
 
     public ConfigurationModel getCurrentConfiguration() throws AlertDatabaseConstraintException, AlertLDAPConfigurationException {
-        final List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorName(SettingsDescriptor.SETTINGS_COMPONENT);
-        if (!configurations.isEmpty() && 1 == configurations.size()) {
-            return configurations.get(0);
-        }
-        throw new AlertLDAPConfigurationException("more than 1 settings configuration present");
+        return configurationAccessor.getConfigurationsByDescriptorName(SettingsDescriptor.SETTINGS_COMPONENT)
+                   .stream()
+                   .findFirst()
+                   .orElseThrow(() -> new AlertLDAPConfigurationException("Settings configuration missing"));
     }
 
     public LdapAuthenticationProvider getAuthenticationProvider() throws AlertLDAPConfigurationException {
@@ -86,7 +83,9 @@ public class LdapManager {
 
     public void updateContext() throws AlertLDAPConfigurationException {
         try {
-            if (isLdapEnabled()) {
+            if (!isLdapEnabled()) {
+                return;
+            } else {
                 final ConfigurationModel configuration = getCurrentConfiguration();
                 final LdapContextSource ldapContextSource = new LdapContextSource();
 
@@ -137,8 +136,8 @@ public class LdapManager {
     private LdapAuthenticator createAuthenticator(final ConfigurationModel configurationModel) throws AlertLDAPConfigurationException {
         final BindAuthenticator authenticator = new BindAuthenticator(contextSource);
         try {
-            final String[] userDnArray = createSetFromCSV(getFieldValueOrEmpty(configurationModel, SettingsDescriptor.KEY_LDAP_USER_DN_PATTERNS));
-            final String[] userAttributeArray = createSetFromCSV(getFieldValueOrEmpty(configurationModel, SettingsDescriptor.KEY_LDAP_USER_ATTRIBUTES));
+            final String[] userDnArray = createArrayFromCSV(getFieldValueOrEmpty(configurationModel, SettingsDescriptor.KEY_LDAP_USER_DN_PATTERNS));
+            final String[] userAttributeArray = createArrayFromCSV(getFieldValueOrEmpty(configurationModel, SettingsDescriptor.KEY_LDAP_USER_ATTRIBUTES));
             authenticator.setUserSearch(createLdapUserSearch(configurationModel, contextSource));
             authenticator.setUserDnPatterns(userDnArray);
             authenticator.setUserAttributes(userAttributeArray);
@@ -149,7 +148,7 @@ public class LdapManager {
         return authenticator;
     }
 
-    private String[] createSetFromCSV(final String commaSeparatedString) {
+    private String[] createArrayFromCSV(final String commaSeparatedString) {
         return StringUtils.split(commaSeparatedString, ",");
     }
 
