@@ -23,10 +23,10 @@
  */
 package com.synopsys.integration.alert.workflow.upgrade;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Set;
+import java.util.TreeMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,11 +59,11 @@ public class UpgradeProcessor {
         } catch (final AlertDatabaseConstraintException e) {
             throw new AlertUpgradeException("Error when registering descriptors and fields", e);
         }
-        final Map<SemanticVersion, UpgradeStep> upgradeProcessSteps = initializeUpgradeMap();
-        final List<SemanticVersion> sortedVersions = upgradeProcessSteps.keySet()
-                                                         .stream()
-                                                         .sorted()
-                                                         .collect(Collectors.toList());
+        final Map<SemanticVersion, UpgradeStep> upgradeProcessSteps = new TreeMap<>();
+        initializeUpgradeMap(upgradeProcessSteps);
+
+        // TODO verify that the set returned here is also sorted as it was in the TreeMap
+        final Set<SemanticVersion> sortedVersions = upgradeProcessSteps.keySet();
         for (final SemanticVersion semanticVersion : sortedVersions) {
             final UpgradeStep upgradeStep = upgradeProcessSteps.get(semanticVersion);
             final String version = semanticVersion.getVersionString();
@@ -77,16 +77,15 @@ public class UpgradeProcessor {
         return !alertVersionUtil.doVersionsMatch();
     }
 
-    private Map<SemanticVersion, UpgradeStep> initializeUpgradeMap() {
+    // Perhaps change to UpgradeOperation
+    private void initializeUpgradeMap(Map<SemanticVersion, UpgradeStep> stepMap) {
         final SemanticVersion buildVersion = new SemanticVersion(alertVersionUtil.findFileVersion());
         final SemanticVersion serverVersion = new SemanticVersion(alertVersionUtil.findDBVersion());
-        final Map<SemanticVersion, UpgradeStep> stepMap = new HashMap<>();
         for (final UpgradeStep upgradeStep : upgradeSteps) {
             final SemanticVersion stepVersion = new SemanticVersion(upgradeStep.getVersion());
             if (stepVersion.isGreaterThan(serverVersion) && stepVersion.isLessThanOrEqual(buildVersion)) {
                 stepMap.put(new SemanticVersion(upgradeStep.getVersion()), upgradeStep);
             }
         }
-        return stepMap;
     }
 }
