@@ -39,7 +39,7 @@ public class NumberConfigField extends ConfigField {
         return new NumberConfigField(key, label, false, false);
     }
 
-    public static NumberConfigField create(final String key, final String label, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
+    public static NumberConfigField create(final String key, final String label, final ConfigValidationFunction validationFunction) {
         return new NumberConfigField(key, label, false, false, validationFunction);
     }
 
@@ -47,7 +47,7 @@ public class NumberConfigField extends ConfigField {
         return new NumberConfigField(key, label, true, false);
     }
 
-    public static NumberConfigField createRequired(final String key, final String label, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
+    public static NumberConfigField createRequired(final String key, final String label, final ConfigValidationFunction validationFunction) {
         return new NumberConfigField(key, label, true, false, validationFunction);
     }
 
@@ -55,7 +55,7 @@ public class NumberConfigField extends ConfigField {
         return new NumberConfigField(key, label, false, false, group);
     }
 
-    public static NumberConfigField createGrouped(final String key, final String label, final FieldGroup group, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
+    public static NumberConfigField createGrouped(final String key, final String label, final FieldGroup group, final ConfigValidationFunction validationFunction) {
         return new NumberConfigField(key, label, false, false, group, validationFunction);
     }
 
@@ -63,7 +63,7 @@ public class NumberConfigField extends ConfigField {
         super(key, label, FieldType.NUMBER_INPUT.getFieldTypeName(), required, sensitive, group);
     }
 
-    public NumberConfigField(final String key, final String label, final boolean required, final boolean sensitive, final FieldGroup group, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
+    public NumberConfigField(final String key, final String label, final boolean required, final boolean sensitive, final FieldGroup group, final ConfigValidationFunction validationFunction) {
         super(key, label, FieldType.NUMBER_INPUT.getFieldTypeName(), required, sensitive, group, validationFunction);
     }
 
@@ -71,13 +71,13 @@ public class NumberConfigField extends ConfigField {
         super(key, label, FieldType.NUMBER_INPUT.getFieldTypeName(), required, sensitive);
     }
 
-    public NumberConfigField(final String key, final String label, final boolean required, final boolean sensitive, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
+    public NumberConfigField(final String key, final String label, final boolean required, final boolean sensitive, final ConfigValidationFunction validationFunction) {
         super(key, label, FieldType.NUMBER_INPUT.getFieldTypeName(), required, sensitive, validationFunction);
     }
 
     @Override
     public Collection<String> validate(final FieldValueModel fieldValueModel, final FieldModel fieldModel) {
-        final List<BiFunction<FieldValueModel, FieldModel, Collection<String>>> validationFunctions;
+        final List<ConfigValidationFunction> validationFunctions;
         if (null != getValidationFunction()) {
             validationFunctions = List.of(this::validateIsNumber, getValidationFunction());
         } else {
