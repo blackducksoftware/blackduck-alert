@@ -41,7 +41,7 @@ public class SelectConfigField extends ConfigField {
         return new SelectConfigField(key, label, true, false, Collections.emptyList());
     }
 
-    public static SelectConfigField createRequiredEmpty(final String key, final String label, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
+    public static SelectConfigField createRequiredEmpty(final String key, final String label, final ConfigValidationFunction validationFunction) {
         return new SelectConfigField(key, label, true, false, Collections.emptyList(), validationFunction);
     }
 
@@ -49,7 +49,7 @@ public class SelectConfigField extends ConfigField {
         return new SelectConfigField(key, label, true, false, options);
     }
 
-    public static SelectConfigField createRequired(final String key, final String label, final Collection<String> options, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
+    public static SelectConfigField createRequired(final String key, final String label, final Collection<String> options, final ConfigValidationFunction validationFunction) {
         return new SelectConfigField(key, label, true, false, options, validationFunction);
     }
 
@@ -57,7 +57,7 @@ public class SelectConfigField extends ConfigField {
         return new SelectConfigField(key, label, false, false, options);
     }
 
-    public static SelectConfigField create(final String key, final String label, final Collection<String> options, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
+    public static SelectConfigField create(final String key, final String label, final Collection<String> options, final ConfigValidationFunction validationFunction) {
         return new SelectConfigField(key, label, false, false, options, validationFunction);
     }
 
@@ -69,7 +69,7 @@ public class SelectConfigField extends ConfigField {
     }
 
     public SelectConfigField(final String key, final String label, final boolean required, final boolean sensitive, final boolean searchable, final boolean multiSelect, final Collection<String> options,
-        final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
+        final ConfigValidationFunction validationFunction) {
         super(key, label, FieldType.SELECT.getFieldTypeName(), required, sensitive, FieldGroup.DEFAULT, "", validationFunction);
         this.searchable = searchable;
         this.multiSelect = multiSelect;
@@ -80,7 +80,7 @@ public class SelectConfigField extends ConfigField {
         this(key, label, required, sensitive, true, false, options);
     }
 
-    public SelectConfigField(final String key, final String label, final boolean required, final boolean sensitive, final Collection<String> options, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
+    public SelectConfigField(final String key, final String label, final boolean required, final boolean sensitive, final Collection<String> options, final ConfigValidationFunction validationFunction) {
         this(key, label, required, sensitive, true, false, options, validationFunction);
     }
 

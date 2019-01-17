@@ -35,7 +35,7 @@ public class ReadOnlyConfigField extends ConfigField {
         return new ReadOnlyConfigField(key, label, true, false);
     }
 
-    public static ReadOnlyConfigField createRequired(final String key, final String label, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
+    public static ReadOnlyConfigField createRequired(final String key, final String label, final ConfigValidationFunction validationFunction) {
         return new ReadOnlyConfigField(key, label, true, false, validationFunction);
     }
 
@@ -43,7 +43,7 @@ public class ReadOnlyConfigField extends ConfigField {
         return new ReadOnlyConfigField(key, label, false, false, group);
     }
 
-    public static ReadOnlyConfigField createGrouped(final String key, final String label, final String group, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
+    public static ReadOnlyConfigField createGrouped(final String key, final String label, final String group, final ConfigValidationFunction validationFunction) {
         return new ReadOnlyConfigField(key, label, false, false, group, validationFunction);
     }
 
@@ -51,7 +51,7 @@ public class ReadOnlyConfigField extends ConfigField {
         return new ReadOnlyConfigField(key, label, false, true, group);
     }
 
-    public static ReadOnlyConfigField createSensitiveGrouped(final String key, final String label, final String group, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
+    public static ReadOnlyConfigField createSensitiveGrouped(final String key, final String label, final String group, final ConfigValidationFunction validationFunction) {
         return new ReadOnlyConfigField(key, label, false, true, group, validationFunction);
     }
 
@@ -59,7 +59,7 @@ public class ReadOnlyConfigField extends ConfigField {
         super(key, label, FieldType.READ_ONLY.getFieldTypeName(), required, sensitive, subGroup);
     }
 
-    public ReadOnlyConfigField(final String key, final String label, final boolean required, final boolean sensitive, final String subGroup, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
+    public ReadOnlyConfigField(final String key, final String label, final boolean required, final boolean sensitive, final String subGroup, final ConfigValidationFunction validationFunction) {
         super(key, label, FieldType.READ_ONLY.getFieldTypeName(), required, sensitive, subGroup, validationFunction);
     }
 
@@ -67,7 +67,7 @@ public class ReadOnlyConfigField extends ConfigField {
         super(key, label, FieldType.READ_ONLY.getFieldTypeName(), required, sensitive);
     }
 
-    public ReadOnlyConfigField(final String key, final String label, final boolean required, final boolean sensitive, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
+    public ReadOnlyConfigField(final String key, final String label, final boolean required, final boolean sensitive, final ConfigValidationFunction validationFunction) {
         super(key, label, FieldType.READ_ONLY.getFieldTypeName(), required, sensitive, validationFunction);
     }
 }

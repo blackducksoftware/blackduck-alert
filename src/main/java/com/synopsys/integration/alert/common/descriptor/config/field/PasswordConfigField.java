@@ -35,7 +35,7 @@ public class PasswordConfigField extends ConfigField {
         return new PasswordConfigField(key, label, false);
     }
 
-    public static PasswordConfigField create(final String key, final String label, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
+    public static PasswordConfigField create(final String key, final String label, final ConfigValidationFunction validationFunction) {
         return new PasswordConfigField(key, label, false, validationFunction);
     }
 
@@ -43,7 +43,7 @@ public class PasswordConfigField extends ConfigField {
         return new PasswordConfigField(key, label, true);
     }
 
-    public static PasswordConfigField createRequired(final String key, final String label, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
+    public static PasswordConfigField createRequired(final String key, final String label, final ConfigValidationFunction validationFunction) {
         return new PasswordConfigField(key, label, true, validationFunction);
     }
 
@@ -51,7 +51,7 @@ public class PasswordConfigField extends ConfigField {
         super(key, label, FieldType.PASSWORD_INPUT.getFieldTypeName(), required, true);
     }
 
-    public PasswordConfigField(final String key, final String label, final boolean required, final BiFunction<FieldValueModel, FieldModel, Collection<String>> validationFunction) {
+    public PasswordConfigField(final String key, final String label, final boolean required, final ConfigValidationFunction validationFunction) {
         super(key, label, FieldType.PASSWORD_INPUT.getFieldTypeName(), required, true, validationFunction);
     }
 
