@@ -3,7 +3,6 @@ package com.synopsys.integration.alert.workflow.startup;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -32,7 +31,7 @@ public class AlertStartupInitializerTest {
         final EmailGlobalDescriptorActionApi descriptorConfig = Mockito.mock(EmailGlobalDescriptorActionApi.class);
         final List<DescriptorActionApi> restApis = List.of(descriptorConfig);
         final ChannelDescriptor channelDescriptor = new HipChatDescriptor(null, null, null, null, new HipChatGlobalUIConfig());
-        Mockito.when(baseDescriptorAccessor.getFieldsForDescriptor(Mockito.anyString(), Mockito.any(ConfigContextEnum.class))).thenReturn(new ArrayList<>(channelDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL)));
+        Mockito.when(baseDescriptorAccessor.getFieldsForDescriptor(Mockito.anyString(), Mockito.any(ConfigContextEnum.class))).thenReturn(List.copyOf(channelDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL)));
         final List<ChannelDescriptor> channelDescriptors = List.of(channelDescriptor);
         final List<ProviderDescriptor> providerDescriptors = List.of();
         final List<ComponentDescriptor> componentDescriptors = List.of();
@@ -63,7 +62,7 @@ public class AlertStartupInitializerTest {
         final EmailGlobalDescriptorActionApi descriptorConfig = Mockito.mock(EmailGlobalDescriptorActionApi.class);
         final List<DescriptorActionApi> restApis = List.of(descriptorConfig);
         final ChannelDescriptor channelDescriptor = new HipChatDescriptor(null, null, null, null, new HipChatGlobalUIConfig());
-        Mockito.when(descriptorAccessor.getFieldsForDescriptor(Mockito.anyString(), Mockito.any(ConfigContextEnum.class))).thenReturn(new ArrayList<>(channelDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL)));
+        Mockito.when(descriptorAccessor.getFieldsForDescriptor(Mockito.anyString(), Mockito.any(ConfigContextEnum.class))).thenReturn(List.copyOf(channelDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL)));
         final List<ChannelDescriptor> channelDescriptors = List.of(channelDescriptor);
         final List<ProviderDescriptor> providerDescriptors = List.of();
         final List<ComponentDescriptor> componentDescriptors = List.of();
