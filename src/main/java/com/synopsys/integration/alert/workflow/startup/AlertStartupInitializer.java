@@ -23,6 +23,7 @@
  */
 package com.synopsys.integration.alert.workflow.startup;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,9 +68,15 @@ public class AlertStartupInitializer {
 
     public void initializeConfigs(final boolean overwriteCurrentConfig) throws IllegalArgumentException, SecurityException, AlertDatabaseConstraintException {
         final Set<String> descriptorNames = descriptorMap.getDescriptorMap().keySet();
+        logger.info("** --------------------------------- **");
+        logger.info("Initializing descriptors with environment variables...");
         for (final String descriptorName : descriptorNames) {
+            logger.info("---------------------------------");
+            logger.info("Descriptor: {}", descriptorName);
+            logger.info("---------------------------------");
             final Map<String, String> newConfiguration = new HashMap<>();
             final List<DefinedFieldModel> fieldsForDescriptor = descriptorAccessor.getFieldsForDescriptor(descriptorName, ConfigContextEnum.GLOBAL);
+            fieldsForDescriptor.sort(Comparator.comparing(DefinedFieldModel::getKey));
             for (final DefinedFieldModel fieldModel : fieldsForDescriptor) {
                 final String key = fieldModel.getKey();
                 final String convertedKey = convertKeyToPropery(descriptorName, key);
@@ -117,11 +124,15 @@ public class AlertStartupInitializer {
     }
 
     private String getEnvironmentValue(final String propertyKey) {
+        String found = "No";
         String value = System.getProperty(propertyKey);
         if (StringUtils.isBlank(value)) {
-            logger.debug("Not found in system env, checking Spring env");
             value = environment.getProperty(propertyKey);
+            if (environment.containsProperty(propertyKey)) {
+                found = "Yes";
+            }
         }
+        logger.info("  {}: {}", propertyKey, found);
         return value;
     }
 }
