@@ -23,6 +23,7 @@
  */
 package com.synopsys.integration.alert.workflow.startup;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -75,7 +76,8 @@ public class AlertStartupInitializer {
             logger.info("Descriptor: {}", descriptorName);
             logger.info("---------------------------------");
             final Map<String, String> newConfiguration = new HashMap<>();
-            final List<DefinedFieldModel> fieldsForDescriptor = descriptorAccessor.getFieldsForDescriptor(descriptorName, ConfigContextEnum.GLOBAL);
+            final List<DefinedFieldModel> fieldsForDescriptor = new ArrayList<>(descriptorAccessor.getFieldsForDescriptor(descriptorName, ConfigContextEnum.GLOBAL));
+            // in order to sort need a mutable list
             fieldsForDescriptor.sort(Comparator.comparing(DefinedFieldModel::getKey));
             for (final DefinedFieldModel fieldModel : fieldsForDescriptor) {
                 final String key = fieldModel.getKey();
