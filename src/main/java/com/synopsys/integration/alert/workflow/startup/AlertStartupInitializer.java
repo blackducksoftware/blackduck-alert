@@ -23,11 +23,11 @@
  */
 package com.synopsys.integration.alert.workflow.startup;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -76,16 +76,13 @@ public class AlertStartupInitializer {
             logger.info("Descriptor: {}", descriptorName);
             logger.info("---------------------------------");
             final Map<String, String> newConfiguration = new HashMap<>();
-            final List<DefinedFieldModel> fieldsForDescriptor = new ArrayList<>(descriptorAccessor.getFieldsForDescriptor(descriptorName, ConfigContextEnum.GLOBAL));
-            // in order to sort need a mutable list
-            fieldsForDescriptor.sort(Comparator.comparing(DefinedFieldModel::getKey));
+            final List<DefinedFieldModel> fieldsForDescriptor = descriptorAccessor.getFieldsForDescriptor(descriptorName, ConfigContextEnum.GLOBAL).stream()
+                                                                    .sorted(Comparator.comparing(DefinedFieldModel::getKey))
+                                                                    .collect(Collectors.toList());
             for (final DefinedFieldModel fieldModel : fieldsForDescriptor) {
                 final String key = fieldModel.getKey();
                 final String convertedKey = convertKeyToPropery(descriptorName, key);
-                final String value = getEnvironmentValue(convertedKey);
-                if (StringUtils.isNotBlank(value)) {
-                    newConfiguration.put(key, value);
-                }
+                getEnvironmentValue(convertedKey).ifPresent(value -> newConfiguration.put(key, value));
                 alertStartupFields.add(convertedKey);
             }
             if (!newConfiguration.isEmpty()) {
@@ -125,7 +122,7 @@ public class AlertStartupInitializer {
         return String.join("_", "alert", descriptorName, keyUnderscores).toUpperCase();
     }
 
-    private String getEnvironmentValue(final String propertyKey) {
+    private Optional<String> getEnvironmentValue(final String propertyKey) {
         String found = "No";
         String value = System.getProperty(propertyKey);
         if (StringUtils.isBlank(value)) {
@@ -135,6 +132,6 @@ public class AlertStartupInitializer {
             }
         }
         logger.info("  {}: {}", propertyKey, found);
-        return value;
+        return Optional.ofNullable(value);
     }
 }
