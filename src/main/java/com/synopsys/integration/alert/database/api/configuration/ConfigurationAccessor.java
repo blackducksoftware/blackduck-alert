@@ -272,7 +272,8 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
         final DescriptorConfigEntity descriptorConfigEntity = descriptorConfigsRepository
                                                                   .findById(descriptorConfigId)
                                                                   .orElseThrow(() -> new AlertDatabaseConstraintException("A config with that id did not exist"));
-        final List<FieldValueEntity> oldValues = fieldValueRepository.findByConfigId(descriptorConfigEntity.getDescriptorId());
+
+        final List<FieldValueEntity> oldValues = fieldValueRepository.findByConfigId(descriptorConfigId);
         fieldValueRepository.deleteAll(oldValues);
 
         final String configContext = getContextById(descriptorConfigEntity.getContextId());

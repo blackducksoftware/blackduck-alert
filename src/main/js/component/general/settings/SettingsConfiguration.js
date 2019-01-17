@@ -1,10 +1,10 @@
-import connect from 'react-redux/es/connect/connect';
 import React, { Component } from 'react';
-import { getInitialSystemSetup, saveInitialSystemSetup } from 'store/actions/system';
+import { getSystemSetup, saveSystemSetup } from 'store/actions/system';
+import connect from 'react-redux/es/connect/connect';
 import SettingsConfigurationForm from 'component/general/settings/SettingsConfigurationForm';
 import PropTypes from 'prop-types';
 
-class SetupPage extends Component {
+class SettingsConfiguration extends Component {
     constructor(props) {
         super(props);
         this.getSettings = this.getSettings.bind(this);
@@ -21,25 +21,25 @@ class SetupPage extends Component {
 
     render() {
         return (
-            <div className="settingsWrapper">
-                <div className="settingsContainer">
-                    <div className="settingsBox">
-                        <SettingsConfigurationForm
-                            fetchingSetupStatus={this.props.fetchingSetupStatus}
-                            updateStatus={this.props.updateStatus}
-                            settingsData={this.props.currentSettingsData}
-                            fieldErrors={this.props.fieldErrors}
-                            getSettings={this.getSettings}
-                            saveSettings={this.saveSettings}
-                        />
-                    </div>
-                </div>
+            <div>
+                <h1>
+                    <span className="fa fa-cog" />
+                    Settings
+                </h1>
+                <SettingsConfigurationForm
+                    fetchingSetupStatus={this.props.fetchingSetupStatus}
+                    updateStatus={this.props.updateStatus}
+                    settingsData={this.props.currentSettingsData}
+                    fieldErrors={this.props.fieldErrors}
+                    getSettings={this.getSettings}
+                    saveSettings={this.saveSettings}
+                />
             </div>
         );
     }
 }
 
-SetupPage.propTypes = {
+SettingsConfiguration.propTypes = {
     fetchingSetupStatus: PropTypes.string.isRequired,
     getSettings: PropTypes.func.isRequired,
     saveSettings: PropTypes.func.isRequired,
@@ -48,7 +48,7 @@ SetupPage.propTypes = {
     fieldErrors: PropTypes.object
 };
 
-SetupPage.defaultProps = {
+SettingsConfiguration.defaultProps = {
     fieldErrors: {},
     currentSettingsData: {},
     updateStatus: ''
@@ -62,8 +62,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    getSettings: () => dispatch(getInitialSystemSetup()),
-    saveSettings: setupData => dispatch(saveInitialSystemSetup(setupData))
+    getSettings: () => dispatch(getSystemSetup()),
+    saveSettings: setupData => dispatch(saveSystemSetup(setupData))
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(SetupPage);
+export default connect(mapStateToProps, mapDispatchToProps)(SettingsConfiguration);

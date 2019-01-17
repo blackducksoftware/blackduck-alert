@@ -24,7 +24,7 @@
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
 import java.io.IOException;
-import java.util.Map;
+import java.util.Collection;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -33,8 +33,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.web.model.FieldModel;
@@ -62,30 +62,15 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
     }
 
     @Override
-    public void validateConfig(final FieldAccessor fieldAccessor, final Map<String, String> fieldErrors) {
-        final String timeout = fieldAccessor.getString(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT).orElse(null);
-        final String apiKey = fieldAccessor.getString(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY).orElse(null);
-        if (StringUtils.isNotBlank(timeout) && !StringUtils.isNumeric(timeout)) {
-            fieldErrors.put(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT, "Not an Integer.");
-        }
-
-        if (StringUtils.isNotBlank(apiKey)) {
-            if (apiKey.length() < 64 || apiKey.length() > 256) {
-                fieldErrors.put(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY, "Invalid Black Duck API Token.");
-            }
-        }
-    }
-
-    @Override
-    public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
+    public void testConfig(final Collection<ConfigField> configFields, final TestConfigModel testConfig) throws IntegrationException {
         final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
 
         final FieldModel fieldModel = testConfig.getFieldModel();
-        validateFieldFormatting(fieldModel.convertToFieldAccessor());
+        validateFieldFormatting(configFields, fieldModel);
 
-        final String apiToken = fieldModel.getField(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY).getValue().orElse("");
-        final String url = fieldModel.getField(BlackDuckDescriptor.KEY_BLACKDUCK_URL).getValue().orElse("");
-        final String timeout = fieldModel.getField(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT).getValue().orElse("");
+        final String apiToken = fieldModel.getField(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY).flatMap(field -> field.getValue()).orElse("");
+        final String url = fieldModel.getField(BlackDuckDescriptor.KEY_BLACKDUCK_URL).flatMap(field -> field.getValue()).orElse("");
+        final String timeout = fieldModel.getField(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT).flatMap(field -> field.getValue()).orElse("");
         final BlackDuckServerConfigBuilder blackDuckServerConfigBuilder = blackDuckProperties.createServerConfigBuilderWithoutAuthentication(intLogger, NumberUtils.toInt(timeout, 300));
         blackDuckServerConfigBuilder.setApiToken(apiToken);
         blackDuckServerConfigBuilder.setUrl(url);

@@ -135,13 +135,12 @@ public class ConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @WithMockUser(roles = "ADMIN")
     public void testUpdateConfig() throws Exception {
         registerDescriptor(hipChatDescriptor);
-        final String urlPath = ConfigController.CONFIGURATION_PATH;
+        final ConfigurationModel emptyConfigurationModel = getConfigurationAccessor().createEmptyConfiguration(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION);
+        final String configId = String.valueOf(emptyConfigurationModel.getConfigurationId());
+        final String urlPath = ConfigController.CONFIGURATION_PATH + "/" + configId;
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(urlPath)
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
-
-        final ConfigurationModel emptyConfigurationModel = getConfigurationAccessor().createEmptyConfiguration(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION);
-        final String configId = String.valueOf(emptyConfigurationModel.getConfigurationId());
 
         final FieldModel fieldModel = createTestFieldModel();
         fieldModel.setId(configId);

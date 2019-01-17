@@ -23,19 +23,36 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field;
 
+import java.util.Collection;
+import java.util.function.BiFunction;
+
 import com.synopsys.integration.alert.common.enumeration.FieldType;
+import com.synopsys.integration.alert.web.model.FieldModel;
+import com.synopsys.integration.alert.web.model.FieldValueModel;
 
 public class PasswordConfigField extends ConfigField {
     public static PasswordConfigField create(final String key, final String label) {
         return new PasswordConfigField(key, label, false);
     }
 
+    public static PasswordConfigField create(final String key, final String label, final ConfigValidationFunction validationFunction) {
+        return new PasswordConfigField(key, label, false, validationFunction);
+    }
+
     public static PasswordConfigField createRequired(final String key, final String label) {
         return new PasswordConfigField(key, label, true);
     }
 
+    public static PasswordConfigField createRequired(final String key, final String label, final ConfigValidationFunction validationFunction) {
+        return new PasswordConfigField(key, label, true, validationFunction);
+    }
+
     public PasswordConfigField(final String key, final String label, final boolean required) {
         super(key, label, FieldType.PASSWORD_INPUT.getFieldTypeName(), required, true);
+    }
+
+    public PasswordConfigField(final String key, final String label, final boolean required, final ConfigValidationFunction validationFunction) {
+        super(key, label, FieldType.PASSWORD_INPUT.getFieldTypeName(), required, true, validationFunction);
     }
 
 }

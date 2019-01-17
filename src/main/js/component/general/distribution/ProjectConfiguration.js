@@ -142,7 +142,7 @@ class ProjectConfiguration extends Component {
                     id="projectConfigurationAll"
                     label="Include all projects"
                     name="includeAllProjects"
-                    value={this.props.includeAllProjects}
+                    isChecked={this.props.includeAllProjects}
                     onChange={this.props.handleChange}
                     errorName="includeAllProjectsError"
                     errorValue={this.props.includeAllProjectsError}

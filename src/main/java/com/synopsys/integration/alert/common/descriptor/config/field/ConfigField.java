@@ -23,10 +23,22 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.function.BiFunction;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.synopsys.integration.alert.common.enumeration.FieldGroup;
+import com.synopsys.integration.alert.web.model.FieldModel;
+import com.synopsys.integration.alert.web.model.FieldValueModel;
 import com.synopsys.integration.util.Stringable;
 
 public class ConfigField extends Stringable {
+    public static final String REQUIRED_FIELD_MISSING = "Required field missing";
+    public static final ConfigValidationFunction NO_VALIDATION = (fieldToValidate, fieldModel) -> List.of();
+
     private String key;
     private String label;
     private String type;
@@ -34,8 +46,10 @@ public class ConfigField extends Stringable {
     private boolean sensitive;
     private FieldGroup group;
     private String subGroup;
+    private transient ConfigValidationFunction validationFunction;
 
-    public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive, final FieldGroup group, final String subGroup) {
+    public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive, final FieldGroup group, final String subGroup,
+        final ConfigValidationFunction validationFunction) {
         this.key = key;
         this.label = label;
         this.type = type;
@@ -43,18 +57,67 @@ public class ConfigField extends Stringable {
         this.sensitive = sensitive;
         this.group = group;
         this.subGroup = subGroup;
+        this.validationFunction = validationFunction;
     }
 
     public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive, final FieldGroup group) {
-        this(key, label, type, required, sensitive, group, "");
+        this(key, label, type, required, sensitive, group, "", NO_VALIDATION);
+    }
+
+    public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive, final FieldGroup group, final ConfigValidationFunction validationFunction) {
+        this(key, label, type, required, sensitive, group, "", validationFunction);
     }
 
     public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive, final String subGroup) {
-        this(key, label, type, required, sensitive, FieldGroup.DEFAULT, subGroup);
+        this(key, label, type, required, sensitive, FieldGroup.DEFAULT, subGroup, NO_VALIDATION);
+    }
+
+    public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive, final String subGroup, final ConfigValidationFunction validationFunction) {
+        this(key, label, type, required, sensitive, FieldGroup.DEFAULT, subGroup, validationFunction);
     }
 
     public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive) {
-        this(key, label, type, required, sensitive, FieldGroup.DEFAULT, "");
+        this(key, label, type, required, sensitive, FieldGroup.DEFAULT, "", NO_VALIDATION);
+    }
+
+    public ConfigField(final String key, final String label, final String type, final boolean required, final boolean sensitive, final ConfigValidationFunction validationFunction) {
+        this(key, label, type, required, sensitive, FieldGroup.DEFAULT, "", validationFunction);
+    }
+
+    public Collection<String> validate(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        return validate(fieldToValidate, fieldModel, List.of(validationFunction));
+    }
+
+    final Collection<String> validate(final FieldValueModel fieldToValidate, final FieldModel fieldModel, final List<ConfigValidationFunction> validationFunctions) {
+        final Collection<String> errors = new LinkedList<>();
+        errors.addAll(validateRequiredField(fieldToValidate));
+        final boolean performValidation = errors.isEmpty() && fieldToValidate.hasValues();
+        if (performValidation) {
+            for (final ConfigValidationFunction validation : validationFunctions) {
+                if (null != validation) {
+                    errors.addAll(validation.apply(fieldToValidate, fieldModel));
+                }
+            }
+        }
+
+        return errors;
+    }
+
+    private Collection<String> validateRequiredField(final FieldValueModel fieldToValidate) {
+        final Collection<String> errors = new LinkedList<>();
+        if (isRequired()) {
+            if (fieldToValidate.hasValues()) {
+                final boolean valuesAllEmpty = fieldToValidate.getValues().stream().allMatch(value -> StringUtils.isBlank(value));
+                if (valuesAllEmpty) {
+                    errors.add(REQUIRED_FIELD_MISSING);
+                }
+            } else {
+                if (!fieldToValidate.isSet()) {
+                    errors.add(REQUIRED_FIELD_MISSING);
+                }
+            }
+        }
+        return errors;
     }
 
     public String getKey() {
@@ -113,4 +176,11 @@ public class ConfigField extends Stringable {
         this.subGroup = subGroup;
     }
 
+    public ConfigValidationFunction getValidationFunction() {
+        return validationFunction;
+    }
+
+    public void setValidationFunction(final ConfigValidationFunction validationFunction) {
+        this.validationFunction = validationFunction;
+    }
 }

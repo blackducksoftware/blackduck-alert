@@ -24,7 +24,9 @@
 package com.synopsys.integration.alert.common.descriptor.config.ui;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
@@ -34,6 +36,8 @@ import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfi
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
+import com.synopsys.integration.alert.web.model.FieldModel;
+import com.synopsys.integration.alert.web.model.FieldValueModel;
 
 @Component
 public class ProviderDistributionUIConfig {
@@ -44,9 +48,18 @@ public class ProviderDistributionUIConfig {
     // TODO pass the notification types and formats
     public List<ConfigField> createCommonConfigFields(final Provider provider) {
         final ConfigField notificationTypesField = SelectConfigField.createRequired(KEY_NOTIFICATION_TYPES, "Notification Types", provider.getProviderContentTypes().stream().map(ProviderContentType::getNotificationType).collect(
-            Collectors.toList()));
+            Collectors.toList()), this::validateNotificationTypes);
         final ConfigField formatField = SelectConfigField.createRequired(KEY_FORMAT_TYPE, "Format", provider.getSupportedFormatTypes().stream().map(FormatType::name).collect(Collectors.toList()));
 
         return Arrays.asList(notificationTypesField, formatField);
+    }
+
+    private Collection<String> validateNotificationTypes(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        final Collection<String> notificationTypes = Optional.ofNullable(fieldToValidate.getValues()).orElse(List.of());
+        if (notificationTypes == null || notificationTypes.size() <= 0) {
+            return List.of("Must have at least one notification type.");
+        }
+
+        return List.of();
     }
 }

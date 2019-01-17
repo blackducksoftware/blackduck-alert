@@ -49,7 +49,11 @@ public class FieldValueModel {
     }
 
     public Optional<String> getValue() {
-        return values.stream().findFirst();
+        Optional<String> value = Optional.empty();
+        if (null != values) {
+            value = values.stream().findFirst();
+        }
+        return value;
     }
 
     public void setValue(final String value) {
@@ -62,5 +66,9 @@ public class FieldValueModel {
 
     public void setIsSet(final boolean set) {
         isSet = set;
+    }
+
+    public boolean hasValues() {
+        return values != null && !values.isEmpty();
     }
 }
