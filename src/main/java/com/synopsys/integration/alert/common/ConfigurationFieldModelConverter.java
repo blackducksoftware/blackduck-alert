@@ -1,47 +1,53 @@
+/**
+ * blackduck-alert
+ *
+ * Copyright (C) 2019 Black Duck Software, Inc.
+ * http://www.blackducksoftware.com/
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package com.synopsys.integration.alert.common;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.EnumUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.web.model.FieldModel;
 
 @Component
 public class ConfigurationFieldModelConverter {
-    private final DescriptorMap descriptorMap;
 
-    @Autowired
-    public ConfigurationFieldModelConverter(final DescriptorMap descriptorMap) {
-        this.descriptorMap = descriptorMap;
+    public final FieldAccessor convertToFieldAccessor(final Map<String, ConfigField> configFieldMap, final FieldModel fieldModel) {
+        final Map<String, ConfigurationFieldModel> fields = convertFromFieldModel(configFieldMap, fieldModel);
+        return new FieldAccessor(fields);
     }
 
-    public Map<String, ConfigurationFieldModel> convertFromFieldModel(final FieldModel fieldModel) {
-        final Map<String, ConfigField> configFieldMap = retrieveUIConfigFields(fieldModel).stream().collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
+    public final Map<String, ConfigurationFieldModel> convertFromFieldModel(final Map<String, ConfigField> configFieldMap, final FieldModel fieldModel) {
         if (configFieldMap.isEmpty()) {
             return Map.of();
         }
 
         return convertToConfigurationFieldModelMap(configFieldMap, fieldModel);
-    }
-
-    private List<ConfigField> retrieveUIConfigFields(final FieldModel fieldModel) {
-        final String context = fieldModel.getContext();
-        final ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
-        return descriptorMap.getDescriptor(fieldModel.getDescriptorName())
-                   .map(descriptor -> descriptor.getUIConfig(descriptorContext))
-                   .flatMap(config -> config)
-                   .map(config -> config.createFields())
-                   .orElse(List.of());
     }
 
     private Map<String, ConfigurationFieldModel> convertToConfigurationFieldModelMap(final Map<String, ConfigField> configFieldMap, final FieldModel fieldModel) {

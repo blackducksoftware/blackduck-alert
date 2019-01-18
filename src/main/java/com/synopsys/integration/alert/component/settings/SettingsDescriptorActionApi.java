@@ -24,7 +24,6 @@
 package com.synopsys.integration.alert.component.settings;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -62,11 +61,11 @@ public class SettingsDescriptorActionApi extends DescriptorActionApi {
     }
 
     @Override
-    public void validateConfig(final Collection<ConfigField> descriptorFields, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
+    public void validateConfig(final Map<String, ConfigField> descriptorFields, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
         super.validateConfig(descriptorFields, fieldModel, fieldErrors);
         validateLDAPSettings(fieldModel, fieldErrors);
     }
-    
+
     private void validateLDAPSettings(final FieldModel fieldModel, final Map<String, String> fieldErrors) {
         final Optional<FieldValueModel> ldapEnabled = fieldModel.getField(SettingsDescriptor.KEY_LDAP_ENABLED);
         if (ldapEnabled.isPresent()) {
@@ -106,7 +105,7 @@ public class SettingsDescriptorActionApi extends DescriptorActionApi {
     }
 
     @Override
-    public void testConfig(final Collection<ConfigField> descriptorFields, final TestConfigModel testConfig) throws IntegrationException {
+    public void testConfig(final Map<String, ConfigField> descriptorFields, final TestConfigModel testConfig) throws IntegrationException {
 
     }
 

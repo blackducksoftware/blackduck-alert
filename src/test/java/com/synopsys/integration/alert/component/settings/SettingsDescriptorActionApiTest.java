@@ -6,7 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -30,8 +33,9 @@ public class SettingsDescriptorActionApiTest {
         final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
-
-        actionaApi.testConfig(settingsUIConfig.createFields(), null);
+        final Map<String, ConfigField> configFieldMap = settingsUIConfig.createFields().stream()
+                                                            .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
+        actionaApi.testConfig(configFieldMap, null);
         Mockito.verify(encryptionUtility, Mockito.times(0)).isInitialized();
         Mockito.verify(userAccessor, Mockito.times(0)).getUser(Mockito.anyString());
         Mockito.verify(systemValidator, Mockito.times(0)).validate(Mockito.anyMap());
@@ -121,7 +125,9 @@ public class SettingsDescriptorActionApiTest {
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of("valid_test_value"), false));
         final HashMap<String, String> fieldErrors = new HashMap<>();
-        actionaApi.validateConfig(settingsUIConfig.createFields(), fieldModel, fieldErrors);
+        final Map<String, ConfigField> configFieldMap = settingsUIConfig.createFields().stream()
+                                                            .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
+        actionaApi.validateConfig(configFieldMap, fieldModel, fieldErrors);
 
         assertTrue(fieldErrors.isEmpty());
     }
@@ -137,7 +143,9 @@ public class SettingsDescriptorActionApiTest {
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, new FieldValueModel(null, true));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(null, true));
         final HashMap<String, String> fieldErrors = new HashMap<>();
-        actionaApi.validateConfig(settingsUIConfig.createFields(), fieldModel, fieldErrors);
+        final Map<String, ConfigField> configFieldMap = settingsUIConfig.createFields().stream()
+                                                            .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
+        actionaApi.validateConfig(configFieldMap, fieldModel, fieldErrors);
 
         assertTrue(fieldErrors.isEmpty());
     }
@@ -153,7 +161,9 @@ public class SettingsDescriptorActionApiTest {
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, new FieldValueModel(List.of(""), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(""), false));
         final HashMap<String, String> fieldErrors = new HashMap<>();
-        actionaApi.validateConfig(settingsUIConfig.createFields(), fieldModel, fieldErrors);
+        final Map<String, ConfigField> configFieldMap = settingsUIConfig.createFields().stream()
+                                                            .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
+        actionaApi.validateConfig(configFieldMap, fieldModel, fieldErrors);
 
         assertFalse(fieldErrors.isEmpty());
         assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD));
@@ -162,7 +172,7 @@ public class SettingsDescriptorActionApiTest {
 
         fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
         fieldErrors.clear();
-        actionaApi.validateConfig(settingsUIConfig.createFields(), fieldModel, fieldErrors);
+        actionaApi.validateConfig(configFieldMap, fieldModel, fieldErrors);
 
         assertFalse(fieldErrors.isEmpty());
         assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD));
@@ -181,7 +191,9 @@ public class SettingsDescriptorActionApiTest {
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, new FieldValueModel(List.of("    "), true));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of("      "), true));
         final HashMap<String, String> fieldErrors = new HashMap<>();
-        actionaApi.validateConfig(settingsUIConfig.createFields(), fieldModel, fieldErrors);
+        final Map<String, ConfigField> configFieldMap = settingsUIConfig.createFields().stream()
+                                                            .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
+        actionaApi.validateConfig(configFieldMap, fieldModel, fieldErrors);
 
         assertFalse(fieldErrors.isEmpty());
         assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD));
@@ -202,7 +214,9 @@ public class SettingsDescriptorActionApiTest {
         fieldModel.putField(SettingsDescriptor.KEY_LDAP_ENABLED, new FieldValueModel(List.of("true"), false));
         fieldModel.putField(SettingsDescriptor.KEY_LDAP_SERVER, new FieldValueModel(List.of(""), false));
         final HashMap<String, String> fieldErrors = new HashMap<>();
-        actionaApi.validateConfig(settingsUIConfig.createFields(), fieldModel, fieldErrors);
+        final Map<String, ConfigField> configFieldMap = settingsUIConfig.createFields().stream()
+                                                            .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
+        actionaApi.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertFalse(fieldErrors.isEmpty());
         assertEquals(SettingsDescriptor.FIELD_ERROR_LDAP_SERVER_MISSING, fieldErrors.get(SettingsDescriptor.KEY_LDAP_SERVER));
     }

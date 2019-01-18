@@ -46,11 +46,11 @@ import com.synopsys.integration.rest.RestConstants;
 
 public abstract class DescriptorActionApi {
 
-    public void validateConfig(final Collection<ConfigField> descriptorFields, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
-        for (final ConfigField field : descriptorFields) {
-            final String fieldKey = field.getKey();
+    public void validateConfig(final Map<String, ConfigField> descriptorFields, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
+        for (final Map.Entry<String, ConfigField> fieldEntry : descriptorFields.entrySet()) {
+            final String fieldKey = fieldEntry.getKey();
             final Optional<FieldValueModel> optionalField = fieldModel.getField(fieldKey);
-            if (field.isRequired()) {
+            if (fieldEntry.getValue().isRequired()) {
                 if (optionalField.isEmpty()) {
                     fieldErrors.put(fieldKey, ConfigField.REQUIRED_FIELD_MISSING);
                 }
@@ -58,7 +58,7 @@ public abstract class DescriptorActionApi {
 
             // field is present now validate the field
             if (!fieldErrors.containsKey(fieldKey) && optionalField.isPresent()) {
-                final Collection<String> validationErrors = field.validate(optionalField.get(), fieldModel);
+                final Collection<String> validationErrors = fieldEntry.getValue().validate(optionalField.get(), fieldModel);
                 if (!validationErrors.isEmpty()) {
                     fieldErrors.put(fieldKey, StringUtils.join(validationErrors, ","));
                 }
@@ -70,7 +70,7 @@ public abstract class DescriptorActionApi {
         return new TestConfigModel(fieldModel, destination);
     }
 
-    public abstract void testConfig(final Collection<ConfigField> configFields, final TestConfigModel testConfig) throws IntegrationException;
+    public abstract void testConfig(final Map<String, ConfigField> configFields, final TestConfigModel testConfig) throws IntegrationException;
 
     public DistributionEvent createChannelEvent(final CommonDistributionConfiguration commmonDistributionConfig, final AggregateMessageContent messageContent) {
         return new DistributionEvent(commmonDistributionConfig.getId().toString(), commmonDistributionConfig.getChannelName(), RestConstants.formatDate(new Date()), commmonDistributionConfig.getProviderName(),
@@ -107,7 +107,7 @@ public abstract class DescriptorActionApi {
         return fieldModel;
     }
 
-    protected void validateFieldFormatting(final Collection<ConfigField> descriptorFields, final FieldModel fieldModel) throws AlertFieldException {
+    protected void validateFieldFormatting(final Map<String, ConfigField> descriptorFields, final FieldModel fieldModel) throws AlertFieldException {
         final Map<String, String> fieldErrors = new HashMap<>();
         validateConfig(descriptorFields, fieldModel, fieldErrors);
 

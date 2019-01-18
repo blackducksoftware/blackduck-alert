@@ -23,8 +23,8 @@
  */
 package com.synopsys.integration.alert.channel.email.descriptor;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -38,6 +38,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.EmailChannel;
 import com.synopsys.integration.alert.channel.email.EmailProperties;
+import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
@@ -52,14 +53,16 @@ import com.synopsys.integration.exception.IntegrationException;
 @Component
 public class EmailGlobalDescriptorActionApi extends DescriptorActionApi {
     private final EmailChannel emailChannel;
+    private final ConfigurationFieldModelConverter modelConverter;
 
     @Autowired
-    public EmailGlobalDescriptorActionApi(final EmailChannel emailChannel) {
+    public EmailGlobalDescriptorActionApi(final EmailChannel emailChannel, final ConfigurationFieldModelConverter modelConverter) {
         this.emailChannel = emailChannel;
+        this.modelConverter = modelConverter;
     }
 
     @Override
-    public void testConfig(final Collection<ConfigField> configFields, final TestConfigModel testConfig) throws IntegrationException {
+    public void testConfig(final Map<String, ConfigField> configFields, final TestConfigModel testConfig) throws IntegrationException {
         Set<String> emailAddresses = Set.of();
         final String testEmailAddress = testConfig.getDestination().orElse(null);
         if (StringUtils.isNotBlank(testEmailAddress)) {
@@ -71,7 +74,7 @@ public class EmailGlobalDescriptorActionApi extends DescriptorActionApi {
             }
             emailAddresses = Set.of(testEmailAddress);
         }
-        final FieldAccessor fieldAccessor = testConfig.getFieldModel().convertToFieldAccessor();
+        final FieldAccessor fieldAccessor = modelConverter.convertToFieldAccessor(configFields, testConfig.getFieldModel());
         final EmailProperties emailProperties = new EmailProperties(fieldAccessor);
 
         final SortedSet<LinkableItem> set = new TreeSet<>();

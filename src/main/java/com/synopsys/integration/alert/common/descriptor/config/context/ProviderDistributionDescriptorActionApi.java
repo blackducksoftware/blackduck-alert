@@ -23,7 +23,7 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.context;
 
-import java.util.Collection;
+import java.util.Map;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.web.model.TestConfigModel;
@@ -31,7 +31,7 @@ import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class ProviderDistributionDescriptorActionApi extends DescriptorActionApi {
     @Override
-    public void testConfig(final Collection<ConfigField> configFields, final TestConfigModel testConfig) throws IntegrationException {
+    public void testConfig(final Map<String, ConfigField> configFields, final TestConfigModel testConfig) throws IntegrationException {
 
     }
 }

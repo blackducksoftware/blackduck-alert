@@ -24,38 +24,45 @@
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
+import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.FieldValueModel;
 
 @Component
-public class BlackDuckDistributionUIConfig extends UIConfig {
-
-    public BlackDuckDistributionUIConfig() {
-        super(BlackDuckDescriptor.BLACKDUCK_LABEL, BlackDuckDescriptor.BLACKDUCK_URL, BlackDuckDescriptor.BLACKDUCK_ICON);
+public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig {
+    @Autowired
+    public BlackDuckDistributionUIConfig(final BlackDuckProvider provider) {
+        super(BlackDuckDescriptor.BLACKDUCK_LABEL, BlackDuckDescriptor.BLACKDUCK_URL, BlackDuckDescriptor.BLACKDUCK_ICON, provider);
     }
 
     @Override
     public List<ConfigField> createFields() {
+        final List<ConfigField> defaultProviderFields = super.createFields();
         final ConfigField filterByProject = CheckboxConfigField.create(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT, "Filter by project");
         final ConfigField projectNamePattern = TextInputConfigField.create(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN, "Project name pattern", this::validateProjectNamePattern);
 
         // TODO figure out how to create a project listing (Perhaps a new field type called table)
         // TODO create a linkedField that is an endpoint the UI hits to generate a field
         final ConfigField configuredProject = SelectConfigField.createRequiredEmpty(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT, "Projects", this::validateConfiguredProject);
-        return List.of(filterByProject, projectNamePattern, configuredProject);
+        final List<ConfigField> fieldList = new LinkedList<>();
+        fieldList.addAll(defaultProviderFields);
+        fieldList.addAll(List.of(filterByProject, projectNamePattern, configuredProject));
+        return List.copyOf(fieldList);
     }
 
     private Collection<String> validateProjectNamePattern(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {

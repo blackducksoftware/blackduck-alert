@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.EmailChannel;
+import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.context.ChannelDistributionDescriptorActionApi;
@@ -58,8 +59,8 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
 
     @Autowired
     public EmailDistributionDescriptorActionApi(final EmailChannel emailChannel, final BaseConfigurationAccessor configurationAccessor, final List<ProviderDescriptor> providerDescriptors,
-        final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor, final BlackDuckEmailHandler blackDuckEmailHandler) {
-        super(emailChannel, configurationAccessor, providerDescriptors);
+        final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor, final BlackDuckEmailHandler blackDuckEmailHandler, final ConfigurationFieldModelConverter modelConverter) {
+        super(emailChannel, configurationAccessor, providerDescriptors, modelConverter);
         this.blackDuckEmailHandler = blackDuckEmailHandler;
         this.blackDuckProjectRepositoryAccessor = blackDuckProjectRepositoryAccessor;
     }
