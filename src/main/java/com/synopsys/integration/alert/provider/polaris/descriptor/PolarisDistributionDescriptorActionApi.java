@@ -23,7 +23,7 @@
  */
 package com.synopsys.integration.alert.provider.polaris.descriptor;
 
-import java.util.Collection;
+import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
@@ -35,7 +35,7 @@ import com.synopsys.integration.exception.IntegrationException;
 @Component
 public class PolarisDistributionDescriptorActionApi extends DescriptorActionApi {
     @Override
-    public void testConfig(final Collection<ConfigField> configFields, final TestConfigModel testConfig) throws IntegrationException {
+    public void testConfig(final Map<String, ConfigField> configFields, final TestConfigModel testConfig) throws IntegrationException {
         // FIXME implement
     }
 }

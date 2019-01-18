@@ -23,7 +23,7 @@
  */
 package com.synopsys.integration.alert.component.scheduling;
 
-import java.util.Collection;
+import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
@@ -36,7 +36,7 @@ import com.synopsys.integration.exception.IntegrationException;
 public class SchedulingDescriptorActionApi extends DescriptorActionApi {
 
     @Override
-    public void testConfig(final Collection<ConfigField> configFields, final TestConfigModel testConfig) throws IntegrationException {
+    public void testConfig(final Map<String, ConfigField> configFields, final TestConfigModel testConfig) throws IntegrationException {
         throw new IntegrationException("Should not be implemented");
     }
 }

@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -18,6 +20,7 @@ import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescript
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatGlobalDescriptorActionApi;
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatGlobalUIConfig;
 import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
+import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -36,13 +39,16 @@ public class HipChatGlobalDescriptorActionApiTest {
     @Test
     public void validateConfigEmptyTest() {
         final HipChatChannel hipChatChannel = Mockito.mock(HipChatChannel.class);
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter();
+
         final HipChatGlobalUIConfig uiConfig = new HipChatGlobalUIConfig();
-        final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel);
+        final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel, modelConverter);
 
         final FieldModel fieldModel = new FieldModel(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL.name(), Map.of());
         final Map<String, String> fieldErrors = new HashMap<>();
-
-        hipChatGlobalDescriptorActionApi.validateConfig(uiConfig.createFields(), fieldModel, fieldErrors);
+        final Map<String, ConfigField> configFieldMap = uiConfig.createFields().stream()
+                                                            .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
+        hipChatGlobalDescriptorActionApi.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(HipChatDescriptor.KEY_API_KEY));
     }
 
@@ -50,7 +56,8 @@ public class HipChatGlobalDescriptorActionApiTest {
     public void validateConfigInvalidTest() {
         final HipChatChannel hipChatChannel = Mockito.mock(HipChatChannel.class);
         final HipChatGlobalUIConfig uiConfig = new HipChatGlobalUIConfig();
-        final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel);
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter();
+        final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel, modelConverter);
 
         final Map<String, FieldValueModel> fields = new HashMap<>();
         addFieldValueToMap(fields, HipChatDescriptor.KEY_API_KEY, "");
@@ -58,7 +65,9 @@ public class HipChatGlobalDescriptorActionApiTest {
         final FieldModel fieldModel = new FieldModel(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL.name(), fields);
         final Map<String, String> fieldErrors = new HashMap<>();
 
-        hipChatGlobalDescriptorActionApi.validateConfig(uiConfig.createFields(), fieldModel, fieldErrors);
+        final Map<String, ConfigField> configFieldMap = uiConfig.createFields().stream()
+                                                            .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
+        hipChatGlobalDescriptorActionApi.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(HipChatDescriptor.KEY_API_KEY));
     }
 
@@ -66,7 +75,8 @@ public class HipChatGlobalDescriptorActionApiTest {
     public void validateConfigValidTest() {
         final HipChatChannel hipChatChannel = Mockito.mock(HipChatChannel.class);
         final HipChatGlobalUIConfig uiConfig = new HipChatGlobalUIConfig();
-        final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel);
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter();
+        final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel, modelConverter);
 
         final Map<String, FieldValueModel> fields = new HashMap<>();
         addFieldValueToMap(fields, HipChatDescriptor.KEY_API_KEY, "API Token");
@@ -74,7 +84,9 @@ public class HipChatGlobalDescriptorActionApiTest {
         final FieldModel fieldModel = new FieldModel(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL.name(), fields);
         final Map<String, String> fieldErrors = new HashMap<>();
 
-        hipChatGlobalDescriptorActionApi.validateConfig(uiConfig.createFields(), fieldModel, fieldErrors);
+        final Map<String, ConfigField> configFieldMap = uiConfig.createFields().stream()
+                                                            .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
+        hipChatGlobalDescriptorActionApi.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertTrue(fieldErrors.isEmpty());
     }
 
@@ -82,13 +94,16 @@ public class HipChatGlobalDescriptorActionApiTest {
     public void testConfigWithoutGlobalConfigTest() throws Exception {
         final HipChatChannel hipChatChannel = Mockito.mock(HipChatChannel.class);
         final HipChatGlobalUIConfig uiConfig = new HipChatGlobalUIConfig();
-        final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel);
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter();
+        final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel, modelConverter);
 
         final Map<String, FieldValueModel> keyToValues = new HashMap<>();
         final FieldModel fieldModel = new FieldModel(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL.name(), keyToValues);
         final TestConfigModel testConfigModel = new TestConfigModel(fieldModel, "fake");
         try {
-            hipChatGlobalDescriptorActionApi.testConfig(uiConfig.createFields(), testConfigModel);
+            final Map<String, ConfigField> configFieldMap = uiConfig.createFields().stream()
+                                                                .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
+            hipChatGlobalDescriptorActionApi.testConfig(configFieldMap, testConfigModel);
             fail("Should have thrown exception");
         } catch (final AlertException e) {
             assertTrue(e.getMessage().contains("ERROR: Missing global config."));
@@ -106,7 +121,8 @@ public class HipChatGlobalDescriptorActionApiTest {
         ////////////////////////////////////////
 
         final HipChatGlobalUIConfig uiConfig = new HipChatGlobalUIConfig();
-        final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel);
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter();
+        final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel, modelConverter);
 
         final Map<String, FieldValueModel> keyToValues = new HashMap<>();
         addFieldValueToMap(keyToValues, HipChatDescriptor.KEY_API_KEY, "API Token");
@@ -115,7 +131,9 @@ public class HipChatGlobalDescriptorActionApiTest {
         final FieldModel fieldModel = new FieldModel(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL.name(), keyToValues);
         final TestConfigModel testConfigModel = new TestConfigModel(fieldModel, "fake");
         try {
-            hipChatGlobalDescriptorActionApi.testConfig(uiConfig.createFields(), testConfigModel);
+            final Map<String, ConfigField> configFieldMap = uiConfig.createFields().stream()
+                                                                .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
+            hipChatGlobalDescriptorActionApi.testConfig(configFieldMap, testConfigModel);
             fail("Should have thrown exception");
         } catch (final AlertException e) {
             assertTrue(e.getMessage().contains("The provided room id is an invalid number"));
@@ -133,7 +151,8 @@ public class HipChatGlobalDescriptorActionApiTest {
         ////////////////////////////////////////
 
         final HipChatGlobalUIConfig uiConfig = new HipChatGlobalUIConfig();
-        final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel);
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter();
+        final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel, modelConverter);
 
         final Map<String, FieldValueModel> keyToValues = new HashMap<>();
         addFieldValueToMap(keyToValues, HipChatDescriptor.KEY_API_KEY, "API Token");
@@ -142,7 +161,9 @@ public class HipChatGlobalDescriptorActionApiTest {
         final FieldModel fieldModel = new FieldModel(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL.name(), keyToValues);
         final TestConfigModel testConfigModel = new TestConfigModel(fieldModel, "123142");
 
-        hipChatGlobalDescriptorActionApi.testConfig(uiConfig.createFields(), testConfigModel);
+        final Map<String, ConfigField> configFieldMap = uiConfig.createFields().stream()
+                                                            .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
+        hipChatGlobalDescriptorActionApi.testConfig(configFieldMap, testConfigModel);
 
         final ArgumentCaptor<String> hostServer = ArgumentCaptor.forClass(String.class);
         final ArgumentCaptor<String> apiKey = ArgumentCaptor.forClass(String.class);
@@ -177,14 +198,16 @@ public class HipChatGlobalDescriptorActionApiTest {
         ////////////////////////////////////////
 
         final HipChatGlobalUIConfig uiConfig = new HipChatGlobalUIConfig();
-        final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel);
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter();
+        final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel, modelConverter);
 
         final Map<String, FieldValueModel> keyToValues = new HashMap<>();
         addFieldValueToMap(keyToValues, HipChatDescriptor.KEY_API_KEY, properties.getProperty(TestPropertyKey.TEST_HIPCHAT_API_KEY));
 
         final FieldModel fieldModel = new FieldModel(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL.name(), keyToValues);
         final TestConfigModel testConfigModel = new TestConfigModel(fieldModel, properties.getProperty(TestPropertyKey.TEST_HIPCHAT_ROOM_ID));
-
-        hipChatGlobalDescriptorActionApi.testConfig(uiConfig.createFields(), testConfigModel);
+        final Map<String, ConfigField> configFieldMap = uiConfig.createFields().stream()
+                                                            .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
+        hipChatGlobalDescriptorActionApi.testConfig(configFieldMap, testConfigModel);
     }
 }

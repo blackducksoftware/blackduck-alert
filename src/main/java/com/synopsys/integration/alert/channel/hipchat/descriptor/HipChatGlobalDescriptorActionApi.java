@@ -23,13 +23,14 @@
  */
 package com.synopsys.integration.alert.channel.hipchat.descriptor;
 
-import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
+import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
@@ -42,15 +43,17 @@ import com.synopsys.integration.rest.request.Request;
 @Component
 public class HipChatGlobalDescriptorActionApi extends DescriptorActionApi {
     private final HipChatChannel hipChatChannel;
+    private final ConfigurationFieldModelConverter modelConverter;
 
     @Autowired
-    public HipChatGlobalDescriptorActionApi(final HipChatChannel hipChatChannel) {
+    public HipChatGlobalDescriptorActionApi(final HipChatChannel hipChatChannel, final ConfigurationFieldModelConverter modelConverter) {
         this.hipChatChannel = hipChatChannel;
+        this.modelConverter = modelConverter;
     }
 
     @Override
-    public void testConfig(final Collection<ConfigField> configFields, final TestConfigModel testConfig) throws IntegrationException {
-        final FieldAccessor fieldAccessor = testConfig.getFieldModel().convertToFieldAccessor();
+    public void testConfig(final Map<String, ConfigField> configFields, final TestConfigModel testConfig) throws IntegrationException {
+        final FieldAccessor fieldAccessor = modelConverter.convertToFieldAccessor(configFields, testConfig.getFieldModel());
         final Optional<String> apiKey = fieldAccessor.getString(HipChatDescriptor.KEY_API_KEY);
         final String configuredApiUrl = fieldAccessor.getString(HipChatDescriptor.KEY_HOST_SERVER).orElse(HipChatChannel.HIP_CHAT_API);
         if (!apiKey.isPresent()) {

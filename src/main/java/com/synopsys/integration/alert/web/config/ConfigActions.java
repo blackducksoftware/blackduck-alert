@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.EnumUtils;
@@ -39,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
@@ -66,13 +68,16 @@ public class ConfigActions {
     private final BaseConfigurationAccessor configurationAccessor;
     private final BaseDescriptorAccessor descriptorAccessor;
     private final DescriptorMap descriptorMap;
+    private final ConfigurationFieldModelConverter modelConverter;
 
     @Autowired
-    public ConfigActions(final ContentConverter contentConverter, final BaseConfigurationAccessor configurationAccessor, final BaseDescriptorAccessor descriptorAccessor, final DescriptorMap descriptorMap) {
+    public ConfigActions(final ContentConverter contentConverter, final BaseConfigurationAccessor configurationAccessor, final BaseDescriptorAccessor descriptorAccessor, final DescriptorMap descriptorMap,
+        final ConfigurationFieldModelConverter modelConverter) {
         this.contentConverter = contentConverter;
         this.configurationAccessor = configurationAccessor;
         this.descriptorAccessor = descriptorAccessor;
         this.descriptorMap = descriptorMap;
+        this.modelConverter = modelConverter;
     }
 
     public boolean doesConfigExist(final String id) throws AlertException {
@@ -142,14 +147,19 @@ public class ConfigActions {
         }
         final String descriptorName = modelToSave.getDescriptorName();
         final String context = modelToSave.getContext();
-        final Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelToSave.convertToConfigurationFieldModelMap();
+        final Map<String, ConfigField> configFields = retrieveUIConfigFields(fieldModel)
+                                                          .stream()
+                                                          .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
+        final Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertFromFieldModel(configFields, modelToSave);
         return convertToFieldModel(configurationAccessor.createConfiguration(descriptorName, EnumUtils.getEnum(ConfigContextEnum.class, context), configurationFieldModelMap.values()));
     }
 
     public String validateConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) throws AlertFieldException {
         final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
         if (descriptorActionApi.isPresent()) {
-            final List<ConfigField> configFields = retrieveUIConfigFields(fieldModel);
+            final Map<String, ConfigField> configFields = retrieveUIConfigFields(fieldModel)
+                                                              .stream()
+                                                              .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
             descriptorActionApi.get().validateConfig(configFields, fieldModel, fieldErrors);
         } else {
             logger.error("Could not find a Descriptor with the name: " + fieldModel.getDescriptorName());
@@ -165,7 +175,9 @@ public class ConfigActions {
         if (descriptorActionApi.isPresent()) {
             final DescriptorActionApi descriptorApi = descriptorActionApi.get();
             final TestConfigModel testConfig = descriptorApi.createTestConfigModel(restModel, destination);
-            final List<ConfigField> configFields = retrieveUIConfigFields(testConfig.getFieldModel());
+            final Map<String, ConfigField> configFields = retrieveUIConfigFields(testConfig.getFieldModel())
+                                                              .stream()
+                                                              .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
             descriptorApi.testConfig(configFields, testConfig);
             return "Successfully sent test message.";
         } else {
@@ -183,7 +195,10 @@ public class ConfigActions {
         }
         if (fieldModel != null) {
             final ConfigurationModel configurationModel = getSavedEntity(id);
-            final Map<String, ConfigurationFieldModel> fieldModels = modelToSave.convertToConfigurationFieldModelMap();
+            final Map<String, ConfigField> configFields = retrieveUIConfigFields(fieldModel)
+                                                              .stream()
+                                                              .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
+            final Map<String, ConfigurationFieldModel> fieldModels = modelConverter.convertFromFieldModel(configFields, modelToSave);
             final Collection<ConfigurationFieldModel> updatedFields = updateConfigurationWithSavedConfiguration(fieldModels, configurationModel.getCopyOfFieldList());
             return convertToFieldModel(configurationAccessor.updateConfiguration(id, updatedFields));
         }
@@ -263,6 +278,7 @@ public class ConfigActions {
         if (descriptor.isPresent()) {
             final Optional<UIConfig> uiConfig = descriptor.get().getUIConfig(descriptorContext);
             return uiConfig.map(config -> config.createFields()).orElse(List.of());
+            // TODO if distribution context use CommonDistributionUIConfig here
         }
         return List.of();
     }
