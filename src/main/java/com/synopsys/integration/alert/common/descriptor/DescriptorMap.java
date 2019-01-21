@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -44,12 +43,10 @@ public class DescriptorMap {
     private final Map<String, ChannelDescriptor> channelDescriptorMapping;
     private final Map<String, ProviderDescriptor> providerDescriptorMapping;
     private final Map<String, ComponentDescriptor> componentDescriptorMapping;
-    private final List<DescriptorActionApi> restApis;
 
     @Autowired
-    public DescriptorMap(final List<ChannelDescriptor> channelDescriptors, final List<ProviderDescriptor> providerDescriptors, final List<ComponentDescriptor> componentDescriptors, final List<DescriptorActionApi> restApis)
+    public DescriptorMap(final List<ChannelDescriptor> channelDescriptors, final List<ProviderDescriptor> providerDescriptors, final List<ComponentDescriptor> componentDescriptors)
         throws AlertException {
-        this.restApis = restApis;
         descriptorMapping = new HashMap<>();
         channelDescriptorMapping = initDescriptorMap(channelDescriptors);
         providerDescriptorMapping = initDescriptorMap(providerDescriptors);
@@ -78,10 +75,6 @@ public class DescriptorMap {
         return Arrays.stream(ConfigContextEnum.values())
                    .flatMap(type -> getDescriptorMetadataList(type).stream())
                    .collect(Collectors.toList());
-    }
-
-    public List<DescriptorActionApi> getAllDescriptorConfigs() {
-        return restApis;
     }
 
     public Optional<Descriptor> getDescriptor(final String name) {
