@@ -21,17 +21,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.descriptor.config.context;
+package com.synopsys.integration.alert.web.model.configuration;
 
-import java.util.Collection;
+import java.util.Set;
 
-import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.web.model.configuration.TestConfigModel;
-import com.synopsys.integration.exception.IntegrationException;
+public class GroupedFieldModel {
+    private final String groupid;
+    private final Set<FieldModel> fieldModels;
 
-public abstract class ProviderDistributionDescriptorActionApi extends DescriptorActionApi {
-    @Override
-    public void testConfig(final Collection<ConfigField> configFields, final TestConfigModel testConfig) throws IntegrationException {
+    public GroupedFieldModel(final String groupid, final Set<FieldModel> fieldModels) {
+        this.groupid = groupid;
+        this.fieldModels = fieldModels;
+    }
 
+    public String getGroupid() {
+        return groupid;
+    }
+
+    public Set<FieldModel> getFieldModels() {
+        return fieldModels;
     }
 }
