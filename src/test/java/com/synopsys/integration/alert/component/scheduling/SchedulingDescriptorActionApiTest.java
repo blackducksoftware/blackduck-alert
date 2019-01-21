@@ -12,8 +12,8 @@ import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.web.model.configuration.FieldModel;
-import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
+import com.synopsys.integration.alert.web.model.FieldModel;
+import com.synopsys.integration.alert.web.model.FieldValueModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 public class SchedulingDescriptorActionApiTest {

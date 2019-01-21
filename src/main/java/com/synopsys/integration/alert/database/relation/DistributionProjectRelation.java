@@ -23,8 +23,6 @@
  */
 package com.synopsys.integration.alert.database.relation;
 
-import java.util.UUID;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -39,7 +37,7 @@ import com.synopsys.integration.alert.database.relation.key.DistributionProjectR
 public class DistributionProjectRelation extends DatabaseRelation {
     @Id
     @Column(name = "common_distribution_config_id")
-    private UUID commonDistributionConfigId;
+    private Long commonDistributionConfigId;
 
     @Id
     @Column(name = "project_id")
@@ -49,13 +47,13 @@ public class DistributionProjectRelation extends DatabaseRelation {
         // JPA requires default constructor definitions
     }
 
-    public DistributionProjectRelation(final UUID commonDistributionConfigId, final Long projectId) {
+    public DistributionProjectRelation(final Long commonDistributionConfigId, final Long projectId) {
         super();
         this.commonDistributionConfigId = commonDistributionConfigId;
         this.projectId = projectId;
     }
 
-    public UUID getCommonDistributionConfigId() {
+    public Long getCommonDistributionConfigId() {
         return commonDistributionConfigId;
     }
 

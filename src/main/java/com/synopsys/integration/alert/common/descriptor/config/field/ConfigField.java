@@ -26,12 +26,13 @@ package com.synopsys.integration.alert.common.descriptor.config.field;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.BiFunction;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.enumeration.FieldGroup;
-import com.synopsys.integration.alert.web.model.configuration.FieldModel;
-import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
+import com.synopsys.integration.alert.web.model.FieldModel;
+import com.synopsys.integration.alert.web.model.FieldValueModel;
 import com.synopsys.integration.util.Stringable;
 
 public class ConfigField extends Stringable {
@@ -102,6 +103,23 @@ public class ConfigField extends Stringable {
         return errors;
     }
 
+    private Collection<String> validateRequiredField(final FieldValueModel fieldToValidate) {
+        final Collection<String> errors = new LinkedList<>();
+        if (isRequired()) {
+            if (fieldToValidate.hasValues()) {
+                final boolean valuesAllEmpty = fieldToValidate.getValues().stream().allMatch(value -> StringUtils.isBlank(value));
+                if (valuesAllEmpty) {
+                    errors.add(REQUIRED_FIELD_MISSING);
+                }
+            } else {
+                if (!fieldToValidate.isSet()) {
+                    errors.add(REQUIRED_FIELD_MISSING);
+                }
+            }
+        }
+        return errors;
+    }
+
     public String getKey() {
         return key;
     }
@@ -134,12 +152,12 @@ public class ConfigField extends Stringable {
         this.required = required;
     }
 
-    public boolean isSensitive() {
-        return sensitive;
-    }
-
     public void setSensitive(final boolean sensitive) {
         this.sensitive = sensitive;
+    }
+
+    public boolean isSensitive() {
+        return sensitive;
     }
 
     public FieldGroup getGroup() {
@@ -164,22 +182,5 @@ public class ConfigField extends Stringable {
 
     public void setValidationFunction(final ConfigValidationFunction validationFunction) {
         this.validationFunction = validationFunction;
-    }
-
-    private Collection<String> validateRequiredField(final FieldValueModel fieldToValidate) {
-        final Collection<String> errors = new LinkedList<>();
-        if (isRequired()) {
-            if (fieldToValidate.hasValues()) {
-                final boolean valuesAllEmpty = fieldToValidate.getValues().stream().allMatch(value -> StringUtils.isBlank(value));
-                if (valuesAllEmpty) {
-                    errors.add(REQUIRED_FIELD_MISSING);
-                }
-            } else {
-                if (!fieldToValidate.isSet()) {
-                    errors.add(REQUIRED_FIELD_MISSING);
-                }
-            }
-        }
-        return errors;
     }
 }

@@ -37,8 +37,8 @@ import com.synopsys.integration.alert.common.descriptor.config.context.Descripto
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
-import com.synopsys.integration.alert.web.model.configuration.FieldModel;
-import com.synopsys.integration.alert.web.model.configuration.TestConfigModel;
+import com.synopsys.integration.alert.web.model.FieldModel;
+import com.synopsys.integration.alert.web.model.TestConfigModel;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigBuilder;
 import com.synopsys.integration.blackduck.rest.BlackDuckRestConnection;

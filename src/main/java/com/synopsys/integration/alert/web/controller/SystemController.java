@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.web.controller.handler.SystemHandler;
-import com.synopsys.integration.alert.web.model.configuration.FieldModel;
+import com.synopsys.integration.alert.web.model.FieldModel;
 
 @RestController
 public class SystemController extends BaseController {

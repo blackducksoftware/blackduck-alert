@@ -17,7 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.Date;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +31,7 @@ public class AuditEntryRepositoryTestIT extends AlertIntegrationTest {
 
     @Test
     public void findFirstByCommonConfigIdOrderByTimeLastSentDescTestIT() {
-        final UUID commonConfigId = UUID.randomUUID();
+        final Long commonConfigId = 50L;
 
         final Date leastRecent = new Date(100);
         final Date middleDate = new Date(200);

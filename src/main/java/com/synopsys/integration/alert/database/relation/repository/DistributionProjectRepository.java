@@ -24,7 +24,6 @@
 package com.synopsys.integration.alert.database.relation.repository;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -32,7 +31,7 @@ import com.synopsys.integration.alert.database.relation.DistributionProjectRelat
 import com.synopsys.integration.alert.database.relation.key.DistributionProjectRelationPK;
 
 public interface DistributionProjectRepository extends JpaRepository<DistributionProjectRelation, DistributionProjectRelationPK> {
-    List<DistributionProjectRelation> findByCommonDistributionConfigId(final UUID commonDistributionConfigId);
+    List<DistributionProjectRelation> findByCommonDistributionConfigId(final Long commonDistributionConfigId);
 
     List<DistributionProjectRelation> findByProjectId(final Long projectId);
 }

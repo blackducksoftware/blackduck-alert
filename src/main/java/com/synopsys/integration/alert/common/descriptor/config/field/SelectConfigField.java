@@ -25,37 +25,17 @@ package com.synopsys.integration.alert.common.descriptor.config.field;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.function.BiFunction;
 
 import com.synopsys.integration.alert.common.enumeration.FieldGroup;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
+import com.synopsys.integration.alert.web.model.FieldModel;
+import com.synopsys.integration.alert.web.model.FieldValueModel;
 
 public class SelectConfigField extends ConfigField {
     private Collection<String> options;
     private boolean searchable;
     private boolean multiSelect;
-
-    public SelectConfigField(final String key, final String label, final boolean required, final boolean sensitive, final boolean searchable, final boolean multiSelect, final Collection<String> options) {
-        super(key, label, FieldType.SELECT.getFieldTypeName(), required, sensitive, FieldGroup.DEFAULT, "", ConfigField.NO_VALIDATION);
-        this.searchable = searchable;
-        this.multiSelect = multiSelect;
-        this.options = options;
-    }
-
-    public SelectConfigField(final String key, final String label, final boolean required, final boolean sensitive, final boolean searchable, final boolean multiSelect, final Collection<String> options,
-        final ConfigValidationFunction validationFunction) {
-        super(key, label, FieldType.SELECT.getFieldTypeName(), required, sensitive, FieldGroup.DEFAULT, "", validationFunction);
-        this.searchable = searchable;
-        this.multiSelect = multiSelect;
-        this.options = options;
-    }
-
-    public SelectConfigField(final String key, final String label, final boolean required, final boolean sensitive, final Collection<String> options) {
-        this(key, label, required, sensitive, true, false, options);
-    }
-
-    public SelectConfigField(final String key, final String label, final boolean required, final boolean sensitive, final Collection<String> options, final ConfigValidationFunction validationFunction) {
-        this(key, label, required, sensitive, true, false, options, validationFunction);
-    }
 
     public static SelectConfigField createRequiredEmpty(final String key, final String label) {
         return new SelectConfigField(key, label, true, false, Collections.emptyList());
@@ -79,6 +59,29 @@ public class SelectConfigField extends ConfigField {
 
     public static SelectConfigField create(final String key, final String label, final Collection<String> options, final ConfigValidationFunction validationFunction) {
         return new SelectConfigField(key, label, false, false, options, validationFunction);
+    }
+
+    public SelectConfigField(final String key, final String label, final boolean required, final boolean sensitive, final boolean searchable, final boolean multiSelect, final Collection<String> options) {
+        super(key, label, FieldType.SELECT.getFieldTypeName(), required, sensitive, FieldGroup.DEFAULT, "", ConfigField.NO_VALIDATION);
+        this.searchable = searchable;
+        this.multiSelect = multiSelect;
+        this.options = options;
+    }
+
+    public SelectConfigField(final String key, final String label, final boolean required, final boolean sensitive, final boolean searchable, final boolean multiSelect, final Collection<String> options,
+        final ConfigValidationFunction validationFunction) {
+        super(key, label, FieldType.SELECT.getFieldTypeName(), required, sensitive, FieldGroup.DEFAULT, "", validationFunction);
+        this.searchable = searchable;
+        this.multiSelect = multiSelect;
+        this.options = options;
+    }
+
+    public SelectConfigField(final String key, final String label, final boolean required, final boolean sensitive, final Collection<String> options) {
+        this(key, label, required, sensitive, true, false, options);
+    }
+
+    public SelectConfigField(final String key, final String label, final boolean required, final boolean sensitive, final Collection<String> options, final ConfigValidationFunction validationFunction) {
+        this(key, label, required, sensitive, true, false, options, validationFunction);
     }
 
     public boolean isSearchable() {

@@ -44,9 +44,9 @@ import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.web.config.ConfigActions;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
+import com.synopsys.integration.alert.web.model.FieldModel;
+import com.synopsys.integration.alert.web.model.FieldValueModel;
 import com.synopsys.integration.alert.web.model.SystemMessageModel;
-import com.synopsys.integration.alert.web.model.configuration.FieldModel;
-import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 import com.synopsys.integration.rest.RestConstants;
 
 @Component
@@ -90,6 +90,11 @@ public class SystemActions {
         return systemMessageUtility.getSystemMessages().stream().map(this::convert).collect(Collectors.toList());
     }
 
+    private SystemMessageModel convert(final SystemMessage systemMessage) {
+        final String createdAt = RestConstants.formatDate(systemMessage.getCreated());
+        return new SystemMessageModel(systemMessage.getSeverity(), createdAt, systemMessage.getContent(), systemMessage.getType());
+    }
+
     public FieldModel getCurrentSystemSetup() {
         final Map<String, FieldValueModel> valueMap = new HashMap<>();
         FieldModel model = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, "GLOBAL", valueMap);
@@ -117,10 +122,5 @@ public class SystemActions {
             logger.error("Error saving initial configuration", ex);
         }
         return systemSettings;
-    }
-
-    private SystemMessageModel convert(final SystemMessage systemMessage) {
-        final String createdAt = RestConstants.formatDate(systemMessage.getCreated());
-        return new SystemMessageModel(systemMessage.getSeverity(), createdAt, systemMessage.getContent(), systemMessage.getType());
     }
 }

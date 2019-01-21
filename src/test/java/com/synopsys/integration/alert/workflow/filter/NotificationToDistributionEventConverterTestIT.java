@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -17,7 +16,7 @@ import com.synopsys.integration.alert.common.configuration.CommonDistributionCon
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
@@ -41,31 +40,30 @@ public class NotificationToDistributionEventConverterTestIT extends AlertIntegra
     }
 
     private CommonDistributionConfiguration createEmailConfig() {
-        final ConfigurationJobModel model = Mockito.mock(ConfigurationJobModel.class);
+        final ConfigurationModel model = Mockito.mock(ConfigurationModel.class);
         final List<ConfigurationFieldModel> fields = MockConfigurationModelFactory.createEmailDistributionFieldsProjectOwnerOnly();
-        Mockito.when(model.createKeyToFieldMap()).thenReturn(MockConfigurationModelFactory.mapFieldKeyToFields(fields));
-        Mockito.when(model.getJobId()).thenReturn(UUID.randomUUID());
+        Mockito.when(model.getCopyOfFieldList()).thenReturn(fields);
+        Mockito.when(model.getCopyOfKeyToFieldMap()).thenReturn(MockConfigurationModelFactory.mapFieldKeyToFields(fields));
 
         final CommonDistributionConfiguration config = new CommonDistributionConfiguration(model);
         return config;
     }
 
     private CommonDistributionConfiguration createHipChatConfig() {
-        final ConfigurationJobModel model = Mockito.mock(ConfigurationJobModel.class);
+        final ConfigurationModel model = Mockito.mock(ConfigurationModel.class);
         final List<ConfigurationFieldModel> fields = MockConfigurationModelFactory.createHipChatDistributionFields();
-        Mockito.when(model.createKeyToFieldMap()).thenReturn(MockConfigurationModelFactory.mapFieldKeyToFields(fields));
-        Mockito.when(model.getJobId()).thenReturn(UUID.randomUUID());
+        Mockito.when(model.getCopyOfFieldList()).thenReturn(fields);
+        Mockito.when(model.getCopyOfKeyToFieldMap()).thenReturn(MockConfigurationModelFactory.mapFieldKeyToFields(fields));
 
         final CommonDistributionConfiguration config = new CommonDistributionConfiguration(model);
         return config;
     }
 
     private CommonDistributionConfiguration createSlackConfig() {
-        final ConfigurationJobModel model = Mockito.mock(ConfigurationJobModel.class);
+        final ConfigurationModel model = Mockito.mock(ConfigurationModel.class);
         final List<ConfigurationFieldModel> fields = MockConfigurationModelFactory.createSlackDistributionFields();
-        Mockito.when(model.createKeyToFieldMap()).thenReturn(MockConfigurationModelFactory.mapFieldKeyToFields(fields));
-        Mockito.when(model.getJobId()).thenReturn(UUID.randomUUID());
-
+        Mockito.when(model.getCopyOfFieldList()).thenReturn(MockConfigurationModelFactory.createSlackDistributionFields());
+        Mockito.when(model.getCopyOfKeyToFieldMap()).thenReturn(MockConfigurationModelFactory.mapFieldKeyToFields(fields));
         final CommonDistributionConfiguration config = new CommonDistributionConfiguration(model);
         return config;
     }

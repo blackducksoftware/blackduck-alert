@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeSet;
-import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -31,16 +30,14 @@ public class AuditUtilityTest {
         final AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
         final AuditUtility auditUtility = new AuditUtility(auditEntryRepository, auditNotificationRepository);
         final AggregateMessageContent content = createMessageContent();
-        final UUID commonConfigUUID = UUID.randomUUID();
-        final AuditEntryEntity savedAuditEntryEntity = new AuditEntryEntity(commonConfigUUID, new Date(), new Date(), AuditEntryStatus.SUCCESS.toString(), null, null);
-        final Long auditID = 10L;
-        savedAuditEntryEntity.setId(auditID);
+        final AuditEntryEntity savedAuditEntryEntity = new AuditEntryEntity(1L, new Date(), new Date(), AuditEntryStatus.SUCCESS.toString(), null, null);
+        savedAuditEntryEntity.setId(10L);
         Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(savedAuditEntryEntity));
         mockAuditRepositorySave(auditEntryRepository, savedAuditEntryEntity);
 
         final Map<Long, Long> existingNotificationIdToAuditId = new HashMap<>();
-        existingNotificationIdToAuditId.put(1L, auditID);
-        final Map<Long, Long> savedNotificationIdToAuditId = auditUtility.createAuditEntry(existingNotificationIdToAuditId, commonConfigUUID, content);
+        existingNotificationIdToAuditId.put(1L, 10L);
+        final Map<Long, Long> savedNotificationIdToAuditId = auditUtility.createAuditEntry(existingNotificationIdToAuditId, 1L, content);
         assertFalse(savedNotificationIdToAuditId.isEmpty());
         assertEquals(2, savedNotificationIdToAuditId.size());
         assertEquals(savedAuditEntryEntity.getId(), savedNotificationIdToAuditId.get(1L));
@@ -55,12 +52,11 @@ public class AuditUtilityTest {
         final AuditNotificationRepository auditNotificationRepository = Mockito.mock(AuditNotificationRepository.class);
         final AuditUtility auditUtility = new AuditUtility(auditEntryRepository, auditNotificationRepository);
         final AggregateMessageContent content = createMessageContent();
-        final UUID commonConfigUUID = UUID.randomUUID();
-        final AuditEntryEntity savedAuditEntryEntity = new AuditEntryEntity(commonConfigUUID, new Date(), new Date(), AuditEntryStatus.SUCCESS.toString(), null, null);
+        final AuditEntryEntity savedAuditEntryEntity = new AuditEntryEntity(1L, new Date(), new Date(), AuditEntryStatus.SUCCESS.toString(), null, null);
         savedAuditEntryEntity.setId(10L);
 
         mockAuditRepositorySave(auditEntryRepository, savedAuditEntryEntity);
-        final Map<Long, Long> savedNotificationIdToAuditId = auditUtility.createAuditEntry(null, commonConfigUUID, content);
+        final Map<Long, Long> savedNotificationIdToAuditId = auditUtility.createAuditEntry(null, 1L, content);
         assertFalse(savedNotificationIdToAuditId.isEmpty());
         assertEquals(2, savedNotificationIdToAuditId.size());
         assertEquals(savedAuditEntryEntity.getId(), savedNotificationIdToAuditId.values().iterator().next());
@@ -80,7 +76,7 @@ public class AuditUtilityTest {
         final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         final AuditUtility auditUtility = new AuditUtility(auditEntryRepository, null);
 
-        final AuditEntryEntity entity = new AuditEntryEntity(UUID.randomUUID(), new Date(System.currentTimeMillis() - 1000), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS.toString(), null, null);
+        final AuditEntryEntity entity = new AuditEntryEntity(1L, new Date(System.currentTimeMillis() - 1000), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS.toString(), null, null);
         entity.setId(1L);
         Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(entity));
         Mockito.when(auditEntryRepository.save(entity)).thenReturn(entity);
@@ -100,7 +96,7 @@ public class AuditUtilityTest {
     public void setAuditEntryFailureTest() {
         final AuditEntryRepository auditEntryRepository = Mockito.mock(AuditEntryRepository.class);
         final AuditUtility auditUtility = new AuditUtility(auditEntryRepository, null);
-        final AuditEntryEntity entity = new AuditEntryEntity(UUID.randomUUID(), new Date(System.currentTimeMillis() - 1000), new Date(System.currentTimeMillis()), AuditEntryStatus.FAILURE.toString(), null, null);
+        final AuditEntryEntity entity = new AuditEntryEntity(1L, new Date(System.currentTimeMillis() - 1000), new Date(System.currentTimeMillis()), AuditEntryStatus.FAILURE.toString(), null, null);
         entity.setId(1L);
         Mockito.when(auditEntryRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(entity));
         Mockito.when(auditEntryRepository.save(entity)).thenReturn(entity);

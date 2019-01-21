@@ -38,9 +38,9 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.web.actions.SystemActions;
+import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.ResponseBodyBuilder;
 import com.synopsys.integration.alert.web.model.SystemMessageModel;
-import com.synopsys.integration.alert.web.model.configuration.FieldModel;
 
 @Component
 public class SystemHandler extends ControllerHandler {

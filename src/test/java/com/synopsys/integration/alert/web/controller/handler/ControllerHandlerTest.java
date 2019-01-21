@@ -19,7 +19,7 @@ public class ControllerHandlerTest {
 
         final ResponseEntity<String> responseEntity = controllerHandlerTestObject.createResponse(HttpStatus.CHECKPOINT, "Test");
         assertEquals(HttpStatus.CHECKPOINT, responseEntity.getStatusCode());
-        assertEquals("{\"id\":\"-1\",\"message\":\"Test\"}", responseEntity.getBody());
+        assertEquals("{\"id\":-1,\"message\":\"Test\"}", responseEntity.getBody());
     }
 
     @Test
@@ -30,7 +30,7 @@ public class ControllerHandlerTest {
 
         final ResponseEntity<String> responseEntity = controllerHandlerTestObject.createResponse(HttpStatus.CHECKPOINT, "11", "Test");
         assertEquals(HttpStatus.CHECKPOINT, responseEntity.getStatusCode());
-        assertEquals("{\"id\":\"11\",\"message\":\"Test\"}", responseEntity.getBody());
+        assertEquals("{\"id\":11,\"message\":\"Test\"}", responseEntity.getBody());
     }
 
     @Test
@@ -41,7 +41,7 @@ public class ControllerHandlerTest {
 
         final ResponseEntity<String> responseEntity = controllerHandlerTestObject.createResponse(HttpStatus.CHECKPOINT, 21L, "Test");
         assertEquals(HttpStatus.CHECKPOINT, responseEntity.getStatusCode());
-        assertEquals("{\"id\":\"21\",\"message\":\"Test\"}", responseEntity.getBody());
+        assertEquals("{\"id\":21,\"message\":\"Test\"}", responseEntity.getBody());
     }
 
     private static class ControllerHandlerTestObject extends ControllerHandler {

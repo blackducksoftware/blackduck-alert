@@ -43,16 +43,17 @@ import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
-import com.synopsys.integration.alert.web.model.configuration.FieldModel;
-import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
+import com.synopsys.integration.alert.web.model.FieldModel;
+import com.synopsys.integration.alert.web.model.FieldValueModel;
 
 @Component
 public class CommonDistributionUIConfig {
+    private final Logger logger = LoggerFactory.getLogger(CommonDistributionUIConfig.class);
     public static final String KEY_NAME = "channel.common.name";
     public static final String KEY_CHANNEL_NAME = "channel.common.channel.name";
     public static final String KEY_PROVIDER_NAME = "channel.common.provider.name";
     public static final String KEY_FREQUENCY = "channel.common.frequency";
-    private final Logger logger = LoggerFactory.getLogger(CommonDistributionUIConfig.class);
+
     private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
