@@ -25,7 +25,7 @@ public class BlackDuckDataHandlerTest {
         final BlackDuckDataHandler blackDuckDataHandler = new BlackDuckDataHandler(contentConverter, blackDuckDataActions);
         final ResponseEntity<String> responseEntity = blackDuckDataHandler.getBlackDuckProjects();
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals("{\"id\":-1,\"message\":\"[]\"}", responseEntity.getBody());
+        assertEquals("{\"id\":\"-1\",\"message\":\"[]\"}", responseEntity.getBody());
     }
 
     @Test
@@ -35,6 +35,6 @@ public class BlackDuckDataHandlerTest {
         final BlackDuckDataHandler blackDuckDataHandler = new BlackDuckDataHandler(contentConverter, blackDuckDataActions);
         final ResponseEntity<String> responseEntity = blackDuckDataHandler.getBlackDuckProjects();
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
-        assertEquals("{\"id\":-1,\"message\":\"ErrorMessage\"}", responseEntity.getBody());
+        assertEquals("{\"id\":\"-1\",\"message\":\"ErrorMessage\"}", responseEntity.getBody());
     }
 }

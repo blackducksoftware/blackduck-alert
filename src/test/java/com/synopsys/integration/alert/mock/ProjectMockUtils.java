@@ -13,6 +13,7 @@ package com.synopsys.integration.alert.mock;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import com.google.gson.JsonArray;
 import com.synopsys.integration.alert.database.entity.ConfiguredProjectEntity;
@@ -69,10 +70,11 @@ public class ProjectMockUtils {
     }
 
     public List<DistributionProjectRelation> getProjectRelations() {
-        final DistributionProjectRelation projectRelation1 = new DistributionProjectRelation(1L, 1L);
-        final DistributionProjectRelation projectRelation2 = new DistributionProjectRelation(1L, 2L);
-        final DistributionProjectRelation projectRelation3 = new DistributionProjectRelation(1L, 3L);
-        final DistributionProjectRelation projectRelation4 = new DistributionProjectRelation(1L, 4L);
+        final UUID commonID = UUID.randomUUID();
+        final DistributionProjectRelation projectRelation1 = new DistributionProjectRelation(commonID, 1L);
+        final DistributionProjectRelation projectRelation2 = new DistributionProjectRelation(commonID, 2L);
+        final DistributionProjectRelation projectRelation3 = new DistributionProjectRelation(commonID, 3L);
+        final DistributionProjectRelation projectRelation4 = new DistributionProjectRelation(commonID, 4L);
         return Arrays.asList(projectRelation1, projectRelation2, projectRelation3, projectRelation4);
     }
 

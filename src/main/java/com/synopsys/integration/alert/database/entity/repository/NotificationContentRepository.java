@@ -47,7 +47,8 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
 
     @Query(value = "SELECT entity FROM NotificationContent entity LEFT JOIN entity.auditNotificationRelations relation ON entity.id = relation.notificationId "
                            + "LEFT JOIN relation.auditEntryEntity auditEntry ON auditEntry.id = relation.auditEntryId "
-                           + "LEFT JOIN auditEntry.descriptorConfigEntity descriptorConfig ON auditEntry.commonConfigId = descriptorConfig.id "
+                           + "LEFT JOIN auditEntry.configGroupEntity configGroup ON auditEntry.commonConfigId = configGroup.jobId "
+                           + "LEFT JOIN configGroup.descriptorConfigEntity descriptorConfig ON configGroup.configId = descriptorConfig.id "
                            + "LEFT JOIN descriptorConfig.fieldValueEntities fieldValue ON descriptorConfig.id = fieldValue.configId "
                            + "LEFT JOIN fieldValue.definedFieldEntity definedField ON fieldValue.fieldId = definedField.id "
                            + "WHERE LOWER(entity.provider) LIKE %:searchTerm% OR "
@@ -62,7 +63,8 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
 
     @Query(value = "SELECT entity FROM NotificationContent entity LEFT JOIN entity.auditNotificationRelations relation ON entity.id = relation.notificationId "
                            + "LEFT JOIN relation.auditEntryEntity auditEntry ON auditEntry.id = relation.auditEntryId "
-                           + "LEFT JOIN auditEntry.descriptorConfigEntity descriptorConfig ON auditEntry.commonConfigId = descriptorConfig.id "
+                           + "LEFT JOIN auditEntry.configGroupEntity configGroup ON auditEntry.commonConfigId = configGroup.jobId "
+                           + "LEFT JOIN configGroup.descriptorConfigEntity descriptorConfig ON configGroup.configId = descriptorConfig.id "
                            + "LEFT JOIN descriptorConfig.fieldValueEntities fieldValue ON descriptorConfig.id = fieldValue.configId "
                            + "LEFT JOIN fieldValue.definedFieldEntity definedField ON fieldValue.fieldId = definedField.id "
                            + "WHERE entity.id IN (SELECT notificationId FROM entity.auditNotificationRelations WHERE entity.id = notificationId) AND "

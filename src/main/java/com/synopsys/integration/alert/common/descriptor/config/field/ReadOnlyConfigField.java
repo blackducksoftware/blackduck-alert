@@ -23,14 +23,25 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.field;
 
-import java.util.Collection;
-import java.util.function.BiFunction;
-
 import com.synopsys.integration.alert.common.enumeration.FieldType;
-import com.synopsys.integration.alert.web.model.FieldModel;
-import com.synopsys.integration.alert.web.model.FieldValueModel;
 
 public class ReadOnlyConfigField extends ConfigField {
+    public ReadOnlyConfigField(final String key, final String label, final boolean required, final boolean sensitive, final String subGroup) {
+        super(key, label, FieldType.READ_ONLY.getFieldTypeName(), required, sensitive, subGroup);
+    }
+
+    public ReadOnlyConfigField(final String key, final String label, final boolean required, final boolean sensitive, final String subGroup, final ConfigValidationFunction validationFunction) {
+        super(key, label, FieldType.READ_ONLY.getFieldTypeName(), required, sensitive, subGroup, validationFunction);
+    }
+
+    public ReadOnlyConfigField(final String key, final String label, final boolean required, final boolean sensitive) {
+        super(key, label, FieldType.READ_ONLY.getFieldTypeName(), required, sensitive);
+    }
+
+    public ReadOnlyConfigField(final String key, final String label, final boolean required, final boolean sensitive, final ConfigValidationFunction validationFunction) {
+        super(key, label, FieldType.READ_ONLY.getFieldTypeName(), required, sensitive, validationFunction);
+    }
+
     public static ReadOnlyConfigField createRequired(final String key, final String label) {
         return new ReadOnlyConfigField(key, label, true, false);
     }
@@ -53,21 +64,5 @@ public class ReadOnlyConfigField extends ConfigField {
 
     public static ReadOnlyConfigField createSensitiveGrouped(final String key, final String label, final String group, final ConfigValidationFunction validationFunction) {
         return new ReadOnlyConfigField(key, label, false, true, group, validationFunction);
-    }
-
-    public ReadOnlyConfigField(final String key, final String label, final boolean required, final boolean sensitive, final String subGroup) {
-        super(key, label, FieldType.READ_ONLY.getFieldTypeName(), required, sensitive, subGroup);
-    }
-
-    public ReadOnlyConfigField(final String key, final String label, final boolean required, final boolean sensitive, final String subGroup, final ConfigValidationFunction validationFunction) {
-        super(key, label, FieldType.READ_ONLY.getFieldTypeName(), required, sensitive, subGroup, validationFunction);
-    }
-
-    public ReadOnlyConfigField(final String key, final String label, final boolean required, final boolean sensitive) {
-        super(key, label, FieldType.READ_ONLY.getFieldTypeName(), required, sensitive);
-    }
-
-    public ReadOnlyConfigField(final String key, final String label, final boolean required, final boolean sensitive, final ConfigValidationFunction validationFunction) {
-        super(key, label, FieldType.READ_ONLY.getFieldTypeName(), required, sensitive, validationFunction);
     }
 }
