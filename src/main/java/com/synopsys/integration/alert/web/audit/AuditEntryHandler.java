@@ -24,6 +24,7 @@
 package com.synopsys.integration.alert.web.audit;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -55,7 +56,7 @@ public class AuditEntryHandler extends ControllerHandler {
     }
 
     public ResponseEntity<String> get(final Long id) {
-        Optional<AuditEntryModel> auditEntryModel = auditEntryActions.get(id);
+        final Optional<AuditEntryModel> auditEntryModel = auditEntryActions.get(id);
         if (auditEntryModel.isPresent()) {
             return createResponse(HttpStatus.OK, id, gson.toJson(auditEntryModel.get()));
         } else {
@@ -63,16 +64,16 @@ public class AuditEntryHandler extends ControllerHandler {
         }
     }
 
-    public ResponseEntity<String> getAuditInfoForJob(final Long jobId) {
-        Optional<JobAuditModel> jobAuditModel = auditEntryActions.getAuditInfoForJob(jobId);
+    public ResponseEntity<String> getAuditInfoForJob(final UUID jobId) {
+        final Optional<JobAuditModel> jobAuditModel = auditEntryActions.getAuditInfoForJob(jobId);
         if (jobAuditModel.isPresent()) {
-            return createResponse(HttpStatus.OK, jobId, gson.toJson(jobAuditModel.get()));
+            return createResponse(HttpStatus.OK, jobId.toString(), gson.toJson(jobAuditModel.get()));
         } else {
-            return createResponse(HttpStatus.GONE, jobId, "The Audit information could not be found for this job.");
+            return createResponse(HttpStatus.GONE, jobId.toString(), "The Audit information could not be found for this job.");
         }
     }
 
-    public ResponseEntity<String> resendNotification(final Long notificationId, final Long commonConfigId) {
+    public ResponseEntity<String> resendNotification(final Long notificationId, final UUID commonConfigId) {
         AlertPagedModel<AuditEntryModel> auditEntries = null;
         try {
             auditEntries = auditEntryActions.resendNotification(notificationId, commonConfigId);
@@ -80,7 +81,7 @@ public class AuditEntryHandler extends ControllerHandler {
         } catch (final AlertNotificationPurgedException e) {
             return createResponse(HttpStatus.GONE, notificationId, e.getMessage());
         } catch (final AlertJobMissingException e) {
-            return createResponse(HttpStatus.GONE, commonConfigId, e.getMessage());
+            return createResponse(HttpStatus.GONE, commonConfigId.toString(), e.getMessage());
         } catch (final IntegrationException e) {
             return createResponse(HttpStatus.BAD_REQUEST, notificationId, e.getMessage());
         }

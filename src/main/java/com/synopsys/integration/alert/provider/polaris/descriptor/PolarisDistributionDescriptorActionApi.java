@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.web.model.TestConfigModel;
+import com.synopsys.integration.alert.web.model.configuration.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component

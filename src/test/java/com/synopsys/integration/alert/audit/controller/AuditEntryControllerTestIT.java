@@ -1,6 +1,8 @@
 package com.synopsys.integration.alert.audit.controller;
 
 import java.util.Collection;
+import java.util.Set;
+import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +23,7 @@ import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
@@ -81,11 +84,11 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     public void testGetConfigWithId() throws Exception {
-        MockAuditEntryEntity mockAuditEntryEntity = new MockAuditEntryEntity();
+        final MockAuditEntryEntity mockAuditEntryEntity = new MockAuditEntryEntity();
         AuditEntryEntity entity = mockAuditEntryEntity.createEntity();
         entity = auditEntryRepository.save(entity);
 
-        MockNotificationContent mockNotificationContent = new MockNotificationContent();
+        final MockNotificationContent mockNotificationContent = new MockNotificationContent();
         NotificationContent notificationContent = mockNotificationContent.createEntity();
         notificationContent = notificationRepository.save(notificationContent);
 
@@ -115,12 +118,13 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
     public void testPostConfig() throws Exception {
         final Collection<ConfigurationFieldModel> hipChatFields = MockConfigurationModelFactory.createHipChatDistributionFields();
         final ConfigurationModel configurationModel = baseConfigurationAccessor.createConfiguration(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION, hipChatFields);
+        final ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(UUID.randomUUID(), Set.of(configurationModel));
 
         final MockNotificationContent mockNotifications = new MockNotificationContent();
         NotificationContent notificationEntity = mockNotifications.createEntity();
         notificationEntity = notificationRepository.save(notificationEntity);
-        MockAuditEntryEntity mockAuditEntryEntity = new MockAuditEntryEntity();
-        mockAuditEntryEntity.setCommonConfigId(configurationModel.getConfigurationId());
+        final MockAuditEntryEntity mockAuditEntryEntity = new MockAuditEntryEntity();
+        mockAuditEntryEntity.setCommonConfigId(configurationJobModel.getJobId());
         AuditEntryEntity auditEntity = mockAuditEntryEntity.createEntity();
         auditEntity = auditEntryRepository.save(auditEntity);
         auditNotificationRepository.save(new AuditNotificationRelation(auditEntity.getId(), notificationEntity.getId()));

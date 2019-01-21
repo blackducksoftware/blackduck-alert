@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -22,6 +23,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistri
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
@@ -144,6 +146,18 @@ public class MockConfigurationModelFactory {
         Mockito.when(configurationModel.getCopyOfKeyToFieldMap()).thenReturn(MockConfigurationModelFactory.mapFieldKeyToFields(fieldList));
 
         return configurationModel;
+    }
+
+    public static ConfigurationJobModel createCommonJobConfigModel(final UUID uuid, final Long id, final Long descriptorId, final String distributionType, final String name, final String providerName, final String frequency,
+        final String filterByProject, final String projectNamePattern, final List<String> configuredProjects, final List<String> notificationTypes, final String formatType) {
+        final ConfigurationJobModel configurationJobModel = Mockito.mock(ConfigurationJobModel.class);
+        Mockito.when(configurationJobModel.getJobId()).thenReturn(uuid);
+
+        final ConfigurationModel configurationModel = createCommonConfigModel(id, descriptorId, distributionType, name, providerName, frequency, filterByProject, projectNamePattern, configuredProjects, notificationTypes, formatType);
+        final Map<String, ConfigurationFieldModel> fieldModelMap = MockConfigurationModelFactory.mapFieldKeyToFields(configurationModel.getCopyOfFieldList());
+        Mockito.when(configurationJobModel.createKeyToFieldMap()).thenReturn(fieldModelMap);
+
+        return configurationJobModel;
     }
 
     private static void mockField(final List<ConfigurationFieldModel> fieldList, final ConfigurationModel configurationModel, final String key, final String value) {
