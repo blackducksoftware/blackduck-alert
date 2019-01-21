@@ -29,13 +29,12 @@ public class AlertStartupInitializerTest {
         final BaseDescriptorAccessor baseDescriptorAccessor = Mockito.mock(BaseDescriptorAccessor.class);
         final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
         final EmailGlobalDescriptorActionApi descriptorConfig = Mockito.mock(EmailGlobalDescriptorActionApi.class);
-        final List<DescriptorActionApi> restApis = List.of(descriptorConfig);
         final ChannelDescriptor channelDescriptor = new HipChatDescriptor(null, null, null, null, new HipChatGlobalUIConfig());
         Mockito.when(baseDescriptorAccessor.getFieldsForDescriptor(Mockito.anyString(), Mockito.any(ConfigContextEnum.class))).thenReturn(List.copyOf(channelDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL)));
         final List<ChannelDescriptor> channelDescriptors = List.of(channelDescriptor);
         final List<ProviderDescriptor> providerDescriptors = List.of();
         final List<ComponentDescriptor> componentDescriptors = List.of();
-        final DescriptorMap descriptorMap = new DescriptorMap(channelDescriptors, providerDescriptors, componentDescriptors, restApis);
+        final DescriptorMap descriptorMap = new DescriptorMap(channelDescriptors, providerDescriptors, componentDescriptors);
         final AlertStartupInitializer initializer = new AlertStartupInitializer(descriptorMap, environment, baseDescriptorAccessor, baseConfigurationAccessor);
         initializer.initializeConfigs(true);
         assertFalse(initializer.getAlertPropertyNameSet().isEmpty());
@@ -47,8 +46,7 @@ public class AlertStartupInitializerTest {
         final BaseDescriptorAccessor baseDescriptorAccessor = Mockito.mock(BaseDescriptorAccessor.class);
         final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
         final EmailGlobalDescriptorActionApi descriptorConfig = Mockito.mock(EmailGlobalDescriptorActionApi.class);
-        final List<DescriptorActionApi> restApis = List.of(descriptorConfig);
-        final DescriptorMap descriptorMap = new DescriptorMap(List.of(), List.of(), List.of(), restApis);
+        final DescriptorMap descriptorMap = new DescriptorMap(List.of(), List.of(), List.of());
         final AlertStartupInitializer initializer = new AlertStartupInitializer(descriptorMap, environment, baseDescriptorAccessor, baseConfigurationAccessor);
         initializer.initializeConfigs(true);
         assertTrue(initializer.getAlertPropertyNameSet().isEmpty());
@@ -66,7 +64,7 @@ public class AlertStartupInitializerTest {
         final List<ChannelDescriptor> channelDescriptors = List.of(channelDescriptor);
         final List<ProviderDescriptor> providerDescriptors = List.of();
         final List<ComponentDescriptor> componentDescriptors = List.of();
-        final DescriptorMap descriptorMap = new DescriptorMap(channelDescriptors, providerDescriptors, componentDescriptors, restApis);
+        final DescriptorMap descriptorMap = new DescriptorMap(channelDescriptors, providerDescriptors, componentDescriptors);
         final String value = "newValue";
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(value);
 
