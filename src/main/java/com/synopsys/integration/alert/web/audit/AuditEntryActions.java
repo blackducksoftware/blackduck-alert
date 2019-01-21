@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -45,7 +46,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.channel.ChannelTemplateManager;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
-import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.configuration.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
@@ -75,12 +75,10 @@ public class AuditEntryActions {
     private final NotificationContentConverter notificationContentConverter;
     private final ChannelTemplateManager channelTemplateManager;
     private final NotificationProcessor notificationProcessor;
-    private final ContentConverter contentConverter;
 
     @Autowired
     public AuditEntryActions(final AuditEntryRepository auditEntryRepository, final NotificationManager notificationManager, final AuditNotificationRepository auditNotificationRepository,
-        final JobConfigReader jobConfigReader, final NotificationContentConverter notificationContentConverter, final ChannelTemplateManager channelTemplateManager, final NotificationProcessor notificationProcessor,
-        final ContentConverter contentConverter) {
+        final JobConfigReader jobConfigReader, final NotificationContentConverter notificationContentConverter, final ChannelTemplateManager channelTemplateManager, final NotificationProcessor notificationProcessor) {
         this.auditEntryRepository = auditEntryRepository;
         this.notificationManager = notificationManager;
         this.auditNotificationRepository = auditNotificationRepository;
@@ -88,7 +86,6 @@ public class AuditEntryActions {
         this.notificationContentConverter = notificationContentConverter;
         this.channelTemplateManager = channelTemplateManager;
         this.notificationProcessor = notificationProcessor;
-        this.contentConverter = contentConverter;
     }
 
     public AlertPagedModel<AuditEntryModel> get() {
@@ -111,7 +108,7 @@ public class AuditEntryActions {
         return Optional.empty();
     }
 
-    public Optional<JobAuditModel> getAuditInfoForJob(final Long jobId) {
+    public Optional<JobAuditModel> getAuditInfoForJob(final UUID jobId) {
         if (jobId != null) {
             final Optional<AuditEntryEntity> auditEntryEntity = auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(jobId);
             return auditEntryEntity.map(value -> {
@@ -133,11 +130,13 @@ public class AuditEntryActions {
         return Optional.empty();
     }
 
-    public AlertPagedModel<AuditEntryModel> resendNotification(final Long notificationId, final Long commonConfigId) throws IntegrationException {
-        final NotificationContent notificationContent = notificationManager.findById(notificationId).orElseThrow(() -> new AlertNotificationPurgedException("No notification with this id exists."));
+    public AlertPagedModel<AuditEntryModel> resendNotification(final Long notificationId, final UUID commonConfigId) throws IntegrationException {
+        final NotificationContent notificationContent = notificationManager
+                                                            .findById(notificationId)
+                                                            .orElseThrow(() -> new AlertNotificationPurgedException("No notification with this id exists."));
         final List<DistributionEvent> distributionEvents;
         if (null != commonConfigId) {
-            final CommonDistributionConfiguration commonDistributionConfig = jobConfigReader.getPopulatedConfig(commonConfigId).orElseThrow(() -> {
+            final CommonDistributionConfiguration commonDistributionConfig = jobConfigReader.getPopulatedJobConfig(commonConfigId).orElseThrow(() -> {
                 logger.warn("The Distribution Job with Id {} could not be found. This notification could not be sent", commonConfigId);
                 return new AlertJobMissingException("The Distribution Job with this id could not be found.");
             });
@@ -149,9 +148,9 @@ public class AuditEntryActions {
             logger.warn("This notification could not be sent. Make sure you have a Distribution Job configured to handle this notification.");
         }
         distributionEvents.forEach(event -> {
-            final String commonDistributionId = event.getConfigId();
+            final UUID commonDistributionId = UUID.fromString(event.getConfigId());
             Long auditId = null;
-            final Optional<AuditEntryEntity> auditEntryEntity = auditEntryRepository.findMatchingAudit(notificationContent.getId(), contentConverter.getLongValue(commonDistributionId));
+            final Optional<AuditEntryEntity> auditEntryEntity = auditEntryRepository.findMatchingAudit(notificationContent.getId(), commonDistributionId);
             final Map<Long, Long> notificationIdToAuditId = new HashMap<>();
             if (auditEntryEntity.isPresent()) {
                 auditId = auditEntryEntity.get().getId();
@@ -221,7 +220,7 @@ public class AuditEntryActions {
         Date lastSentDate = null;
         final List<JobModel> jobModels = new ArrayList<>();
         for (final AuditEntryEntity auditEntryEntity : auditEntryEntities) {
-            final Long commonConfigId = auditEntryEntity.getCommonConfigId();
+            final UUID commonConfigId = auditEntryEntity.getCommonConfigId();
 
             if (null == lastSentDate || (null != auditEntryEntity.getTimeLastSent() && lastSentDate.before(auditEntryEntity.getTimeLastSent()))) {
                 lastSentDate = auditEntryEntity.getTimeLastSent();
@@ -241,7 +240,7 @@ public class AuditEntryActions {
             final String errorMessage = auditEntryEntity.getErrorMessage();
             final String errorStackTrace = auditEntryEntity.getErrorStackTrace();
 
-            final Optional<CommonDistributionConfiguration> commonConfig = jobConfigReader.getPopulatedConfig(commonConfigId);
+            final Optional<CommonDistributionConfiguration> commonConfig = jobConfigReader.getPopulatedJobConfig(commonConfigId);
             String distributionConfigName = null;
             String eventType = null;
             if (commonConfig.isPresent()) {
