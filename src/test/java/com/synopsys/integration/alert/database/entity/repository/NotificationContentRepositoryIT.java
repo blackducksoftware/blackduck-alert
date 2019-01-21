@@ -93,6 +93,4 @@ public class NotificationContentRepositoryIT extends AlertIntegrationTest {
         final NotificationContent savedEntity = repository.save(entity);
         return savedEntity;
     }
-
-    // TODO Add tests to also verify our complex queries work properly (findMatchingNotification and findMatchingSentNotification)
 }

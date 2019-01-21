@@ -23,22 +23,28 @@
  */
 package com.synopsys.integration.alert.database.channel;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.configuration.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.enumeration.DescriptorType;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 
 @Component
 public class JobConfigReader {
     private final BaseConfigurationAccessor configurationAccessor;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     public JobConfigReader(final BaseConfigurationAccessor configurationAccessor) {
@@ -46,21 +52,43 @@ public class JobConfigReader {
     }
 
     @Transactional
-    public List<CommonDistributionConfiguration> getPopulatedJobConfigs() {
-        return configurationAccessor.getAllJobs().stream()
-                   .map(CommonDistributionConfiguration::new)
-                   .collect(Collectors.toList());
+    public List<CommonDistributionConfiguration> getPopulatedConfigs() {
+        try {
+            final List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationsByDescriptorType(DescriptorType.CHANNEL);
+            return configurationModels.stream()
+                       .map(CommonDistributionConfiguration::new)
+                       .collect(Collectors.toList());
+        } catch (final AlertDatabaseConstraintException e) {
+            logger.error("Was not able to retrieve configurations", e);
+            return Collections.emptyList();
+        }
     }
 
     @Transactional
-    public Optional<CommonDistributionConfiguration> getPopulatedJobConfig(final UUID configId) {
+    public List<CommonDistributionConfiguration> getPopulatedConfigs(FrequencyType frequency) {
+        try {
+            final List<ConfigurationModel> configurationModels = configurationAccessor.getChannelConfigurationsByFrequency(frequency);
+            return configurationModels.stream()
+                       .map(CommonDistributionConfiguration::new)
+                       .collect(Collectors.toList());
+        } catch (final AlertDatabaseConstraintException e) {
+            logger.error("Was not able to retrieve configurations", e);
+            return Collections.emptyList();
+        }
+    }
+
+    @Transactional
+    public Optional<CommonDistributionConfiguration> getPopulatedConfig(final Long configId) {
         if (null == configId) {
             return Optional.empty();
         }
         try {
-            return configurationAccessor.getJobById(configId).map(CommonDistributionConfiguration::new);
+            final Optional<ConfigurationModel> configurationModel = configurationAccessor.getConfigurationById(configId);
+            if (configurationModel.isPresent()) {
+                return Optional.of(new CommonDistributionConfiguration(configurationModel.get()));
+            }
         } catch (final AlertDatabaseConstraintException e) {
-
+            // Intentionally ignored
         }
         return Optional.empty();
     }

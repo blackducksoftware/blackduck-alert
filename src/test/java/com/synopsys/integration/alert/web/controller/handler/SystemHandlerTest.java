@@ -15,11 +15,11 @@ import org.springframework.http.ResponseEntity;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
 import com.synopsys.integration.alert.web.actions.SystemActions;
-import com.synopsys.integration.alert.web.model.configuration.FieldModel;
+import com.synopsys.integration.alert.web.model.FieldModel;
 
 public class SystemHandlerTest {
-    private final ContentConverter contentConverter = Mockito.mock(ContentConverter.class);
     private SystemActions systemActions;
+    private final ContentConverter contentConverter = Mockito.mock(ContentConverter.class);
 
     @BeforeEach
     public void initialize() {

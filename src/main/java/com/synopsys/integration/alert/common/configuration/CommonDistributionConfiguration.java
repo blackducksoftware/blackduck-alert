@@ -24,9 +24,7 @@
 package com.synopsys.integration.alert.common.configuration;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
@@ -35,8 +33,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistribu
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationJobModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 
 public class CommonDistributionConfiguration extends Configuration {
@@ -52,16 +49,10 @@ public class CommonDistributionConfiguration extends Configuration {
     private final String projectNamePattern;
     // FIXME this field is here temporarily as there is some tight coupling to the BD provider.
     private final Set<String> configuredProjects;
-    private final UUID id;
 
-    public CommonDistributionConfiguration(final ConfigurationJobModel configurationJobModel) {
-        this(configurationJobModel.getJobId(), configurationJobModel.createKeyToFieldMap());
-    }
+    public CommonDistributionConfiguration(@NotNull final ConfigurationModel configurationModel) {
+        super(configurationModel);
 
-    public CommonDistributionConfiguration(@NotNull final UUID jobUUID, @NotNull final Map<String, ConfigurationFieldModel> keyToFieldMap) {
-        super(keyToFieldMap);
-
-        id = jobUUID;
         name = getFieldAccessor().getString(CommonDistributionUIConfig.KEY_NAME).orElse(null);
         channelName = getFieldAccessor().getString(CommonDistributionUIConfig.KEY_CHANNEL_NAME).orElse(null);
         providerName = getFieldAccessor().getString(CommonDistributionUIConfig.KEY_PROVIDER_NAME).orElse(null);
@@ -71,10 +62,6 @@ public class CommonDistributionConfiguration extends Configuration {
         filterByProject = getFieldAccessor().getBoolean(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT).orElse(null);
         projectNamePattern = getFieldAccessor().getString(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN).orElse(null);
         configuredProjects = getFieldAccessor().getAllStrings(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT).stream().collect(Collectors.toSet());
-    }
-
-    public UUID getId() {
-        return id;
     }
 
     public String getName() {

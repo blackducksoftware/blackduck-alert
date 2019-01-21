@@ -7,8 +7,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterEach;
@@ -28,7 +26,6 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor;
 import com.synopsys.integration.alert.database.api.configuration.DescriptorAccessor;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.RegisteredDescriptorModel;
@@ -87,15 +84,11 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
         final ConfigurationModel configurationModel = Mockito.mock(ConfigurationModel.class);
         Mockito.when(configurationModel.getCopyOfKeyToFieldMap()).thenReturn(fieldMap);
         Mockito.when(configurationModel.getConfigurationId()).thenReturn(1L);
-        final ConfigurationJobModel configurationJobModel = Mockito.mock(ConfigurationJobModel.class);
-        Mockito.when(configurationJobModel.getJobId()).thenReturn(UUID.randomUUID());
-        Mockito.when(configurationJobModel.getCopyOfConfigurations()).thenReturn(Set.of(configurationModel));
-        Mockito.when(configurationJobModel.createKeyToFieldMap()).thenReturn(fieldMap);
 
-        final CommonDistributionConfiguration config = new CommonDistributionConfiguration(configurationJobModel);
+        final CommonDistributionConfiguration config = new CommonDistributionConfiguration(configurationModel);
 
         final JobConfigReader jobConfigReader = Mockito.mock(JobConfigReader.class);
-        Mockito.when(jobConfigReader.getPopulatedJobConfigs()).thenReturn(List.of(config));
+        Mockito.when(jobConfigReader.getPopulatedConfigs()).thenReturn(List.of(config));
 
         defaultNotificationFilter = new NotificationFilter(jsonExtractor, providerDescriptors, jobConfigReader);
         descriptorAccessor.registerDescriptor(TEST_DESCRIPTOR_NAME, DescriptorType.CHANNEL, List.of());
@@ -115,7 +108,7 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
     @Test
     public void shortCircuitIfNoCommonConfigsTest() {
         final JobConfigReader jobConfigReader = Mockito.mock(JobConfigReader.class);
-        Mockito.when(jobConfigReader.getPopulatedJobConfigs()).thenReturn(List.of());
+        Mockito.when(jobConfigReader.getPopulatedConfigs()).thenReturn(List.of());
 
         final NotificationFilter notificationFilter = new NotificationFilter(jsonExtractor, providerDescriptors, jobConfigReader);
         final NotificationContent applicableNotification = createVulnerabilityNotification(TEST_CONFIG_PROJECT_NAME, BlackDuckProvider.COMPONENT_NAME, NEW);
@@ -129,7 +122,7 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
         Mockito.when(config.getFrequencyType()).thenReturn(FrequencyType.DAILY);
 
         final JobConfigReader jobConfigReader = Mockito.mock(JobConfigReader.class);
-        Mockito.when(jobConfigReader.getPopulatedJobConfigs()).thenReturn(List.of(config));
+        Mockito.when(jobConfigReader.getPopulatedConfigs()).thenReturn(List.of(config));
 
         final NotificationFilter notificationFilter = new NotificationFilter(jsonExtractor, providerDescriptors, jobConfigReader);
         final ConfigurationFieldModel fieldModel = createFieldModel(TEST_DESCRIPTOR_FIELD_KEY, "value");

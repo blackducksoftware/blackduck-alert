@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
+import com.synopsys.integration.alert.web.model.FieldValueModel;
 
 public class FieldModelUtil {
 

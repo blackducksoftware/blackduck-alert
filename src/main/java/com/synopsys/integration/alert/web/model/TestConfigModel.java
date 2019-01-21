@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.model.configuration;
+package com.synopsys.integration.alert.web.model;
 
 import java.util.Optional;
 

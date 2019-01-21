@@ -13,7 +13,6 @@ package com.synopsys.integration.alert.mock;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -36,7 +35,7 @@ public class NotificationTypeMockUtils extends MockEntityUtil<NotificationTypeEn
     }
 
     public List<DistributionNotificationTypeRelation> getNotificationTypeRelations() {
-        final DistributionNotificationTypeRelation relation1 = new DistributionNotificationTypeRelation(UUID.randomUUID(), type.name());
+        final DistributionNotificationTypeRelation relation1 = new DistributionNotificationTypeRelation(1L, type.name());
         return Arrays.asList(relation1);
     }
 

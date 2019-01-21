@@ -31,14 +31,14 @@ import com.google.gson.JsonObject;
 public class ResponseBodyBuilder {
     private final JsonObject map;
 
-    public ResponseBodyBuilder(final String id, final String message) {
-        map = new JsonObject();
+    public ResponseBodyBuilder(final Long id, final String message) {
+        this.map = new JsonObject();
         map.addProperty("id", id);
         map.addProperty("message", message);
     }
 
     public ResponseBodyBuilder(final String message) {
-        map = new JsonObject();
+        this.map = new JsonObject();
         map.addProperty("message", message);
     }
 
