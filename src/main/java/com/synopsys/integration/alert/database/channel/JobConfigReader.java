@@ -60,9 +60,8 @@ public class JobConfigReader {
         try {
             return configurationAccessor.getJobById(configId).map(CommonDistributionConfiguration::new);
         } catch (final AlertDatabaseConstraintException e) {
-
+            return Optional.empty();
         }
-        return Optional.empty();
     }
 
 }
