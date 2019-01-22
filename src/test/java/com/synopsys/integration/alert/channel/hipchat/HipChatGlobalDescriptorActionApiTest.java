@@ -24,6 +24,7 @@ import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.audit.AuditUtility;
 import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestProperties;
@@ -39,7 +40,9 @@ public class HipChatGlobalDescriptorActionApiTest {
     @Test
     public void validateConfigEmptyTest() {
         final HipChatChannel hipChatChannel = Mockito.mock(HipChatChannel.class);
-        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter();
+        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility);
 
         final HipChatGlobalUIConfig uiConfig = new HipChatGlobalUIConfig();
         final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel, modelConverter);
@@ -56,7 +59,9 @@ public class HipChatGlobalDescriptorActionApiTest {
     public void validateConfigInvalidTest() {
         final HipChatChannel hipChatChannel = Mockito.mock(HipChatChannel.class);
         final HipChatGlobalUIConfig uiConfig = new HipChatGlobalUIConfig();
-        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter();
+        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility);
         final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel, modelConverter);
 
         final Map<String, FieldValueModel> fields = new HashMap<>();
@@ -75,7 +80,9 @@ public class HipChatGlobalDescriptorActionApiTest {
     public void validateConfigValidTest() {
         final HipChatChannel hipChatChannel = Mockito.mock(HipChatChannel.class);
         final HipChatGlobalUIConfig uiConfig = new HipChatGlobalUIConfig();
-        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter();
+        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility);
         final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel, modelConverter);
 
         final Map<String, FieldValueModel> fields = new HashMap<>();
@@ -94,7 +101,9 @@ public class HipChatGlobalDescriptorActionApiTest {
     public void testConfigWithoutGlobalConfigTest() throws Exception {
         final HipChatChannel hipChatChannel = Mockito.mock(HipChatChannel.class);
         final HipChatGlobalUIConfig uiConfig = new HipChatGlobalUIConfig();
-        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter();
+        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility);
         final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel, modelConverter);
 
         final Map<String, FieldValueModel> keyToValues = new HashMap<>();
@@ -121,7 +130,9 @@ public class HipChatGlobalDescriptorActionApiTest {
         ////////////////////////////////////////
 
         final HipChatGlobalUIConfig uiConfig = new HipChatGlobalUIConfig();
-        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter();
+        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility);
         final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel, modelConverter);
 
         final Map<String, FieldValueModel> keyToValues = new HashMap<>();
@@ -151,7 +162,9 @@ public class HipChatGlobalDescriptorActionApiTest {
         ////////////////////////////////////////
 
         final HipChatGlobalUIConfig uiConfig = new HipChatGlobalUIConfig();
-        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter();
+        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility);
         final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel, modelConverter);
 
         final Map<String, FieldValueModel> keyToValues = new HashMap<>();
@@ -198,7 +211,9 @@ public class HipChatGlobalDescriptorActionApiTest {
         ////////////////////////////////////////
 
         final HipChatGlobalUIConfig uiConfig = new HipChatGlobalUIConfig();
-        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter();
+        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility);
         final HipChatGlobalDescriptorActionApi hipChatGlobalDescriptorActionApi = new HipChatGlobalDescriptorActionApi(hipChatChannel, modelConverter);
 
         final Map<String, FieldValueModel> keyToValues = new HashMap<>();

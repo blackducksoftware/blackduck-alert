@@ -25,17 +25,27 @@ package com.synopsys.integration.alert.common;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
 import com.synopsys.integration.alert.web.model.FieldModel;
 
 @Component
 public class ConfigurationFieldModelConverter {
+    private final EncryptionUtility encryptionUtility;
+
+    @Autowired
+    public ConfigurationFieldModelConverter(final EncryptionUtility encryptionUtility) {
+        this.encryptionUtility = encryptionUtility;
+    }
 
     public final FieldAccessor convertToFieldAccessor(final Map<String, ConfigField> configFieldMap, final FieldModel fieldModel) {
         final Map<String, ConfigurationFieldModel> fields = convertFromFieldModel(configFieldMap, fieldModel);
@@ -48,6 +58,29 @@ public class ConfigurationFieldModelConverter {
         }
 
         return convertToConfigurationFieldModelMap(configFieldMap, fieldModel);
+    }
+
+    public final Optional<ConfigurationFieldModel> convertFromDefinedFieldModel(final DefinedFieldModel definedFieldModel, final String value) {
+        final Optional<ConfigurationFieldModel> configurationModel = createEmptyModel(definedFieldModel);
+        configurationModel.ifPresent(model -> model.setFieldValue(value));
+        return configurationModel;
+    }
+
+    public final Optional<ConfigurationFieldModel> convertFromDefinedFieldModel(final DefinedFieldModel definedFieldModel, final Collection<String> values) {
+        final Optional<ConfigurationFieldModel> configurationModel = createEmptyModel(definedFieldModel);
+        configurationModel.ifPresent(model -> model.setFieldValues(values));
+        return configurationModel;
+    }
+
+    private Optional<ConfigurationFieldModel> createEmptyModel(final DefinedFieldModel definedFieldModel) {
+        ConfigurationFieldModel configurationModel = ConfigurationFieldModel.create(definedFieldModel.getKey());
+        if (definedFieldModel.getSensitive()) {
+            if (!encryptionUtility.isInitialized()) {
+                return Optional.empty();
+            }
+            configurationModel = ConfigurationFieldModel.createSensitive(definedFieldModel.getKey());
+        }
+        return Optional.of(configurationModel);
     }
 
     private Map<String, ConfigurationFieldModel> convertToConfigurationFieldModelMap(final Map<String, ConfigField> configFieldMap, final FieldModel fieldModel) {
