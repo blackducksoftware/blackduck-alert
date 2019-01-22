@@ -1,0 +1,1497 @@
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    <!-- DESCRIPTOR_TYPES: required to register descriptors -->
+    <changeSet author="gkillough" id="1548167676836-1">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_TYPES">
+            <!-- This is a brand new table. ID = 1 -->
+            <column name="TYPE" type="VARCHAR(255)" value="CHANNEL"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_TYPES">
+            <!-- This is a brand new table. ID = 2 -->
+            <column name="TYPE" type="VARCHAR(255)" value="PROVIDER"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_TYPES">
+            <!-- This is a brand new table. ID = 3 -->
+            <column name="TYPE" type="VARCHAR(255)" value="COMPONENT"/>
+        </insert>
+    </changeSet>
+
+    <!-- CONFIG_CONTEXTS: required to register fields -->
+    <changeSet author="gkillough" id="1548167676836-2">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="CONFIG_CONTEXTS">
+            <!-- This is a brand new table. ID = 1 -->
+            <column name="CONTEXT" type="VARCHAR(31)" value="GLOBAL"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="CONFIG_CONTEXTS">
+            <!-- This is a brand new table. ID = 2 -->
+            <column name="CONTEXT" type="VARCHAR(31)" value="DISTRIBUTION"/>
+        </insert>
+    </changeSet>
+
+    <!-- REGISTERED_DESCRIPTORS: required to register fields -->
+    <changeSet author="gkillough" id="1548167676836-3">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="REGISTERED_DESCRIPTORS">
+            <!-- This is a brand new table. ID = 1 -->
+            <column name="NAME" type="VARCHAR(255)" value="provider_blackduck"/>
+            <column name="TYPE_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="REGISTERED_DESCRIPTORS">
+            <!-- This is a brand new table. ID = 2 -->
+            <column name="NAME" type="VARCHAR(255)" value="channel_email"/>
+            <column name="TYPE_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="REGISTERED_DESCRIPTORS">
+            <!-- This is a brand new table. ID = 3 -->
+            <column name="NAME" type="VARCHAR(255)" value="channel_hipchat"/>
+            <column name="TYPE_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="REGISTERED_DESCRIPTORS">
+            <!-- This is a brand new table. ID = 4 -->
+            <column name="NAME" type="VARCHAR(255)" value="channel_slack"/>
+            <column name="TYPE_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+        <!-- No need to insert provider_polaris since it is new -->
+    </changeSet>
+
+    <!-- Register Global Black Duck Fields. Changelog Extension: 4. DESCRIPTOR_ID = 1 -->
+
+    <!-- New Field: SOURCE_KEY = blackduck.url, ID = 1 -->
+    <changeSet author="gkillough" id="1548167676836-4-1">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="blackduck.url"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="1"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="1"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = blackduck.api.key, ID = 2 -->
+    <changeSet author="gkillough" id="1548167676836-4-2">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="blackduck.api.key"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="TRUE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="2"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="2"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = blackduck.timeout, ID = 3 -->
+    <changeSet author="gkillough" id="1548167676836-4-3">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="blackduck.timeout"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="3"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="3"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- Register Distribution Black Duck Fields. Changelog Extension: 5. DESCRIPTOR_ID = 1 -->
+
+    <!-- New Field: SOURCE_KEY = channel.common.filter.by.project, ID = 4 -->
+    <changeSet author="gkillough" id="1548167676836-5-1">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="channel.common.filter.by.project"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="4"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="4"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = channel.common.project.name.pattern, ID = 5 -->
+    <changeSet author="gkillough" id="1548167676836-5-2">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="channel.common.project.name.pattern"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="5"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="5"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = channel.common.configured.project, ID = 6 -->
+    <changeSet author="gkillough" id="1548167676836-5-3">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="channel.common.configured.project"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="6"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="6"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+    </changeSet>
+
+    <!-- Register Distribution Email Fields. Changelog Extension: 6. DESCRIPTOR_ID = 2 -->
+
+    <!-- New Field: SOURCE_KEY = subject.line, ID = 7 -->
+    <changeSet author="gkillough" id="1548167676836-6-1">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="subject.line"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="7"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="7"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = project.owner.only, ID = 8 -->
+    <changeSet author="gkillough" id="1548167676836-6-2">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="project.owner.only"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="8"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="8"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = email.addresses, ID = 9 -->
+    <changeSet author="gkillough" id="1548167676836-6-3">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="email.addresses"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="9"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="9"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+    </changeSet>
+
+    <!-- Register Global Email Fields. Changelog Extension: 7. DESCRIPTOR_ID = 2 -->
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.user, ID = 10 -->
+    <changeSet author="gkillough" id="1548167676836-7-1">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.user"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="10"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="10"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.host, ID = 11 -->
+    <changeSet author="gkillough" id="1548167676836-7-2">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.host"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="11"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="11"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.port, ID = 12 -->
+    <changeSet author="gkillough" id="1548167676836-7-3">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.port"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="12"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="12"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.connectiontimeout, ID = 13 -->
+    <changeSet author="gkillough" id="1548167676836-7-4">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.connectiontimeout"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="13"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="13"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.timeout, ID = 14 -->
+    <changeSet author="gkillough" id="1548167676836-7-5">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.timeout"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="14"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="14"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.writetimeout, ID = 15 -->
+    <changeSet author="gkillough" id="1548167676836-7-6">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.writetimeout"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="15"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="15"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.from, ID = 16 -->
+    <changeSet author="gkillough" id="1548167676836-7-7">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.from"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="16"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="16"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.localhost, ID = 17 -->
+    <changeSet author="gkillough" id="1548167676836-7-8">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.localhost"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="17"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="17"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.localaddress, ID = 18 -->
+    <changeSet author="gkillough" id="1548167676836-7-9">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.localaddress"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="18"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="18"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.localport, ID = 19 -->
+    <changeSet author="gkillough" id="1548167676836-7-10">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.localport"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="19"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="19"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.ehlo, ID = 20 -->
+    <changeSet author="gkillough" id="1548167676836-7-11">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.ehlo"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="20"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="20"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.auth, ID = 21 -->
+    <changeSet author="gkillough" id="1548167676836-7-12">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.auth"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="21"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="21"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.auth.mechanisms, ID = 22 -->
+    <changeSet author="gkillough" id="1548167676836-7-13">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.auth.mechanisms"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="22"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="22"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.auth.login.disable, ID = 23 -->
+    <changeSet author="gkillough" id="1548167676836-7-14">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.auth.login.disable"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="23"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="23"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.auth.plain.disable, ID = 24 -->
+    <changeSet author="gkillough" id="1548167676836-7-15">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.auth.plain.disable"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="24"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="24"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.auth.digest-md5.disable, ID = 25 -->
+    <changeSet author="gkillough" id="1548167676836-7-16">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.auth.digest-md5.disable"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="25"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="25"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.auth.ntlm.disable, ID = 26 -->
+    <changeSet author="gkillough" id="1548167676836-7-17">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.auth.ntlm.disable"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="26"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="26"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.auth.ntlm.domain, ID = 27 -->
+    <changeSet author="gkillough" id="1548167676836-7-18">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.auth.ntlm.domain"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="27"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="27"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.auth.ntlm.flags, ID = 28 -->
+    <changeSet author="gkillough" id="1548167676836-7-19">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.auth.ntlm.flags"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="28"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="28"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.auth.xoauth2.disable, ID = 29 -->
+    <changeSet author="gkillough" id="1548167676836-7-20">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.auth.xoauth2.disable"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="29"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="29"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.submitter, ID = 30 -->
+    <changeSet author="gkillough" id="1548167676836-7-21">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.submitter"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="30"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="30"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.dsn.notify, ID = 31 -->
+    <changeSet author="gkillough" id="1548167676836-7-22">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.dsn.notify"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="31"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="31"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.dsn.ret, ID = 32 -->
+    <changeSet author="gkillough" id="1548167676836-7-23">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.dsn.ret"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="32"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="32"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.allow8bitmime, ID = 33 -->
+    <changeSet author="gkillough" id="1548167676836-7-24">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.allow8bitmime"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="33"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="33"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.sendpartial, ID = 34 -->
+    <changeSet author="gkillough" id="1548167676836-7-25">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.sendpartial"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="34"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="34"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.sasl.enable, ID = 35 -->
+    <changeSet author="gkillough" id="1548167676836-7-26">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.sasl.enable"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="35"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="35"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.sasl.mechanisms, ID = 36 -->
+    <changeSet author="gkillough" id="1548167676836-7-27">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.sasl.mechanisms"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="36"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="36"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.sasl.authorizationid, ID = 37 -->
+    <changeSet author="gkillough" id="1548167676836-7-28">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.sasl.authorizationid"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="37"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="37"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.sasl.realm, ID = 38 -->
+    <changeSet author="gkillough" id="1548167676836-7-29">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.sasl.realm"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="38"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="38"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.sasl.usecanonicalhostname, ID = 39 -->
+    <changeSet author="gkillough" id="1548167676836-7-30">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.sasl.usecanonicalhostname"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="39"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="39"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.quitwait, ID = 40 -->
+    <changeSet author="gkillough" id="1548167676836-7-31">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.quitwait"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="40"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="40"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.reportsuccess, ID = 41 -->
+    <changeSet author="gkillough" id="1548167676836-7-32">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.reportsuccess"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="41"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="41"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.ssl.enable, ID = 42 -->
+    <changeSet author="gkillough" id="1548167676836-7-33">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.ssl.enable"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="42"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="42"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.ssl.checkserveridentity, ID = 43 -->
+    <changeSet author="gkillough" id="1548167676836-7-34">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.ssl.checkserveridentity"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="43"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="43"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.ssl.trust, ID = 44 -->
+    <changeSet author="gkillough" id="1548167676836-7-35">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.ssl.trust"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="44"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="44"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.ssl.protocols, ID = 45 -->
+    <changeSet author="gkillough" id="1548167676836-7-36">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.ssl.protocols"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="45"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="45"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.ssl.ciphersuites, ID = 46 -->
+    <changeSet author="gkillough" id="1548167676836-7-37">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.ssl.ciphersuites"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="46"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="46"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.starttls.enable, ID = 47 -->
+    <changeSet author="gkillough" id="1548167676836-7-38">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.starttls.enable"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="47"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="47"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.starttls.required, ID = 48 -->
+    <changeSet author="gkillough" id="1548167676836-7-39">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.starttls.required"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="48"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="48"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.proxy.host, ID = 49 -->
+    <changeSet author="gkillough" id="1548167676836-7-40">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.proxy.host"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="49"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="49"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.proxy.port, ID = 50 -->
+    <changeSet author="gkillough" id="1548167676836-7-41">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.proxy.port"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="50"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="50"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.socks.host, ID = 51 -->
+    <changeSet author="gkillough" id="1548167676836-7-42">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.socks.host"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="51"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="51"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.socks.port, ID = 52 -->
+    <changeSet author="gkillough" id="1548167676836-7-43">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.socks.port"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="52"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="52"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.mailextension, ID = 53 -->
+    <changeSet author="gkillough" id="1548167676836-7-44">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.mailextension"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="53"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="53"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.userset, ID = 54 -->
+    <changeSet author="gkillough" id="1548167676836-7-45">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.userset"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="54"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="54"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.noop.strict, ID = 55 -->
+    <changeSet author="gkillough" id="1548167676836-7-46">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.noop.strict"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="55"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="55"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = mail.smtp.password, ID = 56 -->
+    <changeSet author="gkillough" id="1548167676836-7-47">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="mail.smtp.password"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="TRUE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="56"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="56"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- Register Global HipChat Fields. Changelog Extension: 8. DESCRIPTOR_ID = 3 -->
+
+    <!-- New Field: SOURCE_KEY = channel.hipchat.api.key, ID = 57 -->
+    <changeSet author="gkillough" id="1548167676836-8-1">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="channel.hipchat.api.key"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="TRUE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="57"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="3"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="57"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = channel.hipchat.host.server, ID = 58 -->
+    <changeSet author="gkillough" id="1548167676836-8-2">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="channel.hipchat.host.server"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="58"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="3"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="58"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- Register Distribution HipChat Fields. Changelog Extension: 9. DESCRIPTOR_ID = 3 -->
+
+    <!-- New Field: SOURCE_KEY = channel.hipchat.room.id, ID = 59 -->
+    <changeSet author="gkillough" id="1548167676836-9-1">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="channel.hipchat.room.id"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="59"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="3"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="59"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = channel.hipchat.notify, ID = 60 -->
+    <changeSet author="gkillough" id="1548167676836-9-2">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="channel.hipchat.notify"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="60"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="3"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="60"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = channel.hipchat.color, ID = 61 -->
+    <changeSet author="gkillough" id="1548167676836-9-3">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="channel.hipchat.color"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="61"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="3"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="61"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+    </changeSet>
+
+    <!-- Register Distribution Slack Fields. Changelog Extension: 10. DESCRIPTOR_ID = 4 -->
+
+    <!-- New Field: SOURCE_KEY = channel.slack.webhook, ID = 62 -->
+    <changeSet author="gkillough" id="1548167676836-10-1">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="channel.slack.webhook"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="62"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="4"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="62"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = channel.slack.channel.name, ID = 63 -->
+    <changeSet author="gkillough" id="1548167676836-10-2">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="channel.slack.channel.name"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="63"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="4"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="63"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = channel.slack.channel.username, ID = 64 -->
+    <changeSet author="gkillough" id="1548167676836-10-3">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="channel.slack.channel.username"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="64"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="4"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="64"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

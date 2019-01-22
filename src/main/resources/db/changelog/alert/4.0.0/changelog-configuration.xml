@@ -71,7 +71,9 @@
             <column name="ID" type="BIGINT(19)" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="CONFIG_CONTEXTS_KEY"/>
             </column>
-            <column name="CONTEXT" type="VARCHAR(31)"/>
+            <column name="CONTEXT" type="VARCHAR(31)">
+                <constraints unique="true"/>
+            </column>
         </createTable>
     </changeSet>
     <changeSet author="gkillough" id="1543499878547-5">
