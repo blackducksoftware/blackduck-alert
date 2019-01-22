@@ -122,9 +122,7 @@ public class SettingsDescriptorActionApi extends DescriptorActionApi {
 
     @Override
     public FieldModel updateConfig(final FieldModel fieldModel) {
-        saveDefaultAdminUserPassword(fieldModel);
-        saveEncryptionProperties(fieldModel);
-        return createScrubbedModel(fieldModel);
+        return saveConfig(fieldModel);
     }
 
     @Override
