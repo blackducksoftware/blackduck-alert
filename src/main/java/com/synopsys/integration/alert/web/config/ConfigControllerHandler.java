@@ -40,8 +40,8 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.web.controller.handler.ControllerHandler;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
-import com.synopsys.integration.alert.web.model.FieldModel;
 import com.synopsys.integration.alert.web.model.ResponseBodyBuilder;
+import com.synopsys.integration.alert.web.model.configuration.FieldModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
@@ -175,9 +175,7 @@ public class ConfigControllerHandler extends ControllerHandler {
         } catch (final AlertFieldException e) {
             return fieldError(id, e.getMessage(), e.getFieldErrors());
         } catch (final AlertException e) {
-            final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(id, e.getMessage());
-            final String responseBody = responseBodyBuilder.build();
-            return new ResponseEntity<>(responseBody, HttpStatus.BAD_REQUEST);
+            return createResponse(HttpStatus.BAD_REQUEST, id, e.getMessage());
         } catch (final IntegrationException e) {
             // FIXME An IntegrationException is too generic to possibly know whether a method is allowed or not. This should be supported through a custom exception (e.g. UnsupportedAlertMethodException).
             logger.error(e.getMessage(), e);
@@ -189,7 +187,7 @@ public class ConfigControllerHandler extends ControllerHandler {
     }
 
     private ResponseEntity<String> fieldError(final long id, final String error, final Map<String, String> fieldErrors) {
-        final ResponseBodyBuilder responseBuilder = new ResponseBodyBuilder(id, error);
+        final ResponseBodyBuilder responseBuilder = new ResponseBodyBuilder(String.valueOf(id), error);
         responseBuilder.putErrors(fieldErrors);
         return new ResponseEntity<>(responseBuilder.build(), HttpStatus.BAD_REQUEST);
     }

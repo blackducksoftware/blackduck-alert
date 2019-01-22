@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
@@ -27,7 +28,7 @@ import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.database.channel.JobConfigReader;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
@@ -75,7 +76,7 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
         final List<String> notificationTypes = List.of(NotificationType.RULE_VIOLATION_CLEARED.name(), NotificationType.VULNERABILITY.name());
         final CommonDistributionConfiguration jobConfig = createCommonDistributionConfiguration(projects, notificationTypes);
         final JobConfigReader spiedReader = Mockito.spy(jobConfigReader);
-        Mockito.doReturn(List.of(jobConfig)).when(spiedReader).getPopulatedConfigs(Mockito.any(FrequencyType.class));
+        Mockito.doReturn(List.of(jobConfig)).when(spiedReader).getPopulatedJobConfigs();
 
         final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(spiedReader, providerDescriptors, notificationFilter);
         final Map<CommonDistributionConfiguration, List<AggregateMessageContent>> topicContentMap = messageContentAggregator.processNotifications(frequencyType, notificationContentList);
@@ -98,7 +99,7 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
         final List<NotificationContent> notificationContentList = List.of(policyNotification, vulnerabilityNotification);
 
         final JobConfigReader spiedReader = Mockito.spy(jobConfigReader);
-        Mockito.doReturn(List.of()).when(spiedReader).getPopulatedConfigs(Mockito.any(FrequencyType.class));
+        Mockito.doReturn(List.of()).when(spiedReader).getPopulatedJobConfigs();
 
         final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(spiedReader, providerDescriptors, notificationFilter);
         final Map<CommonDistributionConfiguration, List<AggregateMessageContent>> topicContentMap = messageContentAggregator.processNotifications(frequencyType, notificationContentList);
@@ -123,7 +124,7 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
         final CommonDistributionConfiguration jobConfig = createCommonDistributionConfiguration(projects, notificationTypes);
 
         final JobConfigReader spiedReader = Mockito.spy(jobConfigReader);
-        Mockito.doReturn(List.of(jobConfig)).when(spiedReader).getPopulatedConfigs(Mockito.any(FrequencyType.class));
+        Mockito.doReturn(List.of(jobConfig)).when(spiedReader).getPopulatedJobConfigs();
 
         final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(spiedReader, providerDescriptors, notificationFilter);
         final Map<CommonDistributionConfiguration, List<AggregateMessageContent>> topicContentMap = messageContentAggregator.processNotifications(frequencyType, notificationContentList);
@@ -149,7 +150,7 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
         final CommonDistributionConfiguration jobConfig = createCommonDistributionConfiguration(projects, notificationTypes);
 
         final JobConfigReader spiedReader = Mockito.spy(jobConfigReader);
-        Mockito.doReturn(List.of(jobConfig)).when(spiedReader).getPopulatedConfigs(Mockito.any(FrequencyType.class));
+        Mockito.doReturn(List.of(jobConfig)).when(spiedReader).getPopulatedJobConfigs();
 
         final MessageContentAggregator messageContentAggregator = new MessageContentAggregator(spiedReader, providerDescriptors, notificationFilter);
         final Map<CommonDistributionConfiguration, List<AggregateMessageContent>> topicContentMap = messageContentAggregator.processNotifications(frequencyType, notificationContentList);
@@ -159,10 +160,10 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
     }
 
     private CommonDistributionConfiguration createCommonDistributionConfiguration(final List<String> projectNames, final List<String> notificationTypes) {
-        final ConfigurationModel configurationModel = Mockito.mock(ConfigurationModel.class);
+        final ConfigurationJobModel configurationModel = Mockito.mock(ConfigurationJobModel.class);
 
-        Mockito.when(configurationModel.getConfigurationId()).thenReturn(1L);
-        Mockito.when(configurationModel.getDescriptorId()).thenReturn(1L);
+        Mockito.when(configurationModel.getJobId()).thenReturn(UUID.randomUUID());
+        //        Mockito.when(configurationModel.getDescriptorId()).thenReturn(1L);
         // Use this to mock fields if necessarily:
         // final String fieldName;
         // final String expectedValue;
@@ -196,7 +197,7 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
         Mockito.when(filterByProjectModel.getFieldValue()).thenReturn(Optional.of(String.valueOf(true)));
         Mockito.when(configuredProjectsModel.getFieldValues()).thenReturn(projectNames);
 
-        Mockito.when(configurationModel.getCopyOfKeyToFieldMap()).thenReturn(fieldModelMap);
+        Mockito.when(configurationModel.createKeyToFieldMap()).thenReturn(fieldModelMap);
 
         return new CommonDistributionConfiguration(configurationModel);
     }

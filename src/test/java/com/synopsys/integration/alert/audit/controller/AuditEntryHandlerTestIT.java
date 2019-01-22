@@ -18,6 +18,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,6 +38,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistribu
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
@@ -102,10 +106,10 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         notificationContentRepository.save(new MockNotificationContent(new Date(System.currentTimeMillis()), "provider", new Date(System.currentTimeMillis()), "notificationType", "{}", 234L).createEntity());
 
         final Collection<ConfigurationFieldModel> hipChatFields = MockConfigurationModelFactory.createHipChatDistributionFields();
-        final ConfigurationModel configurationModel = baseConfigurationAccessor.createConfiguration(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION, hipChatFields);
+        final ConfigurationJobModel configurationJobModel = baseConfigurationAccessor.createJob(Set.of(HipChatChannel.COMPONENT_NAME, BlackDuckProvider.COMPONENT_NAME), hipChatFields);
 
         final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(
-            new AuditEntryEntity(configurationModel.getConfigurationId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS.toString(), null, null));
+            new AuditEntryEntity(configurationJobModel.getJobId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS.toString(), null, null));
 
         auditNotificationRepository.save(new AuditNotificationRelation(savedAuditEntryEntity.getId(), savedNotificationEntity.getId()));
 
@@ -124,8 +128,9 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         assertEquals(savedNotificationEntity.getId().toString(), auditEntry.getId());
         assertFalse(auditEntry.getJobs().isEmpty());
         assertEquals(1, auditEntry.getJobs().size());
-        assertEquals(configurationModel.getField(CommonDistributionUIConfig.KEY_CHANNEL_NAME).get().getFieldValue().get(), auditEntry.getJobs().get(0).getEventType());
-        assertEquals(configurationModel.getField(CommonDistributionUIConfig.KEY_NAME).get().getFieldValue().get(), auditEntry.getJobs().get(0).getName());
+        final Map<String, ConfigurationFieldModel> keyToFieldMap = configurationJobModel.createKeyToFieldMap();
+        assertEquals(keyToFieldMap.get(CommonDistributionUIConfig.KEY_CHANNEL_NAME).getFieldValue().get(), auditEntry.getJobs().get(0).getEventType());
+        assertEquals(keyToFieldMap.get(CommonDistributionUIConfig.KEY_NAME).getFieldValue().get(), auditEntry.getJobs().get(0).getName());
 
         final NotificationConfig notification = auditEntry.getNotification();
         assertEquals(savedNotificationEntity.getCreatedAt().toString(), notification.getCreatedAt());
@@ -140,9 +145,11 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     public void getGetAuditInfoForJobIT() throws Exception {
         final Collection<ConfigurationFieldModel> hipChatFields = MockConfigurationModelFactory.createHipChatDistributionFields();
         final ConfigurationModel configurationModel = baseConfigurationAccessor.createConfiguration(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION, hipChatFields);
+        final UUID jobID = UUID.randomUUID();
+        final ConfigurationJobModel configurationJobModel = new ConfigurationJobModel(jobID, Set.of(configurationModel));
 
         final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(
-            new AuditEntryEntity(configurationModel.getConfigurationId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS.toString(), null, null));
+            new AuditEntryEntity(configurationJobModel.getJobId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()), AuditEntryStatus.SUCCESS.toString(), null, null));
 
         final ResponseEntity<String> jobAuditModelResponse = auditEntryHandler.getAuditInfoForJob(savedAuditEntryEntity.getCommonConfigId());
         assertNotNull(jobAuditModelResponse);
@@ -158,14 +165,14 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         final MockNotificationContent mockNotification = new MockNotificationContent(new java.util.Date(), BlackDuckProvider.COMPONENT_NAME, new java.util.Date(), "POLICY_OVERRIDE", content, 1L);
 
         final Collection<ConfigurationFieldModel> hipChatFields = MockConfigurationModelFactory.createHipChatDistributionFields();
-        final ConfigurationModel configurationModel = baseConfigurationAccessor.createConfiguration(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION, hipChatFields);
+        final ConfigurationJobModel configurationJobModel = baseConfigurationAccessor.createJob(Set.of(HipChatChannel.COMPONENT_NAME, BlackDuckProvider.COMPONENT_NAME), hipChatFields);
 
-        distributionNotificationTypeRepository.save(new DistributionNotificationTypeRelation(configurationModel.getConfigurationId(), "POLICY_OVERRIDE"));
+        distributionNotificationTypeRepository.save(new DistributionNotificationTypeRelation(configurationJobModel.getJobId(), "POLICY_OVERRIDE"));
 
         final NotificationContent savedNotificationEntity = notificationContentRepository.save(mockNotification.createEntity());
 
         final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository
-                                                           .save(new AuditEntryEntity(configurationModel.getConfigurationId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()),
+                                                           .save(new AuditEntryEntity(configurationJobModel.getJobId(), new Date(System.currentTimeMillis()), new Date(System.currentTimeMillis()),
                                                                AuditEntryStatus.SUCCESS.toString(),
                                                                null, null));
 
@@ -177,13 +184,13 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         final ResponseEntity<String> validResponse = auditEntryHandler.resendNotification(savedNotificationEntity.getId(), null);
         assertEquals(HttpStatus.OK, validResponse.getStatusCode());
 
-        final ResponseEntity<String> invalidJobResponse = auditEntryHandler.resendNotification(savedNotificationEntity.getId(), -1L);
+        final ResponseEntity<String> invalidJobResponse = auditEntryHandler.resendNotification(savedNotificationEntity.getId(), UUID.randomUUID());
         assertEquals(HttpStatus.GONE, invalidJobResponse.getStatusCode());
 
         final ResponseEntity<String> invalidReferenceResponse_1 = auditEntryHandler.resendNotification(savedNotificationEntity.getId(), null);
         assertEquals(HttpStatus.OK, invalidReferenceResponse_1.getStatusCode());
 
-        final ResponseEntity<String> validJobSpecificResend = auditEntryHandler.resendNotification(savedNotificationEntity.getId(), configurationModel.getConfigurationId());
+        final ResponseEntity<String> validJobSpecificResend = auditEntryHandler.resendNotification(savedNotificationEntity.getId(), configurationJobModel.getJobId());
         assertEquals(HttpStatus.OK, validJobSpecificResend.getStatusCode());
     }
 
