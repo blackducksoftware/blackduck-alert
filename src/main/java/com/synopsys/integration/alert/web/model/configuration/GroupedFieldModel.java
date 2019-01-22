@@ -26,16 +26,16 @@ package com.synopsys.integration.alert.web.model.configuration;
 import java.util.Set;
 
 public class GroupedFieldModel {
-    private final String groupid;
+    private final String groupId;
     private final Set<FieldModel> fieldModels;
 
-    public GroupedFieldModel(final String groupid, final Set<FieldModel> fieldModels) {
-        this.groupid = groupid;
+    public GroupedFieldModel(final String groupId, final Set<FieldModel> fieldModels) {
+        this.groupId = groupId;
         this.fieldModels = fieldModels;
     }
 
-    public String getGroupid() {
-        return groupid;
+    public String getGroupId() {
+        return groupId;
     }
 
     public Set<FieldModel> getFieldModels() {
