@@ -75,10 +75,6 @@ public class ConfigActions {
         this.descriptorMap = descriptorMap;
     }
 
-    public boolean doesConfigExist(final String id) throws AlertException {
-        return doesConfigExist(contentConverter.getLongValue(id));
-    }
-
     public boolean doesConfigExist(final Long id) throws AlertException {
         return id != null && configurationAccessor.getConfigurationById(id).isPresent();
     }
@@ -113,10 +109,6 @@ public class ConfigActions {
             optionalModel = Optional.of(fieldModel);
         }
         return optionalModel;
-    }
-
-    public void deleteConfig(final String id) throws AlertException {
-        deleteConfig(contentConverter.getLongValue(id));
     }
 
     public void deleteConfig(final Long id) throws AlertException {
@@ -237,10 +229,6 @@ public class ConfigActions {
 
     private Optional<Descriptor> retrieveDescriptor(final String descriptorName) {
         return descriptorMap.getDescriptor(descriptorName);
-    }
-
-    private Optional<Descriptor> retrieveDescriptor(final FieldModel fieldModel) {
-        return retrieveDescriptor(fieldModel.getDescriptorName());
     }
 
     private Optional<DescriptorActionApi> retrieveDescriptorActionApi(final String context, final String descriptorName) {

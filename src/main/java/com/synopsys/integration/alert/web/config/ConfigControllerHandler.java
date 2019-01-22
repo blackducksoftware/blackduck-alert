@@ -23,11 +23,6 @@
  */
 package com.synopsys.integration.alert.web.config;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +33,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.web.controller.handler.ControllerHandler;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
-import com.synopsys.integration.alert.web.model.ResponseBodyBuilder;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
@@ -57,78 +50,19 @@ public class ConfigControllerHandler extends ControllerHandler {
     }
 
     public ResponseEntity<String> getConfigs(final ConfigContextEnum context, final String descriptorName) {
-        ResponseEntity<String> response;
-        try {
-            final List<FieldModel> models = descriptorConfigActions.getConfigs(context, descriptorName);
-            if (models.isEmpty()) {
-                response = createResponse(HttpStatus.NOT_FOUND, "Configurations not found for the context and descriptor provided");
-            } else {
-                response = new ResponseEntity<>(getContentConverter().getJsonString(models), HttpStatus.OK);
-            }
-        } catch (final AlertException e) {
-            logger.error("Was not able to find configurations with the context {}, and descriptorName {}", context, descriptorName);
-            response = createResponse(HttpStatus.NOT_FOUND, "Configurations not found for the context and descriptor provided");
-        }
-        return response;
+
     }
 
     public ResponseEntity<String> getConfig(final Long id) {
-        ResponseEntity<String> response;
-        try {
-            final Optional<FieldModel> optionalModel = descriptorConfigActions.getConfigById(id);
-            if (optionalModel.isPresent()) {
-                response = new ResponseEntity<>(getContentConverter().getJsonString(optionalModel.get()), HttpStatus.OK);
-            } else {
-                response = createResponse(HttpStatus.NOT_FOUND, "Configuration not found for the specified id");
-            }
-        } catch (final AlertException e) {
-            logger.error(e.getMessage(), e);
-            response = createResponse(HttpStatus.NOT_FOUND, "Configuration not found for the specified id");
-        }
-        return response;
+
     }
 
     public ResponseEntity<String> postConfig(final FieldModel restModel) {
-        if (restModel == null) {
-            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing");
-        }
-        final Long id = getContentConverter().getLongValue(restModel.getId());
-        try {
-            if (!descriptorConfigActions.doesConfigExist(id)) {
-                try {
-                    descriptorConfigActions.validateConfig(restModel, new HashMap<>());
-                    final FieldModel updatedEntity = descriptorConfigActions.saveConfig(restModel);
-                    return createResponse(HttpStatus.CREATED, updatedEntity.getId(), "Created");
-                } catch (final AlertFieldException e) {
-                    return fieldError(id, "There were errors with the configuration.", e.getFieldErrors());
-                }
-            }
-        } catch (final AlertException e) {
-            logger.error(e.getMessage(), e);
-            return createResponse(HttpStatus.INTERNAL_SERVER_ERROR, restModel.getId(), e.getMessage());
-        }
-        return createResponse(HttpStatus.CONFLICT, id, "Provided id must not be in use. To update an existing configuration, use PUT.");
+
     }
 
     public ResponseEntity<String> putConfig(final Long id, final FieldModel restModel) {
-        if (restModel == null) {
-            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing");
-        }
-        try {
-            if (descriptorConfigActions.doesConfigExist(id)) {
-                try {
-                    descriptorConfigActions.validateConfig(restModel, new HashMap<>());
-                    final FieldModel updatedEntity = descriptorConfigActions.updateConfig(id, restModel);
-                    return createResponse(HttpStatus.ACCEPTED, updatedEntity.getId(), "Updated");
-                } catch (final AlertFieldException e) {
-                    return fieldError(id, "There were errors with the configuration.", e.getFieldErrors());
-                }
-            }
-        } catch (final AlertException e) {
-            logger.error(e.getMessage(), e);
-            return createResponse(HttpStatus.INTERNAL_SERVER_ERROR, id, e.getMessage());
-        }
-        return createResponse(HttpStatus.BAD_REQUEST, id, "No configuration with the specified id.");
+
     }
 
     public ResponseEntity<String> deleteConfig(final Long id) {
@@ -145,16 +79,7 @@ public class ConfigControllerHandler extends ControllerHandler {
     }
 
     public ResponseEntity<String> validateConfig(final FieldModel restModel) {
-        if (restModel == null) {
-            return createResponse(HttpStatus.BAD_REQUEST, "", "Required request body is missing");
-        }
-        final Long id = getContentConverter().getLongValue(restModel.getId());
-        try {
-            final String responseMessage = descriptorConfigActions.validateConfig(restModel, new HashMap<>());
-            return createResponse(HttpStatus.OK, restModel.getId(), responseMessage);
-        } catch (final AlertFieldException e) {
-            return fieldError(id, e.getMessage(), e.getFieldErrors());
-        }
+
     }
 
     public ResponseEntity<String> testConfig(final FieldModel restModel) {
@@ -184,12 +109,6 @@ public class ConfigControllerHandler extends ControllerHandler {
             logger.error(e.getMessage(), e);
             return createResponse(HttpStatus.INTERNAL_SERVER_ERROR, id, e.getMessage());
         }
-    }
-
-    private ResponseEntity<String> fieldError(final long id, final String error, final Map<String, String> fieldErrors) {
-        final ResponseBodyBuilder responseBuilder = new ResponseBodyBuilder(String.valueOf(id), error);
-        responseBuilder.putErrors(fieldErrors);
-        return new ResponseEntity<>(responseBuilder.build(), HttpStatus.BAD_REQUEST);
     }
 
 }

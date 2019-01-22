@@ -34,7 +34,6 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.provider.blackduck.model.BlackDuckProject;
-import com.synopsys.integration.alert.web.controller.handler.ControllerHandler;
 
 @Component
 public class BlackDuckDataHandler extends ControllerHandler {
