@@ -26,7 +26,6 @@ package com.synopsys.integration.alert.workflow.startup;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
@@ -105,19 +104,6 @@ public class AlertStartupInitializer {
 
     public SortedSet<String> getAlertPropertyNameSet() {
         return alertStartupFields;
-    }
-
-    private Set<ConfigurationFieldModel> createConfigurationFieldModels(final Map<String, String> fields) {
-        return fields.entrySet()
-                   .stream()
-                   .map(entry -> createConfigurationFieldModel(entry.getKey(), entry.getValue()))
-                   .collect(Collectors.toSet());
-    }
-
-    private ConfigurationFieldModel createConfigurationFieldModel(final String key, final String value) {
-        final ConfigurationFieldModel field = ConfigurationFieldModel.create(key);
-        field.setFieldValue(value);
-        return field;
     }
 
     private String convertKeyToPropery(final String descriptorName, final String key) {

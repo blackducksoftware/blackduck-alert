@@ -38,8 +38,8 @@ import com.synopsys.integration.alert.database.api.configuration.model.DefinedFi
 import com.synopsys.integration.alert.database.api.configuration.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.TestProperties;
-import com.synopsys.integration.alert.web.model.FieldModel;
-import com.synopsys.integration.alert.web.model.FieldValueModel;
+import com.synopsys.integration.alert.web.model.configuration.FieldModel;
+import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 public abstract class ChannelDescriptorTest extends FieldRegistrationIntegrationTest {

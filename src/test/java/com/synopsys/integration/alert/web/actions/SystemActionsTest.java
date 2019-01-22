@@ -20,8 +20,8 @@ import com.synopsys.integration.alert.database.system.SystemMessage;
 import com.synopsys.integration.alert.database.system.SystemMessageUtility;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.web.config.ConfigActions;
-import com.synopsys.integration.alert.web.model.FieldModel;
-import com.synopsys.integration.alert.web.model.FieldValueModel;
+import com.synopsys.integration.alert.web.model.configuration.FieldModel;
+import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 
 public class SystemActionsTest {
     private SystemStatusUtility systemStatusUtility;
@@ -72,12 +72,6 @@ public class SystemActionsTest {
         final SystemActions systemActions = new SystemActions(systemStatusUtility, systemMessageUtility, configActions);
         systemActions.getSystemMessages();
         Mockito.verify(systemMessageUtility).getSystemMessages();
-    }
-
-    private List<SystemMessage> createSystemMessageList() {
-        ZonedDateTime zonedDateTime = ZonedDateTime.now();
-        zonedDateTime = zonedDateTime.minusMinutes(1);
-        return Collections.singletonList(new SystemMessage(Date.from(zonedDateTime.toInstant()), "type", "content", "type"));
     }
 
     @Test
@@ -146,5 +140,11 @@ public class SystemActionsTest {
         final Map<String, String> fieldErrors = new HashMap<>();
         systemActions.saveRequiredInformation(model, fieldErrors);
         assertTrue(fieldErrors.isEmpty());
+    }
+
+    private List<SystemMessage> createSystemMessageList() {
+        ZonedDateTime zonedDateTime = ZonedDateTime.now();
+        zonedDateTime = zonedDateTime.minusMinutes(1);
+        return Collections.singletonList(new SystemMessage(Date.from(zonedDateTime.toInstant()), "type", "content", "type"));
     }
 }

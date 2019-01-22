@@ -45,12 +45,13 @@ public abstract class ControllerHandler {
     }
 
     protected ResponseEntity<String> createResponse(final HttpStatus status, final String id, final String message) {
-        return createResponse(status, contentConverter.getLongValue(id), message);
+        final String responseBody = new ResponseBodyBuilder(id, message).build();
+        return new ResponseEntity<>(responseBody, status);
+
     }
 
     protected ResponseEntity<String> createResponse(final HttpStatus status, final Long id, final String message) {
-        final String responseBody = new ResponseBodyBuilder(id, message).build();
-        return new ResponseEntity<>(responseBody, status);
+        return createResponse(status, String.valueOf(id), message);
     }
 
     protected ResponseEntity<String> createResponse(final HttpStatus status, final String message) {

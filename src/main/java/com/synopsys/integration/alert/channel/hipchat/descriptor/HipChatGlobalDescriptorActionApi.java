@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.exception.AlertException;
-import com.synopsys.integration.alert.web.model.TestConfigModel;
+import com.synopsys.integration.alert.web.model.configuration.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.connection.RestConnection;
 import com.synopsys.integration.rest.request.Request;

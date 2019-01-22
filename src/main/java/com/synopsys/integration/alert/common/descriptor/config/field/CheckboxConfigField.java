@@ -25,30 +25,13 @@ package com.synopsys.integration.alert.common.descriptor.config.field;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.function.BiFunction;
 
 import com.synopsys.integration.alert.common.enumeration.FieldGroup;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
-import com.synopsys.integration.alert.web.model.FieldModel;
-import com.synopsys.integration.alert.web.model.FieldValueModel;
+import com.synopsys.integration.alert.web.model.configuration.FieldModel;
+import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 
 public class CheckboxConfigField extends ConfigField {
-    public static CheckboxConfigField create(final String key, final String label) {
-        return new CheckboxConfigField(key, label, false);
-    }
-
-    public static CheckboxConfigField create(final String key, final String label, final ConfigValidationFunction validationFunction) {
-        return new CheckboxConfigField(key, label, false, validationFunction);
-    }
-
-    public static CheckboxConfigField createGrouped(final String key, final String label, final FieldGroup group) {
-        return new CheckboxConfigField(key, label, false, group);
-    }
-
-    public static CheckboxConfigField createGrouped(final String key, final String label, final FieldGroup group, final ConfigValidationFunction validationFunction) {
-        return new CheckboxConfigField(key, label, false, group, validationFunction);
-    }
-
     public CheckboxConfigField(final String key, final String label, final boolean required, final FieldGroup group) {
         super(key, label, FieldType.CHECKBOX_INPUT.getFieldTypeName(), required, false, group);
     }
@@ -63,6 +46,22 @@ public class CheckboxConfigField extends ConfigField {
 
     public CheckboxConfigField(final String key, final String label, final boolean required, final ConfigValidationFunction validationFunction) {
         super(key, label, FieldType.CHECKBOX_INPUT.getFieldTypeName(), required, false, validationFunction);
+    }
+
+    public static CheckboxConfigField create(final String key, final String label) {
+        return new CheckboxConfigField(key, label, false);
+    }
+
+    public static CheckboxConfigField create(final String key, final String label, final ConfigValidationFunction validationFunction) {
+        return new CheckboxConfigField(key, label, false, validationFunction);
+    }
+
+    public static CheckboxConfigField createGrouped(final String key, final String label, final FieldGroup group) {
+        return new CheckboxConfigField(key, label, false, group);
+    }
+
+    public static CheckboxConfigField createGrouped(final String key, final String label, final FieldGroup group, final ConfigValidationFunction validationFunction) {
+        return new CheckboxConfigField(key, label, false, group, validationFunction);
     }
 
     @Override

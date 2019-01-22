@@ -12,7 +12,7 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.alert.web.model.FieldModel;
+import com.synopsys.integration.alert.web.model.configuration.FieldModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 public class BlackDuckDistributionDescriptorActionApiTest {
