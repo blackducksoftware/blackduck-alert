@@ -21,18 +21,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.audit;
+package com.synopsys.integration.alert.web.model.configuration;
 
 import java.util.Optional;
-import java.util.UUID;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+public class TestConfigModel {
+    private final String destination;
+    private final FieldModel fieldModel;
 
-public interface AuditEntryRepository extends JpaRepository<AuditEntryEntity, Long> {
-    Optional<AuditEntryEntity> findFirstByCommonConfigIdOrderByTimeLastSentDesc(final UUID commonConfigId);
+    public TestConfigModel(final FieldModel fieldModel) {
+        this(fieldModel, null);
+    }
 
-    @Query(value = "SELECT entity FROM AuditEntryEntity entity INNER JOIN entity.auditNotificationRelations relation ON entity.id = relation.auditEntryId WHERE entity.commonConfigId = ?2 AND relation.notificationContent.id = ?1")
-    Optional<AuditEntryEntity> findMatchingAudit(Long notificationId, UUID commonConfigId);
+    public TestConfigModel(final FieldModel fieldModel, final String destination) {
+        this.fieldModel = fieldModel;
+        this.destination = destination;
+    }
+
+    public FieldModel getFieldModel() {
+        return fieldModel;
+    }
+
+    public Optional<String> getDestination() {
+        return Optional.ofNullable(destination);
+    }
 
 }

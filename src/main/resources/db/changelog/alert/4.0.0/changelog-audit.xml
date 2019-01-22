@@ -3,6 +3,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
     <changeSet author="jrichard" id="1544542018669-1">
         <modifyDataType schemaName="ALERT" tableName="AUDIT_ENTRIES" columnName="STATUS" newDataType="VARCHAR(255)"/>
+        <modifyDataType schemaName="ALERT" tableName="AUDIT_ENTRIES" columnName="COMMON_CONFIG_ID" newDataType="UUID"/>
     </changeSet>
     <changeSet author="jrichard" id="1544542018669-2">
         <update schemaName="ALERT" tableName="AUDIT_ENTRIES">

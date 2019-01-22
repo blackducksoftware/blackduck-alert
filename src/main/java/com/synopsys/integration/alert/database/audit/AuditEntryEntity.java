@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.database.audit;
 
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -40,7 +41,7 @@ import org.hibernate.annotations.Type;
 
 import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
-import com.synopsys.integration.alert.database.entity.configuration.DescriptorConfigEntity;
+import com.synopsys.integration.alert.database.entity.configuration.ConfigGroupEntity;
 
 @Entity
 @Table(schema = "alert", name = "audit_entries")
@@ -48,7 +49,7 @@ public class AuditEntryEntity extends DatabaseEntity {
     public static final int STACK_TRACE_CHAR_LIMIT = 10000;
 
     @Column(name = "common_config_id")
-    private Long commonConfigId;
+    private UUID commonConfigId;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "time_created")
@@ -74,14 +75,14 @@ public class AuditEntryEntity extends DatabaseEntity {
     private List<AuditNotificationRelation> auditNotificationRelations;
 
     @OneToOne
-    @JoinColumn(name = "common_config_id", referencedColumnName = "id", insertable = false, updatable = false)
-    private DescriptorConfigEntity descriptorConfigEntity;
+    @JoinColumn(name = "common_config_id", referencedColumnName = "config_id", insertable = false, updatable = false)
+    private ConfigGroupEntity configGroupEntity;
 
     public AuditEntryEntity() {
         // JPA requires default constructor definitions
     }
 
-    public AuditEntryEntity(final Long commonConfigId, final Date timeCreated, final Date timeLastSent, final String status, final String errorMessage, final String errorStackTrace) {
+    public AuditEntryEntity(final UUID commonConfigId, final Date timeCreated, final Date timeLastSent, final String status, final String errorMessage, final String errorStackTrace) {
         this.commonConfigId = commonConfigId;
         this.timeCreated = timeCreated;
         this.timeLastSent = timeLastSent;
@@ -90,7 +91,7 @@ public class AuditEntryEntity extends DatabaseEntity {
         this.errorStackTrace = errorStackTrace;
     }
 
-    public Long getCommonConfigId() {
+    public UUID getCommonConfigId() {
         return commonConfigId;
     }
 
@@ -134,7 +135,7 @@ public class AuditEntryEntity extends DatabaseEntity {
         return auditNotificationRelations;
     }
 
-    public DescriptorConfigEntity getDescriptorConfigEntity() {
-        return descriptorConfigEntity;
+    public ConfigGroupEntity getConfigGroupEntity() {
+        return configGroupEntity;
     }
 }

@@ -21,10 +21,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.model;
+package com.synopsys.integration.alert.web.model.configuration;
 
 import java.util.Map;
 import java.util.Optional;
+
+import com.synopsys.integration.alert.web.model.Config;
 
 public class FieldModel extends Config {
     private final Map<String, FieldValueModel> keyToValues;

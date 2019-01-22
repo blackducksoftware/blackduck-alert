@@ -24,6 +24,7 @@
 package com.synopsys.integration.alert.web.actions;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -59,14 +60,14 @@ public class NotificationTypesActions {
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public List<String> getNotificationTypes(final Long configId) {
+    public List<String> getNotificationTypes(final UUID configId) {
         final List<DistributionNotificationTypeRelation> foundRelations = distributionNotificationTypeRepository.findByCommonDistributionConfigId(configId);
         return foundRelations.stream().map(DistributionNotificationTypeRelation::getNotificationType).collect(Collectors.toList());
 
     }
 
     @Transactional
-    public void saveNotificationTypes(final long entityId, final List<String> configuredNotificationTypes) {
+    public void saveNotificationTypes(final UUID entityId, final List<String> configuredNotificationTypes) {
         if (configuredNotificationTypes != null) {
             removeOldNotificationTypes(entityId);
             addNewDistributionNotificationTypes(entityId, configuredNotificationTypes);
@@ -76,12 +77,12 @@ public class NotificationTypesActions {
     }
 
     @Transactional
-    public void removeOldNotificationTypes(final Long commonDistributionConfigId) {
+    public void removeOldNotificationTypes(final UUID commonDistributionConfigId) {
         final List<DistributionNotificationTypeRelation> distributionProjects = distributionNotificationTypeRepository.findByCommonDistributionConfigId(commonDistributionConfigId);
         distributionNotificationTypeRepository.deleteAll(distributionProjects);
     }
 
-    private void addNewDistributionNotificationTypes(final Long commonDistributionConfigId, final List<String> notificationTypesFromRestModel) {
+    private void addNewDistributionNotificationTypes(final UUID commonDistributionConfigId, final List<String> notificationTypesFromRestModel) {
         notificationTypesFromRestModel.forEach(notificationType -> distributionNotificationTypeRepository.save(new DistributionNotificationTypeRelation(commonDistributionConfigId, notificationType)));
     }
 }

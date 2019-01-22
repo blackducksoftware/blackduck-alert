@@ -24,6 +24,7 @@
 package com.synopsys.integration.alert.database.relation.repository;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -31,5 +32,5 @@ import com.synopsys.integration.alert.database.relation.DistributionNotification
 import com.synopsys.integration.alert.database.relation.key.DistributionNotificationTypeRelationPK;
 
 public interface DistributionNotificationTypeRepository extends JpaRepository<DistributionNotificationTypeRelation, DistributionNotificationTypeRelationPK> {
-    List<DistributionNotificationTypeRelation> findByCommonDistributionConfigId(final Long commonDistributionConfigId);
+    List<DistributionNotificationTypeRelation> findByCommonDistributionConfigId(final UUID commonDistributionConfigId);
 }

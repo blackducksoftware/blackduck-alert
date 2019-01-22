@@ -37,7 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.web.controller.BaseController;
-import com.synopsys.integration.alert.web.model.FieldModel;
+import com.synopsys.integration.alert.web.model.configuration.FieldModel;
 
 @RestController
 @RequestMapping(ConfigController.CONFIGURATION_PATH)
