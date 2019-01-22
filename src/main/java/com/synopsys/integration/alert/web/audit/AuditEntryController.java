@@ -23,6 +23,8 @@
  */
 package com.synopsys.integration.alert.web.audit;
 
+import java.util.UUID;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -59,7 +61,7 @@ public class AuditEntryController extends BaseController {
     }
 
     @GetMapping(value = "/job/{jobId}")
-    public ResponseEntity<String> getAuditInfoForJob(@PathVariable(value = "jobId") final Long jobId) {
+    public ResponseEntity<String> getAuditInfoForJob(@PathVariable(value = "jobId") final UUID jobId) {
         return auditEntryHandler.getAuditInfoForJob(jobId);
     }
 
@@ -69,7 +71,7 @@ public class AuditEntryController extends BaseController {
     }
 
     @PostMapping(value = "/resend/{id}/job/{jobId}")
-    public ResponseEntity<String> post(@PathVariable(value = "id") final Long notificationId, @PathVariable(value = "jobId") final Long jobId) {
+    public ResponseEntity<String> post(@PathVariable(value = "id") final Long notificationId, @PathVariable(value = "jobId") final UUID jobId) {
         return auditEntryHandler.resendNotification(notificationId, jobId);
     }
 

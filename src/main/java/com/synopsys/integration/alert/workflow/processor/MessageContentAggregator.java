@@ -65,7 +65,7 @@ public class MessageContentAggregator {
             return Collections.emptyMap();
         }
 
-        final List<CommonDistributionConfiguration> distributionConfigs = jobConfigReader.getPopulatedConfigs();
+        final List<CommonDistributionConfiguration> distributionConfigs = jobConfigReader.getPopulatedJobConfigs();
         if (distributionConfigs.isEmpty()) {
             return Collections.emptyMap();
         }
@@ -77,7 +77,10 @@ public class MessageContentAggregator {
             return Collections.emptyMap();
         }
 
-        final List<CommonDistributionConfiguration> distributionConfigs = jobConfigReader.getPopulatedConfigs(frequency);
+        final List<CommonDistributionConfiguration> distributionConfigs = jobConfigReader.getPopulatedJobConfigs()
+                                                                              .stream()
+                                                                              .filter(commonDistributionConfiguration -> frequency.equals(commonDistributionConfiguration.getFrequencyType()))
+                                                                              .collect(Collectors.toList());
         if (distributionConfigs.isEmpty()) {
             return Collections.emptyMap();
         }

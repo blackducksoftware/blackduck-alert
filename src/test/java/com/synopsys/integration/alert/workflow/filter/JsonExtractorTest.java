@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
@@ -80,7 +81,7 @@ public class JsonExtractorTest {
         final List<String> notificationTypes = Arrays.asList("type1", "type2");
 
         final CommonDistributionConfiguration commonDistributionConfig = new CommonDistributionConfiguration(
-            MockConfigurationModelFactory.createCommonConfigModel(id, distributionConfigId, distributionType, name, providerName, frequency, filterByProject, projectNamePattern, configuredProjects,
+            MockConfigurationModelFactory.createCommonJobConfigModel(UUID.randomUUID(), id, distributionConfigId, distributionType, name, providerName, frequency, filterByProject, projectNamePattern, configuredProjects,
                 notificationTypes, FormatType.DEFAULT.name()));
 
         final JsonField<String> nameField = JsonField.createStringField(null, null, null, null, Arrays.asList(JsonPath.compile("$.name")));
