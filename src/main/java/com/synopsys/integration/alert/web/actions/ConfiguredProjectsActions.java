@@ -26,6 +26,7 @@ package com.synopsys.integration.alert.web.actions;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +61,7 @@ public class ConfiguredProjectsActions {
     }
 
     @Transactional
-    public List<String> getConfiguredProjects(final Long configId) {
+    public List<String> getConfiguredProjects(final UUID configId) {
         final List<DistributionProjectRelation> distributionProjects = distributionProjectRepository.findByCommonDistributionConfigId(configId);
         final List<String> configuredProjects = new ArrayList<>(distributionProjects.size());
         for (final DistributionProjectRelation relation : distributionProjects) {
@@ -72,7 +73,7 @@ public class ConfiguredProjectsActions {
 
     @Transactional
     // TODO investigate the impact of private methods on transactions; the transaction is not complete until after all of the private methods have executed
-    public void saveConfiguredProjects(final long entityId, final List<String> configuredProjects) {
+    public void saveConfiguredProjects(final UUID entityId, final List<String> configuredProjects) {
         if (configuredProjects != null) {
             removeOldDistributionProjectRelations(entityId);
             addNewDistributionProjectRelations(entityId, configuredProjects);
@@ -93,12 +94,12 @@ public class ConfiguredProjectsActions {
         });
     }
 
-    private void removeOldDistributionProjectRelations(final Long commonDistributionConfigId) {
+    private void removeOldDistributionProjectRelations(final UUID commonDistributionConfigId) {
         final List<DistributionProjectRelation> distributionProjects = distributionProjectRepository.findByCommonDistributionConfigId(commonDistributionConfigId);
         distributionProjectRepository.deleteAll(distributionProjects);
     }
 
-    private void addNewDistributionProjectRelations(final Long commonDistributionConfigId, final List<String> configuredProjectsFromRestModel) {
+    private void addNewDistributionProjectRelations(final UUID commonDistributionConfigId, final List<String> configuredProjectsFromRestModel) {
         for (final String projectName : configuredProjectsFromRestModel) {
             final Long projectId;
             final ConfiguredProjectEntity foundEntity = configuredProjectsRepository.findByProjectName(projectName);

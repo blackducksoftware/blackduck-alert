@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.audit.mock;
 
 import java.util.Date;
+import java.util.UUID;
 
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
@@ -8,7 +9,7 @@ import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.mock.entity.MockEntityUtil;
 
 public class MockAuditEntryEntity extends MockEntityUtil<AuditEntryEntity> {
-    private Long commonConfigId = 2L;
+    private UUID commonConfigId = UUID.fromString("1c0c7769-7cae-47d1-b80f-8c09eb8b90b9");
     private Date timeCreated = new Date(400);
     private Date timeLastSent = new Date(500);
     private AuditEntryStatus status = AuditEntryStatus.SUCCESS;
@@ -16,11 +17,11 @@ public class MockAuditEntryEntity extends MockEntityUtil<AuditEntryEntity> {
     private String errorStackTrace = "errorStackTrace";
     private Long id = 1L;
 
-    public Long getCommonConfigId() {
+    public UUID getCommonConfigId() {
         return commonConfigId;
     }
 
-    public void setCommonConfigId(final Long commonConfigId) {
+    public void setCommonConfigId(final UUID commonConfigId) {
         this.commonConfigId = commonConfigId;
     }
 
@@ -92,7 +93,7 @@ public class MockAuditEntryEntity extends MockEntityUtil<AuditEntryEntity> {
     @Override
     public String getEntityJson() {
         final JsonObject json = new JsonObject();
-        json.addProperty("commonConfigId", commonConfigId);
+        json.addProperty("commonConfigId", commonConfigId.toString());
         json.addProperty("timeCreated", timeCreated.toLocaleString());
         json.addProperty("timeLastSent", timeLastSent.toLocaleString());
         json.addProperty("status", status.toString());

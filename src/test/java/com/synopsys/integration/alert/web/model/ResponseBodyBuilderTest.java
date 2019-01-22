@@ -29,24 +29,24 @@ public class ResponseBodyBuilderTest {
 
     @Test
     public void testResponseBodyBuilder() {
-        final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(55L, "Message");
+        final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder("55L", "Message");
 
         responseBodyBuilder.put("Key1", "Value");
         responseBodyBuilder.put("Key2", 22);
         responseBodyBuilder.put("Key3", false);
 
-        assertEquals("{\"id\":55,\"message\":\"Message\",\"Key1\":\"Value\",\"Key2\":22,\"Key3\":false}", responseBodyBuilder.build());
+        assertEquals("{\"id\":\"55L\",\"message\":\"Message\",\"Key1\":\"Value\",\"Key2\":22,\"Key3\":false}", responseBodyBuilder.build());
     }
 
     @Test
     public void testResponseBodyBuilderErrors() {
-        final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder(33L, "There were errors");
+        final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder("33L", "There were errors");
 
         final Map<String, String> errors = new HashMap<>();
         errors.put("Field", "Terrible error");
 
         responseBodyBuilder.putErrors(errors);
 
-        assertEquals("{\"id\":33,\"message\":\"There were errors\",\"errors\":{\"Field\":\"Terrible error\"}}", responseBodyBuilder.build());
+        assertEquals("{\"id\":\"33L\",\"message\":\"There were errors\",\"errors\":{\"Field\":\"Terrible error\"}}", responseBodyBuilder.build());
     }
 }

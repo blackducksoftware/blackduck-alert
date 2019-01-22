@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -56,7 +57,7 @@ public class AuditUtility {
     }
 
     @Transactional
-    public Map<Long, Long> createAuditEntry(final Map<Long, Long> existingNotificationIdToAuditId, final Long commonDistributionId, final AggregateMessageContent content) {
+    public Map<Long, Long> createAuditEntry(final Map<Long, Long> existingNotificationIdToAuditId, final UUID commonDistributionId, final AggregateMessageContent content) {
         final Map<Long, Long> notificationIdToAuditId = new HashMap<>();
         final Set<Long> notificationIds = content.getCategoryItemList().stream()
                                               .map(CategoryItem::getNotificationId)
