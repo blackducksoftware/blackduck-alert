@@ -21,29 +21,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.web.model;
+package com.synopsys.integration.alert.web.model.configuration;
 
-import java.util.Optional;
+import java.util.Set;
 
-public class TestConfigModel {
-    private final String destination;
-    private final FieldModel fieldModel;
+public class GroupedFieldModel {
+    private final String groupId;
+    private final Set<FieldModel> fieldModels;
 
-    public TestConfigModel(final FieldModel fieldModel) {
-        this(fieldModel, null);
+    public GroupedFieldModel(final String groupId, final Set<FieldModel> fieldModels) {
+        this.groupId = groupId;
+        this.fieldModels = fieldModels;
     }
 
-    public TestConfigModel(final FieldModel fieldModel, final String destination) {
-        this.fieldModel = fieldModel;
-        this.destination = destination;
+    public String getGroupId() {
+        return groupId;
     }
 
-    public FieldModel getFieldModel() {
-        return fieldModel;
+    public Set<FieldModel> getFieldModels() {
+        return fieldModels;
     }
-
-    public Optional<String> getDestination() {
-        return Optional.ofNullable(destination);
-    }
-
 }

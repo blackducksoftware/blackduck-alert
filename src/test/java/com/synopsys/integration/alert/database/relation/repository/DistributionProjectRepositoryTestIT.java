@@ -13,6 +13,8 @@ package com.synopsys.integration.alert.database.relation.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.UUID;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,7 +40,7 @@ public class DistributionProjectRepositoryTestIT extends AlertIntegrationTest {
 
     @Test
     public void saveEntityTestIT() {
-        final Long distributionConfigId = 1L;
+        final UUID distributionConfigId = UUID.randomUUID();
         final Long projectId = 2L;
         final DistributionProjectRelation relation = new DistributionProjectRelation(distributionConfigId, projectId);
 

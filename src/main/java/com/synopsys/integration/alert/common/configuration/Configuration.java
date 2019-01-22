@@ -23,21 +23,17 @@
  */
 package com.synopsys.integration.alert.common.configuration;
 
+import java.util.Map;
+
 import javax.validation.constraints.NotNull;
 
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 
 public class Configuration {
-    private final Long id;
     private final FieldAccessor fieldAccessor;
 
-    public Configuration(@NotNull final ConfigurationModel configurationModel) {
-        fieldAccessor = new FieldAccessor(configurationModel.getCopyOfKeyToFieldMap());
-        id = configurationModel.getConfigurationId();
-    }
-
-    public Long getId() {
-        return id;
+    public Configuration(@NotNull final Map<String, ConfigurationFieldModel> keyToFieldMap) {
+        fieldAccessor = new FieldAccessor(keyToFieldMap);
     }
 
     public FieldAccessor getFieldAccessor() {
