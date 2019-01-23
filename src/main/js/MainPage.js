@@ -5,16 +5,16 @@ import { Redirect, Route, withRouter } from 'react-router-dom';
 
 import { getDescriptorByType, getDescriptorsByTypeAndContext } from 'store/actions/descriptors';
 import Navigation from 'Navigation';
-import Audit from 'component/general/audit/Index';
-import AboutInfo from 'component/general/AboutInfo';
-import DistributionConfiguration from 'component/general/distribution/Index';
-import SchedulingConfiguration from 'component/general/SchedulingConfiguration';
-import SlackConfiguration from 'component/channels/SlackConfiguration';
-import EmailConfiguration from 'component/channels/EmailConfiguration';
-import HipChatConfiguration from 'component/channels/HipChatConfiguration';
+import Audit from 'component/audit/Index';
+import AboutInfo from 'component/AboutInfo';
+import DistributionConfiguration from 'component/distribution/Index';
+import SchedulingConfiguration from 'component/SchedulingConfiguration';
+import SlackConfiguration from 'channels/SlackConfiguration';
+import EmailConfiguration from 'channels/EmailConfiguration';
+import HipChatConfiguration from 'channels/HipChatConfiguration';
 import LogoutConfirmation from 'component/common/LogoutConfirmation';
-import BlackDuckConfiguration from 'component/providers/BlackDuckConfiguration';
-import SettingsConfiguration from 'component/general/settings/SettingsConfiguration';
+import BlackDuckConfiguration from 'providers/BlackDuckConfiguration';
+import SettingsConfiguration from 'component/settings/SettingsConfiguration';
 
 
 class MainPage extends Component {

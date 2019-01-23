@@ -2,16 +2,16 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { BootstrapTable, ButtonGroup, TableHeaderColumn } from 'react-bootstrap-table';
-import { getAuditData } from 'store/actions/audit';
-import AutoRefresh from 'component/common/AutoRefresh';
-import DescriptorLabel from 'component/common/DescriptorLabel';
-import RefreshTableCellFormatter from 'component/common/RefreshTableCellFormatter';
-import NotificationTypeLegend from 'component/common/NotificationTypeLegend';
-import { logout } from 'store/actions/session';
-import AuditDetails from 'component/general/audit/Details';
-import CheckboxInput from 'field/input/CheckboxInput';
+import { getAuditData } from '../../store/actions/audit';
+import AutoRefresh from '../common/AutoRefresh';
+import DescriptorLabel from '../common/DescriptorLabel';
+import RefreshTableCellFormatter from '../common/RefreshTableCellFormatter';
+import NotificationTypeLegend from '../common/NotificationTypeLegend';
+import { logout } from '../../store/actions/session';
+import AuditDetails from 'Details';
+import CheckboxInput from '../../field/input/CheckboxInput';
 
-import '../../../../css/audit.scss';
+import '../../../css/audit.scss';
 
 
 class Index extends Component {

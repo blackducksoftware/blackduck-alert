@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { BootstrapTable, ReactBsTable, TableHeaderColumn } from 'react-bootstrap-table';
 
-import CheckboxInput from 'field/input/CheckboxInput';
-import { getProjects } from 'store/actions/projects';
-import TextInput from 'field/input/TextInput';
+import CheckboxInput from '../../field/input/CheckboxInput';
+import { getProjects } from '../../store/actions/projects';
+import TextInput from '../../field/input/TextInput';
 
 function assignClassName(row, rowIdx) {
     return 'tableRow';
