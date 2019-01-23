@@ -33,7 +33,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -80,34 +79,6 @@ public class StartupManager {
     private final EncryptionUtility encryptionUtility;
     private final UpgradeProcessor upgradeProcessor;
     private final ProxyManager proxyManager;
-
-    @Value("${logging.level.com.blackducksoftware.integration:}")
-    private String loggingLevel;
-
-    // SSL properties
-    @Value("${server.port:")
-    private String serverPort;
-
-    @Value("${server.ssl.key-store:}")
-    private String keyStoreFile;
-
-    @Value("${server.ssl.key-store-password:}")
-    private String keyStorePass;
-
-    @Value("${server.ssl.keyStoreType:}")
-    private String keyStoreType;
-
-    @Value("${server.ssl.keyAlias:}")
-    private String keyAlias;
-
-    @Value("${server.ssl.trust-store:}")
-    private String trustStoreFile;
-
-    @Value("${server.ssl.trust-store-password:}")
-    private String trustStorePass;
-
-    @Value("${server.ssl.trustStoreType:}")
-    private String trustStoreType;
 
     @Autowired
     public StartupManager(final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
@@ -163,7 +134,7 @@ public class StartupManager {
         final boolean authenticatedProxy = StringUtils.isNotBlank(proxyManager.getAlertProxyPassword().orElse(null));
         logger.info("----------------------------------------");
         logger.info("Alert Configuration: ");
-        logger.info("Logging level:           {}", getLoggingLevel());
+        logger.info("Logging level:           {}", alertProperties.getLoggingLevel().orElse(""));
         logger.info("Alert Proxy Host:          {}", proxyManager.getAlertProxyHost().orElse(""));
         logger.info("Alert Proxy Port:          {}", proxyManager.getAlertProxyPort().orElse(""));
         logger.info("Alert Proxy Authenticated: {}", authenticatedProxy);
@@ -267,9 +238,4 @@ public class StartupManager {
         logger.info("Initializing providers...");
         providerDescriptorList.stream().map(ProviderDescriptor::getProvider).forEach(Provider::initialize);
     }
-
-    public String getLoggingLevel() {
-        return loggingLevel;
-    }
-
 }
