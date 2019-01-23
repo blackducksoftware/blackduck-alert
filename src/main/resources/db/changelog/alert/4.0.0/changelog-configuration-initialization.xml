@@ -69,7 +69,21 @@
             <column name="NAME" type="VARCHAR(255)" value="channel_slack"/>
             <column name="TYPE_ID" type="BIGINT(19)" value="1"/>
         </insert>
-        <!-- No need to insert provider_polaris since it is new -->
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="REGISTERED_DESCRIPTORS">
+            <!-- This is a brand new table. ID = 5 -->
+            <column name="NAME" type="VARCHAR(255)" value="component_settings"/>
+            <column name="TYPE_ID" type="BIGINT(19)" value="3"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="REGISTERED_DESCRIPTORS">
+            <!-- This is a brand new table. ID = 6 -->
+            <column name="NAME" type="VARCHAR(255)" value="component_scheduling"/>
+            <column name="TYPE_ID" type="BIGINT(19)" value="3"/>
+        </insert>
+        <!-- TODO determine if we should add polaris for this release -->
     </changeSet>
 
     <!-- Register Global Black Duck Fields. Changelog Extension: 4. DESCRIPTOR_ID = 1 -->
@@ -1491,6 +1505,585 @@
                 tableName="FIELD_CONTEXTS">
             <column name="FIELD_ID" type="BIGINT(19)" value="64"/>
             <column name="CONTEXT_ID" type="BIGINT(19)" value="2"/>
+        </insert>
+    </changeSet>
+
+    <!-- Register Global Settings Fields. Changelog Extension: 11. DESCRIPTOR_ID = 5 -->
+
+    <!-- New Field: SOURCE_KEY = settings.proxy.host, ID = 65 -->
+    <changeSet author="gkillough" id="1548167676836-11-1">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="settings.proxy.host"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="65"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="65"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = settings.proxy.port, ID = 66 -->
+    <changeSet author="gkillough" id="1548167676836-11-2">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="settings.proxy.port"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="66"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="66"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = settings.proxy.username, ID = 67 -->
+    <changeSet author="gkillough" id="1548167676836-11-3">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="settings.proxy.username"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="67"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="67"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = settings.proxy.password, ID = 68 -->
+    <changeSet author="gkillough" id="1548167676836-11-4">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="settings.proxy.password"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="TRUE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="68"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="68"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = settings.ldap.enabled, ID = 69 -->
+    <changeSet author="gkillough" id="1548167676836-11-5">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="settings.ldap.enabled"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="69"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="69"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = settings.ldap.server, ID = 70 -->
+    <changeSet author="gkillough" id="1548167676836-11-6">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="settings.ldap.server"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="70"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="70"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = settings.ldap.manager.dn, ID = 71 -->
+    <changeSet author="gkillough" id="1548167676836-11-7">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="settings.ldap.manager.dn"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="71"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="71"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = settings.ldap.manager.password, ID = 72 -->
+    <changeSet author="gkillough" id="1548167676836-11-8">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="settings.ldap.manager.password"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="TRUE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="72"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="72"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = settings.ldap.authentication.type, ID = 73 -->
+    <changeSet author="gkillough" id="1548167676836-11-9">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="settings.ldap.authentication.type"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="73"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="73"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = settings.ldap.referral, ID = 74 -->
+    <changeSet author="gkillough" id="1548167676836-11-10">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="settings.ldap.referral"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="74"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="74"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = settings.ldap.user.search.base, ID = 75 -->
+    <changeSet author="gkillough" id="1548167676836-11-11">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="settings.ldap.user.search.base"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="75"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="75"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = settings.ldap.user.search.filter, ID = 76 -->
+    <changeSet author="gkillough" id="1548167676836-11-12">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="settings.ldap.user.search.filter"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="76"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="76"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = settings.ldap.user.dn.patterns, ID = 77 -->
+    <changeSet author="gkillough" id="1548167676836-11-13">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="settings.ldap.user.dn.patterns"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="77"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="77"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = settings.ldap.user.attributes, ID = 78 -->
+    <changeSet author="gkillough" id="1548167676836-11-14">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="settings.ldap.user.attributes"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="78"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="78"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = settings.ldap.group.search.base, ID = 79 -->
+    <changeSet author="gkillough" id="1548167676836-11-15">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="settings.ldap.group.search.base"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="79"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="79"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = settings.ldap.group.search.filter, ID = 80 -->
+    <changeSet author="gkillough" id="1548167676836-11-16">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="settings.ldap.group.search.filter"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="80"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="80"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = settings.ldap.group.role.attribute, ID = 81 -->
+    <changeSet author="gkillough" id="1548167676836-11-17">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="settings.ldap.group.role.attribute"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="81"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="81"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = settings.ldap.role.prefix, ID = 82 -->
+    <changeSet author="gkillough" id="1548167676836-11-18">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="settings.ldap.role.prefix"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="82"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="82"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+
+    <!-- Register Global Scheduling Fields. Changelog Extension: 12. DESCRIPTOR_ID = 6 -->
+
+    <!-- New Field: SOURCE_KEY = scheduling.accumulator.next.run, ID = 83 -->
+    <changeSet author="gkillough" id="1548167676836-12-1">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="scheduling.accumulator.next.run"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="83"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="6"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="83"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = scheduling.daily.digest.hour, ID = 84 -->
+    <changeSet author="gkillough" id="1548167676836-12-2">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="scheduling.daily.digest.hour"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="84"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="6"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="84"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = scheduling.daily.digest.next.run, ID = 85 -->
+    <changeSet author="gkillough" id="1548167676836-12-3">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="scheduling.daily.digest.next.run"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="85"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="6"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="85"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = scheduling.purge.data.frequency, ID = 86 -->
+    <changeSet author="gkillough" id="1548167676836-12-4">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="scheduling.purge.data.frequency"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="86"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="6"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="86"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = scheduling.purge.data.next.run, ID = 87 -->
+    <changeSet author="gkillough" id="1548167676836-12-5">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="scheduling.purge.data.next.run"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="87"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="6"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="87"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- Register Global Settings UI Fields. Changelog Extension: 13. DESCRIPTOR_ID = 5 -->
+
+    <!-- New Field: SOURCE_KEY = settings.user.default.admin.password, ID = 88 -->
+    <changeSet author="gkillough" id="1548167676836-13-1">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="settings.user.default.admin.password"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="88"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="88"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = settings.encryption.password, ID = 89 -->
+    <changeSet author="gkillough" id="1548167676836-13-2">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="settings.encryption.password"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="89"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="89"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+        </insert>
+    </changeSet>
+
+    <!-- New Field: SOURCE_KEY = settings.encryption.global.salt, ID = 90 -->
+    <changeSet author="gkillough" id="1548167676836-13-3">
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DEFINED_FIELDS">
+            <column name="SOURCE_KEY" type="VARCHAR(255)" value="settings.encryption.global.salt"/>
+            <column name="SENSITIVE" type="BOOLEAN" value="FALSE"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="DESCRIPTOR_FIELDS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="90"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+        </insert>
+        <insert dbms="h2"
+                schemaName="ALERT"
+                tableName="FIELD_CONTEXTS">
+            <column name="FIELD_ID" type="BIGINT(19)" value="90"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
         </insert>
     </changeSet>
 
