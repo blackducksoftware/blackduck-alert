@@ -28,6 +28,7 @@ import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -37,6 +38,7 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.ProxyManager;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.provider.ProviderProperties;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
@@ -47,14 +49,15 @@ import com.synopsys.integration.blackduck.rest.BlackDuckRestConnection;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 @Component
 public class BlackDuckProperties extends ProviderProperties {
     public static final int DEFAULT_TIMEOUT = 300;
-
     private final Gson gson;
     private final AlertProperties alertProperties;
     private final ProxyManager proxyManager;
+    private Logger logger = LoggerFactory.getLogger(BlackDuckProperties.class);
 
     // the blackduck product hasn't renamed their environment variables from hub to blackduck
     // need to keep hub in the name until
@@ -182,11 +185,17 @@ public class BlackDuckProperties extends ProviderProperties {
 
     private Properties getBlackDuckProperties() {
         final Properties properties = new Properties();
+
         properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "trust.cert", String.valueOf(alertProperties.getAlertTrustCertificate().orElse(false)));
-        properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.host", proxyManager.getAlertProxyHost().orElse(""));
-        properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.port", proxyManager.getAlertProxyPort().orElse(""));
-        properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.username", proxyManager.getAlertProxyUsername().orElse(""));
-        properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.password", proxyManager.getAlertProxyPassword().orElse(""));
+        try {
+            ProxyInfo proxyInfo = proxyManager.createProxyInfo();
+            properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.host", proxyInfo.getHost().orElse(""));
+            properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.port", String.valueOf(proxyInfo.getPort()));
+            properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.username", proxyInfo.getUsername().orElse(""));
+            properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.password", proxyInfo.getPassword().orElse(""));
+        } catch (AlertDatabaseConstraintException ex) {
+            logger.error("Error applying proxy settings.", ex);
+        }
         return properties;
     }
 

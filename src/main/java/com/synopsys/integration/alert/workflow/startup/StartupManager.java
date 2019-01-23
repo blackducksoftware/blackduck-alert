@@ -60,6 +60,7 @@ import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.OnDemandTask;
 import com.synopsys.integration.alert.workflow.upgrade.UpgradeProcessor;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 @Component
 public class StartupManager {
@@ -131,14 +132,20 @@ public class StartupManager {
     }
 
     public void logConfiguration() {
-        final boolean authenticatedProxy = StringUtils.isNotBlank(proxyManager.getAlertProxyPassword().orElse(null));
+        ProxyInfo proxyInfo = ProxyInfo.NO_PROXY_INFO;
+        try {
+            proxyInfo = proxyManager.createProxyInfo();
+        } catch (AlertDatabaseConstraintException e) {
+            // no logging needed here
+        }
+        final boolean authenticatedProxy = StringUtils.isNotBlank(proxyInfo.getPassword().orElse(""));
         logger.info("----------------------------------------");
         logger.info("Alert Configuration: ");
         logger.info("Logging level:           {}", alertProperties.getLoggingLevel().orElse(""));
-        logger.info("Alert Proxy Host:          {}", proxyManager.getAlertProxyHost().orElse(""));
-        logger.info("Alert Proxy Port:          {}", proxyManager.getAlertProxyPort().orElse(""));
+        logger.info("Alert Proxy Host:          {}", proxyInfo.getHost().orElse(""));
+        logger.info("Alert Proxy Port:          {}", proxyInfo.getPort());
         logger.info("Alert Proxy Authenticated: {}", authenticatedProxy);
-        logger.info("Alert Proxy User:          {}", proxyManager.getAlertProxyUsername().orElse(""));
+        logger.info("Alert Proxy User:          {}", proxyInfo.getUsername().orElse(""));
         logger.info("");
         logger.info("BlackDuck URL:                 {}", blackDuckProperties.getBlackDuckUrl().orElse(""));
         logger.info("BlackDuck Webserver Host:                 {}", blackDuckProperties.getPublicBlackDuckWebserverHost().orElse(""));

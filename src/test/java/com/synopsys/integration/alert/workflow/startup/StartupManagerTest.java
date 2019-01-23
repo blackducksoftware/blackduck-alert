@@ -31,6 +31,10 @@ import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.OnDemandTask;
+import com.synopsys.integration.rest.credentials.Credentials;
+import com.synopsys.integration.rest.credentials.CredentialsBuilder;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
+import com.synopsys.integration.rest.proxy.ProxyInfoBuilder;
 
 public class StartupManagerTest {
     private OutputLogger outputLogger;
@@ -48,10 +52,25 @@ public class StartupManagerTest {
     }
 
     @Test
-    public void testLogConfiguration() throws IOException {
+    public void testLogConfiguration() throws Exception {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
-        Mockito.when(proxyManager.getAlertProxyPassword()).thenReturn(Optional.of("not_blank_data"));
+
+        final CredentialsBuilder builder = Credentials.newBuilder();
+        builder.setUsername("AUser");
+        builder.setPassword("aPassword");
+        final Credentials credentials = builder.build();
+
+        final ProxyInfoBuilder proxyBuilder = ProxyInfo.newBuilder();
+        proxyBuilder.setHost("google.com");
+        proxyBuilder.setPort(3218);
+        proxyBuilder.setCredentials(credentials);
+        proxyBuilder.setNtlmDomain(null);
+        proxyBuilder.setNtlmWorkstation(null);
+        final ProxyInfo expectedProxyInfo = proxyBuilder.build();
+
+        Mockito.when(proxyManager.createProxyInfo()).thenReturn(expectedProxyInfo);
+        
         final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(testAlertProperties);
         testGlobalProperties.setBlackDuckUrl("Black Duck Url");
         testGlobalProperties.setBlackDuckApiKey("Black Duck API Token");

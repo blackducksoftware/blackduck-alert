@@ -1,7 +1,6 @@
 package com.synopsys.integration.alert.common;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Optional;
@@ -38,68 +37,6 @@ public class ProxyManagerTest {
     }
 
     @Test
-    public void testFieldMissingFields() {
-        // field missing from configuration
-        Mockito.when(configurationModel.getField(SettingsDescriptor.KEY_PROXY_HOST)).thenReturn(Optional.empty());
-        Mockito.when(configurationModel.getField(SettingsDescriptor.KEY_PROXY_PORT)).thenReturn(Optional.empty());
-        Mockito.when(configurationModel.getField(SettingsDescriptor.KEY_PROXY_USERNAME)).thenReturn(Optional.empty());
-        Mockito.when(configurationModel.getField(SettingsDescriptor.KEY_PROXY_PASSWORD)).thenReturn(Optional.empty());
-
-        assertTrue(proxyManager.getAlertProxyHost().isEmpty());
-        assertTrue(proxyManager.getAlertProxyPort().isEmpty());
-        assertTrue(proxyManager.getAlertProxyUsername().isEmpty());
-        assertTrue(proxyManager.getAlertProxyPassword().isEmpty());
-
-    }
-
-    @Test
-    public void testFieldValuesMissing() {
-        // field value missing
-        ConfigurationFieldModel hostModel = Mockito.mock(ConfigurationFieldModel.class);
-        ConfigurationFieldModel portModel = Mockito.mock(ConfigurationFieldModel.class);
-        ConfigurationFieldModel usernameModel = Mockito.mock(ConfigurationFieldModel.class);
-        ConfigurationFieldModel passwordModel = Mockito.mock(ConfigurationFieldModel.class);
-
-        Mockito.when(hostModel.getFieldValue()).thenReturn(Optional.empty());
-        Mockito.when(portModel.getFieldValue()).thenReturn(Optional.empty());
-        Mockito.when(usernameModel.getFieldValue()).thenReturn(Optional.empty());
-        Mockito.when(passwordModel.getFieldValue()).thenReturn(Optional.empty());
-
-        Mockito.when(configurationModel.getField(SettingsDescriptor.KEY_PROXY_HOST)).thenReturn(Optional.of(hostModel));
-        Mockito.when(configurationModel.getField(SettingsDescriptor.KEY_PROXY_PORT)).thenReturn(Optional.of(portModel));
-        Mockito.when(configurationModel.getField(SettingsDescriptor.KEY_PROXY_USERNAME)).thenReturn(Optional.of(usernameModel));
-        Mockito.when(configurationModel.getField(SettingsDescriptor.KEY_PROXY_PASSWORD)).thenReturn(Optional.of(passwordModel));
-
-        assertTrue(proxyManager.getAlertProxyHost().isEmpty());
-        assertTrue(proxyManager.getAlertProxyPort().isEmpty());
-        assertTrue(proxyManager.getAlertProxyUsername().isEmpty());
-        assertTrue(proxyManager.getAlertProxyPassword().isEmpty());
-    }
-
-    @Test
-    public void testGetFields() {
-        ConfigurationFieldModel hostModel = Mockito.mock(ConfigurationFieldModel.class);
-        ConfigurationFieldModel portModel = Mockito.mock(ConfigurationFieldModel.class);
-        ConfigurationFieldModel usernameModel = Mockito.mock(ConfigurationFieldModel.class);
-        ConfigurationFieldModel passwordModel = Mockito.mock(ConfigurationFieldModel.class);
-
-        Mockito.when(hostModel.getFieldValue()).thenReturn(Optional.of(HOST));
-        Mockito.when(portModel.getFieldValue()).thenReturn(Optional.of(PORT));
-        Mockito.when(usernameModel.getFieldValue()).thenReturn(Optional.of(USERNAME));
-        Mockito.when(passwordModel.getFieldValue()).thenReturn(Optional.of(PASSWORD));
-
-        Mockito.when(configurationModel.getField(SettingsDescriptor.KEY_PROXY_HOST)).thenReturn(Optional.of(hostModel));
-        Mockito.when(configurationModel.getField(SettingsDescriptor.KEY_PROXY_PORT)).thenReturn(Optional.of(portModel));
-        Mockito.when(configurationModel.getField(SettingsDescriptor.KEY_PROXY_USERNAME)).thenReturn(Optional.of(usernameModel));
-        Mockito.when(configurationModel.getField(SettingsDescriptor.KEY_PROXY_PASSWORD)).thenReturn(Optional.of(passwordModel));
-
-        assertEquals(HOST, proxyManager.getAlertProxyHost().orElse(null));
-        assertEquals(PORT, proxyManager.getAlertProxyPort().orElse(null));
-        assertEquals(USERNAME, proxyManager.getAlertProxyUsername().orElse(null));
-        assertEquals(PASSWORD, proxyManager.getAlertProxyPassword().orElse(null));
-    }
-
-    @Test
     public void testCreate() throws Exception {
         ConfigurationFieldModel hostModel = Mockito.mock(ConfigurationFieldModel.class);
         ConfigurationFieldModel portModel = Mockito.mock(ConfigurationFieldModel.class);
@@ -122,17 +59,6 @@ public class ProxyManagerTest {
         assertEquals(USERNAME, proxyInfo.getUsername().orElse(null));
         assertEquals(PASSWORD, proxyInfo.getPassword().orElse(null));
 
-    }
-
-    @Test
-    public void testFieldMissingByException() throws Exception {
-        Mockito.when(configurationAccessor.getConfigurationByDescriptorNameAndContext(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL)).thenThrow(new AlertDatabaseConstraintException("test error finding configuration"));
-        proxyManager = new ProxyManager(configurationAccessor);
-
-        assertTrue(proxyManager.getAlertProxyHost().isEmpty());
-        assertTrue(proxyManager.getAlertProxyPort().isEmpty());
-        assertTrue(proxyManager.getAlertProxyUsername().isEmpty());
-        assertTrue(proxyManager.getAlertProxyPassword().isEmpty());
     }
 
     @Test
