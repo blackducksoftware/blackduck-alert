@@ -106,7 +106,6 @@ public class DescriptorController extends MetadataController {
                     optionalMetaData.ifPresent(metadata -> descriptorMetadata.add(createMetaData(metadata)));
                 } else {
                     optionalMetaData.ifPresent(descriptorMetadata::add);
-
                 }
             }
         }
