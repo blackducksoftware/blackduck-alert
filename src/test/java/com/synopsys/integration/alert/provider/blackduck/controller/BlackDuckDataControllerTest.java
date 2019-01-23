@@ -18,14 +18,13 @@ import org.mockito.Mockito;
 import org.springframework.http.ResponseEntity;
 
 import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckDataController;
-import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckDataHandler;
 
 public class BlackDuckDataControllerTest {
 
     @Test
     public void getProjectsTest() {
         final BlackDuckDataHandler handler = Mockito.mock(BlackDuckDataHandler.class);
-        final BlackDuckDataController controller = new BlackDuckDataController(handler);
+        final BlackDuckDataController controller = new BlackDuckDataController(handler, responseFactory, contentConverter);
 
         Mockito.when(handler.getBlackDuckProjects()).thenReturn(null);
 

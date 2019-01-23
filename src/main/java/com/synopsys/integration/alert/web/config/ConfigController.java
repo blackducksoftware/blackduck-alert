@@ -51,6 +51,7 @@ import com.synopsys.integration.alert.web.controller.ResponseFactory;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.ResponseBodyBuilder;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
+import com.synopsys.integration.rest.exception.IntegrationRestException;
 
 @RestController
 @RequestMapping(ConfigController.CONFIGURATION_PATH)
@@ -170,12 +171,44 @@ public class ConfigController extends BaseController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteConfig(@PathVariable final Long id) {
-        return controllerHandler.deleteConfig(id);
+        if (null == id) {
+            responseFactory.createBadRequestResponse("", "Proper ID is required for deleting.");
+        }
+        String stringId = contentConverter.getStringValue(id);
+        try {
+            if (configActions.doesConfigExist(id)) {
+                configActions.deleteConfig(id);
+                return responseFactory.createAcceptedResponse(stringId, "Deleted");
+            } else {
+                return responseFactory.createBadRequestResponse(stringId, "No configuration with the specified id.");
+            }
+        } catch (final AlertException e) {
+            logger.error(e.getMessage(), e);
+            return responseFactory.createInternalServerErrorResponse(stringId, e.getMessage());
+        }
     }
 
     @PostMapping("/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = true) final FieldModel restModel, @RequestParam(required = false) final String destination) {
-        return controllerHandler.testConfig(restModel, destination);
+        if (restModel == null) {
+            return responseFactory.createBadRequestResponse("", "Required request body is missing");
+        }
+        String stringId = restModel.getId();
+        final Long id = contentConverter.getLongValue(stringId);
+        try {
+            final String responseMessage = configActions.testConfig(restModel, destination);
+            return responseFactory.createResponse(HttpStatus.OK, id, responseMessage);
+        } catch (final IntegrationRestException e) {
+            logger.error(e.getMessage(), e);
+            return responseFactory.createResponse(HttpStatus.valueOf(e.getHttpStatusCode()), id, e.getHttpStatusMessage() + " : " + e.getMessage());
+        } catch (final AlertFieldException e) {
+            return fieldError(id, e.getMessage(), e.getFieldErrors());
+        } catch (final AlertException e) {
+            return responseFactory.createBadRequestResponse(stringId, e.getMessage());
+        } catch (final Exception e) {
+            logger.error(e.getMessage(), e);
+            return responseFactory.createInternalServerErrorResponse(stringId, e.getMessage());
+        }
     }
 
     private ResponseEntity<String> fieldError(final long id, final String error, final Map<String, String> fieldErrors) {

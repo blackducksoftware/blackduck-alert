@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
-import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.context.ChannelDistributionDescriptorActionApi;
 
@@ -37,7 +36,7 @@ import com.synopsys.integration.alert.common.descriptor.config.context.ChannelDi
 public class HipChatDistributionDescriptorActionApi extends ChannelDistributionDescriptorActionApi {
 
     @Autowired
-    public HipChatDistributionDescriptorActionApi(final HipChatChannel hipChatChannel, final BaseConfigurationAccessor configurationAccessor, final List<ProviderDescriptor> providerDescriptors) {
-        super(hipChatChannel, configurationAccessor, providerDescriptors);
+    public HipChatDistributionDescriptorActionApi(final HipChatChannel hipChatChannel, final List<ProviderDescriptor> providerDescriptors) {
+        super(hipChatChannel, providerDescriptors);
     }
 }
