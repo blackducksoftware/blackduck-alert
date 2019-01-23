@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
@@ -26,7 +27,7 @@ public class ProxyManager {
     }
 
     private ConfigurationModel getSettingsConfiguration() throws AlertRuntimeException, AlertDatabaseConstraintException {
-        return configurationAccessor.getConfigurationsByDescriptorName(SettingsDescriptor.SETTINGS_COMPONENT)
+        return configurationAccessor.getConfigurationByDescriptorNameAndContext(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL)
                    .stream()
                    .findFirst()
                    .orElseThrow(() -> new AlertRuntimeException("Settings configuration missing"));
