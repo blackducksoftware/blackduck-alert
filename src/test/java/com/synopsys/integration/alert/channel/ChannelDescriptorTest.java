@@ -54,13 +54,11 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
 
     @Autowired
     protected DescriptorAccessor descriptorAccessor;
-
-    @Autowired
-    private BlackDuckDescriptor providerDescriptor;
-
     protected ConfigurationModel provider_global;
     protected Optional<ConfigurationModel> global_config;
     protected ConfigurationModel distribution_config;
+    @Autowired
+    private BlackDuckDescriptor providerDescriptor;
 
     @BeforeEach
     public void init() throws Exception {
@@ -200,7 +198,7 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
             configFieldMap.putAll(globalMap);
             configFieldMap.putAll(providerDistributionMap);
             configFieldMap.putAll(distributionMap);
-            descriptorActionApi.get().testConfig(configFieldMap, descriptorActionApi.get().createTestConfigModel(restModel, createTestConfigDestination()));
+            descriptorActionApi.get().testConfig(descriptorActionApi.get().createTestConfigModel(restModel, createTestConfigDestination()));
         } catch (final IntegrationException e) {
             e.printStackTrace();
             Assert.fail();
@@ -215,7 +213,7 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
         try {
             assertTrue(descriptorActionApi.isPresent());
             final Map<String, ConfigField> configFieldMap = createFieldMap(ConfigContextEnum.GLOBAL);
-            descriptorActionApi.get().testConfig(configFieldMap, descriptorActionApi.get().createTestConfigModel(restModel, createTestConfigDestination()));
+            descriptorActionApi.get().testConfig(descriptorActionApi.get().createTestConfigModel(restModel, createTestConfigDestination()));
         } catch (final IntegrationException e) {
             e.printStackTrace();
             Assert.fail();

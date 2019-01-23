@@ -38,7 +38,7 @@ public class BlackDuckDistributionDescriptorActionApiTest {
         Mockito.when(uiConfig.createFields()).thenReturn(blackDuckDistributionUIConfig.createFields());
         final BlackDuckDistributionDescriptorActionApi restApi = new BlackDuckDistributionDescriptorActionApi(Mockito.mock(ContentConverter.class));
         final BlackDuckDistributionDescriptorActionApi spiedRestApi = Mockito.spy(restApi);
-        spiedRestApi.testConfig(Mockito.anyMap(), Mockito.any());
-        Mockito.verify(spiedRestApi).testConfig(Mockito.anyMap(), Mockito.any());
+        spiedRestApi.testConfig(Mockito.any());
+        Mockito.verify(spiedRestApi).testConfig(Mockito.any());
     }
 }

@@ -19,13 +19,13 @@ import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 public class SchedulingDescriptorActionApiTest {
+    public static final String DAILY_DIGEST_ERROR_MESSAGE = "Must be a number between 0 and 23";
+    public static final String PURGE_FREQUENCY_ERROR_MESSAGE = "Must be a number between 1 and 7";
     private static final FieldValueModel FIELD_HOUR_OF_DAY = new FieldValueModel(new ArrayList<>(), false);
     private static final FieldValueModel FIELD_PURGE_FREQUENCY = new FieldValueModel(new ArrayList<>(), false);
     private static final Map<String, FieldValueModel> FIELD_MAP = Map.of(SchedulingUIConfig.KEY_DAILY_DIGEST_HOUR_OF_DAY, FIELD_HOUR_OF_DAY,
         SchedulingUIConfig.KEY_PURGE_DATA_FREQUENCY_DAYS, FIELD_PURGE_FREQUENCY);
     private static final FieldModel FIELD_MODEL = new FieldModel(SchedulingDescriptor.SCHEDULING_COMPONENT, ConfigContextEnum.GLOBAL.name(), FIELD_MAP);
-    public static final String DAILY_DIGEST_ERROR_MESSAGE = "Must be a number between 0 and 23";
-    public static final String PURGE_FREQUENCY_ERROR_MESSAGE = "Must be a number between 1 and 7";
     private final SchedulingUIConfig schedulingUIConfig = new SchedulingUIConfig();
 
     @AfterEach
@@ -118,7 +118,7 @@ public class SchedulingDescriptorActionApiTest {
         try {
             final Map<String, ConfigField> configFieldMap = schedulingUIConfig.createFields().stream()
                                                                 .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-            actionApi.testConfig(configFieldMap, null);
+            actionApi.testConfig(null);
             fail("Expected exception to be thrown");
         } catch (final IntegrationException e) {
             assertEquals("Should not be implemented", e.getMessage());

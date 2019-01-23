@@ -33,9 +33,7 @@ public class SettingsDescriptorActionApiTest {
         final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
-        final Map<String, ConfigField> configFieldMap = settingsUIConfig.createFields().stream()
-                                                            .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        actionaApi.testConfig(configFieldMap, null);
+        actionaApi.testConfig(null);
         Mockito.verify(encryptionUtility, Mockito.times(0)).isInitialized();
         Mockito.verify(userAccessor, Mockito.times(0)).getUser(Mockito.anyString());
         Mockito.verify(systemValidator, Mockito.times(0)).validate(Mockito.anyMap());

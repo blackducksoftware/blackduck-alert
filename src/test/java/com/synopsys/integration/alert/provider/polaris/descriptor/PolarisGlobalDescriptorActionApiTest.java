@@ -23,7 +23,7 @@ import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
-import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
+import com.synopsys.integration.alert.mock.MockDescriptorAccessor;
 import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
 import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
 import com.synopsys.integration.alert.util.TestProperties;
@@ -43,18 +43,11 @@ public class PolarisGlobalDescriptorActionApiTest {
 
     private final PolarisGlobalUIConfig polarisGlobalUIConfig = new PolarisGlobalUIConfig();
 
-    private List<DefinedFieldModel> createDefinedFields(List<ConfigField> configFields, ConfigContextEnum context) {
-        return configFields.stream()
-                   .map(configField -> new DefinedFieldModel(configField.getKey(), context, configField.isSensitive()))
-                   .collect(Collectors.toList());
-    }
-
     @Test
     public void validateConfigWhenValidTest() throws Exception {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
-        final BaseDescriptorAccessor descriptorAccessor = Mockito.mock(BaseDescriptorAccessor.class);
-        Mockito.when(descriptorAccessor.getFieldsForDescriptor(PolarisProvider.COMPONENT_NAME, ConfigContextEnum.GLOBAL)).thenReturn(createDefinedFields(polarisGlobalUIConfig.createFields(), ConfigContextEnum.GLOBAL));
+        final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(polarisGlobalUIConfig.createFields());
         final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor);
         final PolarisGlobalDescriptorActionApi actionApi = new PolarisGlobalDescriptorActionApi(null, modelConverter);
 
@@ -80,8 +73,7 @@ public class PolarisGlobalDescriptorActionApiTest {
     public void validateConfigWhenInvalidTest() throws Exception {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
-        final BaseDescriptorAccessor descriptorAccessor = Mockito.mock(BaseDescriptorAccessor.class);
-        Mockito.when(descriptorAccessor.getFieldsForDescriptor(PolarisProvider.COMPONENT_NAME, ConfigContextEnum.GLOBAL)).thenReturn(createDefinedFields(polarisGlobalUIConfig.createFields(), ConfigContextEnum.GLOBAL));
+        final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(polarisGlobalUIConfig.createFields());
         final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor);
         final PolarisGlobalDescriptorActionApi actionApi = new PolarisGlobalDescriptorActionApi(null, modelConverter);
 
@@ -151,8 +143,7 @@ public class PolarisGlobalDescriptorActionApiTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
 
-        final BaseDescriptorAccessor descriptorAccessor = Mockito.mock(BaseDescriptorAccessor.class);
-        Mockito.when(descriptorAccessor.getFieldsForDescriptor(PolarisProvider.COMPONENT_NAME, ConfigContextEnum.GLOBAL)).thenReturn(createDefinedFields(polarisGlobalUIConfig.createFields(), ConfigContextEnum.GLOBAL));
+        final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(polarisGlobalUIConfig.createFields());
         final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor);
         final PolarisGlobalDescriptorActionApi actionApi = new PolarisGlobalDescriptorActionApi(polarisProperties, modelConverter);
         try {
@@ -169,8 +160,7 @@ public class PolarisGlobalDescriptorActionApiTest {
     public void testConfigWithInvalidFieldsTest() throws Exception {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
-        final BaseDescriptorAccessor descriptorAccessor = Mockito.mock(BaseDescriptorAccessor.class);
-        Mockito.when(descriptorAccessor.getFieldsForDescriptor(PolarisProvider.COMPONENT_NAME, ConfigContextEnum.GLOBAL)).thenReturn(createDefinedFields(polarisGlobalUIConfig.createFields(), ConfigContextEnum.GLOBAL));
+        final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(polarisGlobalUIConfig.createFields());
         final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor);
         final PolarisGlobalDescriptorActionApi actionApi = new PolarisGlobalDescriptorActionApi(null, modelConverter);
 
@@ -216,8 +206,7 @@ public class PolarisGlobalDescriptorActionApiTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
 
-        final BaseDescriptorAccessor descriptorAccessor = Mockito.mock(BaseDescriptorAccessor.class);
-        Mockito.when(descriptorAccessor.getFieldsForDescriptor(PolarisProvider.COMPONENT_NAME, ConfigContextEnum.GLOBAL)).thenReturn(createDefinedFields(polarisGlobalUIConfig.createFields(), ConfigContextEnum.GLOBAL));
+        final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(polarisGlobalUIConfig.createFields());
         final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor);
         final PolarisGlobalDescriptorActionApi actionApi = new PolarisGlobalDescriptorActionApi(polarisProperties, modelConverter);
 
