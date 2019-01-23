@@ -49,6 +49,34 @@ public class AlertProperties {
     @Value("${alert.encryption.global.salt:}")
     private String alertEncryptionGlobalSalt;
 
+    @Value("${logging.level.com.blackducksoftware.integration:}")
+    private String loggingLevel;
+
+    // SSL properties
+    @Value("${server.port:")
+    private String serverPort;
+
+    @Value("${server.ssl.key-store:}")
+    private String keyStoreFile;
+
+    @Value("${server.ssl.key-store-password:}")
+    private String keyStorePass;
+
+    @Value("${server.ssl.keyStoreType:}")
+    private String keyStoreType;
+
+    @Value("${server.ssl.keyAlias:}")
+    private String keyAlias;
+
+    @Value("${server.ssl.trust-store:}")
+    private String trustStoreFile;
+
+    @Value("${server.ssl.trust-store-password:}")
+    private String trustStorePass;
+
+    @Value("${server.ssl.trustStoreType:}")
+    private String trustStoreType;
+
     public String getAlertConfigHome() {
         return StringUtils.trimToNull(alertConfigHome);
     }
@@ -71,6 +99,10 @@ public class AlertProperties {
 
     public Optional<String> getAlertEncryptionGlobalSalt() {
         return getOptionalString(alertEncryptionGlobalSalt);
+    }
+
+    public Optional<String> getLoggingLevel() {
+        return getOptionalString(loggingLevel);
     }
 
     private Optional<String> getOptionalString(final String value) {
