@@ -98,9 +98,9 @@ public class SystemController extends BaseController {
             final HttpHeaders headers = new HttpHeaders();
             headers.add("Location", contextPath);
             return new ResponseEntity<>(headers, HttpStatus.FOUND);
-        } else {
-            return new ResponseEntity<>(contentConverter.getJsonString(systemActions.getCurrentSystemSetup()), HttpStatus.OK);
         }
+
+        return new ResponseEntity<>(contentConverter.getJsonString(systemActions.getCurrentSystemSetup()), HttpStatus.OK);
     }
 
     @PostMapping(value = "/system/setup/initial")
@@ -109,22 +109,24 @@ public class SystemController extends BaseController {
             final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder("System Setup has already occurred");
             final String responseBody = responseBodyBuilder.build();
             return new ResponseEntity<>(responseBody, HttpStatus.CONFLICT);
-        } else {
-            return saveSystemSettings(settingsToSave);
         }
+
+        return saveSystemSettings(settingsToSave);
     }
 
     private ResponseEntity<String> saveSystemSettings(final FieldModel model) {
         final HashMap<String, String> fieldErrors = new HashMap<>();
         final FieldModel savedConfig = systemActions.saveRequiredInformation(model, fieldErrors);
+        // FIXME this logic is a bit strange. We check to see if field errors is empty then pass the thing that's empty.
+        //  handling the exception that validation normally throws here may be simpler to understand.
         if (fieldErrors.isEmpty()) {
             return responseFactory.createResponse(HttpStatus.OK, contentConverter.getJsonString(savedConfig));
-        } else {
-            final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder("Invalid System Setup");
-            responseBodyBuilder.putErrors(fieldErrors);
-            final String responseBody = responseBodyBuilder.build();
-            return responseFactory.createResponse(HttpStatus.BAD_REQUEST, responseBody);
         }
+
+        final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder("Invalid System Setup");
+        responseBodyBuilder.putErrors(fieldErrors);
+        final String responseBody = responseBodyBuilder.build();
+        return responseFactory.createResponse(HttpStatus.BAD_REQUEST, responseBody);
     }
 
 }
