@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Select from 'react-select';
-import TextInput from '../../../field/input/TextInput';
-import CheckboxInput from '../../../field/input/CheckboxInput';
-import { getDistributionJob } from '../../../store/actions/distributions';
+import TextInput from '../../field/input/TextInput';
+import CheckboxInput from '../../field/input/CheckboxInput';
+import { getDistributionJob } from '../../store/actions/distributions';
 
 import BaseJobConfiguration from 'BaseJobConfiguration';
 
