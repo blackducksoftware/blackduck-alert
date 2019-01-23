@@ -48,7 +48,6 @@ import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.component.scheduling.SchedulingConfiguration;
 import com.synopsys.integration.alert.component.scheduling.SchedulingDescriptor;
-import com.synopsys.integration.alert.component.scheduling.SchedulingUIConfig;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.database.security.StringEncryptionConverter;
@@ -206,9 +205,9 @@ public class StartupManager {
         } else {
             dailyDigestHourOfDay = "0";
             purgeDataFrequencyDays = "3";
-            final ConfigurationFieldModel hourOfDayField = ConfigurationFieldModel.create(SchedulingUIConfig.KEY_DAILY_DIGEST_HOUR_OF_DAY);
+            final ConfigurationFieldModel hourOfDayField = ConfigurationFieldModel.create(SchedulingDescriptor.KEY_DAILY_DIGEST_HOUR_OF_DAY);
             hourOfDayField.setFieldValue(dailyDigestHourOfDay);
-            final ConfigurationFieldModel purgeFrequencyField = ConfigurationFieldModel.create(SchedulingUIConfig.KEY_PURGE_DATA_FREQUENCY_DAYS);
+            final ConfigurationFieldModel purgeFrequencyField = ConfigurationFieldModel.create(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS);
             purgeFrequencyField.setFieldValue(purgeDataFrequencyDays);
             try {
                 final ConfigurationModel schedulingModel = configurationAccessor.createConfiguration(SchedulingDescriptor.SCHEDULING_COMPONENT, ConfigContextEnum.GLOBAL, Arrays.asList(hourOfDayField, purgeFrequencyField));
