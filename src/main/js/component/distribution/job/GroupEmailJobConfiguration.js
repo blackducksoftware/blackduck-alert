@@ -1,21 +1,21 @@
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import TextInput from 'field/input/TextInput';
-import { getDistributionJob } from 'store/actions/distributions';
+import PropTypes from 'prop-types';
+import TextInput from '../../../field/input/TextInput';
+import BaseJobConfiguration from 'BaseJobConfiguration';
+import { getDistributionJob } from '../../../store/actions/distributions';
+import CheckboxInput from '../../../field/input/CheckboxInput';
 
-import BaseJobConfiguration from 'component/general/distribution/job/BaseJobConfiguration';
 
-class SlackJobConfiguration extends Component {
+class GroupEmailJobConfiguration extends Component {
     constructor(props) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
         this.handleStateValues = this.handleStateValues.bind(this);
         this.getConfiguration = this.getConfiguration.bind(this);
         this.state = {
-            webhook: props.webhook,
-            channelUsername: props.channelUsername,
-            channelName: props.channelName,
+            emailSubjectLine: props.emailSubjectLine,
+            projectOwnerOnly: props.projectOwnerOnly,
             error: {}
         };
         this.loading = false;
@@ -34,9 +34,8 @@ class SlackJobConfiguration extends Component {
                 const jobConfig = nextProps.jobs[nextProps.distributionConfigId];
                 if (jobConfig) {
                     this.setState({
-                        webhook: jobConfig.webhook,
-                        channelUsername: jobConfig.channelUsername,
-                        channelName: jobConfig.channelName
+                        emailSubjectLine: jobConfig.emailSubjectLine,
+                        projectOwnerOnly: jobConfig.projectOwnerOnly
                     });
                 }
             }
@@ -49,31 +48,38 @@ class SlackJobConfiguration extends Component {
         });
     }
 
-    handleChange({ target }) {
-        const value = target.type === 'checkbox' ? target.checked : target.value;
-        const { name } = target;
-        this.handleStateValues(name, value);
-    }
-
     handleStateValues(name, value) {
         this.setState({
             [name]: value
         });
     }
 
+    handleChange({ target }) {
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+        const { name } = target;
+        this.handleStateValues(name, value);
+    }
+
     render() {
         const content = (
             <div>
-                <TextInput id="jobSlackWebhook" label="Webhook" name="webhook" value={this.state.webhook} onChange={this.handleChange} errorName="webhookError" errorValue={this.props.error.webhookError} />
-                <TextInput id="jobSlackChannelName" label="Channel Name" name="channelName" value={this.state.channelName} onChange={this.handleChange} errorName="channelNameError" errorValue={this.props.error.channelNameError} />
                 <TextInput
-                    id="jobSlackChannelUsername"
-                    label="Channel Username"
-                    name="channelUsername"
-                    value={this.state.channelUsername}
+                    id="jobEmailSubject"
+                    label="Subject Line"
+                    name="emailSubjectLine"
+                    value={this.state.emailSubjectLine}
                     onChange={this.handleChange}
-                    errorName="channelUsernameError"
-                    errorValue={this.props.error.channelUsernameError}
+                    errorName="emailSubjectLineError"
+                    errorValue={this.props.emailSubjectLineError}
+                />
+                <CheckboxInput
+                    id="projectOwnerOnly"
+                    label="Project Owner Only"
+                    name="projectOwnerOnly"
+                    isChecked={this.state.projectOwnerOnly}
+                    onChange={this.handleChange}
+                    errorName="projectOwnerOnlyError"
+                    errorValue={this.props.error.projectOwnerOnlyError}
                 />
             </div>);
         return (<BaseJobConfiguration
@@ -89,33 +95,33 @@ class SlackJobConfiguration extends Component {
     }
 }
 
-SlackJobConfiguration.propTypes = {
-    getDistributionJob: PropTypes.func.isRequired,
+GroupEmailJobConfiguration.propTypes = {
     jobs: PropTypes.object,
     distributionConfigId: PropTypes.string,
     baseUrl: PropTypes.string,
     testUrl: PropTypes.string,
     distributionType: PropTypes.string,
-    webhook: PropTypes.string,
-    channelName: PropTypes.string,
-    channelUsername: PropTypes.string,
+    getDistributionJob: PropTypes.func.isRequired,
     error: PropTypes.object,
     handleCancel: PropTypes.func.isRequired,
     handleSaveBtnClick: PropTypes.func.isRequired,
     alertChannelName: PropTypes.string.isRequired,
     fetching: PropTypes.bool,
-    inProgress: PropTypes.bool
+    inProgress: PropTypes.bool,
+    emailSubjectLine: PropTypes.string,
+    emailSubjectLineError: PropTypes.string,
+    projectOwnerOnly: PropTypes.bool
 };
 
-SlackJobConfiguration.defaultProps = {
+GroupEmailJobConfiguration.defaultProps = {
     jobs: {},
     distributionConfigId: null,
-    baseUrl: '/alert/api/configuration/channel/distribution/channel_slack',
-    testUrl: '/alert/api/configuration/channel/distribution/channel_slack/test',
-    distributionType: 'channel_slack',
-    webhook: '',
-    channelName: '',
-    channelUsername: '',
+    baseUrl: '/alert/api/configuration/channel/distribution/channel_email',
+    testUrl: '/alert/api/configuration/channel/distribution/channel_email/test',
+    distributionType: 'channel_email',
+    emailSubjectLine: '',
+    emailSubjectLineError: '',
+    projectOwnerOnly: false,
     error: {},
     fetching: false,
     inProgress: false
@@ -132,4 +138,4 @@ const mapStateToProps = state => ({
     inProgress: state.distributions.inProgress
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(SlackJobConfiguration);
+export default connect(mapStateToProps, mapDispatchToProps)(GroupEmailJobConfiguration);

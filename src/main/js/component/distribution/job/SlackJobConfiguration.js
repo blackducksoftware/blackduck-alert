@@ -1,21 +1,21 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import TextInput from 'field/input/TextInput';
-import BaseJobConfiguration from 'component/general/distribution/job/BaseJobConfiguration';
-import { getDistributionJob } from 'store/actions/distributions';
-import CheckboxInput from 'field/input/CheckboxInput';
+import { connect } from 'react-redux';
+import TextInput from '../../../field/input/TextInput';
+import { getDistributionJob } from '../../../store/actions/distributions';
 
+import BaseJobConfiguration from 'BaseJobConfiguration';
 
-class GroupEmailJobConfiguration extends Component {
+class SlackJobConfiguration extends Component {
     constructor(props) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
         this.handleStateValues = this.handleStateValues.bind(this);
         this.getConfiguration = this.getConfiguration.bind(this);
         this.state = {
-            emailSubjectLine: props.emailSubjectLine,
-            projectOwnerOnly: props.projectOwnerOnly,
+            webhook: props.webhook,
+            channelUsername: props.channelUsername,
+            channelName: props.channelName,
             error: {}
         };
         this.loading = false;
@@ -34,8 +34,9 @@ class GroupEmailJobConfiguration extends Component {
                 const jobConfig = nextProps.jobs[nextProps.distributionConfigId];
                 if (jobConfig) {
                     this.setState({
-                        emailSubjectLine: jobConfig.emailSubjectLine,
-                        projectOwnerOnly: jobConfig.projectOwnerOnly
+                        webhook: jobConfig.webhook,
+                        channelUsername: jobConfig.channelUsername,
+                        channelName: jobConfig.channelName
                     });
                 }
             }
@@ -48,38 +49,31 @@ class GroupEmailJobConfiguration extends Component {
         });
     }
 
-    handleStateValues(name, value) {
-        this.setState({
-            [name]: value
-        });
-    }
-
     handleChange({ target }) {
         const value = target.type === 'checkbox' ? target.checked : target.value;
         const { name } = target;
         this.handleStateValues(name, value);
     }
 
+    handleStateValues(name, value) {
+        this.setState({
+            [name]: value
+        });
+    }
+
     render() {
         const content = (
             <div>
+                <TextInput id="jobSlackWebhook" label="Webhook" name="webhook" value={this.state.webhook} onChange={this.handleChange} errorName="webhookError" errorValue={this.props.error.webhookError} />
+                <TextInput id="jobSlackChannelName" label="Channel Name" name="channelName" value={this.state.channelName} onChange={this.handleChange} errorName="channelNameError" errorValue={this.props.error.channelNameError} />
                 <TextInput
-                    id="jobEmailSubject"
-                    label="Subject Line"
-                    name="emailSubjectLine"
-                    value={this.state.emailSubjectLine}
+                    id="jobSlackChannelUsername"
+                    label="Channel Username"
+                    name="channelUsername"
+                    value={this.state.channelUsername}
                     onChange={this.handleChange}
-                    errorName="emailSubjectLineError"
-                    errorValue={this.props.emailSubjectLineError}
-                />
-                <CheckboxInput
-                    id="projectOwnerOnly"
-                    label="Project Owner Only"
-                    name="projectOwnerOnly"
-                    isChecked={this.state.projectOwnerOnly}
-                    onChange={this.handleChange}
-                    errorName="projectOwnerOnlyError"
-                    errorValue={this.props.error.projectOwnerOnlyError}
+                    errorName="channelUsernameError"
+                    errorValue={this.props.error.channelUsernameError}
                 />
             </div>);
         return (<BaseJobConfiguration
@@ -95,33 +89,33 @@ class GroupEmailJobConfiguration extends Component {
     }
 }
 
-GroupEmailJobConfiguration.propTypes = {
+SlackJobConfiguration.propTypes = {
+    getDistributionJob: PropTypes.func.isRequired,
     jobs: PropTypes.object,
     distributionConfigId: PropTypes.string,
     baseUrl: PropTypes.string,
     testUrl: PropTypes.string,
     distributionType: PropTypes.string,
-    getDistributionJob: PropTypes.func.isRequired,
+    webhook: PropTypes.string,
+    channelName: PropTypes.string,
+    channelUsername: PropTypes.string,
     error: PropTypes.object,
     handleCancel: PropTypes.func.isRequired,
     handleSaveBtnClick: PropTypes.func.isRequired,
     alertChannelName: PropTypes.string.isRequired,
     fetching: PropTypes.bool,
-    inProgress: PropTypes.bool,
-    emailSubjectLine: PropTypes.string,
-    emailSubjectLineError: PropTypes.string,
-    projectOwnerOnly: PropTypes.bool
+    inProgress: PropTypes.bool
 };
 
-GroupEmailJobConfiguration.defaultProps = {
+SlackJobConfiguration.defaultProps = {
     jobs: {},
     distributionConfigId: null,
-    baseUrl: '/alert/api/configuration/channel/distribution/channel_email',
-    testUrl: '/alert/api/configuration/channel/distribution/channel_email/test',
-    distributionType: 'channel_email',
-    emailSubjectLine: '',
-    emailSubjectLineError: '',
-    projectOwnerOnly: false,
+    baseUrl: '/alert/api/configuration/channel/distribution/channel_slack',
+    testUrl: '/alert/api/configuration/channel/distribution/channel_slack/test',
+    distributionType: 'channel_slack',
+    webhook: '',
+    channelName: '',
+    channelUsername: '',
     error: {},
     fetching: false,
     inProgress: false
@@ -138,4 +132,4 @@ const mapStateToProps = state => ({
     inProgress: state.distributions.inProgress
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(GroupEmailJobConfiguration);
+export default connect(mapStateToProps, mapDispatchToProps)(SlackJobConfiguration);

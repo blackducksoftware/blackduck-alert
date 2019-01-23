@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Select from 'react-select';
 
-import { getSchedulingConfig, updateSchedulingConfig } from 'store/actions/schedulingConfig';
+import { getSchedulingConfig, updateSchedulingConfig } from '../store/actions/schedulingConfig';
 
-import ConfigButtons from 'component/common/ConfigButtons';
+import ConfigButtons from 'common/ConfigButtons';
 
-import { dailyDigestOptions, purgeOptions } from 'util/scheduling-data';
+import { dailyDigestOptions, purgeOptions } from '../util/scheduling-data';
 
 class SchedulingConfiguration extends React.Component {
     constructor(props) {
