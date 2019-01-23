@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import TextInput from 'field/input/TextInput';
 import { getDistributionJob } from 'store/actions/distributions';
 
-import BaseJobConfiguration from 'distribution/BaseJobConfiguration';
+import BaseJobConfiguration from 'distribution/job/BaseJobConfiguration';
 
 class SlackJobConfiguration extends Component {
     constructor(props) {
