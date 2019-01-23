@@ -38,6 +38,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.ProxyManager;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
@@ -78,6 +79,7 @@ public class StartupManager {
     private final BaseConfigurationAccessor configurationAccessor;
     private final EncryptionUtility encryptionUtility;
     private final UpgradeProcessor upgradeProcessor;
+    private final ProxyManager proxyManager;
 
     @Value("${logging.level.com.blackducksoftware.integration:}")
     private String loggingLevel;
@@ -111,7 +113,7 @@ public class StartupManager {
     public StartupManager(final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
         final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer,
         final List<ProviderDescriptor> providerDescriptorList, final SystemStatusUtility systemStatusUtility, final SystemValidator systemValidator, final BaseConfigurationAccessor configurationAccessor,
-        final EncryptionUtility encryptionUtility, final UpgradeProcessor upgradeProcessor) {
+        final EncryptionUtility encryptionUtility, final UpgradeProcessor upgradeProcessor, final ProxyManager proxyManager) {
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
         this.dailyTask = dailyTask;
@@ -125,6 +127,7 @@ public class StartupManager {
         this.configurationAccessor = configurationAccessor;
         this.encryptionUtility = encryptionUtility;
         this.upgradeProcessor = upgradeProcessor;
+        this.proxyManager = proxyManager;
     }
 
     @Transactional
@@ -157,14 +160,14 @@ public class StartupManager {
     }
 
     public void logConfiguration() {
-        final boolean authenticatedProxy = StringUtils.isNotBlank(alertProperties.getAlertProxyPassword().orElse(null));
+        final boolean authenticatedProxy = StringUtils.isNotBlank(proxyManager.getAlertProxyPassword().orElse(null));
         logger.info("----------------------------------------");
         logger.info("Alert Configuration: ");
         logger.info("Logging level:           {}", getLoggingLevel());
-        logger.info("Alert Proxy Host:          {}", alertProperties.getAlertProxyHost().orElse(""));
-        logger.info("Alert Proxy Port:          {}", alertProperties.getAlertProxyPort().orElse(""));
+        logger.info("Alert Proxy Host:          {}", proxyManager.getAlertProxyHost().orElse(""));
+        logger.info("Alert Proxy Port:          {}", proxyManager.getAlertProxyPort().orElse(""));
         logger.info("Alert Proxy Authenticated: {}", authenticatedProxy);
-        logger.info("Alert Proxy User:          {}", alertProperties.getAlertProxyUsername().orElse(""));
+        logger.info("Alert Proxy User:          {}", proxyManager.getAlertProxyUsername().orElse(""));
         logger.info("");
         logger.info("BlackDuck URL:                 {}", blackDuckProperties.getBlackDuckUrl().orElse(""));
         logger.info("BlackDuck Webserver Host:                 {}", blackDuckProperties.getPublicBlackDuckWebserverHost().orElse(""));

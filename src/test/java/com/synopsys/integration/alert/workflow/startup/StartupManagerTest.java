@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.common.ProxyManager;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -49,7 +50,8 @@ public class StartupManagerTest {
     @Test
     public void testLogConfiguration() throws IOException {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        testAlertProperties.setAlertProxyPassword("not_blank_data");
+        final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
+        Mockito.when(proxyManager.getAlertProxyPassword()).thenReturn(Optional.of("not_blank_data"));
         final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(testAlertProperties);
         testGlobalProperties.setBlackDuckUrl("Black Duck Url");
         testGlobalProperties.setBlackDuckApiKey("Black Duck API Token");
@@ -60,7 +62,7 @@ public class StartupManagerTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final BaseDescriptorAccessor baseDescriptorAccessor = Mockito.mock(BaseDescriptorAccessor.class);
         final StartupManager startupManager = new StartupManager(testAlertProperties, mockTestGlobalProperties, null, null, null, null, null, null, systemStatusUtility, systemValidator, baseConfigurationAccessor, encryptionUtility
-            , null);
+            , null, proxyManager);
 
         startupManager.logConfiguration();
         assertTrue(outputLogger.isLineContainingText("Alert Proxy Authenticated: true"));
@@ -71,7 +73,7 @@ public class StartupManagerTest {
     @Test
     public void testInitializeCronJobsWithEmptyConfig() throws Exception {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
-
+        final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         final PhoneHomeTask phoneHomeTask = Mockito.mock(PhoneHomeTask.class);
         Mockito.doNothing().when(phoneHomeTask).scheduleExecution(Mockito.anyString());
         final DailyTask dailyTask = Mockito.mock(DailyTask.class);
@@ -91,7 +93,7 @@ public class StartupManagerTest {
         final ConfigurationModel schedulingModel = Mockito.mock(ConfigurationModel.class);
         Mockito.when(baseConfigurationAccessor.createConfiguration(Mockito.anyString(), Mockito.any(ConfigContextEnum.class), Mockito.anyCollection())).thenReturn(schedulingModel);
         final StartupManager startupManager = new StartupManager(testAlertProperties, null, dailyTask, onDemandTask, purgeTask, phoneHomeTask, null, Collections.emptyList(), systemStatusUtility, systemValidator, baseConfigurationAccessor,
-            encryptionUtility, null);
+            encryptionUtility, null, proxyManager);
         //        startupManager.registerDescriptors();
         startupManager.initializeCronJobs();
 
@@ -101,7 +103,7 @@ public class StartupManagerTest {
     @Test
     public void testInitializeCronJobsWithConfig() throws Exception {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
-
+        final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         final PhoneHomeTask phoneHomeTask = Mockito.mock(PhoneHomeTask.class);
         Mockito.doNothing().when(phoneHomeTask).scheduleExecution(Mockito.anyString());
         final DailyTask dailyTask = Mockito.mock(DailyTask.class);
@@ -131,7 +133,7 @@ public class StartupManagerTest {
         Mockito.when(baseConfigurationAccessor.getConfigurationsByDescriptorName(SchedulingDescriptor.SCHEDULING_COMPONENT)).thenReturn(configList);
 
         final StartupManager startupManager = new StartupManager(testAlertProperties, null, dailyTask, onDemandTask, purgeTask, phoneHomeTask, null, Collections.emptyList(), systemStatusUtility, systemValidator, baseConfigurationAccessor,
-            encryptionUtility, null);
+            encryptionUtility, null, proxyManager);
         //        startupManager.registerDescriptors();
         startupManager.initializeCronJobs();
 
