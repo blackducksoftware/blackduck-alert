@@ -39,7 +39,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
@@ -62,14 +61,12 @@ import com.synopsys.integration.exception.IntegrationException;
 @Component
 public class ConfigActions {
     private static final Logger logger = LoggerFactory.getLogger(ConfigActions.class);
-    private final ContentConverter contentConverter;
     private final BaseConfigurationAccessor configurationAccessor;
     private final BaseDescriptorAccessor descriptorAccessor;
     private final DescriptorMap descriptorMap;
 
     @Autowired
-    public ConfigActions(final ContentConverter contentConverter, final BaseConfigurationAccessor configurationAccessor, final BaseDescriptorAccessor descriptorAccessor, final DescriptorMap descriptorMap) {
-        this.contentConverter = contentConverter;
+    public ConfigActions(final BaseConfigurationAccessor configurationAccessor, final BaseDescriptorAccessor descriptorAccessor, final DescriptorMap descriptorMap) {
         this.configurationAccessor = configurationAccessor;
         this.descriptorAccessor = descriptorAccessor;
         this.descriptorMap = descriptorMap;

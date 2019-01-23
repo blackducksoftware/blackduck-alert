@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckDataActions;
-import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckDataHandler;
 
 public class BlackDuckDataHandlerTest {
     private final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());

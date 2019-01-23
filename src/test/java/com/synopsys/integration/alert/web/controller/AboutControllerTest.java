@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.web.actions.AboutActions;
-import com.synopsys.integration.alert.web.controller.handler.AboutHandler;
 import com.synopsys.integration.alert.web.model.AboutModel;
 
 public class AboutControllerTest {
@@ -33,7 +32,7 @@ public class AboutControllerTest {
         final AboutHandler aboutHandler = new AboutHandler(contentConverter, aboutActions);
 
         Mockito.when(aboutActions.getAboutModel()).thenReturn(Optional.of(model));
-        final AboutController controller = new AboutController(aboutHandler);
+        final AboutController controller = new AboutController(aboutHandler, aboutActions, contentConverter);
         final ResponseEntity<String> response = controller.about();
 
         final String expectedJson = gson.toJson(model);
