@@ -222,7 +222,7 @@
         </createProcedure>
         <createProcedure
                 dbms="h2"
-                procedureName="Compute most recently generated field id"
+                procedureName="Retrieve most recently generated field id"
                 relativeToChangelogFile="true"
                 schemaName="ALERT">
             CREATE ALIAS GET_LATEST_FIELD_ID
@@ -235,6 +235,14 @@
                 schemaName="ALERT">
             CREATE ALIAS GET_ID_FOR_CONFIG_CONTEXT
             FOR "com.synopsys.integration.alert.database.H2StoredProcedures.getIdForConfigContext";
+        </createProcedure>
+        <createProcedure
+                dbms="h2"
+                procedureName="Define a new field and add the relations"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS DEFINE_FIELD
+            FOR "com.synopsys.integration.alert.database.H2StoredProcedures.defineField";
         </createProcedure>
     </changeSet>
 </databaseChangeLog>
