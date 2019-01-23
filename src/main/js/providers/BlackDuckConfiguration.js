@@ -1,13 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import NumberInput from '../field/input/NumberInput';
-import PasswordInput from '../field/input/PasswordInput';
-import ReadOnlyField from '../field/ReadOnlyField';
-import TextInput from '../field/input/TextInput';
-import ConfigButtons from '../component/common/ConfigButtons';
+import NumberInput from 'field/input/NumberInput';
+import PasswordInput from 'field/input/PasswordInput';
+import ReadOnlyField from 'field/ReadOnlyField';
+import TextInput from 'field/input/TextInput';
+import ConfigButtons from 'component/common/ConfigButtons';
 
-import { getConfig, testConfig, updateConfig } from '../store/actions/config';
+import { getConfig, testConfig, updateConfig } from 'store/actions/config';
 
 class BlackDuckConfiguration extends React.Component {
     constructor(props) {

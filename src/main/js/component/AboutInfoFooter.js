@@ -5,8 +5,8 @@ import PropTypes from 'prop-types';
 import { Overlay, Popover } from 'react-bootstrap';
 
 import SystemMessage from 'common/SystemMessage';
-import { getAboutInfo } from '../store/actions/about';
-import { getLatestMessages } from '../store/actions/system';
+import { getAboutInfo } from 'store/actions/about';
+import { getLatestMessages } from 'store/actions/system';
 import '../../css/footer.scss';
 import '../css/messages.scss';
 

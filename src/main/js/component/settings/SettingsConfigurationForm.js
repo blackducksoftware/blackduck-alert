@@ -1,12 +1,12 @@
-import PasswordInput from '../../field/input/PasswordInput';
-import CheckboxInput from '../../field/input/CheckboxInput';
-import TextInput from '../../field/input/TextInput';
+import PasswordInput from 'field/input/PasswordInput';
+import CheckboxInput from 'field/input/CheckboxInput';
+import TextInput from 'field/input/TextInput';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import Select from 'react-select';
-import CollapsiblePane from '../common/CollapsiblePane';
-import ConfigButtons from '../common/ConfigButtons';
-import * as FieldModelUtil from '../../util/fieldModelUtilities';
+import CollapsiblePane from 'component/common/CollapsiblePane';
+import ConfigButtons from 'component/common/ConfigButtons';
+import * as FieldModelUtil from 'util/fieldModelUtilities';
 
 
 const KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD = 'user.default.admin.password';
