@@ -222,7 +222,7 @@
         </createProcedure>
         <createProcedure
                 dbms="h2"
-                procedureName="Compute registered descriptor id"
+                procedureName="Compute most recently generated field id"
                 relativeToChangelogFile="true"
                 schemaName="ALERT">
             CREATE ALIAS GET_LATEST_FIELD_ID
@@ -230,7 +230,7 @@
         </createProcedure>
         <createProcedure
                 dbms="h2"
-                procedureName="Compute registered descriptor id"
+                procedureName="Compute config context id"
                 relativeToChangelogFile="true"
                 schemaName="ALERT">
             CREATE ALIAS GET_ID_FOR_CONFIG_CONTEXT
