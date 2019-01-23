@@ -198,7 +198,43 @@
         />
     </changeSet>
     <changeSet author="bmandel" id="1548100590332-1">
-        <modifyDataType schemaName="ALERT" tableName="DISTRIBUTION_NOTIFICATION_TYPES" columnName="COMMON_DISTRIBUTION_CONFIG_ID" newDataType="UUID"/>
-        <modifyDataType schemaName="ALERT" tableName="DISTRIBUTION_PROJECT_RELATION" columnName="COMMON_DISTRIBUTION_CONFIG_ID" newDataType="UUID"/>
+        <modifyDataType
+                schemaName="ALERT"
+                tableName="DISTRIBUTION_NOTIFICATION_TYPES"
+                columnName="COMMON_DISTRIBUTION_CONFIG_ID"
+                newDataType="UUID"
+        />
+        <modifyDataType
+                schemaName="ALERT"
+                tableName="DISTRIBUTION_PROJECT_RELATION"
+                columnName="COMMON_DISTRIBUTION_CONFIG_ID"
+                newDataType="UUID"
+        />
+    </changeSet>
+    <changeSet author="gkillough" id="1548100590500-1">
+        <createProcedure
+                dbms="h2"
+                procedureName="Compute registered descriptor id"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME
+            FOR "com.synopsys.integration.alert.database.H2StoredProcedures.getIdForRegisteredDescriptorName";
+        </createProcedure>
+        <createProcedure
+                dbms="h2"
+                procedureName="Compute registered descriptor id"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS GET_LATEST_FIELD_ID
+            FOR "com.synopsys.integration.alert.database.H2StoredProcedures.getLatestFieldId";
+        </createProcedure>
+        <createProcedure
+                dbms="h2"
+                procedureName="Compute registered descriptor id"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS GET_ID_FOR_CONFIG_CONTEXT
+            FOR "com.synopsys.integration.alert.database.H2StoredProcedures.getIdForConfigContext";
+        </createProcedure>
     </changeSet>
 </databaseChangeLog>
