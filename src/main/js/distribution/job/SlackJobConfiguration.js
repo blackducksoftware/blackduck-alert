@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import TextInput from '../../field/input/TextInput';
-import { getDistributionJob } from '../../store/actions/distributions';
+import TextInput from 'field/input/TextInput';
+import { getDistributionJob } from 'store/actions/distributions';
 
-import BaseJobConfiguration from 'BaseJobConfiguration';
+import BaseJobConfiguration from 'distribution/BaseJobConfiguration';
 
 class SlackJobConfiguration extends Component {
     constructor(props) {

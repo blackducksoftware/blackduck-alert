@@ -3,15 +3,15 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn } from 'react-bootstrap-table';
 
-import AutoRefresh from '../component/common/AutoRefresh';
-import DescriptorLabel from '../component/common/DescriptorLabel';
-import GroupEmailJobConfiguration from 'job/GroupEmailJobConfiguration';
-import HipChatJobConfiguration from 'job/HipChatJobConfiguration';
-import SlackJobConfiguration from 'job/SlackJobConfiguration';
-import EditTableCellFormatter from '../component/common/EditTableCellFormatter';
+import AutoRefresh from 'component/common/AutoRefresh';
+import DescriptorLabel from 'component/common/DescriptorLabel';
+import GroupEmailJobConfiguration from 'distribution/job/GroupEmailJobConfiguration';
+import HipChatJobConfiguration from 'distribution/job/HipChatJobConfiguration';
+import SlackJobConfiguration from 'distribution/job/SlackJobConfiguration';
+import EditTableCellFormatter from 'component/common/EditTableCellFormatter';
 
-import JobAddModal from 'JobAddModal';
-import { logout } from '../store/actions/session';
+import JobAddModal from 'distribution/JobAddModal';
+import { logout } from 'store/actions/session';
 
 /**
  * Selects className based on field value

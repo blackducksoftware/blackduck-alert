@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { getSystemSetup, saveSystemSetup } from '../../store/actions/system';
+import { getSystemSetup, saveSystemSetup } from 'store/actions/system';
 import connect from 'react-redux/es/connect/connect';
 import SettingsConfigurationForm from 'SettingsConfigurationForm';
 import PropTypes from 'prop-types';
