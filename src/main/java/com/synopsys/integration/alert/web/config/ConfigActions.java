@@ -143,7 +143,8 @@ public class ConfigActions {
         }
     }
 
-    public FieldModel saveConfig(final FieldModel fieldModel) throws AlertException {
+    public FieldModel saveConfig(final FieldModel fieldModel) throws AlertException, AlertFieldException {
+        validateConfig(fieldModel, new HashMap<>());
         final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
         FieldModel modelToSave = fieldModel;
         if (descriptorActionApi.isPresent()) {
@@ -175,6 +176,7 @@ public class ConfigActions {
     }
 
     public String testConfig(final FieldModel restModel, final String destination) throws IntegrationException {
+        validateConfig(restModel, new HashMap<>());
         final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(restModel);
         if (descriptorActionApi.isPresent()) {
             final DescriptorActionApi descriptorApi = descriptorActionApi.get();
@@ -192,14 +194,15 @@ public class ConfigActions {
                 fieldsToTest.putAll(includeProviderFields(descriptorContext, restModel));
             }
             fieldsToTest.putAll(configFields);
-            descriptorApi.testConfig(fieldsToTest, testConfig);
+            descriptorApi.testConfig(testConfig);
             return "Successfully sent test message.";
         } else {
             return "Could not find a Descriptor with the name: " + restModel.getDescriptorName();
         }
     }
 
-    public FieldModel updateConfig(final Long id, final FieldModel fieldModel) throws AlertException {
+    public FieldModel updateConfig(final Long id, final FieldModel fieldModel) throws AlertException, AlertFieldException {
+        validateConfig(fieldModel, new HashMap<>());
         final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
         FieldModel modelToSave = fieldModel;
         if (descriptorActionApi.isPresent()) {
@@ -227,7 +230,7 @@ public class ConfigActions {
         return null;
     }
 
-    public Collection<ConfigurationFieldModel> updateConfigurationWithSavedConfiguration(final Map<String, ConfigurationFieldModel> newConfiguration, final Collection<ConfigurationFieldModel> savedConfiguration) throws AlertException {
+    private Collection<ConfigurationFieldModel> updateConfigurationWithSavedConfiguration(final Map<String, ConfigurationFieldModel> newConfiguration, final Collection<ConfigurationFieldModel> savedConfiguration) throws AlertException {
         final Collection<ConfigurationFieldModel> sensitiveFields = savedConfiguration.stream().filter(fieldModel -> fieldModel.isSensitive()).collect(Collectors.toSet());
         for (final ConfigurationFieldModel fieldModel : sensitiveFields) {
             final String key = fieldModel.getFieldKey();
@@ -322,8 +325,8 @@ public class ConfigActions {
     }
 
     private List<ConfigField> createDistributionTemplate() {
-        final Set<String> channelDescriptors = descriptorMap.getChannelDescriptorMap().values().stream().map(value -> value.getName()).collect(Collectors.toSet());
-        final Set<String> providerDescriptors = descriptorMap.getProviderDescriptorMap().values().stream().map(value -> value.getName()).collect(Collectors.toSet());
+        final Set<String> channelDescriptors = descriptorMap.getChannelDescriptorMap().keySet();
+        final Set<String> providerDescriptors = descriptorMap.getProviderDescriptorMap().keySet();
         return commonDistributionUIConfig.createCommonConfigFields(channelDescriptors, providerDescriptors);
     }
 }
