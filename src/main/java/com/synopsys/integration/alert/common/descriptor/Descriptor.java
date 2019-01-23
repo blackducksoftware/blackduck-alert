@@ -142,9 +142,7 @@ public abstract class Descriptor extends Stringable {
     public void testConfig(final ConfigContextEnum actionApiType, final TestConfigModel testConfig) throws IntegrationException {
         final Optional<DescriptorActionApi> actionApi = getActionApi(actionApiType);
         if (actionApi.isPresent()) {
-            final Map<String, ConfigField> configFields = createConfigFieldMap(actionApiType);
-            ;
-            actionApi.get().testConfig(configFields, testConfig);
+            actionApi.get().testConfig(testConfig);
         }
     }
 
@@ -163,6 +161,5 @@ public abstract class Descriptor extends Stringable {
     private Map<String, ConfigField> createConfigFieldMap(final ConfigContextEnum context) {
         final List<ConfigField> configFields = retrieveUIConfigFields(context);
         return configFields.stream().collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-
     }
 }
