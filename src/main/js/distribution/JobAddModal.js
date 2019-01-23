@@ -7,8 +7,8 @@ import Select, { components } from 'react-select';
 import GroupEmailJobConfiguration from 'job/GroupEmailJobConfiguration';
 import HipChatJobConfiguration from 'job/HipChatJobConfiguration';
 import SlackJobConfiguration from 'job/SlackJobConfiguration';
-import DescriptorOption from '../common/DescriptorOption';
-import { resetDistributionDescriptor } from '../../store/actions/descriptors';
+import DescriptorOption from '../component/common/DescriptorOption';
+import { resetDistributionDescriptor } from '../store/actions/descriptors';
 
 const { Option, SingleValue } = components;
 

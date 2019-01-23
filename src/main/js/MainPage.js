@@ -7,7 +7,7 @@ import { getDescriptorByType, getDescriptorsByTypeAndContext } from 'store/actio
 import Navigation from 'Navigation';
 import Audit from 'component/audit/Index';
 import AboutInfo from 'component/AboutInfo';
-import DistributionConfiguration from 'component/distribution/Index';
+import DistributionConfiguration from 'distribution/Index';
 import SchedulingConfiguration from 'component/SchedulingConfiguration';
 import SlackConfiguration from 'channels/SlackConfiguration';
 import EmailConfiguration from 'channels/EmailConfiguration';
