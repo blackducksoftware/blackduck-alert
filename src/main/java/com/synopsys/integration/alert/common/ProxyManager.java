@@ -56,38 +56,6 @@ public class ProxyManager {
                    .orElseThrow(() -> new AlertRuntimeException("Settings configuration missing"));
     }
 
-    public Optional<String> getAlertProxyHost() {
-        try {
-            return getSettingsConfiguration().getField(SettingsDescriptor.KEY_PROXY_HOST).flatMap(ConfigurationFieldModel::getFieldValue);
-        } catch (AlertRuntimeException | AlertDatabaseConstraintException ex) {
-            return Optional.empty();
-        }
-    }
-
-    public Optional<String> getAlertProxyPort() {
-        try {
-            return getSettingsConfiguration().getField(SettingsDescriptor.KEY_PROXY_PORT).flatMap(ConfigurationFieldModel::getFieldValue);
-        } catch (AlertRuntimeException | AlertDatabaseConstraintException ex) {
-            return Optional.empty();
-        }
-    }
-
-    public Optional<String> getAlertProxyUsername() {
-        try {
-            return getSettingsConfiguration().getField(SettingsDescriptor.KEY_PROXY_USERNAME).flatMap(ConfigurationFieldModel::getFieldValue);
-        } catch (AlertRuntimeException | AlertDatabaseConstraintException ex) {
-            return Optional.empty();
-        }
-    }
-
-    public Optional<String> getAlertProxyPassword() {
-        try {
-            return getSettingsConfiguration().getField(SettingsDescriptor.KEY_PROXY_PASSWORD).flatMap(ConfigurationFieldModel::getFieldValue);
-        } catch (AlertRuntimeException | AlertDatabaseConstraintException ex) {
-            return Optional.empty();
-        }
-    }
-
     public ProxyInfo createProxyInfo() throws AlertRuntimeException, AlertDatabaseConstraintException, IllegalArgumentException {
         ConfigurationModel settingsConfiguration = getSettingsConfiguration();
         final Optional<String> alertProxyHost = settingsConfiguration.getField(SettingsDescriptor.KEY_PROXY_HOST).flatMap(ConfigurationFieldModel::getFieldValue);

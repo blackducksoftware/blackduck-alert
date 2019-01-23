@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,10 +52,6 @@ public class ChannelRestConnectionFactoryTest {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         testAlertProperties.setAlertTrustCertificate(true);
         ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
-        Mockito.when(proxyManager.getAlertProxyHost()).thenReturn(Optional.of(host));
-        Mockito.when(proxyManager.getAlertProxyUsername()).thenReturn(Optional.of(credentials.getUsername().get()));
-        Mockito.when(proxyManager.getAlertProxyPassword()).thenReturn(Optional.of(credentials.getPassword().get()));
-        Mockito.when(proxyManager.getAlertProxyHost()).thenReturn(Optional.of(String.valueOf(port)));
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(expectedProxyInfo);
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties, proxyManager);
 

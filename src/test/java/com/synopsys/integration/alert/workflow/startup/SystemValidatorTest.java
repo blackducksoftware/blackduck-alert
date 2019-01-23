@@ -4,7 +4,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Optional;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +20,10 @@ import com.synopsys.integration.alert.provider.blackduck.TestBlackDuckProperties
 import com.synopsys.integration.alert.util.OutputLogger;
 import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestTags;
+import com.synopsys.integration.rest.credentials.Credentials;
+import com.synopsys.integration.rest.credentials.CredentialsBuilder;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
+import com.synopsys.integration.rest.proxy.ProxyInfoBuilder;
 
 public class SystemValidatorTest {
     private OutputLogger outputLogger;
@@ -187,13 +190,24 @@ public class SystemValidatorTest {
     }
 
     @Test
-    public void testValidateHubValidProviderWithProxy() throws IOException {
+    public void testValidateHubValidProviderWithProxy() throws Exception {
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
-        Mockito.when(proxyManager.getAlertProxyHost()).thenReturn(Optional.of("google.com"));
-        Mockito.when(proxyManager.getAlertProxyPort()).thenReturn(Optional.of("3218"));
-        Mockito.when(proxyManager.getAlertProxyUsername()).thenReturn(Optional.of("AUser"));
-        Mockito.when(proxyManager.getAlertProxyPassword()).thenReturn(Optional.of("aPassword"));
+
+        final CredentialsBuilder builder = Credentials.newBuilder();
+        builder.setUsername("AUser");
+        builder.setPassword("aPassword");
+        final Credentials credentials = builder.build();
+
+        final ProxyInfoBuilder proxyBuilder = ProxyInfo.newBuilder();
+        proxyBuilder.setHost("google.com");
+        proxyBuilder.setPort(3218);
+        proxyBuilder.setCredentials(credentials);
+        proxyBuilder.setNtlmDomain(null);
+        proxyBuilder.setNtlmWorkstation(null);
+        final ProxyInfo expectedProxyInfo = proxyBuilder.build();
+
+        Mockito.when(proxyManager.createProxyInfo()).thenReturn(expectedProxyInfo);
         final TestBlackDuckProperties testGlobalProperties = new TestBlackDuckProperties(testAlertProperties);
         testGlobalProperties.setBlackDuckUrl("Black Duck URL");
         testGlobalProperties.setBlackDuckApiKey("Black Duck API Token");
