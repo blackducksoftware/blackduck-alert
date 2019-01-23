@@ -99,14 +99,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="1"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('provider_blackduck')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="1"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -121,14 +121,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="2"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('provider_blackduck')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="2"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -143,14 +143,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="3"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('provider_blackduck')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="3"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -167,14 +167,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="4"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('provider_blackduck')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="4"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
         </insert>
     </changeSet>
 
@@ -189,14 +189,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="5"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('provider_blackduck')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="5"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
         </insert>
     </changeSet>
 
@@ -211,14 +211,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="6"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('provider_blackduck')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="6"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
         </insert>
     </changeSet>
 
@@ -235,14 +235,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="7"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="7"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
         </insert>
     </changeSet>
 
@@ -257,14 +257,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="8"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="8"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
         </insert>
     </changeSet>
 
@@ -279,14 +279,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="9"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="9"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
         </insert>
     </changeSet>
 
@@ -303,14 +303,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="10"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="10"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -325,14 +325,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="11"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="11"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -347,14 +347,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="12"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="12"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -369,14 +369,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="13"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="13"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -391,14 +391,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="14"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="14"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -413,14 +413,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="15"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="15"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -435,14 +435,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="16"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="16"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -457,14 +457,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="17"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="17"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -479,14 +479,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="18"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="18"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -501,14 +501,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="19"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="19"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -523,14 +523,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="20"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="20"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -545,14 +545,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="21"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="21"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -567,14 +567,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="22"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="22"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -589,14 +589,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="23"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="23"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -611,14 +611,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="24"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="24"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -633,14 +633,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="25"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="25"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -655,14 +655,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="26"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="26"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -677,14 +677,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="27"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="27"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -699,14 +699,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="28"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="28"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -721,14 +721,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="29"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="29"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -743,14 +743,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="30"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="30"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -765,14 +765,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="31"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="31"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -787,14 +787,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="32"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="32"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -809,14 +809,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="33"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="33"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -831,14 +831,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="34"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="34"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -853,14 +853,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="35"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="35"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -875,14 +875,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="36"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="36"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -897,14 +897,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="37"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="37"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -919,14 +919,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="38"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="38"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -941,14 +941,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="39"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="39"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -963,14 +963,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="40"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="40"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -985,14 +985,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="41"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="41"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1007,14 +1007,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="42"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="42"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1029,14 +1029,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="43"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="43"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1051,14 +1051,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="44"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="44"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1073,14 +1073,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="45"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="45"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1095,14 +1095,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="46"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="46"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1117,14 +1117,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="47"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="47"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1139,14 +1139,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="48"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="48"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1161,14 +1161,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="49"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="49"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1183,14 +1183,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="50"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="50"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1205,14 +1205,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="51"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="51"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1227,14 +1227,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="52"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="52"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1249,14 +1249,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="53"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="53"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1271,14 +1271,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="54"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="54"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1293,14 +1293,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="55"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="55"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1315,14 +1315,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="56"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_email')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="56"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1339,14 +1339,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="57"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="3"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_hipchat')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="57"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1361,14 +1361,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="58"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="3"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_hipchat')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="58"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1385,14 +1385,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="59"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="3"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_hipchat')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="59"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
         </insert>
     </changeSet>
 
@@ -1407,14 +1407,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="60"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="3"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_hipchat')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="60"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
         </insert>
     </changeSet>
 
@@ -1429,14 +1429,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="61"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="3"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_hipchat')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="61"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
         </insert>
     </changeSet>
 
@@ -1453,14 +1453,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="62"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="4"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_slack')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="62"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
         </insert>
     </changeSet>
 
@@ -1475,14 +1475,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="63"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="4"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_slack')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="63"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
         </insert>
     </changeSet>
 
@@ -1497,14 +1497,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="64"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="4"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('channel_slack')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="64"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="2"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION')"/>
         </insert>
     </changeSet>
 
@@ -1521,14 +1521,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="65"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_settings')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="65"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1543,14 +1543,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="66"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_settings')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="66"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1565,14 +1565,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="67"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_settings')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="67"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1587,14 +1587,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="68"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_settings')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="68"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1609,14 +1609,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="69"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_settings')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="69"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1631,14 +1631,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="70"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_settings')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="70"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1653,14 +1653,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="71"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_settings')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="71"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1675,14 +1675,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="72"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_settings')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="72"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1697,14 +1697,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="73"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_settings')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="73"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1719,14 +1719,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="74"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_settings')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="74"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1741,14 +1741,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="75"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_settings')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="75"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1763,14 +1763,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="76"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_settings')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="76"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1785,14 +1785,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="77"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_settings')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="77"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1807,14 +1807,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="78"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_settings')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="78"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1829,14 +1829,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="79"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_settings')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="79"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1851,14 +1851,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="80"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_settings')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="80"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1873,14 +1873,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="81"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_settings')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="81"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1895,14 +1895,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="82"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_settings')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="82"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1920,14 +1920,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="83"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="6"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_scheduling')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="83"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1942,14 +1942,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="84"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="6"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_scheduling')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="84"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1964,14 +1964,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="85"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="6"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_scheduling')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="85"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -1986,14 +1986,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="86"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="6"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_scheduling')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="86"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -2008,14 +2008,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="87"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="6"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_scheduling')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="87"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -2032,14 +2032,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="88"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_settings')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="88"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -2054,14 +2054,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="89"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_settings')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="89"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
@@ -2076,14 +2076,14 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_FIELDS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="90"/>
-            <column name="DESCRIPTOR_ID" type="BIGINT(19)" value="5"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="DESCRIPTOR_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('component_settings')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="FIELD_CONTEXTS">
-            <column name="FIELD_ID" type="BIGINT(19)" value="90"/>
-            <column name="CONTEXT_ID" type="BIGINT(19)" value="1"/>
+            <column name="FIELD_ID" type="BIGINT(19)" valueComputed="GET_LATEST_FIELD_ID()"/>
+            <column name="CONTEXT_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
     </changeSet>
 
