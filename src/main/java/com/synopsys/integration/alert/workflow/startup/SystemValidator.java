@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.ProxyManager;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
@@ -59,16 +60,18 @@ public class SystemValidator {
     private final SystemStatusUtility systemStatusUtility;
     private final SystemMessageUtility systemMessageUtility;
     private final UserAccessor userAccessor;
+    private final ProxyManager proxyManager;
 
     @Autowired
     public SystemValidator(final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties, final EncryptionUtility encryptionUtility, final SystemStatusUtility systemStatusUtility,
-        final SystemMessageUtility systemMessageUtility, final UserAccessor userAccessor) {
+        final SystemMessageUtility systemMessageUtility, final UserAccessor userAccessor, final ProxyManager proxyManager) {
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
         this.encryptionUtility = encryptionUtility;
         this.systemStatusUtility = systemStatusUtility;
         this.systemMessageUtility = systemMessageUtility;
         this.userAccessor = userAccessor;
+        this.proxyManager = proxyManager;
     }
 
     public boolean validate() {
@@ -143,7 +146,7 @@ public class SystemValidator {
         boolean valid = true;
         try {
             final BlackDuckServerVerifier verifier = new BlackDuckServerVerifier();
-            final ProxyInfo proxyInfo = alertProperties.createProxyInfo();
+            final ProxyInfo proxyInfo = proxyManager.createProxyInfo();
             final Optional<String> blackDuckUrlOptional = blackDuckProperties.getBlackDuckUrl();
             if (!blackDuckUrlOptional.isPresent()) {
                 logger.error("  -> BlackDuck Provider Invalid; cause: Black Duck URL missing...");

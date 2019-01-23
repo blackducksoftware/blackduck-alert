@@ -27,11 +27,15 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.ProxyManager;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.provider.ProviderProperties;
 import com.synopsys.integration.alert.provider.polaris.descriptor.PolarisDescriptor;
 import com.synopsys.integration.exception.IntegrationException;
@@ -43,13 +47,15 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 @Component
 public class PolarisProperties extends ProviderProperties {
     public static final Integer DEFAULT_TIMEOUT = 300;
-
+    private static final Logger logger = LoggerFactory.getLogger(PolarisProperties.class);
     private final AlertProperties alertProperties;
+    private final ProxyManager proxyManager;
 
     @Autowired
-    public PolarisProperties(final AlertProperties alertProperties, final BaseConfigurationAccessor configurationAccessor) {
+    public PolarisProperties(final AlertProperties alertProperties, final BaseConfigurationAccessor configurationAccessor, final ProxyManager proxyManager) {
         super(PolarisProvider.COMPONENT_NAME, configurationAccessor);
         this.alertProperties = alertProperties;
+        this.proxyManager = proxyManager;
     }
 
     public Optional<String> getUrl() {
@@ -94,7 +100,12 @@ public class PolarisProperties extends ProviderProperties {
 
     public AccessTokenRestConnection createRestConnection(final IntLogger intLogger, final String baseUrl, final String accessToken, final Integer timeout) {
         final Boolean alwaysTrustCertificate = alertProperties.getAlertTrustCertificate().orElse(Boolean.FALSE);
-        final ProxyInfo proxyInfo = alertProperties.createProxyInfo();
+        ProxyInfo proxyInfo = ProxyInfo.NO_PROXY_INFO;
+        try {
+            proxyInfo = proxyManager.createProxyInfo();
+        } catch (AlertDatabaseConstraintException | AlertRuntimeException ex) {
+            logger.error("Error creating proxy information", ex);
+        }
 
         return new AccessTokenRestConnection(intLogger, timeout, alwaysTrustCertificate, proxyInfo, baseUrl, accessToken);
     }

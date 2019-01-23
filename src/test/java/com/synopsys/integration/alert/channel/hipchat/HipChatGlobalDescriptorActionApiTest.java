@@ -18,6 +18,7 @@ import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescript
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatGlobalDescriptorActionApi;
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatGlobalUIConfig;
 import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
+import com.synopsys.integration.alert.common.ProxyManager;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -30,6 +31,7 @@ import com.synopsys.integration.alert.web.model.configuration.FieldModel;
 import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 import com.synopsys.integration.alert.web.model.configuration.TestConfigModel;
 import com.synopsys.integration.rest.connection.RestConnection;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class HipChatGlobalDescriptorActionApiTest {
 
@@ -168,9 +170,10 @@ public class HipChatGlobalDescriptorActionApiTest {
         final TestProperties properties = new TestProperties();
 
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
-
+        final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
+        Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties);
+        final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties, proxyManager);
 
         final HipChatChannel hipChatChannel = new HipChatChannel(new Gson(), testAlertProperties, auditUtility, channelRestConnectionFactory);
 
