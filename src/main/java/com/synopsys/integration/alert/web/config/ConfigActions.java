@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -154,8 +153,7 @@ public class ConfigActions {
         }
         final String descriptorName = modelToSave.getDescriptorName();
         final String context = modelToSave.getContext();
-        final Map<String, ConfigField> configFields = createConfigFieldsToSave(fieldModel);
-        final Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertFromFieldModel(configFields, modelToSave);
+        final Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertFromFieldModel(modelToSave);
         return convertToFieldModel(configurationAccessor.createConfiguration(descriptorName, EnumUtils.getEnum(ConfigContextEnum.class, context), configurationFieldModelMap.values()));
     }
 
@@ -181,19 +179,6 @@ public class ConfigActions {
         if (descriptorActionApi.isPresent()) {
             final DescriptorActionApi descriptorApi = descriptorActionApi.get();
             final TestConfigModel testConfig = descriptorApi.createTestConfigModel(restModel, destination);
-            final Map<String, ConfigField> fieldsToTest = new LinkedHashMap<>();
-            final Map<String, ConfigField> configFields = retrieveUIConfigFields(testConfig.getFieldModel())
-                                                              .stream()
-                                                              .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-            final ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, restModel.getContext());
-
-            if (ConfigContextEnum.DISTRIBUTION == descriptorContext) {
-                final Map<String, ConfigField> globalFields = createConfigFields(descriptorContext, restModel.getDescriptorName()).stream()
-                                                                  .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-                fieldsToTest.putAll(globalFields);
-                fieldsToTest.putAll(includeProviderFields(descriptorContext, restModel));
-            }
-            fieldsToTest.putAll(configFields);
             descriptorApi.testConfig(testConfig);
             return "Successfully sent test message.";
         } else {
@@ -212,8 +197,7 @@ public class ConfigActions {
         }
         if (fieldModel != null) {
             final ConfigurationModel configurationModel = getSavedEntity(id);
-            final Map<String, ConfigField> configFields = createConfigFieldsToSave(fieldModel);
-            final Map<String, ConfigurationFieldModel> fieldModels = modelConverter.convertFromFieldModel(configFields, modelToSave);
+            final Map<String, ConfigurationFieldModel> fieldModels = modelConverter.convertFromFieldModel(modelToSave);
             final Collection<ConfigurationFieldModel> updatedFields = updateConfigurationWithSavedConfiguration(fieldModels, configurationModel.getCopyOfFieldList());
             return convertToFieldModel(configurationAccessor.updateConfiguration(id, updatedFields));
         }
@@ -240,23 +224,6 @@ public class ConfigActions {
             }
         }
         return newConfiguration.values();
-    }
-
-    private Map<String, ConfigField> createConfigFieldsToSave(final FieldModel fieldModel) {
-        final Map<String, ConfigField> fieldsToSave = new LinkedHashMap<>();
-        final Map<String, ConfigField> configFields = retrieveUIConfigFields(fieldModel)
-                                                          .stream()
-                                                          .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-        final ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, fieldModel.getContext());
-        fieldsToSave.putAll(includeProviderFields(descriptorContext, fieldModel));
-        fieldsToSave.putAll(configFields);
-        return fieldsToSave;
-    }
-
-    private Map<String, ConfigField> includeProviderFields(final ConfigContextEnum context, final FieldModel fieldModel) {
-        final Optional<FieldValueModel> optionalProviderField = fieldModel.getField(CommonDistributionUIConfig.KEY_PROVIDER_NAME);
-        final String providerName = optionalProviderField.flatMap(field -> field.getValue()).orElse("");
-        return createConfigFields(context, providerName).stream().collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
     }
 
     private FieldModel convertToFieldModel(final ConfigurationModel configurationModel) throws AlertDatabaseConstraintException {

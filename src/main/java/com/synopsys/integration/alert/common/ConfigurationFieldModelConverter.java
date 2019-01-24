@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.common;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -39,6 +40,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
@@ -58,23 +60,12 @@ public class ConfigurationFieldModelConverter {
     }
 
     public final FieldAccessor convertToFieldAccessor(final FieldModel fieldModel) throws AlertDatabaseConstraintException {
-        ConfigContextEnum context = EnumUtils.getEnum(ConfigContextEnum.class, fieldModel.getContext());
-        List<DefinedFieldModel> definedFieldList = descriptorAccessor.getFieldsForDescriptor(fieldModel.getDescriptorName(), context);
-        final Set<ConfigurationFieldModel> configurationModels = new HashSet<>();
-        for (final DefinedFieldModel definedField : definedFieldList) {
-            Collection<String> values = fieldModel.getFieldValues(definedField.getKey());
-            convertFromDefinedFieldModel(definedField, values).ifPresent(configurationModels::add);
-        }
-        final Map<String, ConfigurationFieldModel> fields = configurationModels.stream().collect(Collectors.toMap(ConfigurationFieldModel::getFieldKey, Function.identity()));
+        final Map<String, ConfigurationFieldModel> fields = convertToConfigurationFieldModelMap(fieldModel);
         return new FieldAccessor(fields);
     }
 
-    public final Map<String, ConfigurationFieldModel> convertFromFieldModel(final Map<String, ConfigField> configFieldMap, final FieldModel fieldModel) {
-        if (configFieldMap.isEmpty()) {
-            return Map.of();
-        }
-
-        return convertToConfigurationFieldModelMap(configFieldMap, fieldModel);
+    public final Map<String, ConfigurationFieldModel> convertFromFieldModel(final FieldModel fieldModel) throws AlertDatabaseConstraintException {
+        return convertToConfigurationFieldModelMap(fieldModel);
     }
 
     public final Optional<ConfigurationFieldModel> convertFromDefinedFieldModel(final DefinedFieldModel definedFieldModel, final String value) {
@@ -87,6 +78,31 @@ public class ConfigurationFieldModelConverter {
         final Optional<ConfigurationFieldModel> configurationModel = createEmptyModel(definedFieldModel);
         configurationModel.ifPresent(model -> model.setFieldValues(values));
         return configurationModel;
+    }
+
+    private Map<String, ConfigurationFieldModel> convertToConfigurationFieldModelMap(final FieldModel fieldModel) throws AlertDatabaseConstraintException {
+        final ConfigContextEnum context = EnumUtils.getEnum(ConfigContextEnum.class, fieldModel.getContext());
+        final String descriptorName = fieldModel.getDescriptorName();
+
+        List<DefinedFieldModel> fieldsForContext = descriptorAccessor.getFieldsForDescriptor(descriptorName, context);
+        List<DefinedFieldModel> definedFieldList = new LinkedList<>();
+        definedFieldList.addAll(fieldsForContext);
+
+        if (ConfigContextEnum.DISTRIBUTION == context) {
+            final Optional<String> providerName = fieldModel.getFieldValue(CommonDistributionUIConfig.KEY_PROVIDER_NAME);
+            // include all global field data as well if present in FieldModel
+            definedFieldList.addAll(descriptorAccessor.getFieldsForDescriptor(descriptorName, ConfigContextEnum.GLOBAL));
+            if (providerName.isPresent()) {
+                definedFieldList.addAll(descriptorAccessor.getFieldsForDescriptor(providerName.get(), context));
+            }
+        }
+
+        final Set<ConfigurationFieldModel> configurationModels = new HashSet<>();
+        for (final DefinedFieldModel definedField : definedFieldList) {
+            Collection<String> values = fieldModel.getFieldValues(definedField.getKey());
+            convertFromDefinedFieldModel(definedField, values).ifPresent(configurationModels::add);
+        }
+        return configurationModels.stream().collect(Collectors.toMap(ConfigurationFieldModel::getFieldKey, Function.identity()));
     }
 
     private Optional<ConfigurationFieldModel> createEmptyModel(final DefinedFieldModel definedFieldModel) {
