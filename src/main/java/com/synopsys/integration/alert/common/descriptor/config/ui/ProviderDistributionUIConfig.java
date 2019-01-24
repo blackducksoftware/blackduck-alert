@@ -29,8 +29,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.stereotype.Component;
-
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
@@ -39,14 +37,19 @@ import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
 import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 
-@Component
-public class ProviderDistributionUIConfig {
+public class ProviderDistributionUIConfig extends UIConfig {
     public static final String KEY_NOTIFICATION_TYPES = "provider.distribution.notification.types";
     public static final String KEY_FORMAT_TYPE = "provider.distribution.format.type";
 
-    // TODO call this method in controller for Providers
-    // TODO pass the notification types and formats
-    public List<ConfigField> createCommonConfigFields(final Provider provider) {
+    private final Provider provider;
+
+    public ProviderDistributionUIConfig(final String label, final String urlName, final String fontAwesomeIcon, final Provider provider) {
+        super(label, urlName, fontAwesomeIcon);
+        this.provider = provider;
+    }
+
+    @Override
+    public List<ConfigField> createFields() {
         final ConfigField notificationTypesField = SelectConfigField.createRequired(KEY_NOTIFICATION_TYPES, "Notification Types", provider.getProviderContentTypes().stream().map(ProviderContentType::getNotificationType).collect(
             Collectors.toList()), this::validateNotificationTypes);
         final ConfigField formatField = SelectConfigField.createRequired(KEY_FORMAT_TYPE, "Format", provider.getSupportedFormatTypes().stream().map(FormatType::name).collect(Collectors.toList()));

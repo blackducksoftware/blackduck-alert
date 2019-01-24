@@ -10,14 +10,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
+import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.security.EncryptionUtility;
+import com.synopsys.integration.alert.mock.MockDescriptorAccessor;
 import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
 import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
 import com.synopsys.integration.alert.util.TestProperties;
@@ -38,8 +44,12 @@ public class PolarisGlobalDescriptorActionApiTest {
     private final PolarisGlobalUIConfig polarisGlobalUIConfig = new PolarisGlobalUIConfig();
 
     @Test
-    public void validateConfigWhenValidTest() {
-        final PolarisGlobalDescriptorActionApi actionApi = new PolarisGlobalDescriptorActionApi(null);
+    public void validateConfigWhenValidTest() throws Exception {
+        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
+        final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(polarisGlobalUIConfig.createFields());
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor);
+        final PolarisGlobalDescriptorActionApi actionApi = new PolarisGlobalDescriptorActionApi(null, modelConverter);
 
         final Map<String, String> fieldErrors = new HashMap<>();
         final FieldModel fieldModel = Mockito.mock(FieldModel.class);
@@ -51,15 +61,21 @@ public class PolarisGlobalDescriptorActionApiTest {
         Mockito.when(fieldModel.getField(PolarisDescriptor.KEY_POLARIS_TIMEOUT)).thenReturn(Optional.of(timeoutField));
         Mockito.when(timeoutField.getValue()).thenReturn(Optional.of("100"));
         Mockito.when(timeoutField.hasValues()).thenReturn(true);
-
-        actionApi.validateConfig(polarisGlobalUIConfig.createFields(), fieldModel, fieldErrors);
+        final Map<String, ConfigField> configFieldMap = polarisGlobalUIConfig.createFields()
+                                                            .stream()
+                                                            .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
+        actionApi.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN));
         assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(PolarisDescriptor.KEY_POLARIS_TIMEOUT));
     }
 
     @Test
-    public void validateConfigWhenInvalidTest() {
-        final PolarisGlobalDescriptorActionApi actionApi = new PolarisGlobalDescriptorActionApi(null);
+    public void validateConfigWhenInvalidTest() throws Exception {
+        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
+        final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(polarisGlobalUIConfig.createFields());
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor);
+        final PolarisGlobalDescriptorActionApi actionApi = new PolarisGlobalDescriptorActionApi(null, modelConverter);
 
         final Map<String, String> fieldErrors = new HashMap<>();
 
@@ -76,8 +92,11 @@ public class PolarisGlobalDescriptorActionApiTest {
         Mockito.when(timeoutField.getValue()).thenReturn(Optional.of(textTimeout));
         Mockito.when(timeoutField.getValues()).thenReturn(List.of(textTimeout));
         Mockito.when(timeoutField.hasValues()).thenReturn(true);
+        final Map<String, ConfigField> configFieldMap = polarisGlobalUIConfig.createFields()
+                                                            .stream()
+                                                            .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
 
-        actionApi.validateConfig(polarisGlobalUIConfig.createFields(), fieldModel, fieldErrors);
+        actionApi.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertEquals(ERROR_POLARIS_ACCESS_TOKEN, fieldErrors.get(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN));
         assertTrue(fieldErrors.get(PolarisDescriptor.KEY_POLARIS_TIMEOUT).contains(ERROR_POLARIS_TIMEOUT));
 
@@ -93,7 +112,7 @@ public class PolarisGlobalDescriptorActionApiTest {
         Mockito.when(timeoutField.getValues()).thenReturn(List.of(negativeValue));
         Mockito.when(timeoutField.hasValues()).thenReturn(true);
 
-        actionApi.validateConfig(polarisGlobalUIConfig.createFields(), fieldModel, fieldErrors);
+        actionApi.validateConfig(configFieldMap, fieldModel, fieldErrors);
         assertEquals(ERROR_POLARIS_ACCESS_TOKEN, fieldErrors.get(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN));
         assertEquals(ERROR_POLARIS_TIMEOUT, fieldErrors.get(PolarisDescriptor.KEY_POLARIS_TIMEOUT));
     }
@@ -101,7 +120,7 @@ public class PolarisGlobalDescriptorActionApiTest {
     @Test
     @Tag(TestTags.DEFAULT_INTEGRATION)
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
-    public void testConfigWithRealConnectionTestIT() {
+    public void testConfigWithRealConnectionTestIT() throws Exception {
         final TestProperties testProperties = new TestProperties();
 
         final String polarisUrl = testProperties.getProperty(TestPropertyKey.TEST_POLARIS_PROVIDER_URL);
@@ -121,25 +140,40 @@ public class PolarisGlobalDescriptorActionApiTest {
         Mockito.when(alertProperties.getAlertTrustCertificate()).thenReturn(Optional.of(Boolean.TRUE));
         final PolarisProperties polarisProperties = new PolarisProperties(alertProperties, null);
 
-        final PolarisGlobalDescriptorActionApi actionApi = new PolarisGlobalDescriptorActionApi(polarisProperties);
+        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
+
+        final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(polarisGlobalUIConfig.createFields());
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor);
+        final PolarisGlobalDescriptorActionApi actionApi = new PolarisGlobalDescriptorActionApi(polarisProperties, modelConverter);
         try {
-            actionApi.testConfig(polarisGlobalUIConfig.createFields(), testConfigModel);
+            final Map<String, ConfigField> configFieldMap = polarisGlobalUIConfig.createFields()
+                                                                .stream()
+                                                                .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
+            actionApi.testConfig(testConfigModel);
         } catch (final Exception e) {
             fail("An exception was thrown while testing (seemingly) valid config. " + e.toString());
         }
     }
 
     @Test
-    public void testConfigWithInvalidFieldsTest() {
-        final PolarisGlobalDescriptorActionApi actionApi = new PolarisGlobalDescriptorActionApi(null);
+    public void testConfigWithInvalidFieldsTest() throws Exception {
+        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
+        final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(polarisGlobalUIConfig.createFields());
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor);
+        final PolarisGlobalDescriptorActionApi actionApi = new PolarisGlobalDescriptorActionApi(null, modelConverter);
 
         final Map<String, FieldValueModel> fieldMap = new HashMap<>();
         final FieldModel fieldModel = new FieldModel(PolarisProvider.COMPONENT_NAME, ConfigContextEnum.GLOBAL.name(), fieldMap);
         final TestConfigModel testConfigModel = new TestConfigModel(fieldModel);
 
         fieldMap.put(PolarisDescriptor.KEY_POLARIS_URL, new FieldValueModel(Set.of(), false));
+        final Map<String, ConfigField> configFieldMap = polarisGlobalUIConfig.createFields()
+                                                            .stream()
+                                                            .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
         try {
-            actionApi.testConfig(polarisGlobalUIConfig.createFields(), testConfigModel);
+            actionApi.testConfig(testConfigModel);
             fail("Expected exception to be thrown");
         } catch (final IntegrationException e) {
         }
@@ -147,7 +181,7 @@ public class PolarisGlobalDescriptorActionApiTest {
         fieldMap.put(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN, new FieldValueModel(Set.of(), false));
         fieldMap.put(PolarisDescriptor.KEY_POLARIS_URL, new FieldValueModel(Set.of("good enough to satisfy the check"), true));
         try {
-            actionApi.testConfig(polarisGlobalUIConfig.createFields(), testConfigModel);
+            actionApi.testConfig(testConfigModel);
             fail("Expected exception to be thrown");
         } catch (final IntegrationException e) {
         }
@@ -155,7 +189,7 @@ public class PolarisGlobalDescriptorActionApiTest {
         fieldMap.put(PolarisDescriptor.KEY_POLARIS_TIMEOUT, new FieldValueModel(Set.of(), false));
         fieldMap.put(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN, new FieldValueModel(Set.of("good enough to satisfy the check"), true));
         try {
-            actionApi.testConfig(polarisGlobalUIConfig.createFields(), testConfigModel);
+            actionApi.testConfig(testConfigModel);
             fail("Expected exception to be thrown");
         } catch (final IntegrationException e) {
         }
@@ -169,7 +203,12 @@ public class PolarisGlobalDescriptorActionApiTest {
         final PolarisProperties polarisProperties = Mockito.mock(PolarisProperties.class);
         Mockito.when(polarisProperties.createRestConnection(Mockito.any(IntLogger.class), Mockito.anyString(), Mockito.anyString(), Mockito.anyInt())).thenReturn(accessTokenRestConnection);
 
-        final PolarisGlobalDescriptorActionApi actionApi = new PolarisGlobalDescriptorActionApi(polarisProperties);
+        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
+
+        final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(polarisGlobalUIConfig.createFields());
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor);
+        final PolarisGlobalDescriptorActionApi actionApi = new PolarisGlobalDescriptorActionApi(polarisProperties, modelConverter);
 
         final Map<String, FieldValueModel> fieldMap = new HashMap<>();
         final FieldModel fieldModel = new FieldModel(PolarisProvider.COMPONENT_NAME, ConfigContextEnum.GLOBAL.name(), fieldMap);
@@ -180,7 +219,11 @@ public class PolarisGlobalDescriptorActionApiTest {
         fieldMap.put(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN, new FieldValueModel(Set.of("good enough to satisfy the check"), true));
 
         try {
-            actionApi.testConfig(polarisGlobalUIConfig.createFields(), testConfigModel);
+
+            final Map<String, ConfigField> configFieldMap = polarisGlobalUIConfig.createFields()
+                                                                .stream()
+                                                                .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
+            actionApi.testConfig(testConfigModel);
             fail("Expected wrapped IOException to be thrown");
         } catch (final IntegrationException e) {
             assertTrue(IOException.class.isInstance(e.getCause()));

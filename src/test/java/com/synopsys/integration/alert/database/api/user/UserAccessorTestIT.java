@@ -45,7 +45,7 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
 
     @Test
     public void testGetUserByUserName() {
-        final Optional<UserModel> user = userAccessor.getUser("sysadmin");
+        final Optional<UserModel> user = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER);
         assertTrue(user.isPresent());
     }
 
