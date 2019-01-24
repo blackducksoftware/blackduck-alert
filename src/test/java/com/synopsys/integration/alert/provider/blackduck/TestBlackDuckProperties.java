@@ -17,6 +17,7 @@ import java.util.Optional;
 import org.mockito.Mockito;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.ProxyManager;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
@@ -26,7 +27,6 @@ import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.blackduck.rest.BlackDuckRestConnection;
-import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.log.IntLogger;
 
 public class TestBlackDuckProperties extends BlackDuckProperties {
@@ -40,15 +40,16 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
     private boolean apiKeySet;
 
     public TestBlackDuckProperties(final TestAlertProperties alertProperties) {
-        this(new Gson(), alertProperties, Mockito.mock(BaseConfigurationAccessor.class));
+        this(new Gson(), alertProperties, Mockito.mock(BaseConfigurationAccessor.class), Mockito.mock(ProxyManager.class));
     }
 
-    public TestBlackDuckProperties(final Gson gson, final TestAlertProperties alertProperties, final BaseConfigurationAccessor baseConfigurationAccessor) {
-        this(gson, alertProperties, baseConfigurationAccessor, 400, true);
+    public TestBlackDuckProperties(final Gson gson, final TestAlertProperties alertProperties, final BaseConfigurationAccessor baseConfigurationAccessor, final ProxyManager proxyManager) {
+        this(gson, alertProperties, baseConfigurationAccessor, proxyManager, 400, true);
     }
 
-    public TestBlackDuckProperties(final Gson gson, final TestAlertProperties alertProperties, final BaseConfigurationAccessor baseConfigurationAccessor, final Integer blackDuckTimeout, final boolean trustCertificates) {
-        super(gson, alertProperties, baseConfigurationAccessor);
+    public TestBlackDuckProperties(final Gson gson, final TestAlertProperties alertProperties, final BaseConfigurationAccessor baseConfigurationAccessor, final ProxyManager proxyManager, final Integer blackDuckTimeout,
+        final boolean trustCertificates) {
+        super(gson, alertProperties, baseConfigurationAccessor, proxyManager);
         this.blackDuckTimeout = blackDuckTimeout;
         testAlertProperties = alertProperties;
         testProperties = new TestProperties();
@@ -134,12 +135,4 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
         return super.createBlackDuckServerConfig(logger, Integer.valueOf(testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_TIMEOUT)), testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_USERNAME),
             testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PASSWORD));
     }
-
-    public BlackDuckServicesFactory createHubServicesFactoryWithCredential(final IntLogger logger) throws Exception {
-        testAlertProperties.setAlertTrustCertificate(true);
-        final BlackDuckServerConfig blackDuckServerConfig = createHubServerConfigWithCredentials(logger);
-        final BlackDuckRestConnection restConnection = blackDuckServerConfig.createCredentialsRestConnection(logger);
-        return new BlackDuckServicesFactory(BlackDuckServicesFactory.createDefaultGson(), BlackDuckServicesFactory.createDefaultObjectMapper(), restConnection, logger);
-    }
-
 }

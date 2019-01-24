@@ -2,8 +2,6 @@ package com.synopsys.integration.alert.util;
 
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.synopsys.integration.alert.common.AlertProperties;
 
 public class TestAlertProperties extends AlertProperties {
@@ -53,57 +51,5 @@ public class TestAlertProperties extends AlertProperties {
 
     public void setAlertTrustCertificate(final Boolean alertTrustCertificate) {
         this.alertTrustCertificate = alertTrustCertificate;
-    }
-
-    @Override
-    public Optional<String> getAlertProxyHost() {
-        if (StringUtils.isNotBlank(alertProxyHost)) {
-            return Optional.of(alertProxyHost);
-        }
-        return Optional.empty();
-    }
-
-    @Override
-    public void setAlertProxyHost(final String alertProxyHost) {
-        this.alertProxyHost = alertProxyHost;
-    }
-
-    @Override
-    public Optional<String> getAlertProxyPort() {
-        if (StringUtils.isNotBlank(alertProxyPort)) {
-            return Optional.of(alertProxyPort);
-        }
-        return Optional.empty();
-    }
-
-    @Override
-    public void setAlertProxyPort(final String alertProxyPort) {
-        this.alertProxyPort = alertProxyPort;
-    }
-
-    @Override
-    public Optional<String> getAlertProxyUsername() {
-        if (StringUtils.isNotBlank(alertProxyUsername)) {
-            return Optional.of(alertProxyUsername);
-        }
-        return Optional.empty();
-    }
-
-    @Override
-    public void setAlertProxyUsername(final String alertProxyUsername) {
-        this.alertProxyUsername = alertProxyUsername;
-    }
-
-    @Override
-    public Optional<String> getAlertProxyPassword() {
-        if (StringUtils.isNotBlank(alertProxyPassword)) {
-            return Optional.of(alertProxyPassword);
-        }
-        return Optional.empty();
-    }
-
-    @Override
-    public void setAlertProxyPassword(final String alertProxyPassword) {
-        this.alertProxyPassword = alertProxyPassword;
     }
 }
