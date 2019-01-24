@@ -26,13 +26,14 @@ package com.synopsys.integration.alert.common;
 import java.util.Optional;
 
 import org.apache.commons.lang3.math.NumberUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
@@ -42,6 +43,7 @@ import com.synopsys.integration.rest.proxy.ProxyInfoBuilder;
 
 @Component
 public class ProxyManager {
+    private static final Logger logger = LoggerFactory.getLogger(ProxyManager.class);
     private final BaseConfigurationAccessor configurationAccessor;
 
     @Autowired
@@ -49,19 +51,23 @@ public class ProxyManager {
         this.configurationAccessor = configurationAccessor;
     }
 
-    private ConfigurationModel getSettingsConfiguration() throws AlertRuntimeException, AlertDatabaseConstraintException {
-        return configurationAccessor.getConfigurationByDescriptorNameAndContext(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL)
-                   .stream()
-                   .findFirst()
-                   .orElseThrow(() -> new AlertRuntimeException("Settings configuration missing"));
+    private Optional<ConfigurationModel> getSettingsConfiguration() {
+        try {
+            return configurationAccessor.getConfigurationByDescriptorNameAndContext(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL)
+                       .stream()
+                       .findFirst();
+        } catch (AlertDatabaseConstraintException ex) {
+            logger.error("Could not find the settings configuration for proxy data", ex);
+        }
+        return Optional.empty();
     }
 
-    public ProxyInfo createProxyInfo() throws AlertRuntimeException, AlertDatabaseConstraintException, IllegalArgumentException {
-        ConfigurationModel settingsConfiguration = getSettingsConfiguration();
-        final Optional<String> alertProxyHost = settingsConfiguration.getField(SettingsDescriptor.KEY_PROXY_HOST).flatMap(ConfigurationFieldModel::getFieldValue);
-        final Optional<String> alertProxyPort = settingsConfiguration.getField(SettingsDescriptor.KEY_PROXY_PORT).flatMap(ConfigurationFieldModel::getFieldValue);
-        final Optional<String> alertProxyUsername = settingsConfiguration.getField(SettingsDescriptor.KEY_PROXY_USERNAME).flatMap(ConfigurationFieldModel::getFieldValue);
-        final Optional<String> alertProxyPassword = settingsConfiguration.getField(SettingsDescriptor.KEY_PROXY_PASSWORD).flatMap(ConfigurationFieldModel::getFieldValue);
+    public ProxyInfo createProxyInfo() throws IllegalArgumentException {
+        Optional<ConfigurationModel> settingsConfiguration = getSettingsConfiguration();
+        final Optional<String> alertProxyHost = settingsConfiguration.flatMap(configurationModel -> configurationModel.getField(SettingsDescriptor.KEY_PROXY_HOST)).flatMap(ConfigurationFieldModel::getFieldValue);
+        final Optional<String> alertProxyPort = settingsConfiguration.flatMap(configurationModel -> configurationModel.getField(SettingsDescriptor.KEY_PROXY_PORT)).flatMap(ConfigurationFieldModel::getFieldValue);
+        final Optional<String> alertProxyUsername = settingsConfiguration.flatMap(configurationModel -> configurationModel.getField(SettingsDescriptor.KEY_PROXY_USERNAME)).flatMap(ConfigurationFieldModel::getFieldValue);
+        final Optional<String> alertProxyPassword = settingsConfiguration.flatMap(configurationModel -> configurationModel.getField(SettingsDescriptor.KEY_PROXY_PASSWORD)).flatMap(ConfigurationFieldModel::getFieldValue);
 
         final ProxyInfoBuilder proxyBuilder = new ProxyInfoBuilder();
         if (alertProxyHost.isPresent()) {
