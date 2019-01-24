@@ -31,6 +31,7 @@ import com.synopsys.integration.alert.web.model.ResponseBodyBuilder;
 
 @Component
 public class ResponseFactory {
+    public static final String EMPTY_ID = "-1L";
 
     public ResponseEntity<String> createResponse(final HttpStatus status, final String id, final String message) {
         final String responseBody = new ResponseBodyBuilder(id, message).build();
@@ -42,7 +43,7 @@ public class ResponseFactory {
     }
 
     public ResponseEntity<String> createResponse(final HttpStatus status, final String message) {
-        return createResponse(status, -1L, message);
+        return createResponse(status, EMPTY_ID, message);
     }
 
     public ResponseEntity<String> createNotFoundResponse(String message) {
@@ -65,8 +66,8 @@ public class ResponseFactory {
         return createResponse(HttpStatus.GONE, id, message);
     }
 
-    public ResponseEntity<String> createMethodNotAllowedResponse() {
-        return createResponse(HttpStatus.METHOD_NOT_ALLOWED, "This method is not allowed");
+    public ResponseEntity<String> createMethodNotAllowedResponse(String message) {
+        return createResponse(HttpStatus.METHOD_NOT_ALLOWED, message);
     }
 
     public ResponseEntity<String> createBadRequestResponse(String id, String message) {

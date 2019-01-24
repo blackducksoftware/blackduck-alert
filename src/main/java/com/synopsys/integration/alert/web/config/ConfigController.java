@@ -46,6 +46,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
 import com.synopsys.integration.alert.web.controller.BaseController;
 import com.synopsys.integration.alert.web.controller.ResponseFactory;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
@@ -203,6 +204,8 @@ public class ConfigController extends BaseController {
             return responseFactory.createResponse(HttpStatus.valueOf(e.getHttpStatusCode()), id, e.getHttpStatusMessage() + " : " + e.getMessage());
         } catch (final AlertFieldException e) {
             return fieldError(id, e.getMessage(), e.getFieldErrors());
+        } catch (AlertMethodNotAllowedException e) {
+            return responseFactory.createMethodNotAllowedResponse(e.getMessage());
         } catch (final AlertException e) {
             return responseFactory.createBadRequestResponse(stringId, e.getMessage());
         } catch (final Exception e) {

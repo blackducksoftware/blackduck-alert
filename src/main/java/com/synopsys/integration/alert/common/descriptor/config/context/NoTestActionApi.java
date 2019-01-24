@@ -21,25 +21,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.component.scheduling;
+package com.synopsys.integration.alert.common.descriptor.config.context;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Collection;
+
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.context.NoTestActionApi;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
+import com.synopsys.integration.alert.web.model.configuration.TestConfigModel;
+import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class SchedulingDescriptor extends ComponentDescriptor {
-    public static final String SCHEDULING_COMPONENT = "component_scheduling";
+public class NoTestActionApi extends DescriptorActionApi {
 
-    public static final String SCHEDULING_LABEL = "Scheduling";
-    public static final String SCHEDULING_URL = "scheduling";
-    public static final String SCHEDULING_ICON = "clock-o";
-
-    @Autowired
-    public SchedulingDescriptor(final NoTestActionApi noTestActionApi, final SchedulingUIConfig schedulingUIConfig) {
-        super(SCHEDULING_COMPONENT, noTestActionApi, schedulingUIConfig);
+    @Override
+    public void testConfig(final Collection<ConfigField> configFields, final TestConfigModel testConfig) throws IntegrationException {
+        throw new AlertMethodNotAllowedException("Component descriptors cannot be tested.");
     }
-
 }
