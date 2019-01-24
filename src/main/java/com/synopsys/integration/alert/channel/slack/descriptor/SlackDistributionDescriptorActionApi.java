@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
+import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.context.ChannelDistributionDescriptorActionApi;
@@ -37,7 +38,8 @@ import com.synopsys.integration.alert.common.descriptor.config.context.ChannelDi
 public class SlackDistributionDescriptorActionApi extends ChannelDistributionDescriptorActionApi {
 
     @Autowired
-    public SlackDistributionDescriptorActionApi(final SlackChannel slackChannel, final BaseConfigurationAccessor configurationAccessor, final List<ProviderDescriptor> providerDescriptors) {
-        super(slackChannel, configurationAccessor, providerDescriptors);
+    public SlackDistributionDescriptorActionApi(final SlackChannel slackChannel, final BaseConfigurationAccessor configurationAccessor, final List<ProviderDescriptor> providerDescriptors,
+        final ConfigurationFieldModelConverter modelConverter) {
+        super(slackChannel, configurationAccessor, providerDescriptors, modelConverter);
     }
 }

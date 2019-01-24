@@ -3,7 +3,7 @@ import Select, { components } from 'react-select';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import TextInput from 'field/input/TextInput';
-import ProjectConfiguration from 'component/general/distribution/ProjectConfiguration';
+import ProjectConfiguration from 'distribution/ProjectConfiguration';
 import ConfigButtons from 'component/common/ConfigButtons';
 
 import { frequencyOptions } from 'util/distribution-data';

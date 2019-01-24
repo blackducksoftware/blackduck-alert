@@ -5,7 +5,7 @@ export function getFieldModelSingleValue(fieldModel, key) {
             return fieldModel.keyToValues[key].values[0];
         }
     }
-    return null;
+    return undefined;
 }
 
 export function getFieldModelBooleanValue(fieldModel, key) {

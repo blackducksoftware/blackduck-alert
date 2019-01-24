@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,6 +23,7 @@ import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescript
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -161,7 +164,9 @@ public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
         final HashMap<String, String> fieldErrors = new HashMap<>();
         final DescriptorActionApi descriptorActionApi = getDescriptor().getActionApi(ConfigContextEnum.DISTRIBUTION).get();
         final DescriptorActionApi spyDescriptorConfig = Mockito.spy(descriptorActionApi);
-        spyDescriptorConfig.validateConfig(getDescriptor().getUIConfig(ConfigContextEnum.DISTRIBUTION).get().createFields(), model, fieldErrors);
+        final Map<String, ConfigField> configFieldMap = getDescriptor().getUIConfig(ConfigContextEnum.DISTRIBUTION).get().createFields().stream()
+                                                            .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
+        spyDescriptorConfig.validateConfig(configFieldMap, model, fieldErrors);
         assertEquals(model.getKeyToValues().size(), fieldErrors.size());
         Mockito.verify(spyDescriptorConfig).validateConfig(Mockito.any(), Mockito.any(), Mockito.anyMap());
     }

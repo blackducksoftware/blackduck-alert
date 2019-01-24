@@ -6,7 +6,7 @@ import TextInput from 'field/input/TextInput';
 import CheckboxInput from 'field/input/CheckboxInput';
 import { getDistributionJob } from 'store/actions/distributions';
 
-import BaseJobConfiguration from 'component/general/distribution/job/BaseJobConfiguration';
+import BaseJobConfiguration from 'distribution/job/BaseJobConfiguration';
 
 class HipChatJobConfiguration extends Component {
     constructor(props) {
