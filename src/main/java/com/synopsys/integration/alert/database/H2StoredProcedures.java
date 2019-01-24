@@ -31,14 +31,16 @@ import java.sql.Statement;
 import org.apache.commons.lang3.StringUtils;
 
 public final class H2StoredProcedures {
+    public static final String UNIQUENESS_CONTRAINT_MESSAGE_SEGMENT = "Unique index or primary key violation";
+
     public static void defineField(final Connection connection, final String fieldKey, final Boolean sensitive, final String descriptorName, final String context) throws SQLException {
         try (final Statement insertIntoDefinedFields = connection.createStatement()) {
-            insertIntoDefinedFields.executeUpdate("INSERT INTO ALERT.Defined_Fields (SOURCE_KEY, SENSITIVE) VALUES ('" + fieldKey + "', " + sensitive + ");");
+            insertIntoDefinedFields.executeUpdate("INSERT INTO ALERT.DEFINED_FIELDS (SOURCE_KEY, SENSITIVE) VALUES ('" + fieldKey + "', " + sensitive + ");");
         } catch (final SQLException e) {
             ignoreUniquenessConstraintException(e);
         }
         try (final Statement insertIntoFieldContexts = connection.createStatement()) {
-            insertIntoFieldContexts.executeUpdate("INSERT INTO ALERT.Field_Contexts (FIELD_ID, CONTEXT_ID) VALUES (GET_LATEST_FIELD_ID(), GET_ID_FOR_CONFIG_CONTEXT('" + StringUtils.upperCase(context) + "'));");
+            insertIntoFieldContexts.executeUpdate("INSERT INTO ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID) VALUES (GET_LATEST_FIELD_ID(), GET_ID_FOR_CONFIG_CONTEXT('" + StringUtils.upperCase(context) + "'));");
         } catch (final SQLException e) {
             ignoreUniquenessConstraintException(e);
         }
@@ -65,7 +67,7 @@ public final class H2StoredProcedures {
 
     private static void ignoreUniquenessConstraintException(final SQLException e) throws SQLException {
         final String exceptionMessage = e.getMessage();
-        if (!exceptionMessage.contains("Unique index or primary key violation")) {
+        if (!exceptionMessage.contains(UNIQUENESS_CONTRAINT_MESSAGE_SEGMENT)) {
             throw e;
         }
         // This is a duplicate key, but the relational tables still need to be updated.
