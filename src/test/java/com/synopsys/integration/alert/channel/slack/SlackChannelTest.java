@@ -38,6 +38,7 @@ import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.channel.rest.ChannelRestConnectionFactory;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.ProxyManager;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
@@ -48,12 +49,12 @@ import com.synopsys.integration.alert.common.model.LinkableItem;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.audit.AuditUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
-import com.synopsys.integration.alert.util.FieldModelUtil;
 import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 import com.synopsys.integration.rest.request.Request;
 
 public class SlackChannelTest extends ChannelTest {
@@ -64,7 +65,9 @@ public class SlackChannelTest extends ChannelTest {
     public void sendMessageTestIT() throws IOException, IntegrationException {
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties);
+        final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
+        Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
+        final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties, proxyManager);
         final SlackChannel slackChannel = new SlackChannel(gson, testAlertProperties, auditUtility, channelRestConnectionFactory);
 
         final AggregateMessageContent messageContent = createMessageContent(getClass().getSimpleName() + ": Request");

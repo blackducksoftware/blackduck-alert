@@ -96,7 +96,6 @@ public class ConfigControllerHandler extends ControllerHandler {
         try {
             if (!descriptorConfigActions.doesConfigExist(id)) {
                 try {
-                    descriptorConfigActions.validateConfig(restModel, new HashMap<>());
                     final FieldModel updatedEntity = descriptorConfigActions.saveConfig(restModel);
                     return createResponse(HttpStatus.CREATED, updatedEntity.getId(), "Created");
                 } catch (final AlertFieldException e) {
@@ -117,7 +116,6 @@ public class ConfigControllerHandler extends ControllerHandler {
         try {
             if (descriptorConfigActions.doesConfigExist(id)) {
                 try {
-                    descriptorConfigActions.validateConfig(restModel, new HashMap<>());
                     final FieldModel updatedEntity = descriptorConfigActions.updateConfig(id, restModel);
                     return createResponse(HttpStatus.ACCEPTED, updatedEntity.getId(), "Updated");
                 } catch (final AlertFieldException e) {

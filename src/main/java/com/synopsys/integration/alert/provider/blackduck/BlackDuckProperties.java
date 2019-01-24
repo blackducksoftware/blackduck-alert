@@ -35,8 +35,10 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.ProxyManager;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.provider.ProviderProperties;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
@@ -47,14 +49,15 @@ import com.synopsys.integration.blackduck.rest.BlackDuckRestConnection;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 @Component
 public class BlackDuckProperties extends ProviderProperties {
     public static final int DEFAULT_TIMEOUT = 300;
-
     private final Gson gson;
     private final AlertProperties alertProperties;
-    private final Logger classLogger = LoggerFactory.getLogger(getClass());
+    private final ProxyManager proxyManager;
+    private Logger logger = LoggerFactory.getLogger(BlackDuckProperties.class);
 
     // the blackduck product hasn't renamed their environment variables from hub to blackduck
     // need to keep hub in the name until
@@ -65,10 +68,11 @@ public class BlackDuckProperties extends ProviderProperties {
     private String publicBlackDuckWebserverPort;
 
     @Autowired
-    public BlackDuckProperties(final Gson gson, final AlertProperties alertProperties, final BaseConfigurationAccessor configurationAccessor) {
+    public BlackDuckProperties(final Gson gson, final AlertProperties alertProperties, final BaseConfigurationAccessor configurationAccessor, final ProxyManager proxyManager) {
         super(BlackDuckProvider.COMPONENT_NAME, configurationAccessor);
         this.gson = gson;
         this.alertProperties = alertProperties;
+        this.proxyManager = proxyManager;
     }
 
     public Optional<String> getBlackDuckUrl() {
@@ -181,11 +185,17 @@ public class BlackDuckProperties extends ProviderProperties {
 
     private Properties getBlackDuckProperties() {
         final Properties properties = new Properties();
+
         properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "trust.cert", String.valueOf(alertProperties.getAlertTrustCertificate().orElse(false)));
-        properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.host", alertProperties.getAlertProxyHost().orElse(""));
-        properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.port", alertProperties.getAlertProxyPort().orElse(""));
-        properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.username", alertProperties.getAlertProxyUsername().orElse(""));
-        properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.password", alertProperties.getAlertProxyPassword().orElse(""));
+        try {
+            ProxyInfo proxyInfo = proxyManager.createProxyInfo();
+            properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.host", proxyInfo.getHost().orElse(""));
+            properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.port", String.valueOf(proxyInfo.getPort()));
+            properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.username", proxyInfo.getUsername().orElse(""));
+            properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.password", proxyInfo.getPassword().orElse(""));
+        } catch (AlertDatabaseConstraintException ex) {
+            logger.error("Error applying proxy settings.", ex);
+        }
         return properties;
     }
 

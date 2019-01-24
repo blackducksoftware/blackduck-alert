@@ -40,21 +40,21 @@ import org.springframework.security.ldap.userdetails.DefaultLdapAuthoritiesPopul
 import org.springframework.security.ldap.userdetails.LdapAuthoritiesPopulator;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
 import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
-import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 
 @Component
 public class LdapManager {
     private static final Logger logger = LoggerFactory.getLogger(LdapManager.class);
+    private final BaseConfigurationAccessor configurationAccessor;
     private LdapContextSource contextSource;
     private LdapAuthenticationProvider authenticationProvider;
-    private final ConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public LdapManager(final ConfigurationAccessor configurationAccessor) {
+    public LdapManager(final BaseConfigurationAccessor configurationAccessor) {
         this.configurationAccessor = configurationAccessor;
     }
 
