@@ -129,6 +129,7 @@ public class StartupManager {
     @Transactional
     public void startup() throws AlertUpgradeException {
         logger.info("Alert Starting...");
+        // FIXME move this logic to the build.gradle
         systemStatusUtility.startupOccurred();
         if (upgradeProcessor.shouldUpgrade()) {
             upgradeProcessor.runUpgrade();
