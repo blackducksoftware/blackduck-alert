@@ -23,27 +23,48 @@
  */
 package com.synopsys.integration.alert.web.provider.blackduck;
 
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.provider.blackduck.model.BlackDuckProject;
 import com.synopsys.integration.alert.web.controller.BaseController;
+import com.synopsys.integration.alert.web.controller.ResponseFactory;
 
 @RestController
 @RequestMapping(BaseController.BASE_PATH + "/blackduck")
 public class BlackDuckDataController extends BaseController {
-    private final BlackDuckDataHandler blackDuckDataHandler;
+    private static final Logger logger = LoggerFactory.getLogger(BlackDuckDataController.class);
+
+    private final ResponseFactory responseFactory;
+    private BlackDuckDataActions blackDuckDataActions;
+    private ContentConverter contentConverter;
 
     @Autowired
-    public BlackDuckDataController(final BlackDuckDataHandler blackDuckDataHandler) {
-        this.blackDuckDataHandler = blackDuckDataHandler;
+    public BlackDuckDataController(final ResponseFactory responseFactory, final BlackDuckDataActions blackDuckDataActions, final ContentConverter contentConverter) {
+        this.responseFactory = responseFactory;
+        this.blackDuckDataActions = blackDuckDataActions;
+        this.contentConverter = contentConverter;
     }
 
     @GetMapping(value = "/projects")
     public ResponseEntity<String> getProjects() {
-        return blackDuckDataHandler.getBlackDuckProjects();
+        try {
+            final List<BlackDuckProject> projects = blackDuckDataActions.getBlackDuckProjects();
+            final String usersJson = contentConverter.getJsonString(projects);
+            return responseFactory.createResponse(HttpStatus.OK, usersJson);
+        } catch (final Exception e) {
+            logger.error(e.getMessage(), e);
+            return responseFactory.createResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
     }
 
 }
