@@ -23,7 +23,7 @@
                 <constraints primaryKey="true" primaryKeyName="DEFINED_FIELDS_KEY"/>
             </column>
             <column name="SOURCE_KEY" type="VARCHAR(255)">
-                <constraints nullable="false"/>
+                <constraints unique="true" nullable="false"/>
             </column>
             <column name="SENSITIVE" type="BOOLEAN" defaultValue="false">
                 <constraints nullable="false"/>
@@ -71,7 +71,9 @@
             <column name="ID" type="BIGINT(19)" autoIncrement="true">
                 <constraints primaryKey="true" primaryKeyName="CONFIG_CONTEXTS_KEY"/>
             </column>
-            <column name="CONTEXT" type="VARCHAR(31)"/>
+            <column name="CONTEXT" type="VARCHAR(31)">
+                <constraints unique="true"/>
+            </column>
         </createTable>
     </changeSet>
     <changeSet author="gkillough" id="1543499878547-5">
@@ -172,7 +174,7 @@
             </column>
             <column name="CONFIG_ID" type="BIGINT(19)"/>
             <column name="FIELD_ID" type="BIGINT(19)"/>
-            <column name="FIELD_VALUE" type="VARCHAR(255)"/>
+            <column name="FIELD_VALUE" type="VARCHAR(512)"/>
         </createTable>
         <addForeignKeyConstraint
                 baseTableSchemaName="ALERT"
@@ -196,7 +198,59 @@
         />
     </changeSet>
     <changeSet author="bmandel" id="1548100590332-1">
-        <modifyDataType schemaName="ALERT" tableName="DISTRIBUTION_NOTIFICATION_TYPES" columnName="COMMON_DISTRIBUTION_CONFIG_ID" newDataType="UUID"/>
-        <modifyDataType schemaName="ALERT" tableName="DISTRIBUTION_PROJECT_RELATION" columnName="COMMON_DISTRIBUTION_CONFIG_ID" newDataType="UUID"/>
+        <modifyDataType
+                schemaName="ALERT"
+                tableName="DISTRIBUTION_NOTIFICATION_TYPES"
+                columnName="COMMON_DISTRIBUTION_CONFIG_ID"
+                newDataType="UUID"
+        />
+        <modifyDataType
+                schemaName="ALERT"
+                tableName="DISTRIBUTION_PROJECT_RELATION"
+                columnName="COMMON_DISTRIBUTION_CONFIG_ID"
+                newDataType="UUID"
+        />
+    </changeSet>
+    <changeSet author="gkillough" id="1548100590500-1">
+        <createProcedure
+                dbms="h2"
+                procedureName="Compute registered descriptor id"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME
+            FOR "com.synopsys.integration.alert.database.H2StoredProcedures.getIdForRegisteredDescriptorName";
+        </createProcedure>
+        <createProcedure
+                dbms="h2"
+                procedureName="Compute descriptor type id"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS GET_ID_FOR_DESCRIPTOR_TYPE
+            FOR "com.synopsys.integration.alert.database.H2StoredProcedures.getIdForDescriptorType";
+        </createProcedure>
+        <createProcedure
+                dbms="h2"
+                procedureName="Retrieve most recently generated field id"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS GET_LATEST_FIELD_ID
+            FOR "com.synopsys.integration.alert.database.H2StoredProcedures.getLatestFieldId";
+        </createProcedure>
+        <createProcedure
+                dbms="h2"
+                procedureName="Compute config context id"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS GET_ID_FOR_CONFIG_CONTEXT
+            FOR "com.synopsys.integration.alert.database.H2StoredProcedures.getIdForConfigContext";
+        </createProcedure>
+        <createProcedure
+                dbms="h2"
+                procedureName="Define a new field and add the relations"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS DEFINE_FIELD
+            FOR "com.synopsys.integration.alert.database.H2StoredProcedures.defineField";
+        </createProcedure>
     </changeSet>
 </databaseChangeLog>
