@@ -70,7 +70,7 @@ public abstract class DescriptorActionApi {
         return new TestConfigModel(fieldModel, destination);
     }
 
-    public abstract void testConfig(final Map<String, ConfigField> configFields, final TestConfigModel testConfig) throws IntegrationException;
+    public abstract void testConfig(final TestConfigModel testConfig) throws IntegrationException;
 
     public DistributionEvent createChannelEvent(final CommonDistributionConfiguration commmonDistributionConfig, final AggregateMessageContent messageContent) {
         return new DistributionEvent(commmonDistributionConfig.getId().toString(), commmonDistributionConfig.getChannelName(), RestConstants.formatDate(new Date()), commmonDistributionConfig.getProviderName(),
@@ -106,14 +106,4 @@ public abstract class DescriptorActionApi {
     public FieldModel deleteConfig(final FieldModel fieldModel) {
         return fieldModel;
     }
-
-    protected void validateFieldFormatting(final Map<String, ConfigField> descriptorFields, final FieldModel fieldModel) throws AlertFieldException {
-        final Map<String, String> fieldErrors = new HashMap<>();
-        validateConfig(descriptorFields, fieldModel, fieldErrors);
-
-        if (!fieldErrors.isEmpty()) {
-            throw new AlertFieldException(fieldErrors);
-        }
-    }
-
 }
