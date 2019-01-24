@@ -7,9 +7,9 @@ import PasswordInput from 'field/input/PasswordInput';
 import TextInput from 'field/input/TextInput';
 import ConfigButtons from 'component/common/ConfigButtons';
 
-import { closeEmailConfigTest, getEmailConfig, openEmailConfigTest, sendEmailConfigTest, toggleAdvancedEmailOptions, updateEmailConfig } from 'store/actions/emailConfig';
+import { closeEmailConfigTest, getEmailConfig, openEmailConfigTest, sendEmailConfigTest, updateEmailConfig } from 'store/actions/emailConfig';
 import ChannelTestModal from 'component/common/ChannelTestModal';
-import CollapsiblePane from "component/common/CollapsiblePane";
+import CollapsiblePane from 'component/common/CollapsiblePane';
 
 class EmailConfiguration extends React.Component {
     constructor(props) {
@@ -666,7 +666,6 @@ EmailConfiguration.propTypes = {
     mailSmtpUserSet: PropTypes.bool,
     mailSmtpNoopStrict: PropTypes.bool,
     showTestModal: PropTypes.bool.isRequired,
-    toggleAdvancedEmailOptions: PropTypes.func.isRequired,
     getEmailConfig: PropTypes.func.isRequired,
     errorMessage: PropTypes.string,
     updateStatus: PropTypes.string,
@@ -787,7 +786,6 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    toggleAdvancedEmailOptions: toggle => dispatch(toggleAdvancedEmailOptions(toggle)),
     getEmailConfig: () => dispatch(getEmailConfig()),
     updateEmailConfig: config => dispatch(updateEmailConfig(config)),
     sendEmailConfigTest: (config, destination) => dispatch(sendEmailConfigTest(config, destination)),
