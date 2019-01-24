@@ -47,6 +47,10 @@ public final class H2StoredProcedures {
         return getFirstInt(connection, "SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE REGISTERED_DESCRIPTORS.NAME = '" + StringUtils.lowerCase(descriptorName) + "' LIMIT 1;");
     }
 
+    public static Integer getIdForDescriptorType(final Connection connection, final String type) throws SQLException {
+        return getFirstInt(connection, "SELECT ID FROM ALERT.DESCRIPTOR_TYPES WHERE DESCRIPTOR_TYPES.TYPE = '" + StringUtils.upperCase(type) + "' LIMIT 1;");
+    }
+
     public static Integer getLatestFieldId(final Connection connection) throws SQLException {
         return getFirstInt(connection, "SELECT ID FROM ALERT.DEFINED_FIELDS ORDER BY ID DESC LIMIT 1;");
     }
