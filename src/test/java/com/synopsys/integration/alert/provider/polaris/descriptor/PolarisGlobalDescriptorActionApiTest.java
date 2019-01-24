@@ -19,6 +19,7 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
+import com.synopsys.integration.alert.common.ProxyManager;
 import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -136,9 +137,10 @@ public class PolarisGlobalDescriptorActionApiTest {
         final TestConfigModel testConfigModel = new TestConfigModel(fieldModel);
 
         final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
-        Mockito.when(alertProperties.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
         Mockito.when(alertProperties.getAlertTrustCertificate()).thenReturn(Optional.of(Boolean.TRUE));
-        final PolarisProperties polarisProperties = new PolarisProperties(alertProperties, null);
+        final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
+        Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
+        final PolarisProperties polarisProperties = new PolarisProperties(alertProperties, null, proxyManager);
 
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);

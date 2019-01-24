@@ -8,7 +8,9 @@ import java.io.IOException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
+import com.synopsys.integration.alert.common.ProxyManager;
 import com.synopsys.integration.alert.util.OutputLogger;
 import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.rest.connection.RestConnection;
@@ -31,7 +33,7 @@ public class ChannelRestConnectionFactoryTest {
     }
 
     @Test
-    public void testConnectionFields() {
+    public void testConnectionFields() throws Exception {
         final String host = "host";
         final int port = 1;
         final CredentialsBuilder builder = Credentials.newBuilder();
@@ -39,15 +41,6 @@ public class ChannelRestConnectionFactoryTest {
         builder.setPassword("password");
         final Credentials credentials = builder.build();
 
-        final TestAlertProperties testAlertProperties = new TestAlertProperties();
-        testAlertProperties.setAlertProxyHost(host);
-        testAlertProperties.setAlertProxyUsername(credentials.getUsername().get());
-        testAlertProperties.setAlertProxyPassword(credentials.getPassword().get());
-        testAlertProperties.setAlertProxyPort(String.valueOf(port));
-        testAlertProperties.setAlertTrustCertificate(true);
-        final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties);
-
-        final RestConnection restConnection = channelRestConnectionFactory.createRestConnection();
         final ProxyInfoBuilder proxyBuilder = ProxyInfo.newBuilder();
         proxyBuilder.setHost(host);
         proxyBuilder.setPort(port);
@@ -55,6 +48,14 @@ public class ChannelRestConnectionFactoryTest {
         proxyBuilder.setNtlmDomain(null);
         proxyBuilder.setNtlmWorkstation(null);
         final ProxyInfo expectedProxyInfo = proxyBuilder.build();
+
+        final TestAlertProperties testAlertProperties = new TestAlertProperties();
+        testAlertProperties.setAlertTrustCertificate(true);
+        ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
+        Mockito.when(proxyManager.createProxyInfo()).thenReturn(expectedProxyInfo);
+        final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties, proxyManager);
+
+        final RestConnection restConnection = channelRestConnectionFactory.createRestConnection();
 
         assertNotNull(restConnection);
         assertEquals(expectedProxyInfo, restConnection.getProxyInfo());
