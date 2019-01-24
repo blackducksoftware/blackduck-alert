@@ -13,24 +13,43 @@ package com.synopsys.integration.alert.provider.blackduck.controller;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Collections;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.core.convert.support.DefaultConversionService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.web.controller.ResponseFactory;
+import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckDataActions;
 import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckDataController;
-import com.synopsys.integration.alert.web.provider.blackduck.BlackDuckDataHandler;
 
 public class BlackDuckDataControllerTest {
+    private final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
 
     @Test
-    public void getProjectsTest() {
-        final BlackDuckDataHandler handler = Mockito.mock(BlackDuckDataHandler.class);
-        final BlackDuckDataController controller = new BlackDuckDataController(handler);
+    public void testGetHubProjects() {
+        final BlackDuckDataActions blackDuckDataActions = Mockito.mock(BlackDuckDataActions.class);
+        Mockito.when(blackDuckDataActions.getBlackDuckProjects()).thenReturn(Collections.emptyList());
+        ResponseFactory responseFactory = new ResponseFactory();
+        final BlackDuckDataController blackDuckDataHandler = new BlackDuckDataController(responseFactory, blackDuckDataActions, contentConverter);
+        final ResponseEntity<String> responseEntity = blackDuckDataHandler.getProjects();
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals("{\"message\":\"[]\"}", responseEntity.getBody());
+    }
 
-        Mockito.when(handler.getBlackDuckProjects()).thenReturn(null);
-
-        final ResponseEntity<String> response = controller.getProjects();
-        assertEquals(null, response);
+    @Test
+    public void testGetHubProjectsThrowException() {
+        final BlackDuckDataActions blackDuckDataActions = Mockito.mock(BlackDuckDataActions.class);
+        Mockito.when(blackDuckDataActions.getBlackDuckProjects()).thenThrow(new IllegalStateException("ErrorMessage"));
+        ResponseFactory responseFactory = new ResponseFactory();
+        final BlackDuckDataController blackDuckDataHandler = new BlackDuckDataController(responseFactory, blackDuckDataActions, contentConverter);
+        final ResponseEntity<String> responseEntity = blackDuckDataHandler.getProjects();
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+        assertEquals("{\"message\":\"ErrorMessage\"}", responseEntity.getBody());
     }
 
 }
