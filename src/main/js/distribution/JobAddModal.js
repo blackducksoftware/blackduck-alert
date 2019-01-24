@@ -9,6 +9,7 @@ import HipChatJobConfiguration from 'distribution/job/HipChatJobConfiguration';
 import SlackJobConfiguration from 'distribution/job/SlackJobConfiguration';
 import DescriptorOption from 'component/common/DescriptorOption';
 import { resetDistributionDescriptor } from 'store/actions/descriptors';
+import * as DescriptorUtilities from 'util/descriptorUtilities';
 
 const { Option, SingleValue } = components;
 
@@ -107,7 +108,7 @@ class JobAddModal extends Component {
     }
 
     createJobTypeOptions() {
-        const channelDescriptors = this.props.descriptors.items.CHANNEL_DISTRIBUTION_CONFIG;
+        const channelDescriptors = DescriptorUtilities.findDescriptorByTypeAndContext(this.props.descriptors.items, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
         if (channelDescriptors) {
             const optionList = channelDescriptors.map(descriptor => ({
                 label: descriptor.label,
@@ -157,12 +158,12 @@ class JobAddModal extends Component {
 JobAddModal.propTypes = {
     resetDistributionDescriptor: PropTypes.func.isRequired,
     onModalClose: PropTypes.func.isRequired,
-    descriptors: PropTypes.object,
+    descriptors: PropTypes.arrayOf(PropTypes.object),
     projects: PropTypes.arrayOf(PropTypes.object)
 };
 
 JobAddModal.defaultProps = {
-    descriptors: {},
+    descriptors: [],
     projects: []
 };
 
