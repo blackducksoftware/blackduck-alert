@@ -40,6 +40,7 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.ProxyManager;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
+import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
 import com.synopsys.integration.alert.database.api.user.UserAccessor;
@@ -170,7 +171,7 @@ public class SystemValidator {
                 verifier.verifyIsBlackDuckServer(blackDuckUrl, proxyInfo, trustCertificate, timeout);
                 logger.info("  -> BlackDuck Provider Valid!");
             }
-        } catch (final MalformedURLException | IntegrationException ex) {
+        } catch (final MalformedURLException | IntegrationException | AlertRuntimeException ex) {
             logger.error("  -> BlackDuck Provider Invalid; cause: {}", ex.getMessage());
             logger.debug("  -> BlackDuck Provider Stack Trace: ", ex);
             systemMessageUtility.addSystemMessage("BlackDuck Provider invalid: " + ex.getMessage(), SystemMessageSeverity.WARNING, SystemMessageType.BLACKDUCK_PROVIDER_CONNECTIVITY);

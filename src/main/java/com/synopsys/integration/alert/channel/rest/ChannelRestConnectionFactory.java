@@ -32,8 +32,6 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.ProxyManager;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.connection.RestConnection;
@@ -58,12 +56,7 @@ public class ChannelRestConnectionFactory {
 
     public RestConnection createRestConnection(final IntLogger intLogger, final int timeout) {
         final Optional<Boolean> alertTrustCertificate = alertProperties.getAlertTrustCertificate();
-        ProxyInfo proxyInfo = ProxyInfo.NO_PROXY_INFO;
-        try {
-            proxyInfo = proxyManager.createProxyInfo();
-        } catch (AlertDatabaseConstraintException | AlertRuntimeException ex) {
-            logger.error("Error creating proxy information", ex);
-        }
+        ProxyInfo proxyInfo = proxyManager.createProxyInfo();
         return new RestConnection(intLogger, timeout, alertTrustCertificate.orElse(Boolean.FALSE), proxyInfo);
     }
 }

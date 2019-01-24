@@ -69,8 +69,8 @@ public class EmailGlobalUIConfig extends UIConfig {
         final ConfigField mailSmtpAuthNtlmFlags = NumberConfigField.createGrouped(EmailPropertyKeys.JAVAMAIL_AUTH_NTLM_FLAGS_KEY.getPropertyKey(), "Smtp Auth Ntlm Flags", FieldGroup.ADVANCED);
         final ConfigField mailSmtpAuthXoauth2Disable = CheckboxConfigField.createGrouped(EmailPropertyKeys.JAVAMAIL_AUTH_XOAUTH2_DISABLE_KEY.getPropertyKey(), "SMTP Auth XOAuth2 Disable", FieldGroup.ADVANCED);
         final ConfigField mailSmtpSubmitter = TextInputConfigField.createGrouped(EmailPropertyKeys.JAVAMAIL_SUBMITTER_KEY.getPropertyKey(), "Smtp Submitter", FieldGroup.ADVANCED);
-        final ConfigField mailSmtpDnsNotify = TextInputConfigField.createGrouped(EmailPropertyKeys.JAVAMAIL_DSN_NOTIFY_KEY.getPropertyKey(), "Smtp DNS Notify", FieldGroup.ADVANCED);
-        final ConfigField mailSmtpDnsRet = TextInputConfigField.createGrouped(EmailPropertyKeys.JAVAMAIL_DSN_RET_KEY.getPropertyKey(), "Smtp DNS Ret", FieldGroup.ADVANCED);
+        final ConfigField mailSmtpDnsNotify = TextInputConfigField.createGrouped(EmailPropertyKeys.JAVAMAIL_DSN_NOTIFY_KEY.getPropertyKey(), "Smtp DSN Notify", FieldGroup.ADVANCED);
+        final ConfigField mailSmtpDnsRet = TextInputConfigField.createGrouped(EmailPropertyKeys.JAVAMAIL_DSN_RET_KEY.getPropertyKey(), "Smtp DSN Ret", FieldGroup.ADVANCED);
         final ConfigField mailSmtpAllow8bitmime = CheckboxConfigField.createGrouped(EmailPropertyKeys.JAVAMAIL_ALLOW_8_BITMIME_KEY.getPropertyKey(), "Smtp Allow 8-bit Mime", FieldGroup.ADVANCED);
         final ConfigField mailSmtpSendPartial = CheckboxConfigField.createGrouped(EmailPropertyKeys.JAVAMAIL_SEND_PARTIAL_KEY.getPropertyKey(), "Smtp Send Partial", FieldGroup.ADVANCED);
         final ConfigField mailSmtpSaslEnable = CheckboxConfigField.createGrouped(EmailPropertyKeys.JAVAMAIL_SASL_ENABLE_KEY.getPropertyKey(), "Smtp SASL Enable", FieldGroup.ADVANCED);
