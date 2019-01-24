@@ -1,9 +1,7 @@
 import {
     EMAIL_CONFIG_FETCHED,
     EMAIL_CONFIG_FETCHING,
-    EMAIL_CONFIG_HIDE_ADVANCED,
     EMAIL_CONFIG_HIDE_TEST_MODAL,
-    EMAIL_CONFIG_SHOW_ADVANCED,
     EMAIL_CONFIG_SHOW_TEST_MODAL,
     EMAIL_CONFIG_TEST_SUCCESSFUL,
     EMAIL_CONFIG_UPDATE_ERROR,
@@ -138,13 +136,6 @@ function handleFailureResponse(dispatch, response) {
                 }
             }
         });
-}
-
-export function toggleAdvancedEmailOptions(toggle) {
-    if (toggle) {
-        return { type: EMAIL_CONFIG_SHOW_ADVANCED };
-    }
-    return { type: EMAIL_CONFIG_HIDE_ADVANCED };
 }
 
 export function openEmailConfigTest() {
