@@ -24,12 +24,10 @@
 package com.synopsys.integration.alert.web.model.configuration;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import com.synopsys.integration.alert.common.configuration.FieldAccessor;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.web.model.Config;
 
 public class FieldModel extends Config {
@@ -70,26 +68,16 @@ public class FieldModel extends Config {
         return Optional.ofNullable(keyToValues.get(key));
     }
 
-    public FieldAccessor convertToFieldAccessor() {
-        final Map<String, ConfigurationFieldModel> fields = convertToConfigurationFieldModelMap();
-        return new FieldAccessor(fields);
+    public Optional<String> getFieldValue(final String key) {
+        return getField(key).flatMap(fieldValueModel -> fieldValueModel.getValue());
     }
 
-    public Map<String, ConfigurationFieldModel> convertToConfigurationFieldModelMap() {
-        return keyToValues
-                   .entrySet()
-                   .stream()
-                   .collect(Collectors.toMap(Map.Entry::getKey, entry -> createConfigurationFieldModel(entry.getKey(), entry.getValue().getValues())));
+    public Collection<String> getFieldValues(final String key) {
+        return getField(key).map(fieldValueModel -> fieldValueModel.getValues()).orElse(List.of());
     }
 
     public void putField(final String key, final FieldValueModel field) {
         keyToValues.put(key, field);
-    }
-
-    private ConfigurationFieldModel createConfigurationFieldModel(final String key, final Collection<String> values) {
-        final ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.create(key);
-        configurationFieldModel.setFieldValues(values);
-        return configurationFieldModel;
     }
 
 }

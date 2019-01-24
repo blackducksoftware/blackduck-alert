@@ -23,12 +23,9 @@
  */
 package com.synopsys.integration.alert.component.scheduling;
 
-import java.util.Collection;
-
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
-import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.web.model.configuration.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
@@ -36,7 +33,7 @@ import com.synopsys.integration.exception.IntegrationException;
 public class SchedulingDescriptorActionApi extends DescriptorActionApi {
 
     @Override
-    public void testConfig(final Collection<ConfigField> configFields, final TestConfigModel testConfig) throws IntegrationException {
+    public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
         throw new IntegrationException("Should not be implemented");
     }
 }
