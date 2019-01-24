@@ -174,7 +174,7 @@
             </column>
             <column name="CONFIG_ID" type="BIGINT(19)"/>
             <column name="FIELD_ID" type="BIGINT(19)"/>
-            <column name="FIELD_VALUE" type="VARCHAR(255)"/>
+            <column name="FIELD_VALUE" type="VARCHAR(512)"/>
         </createTable>
         <addForeignKeyConstraint
                 baseTableSchemaName="ALERT"
