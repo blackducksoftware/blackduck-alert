@@ -34,32 +34,32 @@ public class SettingsDescriptor extends ComponentDescriptor {
     public static final String SETTINGS_LABEL = "Settings";
     public static final String SETTINGS_URL = "settings";
     public static final String SETTINGS_ICON = "cog";
-    // KEYS not stored in the database
-    public static final String KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD = "user.default.admin.password";
-    public static final String KEY_ENCRYPTION_PASSWORD = "encryption.password";
-    public static final String KEY_ENCRYPTION_GLOBAL_SALT = "encryption.global.salt";
+    // Values not stored in the database, but keys must be registered
+    public static final String KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD = "settings.user.default.admin.password";
+    public static final String KEY_ENCRYPTION_PASSWORD = "settings.encryption.password";
+    public static final String KEY_ENCRYPTION_GLOBAL_SALT = "settings.encryption.global.salt";
 
     // Proxy Keys
-    public static final String KEY_PROXY_HOST = "proxy.host";
-    public static final String KEY_PROXY_PORT = "proxy.port";
-    public static final String KEY_PROXY_USERNAME = "proxy.username";
-    public static final String KEY_PROXY_PASSWORD = "proxy.password";
+    public static final String KEY_PROXY_HOST = "settings.proxy.host";
+    public static final String KEY_PROXY_PORT = "settings.proxy.port";
+    public static final String KEY_PROXY_USERNAME = "settings.proxy.username";
+    public static final String KEY_PROXY_PASSWORD = "settings.proxy.password";
 
     // LDAP Keys
-    public static final String KEY_LDAP_ENABLED = "ldap.enabled";
-    public static final String KEY_LDAP_SERVER = "ldap.server";
-    public static final String KEY_LDAP_MANAGER_DN = "ldap.manager.dn";
-    public static final String KEY_LDAP_MANAGER_PASSWORD = "ldap.manager.password";
-    public static final String KEY_LDAP_AUTHENTICATION_TYPE = "ldap.authentication.type";
-    public static final String KEY_LDAP_REFERRAL = "ldap.referral";
-    public static final String KEY_LDAP_USER_SEARCH_BASE = "ldap.user.search.base";
-    public static final String KEY_LDAP_USER_SEARCH_FILTER = "ldap.user.search.filter";
-    public static final String KEY_LDAP_USER_DN_PATTERNS = "ldap.user.dn.patterns";
-    public static final String KEY_LDAP_USER_ATTRIBUTES = "ldap.user.attributes";
-    public static final String KEY_LDAP_GROUP_SEARCH_BASE = "ldap.group.search.base";
-    public static final String KEY_LDAP_GROUP_SEARCH_FILTER = "ldap.group.search.filter";
-    public static final String KEY_LDAP_GROUP_ROLE_ATTRIBUTE = "ldap.group.role.attribute";
-    public static final String KEY_LDAP_ROLE_PREFIX = "ldap.role.prefix";
+    public static final String KEY_LDAP_ENABLED = "settings.ldap.enabled";
+    public static final String KEY_LDAP_SERVER = "settings.ldap.server";
+    public static final String KEY_LDAP_MANAGER_DN = "settings.ldap.manager.dn";
+    public static final String KEY_LDAP_MANAGER_PASSWORD = "settings.ldap.manager.password";
+    public static final String KEY_LDAP_AUTHENTICATION_TYPE = "settings.ldap.authentication.type";
+    public static final String KEY_LDAP_REFERRAL = "settings.ldap.referral";
+    public static final String KEY_LDAP_USER_SEARCH_BASE = "settings.ldap.user.search.base";
+    public static final String KEY_LDAP_USER_SEARCH_FILTER = "settings.ldap.user.search.filter";
+    public static final String KEY_LDAP_USER_DN_PATTERNS = "settings.ldap.user.dn.patterns";
+    public static final String KEY_LDAP_USER_ATTRIBUTES = "settings.ldap.user.attributes";
+    public static final String KEY_LDAP_GROUP_SEARCH_BASE = "settings.ldap.group.search.base";
+    public static final String KEY_LDAP_GROUP_SEARCH_FILTER = "settings.ldap.group.search.filter";
+    public static final String KEY_LDAP_GROUP_ROLE_ATTRIBUTE = "settings.ldap.group.role.attribute";
+    public static final String KEY_LDAP_ROLE_PREFIX = "settings.ldap.role.prefix";
 
     public static final String FIELD_ERROR_DEFAULT_USER_PASSWORD = "Default admin user password missing";
     public static final String FIELD_ERROR_ENCRYPTION_PASSWORD = "Encryption password missing";

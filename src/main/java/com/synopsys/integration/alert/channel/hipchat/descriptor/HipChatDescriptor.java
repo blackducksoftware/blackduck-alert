@@ -35,8 +35,8 @@ public class HipChatDescriptor extends ChannelDescriptor {
     public static final String KEY_NOTIFY = "channel.hipchat.notify";
     public static final String KEY_COLOR = "channel.hipchat.color";
 
-    public static final String KEY_API_KEY = "api.key";
-    public static final String KEY_HOST_SERVER = "host.server";
+    public static final String KEY_API_KEY = "channel.hipchat.api.key";
+    public static final String KEY_HOST_SERVER = "channel.hipchat.host.server";
 
     public static final String HIP_CHAT_LABEL = "HipChat";
     public static final String HIP_CHAT_URL = "hipchat";
