@@ -37,6 +37,12 @@ public class SchedulingDescriptor extends ComponentDescriptor {
     public static final String SCHEDULING_URL = "scheduling";
     public static final String SCHEDULING_ICON = "clock-o";
 
+    public static final String KEY_ACCUMULATOR_NEXT_RUN = "scheduling.accumulator.next.run";
+    public static final String KEY_DAILY_DIGEST_HOUR_OF_DAY = "scheduling.daily.digest.hour";
+    public static final String KEY_DAILY_DIGEST_NEXT_RUN = "scheduling.daily.digest.next.run";
+    public static final String KEY_PURGE_DATA_FREQUENCY_DAYS = "scheduling.purge.data.frequency";
+    public static final String KEY_PURGE_DATA_NEXT_RUN = "scheduling.purge.data.next.run";
+
     @Autowired
     public SchedulingDescriptor(final NoTestActionApi noTestActionApi, final SchedulingUIConfig schedulingUIConfig) {
         super(SCHEDULING_COMPONENT, noTestActionApi, schedulingUIConfig);
