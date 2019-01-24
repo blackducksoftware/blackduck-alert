@@ -31,9 +31,9 @@ import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 
 @Component
 public class SlackDescriptor extends ChannelDescriptor {
-    public static final String KEY_WEBHOOK = "webhook";
-    public static final String KEY_CHANNEL_NAME = "channel.name";
-    public static final String KEY_CHANNEL_USERNAME = "channel.username";
+    public static final String KEY_WEBHOOK = "channel.slack.webhook";
+    public static final String KEY_CHANNEL_NAME = "channel.slack.channel.name";
+    public static final String KEY_CHANNEL_USERNAME = "channel.slack.channel.username";
 
     public static final String SLACK_LABEL = "Slack";
     public static final String SLACK_URL = "slack";

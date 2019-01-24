@@ -48,7 +48,6 @@ import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.component.scheduling.SchedulingConfiguration;
 import com.synopsys.integration.alert.component.scheduling.SchedulingDescriptor;
-import com.synopsys.integration.alert.component.scheduling.SchedulingUIConfig;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.database.security.StringEncryptionConverter;
@@ -83,7 +82,7 @@ public class StartupManager {
 
     @Autowired
     public StartupManager(final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
-        final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer,
+        final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask, final PhoneHomeTask phoneHomeTask, final AlertStartupInitializer alertStartupInitializer,
         final List<ProviderDescriptor> providerDescriptorList, final SystemStatusUtility systemStatusUtility, final SystemValidator systemValidator, final BaseConfigurationAccessor configurationAccessor,
         final EncryptionUtility encryptionUtility, final UpgradeProcessor upgradeProcessor, final ProxyManager proxyManager) {
         this.alertProperties = alertProperties;
@@ -91,7 +90,7 @@ public class StartupManager {
         this.dailyTask = dailyTask;
         this.onDemandTask = onDemandTask;
         this.purgeTask = purgeTask;
-        phoneHomeTask = phoneHometask;
+        this.phoneHomeTask = phoneHomeTask;
         this.alertStartupInitializer = alertStartupInitializer;
         this.providerDescriptorList = providerDescriptorList;
         this.systemStatusUtility = systemStatusUtility;
@@ -105,6 +104,7 @@ public class StartupManager {
     @Transactional
     public void startup() throws AlertUpgradeException {
         logger.info("Alert Starting...");
+        // FIXME move this logic to the build.gradle
         systemStatusUtility.startupOccurred();
         if (upgradeProcessor.shouldUpgrade()) {
             upgradeProcessor.runUpgrade();
@@ -183,9 +183,9 @@ public class StartupManager {
         } else {
             dailyDigestHourOfDay = "0";
             purgeDataFrequencyDays = "3";
-            final ConfigurationFieldModel hourOfDayField = ConfigurationFieldModel.create(SchedulingUIConfig.KEY_DAILY_DIGEST_HOUR_OF_DAY);
+            final ConfigurationFieldModel hourOfDayField = ConfigurationFieldModel.create(SchedulingDescriptor.KEY_DAILY_DIGEST_HOUR_OF_DAY);
             hourOfDayField.setFieldValue(dailyDigestHourOfDay);
-            final ConfigurationFieldModel purgeFrequencyField = ConfigurationFieldModel.create(SchedulingUIConfig.KEY_PURGE_DATA_FREQUENCY_DAYS);
+            final ConfigurationFieldModel purgeFrequencyField = ConfigurationFieldModel.create(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS);
             purgeFrequencyField.setFieldValue(purgeDataFrequencyDays);
             try {
                 final ConfigurationModel schedulingModel = configurationAccessor.createConfiguration(SchedulingDescriptor.SCHEDULING_COMPONENT, ConfigContextEnum.GLOBAL, Arrays.asList(hourOfDayField, purgeFrequencyField));
