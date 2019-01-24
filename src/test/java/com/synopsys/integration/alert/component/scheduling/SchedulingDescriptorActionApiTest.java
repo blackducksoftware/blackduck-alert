@@ -23,8 +23,8 @@ public class SchedulingDescriptorActionApiTest {
     public static final String PURGE_FREQUENCY_ERROR_MESSAGE = "Must be a number between 1 and 7";
     private static final FieldValueModel FIELD_HOUR_OF_DAY = new FieldValueModel(new ArrayList<>(), false);
     private static final FieldValueModel FIELD_PURGE_FREQUENCY = new FieldValueModel(new ArrayList<>(), false);
-    private static final Map<String, FieldValueModel> FIELD_MAP = Map.of(SchedulingUIConfig.KEY_DAILY_DIGEST_HOUR_OF_DAY, FIELD_HOUR_OF_DAY,
-        SchedulingUIConfig.KEY_PURGE_DATA_FREQUENCY_DAYS, FIELD_PURGE_FREQUENCY);
+    private static final Map<String, FieldValueModel> FIELD_MAP = Map.of(SchedulingDescriptor.KEY_DAILY_DIGEST_HOUR_OF_DAY, FIELD_HOUR_OF_DAY,
+        SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, FIELD_PURGE_FREQUENCY);
     private static final FieldModel FIELD_MODEL = new FieldModel(SchedulingDescriptor.SCHEDULING_COMPONENT, ConfigContextEnum.GLOBAL.name(), FIELD_MAP);
     private final SchedulingUIConfig schedulingUIConfig = new SchedulingUIConfig();
 
@@ -44,8 +44,8 @@ public class SchedulingDescriptorActionApiTest {
         final Map<String, ConfigField> configFieldMap = schedulingUIConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
         actionApi.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
-        assertEquals(null, fieldErrors.get(SchedulingUIConfig.KEY_DAILY_DIGEST_HOUR_OF_DAY));
-        assertEquals(null, fieldErrors.get(SchedulingUIConfig.KEY_PURGE_DATA_FREQUENCY_DAYS));
+        assertEquals(null, fieldErrors.get(SchedulingDescriptor.KEY_DAILY_DIGEST_HOUR_OF_DAY));
+        assertEquals(null, fieldErrors.get(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS));
     }
 
     @Test
@@ -58,8 +58,8 @@ public class SchedulingDescriptorActionApiTest {
         final Map<String, ConfigField> configFieldMap = schedulingUIConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
         actionApi.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
-        assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SchedulingUIConfig.KEY_DAILY_DIGEST_HOUR_OF_DAY));
-        assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SchedulingUIConfig.KEY_PURGE_DATA_FREQUENCY_DAYS));
+        assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SchedulingDescriptor.KEY_DAILY_DIGEST_HOUR_OF_DAY));
+        assertEquals(ConfigField.REQUIRED_FIELD_MISSING, fieldErrors.get(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS));
     }
 
     @Test
@@ -69,12 +69,11 @@ public class SchedulingDescriptorActionApiTest {
 
         FIELD_HOUR_OF_DAY.setValue("not a number");
         FIELD_PURGE_FREQUENCY.setValue("not a number");
-
         final Map<String, ConfigField> configFieldMap = schedulingUIConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
         actionApi.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
-        assertEquals(DAILY_DIGEST_ERROR_MESSAGE, fieldErrors.get(SchedulingUIConfig.KEY_DAILY_DIGEST_HOUR_OF_DAY));
-        assertEquals(PURGE_FREQUENCY_ERROR_MESSAGE, fieldErrors.get(SchedulingUIConfig.KEY_PURGE_DATA_FREQUENCY_DAYS));
+        assertEquals(DAILY_DIGEST_ERROR_MESSAGE, fieldErrors.get(SchedulingDescriptor.KEY_DAILY_DIGEST_HOUR_OF_DAY));
+        assertEquals(PURGE_FREQUENCY_ERROR_MESSAGE, fieldErrors.get(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS));
     }
 
     @Test
@@ -86,12 +85,12 @@ public class SchedulingDescriptorActionApiTest {
         final Map<String, ConfigField> configFieldMap = schedulingUIConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
         actionApi.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
-        assertEquals(DAILY_DIGEST_ERROR_MESSAGE, fieldErrors.get(SchedulingUIConfig.KEY_DAILY_DIGEST_HOUR_OF_DAY));
+        assertEquals(DAILY_DIGEST_ERROR_MESSAGE, fieldErrors.get(SchedulingDescriptor.KEY_DAILY_DIGEST_HOUR_OF_DAY));
 
         fieldErrors.clear();
         FIELD_HOUR_OF_DAY.setValue("24");
         actionApi.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
-        assertEquals(DAILY_DIGEST_ERROR_MESSAGE, fieldErrors.get(SchedulingUIConfig.KEY_DAILY_DIGEST_HOUR_OF_DAY));
+        assertEquals(DAILY_DIGEST_ERROR_MESSAGE, fieldErrors.get(SchedulingDescriptor.KEY_DAILY_DIGEST_HOUR_OF_DAY));
     }
 
     @Test
@@ -103,13 +102,13 @@ public class SchedulingDescriptorActionApiTest {
         final Map<String, ConfigField> configFieldMap = schedulingUIConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
         actionApi.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
-        assertEquals(PURGE_FREQUENCY_ERROR_MESSAGE, fieldErrors.get(SchedulingUIConfig.KEY_PURGE_DATA_FREQUENCY_DAYS));
+        assertEquals(PURGE_FREQUENCY_ERROR_MESSAGE, fieldErrors.get(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS));
 
         fieldErrors.clear();
         FIELD_PURGE_FREQUENCY.setValue("8");
         actionApi.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
 
-        assertEquals(PURGE_FREQUENCY_ERROR_MESSAGE, fieldErrors.get(SchedulingUIConfig.KEY_PURGE_DATA_FREQUENCY_DAYS));
+        assertEquals(PURGE_FREQUENCY_ERROR_MESSAGE, fieldErrors.get(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS));
     }
 
     @Test
