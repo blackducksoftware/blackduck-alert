@@ -94,7 +94,7 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
 
         auditNotificationRepository.save(new AuditNotificationRelation(entity.getId(), notificationContent.getId()));
 
-        final String getUrl = auditUrl + "/" + String.valueOf(notificationContent.getId());
+        final String getUrl = auditUrl + "/" + notificationContent.getId();
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(getUrl)
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -106,7 +106,7 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
     public void testGetAuditInfoForJob() throws Exception {
         AuditEntryEntity entity = new MockAuditEntryEntity().createEntity();
         entity = auditEntryRepository.save(entity);
-        final String getUrl = auditUrl + "/job/" + String.valueOf(entity.getCommonConfigId());
+        final String getUrl = auditUrl + "/job/" + entity.getCommonConfigId();
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(getUrl)
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -129,7 +129,7 @@ public class AuditEntryControllerTestIT extends AlertIntegrationTest {
         auditEntity = auditEntryRepository.save(auditEntity);
         auditNotificationRepository.save(new AuditNotificationRelation(auditEntity.getId(), notificationEntity.getId()));
 
-        final String resendUrl = auditUrl + "/resend/" + String.valueOf(notificationEntity.getId()) + "/";
+        final String resendUrl = auditUrl + "/resend/" + notificationEntity.getId() + "/";
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(resendUrl)
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
