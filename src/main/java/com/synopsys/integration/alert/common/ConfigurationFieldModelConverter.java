@@ -39,7 +39,6 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
-import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -114,25 +113,5 @@ public class ConfigurationFieldModelConverter {
             configurationModel = ConfigurationFieldModel.createSensitive(definedFieldModel.getKey());
         }
         return Optional.of(configurationModel);
-    }
-
-    private Map<String, ConfigurationFieldModel> convertToConfigurationFieldModelMap(final Map<String, ConfigField> configFieldMap, final FieldModel fieldModel) {
-        return fieldModel.getKeyToValues()
-                   .entrySet()
-                   .stream()
-                   .filter(entry -> configFieldMap.containsKey(entry.getKey()))
-                   .collect(Collectors.toMap(Map.Entry::getKey, entry -> createConfigurationFieldModel(configFieldMap.get(entry.getKey()), entry.getValue().getValues())));
-    }
-
-    private ConfigurationFieldModel createConfigurationFieldModel(final ConfigField configField, final Collection<String> values) {
-        final ConfigurationFieldModel configurationFieldModel;
-        final String key = configField.getKey();
-        if (configField.isSensitive()) {
-            configurationFieldModel = ConfigurationFieldModel.createSensitive(key);
-        } else {
-            configurationFieldModel = ConfigurationFieldModel.create(key);
-        }
-        configurationFieldModel.setFieldValues(values);
-        return configurationFieldModel;
     }
 }
