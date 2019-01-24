@@ -23,6 +23,7 @@
  */
 package com.synopsys.integration.alert.web.audit;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -35,44 +36,79 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.web.controller.BaseController;
+import com.synopsys.integration.alert.web.controller.ResponseFactory;
+import com.synopsys.integration.alert.web.exception.AlertJobMissingException;
+import com.synopsys.integration.alert.web.exception.AlertNotificationPurgedException;
 import com.synopsys.integration.alert.web.model.AlertPagedModel;
+import com.synopsys.integration.exception.IntegrationException;
 
 @RestController
 @RequestMapping(BaseController.BASE_PATH + "/audit")
 public class AuditEntryController extends BaseController {
-    private final AuditEntryHandler auditEntryHandler;
+    private AuditEntryActions auditEntryActions;
+    private ContentConverter contentConverter;
+    private ResponseFactory responseFactory;
 
     @Autowired
-    public AuditEntryController(final AuditEntryHandler auditEntryHandler) {
-        this.auditEntryHandler = auditEntryHandler;
+    public AuditEntryController(final AuditEntryActions auditEntryActions, final ContentConverter contentConverter, final ResponseFactory responseFactory) {
+        this.auditEntryActions = auditEntryActions;
+        this.contentConverter = contentConverter;
+        this.responseFactory = responseFactory;
     }
 
     @GetMapping
     public AlertPagedModel<AuditEntryModel> get(@RequestParam(value = "pageNumber", required = false) final Integer pageNumber, @RequestParam(value = "pageSize", required = false) final Integer pageSize,
         @RequestParam(value = "searchTerm", required = false) final String searchTerm, @RequestParam(value = "sortField", required = false) final String sortField,
         @RequestParam(value = "sortOrder", required = false) final String sortOrder, @RequestParam(value = "onlyShowSentNotifications", required = false) final Boolean onlyShowSentNotifications) {
-        return auditEntryHandler.get(pageNumber, pageSize, searchTerm, sortField, sortOrder, BooleanUtils.toBoolean(onlyShowSentNotifications));
+        return auditEntryActions.get(pageNumber, pageSize, searchTerm, sortField, sortOrder, BooleanUtils.toBoolean(onlyShowSentNotifications));
     }
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<String> get(@PathVariable(value = "id") final Long id) {
-        return auditEntryHandler.get(id);
+        final Optional<AuditEntryModel> auditEntryModel = auditEntryActions.get(id);
+        String stringId = contentConverter.getStringValue(id);
+        if (auditEntryModel.isPresent()) {
+            return responseFactory.createOkResponse(stringId, contentConverter.getJsonString(auditEntryModel.get()));
+        } else {
+            return responseFactory.createGoneResponse(stringId, "This Audit entry could not be found.");
+        }
     }
 
     @GetMapping(value = "/job/{jobId}")
     public ResponseEntity<String> getAuditInfoForJob(@PathVariable(value = "jobId") final UUID jobId) {
-        return auditEntryHandler.getAuditInfoForJob(jobId);
+        final Optional<JobAuditModel> jobAuditModel = auditEntryActions.getAuditInfoForJob(jobId);
+        String jobIdString = jobId.toString();
+        if (jobAuditModel.isPresent()) {
+            return responseFactory.createOkResponse(jobIdString, contentConverter.getJsonString(jobAuditModel.get()));
+        } else {
+            return responseFactory.createGoneResponse(jobIdString, "The Audit information could not be found for this job.");
+        }
     }
 
     @PostMapping(value = "/resend/{id}/")
     public ResponseEntity<String> post(@PathVariable(value = "id") final Long notificationId) {
-        return auditEntryHandler.resendNotification(notificationId, null);
+        return resendNotification(notificationId, null);
     }
 
     @PostMapping(value = "/resend/{id}/job/{jobId}")
     public ResponseEntity<String> post(@PathVariable(value = "id") final Long notificationId, @PathVariable(value = "jobId") final UUID jobId) {
-        return auditEntryHandler.resendNotification(notificationId, jobId);
+        return resendNotification(notificationId, jobId);
+    }
+
+    private ResponseEntity<String> resendNotification(final Long notificationId, final UUID commonConfigId) {
+        String stringNotificationId = contentConverter.getStringValue(notificationId);
+        try {
+            final AlertPagedModel<AuditEntryModel> auditEntries = auditEntryActions.resendNotification(notificationId, commonConfigId);
+            return responseFactory.createOkResponse(stringNotificationId, contentConverter.getJsonString(auditEntries));
+        } catch (final AlertNotificationPurgedException e) {
+            return responseFactory.createGoneResponse(stringNotificationId, e.getMessage());
+        } catch (final AlertJobMissingException e) {
+            return responseFactory.createGoneResponse(commonConfigId.toString(), e.getMessage());
+        } catch (final IntegrationException e) {
+            return responseFactory.createBadRequestResponse(stringNotificationId, e.getMessage());
+        }
     }
 
 }

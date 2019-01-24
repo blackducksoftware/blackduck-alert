@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.web.actions.AboutActions;
-import com.synopsys.integration.alert.web.controller.handler.AboutHandler;
 import com.synopsys.integration.alert.web.model.AboutModel;
 
 public class AboutControllerTest {
@@ -28,16 +27,57 @@ public class AboutControllerTest {
         final boolean initialized = true;
         final String startupTime = "startup time is now";
 
+        ResponseFactory responseFactory = new ResponseFactory();
         final AboutModel model = new AboutModel(version, description, gitHubUrl, initialized, startupTime);
         final AboutActions aboutActions = Mockito.mock(AboutActions.class);
-        final AboutHandler aboutHandler = new AboutHandler(contentConverter, aboutActions);
 
         Mockito.when(aboutActions.getAboutModel()).thenReturn(Optional.of(model));
-        final AboutController controller = new AboutController(aboutHandler);
+        final AboutController controller = new AboutController(aboutActions, responseFactory, contentConverter);
         final ResponseEntity<String> response = controller.about();
 
-        final String expectedJson = gson.toJson(model);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(expectedJson, response.getBody());
+        ResponseEntity<String> expectedResponse = responseFactory.createResponse(HttpStatus.OK, contentConverter.getJsonString(model));
+        assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
+        assertEquals(expectedResponse.getBody(), response.getBody());
+    }
+
+    @Test
+    public void testGetAboutData() {
+        final String version = "1.2.3";
+        final String description = "description";
+        final String gitHubUrl = "https://www.google.com";
+        final boolean initialized = true;
+        final String startupTime = "startup time is now";
+
+        final Gson gson = new Gson();
+        final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
+        ResponseFactory responseFactory = new ResponseFactory();
+
+        final AboutModel model = new AboutModel(version, description, gitHubUrl, initialized, startupTime);
+        final AboutActions aboutActions = Mockito.mock(AboutActions.class);
+        final AboutController aboutController = new AboutController(aboutActions, responseFactory, contentConverter);
+
+        Mockito.when(aboutActions.getAboutModel()).thenReturn(Optional.of(model));
+
+        final ResponseEntity<String> response = aboutController.about();
+        ResponseEntity<String> expectedResponse = responseFactory.createResponse(HttpStatus.OK, contentConverter.getJsonString(model));
+        assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
+        assertEquals(expectedResponse.getBody(), response.getBody());
+    }
+
+    @Test
+    public void testGetAboutDataNotPresent() {
+        final Gson gson = new Gson();
+        final ContentConverter contentConverter = new ContentConverter(gson, new DefaultConversionService());
+
+        ResponseFactory responseFactory = new ResponseFactory();
+        final AboutActions aboutActions = Mockito.mock(AboutActions.class);
+        final AboutController aboutController = new AboutController(aboutActions, responseFactory, contentConverter);
+
+        Mockito.when(aboutActions.getAboutModel()).thenReturn(Optional.empty());
+
+        final ResponseEntity<String> response = aboutController.about();
+        ResponseEntity<String> expectedResponse = responseFactory.createResponse(HttpStatus.NOT_FOUND, AboutController.ERROR_ABOUT_MODEL_NOT_FOUND);
+        assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
+        assertEquals(expectedResponse.getBody(), response.getBody());
     }
 }
