@@ -34,8 +34,6 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.ProxyManager;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.common.provider.ProviderProperties;
 import com.synopsys.integration.alert.provider.polaris.descriptor.PolarisDescriptor;
 import com.synopsys.integration.exception.IntegrationException;
@@ -100,13 +98,7 @@ public class PolarisProperties extends ProviderProperties {
 
     public AccessTokenRestConnection createRestConnection(final IntLogger intLogger, final String baseUrl, final String accessToken, final Integer timeout) {
         final Boolean alwaysTrustCertificate = alertProperties.getAlertTrustCertificate().orElse(Boolean.FALSE);
-        ProxyInfo proxyInfo = ProxyInfo.NO_PROXY_INFO;
-        try {
-            proxyInfo = proxyManager.createProxyInfo();
-        } catch (AlertDatabaseConstraintException | AlertRuntimeException ex) {
-            logger.error("Error creating proxy information", ex);
-        }
-
+        ProxyInfo proxyInfo = proxyManager.createProxyInfo();
         return new AccessTokenRestConnection(intLogger, timeout, alwaysTrustCertificate, proxyInfo, baseUrl, accessToken);
     }
 

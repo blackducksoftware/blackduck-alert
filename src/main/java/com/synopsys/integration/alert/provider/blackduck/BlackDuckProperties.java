@@ -38,7 +38,6 @@ import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.ProxyManager;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.provider.ProviderProperties;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
@@ -186,16 +185,12 @@ public class BlackDuckProperties extends ProviderProperties {
     private Properties getBlackDuckProperties() {
         final Properties properties = new Properties();
 
+        ProxyInfo proxyInfo = proxyManager.createProxyInfo();
         properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "trust.cert", String.valueOf(alertProperties.getAlertTrustCertificate().orElse(false)));
-        try {
-            ProxyInfo proxyInfo = proxyManager.createProxyInfo();
-            properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.host", proxyInfo.getHost().orElse(""));
-            properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.port", String.valueOf(proxyInfo.getPort()));
-            properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.username", proxyInfo.getUsername().orElse(""));
-            properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.password", proxyInfo.getPassword().orElse(""));
-        } catch (AlertDatabaseConstraintException ex) {
-            logger.error("Error applying proxy settings.", ex);
-        }
+        properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.host", proxyInfo.getHost().orElse(""));
+        properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.port", String.valueOf(proxyInfo.getPort()));
+        properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.username", proxyInfo.getUsername().orElse(""));
+        properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.password", proxyInfo.getPassword().orElse(""));
         return properties;
     }
 

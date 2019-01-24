@@ -5,15 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.exception.AlertRuntimeException;
 import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
@@ -59,29 +56,5 @@ public class ProxyManagerTest {
         assertEquals(USERNAME, proxyInfo.getUsername().orElse(null));
         assertEquals(PASSWORD, proxyInfo.getPassword().orElse(null));
 
-    }
-
-    @Test
-    public void testCreateThrowException() {
-        try {
-            Mockito.when(configurationAccessor.getConfigurationByDescriptorNameAndContext(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL)).thenThrow(new AlertDatabaseConstraintException("test error finding configuration"));
-            proxyManager = new ProxyManager(configurationAccessor);
-            proxyManager.createProxyInfo();
-            Assertions.fail();
-        } catch (AlertDatabaseConstraintException ex) {
-
-        }
-    }
-
-    @Test
-    public void testCreateThrowRuntimeException() throws Exception {
-        try {
-            Mockito.when(configurationAccessor.getConfigurationByDescriptorNameAndContext(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL)).thenReturn(List.of());
-            proxyManager = new ProxyManager(configurationAccessor);
-            proxyManager.createProxyInfo();
-            Assertions.fail();
-        } catch (AlertRuntimeException ex) {
-
-        }
     }
 }

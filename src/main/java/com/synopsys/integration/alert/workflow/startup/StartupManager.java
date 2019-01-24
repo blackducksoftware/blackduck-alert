@@ -132,12 +132,8 @@ public class StartupManager {
     }
 
     public void logConfiguration() {
-        ProxyInfo proxyInfo = ProxyInfo.NO_PROXY_INFO;
-        try {
-            proxyInfo = proxyManager.createProxyInfo();
-        } catch (AlertDatabaseConstraintException e) {
-            // no logging needed here
-        }
+        ProxyInfo proxyInfo = proxyManager.createProxyInfo();
+
         final boolean authenticatedProxy = StringUtils.isNotBlank(proxyInfo.getPassword().orElse(""));
         logger.info("----------------------------------------");
         logger.info("Alert Configuration: ");
