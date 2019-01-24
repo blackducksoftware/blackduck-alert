@@ -20,7 +20,7 @@ const initialState = {
     actionMessage: null,
     error: {
         message: '',
-        fieldErrors: []
+        fieldErrors: {}
     },
     id: null
 };
@@ -71,7 +71,7 @@ const config = (state = initialState, action) => {
                 showTestModal: false,
                 error: {
                     message: '',
-                    fieldErrors: []
+                    fieldErrors: {}
                 }
             });
 
@@ -81,7 +81,7 @@ const config = (state = initialState, action) => {
                 updateStatus: 'UPDATING',
                 error: {
                     message: '',
-                    fieldErrors: []
+                    fieldErrors: {}
                 }
             });
 
@@ -93,7 +93,7 @@ const config = (state = initialState, action) => {
                 ...action.config,
                 error: {
                     message: '',
-                    fieldErrors: []
+                    fieldErrors: {}
                 }
             });
 
@@ -103,7 +103,7 @@ const config = (state = initialState, action) => {
                 actionMessage: null,
                 error: {
                     message: action.message,
-                    fieldErrors: action.errors || []
+                    fieldErrors: action.errors || {}
                 }
             });
 
