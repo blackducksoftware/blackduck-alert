@@ -9,31 +9,31 @@ import ConfigButtons from 'component/common/ConfigButtons';
 import * as FieldModelUtil from 'util/fieldModelUtilities';
 
 
-const KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD = 'user.default.admin.password';
-const KEY_ENCRYPTION_PASSWORD = 'encryption.password';
-const KEY_ENCRYPTION_GLOBAL_SALT = 'encryption.global.salt';
+const KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD = 'settings.user.default.admin.password';
+const KEY_ENCRYPTION_PASSWORD = 'settings.encryption.password';
+const KEY_ENCRYPTION_GLOBAL_SALT = 'settings.encryption.global.salt';
 
 // Proxy Keys
-const KEY_PROXY_HOST = 'proxy.host';
-const KEY_PROXY_PORT = 'proxy.port';
-const KEY_PROXY_USERNAME = 'proxy.username';
-const KEY_PROXY_PASSWORD = 'proxy.password';
+const KEY_PROXY_HOST = 'settings.proxy.host';
+const KEY_PROXY_PORT = 'settings.proxy.port';
+const KEY_PROXY_USERNAME = 'settings.proxy.username';
+const KEY_PROXY_PASSWORD = 'settings.proxy.password';
 
 // LDAP Keys
-const KEY_LDAP_ENABLED = 'ldap.enabled';
-const KEY_LDAP_SERVER = 'ldap.server';
-const KEY_LDAP_MANAGER_DN = 'ldap.manager.dn';
-const KEY_LDAP_MANAGER_PASSWORD = 'ldap.manager.password';
-const KEY_LDAP_AUTHENTICATION_TYPE = 'ldap.authentication.type';
-const KEY_LDAP_REFERRAL = 'ldap.referral';
-const KEY_LDAP_USER_SEARCH_BASE = 'ldap.user.search.base';
-const KEY_LDAP_USER_SEARCH_FILTER = 'ldap.user.search.filter';
-const KEY_LDAP_USER_DN_PATTERNS = 'ldap.user.dn.patterns';
-const KEY_LDAP_USER_ATTRIBUTES = 'ldap.user.attributes';
-const KEY_LDAP_GROUP_SEARCH_BASE = 'ldap.group.search.base';
-const KEY_LDAP_GROUP_SEARCH_FILTER = 'ldap.group.search.filter';
-const KEY_LDAP_GROUP_ROLE_ATTRIBUTE = 'ldap.group.role.attribute';
-const KEY_LDAP_ROLE_PREFIX = 'ldap.role.prefix';
+const KEY_LDAP_ENABLED = 'settings.ldap.enabled';
+const KEY_LDAP_SERVER = 'settings.ldap.server';
+const KEY_LDAP_MANAGER_DN = 'settings.ldap.manager.dn';
+const KEY_LDAP_MANAGER_PASSWORD = 'settings.ldap.manager.password';
+const KEY_LDAP_AUTHENTICATION_TYPE = 'settings.ldap.authentication.type';
+const KEY_LDAP_REFERRAL = 'settings.ldap.referral';
+const KEY_LDAP_USER_SEARCH_BASE = 'settings.ldap.user.search.base';
+const KEY_LDAP_USER_SEARCH_FILTER = 'settings.ldap.user.search.filter';
+const KEY_LDAP_USER_DN_PATTERNS = 'settings.ldap.user.dn.patterns';
+const KEY_LDAP_USER_ATTRIBUTES = 'settings.ldap.user.attributes';
+const KEY_LDAP_GROUP_SEARCH_BASE = 'settings.ldap.group.search.base';
+const KEY_LDAP_GROUP_SEARCH_FILTER = 'settings.ldap.group.search.filter';
+const KEY_LDAP_GROUP_ROLE_ATTRIBUTE = 'settings.ldap.group.role.attribute';
+const KEY_LDAP_ROLE_PREFIX = 'settings.ldap.role.prefix';
 
 const fieldNames = [
     KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD,
