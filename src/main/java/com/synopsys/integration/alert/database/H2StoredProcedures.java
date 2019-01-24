@@ -32,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public final class H2StoredProcedures {
     public static final String UNIQUENESS_CONTRAINT_MESSAGE_SEGMENT = "Unique index or primary key violation";
+    public static final String DOES_NOT_EXIST_MESSAGE = "No values returned for that query";
 
     public static void defineField(final Connection connection, final String fieldKey, final Boolean sensitive, final String descriptorName, final String context) throws SQLException {
         try (final Statement insertIntoDefinedFields = connection.createStatement()) {
@@ -40,7 +41,7 @@ public final class H2StoredProcedures {
             ignoreUniquenessConstraintException(e);
         }
 
-        final Integer fieldId = getFirstInt(connection, "SELECT ID FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = '" + fieldKey + "' LIMIT 1;");
+        final Integer fieldId = getFieldIdForSourceKey(connection, fieldKey);
         try (final Statement insertIntoFieldContexts = connection.createStatement()) {
             insertIntoFieldContexts.executeUpdate("INSERT INTO ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID) VALUES (" + fieldId + ", GET_ID_FOR_CONFIG_CONTEXT('" + StringUtils.upperCase(context) + "'));");
         } catch (final SQLException e) {
@@ -52,19 +53,70 @@ public final class H2StoredProcedures {
     }
 
     public static Integer getIdForRegisteredDescriptorName(final Connection connection, final String descriptorName) throws SQLException {
-        return getFirstInt(connection, "SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE REGISTERED_DESCRIPTORS.NAME = '" + StringUtils.lowerCase(descriptorName) + "' LIMIT 1;");
+        return getFirstInt(connection, "SELECT ID FROM ALERT.REGISTERED_DESCRIPTORS WHERE REGISTERED_DESCRIPTORS.NAME = '" + StringUtils.lowerCase(descriptorName) + "' LIMIT 1;", "ID");
     }
 
     public static Integer getIdForDescriptorType(final Connection connection, final String type) throws SQLException {
-        return getFirstInt(connection, "SELECT ID FROM ALERT.DESCRIPTOR_TYPES WHERE DESCRIPTOR_TYPES.TYPE = '" + StringUtils.upperCase(type) + "' LIMIT 1;");
+        return getFirstInt(connection, "SELECT ID FROM ALERT.DESCRIPTOR_TYPES WHERE DESCRIPTOR_TYPES.TYPE = '" + StringUtils.upperCase(type) + "' LIMIT 1;", "ID");
     }
 
-    public static Integer getLatestFieldId(final Connection connection) throws SQLException {
-        return getFirstInt(connection, "SELECT ID FROM ALERT.DEFINED_FIELDS ORDER BY ID DESC LIMIT 1;");
+    public static Integer getFieldIdForSourceKey(final Connection connection, final String sourceKey) throws SQLException {
+        return getFirstInt(connection, "SELECT ID FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = '" + sourceKey + "' LIMIT 1;", "ID");
     }
 
     public static Integer getIdForConfigContext(final Connection connection, final String context) throws SQLException {
-        return getFirstInt(connection, "SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONFIG_CONTEXTS.CONTEXT = '" + StringUtils.upperCase(context) + "' LIMIT 1;");
+        return getFirstInt(connection, "SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONFIG_CONTEXTS.CONTEXT = '" + StringUtils.upperCase(context) + "' LIMIT 1;", "ID");
+    }
+
+    public static Integer getLatestIdForDescriptorConfig(final Connection connection) throws SQLException {
+        return getFirstInt(connection, "SELECT ID FROM ALERT.DESCRIPTOR_CONFIGS ORDER BY DESCRIPTOR_CONFIGS.ID DESC LIMIT 1;", "ID");
+    }
+
+    public static void migrateIntValueIntoNewestConfig(final Connection connection, final String schemaName, final String tableName, final String columnName, final String fieldKey) throws SQLException {
+        try {
+            final Integer value = getFirstInt(connection, String.format("SELECT %s FROM %s.%s LIMIT 1;", columnName, schemaName, tableName), "ID");
+            if (value != null) {
+                migrateValueIntoNewestConfig(connection, fieldKey, value.toString());
+            }
+        } catch (final SQLException e) {
+            if (!DOES_NOT_EXIST_MESSAGE.equals(e.getMessage())) {
+                throw e;
+            }
+        }
+    }
+
+    public static void migrateBooleanValueIntoNewestConfig(final Connection connection, final String schemaName, final String tableName, final String columnName, final String fieldKey) throws SQLException {
+        try {
+            final Boolean value = getFirstBoolean(connection, String.format("SELECT %s FROM %s.%s LIMIT 1;", columnName, schemaName, tableName), "ID");
+            if (value != null) {
+                migrateValueIntoNewestConfig(connection, fieldKey, value.toString());
+            }
+        } catch (final SQLException e) {
+            if (!DOES_NOT_EXIST_MESSAGE.equals(e.getMessage())) {
+                throw e;
+            }
+        }
+    }
+
+    public static void migrateStringValueIntoNewestConfig(final Connection connection, final String schemaName, final String tableName, final String columnName, final String fieldKey) throws SQLException {
+        try {
+            final String value = getFirstString(connection, String.format("SELECT %s FROM %s.%s LIMIT 1;", columnName, schemaName, tableName), "ID");
+            if (StringUtils.isNotBlank(value)) {
+                migrateValueIntoNewestConfig(connection, fieldKey, String.format("'%s'", value));
+            }
+        } catch (final SQLException e) {
+            if (!DOES_NOT_EXIST_MESSAGE.equals(e.getMessage())) {
+                throw e;
+            }
+        }
+    }
+
+    private static void migrateValueIntoNewestConfig(final Connection connection, final String fieldKey, final String value) throws SQLException {
+        try (final Statement insertIntoFieldValues = connection.createStatement()) {
+            final Integer configId = getLatestIdForDescriptorConfig(connection);
+            final Integer fieldId = getFieldIdForSourceKey(connection, fieldKey);
+            insertIntoFieldValues.executeUpdate("INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (" + configId + ", " + fieldId + ", " + value + ")");
+        }
     }
 
     private static void ignoreUniquenessConstraintException(final SQLException e) throws SQLException {
@@ -75,13 +127,35 @@ public final class H2StoredProcedures {
         // This is a duplicate key, but the relational tables still need to be updated.
     }
 
-    private static Integer getFirstInt(final Connection connection, final String sql) throws SQLException {
+    private static Integer getFirstInt(final Connection connection, final String sql, final String columnName) throws SQLException {
         try (final Statement statement = connection.createStatement()) {
             final ResultSet resultSet = statement.executeQuery(sql);
             if (resultSet.next()) {
-                return resultSet.getInt("ID");
+                return resultSet.getInt(columnName);
             } else {
-                throw new SQLException("Row does not exist");
+                throw new SQLException(DOES_NOT_EXIST_MESSAGE);
+            }
+        }
+    }
+
+    private static Boolean getFirstBoolean(final Connection connection, final String sql, final String columnName) throws SQLException {
+        try (final Statement statement = connection.createStatement()) {
+            final ResultSet resultSet = statement.executeQuery(sql);
+            if (resultSet.next()) {
+                return resultSet.getBoolean(columnName);
+            } else {
+                throw new SQLException(DOES_NOT_EXIST_MESSAGE);
+            }
+        }
+    }
+
+    private static String getFirstString(final Connection connection, final String sql, final String columnName) throws SQLException {
+        try (final Statement statement = connection.createStatement()) {
+            final ResultSet resultSet = statement.executeQuery(sql);
+            if (resultSet.next()) {
+                return resultSet.getString(columnName);
+            } else {
+                throw new SQLException(DOES_NOT_EXIST_MESSAGE);
             }
         }
     }

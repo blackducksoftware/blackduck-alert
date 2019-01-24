@@ -106,20 +106,20 @@ public class H2StoredProceduresTest {
     }
 
     @Test
-    public void getLatestFieldIdTest() throws SQLException {
+    public void getFieldIdForSourceKeyTest() throws SQLException {
         final Integer id = 1;
         Mockito.when(mockResultSet.next()).thenReturn(Boolean.TRUE);
         Mockito.when(mockResultSet.getInt(Mockito.anyString())).thenReturn(id);
 
-        final Integer retrievedId = H2StoredProcedures.getLatestFieldId(mockConnection);
+        final Integer retrievedId = H2StoredProcedures.getFieldIdForSourceKey(mockConnection, "random.key");
         Assertions.assertEquals(id, retrievedId);
     }
 
     @Test
-    public void getLatestFieldIdThrowsExceptionTest() throws SQLException {
+    public void getFieldIdForSourceKeyThrowsExceptionTest() throws SQLException {
         Mockito.when(mockResultSet.next()).thenReturn(Boolean.FALSE);
         try {
-            H2StoredProcedures.getLatestFieldId(mockConnection);
+            H2StoredProcedures.getFieldIdForSourceKey(mockConnection, "random.key");
             Assertions.fail("Expected exception to be thrown");
         } catch (final SQLException e) {
         }
@@ -144,4 +144,20 @@ public class H2StoredProceduresTest {
         } catch (final SQLException e) {
         }
     }
+
+    @Test
+    public void migrateIntValueIntoNewestConfigTest() {
+        // TODO implement
+    }
+
+    @Test
+    public void migrateStringValueIntoNewestConfigTest() {
+        // TODO implement
+    }
+
+    @Test
+    public void migrateBooleanValueIntoNewestConfigTest() {
+        // TODO implement
+    }
+
 }
