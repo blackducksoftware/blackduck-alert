@@ -33,11 +33,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.ProxyManager;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
@@ -60,6 +60,7 @@ import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.OnDemandTask;
 import com.synopsys.integration.alert.workflow.upgrade.UpgradeProcessor;
+import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 @Component
 public class StartupManager {
@@ -78,40 +79,13 @@ public class StartupManager {
     private final BaseConfigurationAccessor configurationAccessor;
     private final EncryptionUtility encryptionUtility;
     private final UpgradeProcessor upgradeProcessor;
-
-    @Value("${logging.level.com.blackducksoftware.integration:}")
-    private String loggingLevel;
-
-    // SSL properties
-    @Value("${server.port:")
-    private String serverPort;
-
-    @Value("${server.ssl.key-store:}")
-    private String keyStoreFile;
-
-    @Value("${server.ssl.key-store-password:}")
-    private String keyStorePass;
-
-    @Value("${server.ssl.keyStoreType:}")
-    private String keyStoreType;
-
-    @Value("${server.ssl.keyAlias:}")
-    private String keyAlias;
-
-    @Value("${server.ssl.trust-store:}")
-    private String trustStoreFile;
-
-    @Value("${server.ssl.trust-store-password:}")
-    private String trustStorePass;
-
-    @Value("${server.ssl.trustStoreType:}")
-    private String trustStoreType;
+    private final ProxyManager proxyManager;
 
     @Autowired
     public StartupManager(final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
         final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask, final PhoneHomeTask phoneHometask, final AlertStartupInitializer alertStartupInitializer,
         final List<ProviderDescriptor> providerDescriptorList, final SystemStatusUtility systemStatusUtility, final SystemValidator systemValidator, final BaseConfigurationAccessor configurationAccessor,
-        final EncryptionUtility encryptionUtility, final UpgradeProcessor upgradeProcessor) {
+        final EncryptionUtility encryptionUtility, final UpgradeProcessor upgradeProcessor, final ProxyManager proxyManager) {
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
         this.dailyTask = dailyTask;
@@ -125,6 +99,7 @@ public class StartupManager {
         this.configurationAccessor = configurationAccessor;
         this.encryptionUtility = encryptionUtility;
         this.upgradeProcessor = upgradeProcessor;
+        this.proxyManager = proxyManager;
     }
 
     @Transactional
@@ -157,14 +132,20 @@ public class StartupManager {
     }
 
     public void logConfiguration() {
-        final boolean authenticatedProxy = StringUtils.isNotBlank(alertProperties.getAlertProxyPassword().orElse(null));
+        ProxyInfo proxyInfo = ProxyInfo.NO_PROXY_INFO;
+        try {
+            proxyInfo = proxyManager.createProxyInfo();
+        } catch (AlertDatabaseConstraintException e) {
+            // no logging needed here
+        }
+        final boolean authenticatedProxy = StringUtils.isNotBlank(proxyInfo.getPassword().orElse(""));
         logger.info("----------------------------------------");
         logger.info("Alert Configuration: ");
-        logger.info("Logging level:           {}", getLoggingLevel());
-        logger.info("Alert Proxy Host:          {}", alertProperties.getAlertProxyHost().orElse(""));
-        logger.info("Alert Proxy Port:          {}", alertProperties.getAlertProxyPort().orElse(""));
+        logger.info("Logging level:           {}", alertProperties.getLoggingLevel().orElse(""));
+        logger.info("Alert Proxy Host:          {}", proxyInfo.getHost().orElse(""));
+        logger.info("Alert Proxy Port:          {}", proxyInfo.getPort());
         logger.info("Alert Proxy Authenticated: {}", authenticatedProxy);
-        logger.info("Alert Proxy User:          {}", alertProperties.getAlertProxyUsername().orElse(""));
+        logger.info("Alert Proxy User:          {}", proxyInfo.getUsername().orElse(""));
         logger.info("");
         logger.info("BlackDuck URL:                 {}", blackDuckProperties.getBlackDuckUrl().orElse(""));
         logger.info("BlackDuck Webserver Host:                 {}", blackDuckProperties.getPublicBlackDuckWebserverHost().orElse(""));
@@ -264,9 +245,4 @@ public class StartupManager {
         logger.info("Initializing providers...");
         providerDescriptorList.stream().map(ProviderDescriptor::getProvider).forEach(Provider::initialize);
     }
-
-    public String getLoggingLevel() {
-        return loggingLevel;
-    }
-
 }

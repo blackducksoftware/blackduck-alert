@@ -24,7 +24,6 @@
 package com.synopsys.integration.alert.component.settings;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -60,35 +59,9 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
     }
 
     @Override
-    public void validateConfig(final Collection<ConfigField> descriptorFields, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
+    public void validateConfig(final Map<String, ConfigField> descriptorFields, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
         super.validateConfig(descriptorFields, fieldModel, fieldErrors);
         validateLDAPSettings(fieldModel, fieldErrors);
-    }
-
-    @Override
-    public FieldModel readConfig(final FieldModel fieldModel) {
-        final Optional<UserModel> defaultUser = userAccessor.getUser("sysadmin");
-        final FieldModel newModel = createFieldModelCopy(fieldModel);
-        final boolean defaultUserPasswordSet = defaultUser.isPresent() && StringUtils.isNotBlank(defaultUser.get().getPassword());
-        newModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, new FieldValueModel(null, defaultUserPasswordSet));
-        newModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, new FieldValueModel(null, encryptionUtility.isPasswordSet()));
-        newModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(null, encryptionUtility.isPasswordSet()));
-        return newModel;
-    }
-
-    @Override
-    public FieldModel updateConfig(final FieldModel fieldModel) {
-        saveDefaultAdminUserPassword(fieldModel);
-        saveEncryptionProperties(fieldModel);
-        return createScrubbedModel(fieldModel);
-    }
-
-    @Override
-    public FieldModel saveConfig(final FieldModel fieldModel) {
-        saveDefaultAdminUserPassword(fieldModel);
-        saveEncryptionProperties(fieldModel);
-        systemValidator.validate();
-        return createScrubbedModel(fieldModel);
     }
 
     private void validateLDAPSettings(final FieldModel fieldModel, final Map<String, String> fieldErrors) {
@@ -127,6 +100,30 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
                 validationFunction.apply(valueModel);
             }
         }
+    }
+
+    @Override
+    public FieldModel readConfig(final FieldModel fieldModel) {
+        final Optional<UserModel> defaultUser = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER);
+        final FieldModel newModel = createFieldModelCopy(fieldModel);
+        final boolean defaultUserPasswordSet = defaultUser.map(UserModel::getPassword).filter(StringUtils::isNotBlank).isPresent();
+        newModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, new FieldValueModel(null, defaultUserPasswordSet));
+        newModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, new FieldValueModel(null, encryptionUtility.isPasswordSet()));
+        newModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(null, encryptionUtility.isPasswordSet()));
+        return newModel;
+    }
+
+    @Override
+    public FieldModel updateConfig(final FieldModel fieldModel) {
+        return saveConfig(fieldModel);
+    }
+
+    @Override
+    public FieldModel saveConfig(final FieldModel fieldModel) {
+        saveDefaultAdminUserPassword(fieldModel);
+        saveEncryptionProperties(fieldModel);
+        systemValidator.validate();
+        return createScrubbedModel(fieldModel);
     }
 
     private FieldModel createScrubbedModel(final FieldModel fieldModel) {

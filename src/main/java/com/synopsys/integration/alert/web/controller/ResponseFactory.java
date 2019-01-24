@@ -23,6 +23,8 @@
  */
 package com.synopsys.integration.alert.web.controller;
 
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -80,5 +82,11 @@ public class ResponseFactory {
 
     public ResponseEntity<String> createConflictResponse(String id, String message) {
         return createResponse(HttpStatus.CONFLICT, id, message);
+    }
+
+    public ResponseEntity<String> createFieldErrorResponse(String id, String message, Map<String, String> fieldErrors) {
+        final ResponseBodyBuilder responseBody = new ResponseBodyBuilder(id, message);
+        responseBody.putErrors(fieldErrors);
+        return new ResponseEntity<>(responseBody.build(), HttpStatus.BAD_REQUEST);
     }
 }

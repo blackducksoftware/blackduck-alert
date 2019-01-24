@@ -7,13 +7,14 @@ import 'font-awesome/scss/font-awesome.scss';
 
 import MainPage from 'MainPage';
 import LoginPage from 'LoginPage';
-import AboutInfoFooter from 'AboutInfoFooter';
+import AboutInfoFooter from 'component/AboutInfoFooter';
+import SetupPage from 'SetupPage';
 import { getConfig } from 'store/actions/config';
 import { verifyLogin } from 'store/actions/session';
 import { getInitialSystemSetup } from './store/actions/system';
 
 import '../css/main.scss';
-import SetupPage from "SetupPage";
+
 
 class App extends Component {
     componentDidMount() {

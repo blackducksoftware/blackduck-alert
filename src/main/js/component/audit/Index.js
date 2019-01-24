@@ -8,10 +8,10 @@ import DescriptorLabel from 'component/common/DescriptorLabel';
 import RefreshTableCellFormatter from 'component/common/RefreshTableCellFormatter';
 import NotificationTypeLegend from 'component/common/NotificationTypeLegend';
 import { logout } from 'store/actions/session';
-import AuditDetails from 'component/general/audit/Details';
+import AuditDetails from 'component/audit/Details';
 import CheckboxInput from 'field/input/CheckboxInput';
 
-import '../../../../css/audit.scss';
+import '../../../css/audit.scss';
 
 
 class Index extends Component {

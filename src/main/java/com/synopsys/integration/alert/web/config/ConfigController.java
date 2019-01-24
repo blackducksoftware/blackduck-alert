@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.web.config;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -50,7 +49,6 @@ import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedExce
 import com.synopsys.integration.alert.web.controller.BaseController;
 import com.synopsys.integration.alert.web.controller.ResponseFactory;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
-import com.synopsys.integration.alert.web.model.ResponseBodyBuilder;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
 import com.synopsys.integration.rest.exception.IntegrationRestException;
 
@@ -110,19 +108,17 @@ public class ConfigController extends BaseController {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", "Required request body is missing");
         }
-        String stringId = restModel.getId();
-        final Long id = contentConverter.getLongValue(stringId);
+        String id = restModel.getId();
         try {
             if (!configActions.doesConfigExist(id)) {
                 try {
-                    configActions.validateConfig(restModel, new HashMap<>());
                     final FieldModel updatedEntity = configActions.saveConfig(restModel);
                     return responseFactory.createResponse(HttpStatus.CREATED, updatedEntity.getId(), "Created");
                 } catch (final AlertFieldException e) {
-                    return fieldError(id, "There were errors with the configuration.", e.getFieldErrors());
+                    return responseFactory.createFieldErrorResponse(id, "There were errors with the configuration.", e.getFieldErrors());
                 }
             } else {
-                return responseFactory.createConflictResponse(stringId, "Provided id must not be in use. To update an existing configuration, use PUT.");
+                return responseFactory.createConflictResponse(id, "Provided id must not be in use. To update an existing configuration, use PUT.");
             }
         } catch (final AlertException e) {
             logger.error(e.getMessage(), e);
@@ -140,11 +136,10 @@ public class ConfigController extends BaseController {
         try {
             if (configActions.doesConfigExist(id)) {
                 try {
-                    configActions.validateConfig(restModel, new HashMap<>());
                     final FieldModel updatedEntity = configActions.updateConfig(id, restModel);
                     return responseFactory.createAcceptedResponse(updatedEntity.getId(), "Updated");
                 } catch (final AlertFieldException e) {
-                    return fieldError(id, "There were errors with the configuration.", e.getFieldErrors());
+                    return responseFactory.createFieldErrorResponse(stringId, "There were errors with the configuration.", e.getFieldErrors());
                 }
             } else {
                 return responseFactory.createBadRequestResponse(stringId, "No configuration with the specified id.");
@@ -160,13 +155,12 @@ public class ConfigController extends BaseController {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", "Required request body is missing");
         }
-        String stringId = restModel.getId();
-        final Long id = contentConverter.getLongValue(stringId);
+        String id = restModel.getId();
         try {
             final String responseMessage = configActions.validateConfig(restModel, new HashMap<>());
-            return responseFactory.createOkResponse(stringId, responseMessage);
+            return responseFactory.createOkResponse(id, responseMessage);
         } catch (final AlertFieldException e) {
-            return fieldError(id, e.getMessage(), e.getFieldErrors());
+            return responseFactory.createFieldErrorResponse(id, e.getMessage(), e.getFieldErrors());
         }
     }
 
@@ -194,29 +188,23 @@ public class ConfigController extends BaseController {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", "Required request body is missing");
         }
-        String stringId = restModel.getId();
-        final Long id = contentConverter.getLongValue(stringId);
+        String id = restModel.getId();
         try {
             final String responseMessage = configActions.testConfig(restModel, destination);
-            return responseFactory.createResponse(HttpStatus.OK, id, responseMessage);
+            return responseFactory.createOkResponse(id, responseMessage);
         } catch (final IntegrationRestException e) {
             logger.error(e.getMessage(), e);
             return responseFactory.createResponse(HttpStatus.valueOf(e.getHttpStatusCode()), id, e.getHttpStatusMessage() + " : " + e.getMessage());
         } catch (final AlertFieldException e) {
-            return fieldError(id, e.getMessage(), e.getFieldErrors());
+            return responseFactory.createFieldErrorResponse(id, e.getMessage(), e.getFieldErrors());
         } catch (AlertMethodNotAllowedException e) {
             return responseFactory.createMethodNotAllowedResponse(e.getMessage());
         } catch (final AlertException e) {
-            return responseFactory.createBadRequestResponse(stringId, e.getMessage());
+            return responseFactory.createBadRequestResponse(id, e.getMessage());
         } catch (final Exception e) {
             logger.error(e.getMessage(), e);
-            return responseFactory.createInternalServerErrorResponse(stringId, e.getMessage());
+            return responseFactory.createInternalServerErrorResponse(id, e.getMessage());
         }
     }
 
-    private ResponseEntity<String> fieldError(final long id, final String error, final Map<String, String> fieldErrors) {
-        final ResponseBodyBuilder responseBuilder = new ResponseBodyBuilder(String.valueOf(id), error);
-        responseBuilder.putErrors(fieldErrors);
-        return new ResponseEntity<>(responseBuilder.build(), HttpStatus.BAD_REQUEST);
-    }
 }
