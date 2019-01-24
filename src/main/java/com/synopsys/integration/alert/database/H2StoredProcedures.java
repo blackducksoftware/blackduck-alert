@@ -34,12 +34,16 @@ public final class H2StoredProcedures {
     public static void defineField(final Connection connection, final String fieldKey, final Boolean sensitive, final String descriptorName, final String context) throws SQLException {
         try (final Statement insertIntoDefinedFields = connection.createStatement()) {
             insertIntoDefinedFields.executeUpdate("INSERT INTO ALERT.Defined_Fields (SOURCE_KEY, SENSITIVE) VALUES ('" + fieldKey + "', " + sensitive + ");");
-        }
-        try (final Statement insertIntoDescriptorFields = connection.createStatement()) {
-            insertIntoDescriptorFields.executeUpdate("INSERT INTO ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID) VALUES (GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('" + StringUtils.lowerCase(descriptorName) + "'), GET_LATEST_FIELD_ID());");
+        } catch (final SQLException e) {
+            ignoreUniquenessConstraintException(e);
         }
         try (final Statement insertIntoFieldContexts = connection.createStatement()) {
             insertIntoFieldContexts.executeUpdate("INSERT INTO ALERT.Field_Contexts (FIELD_ID, CONTEXT_ID) VALUES (GET_LATEST_FIELD_ID(), GET_ID_FOR_CONFIG_CONTEXT('" + StringUtils.upperCase(context) + "'));");
+        } catch (final SQLException e) {
+            ignoreUniquenessConstraintException(e);
+        }
+        try (final Statement insertIntoDescriptorFields = connection.createStatement()) {
+            insertIntoDescriptorFields.executeUpdate("INSERT INTO ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID) VALUES (GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('" + StringUtils.lowerCase(descriptorName) + "'), GET_LATEST_FIELD_ID());");
         }
     }
 
@@ -57,6 +61,14 @@ public final class H2StoredProcedures {
 
     public static Integer getIdForConfigContext(final Connection connection, final String context) throws SQLException {
         return getFirstInt(connection, "SELECT ID FROM ALERT.CONFIG_CONTEXTS WHERE CONFIG_CONTEXTS.CONTEXT = '" + StringUtils.upperCase(context) + "' LIMIT 1;");
+    }
+
+    private static void ignoreUniquenessConstraintException(final SQLException e) throws SQLException {
+        final String exceptionMessage = e.getMessage();
+        if (!exceptionMessage.contains("Unique index or primary key violation")) {
+            throw e;
+        }
+        // This is a duplicate key, but the relational tables still need to be updated.
     }
 
     private static Integer getFirstInt(final Connection connection, final String sql) throws SQLException {
