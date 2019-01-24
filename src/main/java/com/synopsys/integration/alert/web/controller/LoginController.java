@@ -25,32 +25,70 @@ package com.synopsys.integration.alert.web.controller;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.web.controller.handler.LoginHandler;
+import com.synopsys.integration.alert.web.actions.LoginActions;
 import com.synopsys.integration.alert.web.model.LoginConfig;
+import com.synopsys.integration.log.IntLogger;
+import com.synopsys.integration.log.LogLevel;
+import com.synopsys.integration.log.PrintStreamIntLogger;
 
 @RestController
 public class LoginController extends BaseController {
-    private final LoginHandler loginHandler;
+    private final LoginActions loginActions;
+    private ResponseFactory responseFactory;
+    private CsrfTokenRepository csrfTokenRepository;
 
     @Autowired
-    public LoginController(final LoginHandler loginDataHandler) {
-        this.loginHandler = loginDataHandler;
+    public LoginController(final LoginActions loginActions, final ResponseFactory responseFactory, final CsrfTokenRepository csrfTokenRepository) {
+        this.loginActions = loginActions;
+        this.responseFactory = responseFactory;
+        this.csrfTokenRepository = csrfTokenRepository;
     }
 
     @PostMapping(value = "/logout")
     public ResponseEntity<String> logout(final HttpServletRequest request) {
-        return loginHandler.userLogout(request);
+        final HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        SecurityContextHolder.clearContext();
+
+        final HttpHeaders headers = new HttpHeaders();
+        headers.add("Location", "/");
+
+        return new ResponseEntity<>("{\"message\":\"Success\"}", headers, HttpStatus.NO_CONTENT);
     }
 
     @PostMapping(value = "/login")
     public ResponseEntity<String> login(final HttpServletRequest request, final HttpServletResponse response, @RequestBody(required = false) final LoginConfig loginConfig) {
-        return loginHandler.userLogin(request, response, loginConfig);
+        final IntLogger logger = new PrintStreamIntLogger(System.out, LogLevel.INFO);
+        try {
+            if (loginActions.authenticateUser(loginConfig)) {
+                final CsrfToken token = csrfTokenRepository.generateToken(request);
+                csrfTokenRepository.saveToken(token, request, response);
+                response.setHeader(token.getHeaderName(), token.getToken());
+                return responseFactory.createResponse(HttpStatus.OK, "{\"message\":\"Success\"}");
+            } else {
+                return responseFactory.createResponse(HttpStatus.UNAUTHORIZED, "User not authorized");
+            }
+        } catch (final BadCredentialsException ex) {
+            return responseFactory.createResponse(HttpStatus.UNAUTHORIZED, "User not authorized");
+        } catch (final Exception ex) {
+            logger.error(ex.getMessage(), ex);
+            return responseFactory.createResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+        }
     }
 }

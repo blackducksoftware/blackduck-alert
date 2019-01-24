@@ -27,19 +27,21 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.google.gson.JsonObject;
+import com.synopsys.integration.alert.web.controller.ResponseFactory;
 
 public class ResponseBodyBuilder {
     private final JsonObject map;
 
     public ResponseBodyBuilder(final String id, final String message) {
         map = new JsonObject();
-        map.addProperty("id", id);
+        if (!ResponseFactory.EMPTY_ID.equals(id)) {
+            map.addProperty("id", id);
+        }
         map.addProperty("message", message);
     }
 
     public ResponseBodyBuilder(final String message) {
-        map = new JsonObject();
-        map.addProperty("message", message);
+        this(ResponseFactory.EMPTY_ID, message);
     }
 
     public ResponseBodyBuilder put(final String key, final Boolean value) {

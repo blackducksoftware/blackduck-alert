@@ -38,20 +38,15 @@ import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 
 @Component
 public class SchedulingUIConfig extends UIConfig {
-    public static final String KEY_ACCUMULATOR_NEXT_RUN = "accumulator.next.run";
-    public static final String KEY_DAILY_DIGEST_HOUR_OF_DAY = "daily.digest.hour";
-    public static final String KEY_DAILY_DIGEST_NEXT_RUN = "daily.digest.next.run";
-    public static final String KEY_PURGE_DATA_FREQUENCY_DAYS = "purge.data.frequency";
-    public static final String KEY_PURGE_DATA_NEXT_RUN = "purge.data.next.run";
-
     public SchedulingUIConfig() {
         super(SchedulingDescriptor.SCHEDULING_LABEL, SchedulingDescriptor.SCHEDULING_URL, SchedulingDescriptor.SCHEDULING_ICON);
     }
 
     @Override
     public List<ConfigField> createFields() {
-        final ConfigField digestHour = SelectConfigField.createRequired(KEY_DAILY_DIGEST_HOUR_OF_DAY, "Daily digest hour of day", List.of("1", "2", "3", "4", "5", "6", "7", "8", "10", "11", "12"), this::validateDigestHourOfDay);
-        final ConfigField purgeFrequency = SelectConfigField.createRequired(KEY_PURGE_DATA_FREQUENCY_DAYS, "Purge data frequency in days", List.of("1", "2", "3"), this::validatePurgeFrequency);
+        final ConfigField digestHour = SelectConfigField
+                                           .createRequired(SchedulingDescriptor.KEY_DAILY_DIGEST_HOUR_OF_DAY, "Daily digest hour of day", List.of("1", "2", "3", "4", "5", "6", "7", "8", "10", "11", "12"), this::validateDigestHourOfDay);
+        final ConfigField purgeFrequency = SelectConfigField.createRequired(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, "Purge data frequency in days", List.of("1", "2", "3"), this::validatePurgeFrequency);
         return Arrays.asList(digestHour, purgeFrequency);
     }
 

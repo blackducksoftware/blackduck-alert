@@ -23,25 +23,40 @@
  */
 package com.synopsys.integration.alert.web.controller;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synopsys.integration.alert.web.controller.handler.AboutHandler;
+import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.web.actions.AboutActions;
+import com.synopsys.integration.alert.web.model.AboutModel;
 
 @RestController
 public class AboutController extends BaseController {
-    private final AboutHandler aboutDataHandler;
+    public static final String ERROR_ABOUT_MODEL_NOT_FOUND = "Could not find the About model.";
+
+    private final AboutActions aboutActions;
+    private ResponseFactory responseFactory;
+    private ContentConverter contentConverter;
 
     @Autowired
-    public AboutController(final AboutHandler aboutDataHandler) {
-        this.aboutDataHandler = aboutDataHandler;
+    public AboutController(final AboutActions aboutActions, final ResponseFactory responseFactory, final ContentConverter contentConverter) {
+        this.aboutActions = aboutActions;
+        this.responseFactory = responseFactory;
+        this.contentConverter = contentConverter;
     }
 
     @GetMapping(value = "/about")
     public ResponseEntity<String> about() {
-        return aboutDataHandler.getAboutData();
+        final Optional<AboutModel> optionalModel = aboutActions.getAboutModel();
+        if (optionalModel.isPresent()) {
+            return responseFactory.createResponse(HttpStatus.OK, contentConverter.getJsonString(optionalModel.get()));
+        }
+        return responseFactory.createResponse(HttpStatus.NOT_FOUND, ERROR_ABOUT_MODEL_NOT_FOUND);
     }
 
 }
