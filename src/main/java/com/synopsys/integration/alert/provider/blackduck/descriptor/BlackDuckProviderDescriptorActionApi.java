@@ -24,7 +24,6 @@
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
 import java.io.IOException;
-import java.util.Collection;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -34,7 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
-import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
@@ -62,11 +60,10 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
     }
 
     @Override
-    public void testConfig(final Collection<ConfigField> configFields, final TestConfigModel testConfig) throws IntegrationException {
+    public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
         final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
 
         final FieldModel fieldModel = testConfig.getFieldModel();
-        validateFieldFormatting(configFields, fieldModel);
 
         final String apiToken = fieldModel.getField(BlackDuckDescriptor.KEY_BLACKDUCK_API_KEY).flatMap(field -> field.getValue()).orElse("");
         final String url = fieldModel.getField(BlackDuckDescriptor.KEY_BLACKDUCK_URL).flatMap(field -> field.getValue()).orElse("");

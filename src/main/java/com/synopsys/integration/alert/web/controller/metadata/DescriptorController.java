@@ -25,6 +25,8 @@ package com.synopsys.integration.alert.web.controller.metadata;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -37,6 +39,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
+import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
@@ -46,10 +50,12 @@ public class DescriptorController extends MetadataController {
     public static final String DESCRIPTORS_PATH = "/descriptors";
 
     private final Collection<Descriptor> descriptors;
+    private final CommonDistributionUIConfig commonDistributionUIConfig;
 
     @Autowired
-    public DescriptorController(final Collection<Descriptor> descriptors) {
+    public DescriptorController(final Collection<Descriptor> descriptors, final CommonDistributionUIConfig commonDistributionUIConfig) {
         this.descriptors = descriptors;
+        this.commonDistributionUIConfig = commonDistributionUIConfig;
     }
 
     @GetMapping(DESCRIPTORS_PATH)
@@ -95,10 +101,30 @@ public class DescriptorController extends MetadataController {
         final Set<DescriptorMetadata> descriptorMetadata = new HashSet<>();
         for (final ConfigContextEnum applicableContext : applicableContexts) {
             for (final Descriptor descriptor : filteredDescriptors) {
-                final Optional<DescriptorMetadata> uiConfig = descriptor.getMetaData(applicableContext);
-                uiConfig.ifPresent(descriptorMetadata::add);
+                final Optional<DescriptorMetadata> optionalMetaData = descriptor.getMetaData(applicableContext);
+                if (ConfigContextEnum.DISTRIBUTION == applicableContext) {
+                    optionalMetaData.ifPresent(metadata -> descriptorMetadata.add(createMetaData(metadata)));
+                } else {
+                    optionalMetaData.ifPresent(descriptorMetadata::add);
+                }
             }
         }
         return descriptorMetadata;
+    }
+
+    private DescriptorMetadata createMetaData(final DescriptorMetadata metadata) {
+        final Set<String> channelDescriptors = descriptors.stream()
+                                                   .filter(descriptor -> DescriptorType.CHANNEL == descriptor.getType())
+                                                   .map(value -> value.getName())
+                                                   .collect(Collectors.toSet());
+        final Set<String> providerDescriptors = descriptors.stream()
+                                                    .filter(descriptor -> DescriptorType.PROVIDER == descriptor.getType())
+                                                    .map(value -> value.getName())
+                                                    .collect(Collectors.toSet());
+        final List<ConfigField> metaDataFields = new LinkedList<>();
+        metaDataFields.addAll(metadata.getFields());
+        metaDataFields.addAll(commonDistributionUIConfig.createCommonConfigFields(channelDescriptors, providerDescriptors));
+
+        return new DescriptorMetadata(metadata.getLabel(), metadata.getUrlName(), metadata.getName(), metadata.getType(), metadata.getContext(), metadata.getFontAwesomeIcon(), metadata.isAutomaticallyGenerateUI(), metaDataFields);
     }
 }
