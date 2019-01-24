@@ -7,8 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -63,9 +61,10 @@ public class ConfigurationFieldModelTest {
         final FieldModel fieldModel = createFieldModel();
         final List<ConfigField> configFields = createConfigFields();
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
+        Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
         final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(configFields);
         final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor);
-        final Map<String, ConfigurationFieldModel> actualModelMap = modelConverter.convertFromFieldModel(configFields.stream().collect(Collectors.toMap(ConfigField::getKey, Function.identity())), fieldModel);
+        final Map<String, ConfigurationFieldModel> actualModelMap = modelConverter.convertFromFieldModel(fieldModel);
         assertTrue(actualModelMap.containsKey(KEY_FIELD_1));
         assertTrue(actualModelMap.containsKey(KEY_FIELD_2));
         assertEquals(VALUE_FIELD_1, actualModelMap.get(KEY_FIELD_1).getFieldValue().orElseThrow(IllegalArgumentException::new));
@@ -73,13 +72,12 @@ public class ConfigurationFieldModelTest {
     }
 
     @Test
-    public void convertFromFieldModelEmptyFieldsTest() {
+    public void convertFromFieldModelEmptyFieldsTest() throws Exception {
         final FieldModel fieldModel = createFieldModel();
-        final List<ConfigField> configFields = createConfigFields();
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(configFields);
+        final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(List.of());
         final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor);
-        final Map<String, ConfigurationFieldModel> actualModelMap = modelConverter.convertFromFieldModel(Map.of(), fieldModel);
+        final Map<String, ConfigurationFieldModel> actualModelMap = modelConverter.convertFromFieldModel(fieldModel);
         assertTrue(actualModelMap.isEmpty());
     }
 

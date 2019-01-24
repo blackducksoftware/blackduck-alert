@@ -187,17 +187,17 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
         jobNameField.setValue(getTestJobName());
         try {
             assertTrue(descriptorActionApi.isPresent());
-            final Map<String, ConfigField> configFieldMap = new HashMap<>();
-            final Map<String, ConfigField> globalMap = createFieldMap(ConfigContextEnum.GLOBAL);
-            final Map<String, ConfigField> distributionMap = createFieldMap(ConfigContextEnum.DISTRIBUTION);
-            final Map<String, ConfigField> providerDistributionMap = providerDescriptor.getUIConfig(ConfigContextEnum.DISTRIBUTION)
-                                                                         .flatMap(uiConfig -> Optional.of(uiConfig.createFields().stream()
-                                                                                                              .collect(Collectors.toMap(ConfigField::getKey, Function.identity()))))
-                                                                         .orElse(Map.of());
-
-            configFieldMap.putAll(globalMap);
-            configFieldMap.putAll(providerDistributionMap);
-            configFieldMap.putAll(distributionMap);
+            //            final Map<String, ConfigField> configFieldMap = new HashMap<>();
+            //            final Map<String, ConfigField> globalMap = createFieldMap(ConfigContextEnum.GLOBAL);
+            //            final Map<String, ConfigField> distributionMap = createFieldMap(ConfigContextEnum.DISTRIBUTION);
+            //            final Map<String, ConfigField> providerDistributionMap = providerDescriptor.getUIConfig(ConfigContextEnum.DISTRIBUTION)
+            //                                                                         .flatMap(uiConfig -> Optional.of(uiConfig.createFields().stream()
+            //                                                                                                              .collect(Collectors.toMap(ConfigField::getKey, Function.identity()))))
+            //                                                                         .orElse(Map.of());
+            //
+            //            configFieldMap.putAll(globalMap);
+            //            configFieldMap.putAll(providerDistributionMap);
+            //            configFieldMap.putAll(distributionMap);
             descriptorActionApi.get().testConfig(descriptorActionApi.get().createTestConfigModel(restModel, createTestConfigDestination()));
         } catch (final IntegrationException e) {
             e.printStackTrace();
@@ -212,7 +212,6 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
         final FieldModel restModel = createValidFieldModel(global_config.orElse(null), ConfigContextEnum.GLOBAL);
         try {
             assertTrue(descriptorActionApi.isPresent());
-            final Map<String, ConfigField> configFieldMap = createFieldMap(ConfigContextEnum.GLOBAL);
             descriptorActionApi.get().testConfig(descriptorActionApi.get().createTestConfigModel(restModel, createTestConfigDestination()));
         } catch (final IntegrationException e) {
             e.printStackTrace();
