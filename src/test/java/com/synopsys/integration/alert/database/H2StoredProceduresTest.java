@@ -29,6 +29,8 @@ public class H2StoredProceduresTest {
 
     @Test
     public void defineFieldTest() throws SQLException {
+        Mockito.when(mockResultSet.next()).thenReturn(Boolean.TRUE);
+        Mockito.when(mockResultSet.getInt(Mockito.anyString())).thenReturn(1);
         Mockito.when(mockStatement.executeUpdate(Mockito.anyString())).thenReturn(1);
         try {
             H2StoredProcedures.defineField(mockConnection, "example.key", Boolean.FALSE, "example_descriptor", "EXAMPLE_CONTEXT");
@@ -39,6 +41,8 @@ public class H2StoredProceduresTest {
 
     @Test
     public void defineFieldThrowsExceptionTest() throws SQLException {
+        Mockito.when(mockResultSet.next()).thenReturn(Boolean.TRUE);
+        Mockito.when(mockResultSet.getInt(Mockito.anyString())).thenReturn(1);
         Mockito.when(mockStatement.executeUpdate(Mockito.anyString())).thenThrow(new SQLException("fake message"));
         try {
             H2StoredProcedures.defineField(mockConnection, "example.key", Boolean.FALSE, "example_descriptor", "EXAMPLE_CONTEXT");
@@ -49,6 +53,8 @@ public class H2StoredProceduresTest {
 
     @Test
     public void defineFieldIgnoresExceptionTest() throws SQLException {
+        Mockito.when(mockResultSet.next()).thenReturn(Boolean.TRUE);
+        Mockito.when(mockResultSet.getInt(Mockito.anyString())).thenReturn(1);
         Mockito.when(mockStatement.executeUpdate(Mockito.contains("INSERT INTO ALERT.DEFINED_FIELDS"))).thenThrow(new SQLException(H2StoredProcedures.UNIQUENESS_CONTRAINT_MESSAGE_SEGMENT));
         Mockito.when(mockStatement.executeUpdate(Mockito.contains("INSERT INTO ALERT.FIELD_CONTEXTS"))).thenThrow(new SQLException(H2StoredProcedures.UNIQUENESS_CONTRAINT_MESSAGE_SEGMENT));
         Mockito.when(mockStatement.executeUpdate(Mockito.contains("INSERT INTO ALERT.DESCRIPTOR_FIELDS"))).thenReturn(1);
