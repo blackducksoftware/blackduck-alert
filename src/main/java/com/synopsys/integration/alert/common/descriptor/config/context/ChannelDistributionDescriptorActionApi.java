@@ -31,7 +31,6 @@ import com.synopsys.integration.alert.channel.DistributionChannel;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
-import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
@@ -45,14 +44,11 @@ import com.synopsys.integration.rest.RestConstants;
 
 public abstract class ChannelDistributionDescriptorActionApi extends DescriptorActionApi {
     private final DistributionChannel distributionChannel;
-    private final BaseConfigurationAccessor configurationAccessor;
     private final List<ProviderDescriptor> providerDescriptors;
     private final ConfigurationFieldModelConverter modelConverter;
 
-    public ChannelDistributionDescriptorActionApi(final DistributionChannel distributionChannel, final BaseConfigurationAccessor configurationAccessor,
-        final List<ProviderDescriptor> providerDescriptors, final ConfigurationFieldModelConverter modelConverter) {
+    public ChannelDistributionDescriptorActionApi(final DistributionChannel distributionChannel, final List<ProviderDescriptor> providerDescriptors, final ConfigurationFieldModelConverter modelConverter) {
         this.distributionChannel = distributionChannel;
-        this.configurationAccessor = configurationAccessor;
         this.providerDescriptors = providerDescriptors;
         this.modelConverter = modelConverter;
     }

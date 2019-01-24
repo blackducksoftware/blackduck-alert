@@ -3,6 +3,7 @@ package com.synopsys.integration.alert.component.settings;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +17,7 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.api.user.UserAccessor;
 import com.synopsys.integration.alert.database.api.user.UserModel;
@@ -33,10 +35,15 @@ public class SettingsDescriptorActionApiTest {
         final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
-        actionaApi.testConfig(null);
-        Mockito.verify(encryptionUtility, Mockito.times(0)).isInitialized();
-        Mockito.verify(userAccessor, Mockito.times(0)).getUser(Mockito.anyString());
-        Mockito.verify(systemValidator, Mockito.times(0)).validate(Mockito.anyMap());
+
+        try {
+            actionaApi.testConfig(null);
+            fail();
+        } catch (AlertMethodNotAllowedException e) {
+            Mockito.verify(encryptionUtility, Mockito.times(0)).isInitialized();
+            Mockito.verify(userAccessor, Mockito.times(0)).getUser(Mockito.anyString());
+            Mockito.verify(systemValidator, Mockito.times(0)).validate(Mockito.anyMap());
+        }
     }
 
     @Test

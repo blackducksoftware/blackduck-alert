@@ -35,19 +35,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.config.context.NoTestActionApi;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.api.user.UserAccessor;
 import com.synopsys.integration.alert.database.api.user.UserModel;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
 import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
-import com.synopsys.integration.alert.web.model.configuration.TestConfigModel;
 import com.synopsys.integration.alert.workflow.startup.SystemValidator;
-import com.synopsys.integration.exception.IntegrationException;
 
 @Component
-public class SettingsDescriptorActionApi extends DescriptorActionApi {
+public class SettingsDescriptorActionApi extends NoTestActionApi {
     private static final Logger logger = LoggerFactory.getLogger(SettingsDescriptorActionApi.class);
     private final EncryptionUtility encryptionUtility;
     private final UserAccessor userAccessor;
@@ -102,11 +100,6 @@ public class SettingsDescriptorActionApi extends DescriptorActionApi {
                 validationFunction.apply(valueModel);
             }
         }
-    }
-
-    @Override
-    public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
-
     }
 
     @Override

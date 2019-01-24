@@ -43,7 +43,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
-import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
@@ -67,7 +66,6 @@ import com.synopsys.integration.exception.IntegrationException;
 @Component
 public class ConfigActions {
     private static final Logger logger = LoggerFactory.getLogger(ConfigActions.class);
-    private final ContentConverter contentConverter;
     private final BaseConfigurationAccessor configurationAccessor;
     private final BaseDescriptorAccessor descriptorAccessor;
     private final DescriptorMap descriptorMap;
@@ -75,9 +73,8 @@ public class ConfigActions {
     private final CommonDistributionUIConfig commonDistributionUIConfig;
 
     @Autowired
-    public ConfigActions(final ContentConverter contentConverter, final BaseConfigurationAccessor configurationAccessor, final BaseDescriptorAccessor descriptorAccessor, final DescriptorMap descriptorMap,
+    public ConfigActions(final BaseConfigurationAccessor configurationAccessor, final BaseDescriptorAccessor descriptorAccessor, final DescriptorMap descriptorMap,
         final ConfigurationFieldModelConverter modelConverter, final CommonDistributionUIConfig commonDistributionUIConfig) {
-        this.contentConverter = contentConverter;
         this.configurationAccessor = configurationAccessor;
         this.descriptorAccessor = descriptorAccessor;
         this.descriptorMap = descriptorMap;
@@ -85,8 +82,8 @@ public class ConfigActions {
         this.commonDistributionUIConfig = commonDistributionUIConfig;
     }
 
-    public boolean doesConfigExist(final String id) throws AlertException {
-        return doesConfigExist(contentConverter.getLongValue(id));
+    public boolean doesConfigExist(String id) throws AlertException {
+        return StringUtils.isNotBlank(id) && doesConfigExist(Long.parseLong(id));
     }
 
     public boolean doesConfigExist(final Long id) throws AlertException {
@@ -123,10 +120,6 @@ public class ConfigActions {
             optionalModel = Optional.of(fieldModel);
         }
         return optionalModel;
-    }
-
-    public void deleteConfig(final String id) throws AlertException {
-        deleteConfig(contentConverter.getLongValue(id));
     }
 
     public void deleteConfig(final Long id) throws AlertException {
@@ -251,10 +244,6 @@ public class ConfigActions {
 
     private Optional<Descriptor> retrieveDescriptor(final String descriptorName) {
         return descriptorMap.getDescriptor(descriptorName);
-    }
-
-    private Optional<Descriptor> retrieveDescriptor(final FieldModel fieldModel) {
-        return retrieveDescriptor(fieldModel.getDescriptorName());
     }
 
     private Optional<DescriptorActionApi> retrieveDescriptorActionApi(final String context, final String descriptorName) {
