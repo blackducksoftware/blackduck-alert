@@ -39,13 +39,15 @@ public final class H2StoredProcedures {
         } catch (final SQLException e) {
             ignoreUniquenessConstraintException(e);
         }
+
+        final Integer fieldId = getFirstInt(connection, "SELECT ID FROM ALERT.DEFINED_FIELDS WHERE DEFINED_FIELDS.SOURCE_KEY = '" + fieldKey + "' LIMIT 1;");
         try (final Statement insertIntoFieldContexts = connection.createStatement()) {
-            insertIntoFieldContexts.executeUpdate("INSERT INTO ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID) VALUES (GET_LATEST_FIELD_ID(), GET_ID_FOR_CONFIG_CONTEXT('" + StringUtils.upperCase(context) + "'));");
+            insertIntoFieldContexts.executeUpdate("INSERT INTO ALERT.FIELD_CONTEXTS (FIELD_ID, CONTEXT_ID) VALUES (" + fieldId + ", GET_ID_FOR_CONFIG_CONTEXT('" + StringUtils.upperCase(context) + "'));");
         } catch (final SQLException e) {
             ignoreUniquenessConstraintException(e);
         }
         try (final Statement insertIntoDescriptorFields = connection.createStatement()) {
-            insertIntoDescriptorFields.executeUpdate("INSERT INTO ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID) VALUES (GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('" + StringUtils.lowerCase(descriptorName) + "'), GET_LATEST_FIELD_ID());");
+            insertIntoDescriptorFields.executeUpdate("INSERT INTO ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID) VALUES (GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('" + StringUtils.lowerCase(descriptorName) + "'), " + fieldId + ");");
         }
     }
 
