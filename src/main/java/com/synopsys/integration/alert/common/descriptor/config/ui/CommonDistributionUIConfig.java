@@ -60,7 +60,6 @@ public class CommonDistributionUIConfig {
         this.configurationAccessor = configurationAccessor;
     }
 
-    // TODO call this method in controller for distributions
     public List<ConfigField> createCommonConfigFields(final Set<String> channelDescriptors, final Set<String> providerDescriptors) {
         final ConfigField name = TextInputConfigField.createRequired(KEY_NAME, "Name");
         final ConfigField frequency = SelectConfigField.createRequired(KEY_FREQUENCY, "Frequency", Arrays.stream(FrequencyType.values()).map(type -> type.getDisplayName()).collect(Collectors.toList()), this::validateJobName);

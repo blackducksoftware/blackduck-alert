@@ -24,9 +24,8 @@
 package com.synopsys.integration.alert.workflow.startup;
 
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
@@ -40,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
@@ -57,13 +57,16 @@ public class AlertStartupInitializer {
     private final SortedSet<String> alertStartupFields;
     private final BaseDescriptorAccessor descriptorAccessor;
     private final BaseConfigurationAccessor fieldConfigurationAccessor;
+    private final ConfigurationFieldModelConverter modelConverter;
 
     @Autowired
-    public AlertStartupInitializer(final DescriptorMap descriptorMap, final Environment environment, final BaseDescriptorAccessor descriptorAccessor, final BaseConfigurationAccessor fieldConfigurationAccessor) {
+    public AlertStartupInitializer(final DescriptorMap descriptorMap, final Environment environment, final BaseDescriptorAccessor descriptorAccessor, final BaseConfigurationAccessor fieldConfigurationAccessor,
+        final ConfigurationFieldModelConverter modelConverter) {
         this.descriptorMap = descriptorMap;
         this.environment = environment;
         this.descriptorAccessor = descriptorAccessor;
         this.fieldConfigurationAccessor = fieldConfigurationAccessor;
+        this.modelConverter = modelConverter;
         alertStartupFields = new TreeSet<>();
     }
 
@@ -75,26 +78,25 @@ public class AlertStartupInitializer {
             logger.info("---------------------------------");
             logger.info("Descriptor: {}", descriptorName);
             logger.info("---------------------------------");
-            final Map<String, String> newConfiguration = new HashMap<>();
             final List<DefinedFieldModel> fieldsForDescriptor = descriptorAccessor.getFieldsForDescriptor(descriptorName, ConfigContextEnum.GLOBAL).stream()
                                                                     .sorted(Comparator.comparing(DefinedFieldModel::getKey))
                                                                     .collect(Collectors.toList());
+            final Set<ConfigurationFieldModel> configurationModels = new HashSet<>();
             for (final DefinedFieldModel fieldModel : fieldsForDescriptor) {
                 final String key = fieldModel.getKey();
                 final String convertedKey = convertKeyToPropery(descriptorName, key);
-                getEnvironmentValue(convertedKey).ifPresent(value -> newConfiguration.put(key, value));
+                getEnvironmentValue(convertedKey).flatMap(value -> modelConverter.convertFromDefinedFieldModel(fieldModel, value)).ifPresent(configurationModels::add);
                 alertStartupFields.add(convertedKey);
             }
-            if (!newConfiguration.isEmpty()) {
-                final Set<ConfigurationFieldModel> fieldModels = createConfigurationFieldModels(newConfiguration);
+            if (!configurationModels.isEmpty()) {
                 final List<ConfigurationModel> foundConfigurationModel = fieldConfigurationAccessor.getConfigurationByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
                 if (!foundConfigurationModel.isEmpty()) {
                     if (overwriteCurrentConfig) {
                         final ConfigurationModel configurationModel = foundConfigurationModel.get(0);
-                        fieldConfigurationAccessor.updateConfiguration(configurationModel.getConfigurationId(), fieldModels);
+                        fieldConfigurationAccessor.updateConfiguration(configurationModel.getConfigurationId(), configurationModels);
                     }
                 } else {
-                    fieldConfigurationAccessor.createConfiguration(descriptorName, ConfigContextEnum.GLOBAL, fieldModels);
+                    fieldConfigurationAccessor.createConfiguration(descriptorName, ConfigContextEnum.GLOBAL, configurationModels);
                 }
             }
         }
@@ -102,19 +104,6 @@ public class AlertStartupInitializer {
 
     public SortedSet<String> getAlertPropertyNameSet() {
         return alertStartupFields;
-    }
-
-    private Set<ConfigurationFieldModel> createConfigurationFieldModels(final Map<String, String> fields) {
-        return fields.entrySet()
-                   .stream()
-                   .map(entry -> createConfigurationFieldModel(entry.getKey(), entry.getValue()))
-                   .collect(Collectors.toSet());
-    }
-
-    private ConfigurationFieldModel createConfigurationFieldModel(final String key, final String value) {
-        final ConfigurationFieldModel field = ConfigurationFieldModel.create(key);
-        field.setFieldValue(value);
-        return field;
     }
 
     private String convertKeyToPropery(final String descriptorName, final String key) {

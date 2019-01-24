@@ -7,9 +7,9 @@ import PasswordInput from 'field/input/PasswordInput';
 import TextInput from 'field/input/TextInput';
 import ConfigButtons from 'component/common/ConfigButtons';
 
-import { closeEmailConfigTest, getEmailConfig, openEmailConfigTest, sendEmailConfigTest, toggleAdvancedEmailOptions, updateEmailConfig } from '../../store/actions/emailConfig';
-import ChannelTestModal from '../common/ChannelTestModal';
-import CollapsiblePane from "../common/CollapsiblePane";
+import { closeEmailConfigTest, getEmailConfig, openEmailConfigTest, sendEmailConfigTest, toggleAdvancedEmailOptions, updateEmailConfig } from 'store/actions/emailConfig';
+import ChannelTestModal from 'component/common/ChannelTestModal';
+import CollapsiblePane from "component/common/CollapsiblePane";
 
 class EmailConfiguration extends React.Component {
     constructor(props) {

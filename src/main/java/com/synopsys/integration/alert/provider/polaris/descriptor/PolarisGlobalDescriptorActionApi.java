@@ -24,16 +24,15 @@
 package com.synopsys.integration.alert.provider.polaris.descriptor;
 
 import java.io.IOException;
-import java.util.Collection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
-import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
@@ -47,19 +46,20 @@ import com.synopsys.integration.rest.request.Response;
 public class PolarisGlobalDescriptorActionApi extends DescriptorActionApi {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final PolarisProperties polarisProperties;
+    private final ConfigurationFieldModelConverter modelConverter;
 
     @Autowired
-    public PolarisGlobalDescriptorActionApi(final PolarisProperties polarisProperties) {
+    public PolarisGlobalDescriptorActionApi(final PolarisProperties polarisProperties, final ConfigurationFieldModelConverter modelConverter) {
         this.polarisProperties = polarisProperties;
+        this.modelConverter = modelConverter;
     }
 
     @Override
-    public void testConfig(final Collection<ConfigField> configFields, final TestConfigModel testConfig) throws IntegrationException {
+    public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
         final Slf4jIntLogger intLogger = new Slf4jIntLogger(logger);
 
         final FieldModel fieldModel = testConfig.getFieldModel();
-        final FieldAccessor fieldAccessor = fieldModel.convertToFieldAccessor();
-        validateFieldFormatting(configFields, fieldModel);
+        final FieldAccessor fieldAccessor = modelConverter.convertToFieldAccessor(fieldModel);
         final String errorMessageFormat = "The field %s is required";
         final String url = fieldAccessor
                                .getString(PolarisDescriptor.KEY_POLARIS_URL)

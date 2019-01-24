@@ -5,12 +5,12 @@ import { BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn } from 'r
 
 import AutoRefresh from 'component/common/AutoRefresh';
 import DescriptorLabel from 'component/common/DescriptorLabel';
-import GroupEmailJobConfiguration from 'component/general/distribution/job/GroupEmailJobConfiguration';
-import HipChatJobConfiguration from 'component/general/distribution/job/HipChatJobConfiguration';
-import SlackJobConfiguration from 'component/general/distribution/job/SlackJobConfiguration';
+import GroupEmailJobConfiguration from 'distribution/job/GroupEmailJobConfiguration';
+import HipChatJobConfiguration from 'distribution/job/HipChatJobConfiguration';
+import SlackJobConfiguration from 'distribution/job/SlackJobConfiguration';
 import EditTableCellFormatter from 'component/common/EditTableCellFormatter';
 
-import JobAddModal from 'component/general/distribution/JobAddModal';
+import JobAddModal from 'distribution/JobAddModal';
 import { logout } from 'store/actions/session';
 
 /**

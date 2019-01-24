@@ -27,9 +27,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.EnumUtils;
@@ -39,12 +42,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -64,12 +69,21 @@ public class ConfigActions {
     private final BaseConfigurationAccessor configurationAccessor;
     private final BaseDescriptorAccessor descriptorAccessor;
     private final DescriptorMap descriptorMap;
+    private final ConfigurationFieldModelConverter modelConverter;
+    private final CommonDistributionUIConfig commonDistributionUIConfig;
 
     @Autowired
-    public ConfigActions(final BaseConfigurationAccessor configurationAccessor, final BaseDescriptorAccessor descriptorAccessor, final DescriptorMap descriptorMap) {
+    public ConfigActions(final BaseConfigurationAccessor configurationAccessor, final BaseDescriptorAccessor descriptorAccessor, final DescriptorMap descriptorMap,
+        final ConfigurationFieldModelConverter modelConverter, final CommonDistributionUIConfig commonDistributionUIConfig) {
         this.configurationAccessor = configurationAccessor;
         this.descriptorAccessor = descriptorAccessor;
         this.descriptorMap = descriptorMap;
+        this.modelConverter = modelConverter;
+        this.commonDistributionUIConfig = commonDistributionUIConfig;
+    }
+
+    public boolean doesConfigExist(String id) throws AlertException {
+        return StringUtils.isNotBlank(id) && doesConfigExist(Long.parseLong(id));
     }
 
     public boolean doesConfigExist(final Long id) throws AlertException {
@@ -121,7 +135,8 @@ public class ConfigActions {
         }
     }
 
-    public FieldModel saveConfig(final FieldModel fieldModel) throws AlertException {
+    public FieldModel saveConfig(final FieldModel fieldModel) throws AlertException, AlertFieldException {
+        validateConfig(fieldModel, new HashMap<>());
         final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
         FieldModel modelToSave = fieldModel;
         if (descriptorActionApi.isPresent()) {
@@ -131,14 +146,16 @@ public class ConfigActions {
         }
         final String descriptorName = modelToSave.getDescriptorName();
         final String context = modelToSave.getContext();
-        final Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelToSave.convertToConfigurationFieldModelMap();
+        final Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertFromFieldModel(modelToSave);
         return convertToFieldModel(configurationAccessor.createConfiguration(descriptorName, EnumUtils.getEnum(ConfigContextEnum.class, context), configurationFieldModelMap.values()));
     }
 
     public String validateConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) throws AlertFieldException {
         final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
         if (descriptorActionApi.isPresent()) {
-            final List<ConfigField> configFields = retrieveUIConfigFields(fieldModel);
+            final Map<String, ConfigField> configFields = retrieveUIConfigFields(fieldModel)
+                                                              .stream()
+                                                              .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
             descriptorActionApi.get().validateConfig(configFields, fieldModel, fieldErrors);
         } else {
             logger.error("Could not find a Descriptor with the name: " + fieldModel.getDescriptorName());
@@ -150,19 +167,20 @@ public class ConfigActions {
     }
 
     public String testConfig(final FieldModel restModel, final String destination) throws IntegrationException {
+        validateConfig(restModel, new HashMap<>());
         final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(restModel);
         if (descriptorActionApi.isPresent()) {
             final DescriptorActionApi descriptorApi = descriptorActionApi.get();
             final TestConfigModel testConfig = descriptorApi.createTestConfigModel(restModel, destination);
-            final List<ConfigField> configFields = retrieveUIConfigFields(testConfig.getFieldModel());
-            descriptorApi.testConfig(configFields, testConfig);
+            descriptorApi.testConfig(testConfig);
             return "Successfully sent test message.";
         } else {
             return "Could not find a Descriptor with the name: " + restModel.getDescriptorName();
         }
     }
 
-    public FieldModel updateConfig(final Long id, final FieldModel fieldModel) throws AlertException {
+    public FieldModel updateConfig(final Long id, final FieldModel fieldModel) throws AlertException, AlertFieldException {
+        validateConfig(fieldModel, new HashMap<>());
         final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
         FieldModel modelToSave = fieldModel;
         if (descriptorActionApi.isPresent()) {
@@ -172,7 +190,7 @@ public class ConfigActions {
         }
         if (fieldModel != null) {
             final ConfigurationModel configurationModel = getSavedEntity(id);
-            final Map<String, ConfigurationFieldModel> fieldModels = modelToSave.convertToConfigurationFieldModelMap();
+            final Map<String, ConfigurationFieldModel> fieldModels = modelConverter.convertFromFieldModel(modelToSave);
             final Collection<ConfigurationFieldModel> updatedFields = updateConfigurationWithSavedConfiguration(fieldModels, configurationModel.getCopyOfFieldList());
             return convertToFieldModel(configurationAccessor.updateConfiguration(id, updatedFields));
         }
@@ -189,7 +207,7 @@ public class ConfigActions {
         return null;
     }
 
-    public Collection<ConfigurationFieldModel> updateConfigurationWithSavedConfiguration(final Map<String, ConfigurationFieldModel> newConfiguration, final Collection<ConfigurationFieldModel> savedConfiguration) throws AlertException {
+    private Collection<ConfigurationFieldModel> updateConfigurationWithSavedConfiguration(final Map<String, ConfigurationFieldModel> newConfiguration, final Collection<ConfigurationFieldModel> savedConfiguration) throws AlertException {
         final Collection<ConfigurationFieldModel> sensitiveFields = savedConfiguration.stream().filter(fieldModel -> fieldModel.isSensitive()).collect(Collectors.toSet());
         for (final ConfigurationFieldModel fieldModel : sensitiveFields) {
             final String key = fieldModel.getFieldKey();
@@ -244,12 +262,27 @@ public class ConfigActions {
     private List<ConfigField> retrieveUIConfigFields(final FieldModel fieldModel) {
         final String context = fieldModel.getContext();
         final ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
-        final Optional<Descriptor> descriptor = retrieveDescriptor(fieldModel.getDescriptorName());
-        if (descriptor.isPresent()) {
-            final Optional<UIConfig> uiConfig = descriptor.get().getUIConfig(descriptorContext);
-            return uiConfig.map(config -> config.createFields()).orElse(List.of());
-        }
-        return List.of();
+        final List<ConfigField> fieldsToReturn = createConfigFields(descriptorContext, fieldModel.getDescriptorName());
+        return List.copyOf(fieldsToReturn);
     }
 
+    private List<ConfigField> createConfigFields(final ConfigContextEnum context, final String descriptorName) {
+        final Optional<Descriptor> optionalDescriptor = retrieveDescriptor(descriptorName);
+        final List<ConfigField> fieldsToReturn = new LinkedList<>();
+        if (optionalDescriptor.isPresent()) {
+            final Descriptor descriptor = optionalDescriptor.get();
+            final Optional<UIConfig> uiConfig = descriptor.getUIConfig(context);
+            fieldsToReturn.addAll(uiConfig.map(config -> config.createFields()).orElse(List.of()));
+            if (ConfigContextEnum.DISTRIBUTION == context) {
+                fieldsToReturn.addAll(createDistributionTemplate());
+            }
+        }
+        return List.copyOf(fieldsToReturn);
+    }
+
+    private List<ConfigField> createDistributionTemplate() {
+        final Set<String> channelDescriptors = descriptorMap.getChannelDescriptorMap().keySet();
+        final Set<String> providerDescriptors = descriptorMap.getProviderDescriptorMap().keySet();
+        return commonDistributionUIConfig.createCommonConfigFields(channelDescriptors, providerDescriptors);
+    }
 }
