@@ -25,7 +25,6 @@ package com.synopsys.integration.alert.common.descriptor.config.context;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import com.synopsys.integration.alert.channel.DistributionChannel;
@@ -34,10 +33,10 @@ import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
 import com.synopsys.integration.alert.web.model.configuration.TestConfigModel;
@@ -59,20 +58,20 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
     }
 
     @Override
-    public void testConfig(final Map<String, ConfigField> configFields, final TestConfigModel testConfigModel) throws IntegrationException {
+    public void testConfig(final TestConfigModel testConfigModel) throws IntegrationException {
         final FieldModel fieldModel = testConfigModel.getFieldModel();
-        final DistributionEvent event = createChannelTestEvent(configFields, fieldModel);
+        final DistributionEvent event = createChannelTestEvent(fieldModel);
         distributionChannel.sendMessage(event);
     }
 
-    public DistributionEvent createChannelTestEvent(final Map<String, ConfigField> configFields, final FieldModel fieldModel) {
+    public DistributionEvent createChannelTestEvent(final FieldModel fieldModel) throws AlertDatabaseConstraintException {
         final AggregateMessageContent messageContent = createTestNotificationContent();
 
         final String channelName = fieldModel.getField(CommonDistributionUIConfig.KEY_CHANNEL_NAME).flatMap(field -> field.getValue()).orElse("");
         final String providerName = fieldModel.getField(CommonDistributionUIConfig.KEY_PROVIDER_NAME).flatMap(field -> field.getValue()).orElse("");
         final String formatType = fieldModel.getField(ProviderDistributionUIConfig.KEY_FORMAT_TYPE).flatMap(field -> field.getValue()).orElse("");
 
-        final FieldAccessor fieldAccessor = modelConverter.convertToFieldAccessor(configFields, fieldModel);
+        final FieldAccessor fieldAccessor = modelConverter.convertToFieldAccessor(fieldModel);
 
         return new DistributionEvent(fieldModel.getId(), channelName, RestConstants.formatDate(new Date()), providerName, formatType, messageContent, fieldAccessor);
     }

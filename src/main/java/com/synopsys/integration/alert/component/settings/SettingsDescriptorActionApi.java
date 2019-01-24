@@ -105,7 +105,7 @@ public class SettingsDescriptorActionApi extends DescriptorActionApi {
     }
 
     @Override
-    public void testConfig(final Map<String, ConfigField> descriptorFields, final TestConfigModel testConfig) throws IntegrationException {
+    public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
 
     }
 
