@@ -6,19 +6,16 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_TYPES">
-            <!-- This is a brand new table. ID = 1 -->
             <column name="TYPE" type="VARCHAR(255)" value="CHANNEL"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_TYPES">
-            <!-- This is a brand new table. ID = 2 -->
             <column name="TYPE" type="VARCHAR(255)" value="PROVIDER"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="DESCRIPTOR_TYPES">
-            <!-- This is a brand new table. ID = 3 -->
             <column name="TYPE" type="VARCHAR(255)" value="COMPONENT"/>
         </insert>
     </changeSet>
@@ -28,13 +25,11 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="CONFIG_CONTEXTS">
-            <!-- This is a brand new table. ID = 1 -->
             <column name="CONTEXT" type="VARCHAR(31)" value="GLOBAL"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="CONFIG_CONTEXTS">
-            <!-- This is a brand new table. ID = 2 -->
             <column name="CONTEXT" type="VARCHAR(31)" value="DISTRIBUTION"/>
         </insert>
     </changeSet>
@@ -44,44 +39,38 @@
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="REGISTERED_DESCRIPTORS">
-            <!-- This is a brand new table. ID = 1 -->
             <column name="NAME" type="VARCHAR(255)" value="provider_blackduck"/>
-            <column name="TYPE_ID" type="BIGINT(19)" value="2"/>
+            <column name="TYPE_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_DESCRIPTOR_TYPE('PROVIDER')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="REGISTERED_DESCRIPTORS">
-            <!-- This is a brand new table. ID = 2 -->
             <column name="NAME" type="VARCHAR(255)" value="channel_email"/>
-            <column name="TYPE_ID" type="BIGINT(19)" value="1"/>
+            <column name="TYPE_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_DESCRIPTOR_TYPE('CHANNEL')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="REGISTERED_DESCRIPTORS">
-            <!-- This is a brand new table. ID = 3 -->
             <column name="NAME" type="VARCHAR(255)" value="channel_hipchat"/>
-            <column name="TYPE_ID" type="BIGINT(19)" value="1"/>
+            <column name="TYPE_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_DESCRIPTOR_TYPE('CHANNEL')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="REGISTERED_DESCRIPTORS">
-            <!-- This is a brand new table. ID = 4 -->
             <column name="NAME" type="VARCHAR(255)" value="channel_slack"/>
-            <column name="TYPE_ID" type="BIGINT(19)" value="1"/>
+            <column name="TYPE_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_DESCRIPTOR_TYPE('CHANNEL')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="REGISTERED_DESCRIPTORS">
-            <!-- This is a brand new table. ID = 5 -->
             <column name="NAME" type="VARCHAR(255)" value="component_settings"/>
-            <column name="TYPE_ID" type="BIGINT(19)" value="3"/>
+            <column name="TYPE_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_DESCRIPTOR_TYPE('COMPONENT')"/>
         </insert>
         <insert dbms="h2"
                 schemaName="ALERT"
                 tableName="REGISTERED_DESCRIPTORS">
-            <!-- This is a brand new table. ID = 6 -->
             <column name="NAME" type="VARCHAR(255)" value="component_scheduling"/>
-            <column name="TYPE_ID" type="BIGINT(19)" value="3"/>
+            <column name="TYPE_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_DESCRIPTOR_TYPE('COMPONENT')"/>
         </insert>
         <!-- TODO determine if we should add polaris for this release -->
     </changeSet>
