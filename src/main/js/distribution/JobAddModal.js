@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 import { Modal } from 'react-bootstrap';
 import Select, { components } from 'react-select';
 
-import GroupEmailJobConfiguration from 'component/general/distribution/job/GroupEmailJobConfiguration';
-import HipChatJobConfiguration from 'component/general/distribution/job/HipChatJobConfiguration';
-import SlackJobConfiguration from 'component/general/distribution/job/SlackJobConfiguration';
+import GroupEmailJobConfiguration from 'distribution/job/GroupEmailJobConfiguration';
+import HipChatJobConfiguration from 'distribution/job/HipChatJobConfiguration';
+import SlackJobConfiguration from 'distribution/job/SlackJobConfiguration';
 import DescriptorOption from 'component/common/DescriptorOption';
 import { resetDistributionDescriptor } from 'store/actions/descriptors';
 
