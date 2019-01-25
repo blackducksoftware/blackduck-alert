@@ -1,5 +1,5 @@
 FROM blackducksoftware/hub-docker-common:1.0.2 as docker-common
-FROM openjdk:8-jre-alpine
+FROM openjdk:12-ea-25-jdk-alpine
 
 ARG VERSION
 
@@ -31,6 +31,15 @@ RUN set -e \
     		bash \
     && addgroup -S alert \
     && adduser -h "$ALERT_HOME" -g alert -s /sbin/nologin -G alert -S -D alert
+
+#    && apt-get -qq -y update \
+#    && apt-get -q -y install \
+#                curl \
+#        		jq \
+#    		    openssl \
+#        		bash \
+#    && addgroup --system alert \
+#    && adduser --system --home "$ALERT_HOME" --shell /sbin/nologin --ingroup alert --gecos alert alert
 
 RUN mkdir -p -m 777 $SECURITY_DIR
 
