@@ -35,7 +35,7 @@ public class AboutControllerTest {
         final AboutController controller = new AboutController(aboutActions, responseFactory, contentConverter);
         final ResponseEntity<String> response = controller.about();
 
-        ResponseEntity<String> expectedResponse = responseFactory.createResponse(HttpStatus.OK, contentConverter.getJsonString(model));
+        ResponseEntity<String> expectedResponse = responseFactory.createOkContentResponse(contentConverter.getJsonString(model));
         assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
         assertEquals(expectedResponse.getBody(), response.getBody());
     }
@@ -59,7 +59,7 @@ public class AboutControllerTest {
         Mockito.when(aboutActions.getAboutModel()).thenReturn(Optional.of(model));
 
         final ResponseEntity<String> response = aboutController.about();
-        ResponseEntity<String> expectedResponse = responseFactory.createResponse(HttpStatus.OK, contentConverter.getJsonString(model));
+        ResponseEntity<String> expectedResponse = responseFactory.createOkContentResponse(contentConverter.getJsonString(model));
         assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
         assertEquals(expectedResponse.getBody(), response.getBody());
     }
@@ -76,7 +76,7 @@ public class AboutControllerTest {
         Mockito.when(aboutActions.getAboutModel()).thenReturn(Optional.empty());
 
         final ResponseEntity<String> response = aboutController.about();
-        ResponseEntity<String> expectedResponse = responseFactory.createResponse(HttpStatus.NOT_FOUND, AboutController.ERROR_ABOUT_MODEL_NOT_FOUND);
+        ResponseEntity<String> expectedResponse = responseFactory.createMessageResponse(HttpStatus.NOT_FOUND, AboutController.ERROR_ABOUT_MODEL_NOT_FOUND);
         assertEquals(expectedResponse.getStatusCode(), response.getStatusCode());
         assertEquals(expectedResponse.getBody(), response.getBody());
     }
