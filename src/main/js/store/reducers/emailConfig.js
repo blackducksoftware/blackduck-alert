@@ -18,11 +18,11 @@ const initialState = {
     showTestModal: false,
     updateStatus: null,
     actionMessage: null,
+    config: {},
     error: {
         message: '',
-        fieldErrors: []
-    },
-    id: null
+        fieldErrors: {}
+    }
 };
 
 const config = (state = initialState, action) => {
@@ -37,7 +37,7 @@ const config = (state = initialState, action) => {
             return Object.assign({}, state, {
                 fetching: false,
                 updateStatus: 'FETCHED',
-                ...action.config
+                config: action.config
             });
 
         case EMAIL_CONFIG_SHOW_ADVANCED:
@@ -71,7 +71,7 @@ const config = (state = initialState, action) => {
                 showTestModal: false,
                 error: {
                     message: '',
-                    fieldErrors: []
+                    fieldErrors: {}
                 }
             });
 
@@ -81,7 +81,7 @@ const config = (state = initialState, action) => {
                 updateStatus: 'UPDATING',
                 error: {
                     message: '',
-                    fieldErrors: []
+                    fieldErrors: {}
                 }
             });
 
@@ -90,10 +90,10 @@ const config = (state = initialState, action) => {
                 fetching: false,
                 updateStatus: 'UPDATED',
                 actionMessage: 'Update successful',
-                ...action.config,
+                config: action.config,
                 error: {
                     message: '',
-                    fieldErrors: []
+                    fieldErrors: {}
                 }
             });
 
@@ -103,7 +103,7 @@ const config = (state = initialState, action) => {
                 actionMessage: null,
                 error: {
                     message: action.message,
-                    fieldErrors: action.errors || []
+                    fieldErrors: action.errors || {}
                 }
             });
 
