@@ -1,0 +1,78 @@
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <!-- TODO: Hard code java here to keep procedures out of source. Previous: 1543499878547, Next: 1548167676836 -->
+    <changeSet author="gkillough" id="1545000000000-1">
+        <createProcedure
+                dbms="h2"
+                procedureName="Compute registered descriptor id"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME
+            FOR "com.synopsys.integration.alert.database.H2StoredProcedures.getIdForRegisteredDescriptorName";
+        </createProcedure>
+        <createProcedure
+                dbms="h2"
+                procedureName="Compute descriptor type id"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS GET_ID_FOR_DESCRIPTOR_TYPE
+            FOR "com.synopsys.integration.alert.database.H2StoredProcedures.getIdForDescriptorType";
+        </createProcedure>
+        <createProcedure
+                dbms="h2"
+                procedureName="Compute field id"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS GET_FIELD_ID_FOR_SOURCE_KEY
+            FOR "com.synopsys.integration.alert.database.H2StoredProcedures.getFieldIdForSourceKey";
+        </createProcedure>
+        <createProcedure
+                dbms="h2"
+                procedureName="Compute config context id"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS GET_ID_FOR_CONFIG_CONTEXT
+            FOR "com.synopsys.integration.alert.database.H2StoredProcedures.getIdForConfigContext";
+        </createProcedure>
+        <createProcedure
+                dbms="h2"
+                procedureName="Define a new field and add the relations"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS DEFINE_FIELD
+            FOR "com.synopsys.integration.alert.database.H2StoredProcedures.defineField";
+        </createProcedure>
+        <createProcedure
+                dbms="h2"
+                procedureName="Get id for most recently added config"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG
+            FOR "com.synopsys.integration.alert.database.H2StoredProcedures.getLatestIdForDescriptorConfig";
+        </createProcedure>
+        <createProcedure
+                dbms="h2"
+                procedureName="Migrate value from schema, table, column into newest config for int field"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS MIGRATE_INT_VALUE_INTO_NEWEST_CONFIG
+            FOR "com.synopsys.integration.alert.database.H2StoredProcedures.migrateIntValueIntoNewestConfig";
+        </createProcedure>
+        <createProcedure
+                dbms="h2"
+                procedureName="Migrate value from schema, table, column into newest config for boolean field"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG
+            FOR "com.synopsys.integration.alert.database.H2StoredProcedures.migrateBooleanValueIntoNewestConfig";
+        </createProcedure>
+        <createProcedure
+                dbms="h2"
+                procedureName="Migrate value from schema, table, column into newest config for string field"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG
+            FOR "com.synopsys.integration.alert.database.H2StoredProcedures.migrateStringValueIntoNewestConfig";
+        </createProcedure>
+    </changeSet>
+</databaseChangeLog>
