@@ -74,7 +74,7 @@ public final class H2StoredProcedures {
 
     public static void migrateIntValueIntoNewestConfig(final Connection connection, final String schemaName, final String tableName, final String columnName, final String fieldKey) throws SQLException {
         try {
-            final Integer value = getFirstInt(connection, String.format("SELECT %s FROM %s.%s LIMIT 1;", columnName, schemaName, tableName), "ID");
+            final Integer value = getFirstInt(connection, String.format("SELECT %s FROM %s.%s LIMIT 1;", columnName, schemaName, tableName), columnName);
             if (value != null) {
                 migrateValueIntoNewestConfig(connection, fieldKey, value.toString());
             }
@@ -87,7 +87,7 @@ public final class H2StoredProcedures {
 
     public static void migrateBooleanValueIntoNewestConfig(final Connection connection, final String schemaName, final String tableName, final String columnName, final String fieldKey) throws SQLException {
         try {
-            final Boolean value = getFirstBoolean(connection, String.format("SELECT %s FROM %s.%s LIMIT 1;", columnName, schemaName, tableName), "ID");
+            final Boolean value = getFirstBoolean(connection, String.format("SELECT %s FROM %s.%s LIMIT 1;", columnName, schemaName, tableName), columnName);
             if (value != null) {
                 migrateValueIntoNewestConfig(connection, fieldKey, value.toString());
             }
@@ -100,7 +100,7 @@ public final class H2StoredProcedures {
 
     public static void migrateStringValueIntoNewestConfig(final Connection connection, final String schemaName, final String tableName, final String columnName, final String fieldKey) throws SQLException {
         try {
-            final String value = getFirstString(connection, String.format("SELECT %s FROM %s.%s LIMIT 1;", columnName, schemaName, tableName), "ID");
+            final String value = getFirstString(connection, String.format("SELECT %s FROM %s.%s LIMIT 1;", columnName, schemaName, tableName), columnName);
             if (StringUtils.isNotBlank(value)) {
                 migrateValueIntoNewestConfig(connection, fieldKey, String.format("'%s'", value));
             }
