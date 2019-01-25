@@ -326,8 +326,9 @@ class Index extends Component {
 
     typeColumnDataFormat(cell) {
         const defaultValue = <div className="inline">{cell}</div>;
-        if (this.props.descriptors) {
-            const descriptorList = this.props.descriptors.items.CHANNEL_DISTRIBUTION_CONFIG;
+        const { descriptors } = this.props;
+        if (descriptors) {
+            const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors.items, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
             if (descriptorList) {
                 const filteredList = descriptorList.filter(descriptor => descriptor.descriptorName === cell);
                 if (filteredList && filteredList.length > 0) {
@@ -343,8 +344,9 @@ class Index extends Component {
 
     providerColumnDataFormat(cell) {
         const defaultValue = <div className="inline">{cell}</div>;
-        if (this.props.descriptors) {
-            const descriptorList = this.props.descriptors.items.PROVIDER_CONFIG;
+        const { descriptors } = this.props;
+        if (descriptors) {
+            const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors.items, DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
             if (descriptorList) {
                 const filteredList = descriptorList.filter(descriptor => descriptor.descriptorName === cell);
                 if (filteredList && filteredList.length > 0) {
@@ -437,13 +439,13 @@ Index.propTypes = {
     logout: PropTypes.func.isRequired,
     autoRefresh: PropTypes.bool,
     csrfToken: PropTypes.string,
-    descriptors: PropTypes.object
+    descriptors: PropTypes.arrayOf(PropTypes.object)
 };
 
 Index.defaultProps = {
     csrfToken: null,
     autoRefresh: true,
-    descriptors: {}
+    descriptors: []
 };
 
 const mapStateToProps = state => ({

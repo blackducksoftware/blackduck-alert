@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import ReadOnlyField from 'field/ReadOnlyField';
 import { getAboutInfo } from 'store/actions/about';
+import * as DescriptorUtilities from 'util/descriptorUtilities';
 
 class AboutInfo extends React.Component {
     componentDidMount() {
@@ -42,9 +43,9 @@ class AboutInfo extends React.Component {
     }
 
     render() {
-        const { version, description, projectUrl } = this.props;
-        const providerList = this.props.descriptors.items['PROVIDER_CONFIG'];
-        const channelList = this.props.descriptors.items['CHANNEL_DISTRIBUTION_CONFIG'];
+        const { version, description, projectUrl, descriptors } = this.props;
+        const providerList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors.items, DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
+        const channelList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors.items, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
         const projectUrlLink = <a alt={projectUrl} href={projectUrl}>{projectUrl}</a>;
         const providerTable = this.createDescriptorTable(providerList);
         const channelTable = this.createDescriptorTable(channelList);
@@ -89,12 +90,12 @@ AboutInfo.propTypes = {
     version: PropTypes.string.isRequired,
     description: PropTypes.string,
     projectUrl: PropTypes.string.isRequired,
-    descriptors: PropTypes.object
+    descriptors: PropTypes.arrayOf(PropTypes.object)
 };
 
 AboutInfo.defaultProps = {
     description: '',
-    descriptors: {}
+    descriptors: []
 };
 
 const mapStateToProps = state => ({

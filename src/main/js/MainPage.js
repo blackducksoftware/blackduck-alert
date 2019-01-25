@@ -2,12 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Redirect, Route, withRouter } from 'react-router-dom';
-
-import { getDescriptorByType, getDescriptorsByTypeAndContext } from 'store/actions/descriptors';
 import Navigation from 'Navigation';
 import Audit from 'component/audit/Index';
 import AboutInfo from 'component/AboutInfo';
 import DistributionConfiguration from 'distribution/Index';
+import { getDescriptors } from 'store/actions/descriptors';
 import SchedulingConfiguration from 'component/SchedulingConfiguration';
 import SlackConfiguration from 'channels/SlackConfiguration';
 import EmailConfiguration from 'channels/EmailConfiguration';
@@ -15,6 +14,7 @@ import HipChatConfiguration from 'channels/HipChatConfiguration';
 import LogoutConfirmation from 'component/common/LogoutConfirmation';
 import BlackDuckConfiguration from 'providers/BlackDuckConfiguration';
 import SettingsConfiguration from 'component/settings/SettingsConfiguration';
+import * as DescriptorUtilities from 'util/descriptorUtilities';
 
 
 class MainPage extends Component {
@@ -24,23 +24,17 @@ class MainPage extends Component {
     }
 
     componentDidMount() {
-        // FIXME this is a temporary workaround
-        // this.props.getDescriptorByType('PROVIDER_CONFIG');
-        // this.props.getDescriptorByType('CHANNEL_GLOBAL_CONFIG');
-        // this.props.getDescriptorByType('CHANNEL_DISTRIBUTION_CONFIG');
-
-        this.props.getDescriptorsByTypeAndContext('PROVIDER_CONFIG', 'GLOBAL');
-        this.props.getDescriptorsByTypeAndContext('CHANNEL_GLOBAL_CONFIG', 'GLOBAL');
-        this.props.getDescriptorsByTypeAndContext('CHANNEL_DISTRIBUTION_CONFIG', 'DISTRIBUTION');
+        this.props.getDescriptors();
     }
 
-    createRoutesForDescriptors(decriptorTypeKey, uriPrefix) {
+    createRoutesForDescriptors(descriptorType, context, uriPrefix) {
         const { descriptors } = this.props;
         if (!descriptors.items) {
             return null;
         }
-        const descriptorList = descriptors.items[decriptorTypeKey];
-        if (!descriptorList) {
+        const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors.items, descriptorType, context);
+
+        if (!descriptorList || descriptorList.length === 0) {
             return null;
         }
         const routeList = descriptorList.map((component) => {
@@ -67,8 +61,8 @@ class MainPage extends Component {
     }
 
     render() {
-        const channels = this.createRoutesForDescriptors('CHANNEL_GLOBAL_CONFIG', '/alert/channels/');
-        const providers = this.createRoutesForDescriptors('PROVIDER_CONFIG', '/alert/providers/');
+        const channels = this.createRoutesForDescriptors(DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, '/alert/channels/');
+        const providers = this.createRoutesForDescriptors(DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, '/alert/providers/');
         return (
             <div>
                 <Navigation />
@@ -91,15 +85,14 @@ class MainPage extends Component {
 MainPage.propTypes = {
     getDescriptorByType: PropTypes.func.isRequired,
     getDescriptorsByTypeAndContext: PropTypes.func.isRequired,
-    descriptors: PropTypes.object.isRequired
+    descriptors: PropTypes.arrayOf(PropTypes.object).isRequired
 };
 const mapStateToProps = state => ({
     descriptors: state.descriptors
 });
 
 const mapDispatchToProps = dispatch => ({
-    getDescriptorByType: descriptorType => dispatch(getDescriptorByType(descriptorType)),
-    getDescriptorsByTypeAndContext: (descriptorType, configContextName) => dispatch(getDescriptorsByTypeAndContext(descriptorType, configContextName))
+    getDescriptors: () => dispatch(getDescriptors())
 });
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(MainPage));
