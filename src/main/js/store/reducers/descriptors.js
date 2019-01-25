@@ -35,10 +35,10 @@ const config = (state = initialState, action) => {
                 error: {
                     message: ''
                 },
-                items: {
+                items: [
                     ...state.items,
                     ...action.items
-                }
+                ]
             });
 
         case DESCRIPTORS_FETCH_ERROR:
