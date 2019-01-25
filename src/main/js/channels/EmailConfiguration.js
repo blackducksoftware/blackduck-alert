@@ -10,7 +10,9 @@ import ConfigButtons from 'component/common/ConfigButtons';
 import { closeEmailConfigTest, getEmailConfig, openEmailConfigTest, sendEmailConfigTest, updateEmailConfig } from 'store/actions/emailConfig';
 import ChannelTestModal from 'component/common/ChannelTestModal';
 import CollapsiblePane from 'component/common/CollapsiblePane';
-import * as FieldModelUtil from "util/fieldModelUtilities";
+import * as FieldModelUtil from 'util/fieldModelUtilities';
+
+const ID_KEY = 'id';
 
 // Javamail Keys
 const JAVAMAIL_USER_KEY = 'mail.smtp.user';
@@ -62,6 +64,7 @@ const JAVAMAIL_NOOP_STRICT_KEY = 'mail.smtp.noop.strict';
 const JAVAMAIL_PASSWORD_KEY = 'mail.smtp.password';
 
 const fieldNames = [
+    ID_KEY,
     JAVAMAIL_USER_KEY,
     JAVAMAIL_HOST_KEY,
     JAVAMAIL_PORT_KEY,
@@ -136,11 +139,11 @@ class EmailConfiguration extends React.Component {
         }
     }
 
-    handleChange(event) {
-        const [target] = event;
-        const value = target.type === 'checkbox' ? target.checked : target.value;
+    handleChange({ target }) {
+        const value = target.type === 'checkbox' ? target.checked.toString() : target.value;
+        const newState = FieldModelUtil.updateFieldModelSingleValue(this.state.currentEmailConfig, target.name, value);
         this.setState({
-            [target.name]: value
+            currentEmailConfig: newState
         });
     }
 
@@ -656,7 +659,7 @@ class EmailConfiguration extends React.Component {
                             showTestModal={this.props.showTestModal}
                             cancelTestModal={this.props.closeEmailConfigTest}
                             sendTestMessage={(destination) => {
-                                this.props.sendEmailConfigTest({ ...this.state }, destination);
+                                this.props.sendEmailConfigTest(this.state.currentEmailConfig, destination);
                             }}
                         />
                     </div>
@@ -677,7 +680,7 @@ EmailConfiguration.propTypes = {
     errorMessage: PropTypes.string,
     updateStatus: PropTypes.string,
     actionMessage: PropTypes.string,
-    fieldErrors: PropTypes.arrayOf(PropTypes.any)
+    fieldErrors: PropTypes.object
 };
 
 EmailConfiguration.defaultProps = {
@@ -693,7 +696,8 @@ const mapStateToProps = state => ({
     errorMessage: state.emailConfig.error.message,
     fieldErrors: state.emailConfig.error.fieldErrors,
     updateStatus: state.emailConfig.updateStatus,
-    actionMessage: state.emailConfig.actionMessage
+    actionMessage: state.emailConfig.actionMessage,
+    showTestModal: state.emailConfig.showTestModal
 });
 
 const mapDispatchToProps = dispatch => ({

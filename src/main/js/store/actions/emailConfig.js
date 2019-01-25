@@ -11,6 +11,7 @@ import {
 
 import { verifyLoginByStatus } from 'store/actions/session';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
+import * as FieldModelUtil from 'util/fieldModelUtilities';
 
 
 /**
@@ -60,9 +61,10 @@ function updatingEmailConfig() {
  * Triggers Email Config Fetched Reducer
  * @returns {{type}}
  */
-function emailConfigUpdated(config) {
+function emailConfigUpdated(config, message) {
     return {
         type: EMAIL_CONFIG_UPDATED,
+        message,
         config
     };
 }
@@ -132,7 +134,8 @@ export function updateEmailConfig(config) {
         request.then((response) => {
             if (response.ok) {
                 response.json().then((data) => {
-                    dispatch(emailConfigUpdated(data));
+                    const updatedConfig = FieldModelUtil.updateFieldModelSingleValue(config, 'id', data.id);
+                    dispatch(emailConfigUpdated(updatedConfig, data.message));
                 }).then(() => {
                     dispatch(getEmailConfig());
                 });

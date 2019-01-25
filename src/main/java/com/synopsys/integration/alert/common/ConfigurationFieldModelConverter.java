@@ -83,8 +83,8 @@ public class ConfigurationFieldModelConverter {
         final ConfigContextEnum context = EnumUtils.getEnum(ConfigContextEnum.class, fieldModel.getContext());
         final String descriptorName = fieldModel.getDescriptorName();
 
-        List<DefinedFieldModel> fieldsForContext = descriptorAccessor.getFieldsForDescriptor(descriptorName, context);
-        List<DefinedFieldModel> definedFieldList = new LinkedList<>();
+        final List<DefinedFieldModel> fieldsForContext = descriptorAccessor.getFieldsForDescriptor(descriptorName, context);
+        final List<DefinedFieldModel> definedFieldList = new LinkedList<>();
         definedFieldList.addAll(fieldsForContext);
 
         if (ConfigContextEnum.DISTRIBUTION == context) {
@@ -98,9 +98,11 @@ public class ConfigurationFieldModelConverter {
 
         final Set<ConfigurationFieldModel> configurationModels = new HashSet<>();
         for (final DefinedFieldModel definedField : definedFieldList) {
-            Collection<String> values = fieldModel.getFieldValues(definedField.getKey());
+            final Collection<String> values = fieldModel.getFieldValues(definedField.getKey());
             convertFromDefinedFieldModel(definedField, values).ifPresent(configurationModels::add);
         }
+        //TODO for sensitive fields we need to get the values and update the ConfigurationFieldModels with the stored value IFF the fieldModel isSet = true and has no value
+
         return configurationModels.stream().collect(Collectors.toMap(ConfigurationFieldModel::getFieldKey, Function.identity()));
     }
 
