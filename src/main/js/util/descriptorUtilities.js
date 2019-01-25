@@ -18,4 +18,6 @@ export function findDescriptorByTypeAndContext(descriptorList, descriptorType, c
     if (!resultList) {
         return null;
     }
+
+    return resultList;
 }

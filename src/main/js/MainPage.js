@@ -36,7 +36,7 @@ class MainPage extends Component {
         const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors.items, descriptorType, context);
 
         console.log("descriptorList ", descriptorList);
-        if (!descriptorList) {
+        if (!descriptorList || descriptorList.length === 0) {
             return null;
         }
         const routeList = descriptorList.map((component) => {
