@@ -83,7 +83,7 @@ public class ConfigController extends BaseController {
             return responseFactory.createNotFoundResponse("Configurations not found for the context and descriptor provided");
         }
 
-        return new ResponseEntity<>(contentConverter.getJsonString(models), HttpStatus.OK);
+        return responseFactory.createOkContentResponse(contentConverter.getJsonString(models));
     }
 
     @GetMapping("/{id}")
@@ -97,7 +97,7 @@ public class ConfigController extends BaseController {
         }
 
         if (optionalModel.isPresent()) {
-            return new ResponseEntity<>(contentConverter.getJsonString(optionalModel.get()), HttpStatus.OK);
+            return responseFactory.createOkContentResponse(contentConverter.getJsonString(optionalModel.get()));
         }
 
         return responseFactory.createNotFoundResponse("Configuration not found for the specified id");
@@ -113,7 +113,7 @@ public class ConfigController extends BaseController {
             if (!configActions.doesConfigExist(id)) {
                 try {
                     final FieldModel updatedEntity = configActions.saveConfig(restModel);
-                    return responseFactory.createResponse(HttpStatus.CREATED, updatedEntity.getId(), "Created");
+                    return responseFactory.createMessageResponse(HttpStatus.CREATED, updatedEntity.getId(), "Created");
                 } catch (final AlertFieldException e) {
                     return responseFactory.createFieldErrorResponse(id, "There were errors with the configuration.", e.getFieldErrors());
                 }
@@ -194,7 +194,7 @@ public class ConfigController extends BaseController {
             return responseFactory.createOkResponse(id, responseMessage);
         } catch (final IntegrationRestException e) {
             logger.error(e.getMessage(), e);
-            return responseFactory.createResponse(HttpStatus.valueOf(e.getHttpStatusCode()), id, e.getHttpStatusMessage() + " : " + e.getMessage());
+            return responseFactory.createMessageResponse(HttpStatus.valueOf(e.getHttpStatusCode()), id, e.getHttpStatusMessage() + " : " + e.getMessage());
         } catch (final AlertFieldException e) {
             return responseFactory.createFieldErrorResponse(id, e.getMessage(), e.getFieldErrors());
         } catch (AlertMethodNotAllowedException e) {
