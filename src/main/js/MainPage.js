@@ -29,13 +29,11 @@ class MainPage extends Component {
 
     createRoutesForDescriptors(descriptorType, context, uriPrefix) {
         const { descriptors } = this.props;
-        console.log("descriptors", descriptors);
         if (!descriptors.items) {
             return null;
         }
         const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors.items, descriptorType, context);
 
-        console.log("descriptorList ", descriptorList);
         if (!descriptorList || descriptorList.length === 0) {
             return null;
         }
