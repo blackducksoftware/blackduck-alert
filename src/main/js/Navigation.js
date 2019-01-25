@@ -5,6 +5,7 @@ import { NavLink, withRouter } from 'react-router-dom';
 import FontAwesome from 'react-fontawesome';
 import Logo from 'component/common/Logo';
 import { confirmLogout } from 'store/actions/session';
+import * as DescriptorUtilities from 'util/descriptorUtilities';
 
 class Navigation extends Component {
     constructor(props) {
@@ -12,12 +13,12 @@ class Navigation extends Component {
         this.createNavItemForDescriptors = this.createNavItemForDescriptors.bind(this);
     }
 
-    createNavItemForDescriptors(decriptorTypeKey, uriPrefix) {
+    createNavItemForDescriptors(decriptorType, context, uriPrefix) {
         const { descriptors } = this.props;
         if (!descriptors.items) {
             return null;
         }
-        const descriptorList = descriptors.items[decriptorTypeKey];
+        const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors.items, decriptorType, context);
         if (!descriptorList) {
             return null;
         }
@@ -30,8 +31,8 @@ class Navigation extends Component {
     }
 
     render() {
-        const channelGlobals = this.createNavItemForDescriptors('CHANNEL_GLOBAL_CONFIG', '/alert/channels/');
-        const providers = this.createNavItemForDescriptors('PROVIDER_CONFIG', '/alert/providers/');
+        const channelGlobals = this.createNavItemForDescriptors(DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, '/alert/channels/');
+        const providers = this.createNavItemForDescriptors(DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, '/alert/providers/');
 
         return (
             <div className="navigation">
@@ -96,7 +97,7 @@ class Navigation extends Component {
 }
 
 Navigation.propTypes = {
-    descriptors: PropTypes.object.isRequired,
+    descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
     confirmLogout: PropTypes.func.isRequired
 };
 

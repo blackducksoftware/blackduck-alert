@@ -7,6 +7,7 @@ import Select from 'react-select';
 import CollapsiblePane from 'component/common/CollapsiblePane';
 import ConfigButtons from 'component/common/ConfigButtons';
 import * as FieldModelUtil from 'util/fieldModelUtilities';
+import * as DescriptorUtil from 'util/descriptorUtilities';
 
 
 const KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD = 'settings.user.default.admin.password';
@@ -66,7 +67,7 @@ class SettingsConfigurationForm extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleSingleSelectChange = this.handleSingleSelectChange.bind(this);
         this.state = {
-            settingsData: FieldModelUtil.createEmptyFieldModel(fieldNames, 'GLOBAL', 'component_settings')
+            settingsData: FieldModelUtil.createEmptyFieldModel(fieldNames, DescriptorUtil.CONTEXT_TYPE.GLOBAL, 'component_settings')
         };
     }
 

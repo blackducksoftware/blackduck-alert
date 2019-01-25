@@ -7,6 +7,7 @@ import DescriptorLabel from 'component/common/DescriptorLabel';
 import TextInput from 'field/input/TextInput';
 import TextArea from 'field/input/TextArea';
 import RefreshTableCellFormatter from 'component/common/RefreshTableCellFormatter';
+import * as DescriptorUtilities from 'util/descriptorUtilities';
 
 class Details extends Component {
     constructor(props) {
@@ -25,8 +26,9 @@ class Details extends Component {
 
     getEventType(eventType) {
         const defaultValue = <div className="inline">Unknown</div>;
-        if (this.props.descriptors) {
-            const descriptorList = this.props.descriptors.items.CHANNEL_DISTRIBUTION_CONFIG;
+        const { descriptors } = this.props;
+        if (descriptors) {
+            const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors.items, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
             if (descriptorList) {
                 const filteredList = descriptorList.filter(descriptor => descriptor.descriptorName === eventType);
                 if (filteredList && filteredList.length > 0) {
@@ -155,7 +157,7 @@ class Details extends Component {
 
 Details.propTypes = {
     show: PropTypes.bool,
-    descriptors: PropTypes.object,
+    descriptors: PropTypes.arrayOf(PropTypes.object),
     currentEntry: PropTypes.object.isRequired,
     resendNotification: PropTypes.func.isRequired,
     handleClose: PropTypes.func.isRequired,
@@ -166,7 +168,7 @@ Details.propTypes = {
 
 Details.defaultProps = {
     show: false,
-    descriptors: {}
+    descriptors: []
 };
 
 const mapStateToProps = state => ({
