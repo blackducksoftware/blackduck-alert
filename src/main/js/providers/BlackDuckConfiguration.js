@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import NumberInput from 'field/input/NumberInput';
 import PasswordInput from 'field/input/PasswordInput';
-import ReadOnlyField from 'field/ReadOnlyField';
 import TextInput from 'field/input/TextInput';
 import ConfigButtons from 'component/common/ConfigButtons';
 
@@ -15,11 +14,6 @@ class BlackDuckConfiguration extends React.Component {
         this.state = {
             blackDuckApiKey: this.props.blackDuckApiKey,
             blackDuckApiKeyIsSet: this.props.blackDuckApiKeyIsSet,
-            blackDuckProxyHost: this.props.blackDuckProxyHost,
-            blackDuckProxyPassword: this.props.blackDuckProxyPassword,
-            blackDuckProxyPasswordIsSet: this.props.blackDuckProxyPasswordIsSet,
-            blackDuckProxyPort: this.props.blackDuckProxyPort,
-            blackDuckProxyUsername: this.props.blackDuckProxyUsername,
             blackDuckTimeout: this.props.blackDuckTimeout,
             blackDuckUrl: this.props.blackDuckUrl
         };
@@ -37,11 +31,6 @@ class BlackDuckConfiguration extends React.Component {
             this.setState({
                 blackDuckApiKey: nextProps.blackDuckApiKey,
                 blackDuckApiKeyIsSet: nextProps.blackDuckApiKeyIsSet,
-                blackDuckProxyHost: nextProps.blackDuckProxyHost,
-                blackDuckProxyPassword: nextProps.blackDuckProxyPassword,
-                blackDuckProxyPasswordIsSet: nextProps.blackDuckProxyPasswordIsSet,
-                blackDuckProxyPort: nextProps.blackDuckProxyPort,
-                blackDuckProxyUsername: nextProps.blackDuckProxyUsername,
                 blackDuckTimeout: nextProps.blackDuckTimeout,
                 blackDuckUrl: nextProps.blackDuckUrl
             });
@@ -108,15 +97,6 @@ class BlackDuckConfiguration extends React.Component {
                             errorMessage={this.props.fieldErrors.apiKey || this.props.fieldErrors.blackDuckApiKey}
                         />
                         <NumberInput id="blackDuckConfigurationTimeout" label="Timeout" name="blackDuckTimeout" value={this.state.blackDuckTimeout} onChange={this.handleChange} />
-                        <div className="form-group">
-                            <div className="col-sm-12">
-                                <h2>Proxy Configuration <small>(Read-Only)</small></h2>
-                            </div>
-                        </div>
-                        <ReadOnlyField label="Host Name" name="blackDuckProxyHost" value={this.props.blackDuckProxyHost} />
-                        <ReadOnlyField label="Port" name="blackDuckProxyPort" value={this.props.blackDuckProxyPort} />
-                        <ReadOnlyField label="Username" name="blackDuckProxyUsername" value={this.props.blackDuckProxyUsername} />
-                        <ReadOnlyField label="Proxy Password" name="blackDuckProxyPassword" isSet={this.props.blackDuckProxyPasswordIsSet} />
                     </div>
                     <ConfigButtons isFixed={false} includeSave includeTest type="submit" onTestClick={this.handleTest} />
                 </form>
@@ -129,11 +109,6 @@ class BlackDuckConfiguration extends React.Component {
 BlackDuckConfiguration.propTypes = {
     blackDuckApiKey: PropTypes.string,
     blackDuckApiKeyIsSet: PropTypes.bool.isRequired,
-    blackDuckProxyHost: PropTypes.string,
-    blackDuckProxyPassword: PropTypes.string,
-    blackDuckProxyPasswordIsSet: PropTypes.bool.isRequired,
-    blackDuckProxyPort: PropTypes.string,
-    blackDuckProxyUsername: PropTypes.string,
     blackDuckTimeout: PropTypes.number.isRequired,
     blackDuckUrl: PropTypes.string.isRequired,
     id: PropTypes.string,
@@ -150,10 +125,6 @@ BlackDuckConfiguration.propTypes = {
 BlackDuckConfiguration.defaultProps = {
     blackDuckApiKey: '',
     id: null,
-    blackDuckProxyHost: null,
-    blackDuckProxyPassword: null,
-    blackDuckProxyPort: null,
-    blackDuckProxyUsername: null,
     errorMessage: null,
     updateStatus: null,
     fieldErrors: [],
@@ -164,11 +135,6 @@ BlackDuckConfiguration.defaultProps = {
 const mapStateToProps = state => ({
     blackDuckApiKey: state.config.blackDuckApiKey,
     blackDuckApiKeyIsSet: state.config.blackDuckApiKeyIsSet,
-    blackDuckProxyHost: state.config.blackDuckProxyHost,
-    blackDuckProxyPassword: state.config.blackDuckProxyPassword,
-    blackDuckProxyPasswordIsSet: state.config.blackDuckProxyPasswordIsSet,
-    blackDuckProxyPort: state.config.blackDuckProxyPort,
-    blackDuckProxyUsername: state.config.blackDuckProxyUsername,
     blackDuckTimeout: state.config.blackDuckTimeout,
     blackDuckUrl: state.config.blackDuckUrl,
     testStatus: state.config.testStatus,
