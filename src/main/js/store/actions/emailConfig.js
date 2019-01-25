@@ -132,7 +132,7 @@ export function updateEmailConfig(config) {
         request.then((response) => {
             if (response.ok) {
                 response.json().then((data) => {
-                    dispatch(emailConfigUpdated({ ...config, id: data.id }));
+                    dispatch(emailConfigUpdated(data));
                 }).then(() => {
                     dispatch(getEmailConfig());
                 });

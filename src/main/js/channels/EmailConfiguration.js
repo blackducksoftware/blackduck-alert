@@ -116,21 +116,22 @@ class EmailConfiguration extends React.Component {
         super(props);
 
         this.state = {
-            errors: []
+            currentEmailConfig: FieldModelUtil.createEmptyFieldModel(fieldNames, 'GLOBAL', 'channel_email')
         };
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    componentDidMount() {
+    componentWillMount() {
         this.props.getEmailConfig();
     }
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.updateStatus === 'FETCHED' || nextProps.updateStatus === 'UPDATED') {
+            const newState = FieldModelUtil.checkModelOrCreateEmpty(nextProps.currentEmailConfig, fieldNames);
             this.setState({
-                currentEmailConfig: nextProps.currentEmailConfig
+                currentEmailConfig: newState
             });
         }
     }
@@ -146,8 +147,8 @@ class EmailConfiguration extends React.Component {
     handleSubmit(evt) {
         evt.preventDefault();
         evt.stopPropagation();
-        const { id } = this.props;
-        this.props.updateEmailConfig({ id, ...this.state });
+        const fieldModel = this.state.currentEmailConfig;
+        this.props.updateEmailConfig(fieldModel);
     }
 
     render() {
@@ -670,7 +671,6 @@ EmailConfiguration.propTypes = {
     openEmailConfigTest: PropTypes.func.isRequired,
     closeEmailConfigTest: PropTypes.func.isRequired,
     sendEmailConfigTest: PropTypes.func.isRequired,
-    id: PropTypes.string,
     currentEmailConfig: PropTypes.object,
     showTestModal: PropTypes.bool.isRequired,
     getEmailConfig: PropTypes.func.isRequired,
@@ -681,7 +681,6 @@ EmailConfiguration.propTypes = {
 };
 
 EmailConfiguration.defaultProps = {
-    id: 'globalEmailConfiguration',
     currentEmailConfig: {},
     errorMessage: '',
     updateStatus: '',
@@ -691,7 +690,6 @@ EmailConfiguration.defaultProps = {
 
 const mapStateToProps = state => ({
     currentEmailConfig: state.emailConfig.config,
-    id: state.emailConfig.id,
     errorMessage: state.emailConfig.error.message,
     fieldErrors: state.emailConfig.error.fieldErrors,
     updateStatus: state.emailConfig.updateStatus,
