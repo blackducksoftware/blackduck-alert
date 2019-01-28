@@ -34,8 +34,8 @@ public class ExposedEndpointsControllerTest {
         final RequestMappingHandlerMapping handlerMapping = Mockito.mock(RequestMappingHandlerMapping.class);
         final ExposedEndpointsController controller = new ExposedEndpointsController(handlerMapping);
 
-        final String endpoint1 = "/api/populateFieldModel";
-        final String endpoint2 = "/api/other/populateFieldModel";
+        final String endpoint1 = "/api/test";
+        final String endpoint2 = "/api/other/test";
         final Set<RequestMethod> expectedSet = new HashSet<>(Arrays.asList(RequestMethod.GET, RequestMethod.POST));
 
         final Map<RequestMappingInfo, HandlerMethod> handlerMethods = new HashMap<>();

@@ -8,7 +8,7 @@ public class CustomDescriptorMetadataTest {
 
     @Test
     public void getUiComponentNameTest() {
-        final String name = "populateFieldModel name";
+        final String name = "test name";
         final CustomDescriptorMetadata customDescriptorMetadata = new CustomDescriptorMetadata(null, null, null, null, null, null, name);
 
         final String storedName = customDescriptorMetadata.getUiComponentName();
@@ -17,7 +17,7 @@ public class CustomDescriptorMetadataTest {
 
     @Test
     public void setUiComponentNameTest() {
-        final String name = "populateFieldModel name";
+        final String name = "test name";
         final CustomDescriptorMetadata customDescriptorMetadata = new CustomDescriptorMetadata(null, null, null, null, null, null, name);
 
         final String newName = "new name";

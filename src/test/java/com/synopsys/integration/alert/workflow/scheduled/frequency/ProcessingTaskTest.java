@@ -32,7 +32,7 @@ import com.synopsys.integration.rest.RestConstants;
 
 public class ProcessingTaskTest {
 
-    private final String taskName = "processing-populateFieldModel-task";
+    private final String taskName = "processing-test-task";
     private List<NotificationContent> modelList;
     private List<DistributionEvent> eventList;
 

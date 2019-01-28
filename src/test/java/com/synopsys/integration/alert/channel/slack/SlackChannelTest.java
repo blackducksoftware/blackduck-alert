@@ -285,7 +285,7 @@ public class SlackChannelTest extends ChannelTest {
         final SlackChannel slackChannel = new SlackChannel(gson, null, null, null);
         List<Request> request = null;
 
-        final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this populateFieldModel message", null);
+        final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "", null, subTopic, List.of());
 
         Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
@@ -343,7 +343,7 @@ public class SlackChannelTest extends ChannelTest {
     @Test
     public void testCreateHtmlMessageEmpty() throws IntegrationException {
         final SlackChannel slackChannel = new SlackChannel(gson, null, null, null);
-        final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this populateFieldModel message", null);
+        final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "", null, subTopic, List.of());
 
         final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();

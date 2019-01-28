@@ -83,7 +83,7 @@ public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
 
     @Override
     public DistributionEvent createChannelEvent() {
-        final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this populateFieldModel message", null);
+        final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "", null, subTopic, Collections.emptyList());
         List<ConfigurationModel> models = List.of();
         try {

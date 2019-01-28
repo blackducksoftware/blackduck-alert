@@ -123,7 +123,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
 
     @Override
     public DistributionEvent createChannelEvent() {
-        final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this populateFieldModel message", null);
+        final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", UNIT_TEST_PROJECT_NAME, null, subTopic, Collections.emptyList());
         List<ConfigurationModel> models = List.of();
         try {
@@ -200,7 +200,7 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
 
     @Test
     public void testProjectOwner() throws Exception {
-        // update the distribution jobs configuration and run the send populateFieldModel again
+        // update the distribution jobs configuration and run the send test again
         // set the project owner field to false
         final List<ConfigurationModel> model = configurationAccessor.getConfigurationByDescriptorNameAndContext(getDescriptor().getName(), ConfigContextEnum.DISTRIBUTION);
         for (final ConfigurationModel configurationModel : model) {

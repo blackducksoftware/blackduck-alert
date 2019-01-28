@@ -137,7 +137,7 @@ public class LoginControllerTestIT extends AlertIntegrationTest {
         final LoginController loginHandler = new LoginController(loginActions, responseFactory, csrfTokenRepository);
 
         final HttpServletRequest request = new MockHttpServletRequest();
-        Mockito.when(loginActions.authenticateUser(Mockito.any())).thenThrow(new BadCredentialsException("Bad credentials populateFieldModel"));
+        Mockito.when(loginActions.authenticateUser(Mockito.any())).thenThrow(new BadCredentialsException("Bad credentials test"));
         final HttpServletResponse httpResponse = new MockHttpServletResponse();
 
         final ResponseEntity<String> response = loginHandler.login(request, httpResponse, null);

@@ -69,7 +69,7 @@ public class EmailChannelTestIT extends ChannelTest {
         final EmailChannel emailChannel = new EmailChannel(gson, testAlertProperties, globalProperties, auditUtility, emailAddressHandler);
         final AggregateMessageContent content = createMessageContent(getClass().getSimpleName());
         final Set<String> emailAddresses = Stream.of(properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT)).collect(Collectors.toSet());
-        final String subjectLine = "Integration populateFieldModel subject line";
+        final String subjectLine = "Integration test subject line";
 
         final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
         addConfigurationFieldToMap(fieldModels, EmailDescriptor.KEY_EMAIL_ADDRESSES, emailAddresses);

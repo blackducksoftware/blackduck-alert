@@ -79,7 +79,7 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
 
     @Test
     public void testAuthenticateDBUserRoleFailIT() {
-        // add a user populateFieldModel then delete a user.
+        // add a user test then delete a user.
         final String userName = properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_ACTIVE_USER);
         mockLoginRestModel.setBlackDuckUsername(userName);
         final LoginActions loginActions = new LoginActions(alertDatabaseAuthProvider, ldapManager);

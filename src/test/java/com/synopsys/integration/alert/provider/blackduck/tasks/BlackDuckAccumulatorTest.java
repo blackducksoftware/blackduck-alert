@@ -103,7 +103,7 @@ public class BlackDuckAccumulatorTest {
         final String startString = notificationAccumulator.formatDate(expectedStartDate);
         filePersistenceUtil.writeToFile(notificationAccumulator.getSearchRangeFileName(), startString);
         final BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
-        Mockito.doThrow(new IOException("Can't read file populateFieldModel exception")).when(spiedAccumulator).readSearchStartTime(Mockito.any());
+        Mockito.doThrow(new IOException("Can't read file test exception")).when(spiedAccumulator).readSearchStartTime(Mockito.any());
         final DateRange dateRange = spiedAccumulator.createDateRange(notificationAccumulator.getSearchRangeFileName());
         assertNotNull(dateRange);
         assertEquals(dateRange.getStart(), dateRange.getEnd());
@@ -120,7 +120,7 @@ public class BlackDuckAccumulatorTest {
         final String startString = notificationAccumulator.formatDate(expectedStartDate);
         filePersistenceUtil.writeToFile(notificationAccumulator.getSearchRangeFileName(), startString);
         final BlackDuckAccumulator spiedAccumulator = Mockito.spy(notificationAccumulator);
-        Mockito.doThrow(new ParseException("Can't parse date populateFieldModel exception", 1)).when(spiedAccumulator).parseDateString(Mockito.any());
+        Mockito.doThrow(new ParseException("Can't parse date test exception", 1)).when(spiedAccumulator).parseDateString(Mockito.any());
         final DateRange dateRange = spiedAccumulator.createDateRange(notificationAccumulator.getSearchRangeFileName());
         assertNotNull(dateRange);
         assertEquals(dateRange.getStart(), dateRange.getEnd());
@@ -190,7 +190,7 @@ public class BlackDuckAccumulatorTest {
 
     @Test
     public void testAccumulateWithDateRange() throws Exception {
-        // this is the most comprehensive populateFieldModel as it mocks all services in use and completes the full extractApplicableNotifications
+        // this is the most comprehensive test as it mocks all services in use and completes the full extractApplicableNotifications
         final BlackDuckRestConnection restConnection = Mockito.mock(BlackDuckRestConnection.class);
         final BlackDuckServicesFactory blackDuckServicesFactory = Mockito.mock(BlackDuckServicesFactory.class);
         final BlackDuckService blackDuckService = Mockito.mock(BlackDuckService.class);
