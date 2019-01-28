@@ -6,9 +6,22 @@ import PasswordInput from 'field/input/PasswordInput';
 import TextInput from 'field/input/TextInput';
 import ConfigButtons from 'component/common/ConfigButtons';
 
-import { getConfig, testConfig, updateConfig } from 'store/actions/config';
+import { getConfig, testConfig, updateConfig } from 'store/actions/blackduck';
+import * as FieldModelUtil from 'util/fieldModelUtilities';
 
-class BlackDuckConfiguration extends React.Component {
+const KEY_BLACKDUCK_URL = "blackduck.url";
+const KEY_BLACKDUCK_API_KEY = "blackduck.api.key";
+const KEY_BLACKDUCK_TIMEOUT = "blackduck.timeout";
+
+
+const fieldNames = [
+    KEY_BLACKDUCK_URL,
+    KEY_BLACKDUCK_TIMEOUT,
+    KEY_BLACKDUCK_API_KEY
+];
+
+class BlackDuckConfiguration
+    extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -20,6 +33,9 @@ class BlackDuckConfiguration extends React.Component {
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTest = this.handleTest.bind(this);
+        this.state = {
+            settingsData: FieldModelUtil.createEmptyFieldModel(fieldNames, DescriptorUtil.CONTEXT_TYPE.GLOBAL, 'provider_blackduck')
+        };
     }
 
     componentDidMount() {
@@ -28,11 +44,9 @@ class BlackDuckConfiguration extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.updateStatus === 'FETCHED' || nextProps.updateStatus === 'UPDATED') {
+            const newState = FieldModelUtil.checkModelOrCreateEmpty(nextProps, fieldNames);
             this.setState({
-                blackDuckApiKey: nextProps.blackDuckApiKey,
-                blackDuckApiKeyIsSet: nextProps.blackDuckApiKeyIsSet,
-                blackDuckTimeout: nextProps.blackDuckTimeout,
-                blackDuckUrl: nextProps.blackDuckUrl
+                settingsData: newState
             });
         }
     }
@@ -79,24 +93,33 @@ class BlackDuckConfiguration extends React.Component {
                 <form className="form-horizontal" onSubmit={this.handleSubmit}>
                     <div>
                         <TextInput
-                            id="blackDuckUrl"
-                            label="Url"
-                            name="blackDuckUrl"
-                            value={this.state.blackDuckUrl}
+                            id={KEY_BLACKDUCK_URL}
+                            label="Host Name"
+                            name={KEY_BLACKDUCK_URL}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_BLACKDUCK_URL)}
                             onChange={this.handleChange}
-                            errorName="blackDuckUrlError"
-                            errorValue={this.props.fieldErrors.blackDuckUrl}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(KEY_BLACKDUCK_URL)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_BLACKDUCK_URL)]}
                         />
                         <PasswordInput
-                            id="blackDuckConfigurationApiToken"
-                            label="API Token"
-                            name="blackDuckApiKey"
-                            value={this.state.blackDuckApiKey}
-                            isSet={this.state.blackDuckApiKeyIsSet}
+                            id={KEY_BLACKDUCK_API_KEY}
+                            label="Password"
+                            name={KEY_BLACKDUCK_API_KEY}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_BLACKDUCK_API_KEY)}
+                            isSet={FieldModelUtil.isFieldModelValueSet(fieldModel, KEY_BLACKDUCK_API_KEY)}
                             onChange={this.handleChange}
-                            errorMessage={this.props.fieldErrors.apiKey || this.props.fieldErrors.blackDuckApiKey}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(KEY_BLACKDUCK_API_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_BLACKDUCK_API_KEY)]}
                         />
-                        <NumberInput id="blackDuckConfigurationTimeout" label="Timeout" name="blackDuckTimeout" value={this.state.blackDuckTimeout} onChange={this.handleChange} />
+                        <NumberInput
+                            id={KEY_BLACKDUCK_TIMEOUT}
+                            label="SMTP Port"
+                            name={KEY_BLACKDUCK_TIMEOUT}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_BLACKDUCK_TIMEOUT)}
+                            onChange={this.handleChange}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(KEY_BLACKDUCK_TIMEOUT)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_BLACKDUCK_TIMEOUT)]}
+                        />
                     </div>
                     <ConfigButtons isFixed={false} includeSave includeTest type="submit" onTestClick={this.handleTest} />
                 </form>

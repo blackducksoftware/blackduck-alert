@@ -2,6 +2,8 @@ import { CONFIG_FETCHED, CONFIG_FETCHING, CONFIG_TEST_FAILED, CONFIG_TEST_SUCCES
 
 import { verifyLoginByStatus } from 'store/actions/session';
 
+import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
+
 const CONFIG_URL = '/alert/api/configuration/provider/provider_blackduck';
 const TEST_URL = '/alert/api/configuration/provider/provider_blackduck/test';
 
@@ -95,25 +97,20 @@ export function getConfig() {
     return (dispatch, getState) => {
         dispatch(fetchingConfig());
         const { csrfToken } = getState().session;
-        fetch(CONFIG_URL, {
-            credentials: 'same-origin',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken
+        const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, 'provider_blackduck');
+        request.then((response) => {
+            if (response.ok) {
+                response.json().then((body) => {
+                    if (body.length > 0) {
+                        dispatch(configFetched(body[0]));
+                    } else {
+                        dispatch(configFetched({}));
+                    }
+                });
+            } else {
+                dispatch(verifyLoginByStatus(response.status));
             }
         })
-            .then((response) => {
-                if (response.ok) {
-                    response.json().then((body) => {
-                        if (body.length > 0) {
-                            dispatch(configFetched(body[0]));
-                        } else {
-                            dispatch(configFetched({}));
-                        }
-                    });
-                } else {
-                    dispatch(verifyLoginByStatus(response.status));
-                }
-            })
             .catch(console.error);
     };
 }
@@ -122,38 +119,34 @@ export function updateConfig(config) {
     return (dispatch, getState) => {
         dispatch(updatingConfig());
         const { csrfToken } = getState().session;
-        const method = config.id ? 'PUT' : 'POST';
         const body = scrubConfig(config);
 
-        fetch(CONFIG_URL, {
-            credentials: 'same-origin',
-            method,
-            body: JSON.stringify(body),
-            headers: {
-                'content-type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
+        let request;
+        if (config.id) {
+            request = ConfigRequestBuilder.createUpdateRequest(csrfToken, config.id, body);
+        } else {
+            request = ConfigRequestBuilder.createNewConfigurationRequest(csrfToken, body);
+        }
+        request.then((response) => {
+            if (response.ok) {
+                response.json().then((data) => {
+                    dispatch(configUpdated({ ...config, id: data.id }));
+                }).then(() => dispatch(getConfig()));
+            } else {
+                response.json().then((data) => {
+                    switch (response.status) {
+                        case 400:
+                            return dispatch(configError(data.message, data.errors));
+                        case 412:
+                            return dispatch(configError(data.message, data.errors));
+                        default: {
+                            dispatch(configError(data.message));
+                            return dispatch(verifyLoginByStatus(response.status));
+                        }
+                    }
+                });
             }
         })
-            .then((response) => {
-                if (response.ok) {
-                    response.json().then((data) => {
-                        dispatch(configUpdated({ ...config, id: data.id }));
-                    }).then(() => dispatch(getConfig()));
-                } else {
-                    response.json().then((data) => {
-                        switch (response.status) {
-                            case 400:
-                                return dispatch(configError(data.message, data.errors));
-                            case 412:
-                                return dispatch(configError(data.message, data.errors));
-                            default: {
-                                dispatch(configError(data.message));
-                                return dispatch(verifyLoginByStatus(response.status));
-                            }
-                        }
-                    });
-                }
-            })
             .catch(console.error);
     };
 }
