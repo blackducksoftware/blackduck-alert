@@ -69,7 +69,7 @@ public class LoginController extends BaseController {
         final HttpHeaders headers = new HttpHeaders();
         headers.add("Location", "/");
 
-        return new ResponseEntity<>("{\"message\":\"Success\"}", headers, HttpStatus.NO_CONTENT);
+        return responseFactory.createResponse(HttpStatus.NO_CONTENT, headers, "{\"message\":\"Success\"}");
     }
 
     @PostMapping(value = "/login")
@@ -80,15 +80,15 @@ public class LoginController extends BaseController {
                 final CsrfToken token = csrfTokenRepository.generateToken(request);
                 csrfTokenRepository.saveToken(token, request, response);
                 response.setHeader(token.getHeaderName(), token.getToken());
-                return responseFactory.createResponse(HttpStatus.OK, "{\"message\":\"Success\"}");
+                return responseFactory.createMessageResponse(HttpStatus.OK, "{\"message\":\"Success\"}");
             } else {
-                return responseFactory.createResponse(HttpStatus.UNAUTHORIZED, "User not authorized");
+                return responseFactory.createMessageResponse(HttpStatus.UNAUTHORIZED, "User not authorized");
             }
         } catch (final BadCredentialsException ex) {
-            return responseFactory.createResponse(HttpStatus.UNAUTHORIZED, "User not authorized");
+            return responseFactory.createMessageResponse(HttpStatus.UNAUTHORIZED, "User not authorized");
         } catch (final Exception ex) {
             logger.error(ex.getMessage(), ex);
-            return responseFactory.createResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+            return responseFactory.createMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
         }
     }
 }

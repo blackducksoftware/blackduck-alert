@@ -54,9 +54,9 @@ public class AboutController extends BaseController {
     public ResponseEntity<String> about() {
         final Optional<AboutModel> optionalModel = aboutActions.getAboutModel();
         if (optionalModel.isPresent()) {
-            return responseFactory.createResponse(HttpStatus.OK, contentConverter.getJsonString(optionalModel.get()));
+            return responseFactory.createOkContentResponse(contentConverter.getJsonString(optionalModel.get()));
         }
-        return responseFactory.createResponse(HttpStatus.NOT_FOUND, ERROR_ABOUT_MODEL_NOT_FOUND);
+        return responseFactory.createMessageResponse(HttpStatus.NOT_FOUND, ERROR_ABOUT_MODEL_NOT_FOUND);
     }
 
 }
