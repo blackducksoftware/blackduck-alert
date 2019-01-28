@@ -44,7 +44,7 @@ public class BlackDuckPolicyOverrideMessageContentCollectorTest {
         final int numberOfPoliciesOverridden = 1;
         final int policyOverlap = 1;
 
-        // there are 3 possible linkable items per notification in the populateFieldModel data
+        // there are 3 possible linkable items per notification in the test data
         // 1- policy rule
         // 2- component
         // 3- component version or policy override user

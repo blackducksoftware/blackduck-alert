@@ -76,7 +76,7 @@ public class EmailGlobalDescriptorActionApi extends DescriptorActionApi {
         final EmailProperties emailProperties = new EmailProperties(fieldAccessor);
 
         final SortedSet<LinkableItem> set = new TreeSet<>();
-        final LinkableItem linkableItem = new LinkableItem("Message", "This is a populateFieldModel message from the Alert global email configuration.", null);
+        final LinkableItem linkableItem = new LinkableItem("Message", "This is a test message from the Alert global email configuration.", null);
         set.add(linkableItem);
         final CategoryItem categoryItem = new CategoryItem(CategoryKey.from("TYPE"), null, 1L, set);
         final AggregateMessageContent messageContent = new AggregateMessageContent("Message Content", "Test from Alert", List.of(categoryItem));

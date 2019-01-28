@@ -194,12 +194,12 @@ public class ConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         unregisterDescriptor(hipChatDescriptor);
     }
 
-    // FIXME Will need to add all configurations to properly run a populateFieldModel check for hipchat.
+    // FIXME Will need to add all configurations to properly run a test check for hipchat.
     //    @Test
     //    @WithMockUser(roles = "ADMIN")
     //    public void testTestConfig() throws Exception {
     //        registerDescriptor(hipChatDescriptor);
-    //        final String urlPath = ConfigController.CONFIGURATION_PATH + "/populateFieldModel";
+    //        final String urlPath = ConfigController.CONFIGURATION_PATH + "/test";
     //        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(urlPath)
     //                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
     //                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());

@@ -72,7 +72,7 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
 
         final List<NotificationContent> notificationContentList = List.of(policyNotification, vulnerabilityNotification);
 
-        final List<String> projects = List.of("example", "alert-populateFieldModel-project", "alert-populateFieldModel-project-2");
+        final List<String> projects = List.of("example", "alert-test-project", "alert-test-project-2");
         final List<String> notificationTypes = List.of(NotificationType.RULE_VIOLATION_CLEARED.name(), NotificationType.VULNERABILITY.name());
         final CommonDistributionConfiguration jobConfig = createCommonDistributionConfiguration(projects, notificationTypes);
         final JobConfigReader spiedReader = Mockito.spy(jobConfigReader);

@@ -84,7 +84,7 @@ public class HipChatChannelTest extends ChannelTest {
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, null, null, null);
         IntegrationException intException = null;
         try {
-            final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this populateFieldModel message", null);
+            final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
             final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "", null, subTopic, List.of());
 
             final FieldAccessor fieldAccessor = new FieldAccessor(new HashMap<>());
@@ -101,7 +101,7 @@ public class HipChatChannelTest extends ChannelTest {
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, null, auditUtility, null);
 
-        final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this populateFieldModel message", null);
+        final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "", null, subTopic, List.of());
 
         final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();
@@ -133,7 +133,7 @@ public class HipChatChannelTest extends ChannelTest {
         final TestAlertProperties alertProperties = new TestAlertProperties();
         final HipChatChannel hipChatChannel = new HipChatChannel(gson, alertProperties, auditUtility, null);
 
-        final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this populateFieldModel message", null);
+        final LinkableItem subTopic = new LinkableItem("subTopic", "Alert has sent this test message", null);
         final AggregateMessageContent messageContent = new AggregateMessageContent("testTopic", "", null, subTopic, List.of());
 
         final Map<String, ConfigurationFieldModel> fieldModels = new HashMap<>();

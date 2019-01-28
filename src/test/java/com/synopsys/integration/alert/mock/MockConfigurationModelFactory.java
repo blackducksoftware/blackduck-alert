@@ -50,7 +50,7 @@ public class MockConfigurationModelFactory {
         final List<ConfigurationFieldModel> fields = new ArrayList<>();
 
         final ConfigurationFieldModel channel = createFieldModel(SlackDescriptor.KEY_CHANNEL_NAME, "Alert channel");
-        final ConfigurationFieldModel username = createFieldModel(SlackDescriptor.KEY_CHANNEL_USERNAME, "Alert unit populateFieldModel");
+        final ConfigurationFieldModel username = createFieldModel(SlackDescriptor.KEY_CHANNEL_USERNAME, "Alert unit test");
         final ConfigurationFieldModel webhook = createFieldModel(SlackDescriptor.KEY_WEBHOOK, "Webhook");
 
         fields.add(channel);
@@ -67,7 +67,7 @@ public class MockConfigurationModelFactory {
 
         //        final ConfigurationFieldModel emailAddresses = createConfigurationFieldModel(EmailDescriptor.KEY_EMAIL_ADDRESSES, List.of("noreply@blackducksoftware.com"));
         final ConfigurationFieldModel projectOwnerOnly = createFieldModel(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, "true");
-        final ConfigurationFieldModel subjectLine = createFieldModel(EmailDescriptor.KEY_SUBJECT_LINE, "Alert unit populateFieldModel subject line");
+        final ConfigurationFieldModel subjectLine = createFieldModel(EmailDescriptor.KEY_SUBJECT_LINE, "Alert unit test subject line");
 
         //        fields.add(emailAddresses);
         fields.add(projectOwnerOnly);
@@ -83,7 +83,7 @@ public class MockConfigurationModelFactory {
 
         final ConfigurationFieldModel emailAddresses = createFieldModel(EmailDescriptor.KEY_EMAIL_ADDRESSES, List.of("noreply@blackducksoftware.com"));
         final ConfigurationFieldModel projectOwnerOnly = createFieldModel(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, "false");
-        final ConfigurationFieldModel subjectLine = createFieldModel(EmailDescriptor.KEY_SUBJECT_LINE, "Alert unit populateFieldModel subject line");
+        final ConfigurationFieldModel subjectLine = createFieldModel(EmailDescriptor.KEY_SUBJECT_LINE, "Alert unit test subject line");
 
         fields.add(emailAddresses);
         fields.add(projectOwnerOnly);

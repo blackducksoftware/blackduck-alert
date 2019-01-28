@@ -14,7 +14,7 @@ public class StringEncryptionConverterTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final StringEncryptionConverter stringEncryptionConverter = new StringEncryptionConverter();
         stringEncryptionConverter.setEncryptionUtility(encryptionUtility);
-        stringEncryptionConverter.convertToDatabaseColumn("populateFieldModel");
+        stringEncryptionConverter.convertToDatabaseColumn("test");
         Mockito.verify(encryptionUtility).encrypt(Mockito.anyString());
     }
 
