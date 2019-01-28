@@ -20,6 +20,7 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.ProxyManager;
+import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
@@ -49,7 +50,8 @@ public class PolarisGlobalDescriptorActionApiTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
         final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(polarisGlobalUIConfig.createFields());
-        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor);
+        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, baseConfigurationAccessor);
         final PolarisGlobalDescriptorActionApi actionApi = new PolarisGlobalDescriptorActionApi(null, modelConverter);
 
         final Map<String, String> fieldErrors = new HashMap<>();
@@ -75,7 +77,8 @@ public class PolarisGlobalDescriptorActionApiTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
         final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(polarisGlobalUIConfig.createFields());
-        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor);
+        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, baseConfigurationAccessor);
         final PolarisGlobalDescriptorActionApi actionApi = new PolarisGlobalDescriptorActionApi(null, modelConverter);
 
         final Map<String, String> fieldErrors = new HashMap<>();
@@ -146,7 +149,8 @@ public class PolarisGlobalDescriptorActionApiTest {
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
 
         final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(polarisGlobalUIConfig.createFields());
-        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor);
+        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, baseConfigurationAccessor);
         final PolarisGlobalDescriptorActionApi actionApi = new PolarisGlobalDescriptorActionApi(polarisProperties, modelConverter);
         try {
             final Map<String, ConfigField> configFieldMap = polarisGlobalUIConfig.createFields()
@@ -163,7 +167,8 @@ public class PolarisGlobalDescriptorActionApiTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
         final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(polarisGlobalUIConfig.createFields());
-        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor);
+        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, baseConfigurationAccessor);
         final PolarisGlobalDescriptorActionApi actionApi = new PolarisGlobalDescriptorActionApi(null, modelConverter);
 
         final Map<String, FieldValueModel> fieldMap = new HashMap<>();
@@ -209,7 +214,8 @@ public class PolarisGlobalDescriptorActionApiTest {
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
 
         final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(polarisGlobalUIConfig.createFields());
-        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor);
+        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, baseConfigurationAccessor);
         final PolarisGlobalDescriptorActionApi actionApi = new PolarisGlobalDescriptorActionApi(polarisProperties, modelConverter);
 
         final Map<String, FieldValueModel> fieldMap = new HashMap<>();

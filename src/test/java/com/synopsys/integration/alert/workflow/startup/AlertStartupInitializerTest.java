@@ -31,7 +31,7 @@ public class AlertStartupInitializerTest {
         final ChannelDescriptor channelDescriptor = new HipChatDescriptor(null, null, null, null, new HipChatGlobalUIConfig());
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
-        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, baseDescriptorAccessor);
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, baseDescriptorAccessor, baseConfigurationAccessor);
         Mockito.when(baseDescriptorAccessor.getFieldsForDescriptor(Mockito.anyString(), Mockito.any(ConfigContextEnum.class))).thenReturn(List.copyOf(channelDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL)));
         final List<ChannelDescriptor> channelDescriptors = List.of(channelDescriptor);
         final List<ProviderDescriptor> providerDescriptors = List.of();
@@ -50,7 +50,7 @@ public class AlertStartupInitializerTest {
         final DescriptorMap descriptorMap = new DescriptorMap(List.of(), List.of(), List.of());
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
-        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, baseDescriptorAccessor);
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, baseDescriptorAccessor, baseConfigurationAccessor);
         final AlertStartupInitializer initializer = new AlertStartupInitializer(descriptorMap, environment, baseDescriptorAccessor, baseConfigurationAccessor, modelConverter);
         initializer.initializeConfigs(true);
         assertTrue(initializer.getAlertPropertyNameSet().isEmpty());
@@ -59,13 +59,13 @@ public class AlertStartupInitializerTest {
     @Test
     public void testSetRestModelValueCreate() throws Exception {
         final Environment environment = Mockito.mock(Environment.class);
-        final BaseDescriptorAccessor descriptorAccessor = Mockito.mock(BaseDescriptorAccessor.class);
-        final BaseConfigurationAccessor configurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
+        final BaseDescriptorAccessor baseDescriptorAccessor = Mockito.mock(BaseDescriptorAccessor.class);
+        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
         final ChannelDescriptor channelDescriptor = new HipChatDescriptor(null, null, null, null, new HipChatGlobalUIConfig());
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
-        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor);
-        Mockito.when(descriptorAccessor.getFieldsForDescriptor(Mockito.anyString(), Mockito.any(ConfigContextEnum.class))).thenReturn(List.copyOf(channelDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL)));
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, baseDescriptorAccessor, baseConfigurationAccessor);
+        Mockito.when(baseDescriptorAccessor.getFieldsForDescriptor(Mockito.anyString(), Mockito.any(ConfigContextEnum.class))).thenReturn(List.copyOf(channelDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL)));
         final List<ChannelDescriptor> channelDescriptors = List.of(channelDescriptor);
         final List<ProviderDescriptor> providerDescriptors = List.of();
         final List<ComponentDescriptor> componentDescriptors = List.of();
@@ -73,11 +73,11 @@ public class AlertStartupInitializerTest {
         final String value = "newValue";
         Mockito.when(environment.getProperty(Mockito.anyString())).thenReturn(value);
 
-        final AlertStartupInitializer initializer = new AlertStartupInitializer(descriptorMap, environment, descriptorAccessor, configurationAccessor, modelConverter);
+        final AlertStartupInitializer initializer = new AlertStartupInitializer(descriptorMap, environment, baseDescriptorAccessor, baseConfigurationAccessor, modelConverter);
         initializer.initializeConfigs(true);
         final int times = descriptorMap.getDescriptorMap().keySet().size();
-        Mockito.verify(descriptorAccessor, Mockito.times(times)).getFieldsForDescriptor(Mockito.anyString(), Mockito.any(ConfigContextEnum.class));
-        Mockito.verify(configurationAccessor, Mockito.times(times)).getConfigurationByDescriptorNameAndContext(Mockito.anyString(), Mockito.any(ConfigContextEnum.class));
-        Mockito.verify(configurationAccessor, Mockito.times(times)).createConfiguration(Mockito.anyString(), Mockito.any(ConfigContextEnum.class), Mockito.anyCollection());
+        Mockito.verify(baseDescriptorAccessor, Mockito.times(times)).getFieldsForDescriptor(Mockito.anyString(), Mockito.any(ConfigContextEnum.class));
+        Mockito.verify(baseConfigurationAccessor, Mockito.times(times)).getConfigurationByDescriptorNameAndContext(Mockito.anyString(), Mockito.any(ConfigContextEnum.class));
+        Mockito.verify(baseConfigurationAccessor, Mockito.times(times)).createConfiguration(Mockito.anyString(), Mockito.any(ConfigContextEnum.class), Mockito.anyCollection());
     }
 }
