@@ -41,4 +41,5 @@ public class GroupedFieldModel {
     public Set<FieldModel> getFieldModels() {
         return fieldModels;
     }
+
 }

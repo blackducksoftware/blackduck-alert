@@ -39,7 +39,6 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
-import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
@@ -86,15 +85,6 @@ public class ConfigurationFieldModelConverter {
         List<DefinedFieldModel> fieldsForContext = descriptorAccessor.getFieldsForDescriptor(descriptorName, context);
         List<DefinedFieldModel> definedFieldList = new LinkedList<>();
         definedFieldList.addAll(fieldsForContext);
-
-        if (ConfigContextEnum.DISTRIBUTION == context) {
-            final Optional<String> providerName = fieldModel.getFieldValue(CommonDistributionUIConfig.KEY_PROVIDER_NAME);
-            // include all global field data as well if present in FieldModel
-            definedFieldList.addAll(descriptorAccessor.getFieldsForDescriptor(descriptorName, ConfigContextEnum.GLOBAL));
-            if (providerName.isPresent()) {
-                definedFieldList.addAll(descriptorAccessor.getFieldsForDescriptor(providerName.get(), context));
-            }
-        }
 
         final Set<ConfigurationFieldModel> configurationModels = new HashSet<>();
         for (final DefinedFieldModel definedField : definedFieldList) {

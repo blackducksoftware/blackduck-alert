@@ -52,7 +52,7 @@ public class DescriptorRegistrarTestIT extends AlertIntegrationTest {
 
         assertEquals(hipChatDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL).size(), globalFields.size());
 
-        //        CommonDistributionUIConfig commonDistributionUIConfig = new CommonDistributionUIConfig();
+        //        ChannelDistributionUIConfig commonDistributionUIConfig = new ChannelDistributionUIConfig();
         //        commonDistributionUIConfig.createCommonConfigFields(Set.of(), Set.of()).size();
         //
         //        ProviderDistributionUIConfig providerDistributionUIConfig = new ProviderDistributionUIConfig();

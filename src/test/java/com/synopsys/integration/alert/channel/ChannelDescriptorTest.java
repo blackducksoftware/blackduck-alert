@@ -27,7 +27,7 @@ import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor;
@@ -183,7 +183,7 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
     public void testDistributionConfig() {
         final Optional<DescriptorActionApi> descriptorActionApi = getDescriptor().getActionApi(ConfigContextEnum.DISTRIBUTION);
         final FieldModel restModel = createValidFieldModel(distribution_config, ConfigContextEnum.DISTRIBUTION);
-        final FieldValueModel jobNameField = restModel.getField(CommonDistributionUIConfig.KEY_NAME).orElseThrow();
+        final FieldValueModel jobNameField = restModel.getField(ChannelDistributionUIConfig.KEY_NAME).orElseThrow();
         jobNameField.setValue(getTestJobName());
         try {
             assertTrue(descriptorActionApi.isPresent());
@@ -231,7 +231,7 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
     public void testDistributionValidate() throws Exception {
         final Optional<DescriptorActionApi> descriptorActionApi = getDescriptor().getActionApi(ConfigContextEnum.DISTRIBUTION);
         final FieldModel restModel = createValidFieldModel(distribution_config, ConfigContextEnum.DISTRIBUTION);
-        final FieldValueModel jobNameField = restModel.getField(CommonDistributionUIConfig.KEY_NAME).orElseThrow();
+        final FieldValueModel jobNameField = restModel.getField(ChannelDistributionUIConfig.KEY_NAME).orElseThrow();
         jobNameField.setValue(getTestJobName());
         final HashMap<String, String> fieldErrors = new HashMap<>();
         final List<ConfigurationModel> models = configurationAccessor.getConfigurationsByDescriptorName(getDescriptor().getName());

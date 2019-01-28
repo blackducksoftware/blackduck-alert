@@ -23,20 +23,12 @@
  */
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.config.context.ProviderDistributionDescriptorActionApi;
 
 @Component
 public class BlackDuckDistributionDescriptorActionApi extends ProviderDistributionDescriptorActionApi {
-    private final ContentConverter contentConverter;
-
-    @Autowired
-    public BlackDuckDistributionDescriptorActionApi(final ContentConverter contentConverter) {
-        this.contentConverter = contentConverter;
-    }
 
     // TODO Add the Delete/update/save overrides here to customize what Blackduck does in each scenario(Modifying projects)
 }

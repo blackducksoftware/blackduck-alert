@@ -59,7 +59,7 @@ public class ConfigContextTestIT extends AlertIntegrationTest {
         final ConfigContextEntity savedConfigContextEntity = configContextRepository.save(configContextEntity);
         assertEquals(1, configContextRepository.findAll().size());
 
-        final String descriptorName = "test descriptor";
+        final String descriptorName = "populateFieldModel descriptor";
         final RegisteredDescriptorEntity registeredDescriptorEntity = new RegisteredDescriptorEntity(descriptorName, 1L);
         final RegisteredDescriptorEntity savedRegisteredDescriptorEntity = registeredDescriptorRepository.save(registeredDescriptorEntity);
         assertEquals(1, registeredDescriptorRepository.findAll().size());

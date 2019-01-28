@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -63,8 +63,8 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
     public DistributionEvent createChannelTestEvent(final FieldModel fieldModel) throws AlertDatabaseConstraintException {
         final AggregateMessageContent messageContent = createTestNotificationContent();
 
-        final String channelName = fieldModel.getField(CommonDistributionUIConfig.KEY_CHANNEL_NAME).flatMap(field -> field.getValue()).orElse("");
-        final String providerName = fieldModel.getField(CommonDistributionUIConfig.KEY_PROVIDER_NAME).flatMap(field -> field.getValue()).orElse("");
+        final String channelName = fieldModel.getField(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).flatMap(field -> field.getValue()).orElse("");
+        final String providerName = fieldModel.getField(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).flatMap(field -> field.getValue()).orElse("");
         final String formatType = fieldModel.getField(ProviderDistributionUIConfig.KEY_FORMAT_TYPE).flatMap(field -> field.getValue()).orElse("");
 
         final FieldAccessor fieldAccessor = modelConverter.convertToFieldAccessor(fieldModel);
@@ -83,7 +83,7 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
     }
 
     private Optional<DescriptorActionApi> getProviderActionApi(final FieldModel fieldModel) {
-        final String providerName = fieldModel.getField(CommonDistributionUIConfig.KEY_PROVIDER_NAME)
+        final String providerName = fieldModel.getField(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
                                         .flatMap(fieldValueModel -> fieldValueModel.getValue())
                                         .orElse(null);
         return providerDescriptors.stream()

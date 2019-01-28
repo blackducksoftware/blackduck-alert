@@ -29,7 +29,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
@@ -194,12 +194,12 @@ public class ConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         unregisterDescriptor(hipChatDescriptor);
     }
 
-    // FIXME Will need to add all configurations to properly run a test check for hipchat.
+    // FIXME Will need to add all configurations to properly run a populateFieldModel check for hipchat.
     //    @Test
     //    @WithMockUser(roles = "ADMIN")
     //    public void testTestConfig() throws Exception {
     //        registerDescriptor(hipChatDescriptor);
-    //        final String urlPath = ConfigController.CONFIGURATION_PATH + "/test";
+    //        final String urlPath = ConfigController.CONFIGURATION_PATH + "/populateFieldModel";
     //        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(urlPath)
     //                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
     //                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -226,8 +226,8 @@ public class ConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         final FieldValueModel formatType = new FieldValueModel(List.of(FormatType.DEFAULT.name()), true);
         final FieldValueModel filterByProject = new FieldValueModel(List.of("false"), true);
 
-        final Map<String, FieldValueModel> fields = Map.of(HipChatDescriptor.KEY_ROOM_ID, roomId, CommonDistributionUIConfig.KEY_NAME, name, CommonDistributionUIConfig.KEY_PROVIDER_NAME, provider,
-            CommonDistributionUIConfig.KEY_CHANNEL_NAME, channel, CommonDistributionUIConfig.KEY_FREQUENCY, frequency, ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, notificationType, ProviderDistributionUIConfig.KEY_FORMAT_TYPE,
+        final Map<String, FieldValueModel> fields = Map.of(HipChatDescriptor.KEY_ROOM_ID, roomId, ChannelDistributionUIConfig.KEY_NAME, name, ChannelDistributionUIConfig.KEY_PROVIDER_NAME, provider,
+            ChannelDistributionUIConfig.KEY_CHANNEL_NAME, channel, ChannelDistributionUIConfig.KEY_FREQUENCY, frequency, ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, notificationType, ProviderDistributionUIConfig.KEY_FORMAT_TYPE,
             formatType, BlackDuckDescriptor.KEY_FILTER_BY_PROJECT, filterByProject);
         return new FieldModel(descriptorName, context, fields);
     }
@@ -244,7 +244,7 @@ public class ConfigControllerTestIT extends DatabaseConfiguredFieldTest {
 
         final ConfigurationModel configurationModel = configurationModelOptional.get();
         final Optional<ConfigurationFieldModel> roomIdField = configurationModel.getField(HipChatDescriptor.KEY_ROOM_ID);
-        final Optional<ConfigurationFieldModel> frequencyField = configurationModel.getField(CommonDistributionUIConfig.KEY_FREQUENCY);
+        final Optional<ConfigurationFieldModel> frequencyField = configurationModel.getField(ChannelDistributionUIConfig.KEY_FREQUENCY);
         final Optional<ConfigurationFieldModel> filterByProjectField = configurationModel.getField(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT);
 
         assertTrue(roomIdField.isPresent());

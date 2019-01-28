@@ -68,9 +68,9 @@ public class HipChatGlobalDescriptorActionApi extends DescriptorActionApi {
             throw new AlertException("The provided room id is an invalid number.");
         }
 
-        final String htmlMessage = "This is a test message sent by Alert.";
+        final String htmlMessage = "This is a populateFieldModel message sent by Alert.";
         final Request testRequest = hipChatChannel.createRequest(configuredApiUrl, apiKey.get(), parsedRoomId, Boolean.TRUE, "red", htmlMessage);
-        hipChatChannel.sendMessageRequest(restConnection, testRequest, "test");
+        hipChatChannel.sendMessageRequest(restConnection, testRequest, "populateFieldModel");
     }
 
 }

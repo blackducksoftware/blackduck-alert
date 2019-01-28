@@ -42,7 +42,7 @@ public class BlackDuckLicenseLimitCollectorTest {
         final LicenseLimitNotificationContent content = new LicenseLimitNotificationContent();
         content.licenseViolationType = LicenseLimitType.MANAGED_CODEBASE_BYTES_NEW;
         content.marketingPageUrl = "https://google.com";
-        content.message = "Unit test message";
+        content.message = "Unit populateFieldModel message";
         content.usedCodeSize = 81L;
         content.hardLimit = 100L;
         content.softLimit = 80L;

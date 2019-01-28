@@ -25,21 +25,25 @@ package com.synopsys.integration.alert.channel.slack.descriptor;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 
 @Component
-public class SlackUIConfig extends UIConfig {
+public class SlackUIConfig extends ChannelDistributionUIConfig {
 
-    public SlackUIConfig() {
-        super(SlackDescriptor.SLACK_LABEL, SlackDescriptor.SLACK_URL, SlackDescriptor.SLACK_ICON);
+    @Autowired
+    public SlackUIConfig(BaseConfigurationAccessor configurationAccessor, BaseDescriptorAccessor descriptorAccessor) {
+        super(SlackDescriptor.SLACK_LABEL, SlackDescriptor.SLACK_URL, SlackDescriptor.SLACK_ICON, configurationAccessor, descriptorAccessor);
     }
 
     @Override
-    public List<ConfigField> createFields() {
+    public List<ConfigField> createChannelDistributionFields() {
         final ConfigField webhook = TextInputConfigField.createRequired(SlackDescriptor.KEY_WEBHOOK, "Webhook");
         final ConfigField channelName = TextInputConfigField.createRequired(SlackDescriptor.KEY_CHANNEL_NAME, "Channel Name");
         final ConfigField channelUsername = TextInputConfigField.create(SlackDescriptor.KEY_CHANNEL_USERNAME, "Channel Username");

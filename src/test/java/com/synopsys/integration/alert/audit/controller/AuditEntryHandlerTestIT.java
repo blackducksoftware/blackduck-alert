@@ -34,7 +34,7 @@ import com.google.gson.JsonArray;
 import com.jayway.jsonpath.JsonPath;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
-import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
@@ -129,8 +129,8 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         assertFalse(auditEntry.getJobs().isEmpty());
         assertEquals(1, auditEntry.getJobs().size());
         final Map<String, ConfigurationFieldModel> keyToFieldMap = configurationJobModel.createKeyToFieldMap();
-        assertEquals(keyToFieldMap.get(CommonDistributionUIConfig.KEY_CHANNEL_NAME).getFieldValue().get(), auditEntry.getJobs().get(0).getEventType());
-        assertEquals(keyToFieldMap.get(CommonDistributionUIConfig.KEY_NAME).getFieldValue().get(), auditEntry.getJobs().get(0).getName());
+        assertEquals(keyToFieldMap.get(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).getFieldValue().get(), auditEntry.getJobs().get(0).getEventType());
+        assertEquals(keyToFieldMap.get(ChannelDistributionUIConfig.KEY_NAME).getFieldValue().get(), auditEntry.getJobs().get(0).getName());
 
         final NotificationConfig notification = auditEntry.getNotification();
         assertEquals(savedNotificationEntity.getCreatedAt().toString(), notification.getCreatedAt());
