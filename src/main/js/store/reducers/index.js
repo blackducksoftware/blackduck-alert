@@ -3,7 +3,7 @@ import { combineReducers } from 'redux';
 
 import about from 'store/reducers/about';
 import audit from 'store/reducers/audit';
-import config from 'store/reducers/config';
+import blackduck from 'store/reducers/blackduck';
 import descriptors from 'store/reducers/descriptors';
 import distributions from 'store/reducers/distributions';
 import emailConfig from 'store/reducers/emailConfig';
@@ -18,7 +18,7 @@ import refresh from 'store/reducers/refresh';
 const rootReducer = combineReducers({
     about,
     audit,
-    config,
+    blackduck,
     descriptors,
     distributions,
     emailConfig,
