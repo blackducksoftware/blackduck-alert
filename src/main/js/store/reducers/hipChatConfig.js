@@ -1,9 +1,7 @@
 import {
     HIPCHAT_CONFIG_FETCHED,
     HIPCHAT_CONFIG_FETCHING,
-    HIPCHAT_CONFIG_HIDE_HOST_SERVER,
     HIPCHAT_CONFIG_HIDE_TEST_MODAL,
-    HIPCHAT_CONFIG_SHOW_HOST_SERVER,
     HIPCHAT_CONFIG_SHOW_TEST_MODAL,
     HIPCHAT_CONFIG_TEST_FAILED,
     HIPCHAT_CONFIG_TEST_SUCCESS,
@@ -15,18 +13,14 @@ import {
 } from 'store/actions/types';
 
 const initialState = {
-    fetching: false,
     updateStatus: null,
+    actionMessage: null,
     testing: false,
-    testStatus: '',
     error: {
         message: '',
-        fieldErrors: []
+        fieldErrors: {}
     },
-    apiKeyIsSet: false,
-    apiKey: null,
-    id: null,
-    showAdvanced: false,
+    config: {},
     showTestModal: false
 };
 
@@ -34,18 +28,14 @@ const config = (state = initialState, action) => {
     switch (action.type) {
         case HIPCHAT_CONFIG_FETCHING:
             return Object.assign({}, state, {
-                fetching: true,
-                updateStatus: null,
-                testing: false,
-                testStatus: ''
+                updateStatus: 'FETCHING',
+                testing: false
             });
 
         case HIPCHAT_CONFIG_FETCHED:
             return Object.assign({}, state, {
-                fetching: false,
                 updateStatus: 'FETCHED',
                 testing: false,
-                testStatus: '',
                 apiKeyIsSet: action.apiKeyIsSet,
                 apiKey: action.apiKey,
                 hostServer: action.hostServer,
@@ -54,91 +44,77 @@ const config = (state = initialState, action) => {
 
         case HIPCHAT_CONFIG_UPDATING:
             return Object.assign({}, state, {
-                fetching: false,
                 updateStatus: 'UPDATING',
                 testing: false,
-                testStatus: '',
                 error: {
                     message: '',
-                    fieldErrors: []
+                    fieldErrors: {}
                 }
             });
 
         case HIPCHAT_CONFIG_UPDATED:
             return Object.assign({}, state, {
-                fetching: false,
                 updateStatus: 'UPDATED',
+                actionMessage: 'Update successful',
                 testing: false,
-                testStatus: '',
                 error: {
                     message: '',
-                    fieldErrors: []
+                    fieldErrors: {}
                 }
             });
 
         case HIPCHAT_CONFIG_UPDATE_ERROR:
             return Object.assign({}, state, {
                 updateStatus: 'ERROR',
+                actionMessage: null,
                 error: {
                     message: action.message,
-                    fieldErrors: action.errors || []
+                    fieldErrors: action.errors || {}
                 }
             });
 
 
         case HIPCHAT_CONFIG_TESTING:
             return Object.assign({}, state, {
-                fetching: false,
                 updateStatus: null,
-                testing: true,
-                testStatus: ''
+                testing: true
             });
 
         case HIPCHAT_CONFIG_SHOW_TEST_MODAL:
             return Object.assign({}, state, {
                 updateStatus: null,
+                actionMessage: null,
                 showTestModal: true
             });
 
         case HIPCHAT_CONFIG_HIDE_TEST_MODAL:
             return Object.assign({}, state, {
                 updateStatus: null,
+                actionMessage: null,
                 showTestModal: false,
                 testing: true
             });
 
         case HIPCHAT_CONFIG_TEST_SUCCESS:
             return Object.assign({}, state, {
-                fetching: false,
                 updateStatus: null,
+                actionMessage: 'Test message sent',
                 testing: false,
-                testStatus: 'SUCCESS',
                 error: {
                     message: '',
-                    fieldErrors: []
+                    fieldErrors: {}
                 }
             });
 
         case HIPCHAT_CONFIG_TEST_FAILED:
             return Object.assign({}, state, {
-                fetching: false,
                 updateStatus: null,
+                actionMessage: null,
                 testing: false,
-                testStatus: 'FAILED',
                 error: {
                     message: action.message,
-                    fieldErrors: action.errors || []
+                    fieldErrors: action.errors || {}
                 }
-            });
-
-        case HIPCHAT_CONFIG_SHOW_HOST_SERVER:
-            return Object.assign({}, state, {
-                showAdvanced: true
-            });
-
-        case HIPCHAT_CONFIG_HIDE_HOST_SERVER:
-            return Object.assign({}, state, {
-                showAdvanced: false
             });
 
         case SERIALIZE:
