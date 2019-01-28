@@ -52,7 +52,7 @@ public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
 
     @Test
     public void testAddSystemMessage() {
-        final String content = "add message test content";
+        final String content = "add message populateFieldModel content";
         final SystemMessageSeverity systemMessageSeverity = SystemMessageSeverity.WARNING;
         systemMessageUtility.addSystemMessage(content, systemMessageSeverity, SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR);
         final List<SystemMessage> actualMessageList = systemMessageRepository.findAll();

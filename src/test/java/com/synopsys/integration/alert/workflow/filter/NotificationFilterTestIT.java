@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.synopsys.integration.alert.common.configuration.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
@@ -79,7 +79,7 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
     public void init() throws AlertDatabaseConstraintException {
         final List<ConfigurationFieldModel> fieldList = MockConfigurationModelFactory.createCommonBlackDuckConfigurationFields("Job Name", TEST_DESCRIPTOR_NAME);
         final Map<String, ConfigurationFieldModel> fieldMap = MockConfigurationModelFactory.mapFieldKeyToFields(fieldList);
-        fieldMap.get(CommonDistributionUIConfig.KEY_FREQUENCY).setFieldValue(TEST_CONFIG_FREQUENCY.name());
+        fieldMap.get(ChannelDistributionUIConfig.KEY_FREQUENCY).setFieldValue(TEST_CONFIG_FREQUENCY.name());
         fieldMap.get(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES).setFieldValue(TEST_CONFIG_NOTIFICATION_TYPE);
         fieldMap.get(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT).setFieldValue(Boolean.TRUE.toString());
         fieldMap.get(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT).setFieldValue(TEST_CONFIG_PROJECT_NAME);
@@ -169,7 +169,7 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
         final NotificationContent garbage3 = createVulnerabilityNotification("garbage3", BlackDuckProvider.COMPONENT_NAME, new Date());
         final List<NotificationContent> notifications = List.of(garbage1, applicableNotification, garbage2, garbage3);
 
-        // TODO refactor the test to use the ObjectHierarchicalField
+        // TODO refactor the populateFieldModel to use the ObjectHierarchicalField
 
         final Collection<NotificationContent> filteredNotifications = defaultNotificationFilter.extractApplicableNotifications(TEST_CONFIG_FREQUENCY, notifications);
 

@@ -36,7 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
-import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
@@ -90,10 +90,10 @@ public class DescriptorRegistrar {
 
     private Collection<DefinedFieldModel> getAllCommonFields() {
         // TODO find a better way to access these fields
-        final DefinedFieldModel name = DefinedFieldModel.createDistributionField(CommonDistributionUIConfig.KEY_NAME);
-        final DefinedFieldModel frequency = DefinedFieldModel.createDistributionField(CommonDistributionUIConfig.KEY_FREQUENCY);
-        final DefinedFieldModel channelName = DefinedFieldModel.createDistributionField(CommonDistributionUIConfig.KEY_CHANNEL_NAME);
-        final DefinedFieldModel providerName = DefinedFieldModel.createDistributionField(CommonDistributionUIConfig.KEY_PROVIDER_NAME);
+        final DefinedFieldModel name = DefinedFieldModel.createDistributionField(ChannelDistributionUIConfig.KEY_NAME);
+        final DefinedFieldModel frequency = DefinedFieldModel.createDistributionField(ChannelDistributionUIConfig.KEY_FREQUENCY);
+        final DefinedFieldModel channelName = DefinedFieldModel.createDistributionField(ChannelDistributionUIConfig.KEY_CHANNEL_NAME);
+        final DefinedFieldModel providerName = DefinedFieldModel.createDistributionField(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
 
         final DefinedFieldModel formatType = DefinedFieldModel.createDistributionField(ProviderDistributionUIConfig.KEY_FORMAT_TYPE);
         final DefinedFieldModel notificationTypes = DefinedFieldModel.createDistributionField(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES);

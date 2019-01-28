@@ -30,7 +30,7 @@ public class NotificationToDistributionEventConverterTestIT extends AlertIntegra
     public void convertToEventsTest() {
         final NotificationToDistributionEventConverter converter = new NotificationToDistributionEventConverter(descriptorMap);
         final Map<CommonDistributionConfiguration, List<AggregateMessageContent>> messageContentMap = new HashMap<>();
-        final List messageContent = List.of(createMessageContent("test"), createMessageContent("example"));
+        final List messageContent = List.of(createMessageContent("populateFieldModel"), createMessageContent("example"));
 
         messageContentMap.put(createEmailConfig(), messageContent);
         messageContentMap.put(createHipChatConfig(), messageContent);

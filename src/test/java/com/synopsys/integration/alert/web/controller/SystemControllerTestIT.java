@@ -78,7 +78,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(systemInitialSetupBaseUrl)
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
         if (systemStatusUtility.isSystemInitialized()) {
-            // the spring-test.properties file sets the encryption and in order to run a hub URL is needed therefore the environment is setup.
+            // the spring-populateFieldModel.properties file sets the encryption and in order to run a hub URL is needed therefore the environment is setup.
             mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isFound());
         } else {
             mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
@@ -113,7 +113,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
         request.content(gson.toJson(configuration));
         request.contentType(contentType);
         if (systemStatusUtility.isSystemInitialized()) {
-            // the spring-test.properties file sets the encryption and in order to run a hub URL is needed therefore the environment is setup.
+            // the spring-populateFieldModel.properties file sets the encryption and in order to run a hub URL is needed therefore the environment is setup.
             mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isConflict());
         } else {
             mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());

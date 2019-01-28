@@ -40,7 +40,7 @@ import com.synopsys.integration.alert.channel.email.EmailChannel;
 import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.context.ChannelDistributionDescriptorActionApi;
-import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckEmailHandler;
@@ -69,7 +69,7 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
         final Set<String> emailAddresses = new HashSet<>();
 
         final Optional<String> filterByProject = fieldModel.getField(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT).flatMap(field -> field.getValue());
-        final Optional<String> providerName = fieldModel.getField(CommonDistributionUIConfig.KEY_PROVIDER_NAME).flatMap(field -> field.getValue());
+        final Optional<String> providerName = fieldModel.getField(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).flatMap(field -> field.getValue());
 
         if (providerName.isPresent() && BlackDuckProvider.COMPONENT_NAME.equals(providerName.get())) {
             Set<BlackDuckProjectEntity> blackDuckProjectEntities = null;

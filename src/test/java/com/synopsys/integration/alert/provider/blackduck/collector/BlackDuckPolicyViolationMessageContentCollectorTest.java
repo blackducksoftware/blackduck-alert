@@ -35,6 +35,23 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
     private final JsonExtractor jsonExtractor = new JsonExtractor(new Gson());
     private final List<MessageContentProcessor> messageContentProcessorList = Arrays.asList(new DefaultMessageContentProcessor(), new DigestMessageContentProcessor());
 
+    public static final void insertAndAssertCountsOnTopic(final BlackDuckPolicyCollector collector, final NotificationContent notification, final String topicName, final int expectedCategoryItemsCount,
+        final int expectedLinkableItemsCount) {
+        collector.insert(notification);
+        final AggregateMessageContent content = collector.collect(FormatType.DEFAULT).stream().filter(topicContent -> topicName.equals(topicContent.getValue())).findFirst().orElse(null);
+        final List<CategoryItem> items = content.getCategoryItemList();
+        Assert.assertEquals(expectedCategoryItemsCount, items.size());
+        Assert.assertEquals(expectedLinkableItemsCount, getCategoryItemLinkableItemsCount(items));
+    }
+
+    public static int getCategoryItemLinkableItemsCount(final List<CategoryItem> items) {
+        int count = 0;
+        for (final CategoryItem item : items) {
+            count += item.getItems().size();
+        }
+        return count;
+    }
+
     @Test
     public void insertRuleViolationClearedNotificationTest() throws Exception {
         final BlackDuckPolicyCollector collector = createPolicyViolationCollector();
@@ -52,7 +69,7 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
         final String topicName = "example";
         final int numberOfRulesCleared = 4;
 
-        // there are 3 possible linkable items per notification in the test data
+        // there are 3 possible linkable items per notification in the populateFieldModel data
         // 1- policy rule
         // 2- component
         // 3- component version or policy override user
@@ -132,22 +149,5 @@ public class BlackDuckPolicyViolationMessageContentCollectorTest {
         collector.insert(notification);
         final List<AggregateMessageContent> aggregateMessageContentList = collector.collect(FormatType.DEFAULT);
         assertFalse(aggregateMessageContentList.isEmpty());
-    }
-
-    public static final void insertAndAssertCountsOnTopic(final BlackDuckPolicyCollector collector, final NotificationContent notification, final String topicName, final int expectedCategoryItemsCount,
-        final int expectedLinkableItemsCount) {
-        collector.insert(notification);
-        final AggregateMessageContent content = collector.collect(FormatType.DEFAULT).stream().filter(topicContent -> topicName.equals(topicContent.getValue())).findFirst().orElse(null);
-        final List<CategoryItem> items = content.getCategoryItemList();
-        Assert.assertEquals(expectedCategoryItemsCount, items.size());
-        Assert.assertEquals(expectedLinkableItemsCount, getCategoryItemLinkableItemsCount(items));
-    }
-
-    public static int getCategoryItemLinkableItemsCount(final List<CategoryItem> items) {
-        int count = 0;
-        for (final CategoryItem item : items) {
-            count += item.getItems().size();
-        }
-        return count;
     }
 }

@@ -45,13 +45,14 @@ import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 
 @Component
 public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig {
+
     @Autowired
     public BlackDuckDistributionUIConfig(final BlackDuckProvider provider) {
         super(BlackDuckDescriptor.BLACKDUCK_LABEL, BlackDuckDescriptor.BLACKDUCK_URL, BlackDuckDescriptor.BLACKDUCK_ICON, provider);
     }
 
     @Override
-    public List<ConfigField> createFields() {
+    public List<ConfigField> createProviderDistributionFields() {
         final List<ConfigField> defaultProviderFields = super.createFields();
         final ConfigField filterByProject = CheckboxConfigField.create(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT, "Filter by project");
         final ConfigField projectNamePattern = TextInputConfigField.create(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN, "Project name pattern", this::validateProjectNamePattern);

@@ -19,7 +19,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
@@ -343,7 +343,7 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
         final String descriptorName = "Unique Descriptor";
         try {
             // Register a custom descriptor of Channel type
-            descriptorAccessor.registerDescriptor(descriptorName, DescriptorType.CHANNEL, Arrays.asList(new DefinedFieldModel(CommonDistributionUIConfig.KEY_FREQUENCY, ConfigContextEnum.DISTRIBUTION, Boolean.FALSE)));
+            descriptorAccessor.registerDescriptor(descriptorName, DescriptorType.CHANNEL, Arrays.asList(new DefinedFieldModel(ChannelDistributionUIConfig.KEY_FREQUENCY, ConfigContextEnum.DISTRIBUTION, Boolean.FALSE)));
 
             configurationModels = configurationAccessor.getChannelConfigurationsByFrequency(FrequencyType.DAILY);
             assertTrue(configurationModels.isEmpty());
@@ -352,7 +352,7 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
             ////////////////////////////////////////////////
 
             // Add a configuration for the custom descriptor with a Frequency field
-            final ConfigurationFieldModel realTimeField = ConfigurationFieldModel.create(CommonDistributionUIConfig.KEY_FREQUENCY);
+            final ConfigurationFieldModel realTimeField = ConfigurationFieldModel.create(ChannelDistributionUIConfig.KEY_FREQUENCY);
             realTimeField.setFieldValue(FrequencyType.REAL_TIME.name());
             configurationAccessor.createConfiguration(descriptorName, ConfigContextEnum.DISTRIBUTION, Arrays.asList(realTimeField));
 

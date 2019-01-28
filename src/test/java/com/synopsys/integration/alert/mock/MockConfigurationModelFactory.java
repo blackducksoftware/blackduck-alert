@@ -18,7 +18,7 @@ import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.channel.hipchat.descriptor.HipChatDescriptor;
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
@@ -50,7 +50,7 @@ public class MockConfigurationModelFactory {
         final List<ConfigurationFieldModel> fields = new ArrayList<>();
 
         final ConfigurationFieldModel channel = createFieldModel(SlackDescriptor.KEY_CHANNEL_NAME, "Alert channel");
-        final ConfigurationFieldModel username = createFieldModel(SlackDescriptor.KEY_CHANNEL_USERNAME, "Alert unit test");
+        final ConfigurationFieldModel username = createFieldModel(SlackDescriptor.KEY_CHANNEL_USERNAME, "Alert unit populateFieldModel");
         final ConfigurationFieldModel webhook = createFieldModel(SlackDescriptor.KEY_WEBHOOK, "Webhook");
 
         fields.add(channel);
@@ -67,7 +67,7 @@ public class MockConfigurationModelFactory {
 
         //        final ConfigurationFieldModel emailAddresses = createConfigurationFieldModel(EmailDescriptor.KEY_EMAIL_ADDRESSES, List.of("noreply@blackducksoftware.com"));
         final ConfigurationFieldModel projectOwnerOnly = createFieldModel(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, "true");
-        final ConfigurationFieldModel subjectLine = createFieldModel(EmailDescriptor.KEY_SUBJECT_LINE, "Alert unit test subject line");
+        final ConfigurationFieldModel subjectLine = createFieldModel(EmailDescriptor.KEY_SUBJECT_LINE, "Alert unit populateFieldModel subject line");
 
         //        fields.add(emailAddresses);
         fields.add(projectOwnerOnly);
@@ -83,7 +83,7 @@ public class MockConfigurationModelFactory {
 
         final ConfigurationFieldModel emailAddresses = createFieldModel(EmailDescriptor.KEY_EMAIL_ADDRESSES, List.of("noreply@blackducksoftware.com"));
         final ConfigurationFieldModel projectOwnerOnly = createFieldModel(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, "false");
-        final ConfigurationFieldModel subjectLine = createFieldModel(EmailDescriptor.KEY_SUBJECT_LINE, "Alert unit test subject line");
+        final ConfigurationFieldModel subjectLine = createFieldModel(EmailDescriptor.KEY_SUBJECT_LINE, "Alert unit populateFieldModel subject line");
 
         fields.add(emailAddresses);
         fields.add(projectOwnerOnly);
@@ -97,11 +97,11 @@ public class MockConfigurationModelFactory {
     public static List<ConfigurationFieldModel> createCommonBlackDuckConfigurationFields(final String jobName, final String channelDescriptorName) {
         final List<ConfigurationFieldModel> fields = new ArrayList<>();
 
-        final ConfigurationFieldModel name = createFieldModel(CommonDistributionUIConfig.KEY_NAME, jobName);
-        final ConfigurationFieldModel channelName = createFieldModel(CommonDistributionUIConfig.KEY_CHANNEL_NAME, channelDescriptorName);
-        final ConfigurationFieldModel providerName = createFieldModel(CommonDistributionUIConfig.KEY_PROVIDER_NAME, BlackDuckProvider.COMPONENT_NAME);
+        final ConfigurationFieldModel name = createFieldModel(ChannelDistributionUIConfig.KEY_NAME, jobName);
+        final ConfigurationFieldModel channelName = createFieldModel(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, channelDescriptorName);
+        final ConfigurationFieldModel providerName = createFieldModel(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, BlackDuckProvider.COMPONENT_NAME);
         final ConfigurationFieldModel notificationTypes = createFieldModel(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, List.of(NotificationType.VULNERABILITY.toString(), NotificationType.RULE_VIOLATION.toString()));
-        final ConfigurationFieldModel frequencyType = createFieldModel(CommonDistributionUIConfig.KEY_FREQUENCY, FrequencyType.REAL_TIME.toString());
+        final ConfigurationFieldModel frequencyType = createFieldModel(ChannelDistributionUIConfig.KEY_FREQUENCY, FrequencyType.REAL_TIME.toString());
         final ConfigurationFieldModel formatType = createFieldModel(ProviderDistributionUIConfig.KEY_FORMAT_TYPE, FormatType.DEFAULT.toString());
         final ConfigurationFieldModel filterByProject = createFieldModel(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT, "true");
         final ConfigurationFieldModel projectNamePattern = createFieldModel(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN, ".*UnitTest.*");
@@ -128,10 +128,10 @@ public class MockConfigurationModelFactory {
         Mockito.when(configurationModel.getDescriptorId()).thenReturn(descriptorId);
 
         final List<ConfigurationFieldModel> fieldList = new ArrayList<>();
-        mockField(fieldList, configurationModel, CommonDistributionUIConfig.KEY_NAME, name);
-        mockField(fieldList, configurationModel, CommonDistributionUIConfig.KEY_FREQUENCY, frequency);
-        mockField(fieldList, configurationModel, CommonDistributionUIConfig.KEY_PROVIDER_NAME, providerName);
-        mockField(fieldList, configurationModel, CommonDistributionUIConfig.KEY_CHANNEL_NAME, distributionType);
+        mockField(fieldList, configurationModel, ChannelDistributionUIConfig.KEY_NAME, name);
+        mockField(fieldList, configurationModel, ChannelDistributionUIConfig.KEY_FREQUENCY, frequency);
+        mockField(fieldList, configurationModel, ChannelDistributionUIConfig.KEY_PROVIDER_NAME, providerName);
+        mockField(fieldList, configurationModel, ChannelDistributionUIConfig.KEY_CHANNEL_NAME, distributionType);
 
         mockField(fieldList, configurationModel, ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, notificationTypes);
         mockField(fieldList, configurationModel, ProviderDistributionUIConfig.KEY_FORMAT_TYPE, formatType);

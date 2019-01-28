@@ -23,7 +23,6 @@
  */
 package com.synopsys.integration.alert.common.descriptor.config.ui;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -37,7 +36,7 @@ import com.synopsys.integration.alert.common.provider.ProviderContentType;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
 import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 
-public class ProviderDistributionUIConfig extends UIConfig {
+public abstract class ProviderDistributionUIConfig extends UIConfig {
     public static final String KEY_NOTIFICATION_TYPES = "provider.distribution.notification.types";
     public static final String KEY_FORMAT_TYPE = "provider.distribution.format.type";
 
@@ -54,8 +53,14 @@ public class ProviderDistributionUIConfig extends UIConfig {
             Collectors.toList()), this::validateNotificationTypes);
         final ConfigField formatField = SelectConfigField.createRequired(KEY_FORMAT_TYPE, "Format", provider.getSupportedFormatTypes().stream().map(FormatType::name).collect(Collectors.toList()));
 
-        return Arrays.asList(notificationTypesField, formatField);
+        final List<ConfigField> configFields = List.of(notificationTypesField, formatField);
+        final List<ConfigField> providerDistributionFields = createProviderDistributionFields();
+        providerDistributionFields.addAll(configFields);
+
+        return providerDistributionFields;
     }
+
+    public abstract List<ConfigField> createProviderDistributionFields();
 
     private Collection<String> validateNotificationTypes(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
         final Collection<String> notificationTypes = Optional.ofNullable(fieldToValidate.getValues()).orElse(List.of());

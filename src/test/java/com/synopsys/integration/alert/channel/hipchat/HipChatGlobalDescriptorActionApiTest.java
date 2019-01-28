@@ -195,7 +195,7 @@ public class HipChatGlobalDescriptorActionApiTest {
         assertTrue(123142 == roomId.getValue());
         assertTrue(notify.getValue());
         assertEquals("red", color.getValue());
-        assertEquals("This is a test message sent by Alert.", message.getValue());
+        assertEquals("This is a populateFieldModel message sent by Alert.", message.getValue());
 
     }
 

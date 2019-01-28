@@ -2,7 +2,7 @@ package com.synopsys.integration.alert.web.controller;
 
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
-// FIXME change this into our new configuraitonController test class that is not abstract
+// FIXME change this into our new configuraitonController populateFieldModel class that is not abstract
 public abstract class ControllerTest extends AlertIntegrationTest {
     //    protected final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
     //    protected MockMvc mockMvc;
@@ -109,7 +109,7 @@ public abstract class ControllerTest extends AlertIntegrationTest {
     //    public void testTestConfig() throws Exception {
     //        final long id = saveGlobalConfig();
     //        final CommonDistributionConfigEntity commonEntity = commonDistributionRepository.save(distributionMockUtil.createEntity());
-    //        final String testRestUrl = restUrl + "/test";
+    //        final String testRestUrl = restUrl + "/populateFieldModel";
     //        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(testRestUrl)
     //                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
     //                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());

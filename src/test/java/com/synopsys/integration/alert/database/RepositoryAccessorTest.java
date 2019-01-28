@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 
-// Line coverage test
+// Line coverage populateFieldModel
 public class RepositoryAccessorTest {
     private final JpaRepository<DatabaseEntity, Long> repository = Mockito.mock(JpaRepository.class);
     private RepositoryAccessor repositoryAccessor;
