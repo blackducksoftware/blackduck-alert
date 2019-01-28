@@ -1,17 +1,7 @@
-import {
-    HIPCHAT_CONFIG_FETCHED,
-    HIPCHAT_CONFIG_FETCHING,
-    HIPCHAT_CONFIG_HIDE_TEST_MODAL,
-    HIPCHAT_CONFIG_SHOW_TEST_MODAL,
-    HIPCHAT_CONFIG_TEST_FAILED,
-    HIPCHAT_CONFIG_TEST_SUCCESS,
-    HIPCHAT_CONFIG_TESTING,
-    HIPCHAT_CONFIG_UPDATE_ERROR,
-    HIPCHAT_CONFIG_UPDATED,
-    HIPCHAT_CONFIG_UPDATING
-} from 'store/actions/types';
+import { CONFIG_FETCHED, CONFIG_FETCHING, CONFIG_TEST_FAILED, CONFIG_TEST_SUCCESS, CONFIG_TESTING, CONFIG_UPDATE_ERROR, CONFIG_UPDATED, CONFIG_UPDATING } from 'store/actions/types';
 
 import { verifyLoginByStatus } from 'store/actions/session';
+
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 import * as FieldModelUtil from 'util/fieldModelUtilities';
 
@@ -21,7 +11,7 @@ import * as FieldModelUtil from 'util/fieldModelUtilities';
  */
 function fetchingConfig() {
     return {
-        type: HIPCHAT_CONFIG_FETCHING
+        type: CONFIG_FETCHING
     };
 }
 
@@ -31,26 +21,14 @@ function fetchingConfig() {
  */
 function configFetched(config) {
     return {
-        type: HIPCHAT_CONFIG_FETCHED,
+        type: CONFIG_FETCHED,
         config
-    };
-}
-
-/**
- * Triggers Config Error
- * @returns {{type}}
- */
-function configError(message, errors) {
-    return {
-        type: HIPCHAT_CONFIG_UPDATE_ERROR,
-        message,
-        errors
     };
 }
 
 function updatingConfig() {
     return {
-        type: HIPCHAT_CONFIG_UPDATING
+        type: CONFIG_UPDATING
     };
 }
 
@@ -58,44 +36,43 @@ function updatingConfig() {
  * Triggers Confirm config was updated
  * @returns {{type}}
  */
-function configUpdated(config, message) {
+function configUpdated(config) {
     return {
-        type: HIPCHAT_CONFIG_UPDATED,
-        message,
+        type: CONFIG_UPDATED,
         config
+    };
+}
+
+/**
+ * Triggers Scheduling Config Error
+ * @returns {{type}}
+ */
+function configError(message, errors) {
+    return {
+        type: CONFIG_UPDATE_ERROR,
+        message,
+        errors
     };
 }
 
 function testingConfig() {
     return {
-        type: HIPCHAT_CONFIG_TESTING
+        type: CONFIG_TESTING
     };
 }
 
 function testSuccess() {
     return {
-        type: HIPCHAT_CONFIG_TEST_SUCCESS
+        type: CONFIG_TEST_SUCCESS
     };
 }
 
 function testFailed(message, errors) {
     return {
-        type: HIPCHAT_CONFIG_TEST_FAILED,
+        type: CONFIG_TEST_FAILED,
         message,
         errors
 
-    };
-}
-
-export function openHipChatConfigTest() {
-    return {
-        type: HIPCHAT_CONFIG_SHOW_TEST_MODAL
-    };
-}
-
-export function closeHipChatConfigTest() {
-    return {
-        type: HIPCHAT_CONFIG_HIDE_TEST_MODAL
     };
 }
 
@@ -103,7 +80,7 @@ export function getConfig() {
     return (dispatch, getState) => {
         dispatch(fetchingConfig());
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, 'channel_hipchat');
+        const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, 'provider_blackduck');
         request.then((response) => {
             if (response.ok) {
                 response.json().then((body) => {
@@ -116,7 +93,8 @@ export function getConfig() {
             } else {
                 dispatch(verifyLoginByStatus(response.status));
             }
-        }).catch(console.error);
+        })
+            .catch(console.error);
     };
 }
 
@@ -134,36 +112,34 @@ export function updateConfig(config) {
             if (response.ok) {
                 response.json().then((data) => {
                     const updatedConfig = FieldModelUtil.updateFieldModelSingleValue(config, 'id', data.id);
-                    dispatch(configUpdated(updatedConfig, data.message));
-                }).then(() => {
-                    dispatch(getConfig());
-                });
+                    dispatch(configUpdated(updatedConfig));
+                }).then(() => dispatch(getConfig()));
             } else {
-                response.json()
-                    .then((data) => {
-                        switch (response.status) {
-                            case 400:
-                                return dispatch(configError(data.message, data.errors));
-                            case 412:
-                                return dispatch(configError(data.message, data.errors));
-                            default: {
-                                dispatch(configError(data.message, null));
-                                return dispatch(verifyLoginByStatus(response.status));
-                            }
+                response.json().then((data) => {
+                    switch (response.status) {
+                        case 400:
+                            return dispatch(configError(data.message, data.errors));
+                        case 412:
+                            return dispatch(configError(data.message, data.errors));
+                        default: {
+                            dispatch(configError(data.message));
+                            return dispatch(verifyLoginByStatus(response.status));
                         }
-                    });
+                    }
+                });
             }
-        }).catch(console.error);
+        })
+            .catch(console.error);
     };
 }
 
-export function testConfig(config, destination) {
+
+export function testConfig(config) {
     return (dispatch, getState) => {
         dispatch(testingConfig());
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createTestRequest(csrfToken, config, destination);
+        const request = ConfigRequestBuilder.createTestRequest(csrfToken, config, '');
         request.then((response) => {
-            dispatch(closeHipChatConfigTest());
             if (response.ok) {
                 dispatch(testSuccess());
             } else {
