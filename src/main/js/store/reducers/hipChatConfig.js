@@ -36,10 +36,7 @@ const config = (state = initialState, action) => {
             return Object.assign({}, state, {
                 updateStatus: 'FETCHED',
                 testing: false,
-                apiKeyIsSet: action.apiKeyIsSet,
-                apiKey: action.apiKey,
-                hostServer: action.hostServer,
-                id: action.id
+                config: action.config
             });
 
         case HIPCHAT_CONFIG_UPDATING:
@@ -57,6 +54,7 @@ const config = (state = initialState, action) => {
                 updateStatus: 'UPDATED',
                 actionMessage: 'Update successful',
                 testing: false,
+                config: action.config,
                 error: {
                     message: '',
                     fieldErrors: {}
