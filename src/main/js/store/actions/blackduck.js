@@ -3,24 +3,7 @@ import { CONFIG_FETCHED, CONFIG_FETCHING, CONFIG_TEST_FAILED, CONFIG_TEST_SUCCES
 import { verifyLoginByStatus } from 'store/actions/session';
 
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
-
-const CONFIG_URL = '/alert/api/configuration/provider/provider_blackduck';
-const TEST_URL = '/alert/api/configuration/provider/provider_blackduck/test';
-
-function scrubConfig(config) {
-    return {
-        blackDuckApiKey: config.blackDuckApiKey,
-        blackDuckApiKeyIsSet: config.blackDuckApiKeyIsSet,
-        blackDuckProxyHost: config.blackDuckProxyHost,
-        blackDuckProxyPassword: config.blackDuckProxyPassword,
-        blackDuckProxyPasswordIsSet: config.blackDuckProxyPasswordIsSet,
-        blackDuckProxyPort: config.blackDuckProxyPort,
-        blackDuckProxyUsername: config.blackDuckProxyUsername,
-        blackDuckTimeout: config.blackDuckTimeout,
-        blackDuckUrl: config.blackDuckUrl,
-        id: (config.id ? `${config.id}` : '')
-    };
-}
+import * as FieldModelUtil from 'util/fieldModelUtilities';
 
 /**
  * Triggers Config Fetching reducer
@@ -39,7 +22,7 @@ function fetchingConfig() {
 function configFetched(config) {
     return {
         type: CONFIG_FETCHED,
-        ...scrubConfig(config)
+        config
     };
 }
 
@@ -56,7 +39,7 @@ function updatingConfig() {
 function configUpdated(config) {
     return {
         type: CONFIG_UPDATED,
-        ...scrubConfig(config)
+        config
     };
 }
 
@@ -119,18 +102,17 @@ export function updateConfig(config) {
     return (dispatch, getState) => {
         dispatch(updatingConfig());
         const { csrfToken } = getState().session;
-        const body = scrubConfig(config);
-
         let request;
         if (config.id) {
-            request = ConfigRequestBuilder.createUpdateRequest(csrfToken, config.id, body);
+            request = ConfigRequestBuilder.createUpdateRequest(csrfToken, config.id, config);
         } else {
-            request = ConfigRequestBuilder.createNewConfigurationRequest(csrfToken, body);
+            request = ConfigRequestBuilder.createNewConfigurationRequest(csrfToken, config);
         }
         request.then((response) => {
             if (response.ok) {
                 response.json().then((data) => {
-                    dispatch(configUpdated({ ...config, id: data.id }));
+                    const updatedConfig = FieldModelUtil.updateFieldModelSingleValue(config, 'id', data.id);
+                    dispatch(configUpdated(updatedConfig));
                 }).then(() => dispatch(getConfig()));
             } else {
                 response.json().then((data) => {
@@ -156,33 +138,24 @@ export function testConfig(config) {
     return (dispatch, getState) => {
         dispatch(testingConfig());
         const { csrfToken } = getState().session;
-        fetch(TEST_URL, {
-            credentials: 'same-origin',
-            method: 'POST',
-            body: JSON.stringify(scrubConfig(config)),
-            headers: {
-                'content-type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
+        const request = ConfigRequestBuilder.createTestRequest(csrfToken, config, '');
+        request.then((response) => {
+            if (response.ok) {
+                dispatch(testSuccess());
+            } else {
+                response.json()
+                    .then((data) => {
+                        switch (response.status) {
+                            case 400:
+                                return dispatch(testFailed(data.message, data.errors));
+                            case 401:
+                                return dispatch(testFailed('API Key isn\'t valid, try a different one'));
+                            default:
+                                return dispatch(testFailed(data.message));
+                        }
+                    });
             }
         })
-        // Refactor this response handler out
-            .then((response) => {
-                if (response.ok) {
-                    dispatch(testSuccess());
-                } else {
-                    response.json()
-                        .then((data) => {
-                            switch (response.status) {
-                                case 400:
-                                    return dispatch(testFailed(data.message, data.errors));
-                                case 401:
-                                    return dispatch(testFailed('API Key isn\'t valid, try a different one'));
-                                default:
-                                    return dispatch(testFailed(data.message));
-                            }
-                        });
-                }
-            })
             .catch(console.error);
     };
 }
