@@ -42,12 +42,6 @@ public class BlackDuckDescriptor extends ProviderDescriptor {
     public static final String KEY_BLACKDUCK_API_KEY = "blackduck.api.key";
     public static final String KEY_BLACKDUCK_TIMEOUT = "blackduck.timeout";
 
-    // FIXME to be removed (ignored in changelog)
-    public static final String KEY_BLACKDUCK_PROXY_HOST = "blackduck.proxy.host";
-    public static final String KEY_BLACKDUCK_PROXY_PORT = "blackduck.proxy.port";
-    public static final String KEY_BLACKDUCK_PROXY_USERNAME = "blackduck.proxy.username";
-    public static final String KEY_BLACKDUCK_PROXY_PASS = "blackduck.proxy.password";
-
     public static final String BLACKDUCK_LABEL = "Black Duck";
     public static final String BLACKDUCK_URL = "blackduck";
     public static final String BLACKDUCK_ICON = "laptop";

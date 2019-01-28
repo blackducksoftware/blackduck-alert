@@ -688,7 +688,7 @@ EmailConfiguration.defaultProps = {
     errorMessage: '',
     updateStatus: '',
     actionMessage: '',
-    fieldErrors: []
+    fieldErrors: {}
 };
 
 const mapStateToProps = state => ({

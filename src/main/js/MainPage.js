@@ -83,8 +83,6 @@ class MainPage extends Component {
 }
 
 MainPage.propTypes = {
-    getDescriptorByType: PropTypes.func.isRequired,
-    getDescriptorsByTypeAndContext: PropTypes.func.isRequired,
     descriptors: PropTypes.arrayOf(PropTypes.object).isRequired
 };
 const mapStateToProps = state => ({
