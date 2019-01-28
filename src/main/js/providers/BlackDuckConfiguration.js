@@ -3,29 +3,40 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import NumberInput from 'field/input/NumberInput';
 import PasswordInput from 'field/input/PasswordInput';
-import ReadOnlyField from 'field/ReadOnlyField';
 import TextInput from 'field/input/TextInput';
 import ConfigButtons from 'component/common/ConfigButtons';
 
-import { getConfig, testConfig, updateConfig } from 'store/actions/config';
+import { getConfig, testConfig, updateConfig } from 'store/actions/blackduck';
+import * as FieldModelUtil from 'util/fieldModelUtilities';
+import * as DescriptorUtil from 'util/descriptorUtilities';
 
-class BlackDuckConfiguration extends React.Component {
+const KEY_BLACKDUCK_URL = "blackduck.url";
+const KEY_BLACKDUCK_API_KEY = "blackduck.api.key";
+const KEY_BLACKDUCK_TIMEOUT = "blackduck.timeout";
+
+
+const fieldNames = [
+    KEY_BLACKDUCK_URL,
+    KEY_BLACKDUCK_TIMEOUT,
+    KEY_BLACKDUCK_API_KEY
+];
+
+class BlackDuckConfiguration
+    extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             blackDuckApiKey: this.props.blackDuckApiKey,
             blackDuckApiKeyIsSet: this.props.blackDuckApiKeyIsSet,
-            blackDuckProxyHost: this.props.blackDuckProxyHost,
-            blackDuckProxyPassword: this.props.blackDuckProxyPassword,
-            blackDuckProxyPasswordIsSet: this.props.blackDuckProxyPasswordIsSet,
-            blackDuckProxyPort: this.props.blackDuckProxyPort,
-            blackDuckProxyUsername: this.props.blackDuckProxyUsername,
             blackDuckTimeout: this.props.blackDuckTimeout,
             blackDuckUrl: this.props.blackDuckUrl
         };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTest = this.handleTest.bind(this);
+        this.state = {
+            currentConfig: FieldModelUtil.createEmptyFieldModel(fieldNames, DescriptorUtil.CONTEXT_TYPE.GLOBAL, 'provider_blackduck')
+        };
     }
 
     componentDidMount() {
@@ -34,39 +45,34 @@ class BlackDuckConfiguration extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.updateStatus === 'FETCHED' || nextProps.updateStatus === 'UPDATED') {
+            const newState = FieldModelUtil.checkModelOrCreateEmpty(nextProps.currentConfig, fieldNames);
             this.setState({
-                blackDuckApiKey: nextProps.blackDuckApiKey,
-                blackDuckApiKeyIsSet: nextProps.blackDuckApiKeyIsSet,
-                blackDuckProxyHost: nextProps.blackDuckProxyHost,
-                blackDuckProxyPassword: nextProps.blackDuckProxyPassword,
-                blackDuckProxyPasswordIsSet: nextProps.blackDuckProxyPasswordIsSet,
-                blackDuckProxyPort: nextProps.blackDuckProxyPort,
-                blackDuckProxyUsername: nextProps.blackDuckProxyUsername,
-                blackDuckTimeout: nextProps.blackDuckTimeout,
-                blackDuckUrl: nextProps.blackDuckUrl
+                currentConfig: newState
             });
         }
     }
 
     handleChange({ target }) {
         const value = target.type === 'checkbox' ? target.checked : target.value;
+        const newState = FieldModelUtil.updateFieldModelSingleValue(this.state.currentConfig, target.name, value);
         this.setState({
-            [target.name]: value
+            currentConfig: newState
         });
     }
 
     handleTest() {
-        const { id } = this.props;
-        this.props.testConfig({ id, ...this.state });
+        const fieldModel = this.state.currentConfig;
+        this.props.testConfig(fieldModel);
     }
 
     handleSubmit(evt) {
         evt.preventDefault();
-        const { id } = this.props;
-        this.props.updateConfig({ id, ...this.state });
+        const fieldModel = this.state.currentConfig;
+        this.props.updateConfig(fieldModel);
     }
 
     render() {
+        const fieldModel = this.state.currentConfig;
         const { errorMessage, testStatus, updateStatus } = this.props;
         return (
             <div>
@@ -90,33 +96,33 @@ class BlackDuckConfiguration extends React.Component {
                 <form className="form-horizontal" onSubmit={this.handleSubmit}>
                     <div>
                         <TextInput
-                            id="blackDuckUrl"
+                            id={KEY_BLACKDUCK_URL}
                             label="Url"
-                            name="blackDuckUrl"
-                            value={this.state.blackDuckUrl}
+                            name={KEY_BLACKDUCK_URL}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_BLACKDUCK_URL)}
                             onChange={this.handleChange}
-                            errorName="blackDuckUrlError"
-                            errorValue={this.props.fieldErrors.blackDuckUrl}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(KEY_BLACKDUCK_URL)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_BLACKDUCK_URL)]}
                         />
                         <PasswordInput
-                            id="blackDuckConfigurationApiToken"
+                            id={KEY_BLACKDUCK_API_KEY}
                             label="API Token"
-                            name="blackDuckApiKey"
-                            value={this.state.blackDuckApiKey}
-                            isSet={this.state.blackDuckApiKeyIsSet}
+                            name={KEY_BLACKDUCK_API_KEY}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_BLACKDUCK_API_KEY)}
+                            isSet={FieldModelUtil.isFieldModelValueSet(fieldModel, KEY_BLACKDUCK_API_KEY)}
                             onChange={this.handleChange}
-                            errorMessage={this.props.fieldErrors.apiKey || this.props.fieldErrors.blackDuckApiKey}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(KEY_BLACKDUCK_API_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_BLACKDUCK_API_KEY)]}
                         />
-                        <NumberInput id="blackDuckConfigurationTimeout" label="Timeout" name="blackDuckTimeout" value={this.state.blackDuckTimeout} onChange={this.handleChange} />
-                        <div className="form-group">
-                            <div className="col-sm-12">
-                                <h2>Proxy Configuration <small>(Read-Only)</small></h2>
-                            </div>
-                        </div>
-                        <ReadOnlyField label="Host Name" name="blackDuckProxyHost" value={this.props.blackDuckProxyHost} />
-                        <ReadOnlyField label="Port" name="blackDuckProxyPort" value={this.props.blackDuckProxyPort} />
-                        <ReadOnlyField label="Username" name="blackDuckProxyUsername" value={this.props.blackDuckProxyUsername} />
-                        <ReadOnlyField label="Proxy Password" name="blackDuckProxyPassword" isSet={this.props.blackDuckProxyPasswordIsSet} />
+                        <NumberInput
+                            id={KEY_BLACKDUCK_TIMEOUT}
+                            label="Timeout"
+                            name={KEY_BLACKDUCK_TIMEOUT}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_BLACKDUCK_TIMEOUT)}
+                            onChange={this.handleChange}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(KEY_BLACKDUCK_TIMEOUT)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_BLACKDUCK_TIMEOUT)]}
+                        />
                     </div>
                     <ConfigButtons isFixed={false} includeSave includeTest type="submit" onTestClick={this.handleTest} />
                 </form>
@@ -127,17 +133,8 @@ class BlackDuckConfiguration extends React.Component {
 
 // Used for compile/validation of properties
 BlackDuckConfiguration.propTypes = {
-    blackDuckApiKey: PropTypes.string,
-    blackDuckApiKeyIsSet: PropTypes.bool.isRequired,
-    blackDuckProxyHost: PropTypes.string,
-    blackDuckProxyPassword: PropTypes.string,
-    blackDuckProxyPasswordIsSet: PropTypes.bool.isRequired,
-    blackDuckProxyPort: PropTypes.string,
-    blackDuckProxyUsername: PropTypes.string,
-    blackDuckTimeout: PropTypes.number.isRequired,
-    blackDuckUrl: PropTypes.string.isRequired,
-    id: PropTypes.string,
-    fieldErrors: PropTypes.arrayOf(PropTypes.object),
+    currentConfig: PropTypes.object,
+    fieldErrors: PropTypes.object,
     updateStatus: PropTypes.string,
     errorMessage: PropTypes.string,
     testStatus: PropTypes.string,
@@ -148,34 +145,20 @@ BlackDuckConfiguration.propTypes = {
 
 // Default values
 BlackDuckConfiguration.defaultProps = {
-    blackDuckApiKey: '',
-    id: null,
-    blackDuckProxyHost: null,
-    blackDuckProxyPassword: null,
-    blackDuckProxyPort: null,
-    blackDuckProxyUsername: null,
+    currentConfig: {},
     errorMessage: null,
     updateStatus: null,
-    fieldErrors: [],
+    fieldErrors: {},
     testStatus: ''
 };
 
 // Mapping redux state -> react props
 const mapStateToProps = state => ({
-    blackDuckApiKey: state.config.blackDuckApiKey,
-    blackDuckApiKeyIsSet: state.config.blackDuckApiKeyIsSet,
-    blackDuckProxyHost: state.config.blackDuckProxyHost,
-    blackDuckProxyPassword: state.config.blackDuckProxyPassword,
-    blackDuckProxyPasswordIsSet: state.config.blackDuckProxyPasswordIsSet,
-    blackDuckProxyPort: state.config.blackDuckProxyPort,
-    blackDuckProxyUsername: state.config.blackDuckProxyUsername,
-    blackDuckTimeout: state.config.blackDuckTimeout,
-    blackDuckUrl: state.config.blackDuckUrl,
-    testStatus: state.config.testStatus,
-    updateStatus: state.config.updateStatus,
-    errorMessage: state.config.error.message,
-    fieldErrors: state.config.error.fieldErrors,
-    id: state.config.id
+    currentConfig: state.blackduck.config,
+    testStatus: state.blackduck.testStatus,
+    updateStatus: state.blackduck.updateStatus,
+    errorMessage: state.blackduck.error.message,
+    fieldErrors: state.blackduck.error.fieldErrors,
 });
 
 // Mapping redux actions -> react props

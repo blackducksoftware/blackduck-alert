@@ -75,7 +75,7 @@ public class BlackDuckDescriptorTest {
         final BlackDuckProviderUIConfig blackDuckProviderUIConfig = new BlackDuckProviderUIConfig();
         final BlackDuckDescriptor descriptor = new BlackDuckDescriptor(null, blackDuckProviderUIConfig, null, blackDuckDistributionUIConfig, provider, topicCollectorFactory);
         Set<DefinedFieldModel> fields = descriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL);
-        assertEquals(7, fields.size());
+        assertEquals(3, fields.size());
 
         fields = descriptor.getAllDefinedFields(ConfigContextEnum.DISTRIBUTION);
         assertEquals(5, fields.size());

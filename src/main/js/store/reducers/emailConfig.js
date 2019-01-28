@@ -1,9 +1,7 @@
 import {
     EMAIL_CONFIG_FETCHED,
     EMAIL_CONFIG_FETCHING,
-    EMAIL_CONFIG_HIDE_ADVANCED,
     EMAIL_CONFIG_HIDE_TEST_MODAL,
-    EMAIL_CONFIG_SHOW_ADVANCED,
     EMAIL_CONFIG_SHOW_TEST_MODAL,
     EMAIL_CONFIG_TEST_SUCCESSFUL,
     EMAIL_CONFIG_UPDATE_ERROR,
@@ -14,7 +12,6 @@ import {
 
 const initialState = {
     fetching: false,
-    showAdvanced: false,
     showTestModal: false,
     updateStatus: null,
     actionMessage: null,
@@ -38,18 +35,6 @@ const config = (state = initialState, action) => {
                 fetching: false,
                 updateStatus: 'FETCHED',
                 config: action.config
-            });
-
-        case EMAIL_CONFIG_SHOW_ADVANCED:
-            return Object.assign({}, state, {
-                updateStatus: null,
-                showAdvanced: true
-            });
-
-        case EMAIL_CONFIG_HIDE_ADVANCED:
-            return Object.assign({}, state, {
-                updateStatus: null,
-                showAdvanced: false
             });
 
         case EMAIL_CONFIG_SHOW_TEST_MODAL:
