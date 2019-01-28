@@ -1,9 +1,7 @@
 import {
     HIPCHAT_CONFIG_FETCHED,
     HIPCHAT_CONFIG_FETCHING,
-    HIPCHAT_CONFIG_HIDE_HOST_SERVER,
     HIPCHAT_CONFIG_HIDE_TEST_MODAL,
-    HIPCHAT_CONFIG_SHOW_HOST_SERVER,
     HIPCHAT_CONFIG_SHOW_TEST_MODAL,
     HIPCHAT_CONFIG_TEST_FAILED,
     HIPCHAT_CONFIG_TEST_SUCCESS,
@@ -14,18 +12,8 @@ import {
 } from 'store/actions/types';
 
 import { verifyLoginByStatus } from 'store/actions/session';
-
-const CONFIG_URL = '/alert/api/configuration/channel/global/channel_hipchat';
-const TEST_URL = `${CONFIG_URL}/test`;
-
-function scrubConfig(config) {
-    return {
-        apiKeyIsSet: config.apiKeyIsSet,
-        apiKey: config.apiKey,
-        hostServer: config.hostServer,
-        id: config.id || ''
-    };
-}
+import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
+import * as FieldModelUtil from 'util/fieldModelUtilities';
 
 /**
  * Triggers Config Fetching reducer
@@ -44,7 +32,7 @@ function fetchingConfig() {
 function configFetched(config) {
     return {
         type: HIPCHAT_CONFIG_FETCHED,
-        ...scrubConfig(config)
+        config
     };
 }
 
@@ -70,10 +58,11 @@ function updatingConfig() {
  * Triggers Confirm config was updated
  * @returns {{type}}
  */
-function configUpdated(config) {
+function configUpdated(config, message) {
     return {
         type: HIPCHAT_CONFIG_UPDATED,
-        ...scrubConfig(config)
+        message,
+        config
     };
 }
 
@@ -110,80 +99,61 @@ export function closeHipChatConfigTest() {
     };
 }
 
-export function toggleShowHostServer(toggle) {
-    if (toggle) {
-        return { type: HIPCHAT_CONFIG_SHOW_HOST_SERVER };
-    }
-    return { type: HIPCHAT_CONFIG_HIDE_HOST_SERVER };
-}
-
 export function getConfig() {
     return (dispatch, getState) => {
         dispatch(fetchingConfig());
         const { csrfToken } = getState().session;
-        fetch(CONFIG_URL, {
-            credentials: 'same-origin',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken
+        const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, 'channel_hipchat');
+        request.then((response) => {
+            if (response.ok) {
+                response.json().then((body) => {
+                    if (body.length > 0) {
+                        dispatch(configFetched(body[0]));
+                    } else {
+                        dispatch(configFetched({}));
+                    }
+                });
+            } else {
+                dispatch(verifyLoginByStatus(response.status));
             }
-        })
-            .then((response) => {
-                if (response.ok) {
-                    response.json().then((body) => {
-                        if (body.length > 0) {
-                            dispatch(configFetched(body[0]));
-                        } else {
-                            dispatch(configFetched({}));
-                        }
-                    });
-                } else {
-                    dispatch(verifyLoginByStatus(response.status));
-                }
-            })
-            .catch(console.error);
+        }).catch(console.error);
     };
 }
 
 export function updateConfig(config) {
     return (dispatch, getState) => {
         dispatch(updatingConfig());
-
-        const method = config.id ? 'PUT' : 'POST';
-        const body = scrubConfig(config);
         const { csrfToken } = getState().session;
-        fetch(CONFIG_URL, {
-            credentials: 'same-origin',
-            method,
-            body: JSON.stringify(body),
-            headers: {
-                'content-type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
-            }
-        })
-            .then((response) => {
-                if (response.ok) {
-                    response.json().then((data) => {
-                        dispatch(configUpdated({ ...config, id: data.id }));
-                    }).then(() => {
-                        dispatch(getConfig());
-                    });
-                } else {
-                    response.json()
-                        .then((data) => {
-                            switch (response.status) {
-                                case 400:
-                                    return dispatch(configError(data.message, data.errors));
-                                case 412:
-                                    return dispatch(configError(data.message, data.errors));
-                                default: {
-                                    dispatch(configError(data.message, null));
-                                    return dispatch(verifyLoginByStatus(response.status));
-                                }
+        let request;
+        if (config.id) {
+            request = ConfigRequestBuilder.createUpdateRequest(csrfToken, config.id, config);
+        } else {
+            request = ConfigRequestBuilder.createNewConfigurationRequest(csrfToken, config);
+        }
+        request.then((response) => {
+            if (response.ok) {
+                response.json().then((data) => {
+                    const updatedConfig = FieldModelUtil.updateFieldModelSingleValue(config, 'id', data.id);
+                    dispatch(configUpdated(updatedConfig, data.message));
+                }).then(() => {
+                    dispatch(getConfig());
+                });
+            } else {
+                response.json()
+                    .then((data) => {
+                        switch (response.status) {
+                            case 400:
+                                return dispatch(configError(data.message, data.errors));
+                            case 412:
+                                return dispatch(configError(data.message, data.errors));
+                            default: {
+                                dispatch(configError(data.message, null));
+                                return dispatch(verifyLoginByStatus(response.status));
                             }
-                        });
-                }
-            })
-            .catch(console.error);
+                        }
+                    });
+            }
+        }).catch(console.error);
     };
 }
 
@@ -191,36 +161,25 @@ export function testConfig(config, destination) {
     return (dispatch, getState) => {
         dispatch(testingConfig());
         const { csrfToken } = getState().session;
-        const encodedDestination = encodeURIComponent(destination);
-        const requestUrl = `${TEST_URL}?destination=${encodedDestination}`;
-        fetch(requestUrl, {
-            credentials: 'same-origin',
-            method: 'POST',
-            body: JSON.stringify(scrubConfig(config)),
-            headers: {
-                'content-type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
+        const request = ConfigRequestBuilder.createTestRequest(csrfToken, config, destination);
+        request.then((response) => {
+            dispatch(closeHipChatConfigTest());
+            if (response.ok) {
+                dispatch(testSuccess());
+            } else {
+                response.json()
+                    .then((data) => {
+                        switch (response.status) {
+                            case 400:
+                                return dispatch(testFailed(data.message, data.errors));
+                            case 401:
+                                return dispatch(testFailed('API Key isn\'t valid, try a different one'));
+                            default:
+                                return dispatch(testFailed(data.message));
+                        }
+                    });
             }
         })
-        // Refactor this response handler out
-            .then((response) => {
-                dispatch(closeHipChatConfigTest());
-                if (response.ok) {
-                    dispatch(testSuccess());
-                } else {
-                    response.json()
-                        .then((data) => {
-                            switch (response.status) {
-                                case 400:
-                                    return dispatch(testFailed(data.message, data.errors));
-                                case 401:
-                                    return dispatch(testFailed('API Key isn\'t valid, try a different one'));
-                                default:
-                                    return dispatch(testFailed(data.message));
-                            }
-                        });
-                }
-            })
             .catch(console.error);
     };
 }
