@@ -21,7 +21,7 @@ const initialState = {
     id: null
 };
 
-const config = (state = initialState, action) => {
+const blackduck = (state = initialState, action) => {
     switch (action.type) {
         case CONFIG_FETCHING:
             return Object.assign({}, state, {
@@ -129,4 +129,4 @@ const config = (state = initialState, action) => {
     }
 };
 
-export default config;
+export default blackduck;
