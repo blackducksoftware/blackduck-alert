@@ -23,6 +23,7 @@
  */
 package com.synopsys.integration.alert.workflow.startup;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -45,6 +46,7 @@ import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
@@ -70,34 +72,82 @@ public class AlertStartupInitializer {
         alertStartupFields = new TreeSet<>();
     }
 
-    public void initializeConfigs(final boolean overwriteCurrentConfig) throws IllegalArgumentException, SecurityException, AlertDatabaseConstraintException {
-        final Set<String> descriptorNames = descriptorMap.getDescriptorMap().keySet();
+    public void initializeConfigs() throws IllegalArgumentException, SecurityException {
         logger.info("** --------------------------------- **");
         logger.info("Initializing descriptors with environment variables...");
+        boolean overwriteCurrentConfig = isEnvironmentOverrideEnabled();
+        logger.info("Environment variables override configuration: {}", overwriteCurrentConfig);
+        initializeConfiguration(List.of(SettingsDescriptor.SETTINGS_COMPONENT), overwriteCurrentConfig);
+        List<String> descriptorNames = descriptorMap.getDescriptorMap().keySet().stream().filter(key -> !key.equals(SettingsDescriptor.SETTINGS_COMPONENT)).sorted().collect(Collectors.toList());
+        initializeConfiguration(descriptorNames, overwriteCurrentConfig);
+    }
+
+    private boolean isEnvironmentOverrideEnabled() {
+        boolean environmentOverride = false;
+        try {
+            // determine if the environment variables should overwrite based on the settings configuration.
+            Optional<ConfigurationModel> settingsConfiguration = findSettingsConfiguration();
+            final String fieldKey = SettingsDescriptor.KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE;
+            boolean overwriteSavedInDB = settingsConfiguration
+                                             .flatMap(configurationModel -> configurationModel.getField(fieldKey))
+                                             .flatMap(field -> field.getFieldValue())
+                                             .map(value -> Boolean.valueOf(value)).orElse(Boolean.FALSE);
+            final String environmentFieldKey = convertKeyToPropery(SettingsDescriptor.SETTINGS_COMPONENT, fieldKey);
+            Optional<String> environmentValue = getEnvironmentValue(environmentFieldKey);
+
+            environmentOverride = environmentValue.map(envValue -> Boolean.valueOf(envValue)).orElse(overwriteSavedInDB);
+        } catch (AlertDatabaseConstraintException ex) {
+            logger.error("Error checking environment override", ex);
+        }
+        return environmentOverride;
+    }
+
+    private Optional<ConfigurationModel> findSettingsConfiguration() throws AlertDatabaseConstraintException {
+        final List<ConfigurationModel> settingsConfigurationModels = fieldConfigurationAccessor.getConfigurationByDescriptorNameAndContext(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL);
+        if (settingsConfigurationModels.size() != 1) {
+            return Optional.empty();
+        }
+        return Optional.of(settingsConfigurationModels.get(0));
+    }
+
+    private void initializeConfiguration(final Collection<String> descriptorNames, final boolean overwriteCurrentConfig) {
         for (final String descriptorName : descriptorNames) {
             logger.info("---------------------------------");
             logger.info("Descriptor: {}", descriptorName);
             logger.info("---------------------------------");
-            final List<DefinedFieldModel> fieldsForDescriptor = descriptorAccessor.getFieldsForDescriptor(descriptorName, ConfigContextEnum.GLOBAL).stream()
-                                                                    .sorted(Comparator.comparing(DefinedFieldModel::getKey))
-                                                                    .collect(Collectors.toList());
-            final Set<ConfigurationFieldModel> configurationModels = new HashSet<>();
-            for (final DefinedFieldModel fieldModel : fieldsForDescriptor) {
-                final String key = fieldModel.getKey();
-                final String convertedKey = convertKeyToPropery(descriptorName, key);
-                getEnvironmentValue(convertedKey).flatMap(value -> modelConverter.convertFromDefinedFieldModel(fieldModel, value)).ifPresent(configurationModels::add);
-                alertStartupFields.add(convertedKey);
+            try {
+                final List<DefinedFieldModel> fieldsForDescriptor = descriptorAccessor.getFieldsForDescriptor(descriptorName, ConfigContextEnum.GLOBAL).stream()
+                                                                        .sorted(Comparator.comparing(DefinedFieldModel::getKey))
+                                                                        .collect(Collectors.toList());
+                final Set<ConfigurationFieldModel> configurationModels = createFieldModelsFromDefinedFields(descriptorName, fieldsForDescriptor);
+                final List<ConfigurationModel> foundConfigurationModels = fieldConfigurationAccessor.getConfigurationByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
+                updateConfigurationFields(descriptorName, overwriteCurrentConfig, foundConfigurationModels, configurationModels);
+            } catch (IllegalArgumentException | SecurityException | AlertDatabaseConstraintException ex) {
+                logger.error("error initializing descriptor", ex);
             }
-            if (!configurationModels.isEmpty()) {
-                final List<ConfigurationModel> foundConfigurationModel = fieldConfigurationAccessor.getConfigurationByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
-                if (!foundConfigurationModel.isEmpty()) {
-                    if (overwriteCurrentConfig) {
-                        final ConfigurationModel configurationModel = foundConfigurationModel.get(0);
-                        fieldConfigurationAccessor.updateConfiguration(configurationModel.getConfigurationId(), configurationModels);
-                    }
-                } else {
-                    fieldConfigurationAccessor.createConfiguration(descriptorName, ConfigContextEnum.GLOBAL, configurationModels);
+        }
+    }
+
+    private Set<ConfigurationFieldModel> createFieldModelsFromDefinedFields(final String descriptorName, List<DefinedFieldModel> fieldsForDescriptor) {
+        final Set<ConfigurationFieldModel> configurationModels = new HashSet<>();
+        for (final DefinedFieldModel fieldModel : fieldsForDescriptor) {
+            final String key = fieldModel.getKey();
+            final String convertedKey = convertKeyToPropery(descriptorName, key);
+            getEnvironmentValue(convertedKey).flatMap(value -> modelConverter.convertFromDefinedFieldModel(fieldModel, value)).ifPresent(configurationModels::add);
+        }
+        return configurationModels;
+    }
+
+    private void updateConfigurationFields(final String descriptorName, boolean overwriteCurrentConfig, final List<ConfigurationModel> foundConfigurationModels, final Set<ConfigurationFieldModel> configurationModels)
+        throws AlertDatabaseConstraintException {
+        if (!configurationModels.isEmpty()) {
+            if (!foundConfigurationModels.isEmpty()) {
+                if (overwriteCurrentConfig) {
+                    final ConfigurationModel configurationModel = foundConfigurationModels.get(0);
+                    fieldConfigurationAccessor.updateConfiguration(configurationModel.getConfigurationId(), configurationModels);
                 }
+            } else {
+                fieldConfigurationAccessor.createConfiguration(descriptorName, ConfigContextEnum.GLOBAL, configurationModels);
             }
         }
     }

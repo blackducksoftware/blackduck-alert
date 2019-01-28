@@ -121,7 +121,7 @@ public class StartupManager {
         try {
             // manually wire the encryption utility.
             StringEncryptionConverter.setEncryptionUtility(encryptionUtility);
-            alertStartupInitializer.initializeConfigs(true);
+            alertStartupInitializer.initializeConfigs();
         } catch (final Exception e) {
             logger.error("Error inserting startup values", e);
         }
