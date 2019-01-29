@@ -55,21 +55,19 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
 
     @Override
     public void testConfig(final TestConfigModel testConfigModel) throws IntegrationException {
-        final FieldModel fieldModel = testConfigModel.getFieldModel();
-        final DistributionEvent event = createChannelTestEvent(fieldModel);
+        final FieldAccessor fieldAccessor = testConfigModel.getFieldAccessor();
+        final DistributionEvent event = createChannelTestEvent(testConfigModel.getConfigId().orElse(null), fieldAccessor);
         distributionChannel.sendMessage(event);
     }
 
-    public DistributionEvent createChannelTestEvent(final FieldModel fieldModel) throws AlertDatabaseConstraintException {
+    public DistributionEvent createChannelTestEvent(final String configId, final FieldAccessor fieldAccessor) throws AlertDatabaseConstraintException {
         final AggregateMessageContent messageContent = createTestNotificationContent();
 
-        final String channelName = fieldModel.getField(CommonDistributionUIConfig.KEY_CHANNEL_NAME).flatMap(field -> field.getValue()).orElse("");
-        final String providerName = fieldModel.getField(CommonDistributionUIConfig.KEY_PROVIDER_NAME).flatMap(field -> field.getValue()).orElse("");
-        final String formatType = fieldModel.getField(ProviderDistributionUIConfig.KEY_FORMAT_TYPE).flatMap(field -> field.getValue()).orElse("");
+        final String channelName = fieldAccessor.getString(CommonDistributionUIConfig.KEY_CHANNEL_NAME).orElse("");
+        final String providerName = fieldAccessor.getString(CommonDistributionUIConfig.KEY_PROVIDER_NAME).orElse("");
+        final String formatType = fieldAccessor.getString(ProviderDistributionUIConfig.KEY_FORMAT_TYPE).orElse("");
 
-        final FieldAccessor fieldAccessor = modelConverter.convertToFieldAccessor(fieldModel);
-
-        return new DistributionEvent(fieldModel.getId(), channelName, RestConstants.formatDate(new Date()), providerName, formatType, messageContent, fieldAccessor);
+        return new DistributionEvent(configId, channelName, RestConstants.formatDate(new Date()), providerName, formatType, messageContent, fieldAccessor);
     }
 
     @Override

@@ -44,6 +44,10 @@ public class FieldAccessor {
         return fields;
     }
 
+    public Optional<ConfigurationFieldModel> getField(String key) {
+        return Optional.ofNullable(fields.get(key));
+    }
+
     public Optional<Long> getLong(final String key) {
         final Optional<String> value = getValue(key);
         return value.map(Long::parseLong);
