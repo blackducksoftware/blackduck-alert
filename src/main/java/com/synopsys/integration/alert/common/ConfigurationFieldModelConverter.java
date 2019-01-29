@@ -34,28 +34,34 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
+import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 
 @Component
 public class ConfigurationFieldModelConverter {
     private final EncryptionUtility encryptionUtility;
     private final BaseDescriptorAccessor descriptorAccessor;
+    private final BaseConfigurationAccessor baseConfigurationAccessor;
 
     @Autowired
-    public ConfigurationFieldModelConverter(final EncryptionUtility encryptionUtility, final BaseDescriptorAccessor descriptorAccessor) {
+    public ConfigurationFieldModelConverter(final EncryptionUtility encryptionUtility, final BaseDescriptorAccessor descriptorAccessor, final BaseConfigurationAccessor baseConfigurationAccessor) {
         this.encryptionUtility = encryptionUtility;
         this.descriptorAccessor = descriptorAccessor;
+        this.baseConfigurationAccessor = baseConfigurationAccessor;
     }
 
     public final FieldAccessor convertToFieldAccessor(final FieldModel fieldModel) throws AlertDatabaseConstraintException {
@@ -95,13 +101,30 @@ public class ConfigurationFieldModelConverter {
                 definedFieldList.addAll(descriptorAccessor.getFieldsForDescriptor(providerName.get(), context));
             }
         }
+        final Optional<ConfigurationModel> savedConfiguration;
+        if (StringUtils.isNotBlank(fieldModel.getId())) {
+            final Long id = Long.parseLong(fieldModel.getId());
+            savedConfiguration = baseConfigurationAccessor.getConfigurationById(id);
+        } else {
+            savedConfiguration = Optional.empty();
+        }
 
         final Set<ConfigurationFieldModel> configurationModels = new HashSet<>();
         for (final DefinedFieldModel definedField : definedFieldList) {
-            final Collection<String> values = fieldModel.getFieldValues(definedField.getKey());
-            convertFromDefinedFieldModel(definedField, values).ifPresent(configurationModels::add);
+            final Optional<FieldValueModel> currentField = fieldModel.getField(definedField.getKey());
+            currentField.ifPresentOrElse(field -> {
+                final Collection<String> values = field.getValues();
+                if (areValuesEmptyOrBlank(values)) {
+                    savedConfiguration.ifPresent(configurationModel -> {
+                        configurationModel.getField(definedField.getKey()).ifPresent(configurationModels::add);
+                    });
+                } else {
+                    convertFromDefinedFieldModel(definedField, values).ifPresent(configurationModels::add);
+                }
+            }, () -> {
+                convertFromDefinedFieldModel(definedField, List.of()).ifPresent(configurationModels::add);
+            });
         }
-        //TODO for sensitive fields we need to get the values and update the ConfigurationFieldModels with the stored value IFF the fieldModel isSet = true and has no value
 
         return configurationModels.stream().collect(Collectors.toMap(ConfigurationFieldModel::getFieldKey, Function.identity()));
     }
@@ -116,4 +139,13 @@ public class ConfigurationFieldModelConverter {
         }
         return Optional.of(configurationModel);
     }
+
+    private boolean areValuesEmptyOrBlank(final Collection<String> values) {
+        if (null == values || values.isEmpty()) {
+            return true;
+        }
+        final Optional<String> first = values.stream().filter(StringUtils::isNotBlank).findFirst();
+        return first.isEmpty();
+    }
+
 }
