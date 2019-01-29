@@ -1,9 +1,7 @@
 import {
     EMAIL_CONFIG_FETCHED,
     EMAIL_CONFIG_FETCHING,
-    EMAIL_CONFIG_HIDE_ADVANCED,
     EMAIL_CONFIG_HIDE_TEST_MODAL,
-    EMAIL_CONFIG_SHOW_ADVANCED,
     EMAIL_CONFIG_SHOW_TEST_MODAL,
     EMAIL_CONFIG_TEST_SUCCESSFUL,
     EMAIL_CONFIG_UPDATE_ERROR,
@@ -14,15 +12,14 @@ import {
 
 const initialState = {
     fetching: false,
-    showAdvanced: false,
     showTestModal: false,
     updateStatus: null,
     actionMessage: null,
+    config: {},
     error: {
         message: '',
-        fieldErrors: []
-    },
-    id: null
+        fieldErrors: {}
+    }
 };
 
 const config = (state = initialState, action) => {
@@ -37,19 +34,7 @@ const config = (state = initialState, action) => {
             return Object.assign({}, state, {
                 fetching: false,
                 updateStatus: 'FETCHED',
-                ...action.config
-            });
-
-        case EMAIL_CONFIG_SHOW_ADVANCED:
-            return Object.assign({}, state, {
-                updateStatus: null,
-                showAdvanced: true
-            });
-
-        case EMAIL_CONFIG_HIDE_ADVANCED:
-            return Object.assign({}, state, {
-                updateStatus: null,
-                showAdvanced: false
+                config: action.config
             });
 
         case EMAIL_CONFIG_SHOW_TEST_MODAL:
@@ -71,7 +56,7 @@ const config = (state = initialState, action) => {
                 showTestModal: false,
                 error: {
                     message: '',
-                    fieldErrors: []
+                    fieldErrors: {}
                 }
             });
 
@@ -81,7 +66,7 @@ const config = (state = initialState, action) => {
                 updateStatus: 'UPDATING',
                 error: {
                     message: '',
-                    fieldErrors: []
+                    fieldErrors: {}
                 }
             });
 
@@ -90,10 +75,10 @@ const config = (state = initialState, action) => {
                 fetching: false,
                 updateStatus: 'UPDATED',
                 actionMessage: 'Update successful',
-                ...action.config,
+                config: action.config,
                 error: {
                     message: '',
-                    fieldErrors: []
+                    fieldErrors: {}
                 }
             });
 
@@ -103,7 +88,7 @@ const config = (state = initialState, action) => {
                 actionMessage: null,
                 error: {
                     message: action.message,
-                    fieldErrors: action.errors || []
+                    fieldErrors: action.errors || {}
                 }
             });
 

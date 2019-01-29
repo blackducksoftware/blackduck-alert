@@ -16,7 +16,7 @@ class ChannelTestModal extends Component {
 
     handleChange(event) {
         event.preventDefault();
-        const [value] = event.target;
+        const { value } = event.target;
         this.setState({ destination: value });
     }
 

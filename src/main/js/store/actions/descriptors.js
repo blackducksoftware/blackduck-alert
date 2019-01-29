@@ -10,8 +10,7 @@ import {
 
 import { verifyLoginByStatus } from 'store/actions/session';
 
-const FETCH_DESCRIPTOR_URL = '/alert/api/descriptor';
-const FETCH_DISTRIBUTION_URL = `${FETCH_DESCRIPTOR_URL}/distribution`;
+const FETCH_DESCRIPTOR_URL = '/alert/api/metadata/descriptors';
 
 function fetchingDescriptors() {
     return {
@@ -19,7 +18,7 @@ function fetchingDescriptors() {
     };
 }
 
-function descriptorsFetched(descriptorType, descriptors) {
+function descriptorsFetched(descriptors) {
     if (descriptors) {
         const sortedList = descriptors.sort((first, second) => {
             if (first.label < second.label) {
@@ -31,16 +30,12 @@ function descriptorsFetched(descriptorType, descriptors) {
         });
         return {
             type: DESCRIPTORS_FETCHED,
-            items: {
-                [descriptorType]: sortedList
-            }
+            items: sortedList
         };
     }
     return {
         type: DESCRIPTORS_FETCHED,
-        items: {
-            [descriptorType]: []
-        }
+        items: []
     };
 }
 
@@ -51,37 +46,10 @@ function descriptorsError(message) {
     };
 }
 
-function fetchingDistributionDescriptor() {
-    return {
-        type: DESCRIPTORS_DISTRIBUTION_FETCHING
-    };
-}
-
-function fetchedDistributionDescriptors(items) {
-    return {
-        type: DESCRIPTORS_DISTRIBUTION_FETCHED,
-        currentDistributionComponents: items
-    };
-}
-
-function distributionDescriptorError(message, error) {
-    return {
-        type: DESCRIPTORS_DISTRIBUTION_FETCH_ERROR,
-        message,
-        error
-    };
-}
-
-function distributionDescriptorReset() {
-    return {
-        type: DESCRIPTORS_DISTRIBUTION_RESET
-    };
-}
-
-export function getDescriptorsByTypeAndContext(distributionConfigType, configContextName) {
+export function getDescriptors() {
     return (dispatch) => {
         dispatch(fetchingDescriptors());
-        const getUrl = `${FETCH_DESCRIPTOR_URL}?context=${configContextName}`;
+        const getUrl = `${FETCH_DESCRIPTOR_URL}`;
         fetch(getUrl, {
             credentials: 'same-origin',
             headers: {
@@ -93,59 +61,9 @@ export function getDescriptorsByTypeAndContext(distributionConfigType, configCon
                     dispatch(descriptorsError(json.message));
                     dispatch(verifyLoginByStatus(response.status));
                 } else {
-                    dispatch(descriptorsFetched(distributionConfigType, json));
+                    dispatch(descriptorsFetched(json));
                 }
             });
         }).catch(dispatch(descriptorsError(console.error)));
-    };
-}
-
-export function getDescriptorByType(distributionConfigType) {
-    return (dispatch) => {
-        dispatch(fetchingDescriptors());
-        const getUrl = `${FETCH_DESCRIPTOR_URL}?descriptorType=${distributionConfigType}`;
-        fetch(getUrl, {
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then((response) => {
-            response.json().then((json) => {
-                if (!response.ok) {
-                    dispatch(descriptorsError(json.message));
-                    dispatch(verifyLoginByStatus(response.status));
-                } else {
-                    dispatch(descriptorsFetched(distributionConfigType, json));
-                }
-            });
-        }).catch(dispatch(descriptorsError(console.error)));
-    };
-}
-
-export function getDistributionDescriptor(provider, channel) {
-    return (dispatch) => {
-        dispatch(fetchingDistributionDescriptor());
-        const getUrl = `${FETCH_DISTRIBUTION_URL}?providerName=${provider}&channelName=${channel}`;
-        fetch(getUrl, {
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then((response) => {
-            response.json().then((json) => {
-                if (!response.ok) {
-                    dispatch(distributionDescriptorError(json.message, json.error));
-                    dispatch(verifyLoginByStatus(response.status));
-                } else {
-                    dispatch(fetchedDistributionDescriptors(json));
-                }
-            });
-        }).catch(dispatch(distributionDescriptorError(console.error)));
-    };
-}
-
-export function resetDistributionDescriptor() {
-    return (dispatch) => {
-        dispatch(distributionDescriptorReset());
     };
 }

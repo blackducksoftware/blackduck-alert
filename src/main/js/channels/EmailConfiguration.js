@@ -7,97 +7,155 @@ import PasswordInput from 'field/input/PasswordInput';
 import TextInput from 'field/input/TextInput';
 import ConfigButtons from 'component/common/ConfigButtons';
 
-import { closeEmailConfigTest, getEmailConfig, openEmailConfigTest, sendEmailConfigTest, toggleAdvancedEmailOptions, updateEmailConfig } from 'store/actions/emailConfig';
+import { closeEmailConfigTest, getEmailConfig, openEmailConfigTest, sendEmailConfigTest, updateEmailConfig } from 'store/actions/emailConfig';
 import ChannelTestModal from 'component/common/ChannelTestModal';
-import CollapsiblePane from "component/common/CollapsiblePane";
+import CollapsiblePane from 'component/common/CollapsiblePane';
+import * as FieldModelUtil from 'util/fieldModelUtilities';
+
+const ID_KEY = 'id';
+
+// Javamail Keys
+const JAVAMAIL_USER_KEY = 'mail.smtp.user';
+const JAVAMAIL_HOST_KEY = 'mail.smtp.host';
+const JAVAMAIL_PORT_KEY = 'mail.smtp.port';
+const JAVAMAIL_CONNECTION_TIMEOUT_KEY = 'mail.smtp.connectiontimeout';
+const JAVAMAIL_TIMEOUT_KEY = 'mail.smtp.timeout';
+const JAVAMAIL_WRITETIMEOUT_KEY = 'mail.smtp.writetimeout';
+const JAVAMAIL_FROM_KEY = 'mail.smtp.from';
+const JAVAMAIL_LOCALHOST_KEY = 'mail.smtp.localhost';
+const JAVAMAIL_LOCALHOST_ADDRESS_KEY = 'mail.smtp.localaddress';
+const JAVAMAIL_LOCALHOST_PORT_KEY = 'mail.smtp.localport';
+const JAVAMAIL_EHLO_KEY = 'mail.smtp.ehlo';
+const JAVAMAIL_AUTH_KEY = 'mail.smtp.auth';
+const JAVAMAIL_AUTH_MECHANISMS_KEY = 'mail.smtp.auth.mechanisms';
+const JAVAMAIL_AUTH_LOGIN_DISABLE_KEY = 'mail.smtp.auth.login.disable';
+const JAVAMAIL_AUTH_LOGIN_PLAIN_DISABLE_KEY = 'mail.smtp.auth.plain.disable';
+const JAVAMAIL_AUTH_DIGEST_MD5_DISABLE_KEY = 'mail.smtp.auth.digest-md5.disable';
+const JAVAMAIL_AUTH_NTLM_DISABLE_KEY = 'mail.smtp.auth.ntlm.disable';
+const JAVAMAIL_AUTH_NTLM_DOMAIN_KEY = 'mail.smtp.auth.ntlm.domain';
+const JAVAMAIL_AUTH_NTLM_FLAGS_KEY = 'mail.smtp.auth.ntlm.flags';
+const JAVAMAIL_AUTH_XOAUTH2_DISABLE_KEY = 'mail.smtp.auth.xoauth2.disable';
+const JAVAMAIL_SUBMITTER_KEY = 'mail.smtp.submitter';
+const JAVAMAIL_DSN_NOTIFY_KEY = 'mail.smtp.dsn.notify';
+const JAVAMAIL_DSN_RET_KEY = 'mail.smtp.dsn.ret';
+const JAVAMAIL_ALLOW_8_BITMIME_KEY = 'mail.smtp.allow8bitmime';
+const JAVAMAIL_SEND_PARTIAL_KEY = 'mail.smtp.sendpartial';
+const JAVAMAIL_SASL_ENABLE_KEY = 'mail.smtp.sasl.enable';
+const JAVAMAIL_SASL_MECHANISMS_KEY = 'mail.smtp.sasl.mechanisms';
+const JAVAMAIL_SASL_AUTHORIZATION_ID_KEY = 'mail.smtp.sasl.authorizationid';
+const JAVAMAIL_SASL_REALM_KEY = 'mail.smtp.sasl.realm';
+const JAVAMAIL_SASL_USE_CANONICAL_HOSTNAME_KEY = 'mail.smtp.sasl.usecanonicalhostname';
+const JAVAMAIL_QUITWAIT_KEY = 'mail.smtp.quitwait';
+const JAVAMAIL_REPORT_SUCCESS_KEY = 'mail.smtp.reportsuccess';
+const JAVAMAIL_SSL_ENABLE_KEY = 'mail.smtp.ssl.enable';
+const JAVAMAIL_SSL_CHECKSERVERIDENTITY_KEY = 'mail.smtp.ssl.checkserveridentity';
+const JAVAMAIL_SSL_TRUST_KEY = 'mail.smtp.ssl.trust';
+const JAVAMAIL_SSL_PROTOCOLS_KEY = 'mail.smtp.ssl.protocols';
+const JAVAMAIL_SSL_CIPHERSUITES_KEY = 'mail.smtp.ssl.ciphersuites';
+const JAVAMAIL_STARTTLS_ENABLE_KEY = 'mail.smtp.starttls.enable';
+const JAVAMAIL_STARTTLS_REQUIRED_KEY = 'mail.smtp.starttls.required';
+const JAVAMAIL_PROXY_HOST_KEY = 'mail.smtp.proxy.host';
+const JAVAMAIL_PROXY_PORT_KEY = 'mail.smtp.proxy.port';
+const JAVAMAIL_SOCKS_HOST_KEY = 'mail.smtp.socks.host';
+const JAVAMAIL_SOCKS_PORT_KEY = 'mail.smtp.socks.port';
+const JAVAMAIL_MAILEXTENSION_KEY = 'mail.smtp.mailextension';
+const JAVAMAIL_USERSET_KEY = 'mail.smtp.userset';
+const JAVAMAIL_NOOP_STRICT_KEY = 'mail.smtp.noop.strict';
+const JAVAMAIL_PASSWORD_KEY = 'mail.smtp.password';
+
+const fieldNames = [
+    ID_KEY,
+    JAVAMAIL_USER_KEY,
+    JAVAMAIL_HOST_KEY,
+    JAVAMAIL_PORT_KEY,
+    JAVAMAIL_CONNECTION_TIMEOUT_KEY,
+    JAVAMAIL_TIMEOUT_KEY,
+    JAVAMAIL_WRITETIMEOUT_KEY,
+    JAVAMAIL_FROM_KEY,
+    JAVAMAIL_LOCALHOST_KEY,
+    JAVAMAIL_LOCALHOST_ADDRESS_KEY,
+    JAVAMAIL_LOCALHOST_PORT_KEY,
+    JAVAMAIL_EHLO_KEY,
+    JAVAMAIL_AUTH_KEY,
+    JAVAMAIL_AUTH_MECHANISMS_KEY,
+    JAVAMAIL_AUTH_LOGIN_DISABLE_KEY,
+    JAVAMAIL_AUTH_LOGIN_PLAIN_DISABLE_KEY,
+    JAVAMAIL_AUTH_DIGEST_MD5_DISABLE_KEY,
+    JAVAMAIL_AUTH_NTLM_DISABLE_KEY,
+    JAVAMAIL_AUTH_NTLM_DOMAIN_KEY,
+    JAVAMAIL_AUTH_NTLM_FLAGS_KEY,
+    JAVAMAIL_AUTH_XOAUTH2_DISABLE_KEY,
+    JAVAMAIL_SUBMITTER_KEY,
+    JAVAMAIL_DSN_NOTIFY_KEY,
+    JAVAMAIL_DSN_RET_KEY,
+    JAVAMAIL_ALLOW_8_BITMIME_KEY,
+    JAVAMAIL_SEND_PARTIAL_KEY,
+    JAVAMAIL_SASL_ENABLE_KEY,
+    JAVAMAIL_SASL_MECHANISMS_KEY,
+    JAVAMAIL_SASL_AUTHORIZATION_ID_KEY,
+    JAVAMAIL_SASL_REALM_KEY,
+    JAVAMAIL_SASL_USE_CANONICAL_HOSTNAME_KEY,
+    JAVAMAIL_QUITWAIT_KEY,
+    JAVAMAIL_REPORT_SUCCESS_KEY,
+    JAVAMAIL_SSL_ENABLE_KEY,
+    JAVAMAIL_SSL_CHECKSERVERIDENTITY_KEY,
+    JAVAMAIL_SSL_TRUST_KEY,
+    JAVAMAIL_SSL_PROTOCOLS_KEY,
+    JAVAMAIL_SSL_CIPHERSUITES_KEY,
+    JAVAMAIL_STARTTLS_ENABLE_KEY,
+    JAVAMAIL_STARTTLS_REQUIRED_KEY,
+    JAVAMAIL_PROXY_HOST_KEY,
+    JAVAMAIL_PROXY_PORT_KEY,
+    JAVAMAIL_SOCKS_HOST_KEY,
+    JAVAMAIL_SOCKS_PORT_KEY,
+    JAVAMAIL_MAILEXTENSION_KEY,
+    JAVAMAIL_USERSET_KEY,
+    JAVAMAIL_NOOP_STRICT_KEY,
+    JAVAMAIL_PASSWORD_KEY
+];
 
 class EmailConfiguration extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            errors: []
+            currentEmailConfig: FieldModelUtil.createEmptyFieldModel(fieldNames, 'GLOBAL', 'channel_email')
         };
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    componentDidMount() {
+    componentWillMount() {
         this.props.getEmailConfig();
     }
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.updateStatus === 'FETCHED' || nextProps.updateStatus === 'UPDATED') {
+            const newState = FieldModelUtil.checkModelOrCreateEmpty(nextProps.currentEmailConfig, fieldNames);
             this.setState({
-                mailSmtpHost: nextProps.mailSmtpHost || '',
-                mailSmtpUser: nextProps.mailSmtpUser || '',
-                mailSmtpPassword: nextProps.mailSmtpPassword || '',
-                mailSmtpPasswordIsSet: nextProps.mailSmtpPasswordIsSet,
-                mailSmtpPort: nextProps.mailSmtpPort,
-                mailSmtpConnectionTimeout: nextProps.mailSmtpConnectionTimeout,
-                mailSmtpTimeout: nextProps.mailSmtpTimeout,
-                mailSmtpWriteTimeout: nextProps.mailSmtpWriteTimeout,
-                mailSmtpFrom: nextProps.mailSmtpFrom || '',
-                mailSmtpLocalhost: nextProps.mailSmtpLocalhost || '',
-                mailSmtpLocalAddress: nextProps.mailSmtpLocalAddress || '',
-                mailSmtpLocalPort: nextProps.mailSmtpLocalPort,
-                mailSmtpEhlo: nextProps.mailSmtpEhlo,
-                mailSmtpAuth: nextProps.mailSmtpAuth,
-                mailSmtpAuthMechanisms: nextProps.mailSmtpAuthMechanisms || '',
-                mailSmtpAuthLoginDisable: nextProps.mailSmtpAuthLoginDisable,
-                mailSmtpAuthPlainDisable: nextProps.mailSmtpAuthPlainDisable,
-                mailSmtpAuthDigestMd5Disable: nextProps.mailSmtpAuthDigestMd5Disable,
-                mailSmtpAuthNtlmDisable: nextProps.mailSmtpAuthNtlmDisable,
-                mailSmtpAuthNtlmDomain: nextProps.mailSmtpAuthNtlmDomain || '',
-                mailSmtpAuthNtlmFlags: nextProps.mailSmtpAuthNtlmFlags,
-                mailSmtpAuthXoauth2Disable: nextProps.mailSmtpAuthXoauth2Disable,
-                mailSmtpSubmitter: nextProps.mailSmtpSubmitter || '',
-                mailSmtpDnsNotify: nextProps.mailSmtpDnsNotify,
-                mailSmtpDnsRet: nextProps.mailSmtpDnsRet,
-                mailSmtpAllow8bitmime: nextProps.mailSmtpAllow8bitmime,
-                mailSmtpSendPartial: nextProps.mailSmtpSendPartial,
-                mailSmtpSaslEnable: nextProps.mailSmtpSaslEnable,
-                mailSmtpSaslMechanisms: nextProps.mailSmtpSaslMechanisms || '',
-                mailSmtpSaslAuthorizationId: nextProps.mailSmtpSaslAuthorizationId || '',
-                mailSmtpSaslRealm: nextProps.mailSmtpSaslRealm || '',
-                mailSmtpSaslUseCanonicalHostname: nextProps.mailSmtpSaslUseCanonicalHostname,
-                mailSmtpQuitwait: nextProps.mailSmtpQuitwait,
-                mailSmtpReportSuccess: nextProps.mailSmtpReportSuccess,
-                mailSmtpSslEnable: nextProps.mailSmtpSslEnable,
-                mailSmtpSslCheckServerIdentity: nextProps.mailSmtpSslCheckServerIdentity,
-                mailSmtpSslTrust: nextProps.mailSmtpSslTrust || '',
-                mailSmtpSslProtocols: nextProps.mailSmtpSslProtocols || '',
-                mailSmtpSslCipherSuites: nextProps.mailSmtpSslCipherSuites || '',
-                mailSmtpStartTlsEnable: nextProps.mailSmtpStartTlsEnable,
-                mailSmtpStartTlsRequired: nextProps.mailSmtpStartTlsRequired,
-                mailSmtpProxyHost: nextProps.mailSmtpProxyHost || '',
-                mailSmtpProxyPort: nextProps.mailSmtpProxyPort,
-                mailSmtpSocksHost: nextProps.mailSmtpSocksHost || '',
-                mailSmtpSocksPort: nextProps.mailSmtpSocksPort,
-                mailSmtpMailExtension: nextProps.mailSmtpMailExtension || '',
-                mailSmtpUserSet: nextProps.mailSmtpUserSet,
-                mailSmtpNoopStrict: nextProps.mailSmtpNoopStrict
+                currentEmailConfig: newState
             });
         }
     }
 
-    handleChange(event) {
-        const [target] = event;
-        const value = target.type === 'checkbox' ? target.checked : target.value;
+    handleChange({ target }) {
+        const value = target.type === 'checkbox' ? target.checked.toString() : target.value;
+        const newState = FieldModelUtil.updateFieldModelSingleValue(this.state.currentEmailConfig, target.name, value);
         this.setState({
-            [target.name]: value
+            currentEmailConfig: newState
         });
     }
 
     handleSubmit(evt) {
         evt.preventDefault();
         evt.stopPropagation();
-        const { id } = this.props;
-        this.props.updateEmailConfig({ id, ...this.state });
+        const fieldModel = this.state.currentEmailConfig;
+        this.props.updateEmailConfig(fieldModel);
     }
 
     render() {
+        const fieldModel = this.state.currentEmailConfig;
         const { errorMessage, actionMessage } = this.props;
         return (
             <div>
@@ -115,474 +173,474 @@ class EmailConfiguration extends React.Component {
                     </div>}
 
                     <TextInput
-                        id="emailSmtpHost"
+                        id={JAVAMAIL_HOST_KEY}
                         label="SMTP Host"
-                        name="mailSmtpHost"
-                        value={this.state.mailSmtpHost}
+                        name={JAVAMAIL_HOST_KEY}
+                        value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_HOST_KEY)}
                         onChange={this.handleChange}
-                        errorName="mailSmtpHostError"
-                        errorValue={this.props.fieldErrors.mailSmtpHost}
+                        errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_HOST_KEY)}
+                        errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_HOST_KEY)]}
                     />
 
                     <TextInput
-                        id="emailSmtpFrom"
+                        id={JAVAMAIL_FROM_KEY}
                         label="SMTP From"
-                        name="mailSmtpFrom"
-                        value={this.state.mailSmtpFrom}
+                        name={JAVAMAIL_FROM_KEY}
+                        value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_FROM_KEY)}
                         onChange={this.handleChange}
-                        errorName="mailSmtpFromError"
-                        errorValue={this.props.fieldErrors.mailSmtpFrom}
+                        errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_FROM_KEY)}
+                        errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_FROM_KEY)]}
                     />
 
                     <CheckboxInput
-                        id="emailSmtpAuth"
+                        id={JAVAMAIL_AUTH_KEY}
                         label="SMTP Auth"
-                        name="mailSmtpAuth"
-                        isChecked={this.state.mailSmtpAuth}
+                        name={JAVAMAIL_AUTH_KEY}
+                        isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_AUTH_KEY)}
                         onChange={this.handleChange}
-                        errorName="mailSmtpAuthError"
-                        errorValue={this.props.fieldErrors.mailSmtpAuth}
+                        errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_KEY)}
+                        errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_KEY)]}
                     />
 
                     <TextInput
-                        id="emailSmtpUser"
+                        id={JAVAMAIL_USER_KEY}
                         label="SMTP User"
-                        name="mailSmtpUser"
-                        value={this.state.mailSmtpUser}
+                        name={JAVAMAIL_USER_KEY}
+                        value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_USER_KEY)}
                         onChange={this.handleChange}
-                        errorName="mailSmtpUserError"
-                        errorValue={this.props.fieldErrors.mailSmtpUser}
+                        errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_USER_KEY)}
+                        errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_USER_KEY)]}
                     />
 
                     <PasswordInput
-                        id="emailSmtpPassword"
+                        id={JAVAMAIL_PASSWORD_KEY}
                         label="SMTP Password"
-                        name="mailSmtpPassword"
-                        value={this.state.mailSmtpPassword}
-                        isSet={this.state.mailSmtpPasswordIsSet}
+                        name={JAVAMAIL_PASSWORD_KEY}
+                        value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_PASSWORD_KEY)}
+                        isSet={FieldModelUtil.isFieldModelValueSet(fieldModel, JAVAMAIL_PASSWORD_KEY)}
                         onChange={this.handleChange}
-                        errorName="mailSmtpPasswordError"
-                        errorValue={this.props.fieldErrors.mailSmtpPassword}
+                        errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_PASSWORD_KEY)}
+                        errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_PASSWORD_KEY)]}
                     />
                     <CollapsiblePane title="Advanced Settings">
                         <NumberInput
-                            id="emailSmtpPort"
+                            id={JAVAMAIL_PORT_KEY}
                             label="SMTP Port"
-                            name="mailSmtpPort"
-                            value={this.state.mailSmtpPort}
+                            name={JAVAMAIL_PORT_KEY}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_PORT_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpPortError"
-                            errorValue={this.props.fieldErrors.mailSmtpPort}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_PORT_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_PORT_KEY)]}
                         />
 
                         <NumberInput
-                            id="emailSmtpConnectionTimeout"
+                            id={JAVAMAIL_CONNECTION_TIMEOUT_KEY}
                             label="SMTP Connection Timeout"
-                            name="mailSmtpConnectionTimeout"
-                            value={this.state.mailSmtpConnectionTimeout}
+                            name={JAVAMAIL_CONNECTION_TIMEOUT_KEY}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_CONNECTION_TIMEOUT_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpConnectionTimeoutError"
-                            errorValue={this.props.fieldErrors.mailSmtpConnectionTimeout}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_CONNECTION_TIMEOUT_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_CONNECTION_TIMEOUT_KEY)]}
                         />
 
                         <NumberInput
-                            id="emailSmtpTimeout"
+                            id={JAVAMAIL_TIMEOUT_KEY}
                             label="SMTP Timeout"
-                            name="mailSmtpTimeout"
-                            value={this.state.mailSmtpTimeout}
+                            name={JAVAMAIL_TIMEOUT_KEY}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_TIMEOUT_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpTimeoutError"
-                            errorValue={this.props.fieldErrors.mailSmtpTimeout}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_TIMEOUT_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_TIMEOUT_KEY)]}
                         />
 
                         <NumberInput
-                            id="emailSmtpWriteTimeout"
+                            id={JAVAMAIL_WRITETIMEOUT_KEY}
                             label="SMTP Write Timeout"
-                            name="mailSmtpWriteTimeout"
-                            value={this.state.mailSmtpWriteTimeout}
+                            name={JAVAMAIL_WRITETIMEOUT_KEY}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_WRITETIMEOUT_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpWriteTimeoutError"
-                            errorValue={this.props.fieldErrors.mailSmtpWriteTimeout}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_WRITETIMEOUT_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_WRITETIMEOUT_KEY)]}
                         />
 
                         <TextInput
-                            id="emailSmtpLocalhost"
+                            id={JAVAMAIL_LOCALHOST_KEY}
                             label="SMTP Localhost"
-                            name="mailSmtpLocalhost"
-                            value={this.state.mailSmtpLocalhost}
+                            name={JAVAMAIL_LOCALHOST_KEY}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_LOCALHOST_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpLocalhostError"
-                            errorValue={this.props.fieldErrors.mailSmtpLocalhost}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_LOCALHOST_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_LOCALHOST_KEY)]}
                         />
 
                         <TextInput
-                            id="emailSmtpLocalAddress"
+                            id={JAVAMAIL_LOCALHOST_ADDRESS_KEY}
                             label="SMTP Local Address"
-                            name="mailSmtpLocalAddress"
-                            value={this.state.mailSmtpLocalAddress}
+                            name={JAVAMAIL_LOCALHOST_ADDRESS_KEY}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_LOCALHOST_ADDRESS_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpLocalAddressError"
-                            errorValue={this.props.fieldErrors.mailSmtpLocalAddress}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_LOCALHOST_ADDRESS_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_LOCALHOST_ADDRESS_KEY)]}
                         />
 
                         <NumberInput
-                            id="emailSmtpLocalPort"
+                            id={JAVAMAIL_LOCALHOST_PORT_KEY}
                             label="SMTP Local Port"
-                            name="mailSmtpLocalPort"
-                            value={this.state.mailSmtpLocalPort}
+                            name={JAVAMAIL_LOCALHOST_PORT_KEY}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_LOCALHOST_PORT_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpLocalPortError"
-                            errorValue={this.props.fieldErrors.mailSmtpLocalPort}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_LOCALHOST_PORT_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_LOCALHOST_PORT_KEY)]}
                         />
 
                         <CheckboxInput
-                            id="emailSmtpEhlo"
+                            id={JAVAMAIL_EHLO_KEY}
                             label="SMTP Ehlo"
-                            name="mailSmtpEhlo"
-                            isChecked={this.state.mailSmtpEhlo}
+                            name={JAVAMAIL_EHLO_KEY}
+                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_EHLO_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpEhloError"
-                            errorValue={this.props.fieldErrors.mailSmtpEhlo}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_EHLO_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_EHLO_KEY)]}
                         />
 
                         <TextInput
-                            id="emailSmtpAuthMechanisms"
+                            id={JAVAMAIL_AUTH_MECHANISMS_KEY}
                             label="SMTP Auth Mechanisms"
-                            name="mailSmtpAuthMechanisms"
-                            value={this.state.mailSmtpAuthMechanisms}
+                            name={JAVAMAIL_AUTH_MECHANISMS_KEY}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_AUTH_MECHANISMS_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpAuthMechanismsError"
-                            errorValue={this.props.fieldErrors.mailSmtpAuthMechanisms}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_MECHANISMS_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_MECHANISMS_KEY)]}
                         />
 
                         <CheckboxInput
-                            id="emailSmtpAuthLoginDisable"
+                            id={JAVAMAIL_AUTH_LOGIN_DISABLE_KEY}
                             label="SMTP Auth Login Disable"
-                            name="mailSmtpAuthLoginDisable"
-                            isChecked={this.state.mailSmtpAuthLoginDisable}
+                            name={JAVAMAIL_AUTH_LOGIN_DISABLE_KEY}
+                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_AUTH_LOGIN_DISABLE_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpAuthLoginDisableError"
-                            errorValue={this.props.fieldErrors.mailSmtpAuthLoginDisable}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_LOGIN_DISABLE_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_LOGIN_DISABLE_KEY)]}
                         />
 
                         <CheckboxInput
-                            id="emailSmtpAuthPlainDisable"
+                            id={JAVAMAIL_AUTH_LOGIN_PLAIN_DISABLE_KEY}
                             label="SMTP Auth Plain Disable"
-                            name="mailSmtpAuthPlainDisable"
-                            isChecked={this.state.mailSmtpAuthPlainDisable}
+                            name={JAVAMAIL_AUTH_LOGIN_PLAIN_DISABLE_KEY}
+                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_AUTH_LOGIN_PLAIN_DISABLE_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpAuthPlainDisableError"
-                            errorValue={this.props.fieldErrors.mailSmtpAuthPlainDisable}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_LOGIN_PLAIN_DISABLE_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_LOGIN_PLAIN_DISABLE_KEY)]}
                         />
 
                         <CheckboxInput
-                            id="emailSmtpAuthDigestDisable"
+                            id={JAVAMAIL_AUTH_DIGEST_MD5_DISABLE_KEY}
                             label="SMTP Auth Digest MD5 Disable"
-                            name="mailSmtpAuthDigestMd5Disable"
-                            isChecked={this.state.mailSmtpAuthDigestMd5Disable}
+                            name={JAVAMAIL_AUTH_DIGEST_MD5_DISABLE_KEY}
+                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_AUTH_DIGEST_MD5_DISABLE_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpAuthDigestMd5DisableError"
-                            errorValue={this.props.fieldErrors.mailSmtpAuthDigestMd5Disable}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_DIGEST_MD5_DISABLE_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_DIGEST_MD5_DISABLE_KEY)]}
                         />
 
                         <CheckboxInput
-                            id="emailSmtpAuthNtlmDisable"
+                            id={JAVAMAIL_AUTH_NTLM_DISABLE_KEY}
                             label="SMTP Auth NTLM Disable"
-                            name="mailSmtpAuthNtlmDisable"
-                            isChecked={this.state.mailSmtpAuthNtlmDisable}
+                            name={JAVAMAIL_AUTH_NTLM_DISABLE_KEY}
+                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_AUTH_NTLM_DISABLE_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpAuthNtlmDisableError"
-                            errorValue={this.props.fieldErrors.mailSmtpAuthNtlmDisable}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_NTLM_DISABLE_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_NTLM_DISABLE_KEY)]}
                         />
 
                         <TextInput
-                            id="emailSmtpAuthNtlmDomain"
+                            id={JAVAMAIL_AUTH_NTLM_DOMAIN_KEY}
                             label="SMTP Auth NTLM Domain"
-                            name="mailSmtpAuthNtlmDomain"
-                            value={this.state.mailSmtpAuthNtlmDomain}
+                            name={JAVAMAIL_AUTH_NTLM_DOMAIN_KEY}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_AUTH_NTLM_DOMAIN_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpAuthNtlmDomainError"
-                            errorValue={this.props.fieldErrors.mailSmtpAuthNtlmDomain}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_NTLM_DOMAIN_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_NTLM_DOMAIN_KEY)]}
                         />
 
                         <NumberInput
-                            id="emailSmtpAuthNtlmFlags"
+                            id={JAVAMAIL_AUTH_NTLM_FLAGS_KEY}
                             label="SMTP Auth NTLM Flags"
-                            name="mailSmtpAuthNtlmFlags"
-                            value={this.state.mailSmtpAuthNtlmFlags}
+                            name={JAVAMAIL_AUTH_NTLM_FLAGS_KEY}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_AUTH_NTLM_FLAGS_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpAuthNtlmFlagsError"
-                            errorValue={this.props.fieldErrors.mailSmtpAuthNtlmFlags}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_NTLM_FLAGS_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_NTLM_FLAGS_KEY)]}
                         />
 
                         <CheckboxInput
-                            id="emailSmtpAuthXoauth2Disable"
+                            id={JAVAMAIL_AUTH_XOAUTH2_DISABLE_KEY}
                             label="SMTP Auth XOAuth2 Disable"
-                            name="mailSmtpAuthXoauth2Disable"
-                            isChecked={this.state.mailSmtpAuthXoauth2Disable}
+                            name={JAVAMAIL_AUTH_XOAUTH2_DISABLE_KEY}
+                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_AUTH_XOAUTH2_DISABLE_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpAuthXoauth2DisableError"
-                            errorValue={this.props.fieldErrors.mailSmtpAuthXoauth2Disable}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_XOAUTH2_DISABLE_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_XOAUTH2_DISABLE_KEY)]}
                         />
 
                         <TextInput
-                            id="emailSmtpSubmitter"
+                            id={JAVAMAIL_SUBMITTER_KEY}
                             label="SMTP Submitter"
-                            name="mailSmtpSubmitter"
-                            value={this.state.mailSmtpSubmitter}
+                            name={JAVAMAIL_SUBMITTER_KEY}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SUBMITTER_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpSubmitterError"
-                            errorValue={this.props.fieldErrors.mailSmtpSubmitter}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SUBMITTER_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SUBMITTER_KEY)]}
                         />
 
                         <TextInput
-                            id="emailSmtpDnsNotify"
+                            id={JAVAMAIL_DSN_NOTIFY_KEY}
                             label="SMTP DNS Notify"
-                            name="mailSmtpDnsNotify"
-                            value={this.state.mailSmtpDnsNotify}
+                            name={JAVAMAIL_DSN_NOTIFY_KEY}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_DSN_NOTIFY_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpDnsNotifyError"
-                            errorValue={this.props.fieldErrors.mailSmtpDnsNotify}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_DSN_NOTIFY_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_DSN_NOTIFY_KEY)]}
                         />
 
                         <TextInput
-                            id="emailSmtpDnsRet"
+                            id={JAVAMAIL_DSN_RET_KEY}
                             label="SMTP DNS Ret"
-                            name="mailSmtpDnsRet"
-                            value={this.state.mailSmtpDnsRet}
+                            name={JAVAMAIL_DSN_RET_KEY}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_DSN_RET_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpDnsRetError"
-                            errorValue={this.props.fieldErrors.mailSmtpDnsRet}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_DSN_RET_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_DSN_RET_KEY)]}
                         />
 
                         <CheckboxInput
-                            id="emailSmtpAllowMime"
+                            id={JAVAMAIL_ALLOW_8_BITMIME_KEY}
                             label="SMTP Allow 8-bit Mime"
-                            name="mailSmtpAllow8bitmime"
-                            isChecked={this.state.mailSmtpAllow8bitmime}
+                            name={JAVAMAIL_ALLOW_8_BITMIME_KEY}
+                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_ALLOW_8_BITMIME_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpAllow8bitmimeError"
-                            errorValue={this.props.fieldErrors.mailSmtpAllow8bitmime}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_ALLOW_8_BITMIME_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_ALLOW_8_BITMIME_KEY)]}
                         />
 
                         <CheckboxInput
-                            id="emailSmtpSendPartial"
+                            id={JAVAMAIL_SEND_PARTIAL_KEY}
                             label="SMTP Send Partial"
-                            name="mailSmtpSendPartial"
-                            isChecked={this.state.mailSmtpSendPartial}
+                            name={JAVAMAIL_SEND_PARTIAL_KEY}
+                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_SEND_PARTIAL_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpSendPartialError"
-                            errorValue={this.props.fieldErrors.mailSmtpSendPartial}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SEND_PARTIAL_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SEND_PARTIAL_KEY)]}
                         />
 
                         <CheckboxInput
-                            id="emailSmtpSaslEnable"
+                            id={JAVAMAIL_SASL_ENABLE_KEY}
                             label="SMTP SASL Enable"
-                            name="mailSmtpSaslEnable"
-                            isChecked={this.state.mailSmtpSaslEnable}
+                            name={JAVAMAIL_SASL_ENABLE_KEY}
+                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_SASL_ENABLE_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpSaslEnableError"
-                            errorValue={this.props.fieldErrors.mailSmtpSaslEnable}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SASL_ENABLE_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SASL_ENABLE_KEY)]}
                         />
 
                         <TextInput
-                            id="emailSmtpSaslMechanisms"
+                            id={JAVAMAIL_SASL_MECHANISMS_KEY}
                             label="SMTP SASL Mechanisms"
-                            name="mailSmtpSaslMechanisms"
-                            value={this.state.mailSmtpSaslMechanisms}
+                            name={JAVAMAIL_SASL_MECHANISMS_KEY}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SASL_MECHANISMS_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpSaslMechanismsError"
-                            errorValue={this.props.fieldErrors.mailSmtpSaslMechanisms}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SASL_MECHANISMS_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SASL_MECHANISMS_KEY)]}
                         />
 
                         <TextInput
-                            id="emailSmtpSaslAuthorizationId"
+                            id={JAVAMAIL_SASL_AUTHORIZATION_ID_KEY}
                             label="SMTP SASL Authorization ID"
-                            name="mailSmtpSaslAuthorizationId"
-                            value={this.state.mailSmtpSaslAuthorizationId}
+                            name={JAVAMAIL_SASL_AUTHORIZATION_ID_KEY}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SASL_AUTHORIZATION_ID_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpSaslAuthorizationIdError"
-                            errorValue={this.props.fieldErrors.mailSmtpSaslAuthorizationId}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SASL_AUTHORIZATION_ID_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SASL_AUTHORIZATION_ID_KEY)]}
                         />
 
                         <TextInput
-                            id="emailSmtpSaslRealm"
+                            id={JAVAMAIL_SASL_REALM_KEY}
                             label="SMTP SASL Realm"
-                            name="mailSmtpSaslRealm"
-                            value={this.state.mailSmtpSaslRealm}
+                            name={JAVAMAIL_SASL_REALM_KEY}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SASL_REALM_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpSaslRealmError"
-                            errorValue={this.props.fieldErrors.mailSmtpSaslRealm}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SASL_REALM_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SASL_REALM_KEY)]}
                         />
 
                         <CheckboxInput
-                            id="emailSmtpSaslUseCanonicalHostname"
+                            id={JAVAMAIL_SASL_USE_CANONICAL_HOSTNAME_KEY}
                             label="SMTP SASL Use Canonical Hostname"
-                            name="mailSmtpSaslUseCanonicalHostname"
-                            isChecked={this.state.mailSmtpSaslUseCanonicalHostname}
+                            name={JAVAMAIL_SASL_USE_CANONICAL_HOSTNAME_KEY}
+                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_SASL_USE_CANONICAL_HOSTNAME_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpSaslUseCanonicalHostnameError"
-                            errorValue={this.props.fieldErrors.mailSmtpSaslUseCanonicalHostname}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SASL_USE_CANONICAL_HOSTNAME_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SASL_USE_CANONICAL_HOSTNAME_KEY)]}
                         />
 
                         <CheckboxInput
-                            id="emailSmtpQuitwait"
+                            id={JAVAMAIL_QUITWAIT_KEY}
                             label="SMTP QuitWait"
-                            name="mailSmtpQuitwait"
-                            isChecked={this.state.mailSmtpQuitwait}
+                            name={JAVAMAIL_QUITWAIT_KEY}
+                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_QUITWAIT_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpQuitwaitError"
-                            errorValue={this.props.fieldErrors.mailSmtpQuitwait}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_QUITWAIT_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_QUITWAIT_KEY)]}
                         />
 
                         <CheckboxInput
-                            id="emailSmtpReportSuccess"
+                            id={JAVAMAIL_REPORT_SUCCESS_KEY}
                             label="SMTP Report Success"
-                            name="mailSmtpReportSuccess"
-                            isChecked={this.state.mailSmtpReportSuccess}
+                            name={JAVAMAIL_REPORT_SUCCESS_KEY}
+                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_REPORT_SUCCESS_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpReportSuccessError"
-                            errorValue={this.props.fieldErrors.mailSmtpReportSuccess}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_REPORT_SUCCESS_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_REPORT_SUCCESS_KEY)]}
                         />
 
                         <CheckboxInput
-                            id="emailSmtpSslEnable"
+                            id={JAVAMAIL_SSL_ENABLE_KEY}
                             label="SMTP SSL Enable"
-                            name="mailSmtpSslEnable"
-                            isChecked={this.state.mailSmtpSslEnable}
+                            name={JAVAMAIL_SSL_ENABLE_KEY}
+                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_SSL_ENABLE_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpSslEnableError"
-                            errorValue={this.props.fieldErrors.mailSmtpSslEnable}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SSL_ENABLE_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SSL_ENABLE_KEY)]}
                         />
 
                         <CheckboxInput
-                            id="emailSmtpSslCheckServerIdentity"
+                            id={JAVAMAIL_SSL_CHECKSERVERIDENTITY_KEY}
                             label="SMTP SSL Check Server Identity"
-                            name="mailSmtpSslCheckServerIdentity"
-                            isChecked={this.state.mailSmtpSslCheckServerIdentity}
+                            name={JAVAMAIL_SSL_CHECKSERVERIDENTITY_KEY}
+                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_SSL_CHECKSERVERIDENTITY_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpSslCheckServerIdentityError"
-                            errorValue={this.props.fieldErrors.mailSmtpSslCheckServerIdentity}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SSL_CHECKSERVERIDENTITY_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SSL_CHECKSERVERIDENTITY_KEY)]}
                         />
 
                         <TextInput
-                            id="emailSmtpSslTrust"
+                            id={JAVAMAIL_SSL_TRUST_KEY}
                             label="SMTP SSL Trust"
-                            name="mailSmtpSslTrust"
-                            value={this.state.mailSmtpSslTrust}
+                            name={JAVAMAIL_SSL_TRUST_KEY}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SSL_TRUST_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpSslTrustError"
-                            errorValue={this.props.fieldErrors.mailSmtpSslTrust}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SSL_TRUST_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SSL_TRUST_KEY)]}
                         />
 
                         <TextInput
-                            id="emailSmtpSslProtocols"
+                            id={JAVAMAIL_SSL_PROTOCOLS_KEY}
                             label="SMTP SSL Protocols"
-                            name="mailSmtpSslProtocols"
-                            value={this.state.mailSmtpSslProtocols}
+                            name={JAVAMAIL_SSL_PROTOCOLS_KEY}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SSL_PROTOCOLS_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpSslProtocolsError"
-                            errorValue={this.props.fieldErrors.mailSmtpSslProtocols}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SSL_PROTOCOLS_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SSL_PROTOCOLS_KEY)]}
                         />
 
                         <TextInput
-                            id="emailSmtpSslCipherSuites"
+                            id={JAVAMAIL_SSL_CIPHERSUITES_KEY}
                             label="SMTP SSL Cipher Suites"
-                            name="mailSmtpSslCipherSuites"
-                            value={this.state.mailSmtpSslCipherSuites}
+                            name={JAVAMAIL_SSL_CIPHERSUITES_KEY}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SSL_CIPHERSUITES_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpSslCipherSuitesError"
-                            errorValue={this.props.fieldErrors.mailSmtpSslCipherSuites}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SSL_CIPHERSUITES_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SSL_CIPHERSUITES_KEY)]}
                         />
 
                         <CheckboxInput
-                            id="emailSmtpStartTlsEnabled"
+                            id={JAVAMAIL_STARTTLS_ENABLE_KEY}
                             label="SMTP Start TLS Enabled"
-                            name="mailSmtpStartTlsEnable"
-                            isChecked={this.state.mailSmtpStartTlsEnable}
+                            name={JAVAMAIL_STARTTLS_ENABLE_KEY}
+                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_STARTTLS_ENABLE_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpStartTlsEnableError"
-                            errorValue={this.props.fieldErrors.mailSmtpStartTlsEnable}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_STARTTLS_ENABLE_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_STARTTLS_ENABLE_KEY)]}
                         />
 
                         <CheckboxInput
-                            id="emailSmtpStartTlsRequired"
+                            id={JAVAMAIL_STARTTLS_REQUIRED_KEY}
                             label="SMTP Start TLS Required"
-                            name="mailSmtpStartTlsRequired"
-                            isChecked={this.state.mailSmtpStartTlsRequired}
+                            name={JAVAMAIL_STARTTLS_REQUIRED_KEY}
+                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_STARTTLS_REQUIRED_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpStartTlsRequiredError"
-                            errorValue={this.props.fieldErrors.mailSmtpStartTlsRequired}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_STARTTLS_REQUIRED_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_STARTTLS_REQUIRED_KEY)]}
                         />
 
                         <TextInput
-                            id="emailSmtpProxyHost"
+                            id={JAVAMAIL_PROXY_HOST_KEY}
                             label="SMTP Proxy Host"
-                            name="mailSmtpProxyHost"
-                            value={this.state.mailSmtpProxyHost}
+                            name={JAVAMAIL_PROXY_HOST_KEY}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_PROXY_HOST_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpProxyHostError"
-                            errorValue={this.props.fieldErrors.mailSmtpProxyHost}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_PROXY_HOST_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_PROXY_HOST_KEY)]}
                         />
 
                         <NumberInput
-                            id="emailSmtpProxyPort"
+                            id={JAVAMAIL_PROXY_PORT_KEY}
                             label="SMTP Proxy Port"
-                            name="mailSmtpProxyPort"
-                            value={this.state.mailSmtpProxyPort}
+                            name={JAVAMAIL_PROXY_PORT_KEY}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_PROXY_PORT_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpProxyPortError"
-                            errorValue={this.props.fieldErrors.mailSmtpProxyPort}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_PROXY_PORT_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_PROXY_PORT_KEY)]}
                         />
 
                         <TextInput
-                            id="emailSmtpSocksHost"
+                            id={JAVAMAIL_SOCKS_HOST_KEY}
                             label="SMTP Socks Host"
-                            name="mailSmtpSocksHost"
-                            value={this.state.mailSmtpSocksHost}
+                            name={JAVAMAIL_SOCKS_HOST_KEY}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SOCKS_HOST_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpSocksHostError"
-                            errorValue={this.props.fieldErrors.mailSmtpSocksHost}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SOCKS_HOST_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SOCKS_HOST_KEY)]}
                         />
 
                         <NumberInput
-                            id="emailSmtpSocksPort"
+                            id={JAVAMAIL_SOCKS_PORT_KEY}
                             label="SMTP Socks Port"
-                            name="mailSmtpSocksPort"
-                            value={this.state.mailSmtpSocksPort}
+                            name={JAVAMAIL_SOCKS_PORT_KEY}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SOCKS_PORT_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpSocksPortError"
-                            errorValue={this.props.fieldErrors.mailSmtpSocksPort}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SOCKS_PORT_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SOCKS_PORT_KEY)]}
                         />
 
                         <TextInput
-                            id="emailSmtpMailExtension"
+                            id={JAVAMAIL_MAILEXTENSION_KEY}
                             label="SMTP Mail Extension"
-                            name="mailSmtpMailExtension"
-                            value={this.state.mailSmtpMailExtension}
+                            name={JAVAMAIL_MAILEXTENSION_KEY}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_MAILEXTENSION_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpMailExtensionError"
-                            errorValue={this.props.fieldErrors.mailSmtpMailExtension}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_MAILEXTENSION_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_MAILEXTENSION_KEY)]}
                         />
 
                         <CheckboxInput
-                            id="emailSmtpUserSet"
+                            id={JAVAMAIL_USERSET_KEY}
                             label="SMTP User Set"
-                            name="mailSmtpUserSet"
-                            isChecked={this.state.mailSmtpUserSet}
+                            name={JAVAMAIL_USERSET_KEY}
+                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_USERSET_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpUserSetError"
-                            errorValue={this.props.fieldErrors.mailSmtpUserSet}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_USERSET_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_USERSET_KEY)]}
                         />
 
                         <CheckboxInput
-                            id="emailSmtpNoopStrict"
+                            id={JAVAMAIL_NOOP_STRICT_KEY}
                             label="SMTP NoOp Strict"
-                            name="mailSmtpNoopStrict"
-                            isChecked={this.state.mailSmtpNoopStrict}
+                            name={JAVAMAIL_NOOP_STRICT_KEY}
+                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_NOOP_STRICT_KEY)}
                             onChange={this.handleChange}
-                            errorName="mailSmtpNoopStrictError"
-                            errorValue={this.props.fieldErrors.mailSmtpNoopStrict}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_NOOP_STRICT_KEY)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_NOOP_STRICT_KEY)]}
                         />
                     </CollapsiblePane>
                     <ConfigButtons
@@ -601,7 +659,7 @@ class EmailConfiguration extends React.Component {
                             showTestModal={this.props.showTestModal}
                             cancelTestModal={this.props.closeEmailConfigTest}
                             sendTestMessage={(destination) => {
-                                this.props.sendEmailConfigTest({ ...this.state }, destination);
+                                this.props.sendEmailConfigTest(this.state.currentEmailConfig, destination);
                             }}
                         />
                     </div>
@@ -616,178 +674,33 @@ EmailConfiguration.propTypes = {
     openEmailConfigTest: PropTypes.func.isRequired,
     closeEmailConfigTest: PropTypes.func.isRequired,
     sendEmailConfigTest: PropTypes.func.isRequired,
-    id: PropTypes.string,
-    mailSmtpHost: PropTypes.string,
-    mailSmtpUser: PropTypes.string,
-    mailSmtpPassword: PropTypes.string,
-    mailSmtpPasswordIsSet: PropTypes.bool.isRequired,
-    mailSmtpPort: PropTypes.string,
-    mailSmtpConnectionTimeout: PropTypes.string,
-    mailSmtpTimeout: PropTypes.string,
-    mailSmtpWriteTimeout: PropTypes.string,
-    mailSmtpFrom: PropTypes.string,
-    mailSmtpLocalhost: PropTypes.string,
-    mailSmtpLocalAddress: PropTypes.string,
-    mailSmtpLocalPort: PropTypes.string,
-    mailSmtpEhlo: PropTypes.bool,
-    mailSmtpAuth: PropTypes.bool,
-    mailSmtpAuthMechanisms: PropTypes.string,
-    mailSmtpAuthLoginDisable: PropTypes.bool,
-    mailSmtpAuthPlainDisable: PropTypes.bool,
-    mailSmtpAuthDigestMd5Disable: PropTypes.bool,
-    mailSmtpAuthNtlmDisable: PropTypes.bool,
-    mailSmtpAuthNtlmDomain: PropTypes.string,
-    mailSmtpAuthNtlmFlags: PropTypes.string,
-    mailSmtpAuthXoauth2Disable: PropTypes.bool,
-    mailSmtpSubmitter: PropTypes.string,
-    mailSmtpDnsNotify: PropTypes.bool,
-    mailSmtpDnsRet: PropTypes.bool,
-    mailSmtpAllow8bitmime: PropTypes.bool,
-    mailSmtpSendPartial: PropTypes.bool,
-    mailSmtpSaslEnable: PropTypes.bool,
-    mailSmtpSaslMechanisms: PropTypes.string,
-    mailSmtpSaslAuthorizationId: PropTypes.string,
-    mailSmtpSaslRealm: PropTypes.string,
-    mailSmtpSaslUseCanonicalHostname: PropTypes.bool,
-    mailSmtpQuitwait: PropTypes.bool,
-    mailSmtpReportSuccess: PropTypes.bool,
-    mailSmtpSslEnable: PropTypes.bool,
-    mailSmtpSslCheckServerIdentity: PropTypes.bool,
-    mailSmtpSslTrust: PropTypes.string,
-    mailSmtpSslProtocols: PropTypes.string,
-    mailSmtpSslCipherSuites: PropTypes.string,
-    mailSmtpStartTlsEnable: PropTypes.bool,
-    mailSmtpStartTlsRequired: PropTypes.bool,
-    mailSmtpProxyHost: PropTypes.string,
-    mailSmtpProxyPort: PropTypes.string,
-    mailSmtpSocksHost: PropTypes.string,
-    mailSmtpSocksPort: PropTypes.string,
-    mailSmtpMailExtension: PropTypes.string,
-    mailSmtpUserSet: PropTypes.bool,
-    mailSmtpNoopStrict: PropTypes.bool,
+    currentEmailConfig: PropTypes.object,
     showTestModal: PropTypes.bool.isRequired,
-    toggleAdvancedEmailOptions: PropTypes.func.isRequired,
     getEmailConfig: PropTypes.func.isRequired,
     errorMessage: PropTypes.string,
     updateStatus: PropTypes.string,
     actionMessage: PropTypes.string,
-    fieldErrors: PropTypes.arrayOf(PropTypes.any)
+    fieldErrors: PropTypes.object
 };
 
 EmailConfiguration.defaultProps = {
-    id: 'globalEmailConfiguration',
-    mailSmtpAuth: false,
-    mailSmtpEhlo: false,
-    mailSmtpAllow8bitmime: false,
-    mailSmtpSendPartial: false,
-    mailSmtpHost: '',
-    mailSmtpUser: '',
-    mailSmtpPassword: '',
-    mailSmtpPort: '',
-    mailSmtpConnectionTimeout: '',
-    mailSmtpTimeout: '',
-    mailSmtpWriteTimeout: '',
-    mailSmtpFrom: '',
-    mailSmtpLocalhost: '',
-    mailSmtpLocalAddress: '',
-    mailSmtpLocalPort: '',
-    mailSmtpAuthMechanisms: '',
-    mailSmtpAuthLoginDisable: false,
-    mailSmtpAuthPlainDisable: false,
-    mailSmtpAuthDigestMd5Disable: false,
-    mailSmtpAuthNtlmDisable: false,
-    mailSmtpAuthNtlmDomain: '',
-    mailSmtpAuthNtlmFlags: '',
-    mailSmtpAuthXoauth2Disable: false,
-    mailSmtpSubmitter: '',
-    mailSmtpDnsNotify: false,
-    mailSmtpDnsRet: false,
-    mailSmtpSaslEnable: false,
-    mailSmtpSaslMechanisms: '',
-    mailSmtpSaslAuthorizationId: '',
-    mailSmtpSaslRealm: '',
-    mailSmtpSaslUseCanonicalHostname: false,
-    mailSmtpQuitwait: false,
-    mailSmtpReportSuccess: false,
-    mailSmtpSslEnable: false,
-    mailSmtpSslCheckServerIdentity: false,
-    mailSmtpSslTrust: '',
-    mailSmtpSslProtocols: '',
-    mailSmtpSslCipherSuites: '',
-    mailSmtpStartTlsEnable: false,
-    mailSmtpStartTlsRequired: false,
-    mailSmtpProxyHost: '',
-    mailSmtpProxyPort: '',
-    mailSmtpSocksHost: '',
-    mailSmtpSocksPort: '',
-    mailSmtpMailExtension: '',
-    mailSmtpUserSet: false,
-    mailSmtpNoopStrict: false,
+    currentEmailConfig: {},
     errorMessage: '',
     updateStatus: '',
     actionMessage: '',
-    fieldErrors: []
+    fieldErrors: {}
 };
 
 const mapStateToProps = state => ({
-    mailSmtpHost: state.emailConfig.mailSmtpHost,
-    mailSmtpUser: state.emailConfig.mailSmtpUser,
-    mailSmtpPassword: state.emailConfig.mailSmtpPassword,
-    mailSmtpPasswordIsSet: state.emailConfig.mailSmtpPasswordIsSet,
-    mailSmtpPort: state.emailConfig.mailSmtpPort,
-    mailSmtpConnectionTimeout: state.emailConfig.mailSmtpConnectionTimeout,
-    mailSmtpTimeout: state.emailConfig.mailSmtpTimeout,
-    mailSmtpWriteTimeout: state.emailConfig.mailSmtpWriteTimeout,
-    mailSmtpFrom: state.emailConfig.mailSmtpFrom,
-    mailSmtpLocalhost: state.emailConfig.mailSmtpLocalhost,
-    mailSmtpLocalAddress: state.emailConfig.mailSmtpLocalAddress,
-    mailSmtpLocalPort: state.emailConfig.mailSmtpLocalPort,
-    mailSmtpEhlo: state.emailConfig.mailSmtpEhlo,
-    mailSmtpAuth: state.emailConfig.mailSmtpAuth,
-    mailSmtpAuthMechanisms: state.emailConfig.mailSmtpAuthMechanisms,
-    mailSmtpAuthLoginDisable: state.emailConfig.mailSmtpAuthLoginDisable,
-    mailSmtpAuthPlainDisable: state.emailConfig.mailSmtpAuthPlainDisable,
-    mailSmtpAuthDigestMd5Disable: state.emailConfig.mailSmtpAuthDigestMd5Disable,
-    mailSmtpAuthNtlmDisable: state.emailConfig.mailSmtpAuthNtlmDisable,
-    mailSmtpAuthNtlmDomain: state.emailConfig.mailSmtpAuthNtlmDomain,
-    mailSmtpAuthNtlmFlags: state.emailConfig.mailSmtpAuthNtlmFlags,
-    mailSmtpAuthXoauth2Disable: state.emailConfig.mailSmtpAuthXoauth2Disable,
-    mailSmtpSubmitter: state.emailConfig.mailSmtpSubmitter,
-    mailSmtpDnsNotify: state.emailConfig.mailSmtpDnsNotify,
-    mailSmtpDnsRet: state.emailConfig.mailSmtpDnsRet,
-    mailSmtpAllow8bitmime: state.emailConfig.mailSmtpAllow8bitmime,
-    mailSmtpSendPartial: state.emailConfig.mailSmtpSendPartial,
-    mailSmtpSaslEnable: state.emailConfig.mailSmtpSaslEnable,
-    mailSmtpSaslMechanisms: state.emailConfig.mailSmtpSaslMechanisms,
-    mailSmtpSaslAuthorizationId: state.emailConfig.mailSmtpSaslAuthorizationId,
-    mailSmtpSaslRealm: state.emailConfig.mailSmtpSaslRealm,
-    mailSmtpSaslUseCanonicalHostname: state.emailConfig.mailSmtpSaslUseCanonicalHostname,
-    mailSmtpQuitwait: state.emailConfig.mailSmtpQuitwait,
-    mailSmtpReportSuccess: state.emailConfig.mailSmtpReportSuccess,
-    mailSmtpSslEnable: state.emailConfig.mailSmtpSslEnable,
-    mailSmtpSslCheckServerIdentity: state.emailConfig.mailSmtpSslCheckServerIdentity,
-    mailSmtpSslTrust: state.emailConfig.mailSmtpSslTrust,
-    mailSmtpSslProtocols: state.emailConfig.mailSmtpSslProtocols,
-    mailSmtpSslCipherSuites: state.emailConfig.mailSmtpSslCipherSuites,
-    mailSmtpStartTlsEnable: state.emailConfig.mailSmtpStartTlsEnable,
-    mailSmtpStartTlsRequired: state.emailConfig.mailSmtpStartTlsRequired,
-    mailSmtpProxyHost: state.emailConfig.mailSmtpProxyHost,
-    mailSmtpProxyPort: state.emailConfig.mailSmtpProxyPort,
-    mailSmtpSocksHost: state.emailConfig.mailSmtpSocksHost,
-    mailSmtpSocksPort: state.emailConfig.mailSmtpSocksPort,
-    mailSmtpMailExtension: state.emailConfig.mailSmtpMailExtension,
-    mailSmtpUserSet: state.emailConfig.mailSmtpUserSet,
-    mailSmtpNoopStrict: state.emailConfig.mailSmtpNoopStrict,
-    showTestModal: state.emailConfig.showTestModal,
-    id: state.emailConfig.id,
+    currentEmailConfig: state.emailConfig.config,
     errorMessage: state.emailConfig.error.message,
     fieldErrors: state.emailConfig.error.fieldErrors,
     updateStatus: state.emailConfig.updateStatus,
-    actionMessage: state.emailConfig.actionMessage
+    actionMessage: state.emailConfig.actionMessage,
+    showTestModal: state.emailConfig.showTestModal
 });
 
 const mapDispatchToProps = dispatch => ({
-    toggleAdvancedEmailOptions: toggle => dispatch(toggleAdvancedEmailOptions(toggle)),
     getEmailConfig: () => dispatch(getEmailConfig()),
     updateEmailConfig: config => dispatch(updateEmailConfig(config)),
     sendEmailConfigTest: (config, destination) => dispatch(sendEmailConfigTest(config, destination)),

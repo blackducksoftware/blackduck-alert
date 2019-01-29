@@ -9,7 +9,7 @@ import MainPage from 'MainPage';
 import LoginPage from 'LoginPage';
 import AboutInfoFooter from 'component/AboutInfoFooter';
 import SetupPage from 'SetupPage';
-import { getConfig } from 'store/actions/config';
+import { getConfig } from 'store/actions/blackduck';
 import { verifyLogin } from 'store/actions/session';
 import { getInitialSystemSetup } from './store/actions/system';
 
