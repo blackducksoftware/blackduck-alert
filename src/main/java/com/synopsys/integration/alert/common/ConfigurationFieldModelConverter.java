@@ -121,9 +121,7 @@ public class ConfigurationFieldModelConverter {
                 } else {
                     convertFromDefinedFieldModel(definedField, values).ifPresent(configurationModels::add);
                 }
-            }, () -> {
-                convertFromDefinedFieldModel(definedField, List.of()).ifPresent(configurationModels::add);
-            });
+            }, () -> convertFromDefinedFieldModel(definedField, List.of()).ifPresent(configurationModels::add));
         }
 
         return configurationModels.stream().collect(Collectors.toMap(ConfigurationFieldModel::getFieldKey, Function.identity()));
@@ -144,8 +142,7 @@ public class ConfigurationFieldModelConverter {
         if (null == values || values.isEmpty()) {
             return true;
         }
-        final Optional<String> first = values.stream().filter(StringUtils::isNotBlank).findFirst();
-        return first.isEmpty();
+        return values.stream().allMatch(StringUtils::isBlank);
     }
 
 }
