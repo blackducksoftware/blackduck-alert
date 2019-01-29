@@ -29,8 +29,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -56,7 +54,6 @@ public class AlertStartupInitializer {
     private final Logger logger = LoggerFactory.getLogger(AlertStartupInitializer.class);
     private final Environment environment;
     private final DescriptorMap descriptorMap;
-    private final SortedSet<String> alertStartupFields;
     private final BaseDescriptorAccessor descriptorAccessor;
     private final BaseConfigurationAccessor fieldConfigurationAccessor;
     private final ConfigurationFieldModelConverter modelConverter;
@@ -69,7 +66,6 @@ public class AlertStartupInitializer {
         this.descriptorAccessor = descriptorAccessor;
         this.fieldConfigurationAccessor = fieldConfigurationAccessor;
         this.modelConverter = modelConverter;
-        alertStartupFields = new TreeSet<>();
     }
 
     public void initializeConfigs() throws IllegalArgumentException, SecurityException {
@@ -133,7 +129,12 @@ public class AlertStartupInitializer {
         for (final DefinedFieldModel fieldModel : fieldsForDescriptor) {
             final String key = fieldModel.getKey();
             final String convertedKey = convertKeyToPropery(descriptorName, key);
-            getEnvironmentValue(convertedKey).flatMap(value -> modelConverter.convertFromDefinedFieldModel(fieldModel, value)).ifPresent(configurationModels::add);
+            boolean hasEnvironmentValue = hasEnvironmentValue(convertedKey);
+            logger.info("  {}", convertedKey);
+            logger.debug("       Environment Variable Found - {}", hasEnvironmentValue);
+            getEnvironmentValue(convertedKey)
+                .flatMap(value -> modelConverter.convertFromDefinedFieldModel(fieldModel, value))
+                .ifPresent(configurationModels::add);
         }
         return configurationModels;
     }
@@ -144,16 +145,15 @@ public class AlertStartupInitializer {
             if (!foundConfigurationModels.isEmpty()) {
                 if (overwriteCurrentConfig) {
                     final ConfigurationModel configurationModel = foundConfigurationModels.get(0);
+                    logger.info("  Overwriting configuration values with environment for descriptor.");
                     fieldConfigurationAccessor.updateConfiguration(configurationModel.getConfigurationId(), configurationModels);
                 }
             } else {
+                logger.info("  Writing initial configuration values from environment for descriptor.");
                 fieldConfigurationAccessor.createConfiguration(descriptorName, ConfigContextEnum.GLOBAL, configurationModels);
+
             }
         }
-    }
-
-    public SortedSet<String> getAlertPropertyNameSet() {
-        return alertStartupFields;
     }
 
     private String convertKeyToPropery(final String descriptorName, final String key) {
@@ -161,16 +161,17 @@ public class AlertStartupInitializer {
         return String.join("_", "alert", descriptorName, keyUnderscores).toUpperCase();
     }
 
+    private boolean hasEnvironmentValue(final String propertyKey) {
+        String value = System.getProperty(propertyKey);
+        return StringUtils.isNotBlank(value) || environment.containsProperty(propertyKey);
+    }
+
     private Optional<String> getEnvironmentValue(final String propertyKey) {
-        String found = "No";
         String value = System.getProperty(propertyKey);
         if (StringUtils.isBlank(value)) {
             value = environment.getProperty(propertyKey);
-            if (environment.containsProperty(propertyKey)) {
-                found = "Yes";
-            }
         }
-        logger.info("  {}: {}", propertyKey, found);
+
         return Optional.ofNullable(value);
     }
 }
