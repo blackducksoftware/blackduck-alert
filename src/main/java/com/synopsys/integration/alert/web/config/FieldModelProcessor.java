@@ -93,7 +93,8 @@ public class FieldModelProcessor {
         return fieldModelConverter.convertFromFieldModel(modelToSave);
     }
 
-    public void validateFieldModel(FieldModel fieldModel, Map<String, String> fieldErrors) {
+    public Map<String, String> validateFieldModel(FieldModel fieldModel) {
+        Map<String, String> fieldErrors = new HashMap<>();
         final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
         if (descriptorActionApi.isPresent()) {
             final Map<String, ConfigField> configFields = retrieveUIConfigFields(fieldModel.getContext(), fieldModel.getDescriptorName())
@@ -101,6 +102,7 @@ public class FieldModelProcessor {
                                                               .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
             descriptorActionApi.get().validateConfig(configFields, fieldModel, fieldErrors);
         }
+        return fieldErrors;
     }
 
     public String testFieldModel(FieldModel fieldModel, String destination) throws IntegrationException {
@@ -126,7 +128,7 @@ public class FieldModelProcessor {
             return updateConfigurationWithSavedConfiguration(fieldModels, configurationModel.get().getCopyOfFieldList());
         }
 
-        return List.of();
+        return fieldModelConverter.convertFromFieldModel(modelToSave).values();
     }
 
     public Optional<Descriptor> retrieveDescriptor(final String descriptorName) {

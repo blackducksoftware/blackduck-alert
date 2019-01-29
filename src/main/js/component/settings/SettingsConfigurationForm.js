@@ -7,38 +7,41 @@ import Select from 'react-select';
 import CollapsiblePane from 'component/common/CollapsiblePane';
 import ConfigButtons from 'component/common/ConfigButtons';
 import * as FieldModelUtil from 'util/fieldModelUtilities';
+import * as DescriptorUtil from 'util/descriptorUtilities';
 
 
-const KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD = 'user.default.admin.password';
-const KEY_ENCRYPTION_PASSWORD = 'encryption.password';
-const KEY_ENCRYPTION_GLOBAL_SALT = 'encryption.global.salt';
+const KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD = 'settings.user.default.admin.password';
+const KEY_ENCRYPTION_PASSWORD = 'settings.encryption.password';
+const KEY_ENCRYPTION_GLOBAL_SALT = 'settings.encryption.global.salt';
+const KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE = 'settings.startup.environment.variable.override';
 
 // Proxy Keys
-const KEY_PROXY_HOST = 'proxy.host';
-const KEY_PROXY_PORT = 'proxy.port';
-const KEY_PROXY_USERNAME = 'proxy.username';
-const KEY_PROXY_PASSWORD = 'proxy.password';
+const KEY_PROXY_HOST = 'settings.proxy.host';
+const KEY_PROXY_PORT = 'settings.proxy.port';
+const KEY_PROXY_USERNAME = 'settings.proxy.username';
+const KEY_PROXY_PASSWORD = 'settings.proxy.password';
 
 // LDAP Keys
-const KEY_LDAP_ENABLED = 'ldap.enabled';
-const KEY_LDAP_SERVER = 'ldap.server';
-const KEY_LDAP_MANAGER_DN = 'ldap.manager.dn';
-const KEY_LDAP_MANAGER_PASSWORD = 'ldap.manager.password';
-const KEY_LDAP_AUTHENTICATION_TYPE = 'ldap.authentication.type';
-const KEY_LDAP_REFERRAL = 'ldap.referral';
-const KEY_LDAP_USER_SEARCH_BASE = 'ldap.user.search.base';
-const KEY_LDAP_USER_SEARCH_FILTER = 'ldap.user.search.filter';
-const KEY_LDAP_USER_DN_PATTERNS = 'ldap.user.dn.patterns';
-const KEY_LDAP_USER_ATTRIBUTES = 'ldap.user.attributes';
-const KEY_LDAP_GROUP_SEARCH_BASE = 'ldap.group.search.base';
-const KEY_LDAP_GROUP_SEARCH_FILTER = 'ldap.group.search.filter';
-const KEY_LDAP_GROUP_ROLE_ATTRIBUTE = 'ldap.group.role.attribute';
-const KEY_LDAP_ROLE_PREFIX = 'ldap.role.prefix';
+const KEY_LDAP_ENABLED = 'settings.ldap.enabled';
+const KEY_LDAP_SERVER = 'settings.ldap.server';
+const KEY_LDAP_MANAGER_DN = 'settings.ldap.manager.dn';
+const KEY_LDAP_MANAGER_PASSWORD = 'settings.ldap.manager.password';
+const KEY_LDAP_AUTHENTICATION_TYPE = 'settings.ldap.authentication.type';
+const KEY_LDAP_REFERRAL = 'settings.ldap.referral';
+const KEY_LDAP_USER_SEARCH_BASE = 'settings.ldap.user.search.base';
+const KEY_LDAP_USER_SEARCH_FILTER = 'settings.ldap.user.search.filter';
+const KEY_LDAP_USER_DN_PATTERNS = 'settings.ldap.user.dn.patterns';
+const KEY_LDAP_USER_ATTRIBUTES = 'settings.ldap.user.attributes';
+const KEY_LDAP_GROUP_SEARCH_BASE = 'settings.ldap.group.search.base';
+const KEY_LDAP_GROUP_SEARCH_FILTER = 'settings.ldap.group.search.filter';
+const KEY_LDAP_GROUP_ROLE_ATTRIBUTE = 'settings.ldap.group.role.attribute';
+const KEY_LDAP_ROLE_PREFIX = 'settings.ldap.role.prefix';
 
 const fieldNames = [
     KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD,
     KEY_ENCRYPTION_PASSWORD,
     KEY_ENCRYPTION_GLOBAL_SALT,
+    KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE,
     KEY_PROXY_HOST,
     KEY_PROXY_PORT,
     KEY_PROXY_USERNAME,
@@ -66,7 +69,7 @@ class SettingsConfigurationForm extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleSingleSelectChange = this.handleSingleSelectChange.bind(this);
         this.state = {
-            settingsData: FieldModelUtil.createEmptyFieldModel(fieldNames, 'GLOBAL', 'component_settings')
+            settingsData: FieldModelUtil.createEmptyFieldModel(fieldNames, DescriptorUtil.CONTEXT_TYPE.GLOBAL, 'component_settings')
         };
     }
 
@@ -163,6 +166,19 @@ class SettingsConfigurationForm extends Component {
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(KEY_ENCRYPTION_GLOBAL_SALT)}
                             errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_ENCRYPTION_GLOBAL_SALT)]}
+                        />
+                    </div>
+                </div>
+                <div className="form-group">
+                    <div className="col-sm-12">
+                        <CheckboxInput
+                            id={KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE}
+                            label="Startup Environment Variable Override"
+                            name={KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE}
+                            isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE)}
+                            onChange={this.handleChange}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE)]}
                         />
                     </div>
                 </div>

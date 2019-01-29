@@ -10,6 +10,7 @@ import NotificationTypeLegend from 'component/common/NotificationTypeLegend';
 import { logout } from 'store/actions/session';
 import AuditDetails from 'component/audit/Details';
 import CheckboxInput from 'field/input/CheckboxInput';
+import * as DescriptorUtilities from 'util/descriptorUtilities';
 
 import '../../../css/audit.scss';
 
@@ -324,8 +325,9 @@ class Index extends Component {
 
     providerColumnDataFormat(cell) {
         const defaultValue = <div className="inline" aria-hidden="true">{cell}</div>;
-        if (this.props.descriptors) {
-            const descriptorList = this.props.descriptors.items.PROVIDER_CONFIG;
+        const { descriptors } = this.props;
+        if (descriptors) {
+            const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors.items, DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
             if (descriptorList) {
                 const filteredList = descriptorList.filter(descriptor => descriptor.descriptorName === cell);
                 if (filteredList && filteredList.length > 0) {
@@ -429,7 +431,7 @@ Index.defaultProps = {
     fetching: false,
     totalDataCount: 0,
     csrfToken: null,
-    descriptors: {},
+    descriptors: [],
     items: []
 };
 
@@ -440,7 +442,7 @@ Index.propTypes = {
     items: PropTypes.arrayOf(PropTypes.object),
     totalDataCount: PropTypes.number,
     getAuditData: PropTypes.func.isRequired,
-    descriptors: PropTypes.object,
+    descriptors: PropTypes.arrayOf(PropTypes.object),
     logout: PropTypes.func.isRequired
 };
 

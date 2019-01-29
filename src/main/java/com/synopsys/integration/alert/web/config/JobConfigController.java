@@ -76,24 +76,24 @@ public class JobConfigController extends BaseController {
             models = jobConfigActions.getAllJobs();
         } catch (final AlertException e) {
             logger.error(e.getMessage(), e);
-            return responseFactory.createResponse(HttpStatus.INTERNAL_SERVER_ERROR, "There was an issue retrieving data from the database.");
+            return responseFactory.createMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "There was an issue retrieving data from the database.");
         }
 
         if (models.isEmpty()) {
             return responseFactory.createNotFoundResponse("Configurations not found for the context and descriptor provided");
         }
 
-        return responseFactory.createResponse(HttpStatus.OK, contentConverter.getJsonString(models));
+        return responseFactory.createOkContentResponse(contentConverter.getJsonString(models));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<String> getJob(UUID id) {
+    public ResponseEntity<String> getJob(@PathVariable UUID id) {
         Optional<JobFieldModel> optionalModel;
         try {
             optionalModel = jobConfigActions.getJobById(id);
         } catch (final AlertException e) {
             logger.error(e.getMessage(), e);
-            return responseFactory.createResponse(HttpStatus.INTERNAL_SERVER_ERROR, "There was an issue retrieving data from the database for ID: " + id);
+            return responseFactory.createMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, "There was an issue retrieving data from the database for ID: " + id);
         }
 
         if (optionalModel.isPresent()) {
@@ -114,7 +114,7 @@ public class JobConfigController extends BaseController {
             if (!jobConfigActions.doesJobExist(uuid)) {
                 try {
                     final JobFieldModel updatedEntity = jobConfigActions.saveJob(restModel);
-                    return responseFactory.createResponse(HttpStatus.CREATED, updatedEntity.getJobId(), "Created");
+                    return responseFactory.createCreatedResponse(updatedEntity.getJobId(), "Created");
                 } catch (final AlertFieldException e) {
                     return responseFactory.createFieldErrorResponse(id, "There were errors with the configuration.", e.getFieldErrors());
                 }
@@ -195,7 +195,7 @@ public class JobConfigController extends BaseController {
             return responseFactory.createOkResponse(id, responseMessage);
         } catch (final IntegrationRestException e) {
             logger.error(e.getMessage(), e);
-            return responseFactory.createResponse(HttpStatus.valueOf(e.getHttpStatusCode()), id, e.getHttpStatusMessage() + " : " + e.getMessage());
+            return responseFactory.createMessageResponse(HttpStatus.valueOf(e.getHttpStatusCode()), id, e.getHttpStatusMessage() + " : " + e.getMessage());
         } catch (final AlertFieldException e) {
             return responseFactory.createFieldErrorResponse(id, e.getMessage(), e.getFieldErrors());
         } catch (AlertMethodNotAllowedException e) {

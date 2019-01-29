@@ -58,9 +58,9 @@ public class ConfigController extends BaseController {
     public static final String CONFIGURATION_PATH = BaseController.BASE_PATH + "/configuration";
     private static final Logger logger = LoggerFactory.getLogger(ConfigController.class);
 
-    private ConfigActions configActions;
-    private ContentConverter contentConverter;
-    private ResponseFactory responseFactory;
+    private final ConfigActions configActions;
+    private final ContentConverter contentConverter;
+    private final ResponseFactory responseFactory;
 
     @Autowired
     public ConfigController(final ConfigActions configActions, final ContentConverter contentConverter, final ResponseFactory responseFactory) {
@@ -71,7 +71,7 @@ public class ConfigController extends BaseController {
 
     @GetMapping
     public ResponseEntity<String> getConfigs(final @RequestParam ConfigContextEnum context, @RequestParam(required = false) final String descriptorName) {
-        List<FieldModel> models;
+        final List<FieldModel> models;
         try {
             models = configActions.getConfigs(context, descriptorName);
         } catch (final AlertException e) {
@@ -83,12 +83,12 @@ public class ConfigController extends BaseController {
             return responseFactory.createNotFoundResponse("Configurations not found for the context and descriptor provided");
         }
 
-        return responseFactory.createResponse(HttpStatus.OK, contentConverter.getJsonString(models));
+        return responseFactory.createOkContentResponse(contentConverter.getJsonString(models));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<String> getConfig(@PathVariable final Long id) {
-        Optional<FieldModel> optionalModel;
+        final Optional<FieldModel> optionalModel;
         try {
             optionalModel = configActions.getConfigById(id);
         } catch (final AlertException e) {
@@ -97,7 +97,7 @@ public class ConfigController extends BaseController {
         }
 
         if (optionalModel.isPresent()) {
-            return responseFactory.createOkResponse(contentConverter.getStringValue(id), contentConverter.getJsonString(optionalModel.get()));
+            return responseFactory.createOkContentResponse(contentConverter.getJsonString(optionalModel.get()));
         }
 
         return responseFactory.createNotFoundResponse("Configuration not found for the specified id");
@@ -108,12 +108,12 @@ public class ConfigController extends BaseController {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", "Required request body is missing");
         }
-        String id = restModel.getId();
+        final String id = restModel.getId();
         try {
             if (!configActions.doesConfigExist(id)) {
                 try {
                     final FieldModel updatedEntity = configActions.saveConfig(restModel);
-                    return responseFactory.createResponse(HttpStatus.CREATED, updatedEntity.getId(), "Created");
+                    return responseFactory.createMessageResponse(HttpStatus.CREATED, updatedEntity.getId(), "Created");
                 } catch (final AlertFieldException e) {
                     return responseFactory.createFieldErrorResponse(id, "There were errors with the configuration.", e.getFieldErrors());
                 }
@@ -132,7 +132,7 @@ public class ConfigController extends BaseController {
             return responseFactory.createBadRequestResponse("", "Required request body is missing");
         }
 
-        String stringId = restModel.getId();
+        final String stringId = restModel.getId();
         try {
             if (configActions.doesConfigExist(id)) {
                 try {
@@ -155,7 +155,7 @@ public class ConfigController extends BaseController {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", "Required request body is missing");
         }
-        String id = restModel.getId();
+        final String id = restModel.getId();
         try {
             final String responseMessage = configActions.validateConfig(restModel, new HashMap<>());
             return responseFactory.createOkResponse(id, responseMessage);
@@ -169,7 +169,7 @@ public class ConfigController extends BaseController {
         if (null == id) {
             responseFactory.createBadRequestResponse("", "Proper ID is required for deleting.");
         }
-        String stringId = contentConverter.getStringValue(id);
+        final String stringId = contentConverter.getStringValue(id);
         try {
             if (configActions.doesConfigExist(id)) {
                 configActions.deleteConfig(id);
@@ -188,16 +188,16 @@ public class ConfigController extends BaseController {
         if (restModel == null) {
             return responseFactory.createBadRequestResponse("", "Required request body is missing");
         }
-        String id = restModel.getId();
+        final String id = restModel.getId();
         try {
             final String responseMessage = configActions.testConfig(restModel, destination);
             return responseFactory.createOkResponse(id, responseMessage);
         } catch (final IntegrationRestException e) {
             logger.error(e.getMessage(), e);
-            return responseFactory.createResponse(HttpStatus.valueOf(e.getHttpStatusCode()), id, e.getHttpStatusMessage() + " : " + e.getMessage());
+            return responseFactory.createMessageResponse(HttpStatus.valueOf(e.getHttpStatusCode()), id, e.getHttpStatusMessage() + " : " + e.getMessage());
         } catch (final AlertFieldException e) {
             return responseFactory.createFieldErrorResponse(id, e.getMessage(), e.getFieldErrors());
-        } catch (AlertMethodNotAllowedException e) {
+        } catch (final AlertMethodNotAllowedException e) {
             return responseFactory.createMethodNotAllowedResponse(e.getMessage());
         } catch (final AlertException e) {
             return responseFactory.createBadRequestResponse(id, e.getMessage());

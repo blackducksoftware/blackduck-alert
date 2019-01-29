@@ -26,8 +26,8 @@ package com.synopsys.integration.alert.web.model.configuration;
 import java.util.Set;
 
 public class JobFieldModel {
-    private final String jobId;
-    private final Set<FieldModel> fieldModels;
+    private String jobId;
+    private Set<FieldModel> fieldModels;
 
     public JobFieldModel() {
         this(null, null);
@@ -42,8 +42,15 @@ public class JobFieldModel {
         return jobId;
     }
 
+    public void setJobId(final String jobId) {
+        this.jobId = jobId;
+    }
+
     public Set<FieldModel> getFieldModels() {
         return fieldModels;
     }
 
+    public void setFieldModels(final Set<FieldModel> fieldModels) {
+        this.fieldModels = fieldModels;
+    }
 }
