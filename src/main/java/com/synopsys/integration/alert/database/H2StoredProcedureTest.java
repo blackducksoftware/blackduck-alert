@@ -29,7 +29,7 @@ public class H2StoredProcedureTest {
     public static final java.lang.Void migrateDistributionJobs(final java.sql.Connection connection) throws java.sql.SQLException {
         try (final java.sql.ResultSet commonDistributionConfig = connection.createStatement().executeQuery("SELECT * FROM ALERT.COMMON_DISTRIBUTION_CONFIG;")) {
             while (commonDistributionConfig.next()) {
-                final java.lang.Integer commonConfigId = commonDistributionConfig.getInt("ID"); // audit cares about this
+                final java.lang.Integer commonConfigId = commonDistributionConfig.getInt("ID");
                 final java.lang.Integer distributionConfigId = commonDistributionConfig.getInt("DISTRIBUTION_CONFIG_ID");
                 final java.lang.String distributionType = commonDistributionConfig.getString("DISTRIBUTION_TYPE");
                 final java.lang.Boolean filterByProject = commonDistributionConfig.getBoolean("FILTER_BY_PROJECT");
@@ -103,7 +103,7 @@ public class H2StoredProcedureTest {
                 // Add specific channel fields
                 if ("channel_email".equals(distributionType)) {
                     try (final java.sql.ResultSet emailDistributionConfigs = connection.createStatement()
-                                                                                 .executeQuery("SELECT * FROM ALERT.EMAIL_GROUP_DISTRIBUTION_CONFIG WHERE EMAIL_GROUP_DISTRIBUTION_CONFIG.ID = " + distributionConfigId + ";")) {
+                                                                                 .executeQuery("SELECT * FROM ALERT.EMAIL_GROUP_DISTRIBUTION_CONFIG WHERE EMAIL_GROUP_DISTRIBUTION_CONFIG.ID = " + distributionConfigId.toString() + ";")) {
                         if (commonDistributionConfig.next()) {
                             // TODO is this all of the fields?
                             final java.lang.String subjectLine = emailDistributionConfigs.getString("EMAIL_SUBJECT_LINE");
@@ -115,7 +115,7 @@ public class H2StoredProcedureTest {
                     }
                 } else if ("channel_hipchat".equals(distributionType)) {
                     try (final java.sql.ResultSet hipChatDistribtionConfigs = connection.createStatement()
-                                                                                  .executeQuery("SELECT * FROM ALERT.EMAIL_GROUP_DISTRIBUTION_CONFIG WHERE EMAIL_GROUP_DISTRIBUTION_CONFIG.ID = " + distributionConfigId + ";")) {
+                                                                                  .executeQuery("SELECT * FROM ALERT.EMAIL_GROUP_DISTRIBUTION_CONFIG WHERE EMAIL_GROUP_DISTRIBUTION_CONFIG.ID = " + distributionConfigId.toString() + ";")) {
                         if (commonDistributionConfig.next()) {
                             final java.lang.String color = hipChatDistribtionConfigs.getString("COLOR");
                             final java.lang.Boolean notify = hipChatDistribtionConfigs.getBoolean("NOTIFY");
@@ -129,7 +129,7 @@ public class H2StoredProcedureTest {
                     }
                 } else if ("channel_slack".equals(distributionType)) {
                     try (final java.sql.ResultSet slackDistributionConfigs = connection.createStatement()
-                                                                                 .executeQuery("SELECT * FROM ALERT.EMAIL_GROUP_DISTRIBUTION_CONFIG WHERE EMAIL_GROUP_DISTRIBUTION_CONFIG.ID = " + distributionConfigId + ";")) {
+                                                                                 .executeQuery("SELECT * FROM ALERT.EMAIL_GROUP_DISTRIBUTION_CONFIG WHERE EMAIL_GROUP_DISTRIBUTION_CONFIG.ID = " + distributionConfigId.toString() + ";")) {
                         if (commonDistributionConfig.next()) {
                             final java.lang.String webhook = slackDistributionConfigs.getString("WEBHOOK");
                             final java.lang.String channelName = slackDistributionConfigs.getString("CHANNEL_NAME");

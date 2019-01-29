@@ -12,7 +12,7 @@
     <!-- Migrate jobs -->
     <changeSet author="gkillough" id="1548704562941-4">
         <sql dbms="h2" stripComments="true">
-            CALL MIGRATE_DISTRIBUTION_JOBS();
+            CALL MIGRATE_DISTRIBUTION_JOBS_FROM_3_1_0_TO_4_0_0();
         </sql>
     </changeSet>
 
