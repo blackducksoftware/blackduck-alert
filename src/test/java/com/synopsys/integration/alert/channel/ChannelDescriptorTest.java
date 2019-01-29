@@ -24,6 +24,7 @@ import com.google.gson.Gson;
 import com.synopsys.integration.alert.FieldRegistrationIntegrationTest;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
@@ -119,6 +120,15 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
 
     }
 
+    public FieldAccessor createValidFieldAccessor(final ConfigurationModel configurationModel) {
+        final Map<String, ConfigurationFieldModel> fieldMap = new HashMap<>();
+        fieldMap.putAll(configurationModel.getCopyOfKeyToFieldMap());
+        global_config.ifPresent(globalConfig -> fieldMap.putAll(globalConfig.getCopyOfKeyToFieldMap()));
+        final FieldAccessor fieldAccessor = new FieldAccessor(fieldMap);
+        return fieldAccessor;
+
+    }
+
     public FieldModel createInvalidDistributionFieldModel() {
         final Map<String, String> invalidValuesMap = new HashMap<>();
         invalidValuesMap.putAll(createInvalidCommonDistributionFieldMap());
@@ -182,23 +192,10 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
     @Test
     public void testDistributionConfig() {
         final Optional<DescriptorActionApi> descriptorActionApi = getDescriptor().getActionApi(ConfigContextEnum.DISTRIBUTION);
-        final FieldModel restModel = createValidFieldModel(distribution_config, ConfigContextEnum.DISTRIBUTION);
-        final FieldValueModel jobNameField = restModel.getField(CommonDistributionUIConfig.KEY_NAME).orElseThrow();
-        jobNameField.setValue(getTestJobName());
+        final FieldAccessor fieldAccessor = createValidFieldAccessor(distribution_config);
         try {
             assertTrue(descriptorActionApi.isPresent());
-            //            final Map<String, ConfigField> configFieldMap = new HashMap<>();
-            //            final Map<String, ConfigField> globalMap = createFieldMap(ConfigContextEnum.GLOBAL);
-            //            final Map<String, ConfigField> distributionMap = createFieldMap(ConfigContextEnum.DISTRIBUTION);
-            //            final Map<String, ConfigField> providerDistributionMap = providerDescriptor.getUIConfig(ConfigContextEnum.DISTRIBUTION)
-            //                                                                         .flatMap(uiConfig -> Optional.of(uiConfig.createFields().stream()
-            //                                                                                                              .collect(Collectors.toMap(ConfigField::getKey, Function.identity()))))
-            //                                                                         .orElse(Map.of());
-            //
-            //            configFieldMap.putAll(globalMap);
-            //            configFieldMap.putAll(providerDistributionMap);
-            //            configFieldMap.putAll(distributionMap);
-            descriptorActionApi.get().testConfig(descriptorActionApi.get().createTestConfigModel(restModel, createTestConfigDestination()));
+            descriptorActionApi.get().testConfig(descriptorActionApi.get().createTestConfigModel(String.valueOf(distribution_config.getConfigurationId()), fieldAccessor, createTestConfigDestination()));
         } catch (final IntegrationException e) {
             e.printStackTrace();
             Assert.fail();
@@ -209,10 +206,11 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
     public void testGlobalConfig() {
         final Optional<DescriptorActionApi> descriptorActionApi = getDescriptor().getActionApi(ConfigContextEnum.GLOBAL);
         assumeTrue(descriptorActionApi.isPresent());
-        final FieldModel restModel = createValidFieldModel(global_config.orElse(null), ConfigContextEnum.GLOBAL);
+        final ConfigurationModel configurationModel = global_config.orElse(null);
+        final FieldAccessor fieldAccessor = createValidFieldAccessor(configurationModel);
         try {
             assertTrue(descriptorActionApi.isPresent());
-            descriptorActionApi.get().testConfig(descriptorActionApi.get().createTestConfigModel(restModel, createTestConfigDestination()));
+            descriptorActionApi.get().testConfig(descriptorActionApi.get().createTestConfigModel(String.valueOf(configurationModel.getConfigurationId()), fieldAccessor, createTestConfigDestination()));
         } catch (final IntegrationException e) {
             e.printStackTrace();
             Assert.fail();
