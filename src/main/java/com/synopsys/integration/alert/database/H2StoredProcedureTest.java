@@ -119,7 +119,7 @@ public class H2StoredProcedureTest {
                 if ("channel_email".equals(distributionType)) {
                     try (final java.sql.ResultSet emailDistributionConfigs = connection.createStatement().executeQuery(
                         "SELECT * FROM ALERT.EMAIL_GROUP_DISTRIBUTION_CONFIG WHERE EMAIL_GROUP_DISTRIBUTION_CONFIG.ID = " + distributionConfigId.toString() + ";")) {
-                        if (commonDistributionConfig.next()) {
+                        if (emailDistributionConfigs.next()) {
                             // TODO is this all of the fields?
                             final java.lang.String subjectLine = emailDistributionConfigs.getString("EMAIL_SUBJECT_LINE");
                             final java.lang.Boolean projectOwnerOnly = emailDistributionConfigs.getBoolean("PROJECT_OWNER_ONLY");
@@ -131,8 +131,8 @@ public class H2StoredProcedureTest {
                     }
                 } else if ("channel_hipchat".equals(distributionType)) {
                     try (final java.sql.ResultSet hipChatDistribtionConfigs = connection.createStatement().executeQuery(
-                        "SELECT * FROM ALERT.EMAIL_GROUP_DISTRIBUTION_CONFIG WHERE EMAIL_GROUP_DISTRIBUTION_CONFIG.ID = " + distributionConfigId.toString() + ";")) {
-                        if (commonDistributionConfig.next()) {
+                        "SELECT * FROM ALERT.HIP_CHAT_DISTRIBUTION_CONFIG WHERE HIP_CHAT_DISTRIBUTION_CONFIG.ID = " + distributionConfigId.toString() + ";")) {
+                        if (hipChatDistribtionConfigs.next()) {
                             final java.lang.String color = hipChatDistribtionConfigs.getString("COLOR");
                             final java.lang.Boolean notify = hipChatDistribtionConfigs.getBoolean("NOTIFY");
                             final java.lang.Integer roomId = hipChatDistribtionConfigs.getInt("ROOM_ID");
@@ -146,8 +146,8 @@ public class H2StoredProcedureTest {
                     }
                 } else if ("channel_slack".equals(distributionType)) {
                     try (final java.sql.ResultSet slackDistributionConfigs = connection.createStatement().executeQuery(
-                        "SELECT * FROM ALERT.EMAIL_GROUP_DISTRIBUTION_CONFIG WHERE EMAIL_GROUP_DISTRIBUTION_CONFIG.ID = " + distributionConfigId.toString() + ";")) {
-                        if (commonDistributionConfig.next()) {
+                        "SELECT * FROM ALERT.SLACK_DISTRIBUTION_CONFIG WHERE SLACK_DISTRIBUTION_CONFIG.ID = " + distributionConfigId.toString() + ";")) {
+                        if (slackDistributionConfigs.next()) {
                             final java.lang.String webhook = slackDistributionConfigs.getString("WEBHOOK");
                             final java.lang.String channelName = slackDistributionConfigs.getString("CHANNEL_NAME");
                             final java.lang.String channelUsername = slackDistributionConfigs.getString("CHANNEL_USERNAME");
