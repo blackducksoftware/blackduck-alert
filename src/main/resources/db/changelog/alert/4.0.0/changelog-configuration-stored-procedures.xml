@@ -1,7 +1,5 @@
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
-    <!-- TODO: Hard code java here to keep procedures out of source. Previous: 1543499878547, Next: 1548167676836 -->
-
     <changeSet author="gkillough" id="1545000000000-1">
         <createProcedure
                 dbms="h2"
@@ -73,7 +71,23 @@
         </createProcedure>
         <createProcedure
                 dbms="h2"
-                procedureName="Define a new field and add the relations"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG AS $$
+                java.lang.Integer getLatestIdForDescriptorConfig(final java.sql.Connection connection) throws java.sql.SQLException {
+                    try (final java.sql.Statement statement = connection.createStatement()) {
+                        final java.sql.ResultSet resultSet = statement.executeQuery("SELECT ID FROM ALERT.DESCRIPTOR_CONFIGS ORDER BY DESCRIPTOR_CONFIGS.ID DESC LIMIT 1;");
+                        if (resultSet.next()) {
+                            return resultSet.getInt("ID");
+                        } else {
+                            throw new java.sql.SQLException("No values returned for that query");
+                        }
+                    }
+                }
+            $$;
+        </createProcedure>
+        <createProcedure
+                dbms="h2"
                 relativeToChangelogFile="true"
                 schemaName="ALERT">
             CREATE ALIAS DEFINE_FIELD AS $$
@@ -99,24 +113,6 @@
                             .executeUpdate("INSERT INTO ALERT.DESCRIPTOR_FIELDS (DESCRIPTOR_ID, FIELD_ID) VALUES (GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('" + descriptorName.toLowerCase() + "'), GET_FIELD_ID_FOR_SOURCE_KEY('" + fieldKey + "'));");
                     }
                     return null;
-                }
-            $$;
-        </createProcedure>
-        <createProcedure
-                dbms="h2"
-                procedureName="Get id for most recently added config"
-                relativeToChangelogFile="true"
-                schemaName="ALERT">
-            CREATE ALIAS GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG AS $$
-                java.lang.Integer getLatestIdForDescriptorConfig(final java.sql.Connection connection) throws java.sql.SQLException {
-                    try (final java.sql.Statement statement = connection.createStatement()) {
-                        final java.sql.ResultSet resultSet = statement.executeQuery("SELECT ID FROM ALERT.DESCRIPTOR_CONFIGS ORDER BY DESCRIPTOR_CONFIGS.ID DESC LIMIT 1;");
-                        if (resultSet.next()) {
-                            return resultSet.getInt("ID");
-                        } else {
-                            throw new java.sql.SQLException("No values returned for that query");
-                        }
-                    }
                 }
             $$;
         </createProcedure>
@@ -197,6 +193,17 @@
                     return null;
                 }
             $$;
+        </createProcedure>
+    </changeSet>
+
+    <!-- Create job migration procedure -->
+    <changeSet author="gkillough" id="1545000000000-2">
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME
+            FOR "com.synopsys.integration.alert.database.H2StoredProcedureTest.migrateDistributionJobs";
         </createProcedure>
     </changeSet>
 </databaseChangeLog>

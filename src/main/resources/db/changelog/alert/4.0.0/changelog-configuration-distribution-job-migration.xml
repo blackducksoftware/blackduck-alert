@@ -1,0 +1,27 @@
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+
+    <!-- Add swap column(s) -->
+    <changeSet author="gkillough" id="1548704562941-1">
+        <addColumn schemaName="ALERT" tableName="AUDIT_ENTRIES">
+            <column name="CONFIG_GROUP_ID" type="UUID"/>
+        </addColumn>
+    </changeSet>
+
+    <!-- Migrate jobs -->
+    <changeSet author="gkillough" id="1548704562941-4">
+    </changeSet>
+
+    <!-- Remove old column(s) -->
+    <changeSet author="gkillough" id="1548704562941-3">
+        <dropColumn schemaName="ALERT" tableName="AUDIT_ENTRIES" columnName="COMMON_CONFIG_ID"/>
+    </changeSet>
+
+    <!-- Rename swap column(s) -->
+    <changeSet author="gkillough" id="1548704562941-4">
+        <renameColumn schemaName="ALERT" tableName="AUDIT_ENTRIES" oldColumnName="CONFIG_GROUP_ID" newColumnName="COMMON_CONFIG_ID"/>
+    </changeSet>
+
+
+</databaseChangeLog>
