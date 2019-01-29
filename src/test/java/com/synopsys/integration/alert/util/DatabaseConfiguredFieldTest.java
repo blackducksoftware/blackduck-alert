@@ -18,6 +18,7 @@ import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 
 public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
@@ -51,6 +52,16 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
     public void unregisterDescriptor(final Descriptor descriptor) throws AlertDatabaseConstraintException {
         descriptorAccessor.unregisterDescriptor(descriptor.getName());
         descriptors.remove(descriptor);
+    }
+
+    public ConfigurationJobModel addJob(String descriptorName, String providerName, final Map<String, Collection<String>> fieldsValues) throws AlertDatabaseConstraintException {
+        final Set<ConfigurationFieldModel> fieldModels = fieldsValues
+                                                             .entrySet()
+                                                             .stream()
+                                                             .map(entry -> createConfigurationFieldModel(entry.getKey(), entry.getValue()))
+                                                             .collect(Collectors.toSet());
+        final ConfigurationJobModel configurationJobModel = configurationAccessor.createJob(Set.of(descriptorName, providerName), fieldModels);
+        addedConfigurations.addAll(configurationJobModel.getCopyOfConfigurations().stream().map(configurationJobModel::getJobId).collect(Collectors.toSet()));
     }
 
     public ConfigurationModel addConfiguration(final String descriptorName, final ConfigContextEnum context, final Map<String, Collection<String>> fieldsValues) throws AlertDatabaseConstraintException {

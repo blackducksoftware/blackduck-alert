@@ -29,6 +29,7 @@ import com.synopsys.integration.alert.common.descriptor.config.context.Descripto
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor;
 import com.synopsys.integration.alert.database.api.configuration.DescriptorAccessor;
@@ -127,6 +128,11 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
         final Map<String, FieldValueModel> fieldModelMap = createFieldValueModelMap(invalidValuesMap);
         final FieldModel model = new FieldModel("1L", getDescriptor().getDestinationName(), ConfigContextEnum.DISTRIBUTION.name(), fieldModelMap);
         return model;
+    }
+
+    public Map<String, String> createValidCommonDistributionFieldMap() {
+        return Map.of(ChannelDistributionUIConfig.KEY_NAME, "name", ChannelDistributionUIConfig.KEY_FREQUENCY, FrequencyType.REAL_TIME.name(), ChannelDistributionUIConfig.KEY_CHANNEL_NAME, "channelName",
+            ChannelDistributionUIConfig.KEY_PROVIDER_NAME, "providerName");
     }
 
     public Map<String, String> createInvalidCommonDistributionFieldMap() {

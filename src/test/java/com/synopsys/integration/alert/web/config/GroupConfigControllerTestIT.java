@@ -42,8 +42,9 @@ import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDes
 import com.synopsys.integration.alert.util.DatabaseConfiguredFieldTest;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
 import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
+import com.synopsys.integration.alert.web.model.configuration.JobFieldModel;
 
-public class ConfigControllerTestIT extends DatabaseConfiguredFieldTest {
+public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
     @Autowired
     HipChatDescriptor hipChatDescriptor;
@@ -52,6 +53,8 @@ public class ConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     private MockMvc mockMvc;
     @Autowired
     private Gson gson;
+
+    private String url = JobConfigController.JOB_CONFIGURATION_PATH;
 
     @BeforeEach
     public void setup() {
@@ -66,7 +69,7 @@ public class ConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         final ConfigurationModel emptyConfigurationModel = addConfiguration(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION, Map.of());
         final String configId = String.valueOf(emptyConfigurationModel.getConfigurationId());
 
-        final String urlPath = ConfigController.CONFIGURATION_PATH + "?context=" + ConfigContextEnum.DISTRIBUTION.name() + "&descriptorName=" + HipChatChannel.COMPONENT_NAME;
+        final String urlPath = url + "?context=" + ConfigContextEnum.DISTRIBUTION.name() + "&descriptorName=" + HipChatChannel.COMPONENT_NAME;
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -74,13 +77,13 @@ public class ConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         final MvcResult mvcResult = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
         final String response = mvcResult.getResponse().getContentAsString();
 
-        final TypeToken fieldModelListType = new TypeToken<List<FieldModel>>() {};
-        final List<FieldModel> fieldModels = gson.fromJson(response, fieldModelListType.getType());
+        final TypeToken fieldModelListType = new TypeToken<List<JobFieldModel>>() {};
+        final List<JobFieldModel> fieldModels = gson.fromJson(response, fieldModelListType.getType());
 
         assertNotNull(fieldModels);
         assertFalse(fieldModels.isEmpty());
         assertTrue(fieldModels.stream()
-                       .filter(fieldModel -> fieldModel.getId().equals(configId))
+                       .filter(fieldModel -> fieldModel.getJobId().equals(configId))
                        .findFirst()
                        .isPresent());
 
@@ -94,7 +97,7 @@ public class ConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         final ConfigurationModel emptyConfigurationModel = addConfiguration(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION, Map.of());
         final String configId = String.valueOf(emptyConfigurationModel.getConfigurationId());
 
-        final String urlPath = ConfigController.CONFIGURATION_PATH + "/" + configId;
+        final String urlPath = url + "/" + configId;
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(urlPath)
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -116,7 +119,7 @@ public class ConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         final ConfigurationModel emptyConfigurationModel = addConfiguration(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION, Map.of());
         final String configId = String.valueOf(emptyConfigurationModel.getConfigurationId());
 
-        final String urlPath = ConfigController.CONFIGURATION_PATH + "/" + configId;
+        final String urlPath = url + "/" + configId;
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(urlPath)
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -137,7 +140,7 @@ public class ConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         registerDescriptor(hipChatDescriptor);
         final ConfigurationModel emptyConfigurationModel = getConfigurationAccessor().createEmptyConfiguration(HipChatChannel.COMPONENT_NAME, ConfigContextEnum.DISTRIBUTION);
         final String configId = String.valueOf(emptyConfigurationModel.getConfigurationId());
-        final String urlPath = ConfigController.CONFIGURATION_PATH + "/" + configId;
+        final String urlPath = url + "/" + configId;
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(urlPath)
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -159,8 +162,7 @@ public class ConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @WithMockUser(roles = "ADMIN")
     public void testSaveConfig() throws Exception {
         registerDescriptor(hipChatDescriptor);
-        final String urlPath = ConfigController.CONFIGURATION_PATH;
-        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(urlPath)
+        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(url)
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
 
@@ -180,7 +182,7 @@ public class ConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @WithMockUser(roles = "ADMIN")
     public void testValidateConfig() throws Exception {
         registerDescriptor(hipChatDescriptor);
-        final String urlPath = ConfigController.CONFIGURATION_PATH + "/validate";
+        final String urlPath = url + "/validate";
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(urlPath)
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -199,7 +201,7 @@ public class ConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     //    @WithMockUser(roles = "ADMIN")
     //    public void testTestConfig() throws Exception {
     //        registerDescriptor(hipChatDescriptor);
-    //        final String urlPath = ConfigController.CONFIGURATION_PATH + "/test";
+    //        final String urlPath = url + "/test";
     //        final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(urlPath)
     //                                                          .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
     //                                                          .with(SecurityMockMvcRequestPostProcessors.csrf());

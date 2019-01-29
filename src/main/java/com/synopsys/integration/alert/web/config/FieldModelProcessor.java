@@ -112,16 +112,21 @@ public class FieldModelProcessor {
             descriptorApi.testConfig(testConfig);
             return "Successfully sent test message.";
         } else {
-            return "Descriptor action api did not exist: " + fieldModel.getDescriptorName();
+            logger.error("Descriptor action api did not exist: {}", fieldModel.getDescriptorName());
+            return "Internal server error. Failed to send test message.";
         }
     }
 
     public Collection<ConfigurationFieldModel> updateFieldModel(Long id, FieldModel fieldModel) throws AlertException {
         final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
         FieldModel modelToSave = descriptorActionApi.map(actionApi -> actionApi.updateConfig(fieldModel)).orElse(fieldModel);
-        final ConfigurationModel configurationModel = getSavedEntity(id);
-        final Map<String, ConfigurationFieldModel> fieldModels = fieldModelConverter.convertFromFieldModel(modelToSave);
-        return updateConfigurationWithSavedConfiguration(fieldModels, configurationModel.getCopyOfFieldList());
+        final Optional<ConfigurationModel> configurationModel = getSavedEntity(id);
+        if (configurationModel.isPresent()) {
+            final Map<String, ConfigurationFieldModel> fieldModels = fieldModelConverter.convertFromFieldModel(modelToSave);
+            return updateConfigurationWithSavedConfiguration(fieldModels, configurationModel.get().getCopyOfFieldList());
+        }
+
+        return List.of();
     }
 
     public Optional<Descriptor> retrieveDescriptor(final String descriptorName) {
@@ -181,14 +186,11 @@ public class FieldModelProcessor {
         return fieldsToReturn;
     }
 
-    public ConfigurationModel getSavedEntity(final Long id) throws AlertException {
+    public Optional<ConfigurationModel> getSavedEntity(final Long id) throws AlertException {
         if (null != id) {
-            final Optional<ConfigurationModel> configuration = configurationAccessor.getConfigurationById(id);
-            if (configuration.isPresent()) {
-                return configuration.get();
-            }
+            return configurationAccessor.getConfigurationById(id);
         }
-        return null;
+        return Optional.empty();
     }
 
     private Collection<ConfigurationFieldModel> updateConfigurationWithSavedConfiguration(final Map<String, ConfigurationFieldModel> newConfiguration, final Collection<ConfigurationFieldModel> savedConfiguration) throws AlertException {

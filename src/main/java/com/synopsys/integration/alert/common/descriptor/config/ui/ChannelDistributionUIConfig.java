@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -71,13 +72,12 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
 
         final List<ConfigField> configFields = List.of(name, channelName, frequency, providerName);
         final List<ConfigField> channelDistributionFields = createChannelDistributionFields();
-        channelDistributionFields.addAll(configFields);
-        return channelDistributionFields;
+        return Stream.concat(configFields.stream(), channelDistributionFields.stream()).collect(Collectors.toList());
     }
 
     public abstract List<ConfigField> createChannelDistributionFields();
 
-    Collection<String> getDescriptorNames(DescriptorType descriptorType) {
+    private Collection<String> getDescriptorNames(DescriptorType descriptorType) {
         try {
             return descriptorAccessor.getRegisteredDescriptorsByType(descriptorType).stream().map(RegisteredDescriptorModel::getName).collect(Collectors.toSet());
         } catch (AlertDatabaseConstraintException e) {

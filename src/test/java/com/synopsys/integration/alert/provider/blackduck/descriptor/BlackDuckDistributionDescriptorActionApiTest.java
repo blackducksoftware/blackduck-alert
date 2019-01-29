@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
@@ -23,7 +22,7 @@ public class BlackDuckDistributionDescriptorActionApiTest {
     public void testValidateConfig() {
         final BlackDuckDistributionUIConfig uiConfig = Mockito.mock(BlackDuckDistributionUIConfig.class);
         Mockito.when(uiConfig.createFields()).thenReturn(blackDuckDistributionUIConfig.createFields());
-        final BlackDuckDistributionDescriptorActionApi restApi = new BlackDuckDistributionDescriptorActionApi(Mockito.mock(ContentConverter.class));
+        final BlackDuckDistributionDescriptorActionApi restApi = new BlackDuckDistributionDescriptorActionApi();
         final BlackDuckDistributionDescriptorActionApi spiedRestApi = Mockito.spy(restApi);
         final FieldModel fieldAccessor = Mockito.mock(FieldModel.class);
         Mockito.when(fieldAccessor.getField(Mockito.anyString())).thenReturn(Optional.empty());
@@ -36,7 +35,7 @@ public class BlackDuckDistributionDescriptorActionApiTest {
     public void testTestConfig() throws IntegrationException {
         final BlackDuckDistributionUIConfig uiConfig = Mockito.mock(BlackDuckDistributionUIConfig.class);
         Mockito.when(uiConfig.createFields()).thenReturn(blackDuckDistributionUIConfig.createFields());
-        final BlackDuckDistributionDescriptorActionApi restApi = new BlackDuckDistributionDescriptorActionApi(Mockito.mock(ContentConverter.class));
+        final BlackDuckDistributionDescriptorActionApi restApi = new BlackDuckDistributionDescriptorActionApi();
         final BlackDuckDistributionDescriptorActionApi spiedRestApi = Mockito.spy(restApi);
         spiedRestApi.testConfig(Mockito.any());
         Mockito.verify(spiedRestApi).testConfig(Mockito.any());
