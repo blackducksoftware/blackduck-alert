@@ -126,8 +126,6 @@ public class ConfigurationFieldModelConverter {
             });
         }
 
-        //TODO for sensitive fields we need to get the values and update the ConfigurationFieldModels with the stored value IFF the fieldModel isSet = true and has no value
-
         return configurationModels.stream().collect(Collectors.toMap(ConfigurationFieldModel::getFieldKey, Function.identity()));
     }
 

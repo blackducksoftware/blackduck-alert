@@ -43,6 +43,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
@@ -155,7 +156,8 @@ public class ConfigActions {
     public String testConfig(final FieldModel fieldModel, final String destination) throws IntegrationException {
         validateConfig(fieldModel, new HashMap<>());
         final DescriptorActionApi descriptorActionApi = retrieveDescriptorActionApi(fieldModel).orElseThrow(() -> new AlertException("Could not find a Descriptor with the name: " + fieldModel.getDescriptorName()));
-        final TestConfigModel testConfig = descriptorActionApi.createTestConfigModel(fieldModel, destination);
+        final FieldAccessor fieldAccessor = modelConverter.convertToFieldAccessor(fieldModel);
+        final TestConfigModel testConfig = descriptorActionApi.createTestConfigModel(fieldModel.getId(), fieldAccessor, destination);
         descriptorActionApi.testConfig(testConfig);
         return "Successfully sent test message.";
     }

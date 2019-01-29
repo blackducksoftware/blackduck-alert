@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
-import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -41,17 +40,15 @@ import com.synopsys.integration.rest.request.Request;
 @Component
 public class HipChatGlobalDescriptorActionApi extends DescriptorActionApi {
     private final HipChatChannel hipChatChannel;
-    private final ConfigurationFieldModelConverter modelConverter;
 
     @Autowired
-    public HipChatGlobalDescriptorActionApi(final HipChatChannel hipChatChannel, final ConfigurationFieldModelConverter modelConverter) {
+    public HipChatGlobalDescriptorActionApi(final HipChatChannel hipChatChannel) {
         this.hipChatChannel = hipChatChannel;
-        this.modelConverter = modelConverter;
     }
 
     @Override
     public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
-        final FieldAccessor fieldAccessor = modelConverter.convertToFieldAccessor(testConfig.getFieldModel());
+        final FieldAccessor fieldAccessor = testConfig.getFieldAccessor();
         final Optional<String> apiKey = fieldAccessor.getString(HipChatDescriptor.KEY_API_KEY);
         final String configuredApiUrl = fieldAccessor.getString(HipChatDescriptor.KEY_HOST_SERVER).orElse(HipChatChannel.HIP_CHAT_API);
         if (!apiKey.isPresent()) {
