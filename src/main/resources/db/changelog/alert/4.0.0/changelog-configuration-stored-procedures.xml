@@ -197,12 +197,12 @@
     </changeSet>
 
     <!-- Create job migration procedure -->
-    <changeSet author="gkillough" id="1545000000000-2">
+    <changeSet author="gkillough" id="1545000000000-3">
         <createProcedure
                 dbms="h2"
                 relativeToChangelogFile="true"
                 schemaName="ALERT">
-            CREATE ALIAS MIGRATE_DISTRIBUTION_JOBS
+            CREATE ALIAS MIGRATE_DISTRIBUTION_JOBS_FROM_3_1_0_TO_4_0_0
             FOR "com.synopsys.integration.alert.database.H2StoredProcedureTest.migrateDistributionJobs";
         </createProcedure>
     </changeSet>
