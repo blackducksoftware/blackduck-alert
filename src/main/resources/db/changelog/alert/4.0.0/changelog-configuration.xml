@@ -203,12 +203,6 @@
     <changeSet author="bmandel" id="1548100590332-1">
         <modifyDataType
                 schemaName="ALERT"
-                tableName="DISTRIBUTION_NOTIFICATION_TYPES"
-                columnName="COMMON_DISTRIBUTION_CONFIG_ID"
-                newDataType="UUID"
-        />
-        <modifyDataType
-                schemaName="ALERT"
                 tableName="DISTRIBUTION_PROJECT_RELATION"
                 columnName="COMMON_DISTRIBUTION_CONFIG_ID"
                 newDataType="UUID"

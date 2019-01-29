@@ -9,4 +9,5 @@
     <include file="changelog-authentication.xml" relativeToChangelogFile="true"/>
     <include file="changelog-audit.xml" relativeToChangelogFile="true"/>
     <include file="changelog-settingskey.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-cleanup.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

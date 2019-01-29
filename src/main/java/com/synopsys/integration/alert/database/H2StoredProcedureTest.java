@@ -58,8 +58,8 @@ public class H2StoredProcedureTest {
                 }
 
                 // Create provider config
-                connection.createStatement()
-                    .executeUpdate("INSERT INTO ALERT.DESCRIPTOR_CONFIGS (DESCRIPTOR_ID, CONTEXT_ID) VALUES (GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('provider_blackduck') , GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION'));");
+                connection.createStatement().executeUpdate(
+                    "INSERT INTO ALERT.DESCRIPTOR_CONFIGS (DESCRIPTOR_ID, CONTEXT_ID) VALUES (GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('provider_blackduck') , GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION'));");
 
                 // Create new job with provider config
                 final java.util.UUID jobUUID = java.util.UUID.randomUUID();
@@ -76,69 +76,87 @@ public class H2StoredProcedureTest {
                     .executeUpdate(
                         "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('provider.distribution.format.type'), '" + formatTypeString + "');");
 
-                // TODO Get notification types (int)
-                //  Table: DISTRIBUTION_NOTIFICATION_TYPES
-                //  New Key: provider.distribution.notification.types
+                // Add provider notification types
+                try (final java.sql.ResultSet distributionNotificationTypes = connection.createStatement().executeQuery(
+                    "SELECT * FROM ALERT.DISTRIBUTION_NOTIFICATION_TYPES WHERE DISTRIBUTION_NOTIFICATION_TYPES.COMMON_DISTRIBUTION_CONFIG_ID = " + commonConfigId.toString() + ";")) {
+                    while (distributionNotificationTypes.next()) {
+                        final java.lang.String notificationTypeName = distributionNotificationTypes.getString("NOTIFICATION_TYPE");
+                        connection.createStatement().executeUpdate(
+                            "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), "
+                                + "GET_FIELD_ID_FOR_SOURCE_KEY('provider.distribution.notification.types'), '" + notificationTypeName + "');");
+                    }
+                }
 
-                // TODO Get project names (string)
-                // channel.common.configured.project
+                // Add project names
+                try (final java.sql.ResultSet projectNamesJoined = connection.createStatement().executeQuery(
+                    "SELECT PROJECT_NAME FROM ALERT.DISTRIBUTION_PROJECT_RELATION JOIN ALERT.CONFIGURED_PROJECTS WHERE DISTRIBUTION_PROJECT_RELATION.COMMON_DISTRIBUTION_CONFIG_ID = " + commonConfigId.toString() + ";")) {
+                    while (projectNamesJoined.next()) {
+                        final java.lang.String projectNameForConfig = projectNamesJoined.getString("PROJECT_NAME");
+                        connection.createStatement().executeUpdate(
+                            "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) "
+                                + "VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('channel.common.configured.project'), '" + projectNameForConfig + "');");
+                    }
+                }
 
                 // Create channel config
-                connection.createStatement()
-                    .executeUpdate("INSERT INTO ALERT.DESCRIPTOR_CONFIGS (DESCRIPTOR_ID, CONTEXT_ID) VALUES (GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('" + distributionType + "') , GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION'));");
+                connection.createStatement().executeUpdate(
+                    "INSERT INTO ALERT.DESCRIPTOR_CONFIGS (DESCRIPTOR_ID, CONTEXT_ID) VALUES (GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME('" + distributionType + "') , GET_ID_FOR_CONFIG_CONTEXT('DISTRIBUTION'));");
 
                 // Add channel config to job
                 connection.createStatement().executeUpdate("INSERT INTO ALERT.CONFIG_GROUPS (CONFIG_ID, JOB_ID) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG() , '" + jobUUID.toString() + "');");
 
                 // Add common channel fields
-                connection.createStatement()
-                    .executeUpdate("INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('channel.common.name'), '" + name + "');");
-                connection.createStatement()
-                    .executeUpdate("INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('channel.common.channel.name'), '" + distributionType + "');");
-                connection.createStatement()
-                    .executeUpdate("INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('channel.common.provider.name'), '" + providerName + "');");
-                connection.createStatement()
-                    .executeUpdate("INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('channel.common.frequency'), '" + frequencyString + "');");
+                connection.createStatement().executeUpdate(
+                    "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('channel.common.name'), '" + name + "');");
+                connection.createStatement().executeUpdate(
+                    "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('channel.common.channel.name'), '" + distributionType + "');");
+                connection.createStatement().executeUpdate(
+                    "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('channel.common.provider.name'), '" + providerName + "');");
+                connection.createStatement().executeUpdate(
+                    "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('channel.common.frequency'), '" + frequencyString + "');");
 
                 // Add specific channel fields
                 if ("channel_email".equals(distributionType)) {
-                    try (final java.sql.ResultSet emailDistributionConfigs = connection.createStatement()
-                                                                                 .executeQuery("SELECT * FROM ALERT.EMAIL_GROUP_DISTRIBUTION_CONFIG WHERE EMAIL_GROUP_DISTRIBUTION_CONFIG.ID = " + distributionConfigId.toString() + ";")) {
+                    try (final java.sql.ResultSet emailDistributionConfigs = connection.createStatement().executeQuery(
+                        "SELECT * FROM ALERT.EMAIL_GROUP_DISTRIBUTION_CONFIG WHERE EMAIL_GROUP_DISTRIBUTION_CONFIG.ID = " + distributionConfigId.toString() + ";")) {
                         if (commonDistributionConfig.next()) {
                             // TODO is this all of the fields?
                             final java.lang.String subjectLine = emailDistributionConfigs.getString("EMAIL_SUBJECT_LINE");
                             final java.lang.Boolean projectOwnerOnly = emailDistributionConfigs.getBoolean("PROJECT_OWNER_ONLY");
-                            connection.createStatement().executeUpdate("INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'email.subject.line', '" + subjectLine + "');");
-                            connection.createStatement()
-                                .executeUpdate("INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'project.owner.only', '" + projectOwnerOnly.toString() + "');");
+                            connection.createStatement().executeUpdate(
+                                "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('email.subject.line'), '" + subjectLine + "');");
+                            connection.createStatement().executeUpdate(
+                                "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('project.owner.only'), '" + projectOwnerOnly.toString() + "');");
                         }
                     }
                 } else if ("channel_hipchat".equals(distributionType)) {
-                    try (final java.sql.ResultSet hipChatDistribtionConfigs = connection.createStatement()
-                                                                                  .executeQuery("SELECT * FROM ALERT.EMAIL_GROUP_DISTRIBUTION_CONFIG WHERE EMAIL_GROUP_DISTRIBUTION_CONFIG.ID = " + distributionConfigId.toString() + ";")) {
+                    try (final java.sql.ResultSet hipChatDistribtionConfigs = connection.createStatement().executeQuery(
+                        "SELECT * FROM ALERT.EMAIL_GROUP_DISTRIBUTION_CONFIG WHERE EMAIL_GROUP_DISTRIBUTION_CONFIG.ID = " + distributionConfigId.toString() + ";")) {
                         if (commonDistributionConfig.next()) {
                             final java.lang.String color = hipChatDistribtionConfigs.getString("COLOR");
                             final java.lang.Boolean notify = hipChatDistribtionConfigs.getBoolean("NOTIFY");
                             final java.lang.Integer roomId = hipChatDistribtionConfigs.getInt("ROOM_ID");
-                            connection.createStatement().executeUpdate("INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'channel.hipchat.color', '" + color + "');");
-                            connection.createStatement()
-                                .executeUpdate("INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'channel.hipchat.notify', '" + notify.toString() + "');");
-                            connection.createStatement()
-                                .executeUpdate("INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'channel.hipchat.room.id', '" + roomId.toString() + "');");
+                            connection.createStatement().executeUpdate(
+                                "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('channel.hipchat.color'), '" + color + "');");
+                            connection.createStatement().executeUpdate(
+                                "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('channel.hipchat.notify'), '" + notify.toString() + "');");
+                            connection.createStatement().executeUpdate(
+                                "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('channel.hipchat.room.id'), '" + roomId.toString() + "');");
                         }
                     }
                 } else if ("channel_slack".equals(distributionType)) {
-                    try (final java.sql.ResultSet slackDistributionConfigs = connection.createStatement()
-                                                                                 .executeQuery("SELECT * FROM ALERT.EMAIL_GROUP_DISTRIBUTION_CONFIG WHERE EMAIL_GROUP_DISTRIBUTION_CONFIG.ID = " + distributionConfigId.toString() + ";")) {
+                    try (final java.sql.ResultSet slackDistributionConfigs = connection.createStatement().executeQuery(
+                        "SELECT * FROM ALERT.EMAIL_GROUP_DISTRIBUTION_CONFIG WHERE EMAIL_GROUP_DISTRIBUTION_CONFIG.ID = " + distributionConfigId.toString() + ";")) {
                         if (commonDistributionConfig.next()) {
                             final java.lang.String webhook = slackDistributionConfigs.getString("WEBHOOK");
                             final java.lang.String channelName = slackDistributionConfigs.getString("CHANNEL_NAME");
                             final java.lang.String channelUsername = slackDistributionConfigs.getString("CHANNEL_USERNAME");
-                            connection.createStatement().executeUpdate("INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'channel.slack.webhook', '" + webhook + "');");
-                            connection.createStatement()
-                                .executeUpdate("INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'channel.slack.channel.name', '" + channelName + "');");
-                            connection.createStatement()
-                                .executeUpdate("INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), 'channel.slack.channel.username', '" + channelUsername + "');");
+                            connection.createStatement().executeUpdate(
+                                "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('channel.slack.webhook'), '" + webhook + "');");
+                            connection.createStatement().executeUpdate(
+                                "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('channel.slack.channel.name'), '" + channelName + "');");
+                            connection.createStatement().executeUpdate(
+                                "INSERT INTO ALERT.FIELD_VALUES (CONFIG_ID, FIELD_ID, FIELD_VALUE) VALUES (GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG(), GET_FIELD_ID_FOR_SOURCE_KEY('channel.slack.channel.username'), '" + channelUsername + "');");
                         }
                     }
                 } else {
@@ -147,7 +165,7 @@ public class H2StoredProcedureTest {
                 }
 
                 // Update audit table
-                try (final java.sql.ResultSet auditEntries = connection.createStatement().executeQuery("SELECT * FROM ALERT.AUDIT_ENTRIES WHERE AUDIT_ENTRIES.COMMON_CONFIG_ID = " + commonConfigId + ";")) {
+                try (final java.sql.ResultSet auditEntries = connection.createStatement().executeQuery("SELECT ID FROM ALERT.AUDIT_ENTRIES WHERE AUDIT_ENTRIES.COMMON_CONFIG_ID = " + commonConfigId.toString() + ";")) {
                     while (auditEntries.next()) {
                         final java.lang.Integer auditId = auditEntries.getInt("ID");
                         connection.createStatement().executeUpdate("UPDATE ALERT.AUDIT_ENTRIES SET AUDIT_ENTRIES.CONFIG_GROUP_ID = '" + jobUUID.toString() + "' WHERE AUDIT_ENTRIES.ID = " + auditId.toString() + ";");
