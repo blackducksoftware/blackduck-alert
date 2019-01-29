@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.channel.email;
 
+import static com.synopsys.integration.alert.util.FieldModelUtil.addConfigurationFieldToMap;
 import static com.synopsys.integration.alert.util.FieldModelUtil.addFieldValueToMap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -20,9 +21,7 @@ import org.mockito.Mockito;
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailGlobalDescriptorActionApi;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailGlobalUIConfig;
-import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
-import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
-import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.NumberConfigField;
@@ -30,12 +29,11 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
-import com.synopsys.integration.alert.common.security.EncryptionUtility;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.audit.AuditUtility;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.data.relation.UserProjectRelationRepositoryAccessor;
-import com.synopsys.integration.alert.mock.MockDescriptorAccessor;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckEmailHandler;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
@@ -52,13 +50,8 @@ public class EmailGlobalDescriptorActionApiTest {
     @Test
     public void validateConfigEmptyTest() {
         final EmailChannel emailChannel = Mockito.mock(EmailChannel.class);
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
         final EmailGlobalUIConfig uiConfig = new EmailGlobalUIConfig();
-        final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(uiConfig.createFields());
-        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
-        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, baseConfigurationAccessor);
-        final EmailGlobalDescriptorActionApi emailGlobalDescriptorActionApi = new EmailGlobalDescriptorActionApi(emailChannel, modelConverter);
+        final EmailGlobalDescriptorActionApi emailGlobalDescriptorActionApi = new EmailGlobalDescriptorActionApi(emailChannel);
 
         final FieldModel fieldModel = new FieldModel(EmailChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL.name(), Map.of());
         final Map<String, String> fieldErrors = new HashMap<>();
@@ -73,13 +66,8 @@ public class EmailGlobalDescriptorActionApiTest {
     @Test
     public void validateConfigInvalidTest() {
         final EmailChannel emailChannel = Mockito.mock(EmailChannel.class);
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
         final EmailGlobalUIConfig uiConfig = new EmailGlobalUIConfig();
-        final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(uiConfig.createFields());
-        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
-        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, baseConfigurationAccessor);
-        final EmailGlobalDescriptorActionApi emailGlobalDescriptorActionApi = new EmailGlobalDescriptorActionApi(emailChannel, modelConverter);
+        final EmailGlobalDescriptorActionApi emailGlobalDescriptorActionApi = new EmailGlobalDescriptorActionApi(emailChannel);
         final Map<String, FieldValueModel> fields = new HashMap<>();
         fillMapBlanks(fields);
         addFieldValueToMap(fields, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), "notInt");
@@ -99,13 +87,8 @@ public class EmailGlobalDescriptorActionApiTest {
     @Test
     public void validateConfigValidTest() {
         final EmailChannel emailChannel = Mockito.mock(EmailChannel.class);
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
         final EmailGlobalUIConfig uiConfig = new EmailGlobalUIConfig();
-        final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(uiConfig.createFields());
-        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
-        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, baseConfigurationAccessor);
-        final EmailGlobalDescriptorActionApi emailGlobalDescriptorActionApi = new EmailGlobalDescriptorActionApi(emailChannel, modelConverter);
+        final EmailGlobalDescriptorActionApi emailGlobalDescriptorActionApi = new EmailGlobalDescriptorActionApi(emailChannel);
         final Map<String, FieldValueModel> fields = new HashMap<>();
         fillMap(fields);
         addFieldValueToMap(fields, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), "10");
@@ -128,16 +111,11 @@ public class EmailGlobalDescriptorActionApiTest {
     @Test
     public void testConfigEmptyTest() throws Exception {
         final EmailChannel emailChannel = Mockito.mock(EmailChannel.class);
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
-        final EmailGlobalUIConfig uiConfig = new EmailGlobalUIConfig();
-        final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(uiConfig.createFields());
-        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
-        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, baseConfigurationAccessor);
-        final EmailGlobalDescriptorActionApi emailGlobalDescriptorActionApi = new EmailGlobalDescriptorActionApi(emailChannel, modelConverter);
-        final Map<String, FieldValueModel> keyToValues = new HashMap<>();
-        final FieldModel fieldModel = new FieldModel(EmailChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL.name(), keyToValues);
-        final TestConfigModel testConfigModel = new TestConfigModel(fieldModel);
+        final EmailGlobalDescriptorActionApi emailGlobalDescriptorActionApi = new EmailGlobalDescriptorActionApi(emailChannel);
+        final Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
+        final FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
+
+        final TestConfigModel testConfigModel = new TestConfigModel(fieldAccessor);
         emailGlobalDescriptorActionApi.testConfig(testConfigModel);
 
         final ArgumentCaptor<EmailProperties> props = ArgumentCaptor.forClass(EmailProperties.class);
@@ -157,16 +135,10 @@ public class EmailGlobalDescriptorActionApiTest {
     @Test
     public void testConfigWithInvalidDestinationTest() throws Exception {
         final EmailChannel emailChannel = Mockito.mock(EmailChannel.class);
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
-        final EmailGlobalUIConfig uiConfig = new EmailGlobalUIConfig();
-        final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(uiConfig.createFields());
-        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
-        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, baseConfigurationAccessor);
-        final EmailGlobalDescriptorActionApi emailGlobalDescriptorActionApi = new EmailGlobalDescriptorActionApi(emailChannel, modelConverter);
-        final Map<String, FieldValueModel> keyToValues = new HashMap<>();
-        final FieldModel fieldModel = new FieldModel(EmailChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL.name(), keyToValues);
-        final TestConfigModel testConfigModel = new TestConfigModel(fieldModel, "fake");
+        final EmailGlobalDescriptorActionApi emailGlobalDescriptorActionApi = new EmailGlobalDescriptorActionApi(emailChannel);
+        final Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
+        final FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
+        final TestConfigModel testConfigModel = new TestConfigModel(fieldAccessor, "fake");
         try {
             emailGlobalDescriptorActionApi.testConfig(testConfigModel);
             fail("Should have thrown exception");
@@ -178,18 +150,12 @@ public class EmailGlobalDescriptorActionApiTest {
     @Test
     public void testConfigWithValidDestinationTest() throws Exception {
         final EmailChannel emailChannel = Mockito.mock(EmailChannel.class);
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
-        final EmailGlobalUIConfig uiConfig = new EmailGlobalUIConfig();
-        final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(uiConfig.createFields());
-        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
-        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, baseConfigurationAccessor);
-        final EmailGlobalDescriptorActionApi emailGlobalDescriptorActionApi = new EmailGlobalDescriptorActionApi(emailChannel, modelConverter);
-        final Map<String, FieldValueModel> keyToValues = new HashMap<>();
-        final FieldModel fieldModel = new FieldModel(EmailChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL.name(), keyToValues);
-        final TestConfigModel testConfigModel = new TestConfigModel(fieldModel, "fake@synopsys.com");
-        final Map<String, ConfigField> configFieldMap = uiConfig.createFields().stream()
-                                                            .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
+        final EmailGlobalDescriptorActionApi emailGlobalDescriptorActionApi = new EmailGlobalDescriptorActionApi(emailChannel);
+
+        final Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
+        final FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
+        final TestConfigModel testConfigModel = new TestConfigModel(fieldAccessor, "fake@synopsys.com");
+
         emailGlobalDescriptorActionApi.testConfig(testConfigModel);
 
         final ArgumentCaptor<EmailProperties> props = ArgumentCaptor.forClass(EmailProperties.class);
@@ -229,25 +195,20 @@ public class EmailGlobalDescriptorActionApiTest {
 
         final EmailChannel emailChannel = new EmailChannel(new Gson(), testAlertProperties, null, auditUtility, emailAddressHandler);
         //////////////////////////////////////
-        final EmailGlobalUIConfig uiConfig = new EmailGlobalUIConfig();
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
-        final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(uiConfig.createFields());
-        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
-        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, baseConfigurationAccessor);
-        final EmailGlobalDescriptorActionApi emailGlobalDescriptorActionApi = new EmailGlobalDescriptorActionApi(emailChannel, modelConverter);
+        final EmailGlobalDescriptorActionApi emailGlobalDescriptorActionApi = new EmailGlobalDescriptorActionApi(emailChannel);
 
-        final Map<String, FieldValueModel> keyToValues = new HashMap<>();
-        addFieldValueToMap(keyToValues, EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST));
-        addFieldValueToMap(keyToValues, EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM));
-        addFieldValueToMap(keyToValues, EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_USER));
-        addFieldValueToMap(keyToValues, EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PASSWORD));
-        addFieldValueToMap(keyToValues, EmailPropertyKeys.JAVAMAIL_EHLO_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_EHLO));
-        addFieldValueToMap(keyToValues, EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_AUTH));
-        addFieldValueToMap(keyToValues, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT));
+        final Map<String, ConfigurationFieldModel> keyToValues = new HashMap<>();
+        addConfigurationFieldToMap(keyToValues, EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST));
+        addConfigurationFieldToMap(keyToValues, EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM));
+        addConfigurationFieldToMap(keyToValues, EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_USER));
+        addConfigurationFieldToMap(keyToValues, EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PASSWORD));
+        addConfigurationFieldToMap(keyToValues, EmailPropertyKeys.JAVAMAIL_EHLO_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_EHLO));
+        addConfigurationFieldToMap(keyToValues, EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_AUTH));
+        addConfigurationFieldToMap(keyToValues, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), properties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT));
 
-        final FieldModel fieldModel = new FieldModel(EmailChannel.COMPONENT_NAME, ConfigContextEnum.GLOBAL.name(), keyToValues);
-        final TestConfigModel testConfigModel = new TestConfigModel(fieldModel, properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT));
+        final FieldAccessor fieldAccessor = new FieldAccessor(keyToValues);
+        final TestConfigModel testConfigModel = new TestConfigModel(fieldAccessor, properties.getProperty(TestPropertyKey.TEST_EMAIL_RECIPIENT));
+
         emailGlobalDescriptorActionApi.testConfig(testConfigModel);
 
     }

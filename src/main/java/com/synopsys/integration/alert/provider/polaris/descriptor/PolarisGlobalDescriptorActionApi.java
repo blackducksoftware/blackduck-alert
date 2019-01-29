@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -45,12 +44,10 @@ import com.synopsys.integration.rest.request.Response;
 public class PolarisGlobalDescriptorActionApi extends DescriptorActionApi {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final PolarisProperties polarisProperties;
-    private final ConfigurationFieldModelConverter modelConverter;
 
     @Autowired
-    public PolarisGlobalDescriptorActionApi(final PolarisProperties polarisProperties, final ConfigurationFieldModelConverter modelConverter) {
+    public PolarisGlobalDescriptorActionApi(final PolarisProperties polarisProperties) {
         this.polarisProperties = polarisProperties;
-        this.modelConverter = modelConverter;
     }
 
     @Override

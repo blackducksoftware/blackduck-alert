@@ -56,7 +56,6 @@ public abstract class DescriptorActionApi {
                     fieldErrors.put(fieldKey, ConfigField.REQUIRED_FIELD_MISSING);
                 }
             }
-
             // field is present now validate the field
             if (!fieldErrors.containsKey(fieldKey) && optionalField.isPresent()) {
                 final Collection<String> validationErrors = fieldEntry.getValue().validate(optionalField.get(), fieldModel);
