@@ -169,7 +169,7 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
         final NotificationContent garbage3 = createVulnerabilityNotification("garbage3", BlackDuckProvider.COMPONENT_NAME, new Date());
         final List<NotificationContent> notifications = List.of(garbage1, applicableNotification, garbage2, garbage3);
 
-        // TODO refactor the populateFieldModel to use the ObjectHierarchicalField
+        // TODO refactor the test to use the ObjectHierarchicalField
 
         final Collection<NotificationContent> filteredNotifications = defaultNotificationFilter.extractApplicableNotifications(TEST_CONFIG_FREQUENCY, notifications);
 

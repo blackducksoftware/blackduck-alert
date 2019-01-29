@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
@@ -55,9 +56,7 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
 
         final List<ConfigField> configFields = List.of(notificationTypesField, formatField);
         final List<ConfigField> providerDistributionFields = createProviderDistributionFields();
-        providerDistributionFields.addAll(configFields);
-
-        return providerDistributionFields;
+        return Stream.concat(configFields.stream(), providerDistributionFields.stream()).collect(Collectors.toList());
     }
 
     public abstract List<ConfigField> createProviderDistributionFields();

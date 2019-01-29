@@ -24,7 +24,6 @@
 package com.synopsys.integration.alert.provider.blackduck.descriptor;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -53,17 +52,13 @@ public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig 
 
     @Override
     public List<ConfigField> createProviderDistributionFields() {
-        final List<ConfigField> defaultProviderFields = super.createFields();
         final ConfigField filterByProject = CheckboxConfigField.create(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT, "Filter by project");
         final ConfigField projectNamePattern = TextInputConfigField.create(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN, "Project name pattern", this::validateProjectNamePattern);
 
         // TODO figure out how to create a project listing (Perhaps a new field type called table)
         // TODO create a linkedField that is an endpoint the UI hits to generate a field
         final ConfigField configuredProject = SelectConfigField.createRequiredEmpty(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT, "Projects", this::validateConfiguredProject);
-        final List<ConfigField> fieldList = new LinkedList<>();
-        fieldList.addAll(defaultProviderFields);
-        fieldList.addAll(List.of(filterByProject, projectNamePattern, configuredProject));
-        return List.copyOf(fieldList);
+        return List.of(filterByProject, projectNamePattern, configuredProject);
     }
 
     private Collection<String> validateProjectNamePattern(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {

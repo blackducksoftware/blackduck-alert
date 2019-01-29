@@ -83,7 +83,7 @@ public class ConfigController extends BaseController {
             return responseFactory.createNotFoundResponse("Configurations not found for the context and descriptor provided");
         }
 
-        return new ResponseEntity<>(contentConverter.getJsonString(models), HttpStatus.OK);
+        return responseFactory.createResponse(HttpStatus.OK, contentConverter.getJsonString(models));
     }
 
     @GetMapping("/{id}")
@@ -96,11 +96,11 @@ public class ConfigController extends BaseController {
             return responseFactory.createNotFoundResponse("Configuration not found for the specified id");
         }
 
-        if (optionalModel.isEmpty()) {
-            return responseFactory.createNotFoundResponse("Configuration not found for the specified id");
+        if (optionalModel.isPresent()) {
+            return responseFactory.createOkResponse(contentConverter.getStringValue(id), contentConverter.getJsonString(optionalModel.get()));
         }
 
-        return new ResponseEntity<>(contentConverter.getJsonString(optionalModel.get()), HttpStatus.OK);
+        return responseFactory.createNotFoundResponse("Configuration not found for the specified id");
     }
 
     @PostMapping

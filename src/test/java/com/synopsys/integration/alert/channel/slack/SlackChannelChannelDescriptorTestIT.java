@@ -105,7 +105,7 @@ public class SlackChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     @Override
     public boolean assertDistributionFields(final Set<DefinedFieldModel> distributionFields) {
         final Set<String> fieldNames = Set.of(SlackDescriptor.KEY_CHANNEL_NAME, SlackDescriptor.KEY_CHANNEL_USERNAME, SlackDescriptor.KEY_WEBHOOK);
-        return distributionFields.stream().map(DefinedFieldModel::getKey).allMatch(fieldNames::contains);
+        return distributionFields.containsAll(fieldNames);
     }
 
     @Override
