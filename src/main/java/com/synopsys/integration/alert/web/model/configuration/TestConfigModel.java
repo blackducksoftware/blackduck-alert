@@ -25,21 +25,38 @@ package com.synopsys.integration.alert.web.model.configuration;
 
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+
 public class TestConfigModel {
     private final String destination;
-    private final FieldModel fieldModel;
+    private final FieldAccessor fieldAccessor;
+    private String configId;
 
-    public TestConfigModel(final FieldModel fieldModel) {
-        this(fieldModel, null);
+    public TestConfigModel(final FieldAccessor fieldAccessor) {
+        this(fieldAccessor, null);
     }
 
-    public TestConfigModel(final FieldModel fieldModel, final String destination) {
-        this.fieldModel = fieldModel;
+    public TestConfigModel(final FieldAccessor fieldAccessor, final String destination) {
+        this.fieldAccessor = fieldAccessor;
         this.destination = destination;
     }
 
-    public FieldModel getFieldModel() {
-        return fieldModel;
+    public Optional<String> getConfigId() {
+        return Optional.ofNullable(configId);
+    }
+
+    public void setConfigId(final String configId) {
+        if (StringUtils.isBlank(configId)) {
+            this.configId = null;
+        } else {
+            this.configId = configId;
+        }
+    }
+
+    public FieldAccessor getFieldAccessor() {
+        return fieldAccessor;
     }
 
     public Optional<String> getDestination() {

@@ -40,6 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
@@ -109,8 +110,8 @@ public class FieldModelProcessor {
         final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
         if (descriptorActionApi.isPresent()) {
             final DescriptorActionApi descriptorApi = descriptorActionApi.get();
-            final TestConfigModel testConfig = descriptorApi.createTestConfigModel(fieldModel, destination);
-            // TODO look to see if FieldAccessor can be modified to allow mutable maps. FieldAccessor and destination can then be passed here
+            final FieldAccessor fieldAccessor = fieldModelConverter.convertToFieldAccessor(fieldModel);
+            final TestConfigModel testConfig = descriptorApi.createTestConfigModel(fieldModel.getId(), fieldAccessor, destination);
             descriptorApi.testConfig(testConfig);
             return "Successfully sent test message.";
         } else {
