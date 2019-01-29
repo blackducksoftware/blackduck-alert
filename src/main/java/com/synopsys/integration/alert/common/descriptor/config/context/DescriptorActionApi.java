@@ -34,6 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.configuration.CommonDistributionConfiguration;
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.LinkableItem;
@@ -55,7 +56,6 @@ public abstract class DescriptorActionApi {
                     fieldErrors.put(fieldKey, ConfigField.REQUIRED_FIELD_MISSING);
                 }
             }
-
             // field is present now validate the field
             if (!fieldErrors.containsKey(fieldKey) && optionalField.isPresent()) {
                 final Collection<String> validationErrors = fieldEntry.getValue().validate(optionalField.get(), fieldModel);
@@ -66,8 +66,10 @@ public abstract class DescriptorActionApi {
         }
     }
 
-    public TestConfigModel createTestConfigModel(final FieldModel fieldModel, final String destination) throws AlertFieldException {
-        return new TestConfigModel(fieldModel, destination);
+    public TestConfigModel createTestConfigModel(final String configId, final FieldAccessor fieldAccessor, final String destination) throws AlertFieldException {
+        final TestConfigModel testConfigModel = new TestConfigModel(fieldAccessor, destination);
+        testConfigModel.setConfigId(configId);
+        return testConfigModel;
     }
 
     public abstract void testConfig(final TestConfigModel testConfig) throws IntegrationException;

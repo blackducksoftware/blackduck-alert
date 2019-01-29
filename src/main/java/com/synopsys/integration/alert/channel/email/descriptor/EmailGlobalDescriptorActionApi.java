@@ -37,7 +37,6 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.EmailChannel;
 import com.synopsys.integration.alert.channel.email.EmailProperties;
-import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -51,12 +50,10 @@ import com.synopsys.integration.exception.IntegrationException;
 @Component
 public class EmailGlobalDescriptorActionApi extends DescriptorActionApi {
     private final EmailChannel emailChannel;
-    private final ConfigurationFieldModelConverter modelConverter;
 
     @Autowired
-    public EmailGlobalDescriptorActionApi(final EmailChannel emailChannel, final ConfigurationFieldModelConverter modelConverter) {
+    public EmailGlobalDescriptorActionApi(final EmailChannel emailChannel) {
         this.emailChannel = emailChannel;
-        this.modelConverter = modelConverter;
     }
 
     @Override
@@ -72,7 +69,7 @@ public class EmailGlobalDescriptorActionApi extends DescriptorActionApi {
             }
             emailAddresses = Set.of(testEmailAddress);
         }
-        final FieldAccessor fieldAccessor = modelConverter.convertToFieldAccessor(testConfig.getFieldModel());
+        final FieldAccessor fieldAccessor = testConfig.getFieldAccessor();
         final EmailProperties emailProperties = new EmailProperties(fieldAccessor);
 
         final SortedSet<LinkableItem> set = new TreeSet<>();
