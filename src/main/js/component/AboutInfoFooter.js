@@ -151,7 +151,7 @@ class AboutInfoFooter extends React.Component {
                 </a>
                 <span className="productVersion">v{version}</span>
                 <span className="copyright">
-                    &nbsp;© 2018&nbsp;
+                    &nbsp;© 2019&nbsp;
                     <a id="aboutLink" href="http://www.blackducksoftware.com">Black Duck Software, Inc</a>
                     &nbsp;All rights reserved.
                 </span>

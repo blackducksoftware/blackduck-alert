@@ -112,7 +112,6 @@ public class StartupManager {
         initializeChannelPropertyManagers();
         validate();
         logConfiguration();
-        listProperties();
         initializeCronJobs();
         initializeProviders();
     }
@@ -121,7 +120,7 @@ public class StartupManager {
         try {
             // manually wire the encryption utility.
             StringEncryptionConverter.setEncryptionUtility(encryptionUtility);
-            alertStartupInitializer.initializeConfigs(true);
+            alertStartupInitializer.initializeConfigs();
         } catch (final Exception e) {
             logger.error("Error inserting startup values", e);
         }
@@ -152,15 +151,6 @@ public class StartupManager {
             logger.info("BlackDuck API Token:           **********");
             logger.info("BlackDuck Timeout:             {}", fieldAccessor.getInteger(BlackDuckDescriptor.KEY_BLACKDUCK_TIMEOUT).orElse(BlackDuckProperties.DEFAULT_TIMEOUT));
         });
-        logger.info("----------------------------------------");
-    }
-
-    public void listProperties() {
-        logger.info("Properties that can be used for initial Alert setup:");
-        logger.info("----------------------------------------");
-        for (final String property : alertStartupInitializer.getAlertPropertyNameSet()) {
-            logger.info(property);
-        }
         logger.info("----------------------------------------");
     }
 
