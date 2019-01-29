@@ -60,10 +60,10 @@ public class BlackDuckDataController extends BaseController {
         try {
             final List<BlackDuckProject> projects = blackDuckDataActions.getBlackDuckProjects();
             final String usersJson = contentConverter.getJsonString(projects);
-            return responseFactory.createResponse(HttpStatus.OK, usersJson);
+            return responseFactory.createOkContentResponse(usersJson);
         } catch (final Exception e) {
             logger.error(e.getMessage(), e);
-            return responseFactory.createResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+            return responseFactory.createMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
