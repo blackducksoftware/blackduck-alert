@@ -100,10 +100,7 @@ public class AlertStartupInitializer {
 
     private Optional<ConfigurationModel> findSettingsConfiguration() throws AlertDatabaseConstraintException {
         final List<ConfigurationModel> settingsConfigurationModels = fieldConfigurationAccessor.getConfigurationByDescriptorNameAndContext(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL);
-        if (settingsConfigurationModels.size() != 1) {
-            return Optional.empty();
-        }
-        return Optional.of(settingsConfigurationModels.get(0));
+        return settingsConfigurationModels.stream().findFirst();
     }
 
     private void initializeConfiguration(final Collection<String> descriptorNames, final boolean overwriteCurrentConfig) {
