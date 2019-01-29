@@ -32,15 +32,6 @@ RUN set -e \
     && addgroup -S alert \
     && adduser -h "$ALERT_HOME" -g alert -s /sbin/nologin -G alert -S -D alert
 
-#    && apt-get -qq -y update \
-#    && apt-get -q -y install \
-#                curl \
-#        		jq \
-#    		    openssl \
-#        		bash \
-#    && addgroup --system alert \
-#    && adduser --system --home "$ALERT_HOME" --shell /sbin/nologin --ingroup alert --gecos alert alert
-
 RUN mkdir -p -m 777 $SECURITY_DIR
 
 COPY blackduck-alert-boot-$VERSION $ALERT_HOME/alert-tar
