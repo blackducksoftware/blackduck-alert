@@ -11,6 +11,9 @@
 
     <!-- Migrate jobs -->
     <changeSet author="gkillough" id="1548704562941-4">
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_DISTRIBUTION_JOBS();
+        </sql>
     </changeSet>
 
     <!-- Remove old column(s) -->

@@ -202,7 +202,7 @@
                 dbms="h2"
                 relativeToChangelogFile="true"
                 schemaName="ALERT">
-            CREATE ALIAS GET_ID_FOR_REGISTERED_DESCRIPTOR_NAME
+            CREATE ALIAS MIGRATE_DISTRIBUTION_JOBS
             FOR "com.synopsys.integration.alert.database.H2StoredProcedureTest.migrateDistributionJobs";
         </createProcedure>
     </changeSet>
