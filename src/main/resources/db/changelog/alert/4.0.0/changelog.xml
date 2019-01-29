@@ -4,7 +4,8 @@
     <include file="changelog-configuration.xml" relativeToChangelogFile="true"/>
     <include file="changelog-configuration-stored-procedures.xml" relativeToChangelogFile="true"/>
     <include file="changelog-configuration-initialization.xml" relativeToChangelogFile="true"/>
-    <include file="changelog-configuration-migration.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-configuration-global-migration.xml" relativeToChangelogFile="true"/>
+    <include file="changelog-configuration-distribution-job-migration.xml" relativeToChangelogFile="true"/>
     <include file="changelog-authentication.xml" relativeToChangelogFile="true"/>
     <include file="changelog-audit.xml" relativeToChangelogFile="true"/>
     <include file="changelog-settingskey.xml" relativeToChangelogFile="true"/>

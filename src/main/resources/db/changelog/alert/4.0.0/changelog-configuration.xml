@@ -197,6 +197,9 @@
                 onDelete="CASCADE"
         />
     </changeSet>
+
+
+    <!-- TODO remove these after migration scripts are complete (because the tables should be gone) -->
     <changeSet author="bmandel" id="1548100590332-1">
         <modifyDataType
                 schemaName="ALERT"

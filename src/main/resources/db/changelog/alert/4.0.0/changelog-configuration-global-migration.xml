@@ -94,7 +94,7 @@
         </sql>
         <!-- MAIL_SMTP_AUTH_DIGEST_MD5_DISABLE -->
         <sql dbms="h2" stripComments="true">
-            CALL MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_AUTH_DIGEST_MD5_DISABLE', 'mail.smtp.auth.digest.md5.disable.');
+            CALL MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_AUTH_DIGEST_MD5_DISABLE', 'mail.smtp.auth.digest-md5.disable');
         </sql>
         <!-- MAIL_SMTP_AUTH_NTLM_DISABLE -->
         <sql dbms="h2" stripComments="true">
@@ -110,7 +110,7 @@
         </sql>
         <!-- MAIL_SMTP_AUTH_XOAUTH2_DISABLE -->
         <sql dbms="h2" stripComments="true">
-            CALL MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_AUTH_XOAUTH2_DISABLE', 'mail.smtp.auth.xoauth2.disable..');
+            CALL MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_AUTH_XOAUTH2_DISABLE', 'mail.smtp.auth.xoauth2.disable');
         </sql>
         <!-- MAIL_SMTP_SUBMITTER -->
         <sql dbms="h2" stripComments="true">
@@ -126,11 +126,11 @@
         </sql>
         <!-- MAIL_SMTP_ALLOW_8_BITMIME -->
         <sql dbms="h2" stripComments="true">
-            CALL MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_ALLOW_8_BITMIME', 'mail.smtp.allow.8.bitmime');
+            CALL MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_ALLOW_8_BITMIME', 'mail.smtp.allow8bitmime');
         </sql>
         <!-- MAIL_SMTP_SEND_PARTIAL -->
         <sql dbms="h2" stripComments="true">
-            CALL MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_SEND_PARTIAL', 'mail.smtp.send.partial');
+            CALL MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_EMAIL_CONFIG', 'MAIL_SMTP_SEND_PARTIAL', 'mail.smtp.sendpartial');
         </sql>
         <!-- MAIL_SMTP_SASL_ENABLE -->
         <sql dbms="h2" stripComments="true">
