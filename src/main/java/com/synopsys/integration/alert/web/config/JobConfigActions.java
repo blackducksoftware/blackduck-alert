@@ -70,7 +70,7 @@ public class JobConfigActions {
     public Optional<JobFieldModel> getJobById(UUID id) throws AlertDatabaseConstraintException {
         final Optional<ConfigurationJobModel> jobConfiguration = configurationAccessor.getJobById(id);
         if (jobConfiguration.isPresent()) {
-            final JobFieldModel jobFieldModel = readGroupedConfiguration(jobConfiguration.get());
+            final JobFieldModel jobFieldModel = readJobConfiguration(jobConfiguration.get());
             return Optional.of(jobFieldModel);
         }
         return Optional.empty();
@@ -80,7 +80,7 @@ public class JobConfigActions {
         final List<ConfigurationJobModel> allJobs = configurationAccessor.getAllJobs();
         List<JobFieldModel> jobFieldModels = new LinkedList<>();
         for (ConfigurationJobModel configurationJobModel : allJobs) {
-            JobFieldModel jobFieldModel = readGroupedConfiguration(configurationJobModel);
+            JobFieldModel jobFieldModel = readJobConfiguration(configurationJobModel);
             jobFieldModels.add(jobFieldModel);
         }
         return jobFieldModels;
@@ -107,7 +107,7 @@ public class JobConfigActions {
             configurationFieldModels.addAll(savedFieldsModels);
         }
         final ConfigurationJobModel savedJob = configurationAccessor.createJob(descriptorNames, configurationFieldModels);
-        return convertToGroupedFieldModel(savedJob);
+        return convertToJobFieldModel(savedJob);
     }
 
     public JobFieldModel updateJob(UUID id, JobFieldModel jobFieldModel) throws AlertFieldException, AlertException {
@@ -119,13 +119,13 @@ public class JobConfigActions {
             configurationFieldModels.addAll(updatedFieldModels);
         }
         final ConfigurationJobModel configurationJobModel = configurationAccessor.updateJob(id, configurationFieldModels);
-        return convertToGroupedFieldModel(configurationJobModel);
+        return convertToJobFieldModel(configurationJobModel);
     }
 
     public String validateJob(JobFieldModel jobFieldModel) throws AlertFieldException {
         Map<String, String> fieldErrors = new HashMap<>();
         for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
-            fieldModelProcessor.validateFieldModel(fieldModel, fieldErrors);
+            fieldErrors.putAll(fieldModelProcessor.validateFieldModel(fieldModel));
         }
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
@@ -149,7 +149,7 @@ public class JobConfigActions {
         return "No field model of type channel was was sent to test.";
     }
 
-    private JobFieldModel readGroupedConfiguration(ConfigurationJobModel groupedConfiguration) throws AlertDatabaseConstraintException {
+    private JobFieldModel readJobConfiguration(ConfigurationJobModel groupedConfiguration) throws AlertDatabaseConstraintException {
         final Set<ConfigurationModel> configurations = groupedConfiguration.getCopyOfConfigurations();
         Set<FieldModel> constructedFieldModels = new HashSet<>();
         for (ConfigurationModel configurationModel : configurations) {
@@ -158,7 +158,7 @@ public class JobConfigActions {
         return new JobFieldModel(groupedConfiguration.getJobId().toString(), constructedFieldModels);
     }
 
-    private JobFieldModel convertToGroupedFieldModel(ConfigurationJobModel configurationJobModel) throws AlertDatabaseConstraintException {
+    private JobFieldModel convertToJobFieldModel(ConfigurationJobModel configurationJobModel) throws AlertDatabaseConstraintException {
         Set<FieldModel> constructedFieldModels = new HashSet<>();
         for (ConfigurationModel configurationModel : configurationJobModel.getCopyOfConfigurations()) {
             constructedFieldModels.add(fieldModelProcessor.convertToFieldModel(configurationModel));

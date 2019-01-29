@@ -171,7 +171,8 @@ public class EmailChannelChannelDescriptorTestIT extends ChannelDescriptorTest {
     @Override
     public boolean assertDistributionFields(final Set<DefinedFieldModel> distributionFields) {
         final Set<String> fieldNames = Set.of(EmailDescriptor.KEY_EMAIL_ADDRESSES, EmailDescriptor.KEY_SUBJECT_LINE, EmailDescriptor.KEY_PROJECT_OWNER_ONLY);
-        return distributionFields.containsAll(fieldNames);
+        Set<String> passedFieldNames = distributionFields.stream().map(DefinedFieldModel::getKey).collect(Collectors.toSet());
+        return passedFieldNames.containsAll(fieldNames);
     }
 
     @Override

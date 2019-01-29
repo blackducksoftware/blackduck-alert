@@ -38,7 +38,7 @@ public class BlackDuckDataControllerTest {
         final BlackDuckDataController blackDuckDataHandler = new BlackDuckDataController(responseFactory, blackDuckDataActions, contentConverter);
         final ResponseEntity<String> responseEntity = blackDuckDataHandler.getProjects();
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals("{\"message\":\"[]\"}", responseEntity.getBody());
+        assertEquals("[]", responseEntity.getBody());
     }
 
     @Test

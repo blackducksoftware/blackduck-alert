@@ -7,21 +7,12 @@ const initialState = {
     testStatus: '',
     error: {
         message: '',
-        fieldErrors: []
+        fieldErrors: {}
     },
-    blackDuckApiKey: '',
-    blackDuckApiKeyIsSet: false,
-    blackDuckProxyHost: '',
-    blackDuckProxyPassword: '',
-    blackDuckProxyPasswordIsSet: false,
-    blackDuckProxyPort: '',
-    blackDuckProxyUsername: '',
-    blackDuckTimeout: 300,
-    blackDuckUrl: '',
-    id: null
+    config: {}
 };
 
-const config = (state = initialState, action) => {
+const blackduck = (state = initialState, action) => {
     switch (action.type) {
         case CONFIG_FETCHING:
             return Object.assign({}, state, {
@@ -37,16 +28,7 @@ const config = (state = initialState, action) => {
                 updateStatus: 'FETCHED',
                 testing: false,
                 testStatus: '',
-                blackDuckApiKey: action.blackDuckApiKey || '',
-                blackDuckApiKeyIsSet: action.blackDuckApiKeyIsSet,
-                blackDuckProxyHost: action.blackDuckProxyHost,
-                blackDuckProxyPassword: action.blackDuckProxyPassword,
-                blackDuckProxyPasswordIsSet: action.blackDuckProxyPasswordIsSet,
-                blackDuckProxyPort: action.blackDuckProxyPort,
-                blackDuckProxyUsername: action.blackDuckProxyUsername,
-                blackDuckTimeout: Number.parseInt(action.blackDuckTimeout, 10) || 300,
-                blackDuckUrl: action.blackDuckUrl,
-                id: action.id
+                config: action.config
             });
 
         case CONFIG_UPDATE_ERROR:
@@ -65,7 +47,7 @@ const config = (state = initialState, action) => {
                 testStatus: '',
                 error: {
                     message: '',
-                    fieldErrors: []
+                    fieldErrors: {}
                 }
             });
 
@@ -77,17 +59,9 @@ const config = (state = initialState, action) => {
                 testStatus: '',
                 error: {
                     message: '',
-                    fieldErrors: []
+                    fieldErrors: {}
                 },
-                blackDuckApiKey: action.blackDuckApiKey || '',
-                blackDuckApiKeyIsSet: action.blackDuckApiKeyIsSet,
-                blackDuckProxyHost: action.blackDuckProxyHost,
-                blackDuckProxyPassword: action.blackDuckProxyPassword,
-                blackDuckProxyPasswordIsSet: action.blackDuckProxyPasswordIsSet,
-                blackDuckProxyPort: action.blackDuckProxyPort,
-                blackDuckProxyUsername: action.blackDuckProxyUsername,
-                blackDuckTimeout: Number.parseInt(action.blackDuckTimeout, 10) || 300,
-                blackDuckUrl: action.blackDuckUrl
+                config: action.config
             });
 
         case CONFIG_TESTING:
@@ -106,7 +80,7 @@ const config = (state = initialState, action) => {
                 testStatus: 'SUCCESS',
                 error: {
                     message: '',
-                    fieldErrors: []
+                    fieldErrors: {}
                 }
             });
 
@@ -118,7 +92,7 @@ const config = (state = initialState, action) => {
                 testStatus: 'FAILED',
                 error: {
                     message: action.message,
-                    fieldErrors: action.errors || []
+                    fieldErrors: action.errors || {}
                 }
             });
         case SERIALIZE:
@@ -129,4 +103,4 @@ const config = (state = initialState, action) => {
     }
 };
 
-export default config;
+export default blackduck;

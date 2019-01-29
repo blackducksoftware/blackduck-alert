@@ -7,121 +7,97 @@ import PasswordInput from 'field/input/PasswordInput';
 import ConfigButtons from 'component/common/ConfigButtons';
 import { closeHipChatConfigTest, getConfig, openHipChatConfigTest, testConfig, toggleShowHostServer, updateConfig } from 'store/actions/hipChatConfig';
 import ChannelTestModal from 'component/common/ChannelTestModal';
+import * as FieldModelUtil from 'util/fieldModelUtilities';
+
+const ID_KEY = 'id';
+const KEY_API_KEY = 'channel.hipchat.api.key';
+const KEY_HOST_SERVER = 'channel.hipchat.host.server';
+
+const fieldNames = [
+    ID_KEY,
+    KEY_API_KEY,
+    KEY_HOST_SERVER
+];
 
 class HipChatConfiguration extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            apiKey: '',
-            apiKeyIsSet: false,
-            hostServer: '',
-            dataLoaded: false
+            currentHipChatConfig: FieldModelUtil.createEmptyFieldModel(fieldNames, 'GLOBAL', 'channel_hipchat')
         };
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleTest = this.handleTest.bind(this);
     }
 
-    componentDidMount() {
+    componentWillMount() {
         this.props.getConfig();
     }
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.updateStatus === 'FETCHED' || nextProps.updateStatus === 'UPDATED') {
+            const newState = FieldModelUtil.checkModelOrCreateEmpty(nextProps.currentHipChatConfig, fieldNames);
             this.setState({
-                dataLoaded: true,
-                apiKey: nextProps.apiKey || '',
-                apiKeyIsSet: nextProps.apiKeyIsSet,
-                hostServer: nextProps.hostServer || ''
+                currentHipChatConfig: newState
             });
         }
     }
 
     handleChange({ target }) {
         const value = target.type === 'checkbox' ? target.checked : target.value;
+        const newState = FieldModelUtil.updateFieldModelSingleValue(this.state.currentHipChatConfig, target.name, value);
         this.setState({
-            [target.name]: value
+            currentHipChatConfig: newState
         });
     }
 
     handleSubmit(event) {
         event.preventDefault();
         event.stopPropagation();
-
-        const { id } = this.props;
-        this.props.updateConfig({ id, ...this.state });
-    }
-
-    handleTest(destination) {
-        const { id } = this.props;
-        this.props.testConfig({ id, ...this.state }, destination);
+        const fieldModel = this.state.currentHipChatConfig;
+        this.props.updateConfig(fieldModel);
     }
 
     render() {
-        const disabled = this.props.fetching || !this.state.dataLoaded;
-        const { errorMessage, testStatus, updateStatus } = this.props;
-        const showAdvancedLabel = (this.props.showAdvanced) ? 'Hide Advanced' : 'Show Advanced';
+        const fieldModel = this.state.currentHipChatConfig;
+        const { errorMessage, actionMessage } = this.props;
         return (
             <div>
                 <h1>
                     <span className="fa fa-comments" />
                     HipChat
                 </h1>
-                {testStatus === 'SUCCESS' && <div className="alert alert-success">
-                    <div>Test message sent</div>
-                </div>}
-
                 {errorMessage && <div className="alert alert-danger">
                     {errorMessage}
                 </div>}
 
-                {updateStatus === 'UPDATED' && <div className="alert alert-success">
-                    {'Update successful'}
+                {actionMessage && <div className="alert alert-success">
+                    {actionMessage}
                 </div>}
 
-                <form className="form-horizontal" disabled={disabled} onSubmit={this.handleSubmit}>
+                <form className="form-horizontal" onSubmit={this.handleSubmit}>
                     <PasswordInput
-                        id="hipChatApiKey"
+                        id={KEY_API_KEY}
                         label="Api Key"
-                        name="apiKey"
-                        readOnly={disabled}
-                        value={this.state.apiKey}
-                        isSet={this.state.apiKeyIsSet}
+                        name={KEY_API_KEY}
+                        value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_API_KEY)}
+                        isSet={FieldModelUtil.isFieldModelValueSet(fieldModel, KEY_API_KEY)}
                         onChange={this.handleChange}
-                        errorName="apiKeyError"
-                        errorValue={this.props.fieldErrors.apiKey}
+                        errorName={FieldModelUtil.createFieldModelErrorKey(KEY_API_KEY)}
+                        errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_API_KEY)]}
                     />
-
-                    <div className="form-group">
-                        <div className="col-sm-9 offset-sm-3">
-                            <button
-                                type="button"
-                                className="btn btn-link"
-                                onClick={() => {
-                                    this.props.toggleShowHostServer(!this.props.showAdvanced);
-                                    return false;
-                                }}
-                            >
-                                {showAdvancedLabel}
-                            </button>
-                        </div>
-                    </div>
-
-                    {this.props.showAdvanced &&
                     <div>
                         <TextInput
-                            id="hipChatServerUrl"
+                            id={KEY_HOST_SERVER}
                             label="HipChat Host Server Url"
-                            name="hostServer"
-                            value={this.state.hostServer}
+                            name={KEY_HOST_SERVER}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_HOST_SERVER)}
                             onChange={this.handleChange}
-                            errorName="hostServerError"
-                            errorValue={this.props.fieldErrors.hostServer}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(KEY_HOST_SERVER)}
+                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_HOST_SERVER)]}
                         />
                     </div>
-                    }
 
                     <ConfigButtons submitId="hipChat-submit" cancelId="hipChat-cancel" includeSave includeTest onTestClick={this.props.openHipChatConfigTest} />
                     <div>
@@ -130,7 +106,7 @@ class HipChatConfiguration extends React.Component {
                             showTestModal={this.props.showTestModal}
                             cancelTestModal={this.props.closeHipChatConfigTest}
                             sendTestMessage={(destination) => {
-                                this.handleTest(destination);
+                                this.props.testConfig(this.state.currentHipChatConfig, destination);
                             }}
                         />
                     </div>
@@ -143,52 +119,37 @@ class HipChatConfiguration extends React.Component {
 HipChatConfiguration.propTypes = {
     openHipChatConfigTest: PropTypes.func.isRequired,
     closeHipChatConfigTest: PropTypes.func.isRequired,
-    hostServer: PropTypes.string,
-    apiKey: PropTypes.string,
-    apiKeyIsSet: PropTypes.bool,
-    id: PropTypes.string,
-    testStatus: PropTypes.string,
+    currentHipChatConfig: PropTypes.object,
     errorMessage: PropTypes.string,
     updateStatus: PropTypes.string,
-    fieldErrors: PropTypes.arrayOf(PropTypes.any),
-    fetching: PropTypes.bool.isRequired,
+    actionMessage: PropTypes.string,
+    fieldErrors: PropTypes.object,
     getConfig: PropTypes.func.isRequired,
     testConfig: PropTypes.func.isRequired,
     showTestModal: PropTypes.bool.isRequired,
-    updateConfig: PropTypes.func.isRequired,
-    showAdvanced: PropTypes.bool.isRequired,
-    toggleShowHostServer: PropTypes.func.isRequired
+    updateConfig: PropTypes.func.isRequired
 };
 
 HipChatConfiguration.defaultProps = {
-    hostServer: null,
-    apiKey: null,
-    apiKeyIsSet: false,
-    id: null,
-    testStatus: null,
+    currentHipChatConfig: {},
     errorMessage: null,
     updateStatus: null,
-    fieldErrors: []
+    actionMessage: null,
+    fieldErrors: {}
 };
 
 // Mapping redux state -> react props
 const mapStateToProps = state => ({
-    hostServer: state.hipChatConfig.hostServer,
-    apiKey: state.hipChatConfig.apiKey,
-    apiKeyIsSet: state.hipChatConfig.apiKeyIsSet,
-    testStatus: state.hipChatConfig.testStatus,
+    currentHipChatConfig: state.hipChatConfig.config,
     showTestModal: state.hipChatConfig.showTestModal,
     updateStatus: state.hipChatConfig.updateStatus,
+    actionMessage: state.hipChatConfig.actionMessage,
     errorMessage: state.hipChatConfig.error.message,
-    fieldErrors: state.hipChatConfig.error.fieldErrors,
-    id: state.hipChatConfig.id,
-    fetching: state.hipChatConfig.fetching,
-    showAdvanced: state.hipChatConfig.showAdvanced
+    fieldErrors: state.hipChatConfig.error.fieldErrors
 });
 
 // Mapping redux actions -> react props
 const mapDispatchToProps = dispatch => ({
-    toggleShowHostServer: toggle => dispatch(toggleShowHostServer(toggle)),
     getConfig: () => dispatch(getConfig()),
     updateConfig: config => dispatch(updateConfig(config)),
     openHipChatConfigTest: () => dispatch(openHipChatConfigTest()),

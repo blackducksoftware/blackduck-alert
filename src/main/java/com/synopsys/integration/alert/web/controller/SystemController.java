@@ -66,7 +66,7 @@ public class SystemController extends BaseController {
     @GetMapping(value = "/system/messages/latest")
     public ResponseEntity<String> getLatestSystemMessages() {
         final List<SystemMessageModel> systemMessageList = systemActions.getSystemMessagesSinceStartup();
-        return responseFactory.createResponse(HttpStatus.OK, contentConverter.getJsonString(systemMessageList));
+        return responseFactory.createOkContentResponse(contentConverter.getJsonString(systemMessageList));
     }
 
     @GetMapping(value = "/system/messages")
@@ -74,20 +74,20 @@ public class SystemController extends BaseController {
         try {
             if (StringUtils.isBlank(startDate) && StringUtils.isBlank(endDate)) {
                 final List<SystemMessageModel> systemMessageList = systemActions.getSystemMessages();
-                return responseFactory.createResponse(HttpStatus.OK, contentConverter.getJsonString(systemMessageList));
+                return responseFactory.createOkContentResponse(contentConverter.getJsonString(systemMessageList));
             } else if (StringUtils.isNotBlank(startDate) && StringUtils.isBlank(endDate)) {
                 final List<SystemMessageModel> systemMessageList = systemActions.getSystemMessagesAfter(startDate);
-                return responseFactory.createResponse(HttpStatus.OK, contentConverter.getJsonString(systemMessageList));
+                return responseFactory.createOkContentResponse(contentConverter.getJsonString(systemMessageList));
             } else if (StringUtils.isBlank(startDate) && StringUtils.isNotBlank(endDate)) {
                 final List<SystemMessageModel> systemMessageList = systemActions.getSystemMessagesBefore(endDate);
-                return responseFactory.createResponse(HttpStatus.OK, contentConverter.getJsonString(systemMessageList));
+                return responseFactory.createOkContentResponse(contentConverter.getJsonString(systemMessageList));
             } else {
                 final List<SystemMessageModel> systemMessageList = systemActions.getSystemMessagesBetween(startDate, endDate);
-                return responseFactory.createResponse(HttpStatus.OK, contentConverter.getJsonString(systemMessageList));
+                return responseFactory.createOkContentResponse(contentConverter.getJsonString(systemMessageList));
             }
         } catch (final ParseException ex) {
             logger.error("error occured getting system messages", ex);
-            return responseFactory.createResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+            return responseFactory.createMessageResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
         }
     }
 
@@ -100,15 +100,13 @@ public class SystemController extends BaseController {
             return new ResponseEntity<>(headers, HttpStatus.FOUND);
         }
 
-        return new ResponseEntity<>(contentConverter.getJsonString(systemActions.getCurrentSystemSetup()), HttpStatus.OK);
+        return responseFactory.createOkContentResponse(contentConverter.getJsonString(systemActions.getCurrentSystemSetup()));
     }
 
     @PostMapping(value = "/system/setup/initial")
     public ResponseEntity<String> initialSystemSetup(@RequestBody final FieldModel settingsToSave) {
         if (systemActions.isSystemInitialized()) {
-            final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder("System Setup has already occurred");
-            final String responseBody = responseBodyBuilder.build();
-            return new ResponseEntity<>(responseBody, HttpStatus.CONFLICT);
+            return responseFactory.createMessageResponse(HttpStatus.CONFLICT, "System Setup has already occurred");
         }
 
         return saveSystemSettings(settingsToSave);
@@ -120,13 +118,13 @@ public class SystemController extends BaseController {
         // FIXME this logic is a bit strange. We check to see if field errors is empty then pass the thing that's empty.
         //  handling the exception that validation normally throws here may be simpler to understand.
         if (fieldErrors.isEmpty()) {
-            return responseFactory.createResponse(HttpStatus.OK, contentConverter.getJsonString(savedConfig));
+            return responseFactory.createOkContentResponse(contentConverter.getJsonString(savedConfig));
         }
 
         final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder("Invalid System Setup");
         responseBodyBuilder.putErrors(fieldErrors);
         final String responseBody = responseBodyBuilder.build();
-        return responseFactory.createResponse(HttpStatus.BAD_REQUEST, responseBody);
+        return responseFactory.createMessageResponse(HttpStatus.BAD_REQUEST, responseBody);
     }
 
 }

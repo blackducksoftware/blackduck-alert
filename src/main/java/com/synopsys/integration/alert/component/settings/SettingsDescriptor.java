@@ -60,6 +60,7 @@ public class SettingsDescriptor extends ComponentDescriptor {
     public static final String KEY_LDAP_GROUP_SEARCH_FILTER = "settings.ldap.group.search.filter";
     public static final String KEY_LDAP_GROUP_ROLE_ATTRIBUTE = "settings.ldap.group.role.attribute";
     public static final String KEY_LDAP_ROLE_PREFIX = "settings.ldap.role.prefix";
+    public static final String KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE = "settings.startup.environment.variable.override";
 
     public static final String FIELD_ERROR_DEFAULT_USER_PASSWORD = "Default admin user password missing";
     public static final String FIELD_ERROR_ENCRYPTION_PASSWORD = "Encryption password missing";

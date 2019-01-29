@@ -11,6 +11,7 @@ import { frequencyOptions } from 'util/distribution-data';
 import { getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob } from 'store/actions/distributions';
 import { getDistributionDescriptor } from 'store/actions/descriptors';
 import DescriptorOption from 'component/common/DescriptorOption';
+import * as DescriptorUtilities from 'util/descriptorUtilities';
 
 const { Option, SingleValue } = components;
 
@@ -255,7 +256,7 @@ class BaseJobConfiguration extends Component {
     }
 
     createProviderOptions() {
-        const providers = this.props.descriptors.items.PROVIDER_CONFIG;
+        const providers = DescriptorUtilities.findDescriptorByTypeAndContext(this.props.descriptors.items, DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
         if (providers) {
             const optionList = providers.map(descriptor => ({
                 label: descriptor.label,
@@ -409,7 +410,7 @@ BaseJobConfiguration.propTypes = {
     saveDistributionJob: PropTypes.func.isRequired,
     updateDistributionJob: PropTypes.func.isRequired,
     getDistributionDescriptor: PropTypes.func.isRequired,
-    descriptors: PropTypes.object,
+    descriptors: PropTypes.arrayOf(PropTypes.object),
     jobs: PropTypes.object,
     baseUrl: PropTypes.string.isRequired,
     testUrl: PropTypes.string.isRequired,
@@ -430,7 +431,7 @@ BaseJobConfiguration.propTypes = {
 };
 
 BaseJobConfiguration.defaultProps = {
-    descriptors: {},
+    descriptors: [],
     jobs: {},
     baseUrl: '',
     testUrl: '',

@@ -117,7 +117,6 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
         }
         final FieldModel model = new FieldModel(String.valueOf(configurationModel.getConfigurationId()), getDescriptor().getDestinationName(), context.name(), fieldValueMap);
         return model;
-
     }
 
     public FieldModel createInvalidDistributionFieldModel() {

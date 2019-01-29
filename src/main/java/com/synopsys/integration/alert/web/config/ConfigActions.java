@@ -55,7 +55,7 @@ public class ConfigActions {
         this.fieldModelProcessor = fieldModelProcessor;
     }
 
-    public boolean doesConfigExist(String id) throws AlertException {
+    public boolean doesConfigExist(final String id) throws AlertException {
         return StringUtils.isNotBlank(id) && doesConfigExist(Long.parseLong(id));
     }
 
@@ -106,7 +106,7 @@ public class ConfigActions {
     }
 
     public String validateConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) throws AlertFieldException {
-        fieldModelProcessor.validateFieldModel(fieldModel, fieldErrors);
+        fieldErrors.putAll(fieldModelProcessor.validateFieldModel(fieldModel));
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }
