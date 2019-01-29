@@ -37,6 +37,7 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
 import com.synopsys.integration.alert.web.model.configuration.TestConfigModel;
+import com.synopsys.integration.alert.workflow.startup.SystemValidator;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigBuilder;
 import com.synopsys.integration.blackduck.rest.BlackDuckRestConnection;
@@ -53,10 +54,12 @@ import com.synopsys.integration.util.BuilderStatus;
 public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final BlackDuckProperties blackDuckProperties;
+    private final SystemValidator systemValidator;
 
     @Autowired
-    public BlackDuckProviderDescriptorActionApi(final BlackDuckProperties blackDuckProperties) {
+    public BlackDuckProviderDescriptorActionApi(final BlackDuckProperties blackDuckProperties, final SystemValidator systemValidator) {
         this.blackDuckProperties = blackDuckProperties;
+        this.systemValidator = systemValidator;
     }
 
     @Override
@@ -101,4 +104,9 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
         return blackDuckServerConfig.createRestConnection(blackDuckServerConfigBuilder.getLogger());
     }
 
+    @Override
+    public FieldModel saveConfig(final FieldModel fieldModel) {
+        systemValidator.validate();
+        return super.saveConfig(fieldModel);
+    }
 }
