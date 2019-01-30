@@ -25,12 +25,6 @@ class BlackDuckConfiguration
     extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            blackDuckApiKey: this.props.blackDuckApiKey,
-            blackDuckApiKeyIsSet: this.props.blackDuckApiKeyIsSet,
-            blackDuckTimeout: this.props.blackDuckTimeout,
-            blackDuckUrl: this.props.blackDuckUrl
-        };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTest = this.handleTest.bind(this);
@@ -118,7 +112,7 @@ class BlackDuckConfiguration
                             id={KEY_BLACKDUCK_TIMEOUT}
                             label="Timeout"
                             name={KEY_BLACKDUCK_TIMEOUT}
-                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_BLACKDUCK_TIMEOUT)}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_BLACKDUCK_TIMEOUT) | 300}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(KEY_BLACKDUCK_TIMEOUT)}
                             errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_BLACKDUCK_TIMEOUT)]}

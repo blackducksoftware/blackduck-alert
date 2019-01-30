@@ -83,14 +83,14 @@ public class TaskManager {
 
     public Optional<String> getNextRunTime(final String taskName) {
         if (!scheduledTaskMap.containsKey(taskName)) {
-            Optional.empty();
+            return Optional.empty();
         }
         return scheduledTaskMap.get(taskName).getFormatedNextRunTime();
     }
 
     public Optional<Long> getDifferenceToNextRun(final String taskName, TimeUnit timeUnit) {
         if (!scheduledTaskMap.containsKey(taskName)) {
-            Optional.empty();
+            return Optional.empty();
         }
         Optional<Long> millisecondsToNextRun = scheduledTaskMap.get(taskName).getMillisecondsToNextRun();
         return millisecondsToNextRun
