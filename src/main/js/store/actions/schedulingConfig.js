@@ -104,7 +104,7 @@ export function updateSchedulingConfig(config) {
     return (dispatch, getState) => {
         dispatch(updatingSchedulingConfig());
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createUpdateRequest(csrfToken, 1, config);
+        const request = ConfigRequestBuilder.createUpdateRequest(csrfToken, config.id, config);
         request.then((response) => {
             if (response.ok) {
                 response.json().then((data) => {

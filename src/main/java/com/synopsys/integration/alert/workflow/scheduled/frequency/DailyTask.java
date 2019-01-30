@@ -35,6 +35,7 @@ import com.synopsys.integration.alert.workflow.processor.NotificationProcessor;
 @Component
 public class DailyTask extends ProcessingTask {
     public static final String TASK_NAME = "daily-frequency";
+    public static final String CRON_FORMAT = "0 0 %s 1/1 * ?";
 
     @Autowired
     public DailyTask(final TaskScheduler taskScheduler, final NotificationManager notificationManager, final NotificationProcessor notificationProcessor, final ChannelTemplateManager channelTemplateManager) {
