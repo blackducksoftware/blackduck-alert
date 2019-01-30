@@ -23,8 +23,11 @@
  */
 package com.synopsys.integration.alert.web.model.configuration;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.web.model.Config;
 
@@ -72,6 +75,18 @@ public class FieldModel extends Config {
 
     public void putField(final String key, final FieldValueModel field) {
         keyToValues.put(key, field);
+    }
+
+    public FieldModel combine(final FieldModel fieldModel) {
+        String id = StringUtils.isNotBlank(getId()) ? getId() : fieldModel.getId();
+        String descriptorName = StringUtils.isNotBlank(getDescriptorName()) ? getDescriptorName() : fieldModel.getDescriptorName();
+        String context = StringUtils.isNotBlank(getContext()) ? getContext() : fieldModel.getContext();
+        final Map<String, FieldValueModel> fieldValueModelMap = new HashMap<>();
+        fieldValueModelMap.putAll(this.getKeyToValues());
+        fieldValueModelMap.putAll(fieldModel.getKeyToValues());
+        final FieldModel newFieldModel = new FieldModel(descriptorName, context, fieldValueModelMap);
+        newFieldModel.setId(id);
+        return newFieldModel;
     }
 
 }
