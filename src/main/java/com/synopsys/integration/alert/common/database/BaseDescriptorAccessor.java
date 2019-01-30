@@ -23,7 +23,6 @@
  */
 package com.synopsys.integration.alert.common.database;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,17 +42,7 @@ public interface BaseDescriptorAccessor {
 
     Optional<RegisteredDescriptorModel> getRegisteredDescriptorById(final Long descriptorId) throws AlertDatabaseConstraintException;
 
-    RegisteredDescriptorModel registerDescriptorWithoutFields(final String descriptorName, DescriptorType descriptorType) throws AlertDatabaseConstraintException;
-
-    RegisteredDescriptorModel registerDescriptor(final String descriptorName, DescriptorType descriptorType, final Collection<DefinedFieldModel> descriptorFields) throws AlertDatabaseConstraintException;
-
-    boolean unregisterDescriptor(final String descriptorName) throws AlertDatabaseConstraintException;
-
     List<DefinedFieldModel> getFieldsForDescriptor(final String descriptorName, final ConfigContextEnum context) throws AlertDatabaseConstraintException;
 
     List<DefinedFieldModel> getFieldsForDescriptorById(final Long descriptorId, final ConfigContextEnum context) throws AlertDatabaseConstraintException;
-
-    DefinedFieldModel addDescriptorField(final Long descriptorId, final DefinedFieldModel descriptorField) throws AlertDatabaseConstraintException;
-
-    boolean removeDescriptorField(final Long descriptorId, final DefinedFieldModel descriptorField) throws AlertDatabaseConstraintException;
 }

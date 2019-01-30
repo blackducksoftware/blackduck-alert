@@ -25,13 +25,11 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.database.DescriptorMocker;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor;
-import com.synopsys.integration.alert.database.api.configuration.DescriptorAccessor;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
-import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
-import com.synopsys.integration.alert.database.api.configuration.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.database.channel.JobConfigReader;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.entity.repository.ConfiguredProjectsRepository;
@@ -61,7 +59,7 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
     private List<ProviderDescriptor> providerDescriptors;
 
     @Autowired
-    private DescriptorAccessor descriptorAccessor;
+    private DescriptorMocker descriptorMocker;
 
     @Autowired
     private ConfigurationAccessor configurationAccessor;
@@ -72,7 +70,7 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
     private NotificationFilter defaultNotificationFilter;
 
     @BeforeEach
-    public void init() throws AlertDatabaseConstraintException {
+    public void init() {
         final List<ConfigurationFieldModel> fieldList = MockConfigurationModelFactory.createCommonBlackDuckConfigurationFields("Job Name", TEST_DESCRIPTOR_NAME);
         final Map<String, ConfigurationFieldModel> fieldMap = MockConfigurationModelFactory.mapFieldKeyToFields(fieldList);
         fieldMap.get(CommonDistributionUIConfig.KEY_FREQUENCY).setFieldValue(TEST_CONFIG_FREQUENCY.name());
@@ -94,17 +92,15 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
         Mockito.when(jobConfigReader.getPopulatedJobConfigs()).thenReturn(List.of(config));
 
         defaultNotificationFilter = new NotificationFilter(jsonExtractor, providerDescriptors, jobConfigReader);
-        descriptorAccessor.registerDescriptor(TEST_DESCRIPTOR_NAME, DescriptorType.CHANNEL, List.of());
 
-        final RegisteredDescriptorModel registeredDescriptorModel = descriptorAccessor.getRegisteredDescriptorByName(TEST_DESCRIPTOR_NAME).orElseThrow();
-        final DefinedFieldModel definedFieldModel = new DefinedFieldModel(TEST_DESCRIPTOR_FIELD_KEY, TEST_DESCRIPTOR_FIELD_CONTEXT, Boolean.FALSE);
-        descriptorAccessor.addDescriptorField(registeredDescriptorModel.getId(), definedFieldModel);
+        descriptorMocker.registerDescriptor(TEST_DESCRIPTOR_NAME, DescriptorType.CHANNEL);
+        descriptorMocker.addFieldToDescriptor(TEST_DESCRIPTOR_NAME, TEST_DESCRIPTOR_FIELD_KEY, TEST_DESCRIPTOR_FIELD_CONTEXT, Boolean.FALSE);
     }
 
     @AfterEach
-    public void cleanup() throws AlertDatabaseConstraintException {
+    public void cleanup() {
         configuredProjectsRepository.deleteAll();
-        descriptorAccessor.unregisterDescriptor(TEST_DESCRIPTOR_NAME);
+        descriptorMocker.cleanUpDescriptors();
     }
 
     @Test
@@ -143,7 +139,7 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void applyWithoutOfOrderNotificationsTest() {
+    public void applyWithOutOfOrderNotificationsTest() {
         final NotificationContent applicableNotification1 = createVulnerabilityNotification(TEST_CONFIG_PROJECT_NAME, BlackDuckProvider.COMPONENT_NAME, NEW);
         final NotificationContent applicableNotification2 = createVulnerabilityNotification(TEST_CONFIG_PROJECT_NAME, BlackDuckProvider.COMPONENT_NAME, OLD);
         final List<NotificationContent> notifications = Arrays.asList(applicableNotification1, applicableNotification2);
