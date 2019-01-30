@@ -1,6 +1,51 @@
 <databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+    <!-- Drop old global configurations -->
     <changeSet author="gkillough" id="1548776599865-1">
+        <dropTable
+                schemaName="ALERT"
+                tableName="GLOBAL_BLACKDUCK_CONFIG"
+        />
+        <dropTable
+                schemaName="ALERT"
+                tableName="GLOBAL_EMAIL_CONFIG"
+        />
+        <dropTable
+                schemaName="ALERT"
+                tableName="GLOBAL_HIPCHAT_CONFIG"
+        />
+        <dropTable
+                schemaName="ALERT"
+                tableName="GLOBAL_SLACK_CONFIG"
+        />
+        <dropTable
+                schemaName="ALERT"
+                tableName="GLOBAL_SCHEDULING_CONFIG"
+        />
+    </changeSet>
+
+    <!-- Drop old distribution configs -->
+    <changeSet author="gkillough" id="1548776599865-2">
+        <dropTable
+                schemaName="ALERT"
+                tableName="EMAIL_GROUP_DISTRIBUTION_CONFIG"
+        />
+        <dropTable
+                schemaName="ALERT"
+                tableName="HIP_CHAT_DISTRIBUTION_CONFIG"
+        />
+        <dropTable
+                schemaName="ALERT"
+                tableName="SLACK_DISTRIBUTION_CONFIG"
+        />
+        <dropTable
+                schemaName="ALERT"
+                tableName="COMMON_DISTRIBUTION_CONFIG"
+        />
+    </changeSet>
+
+    <!-- Drop old common config relations -->
+    <changeSet author="gkillough" id="1548776599865-3">
         <dropTable
                 schemaName="ALERT"
                 tableName="DISTRIBUTION_NOTIFICATION_TYPES_RELATION"
@@ -8,6 +53,14 @@
         <dropTable
                 schemaName="ALERT"
                 tableName="DISTRIBUTION_NOTIFICATION_TYPES"
+        />
+    </changeSet>
+
+    <!-- Drop abandoned tables -->
+    <changeSet author="gkillough" id="1548776599865-4">
+        <dropTable
+                schemaName="ALERT"
+                tableName="VULNERABILITIES"
         />
     </changeSet>
 </databaseChangeLog>
