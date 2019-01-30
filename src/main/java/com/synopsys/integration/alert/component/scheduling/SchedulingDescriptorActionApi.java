@@ -55,6 +55,11 @@ public class SchedulingDescriptorActionApi extends NoTestActionApi {
     }
 
     @Override
+    public FieldModel updateConfig(final FieldModel fieldModel) {
+        return saveConfig(fieldModel);
+    }
+
+    @Override
     public FieldModel saveConfig(final FieldModel fieldModel) {
         final String dailyDigestHourOfDay = fieldModel.getFieldValue(SchedulingDescriptor.KEY_DAILY_DIGEST_HOUR_OF_DAY).orElse("");
         final String purgeDataFrequencyDays = fieldModel.getFieldValue(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS).orElse("");

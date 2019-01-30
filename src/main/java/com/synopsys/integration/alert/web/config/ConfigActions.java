@@ -138,7 +138,7 @@ public class ConfigActions {
         final String context = fieldModel.getContext();
         final Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertFromFieldModel(fieldModel);
         final FieldModel dbSavedModel = convertToFieldModel(configurationAccessor.createConfiguration(descriptorName, EnumUtils.getEnum(ConfigContextEnum.class, context), configurationFieldModelMap.values()));
-        final FieldModel combinedModel = dbSavedModel.combine(fieldModel);
+        final FieldModel combinedModel = dbSavedModel.fill(fieldModel);
         return descriptorActionApi.saveConfig(combinedModel);
     }
 
@@ -166,12 +166,13 @@ public class ConfigActions {
     public FieldModel updateConfig(final Long id, final FieldModel fieldModel) throws AlertException, AlertFieldException {
         validateConfig(fieldModel, new HashMap<>());
         final DescriptorActionApi descriptorActionApi = retrieveDescriptorActionApi(fieldModel).orElseThrow(() -> new AlertException("Could not find a Descriptor with the name: " + fieldModel.getDescriptorName()));
-        final FieldModel modelToSave = descriptorActionApi.updateConfig(fieldModel);
         if (fieldModel != null) {
             final ConfigurationModel configurationModel = getSavedEntity(id);
-            final Map<String, ConfigurationFieldModel> fieldModels = modelConverter.convertFromFieldModel(modelToSave);
+            final Map<String, ConfigurationFieldModel> fieldModels = modelConverter.convertFromFieldModel(fieldModel);
             final Collection<ConfigurationFieldModel> updatedFields = updateConfigurationWithSavedConfiguration(fieldModels, configurationModel.getCopyOfFieldList());
-            return convertToFieldModel(configurationAccessor.updateConfiguration(id, updatedFields));
+            FieldModel dbSavedModel = convertToFieldModel(configurationAccessor.updateConfiguration(id, updatedFields));
+            FieldModel combinedModel = dbSavedModel.fill(fieldModel);
+            return descriptorActionApi.updateConfig(combinedModel);
         }
         return null;
     }
