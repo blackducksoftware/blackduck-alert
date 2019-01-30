@@ -64,9 +64,11 @@ export function checkModelOrCreateEmpty(fieldModel, fields) {
     const emptyFieldModel = createEmptyFieldModel(fields, fieldModel.context, fieldModel.descriptorName);
     const newModel = Object.assign({}, emptyFieldModel, fieldModel);
     const newKeyToValues = emptyFieldModel.keyToValues;
-    Object.keys(fieldModel.keyToValues).forEach((key) => {
-        newKeyToValues[key] = fieldModel.keyToValues[key];
-    });
+    if (fieldModel.keyToValues) {
+        Object.keys(fieldModel.keyToValues).forEach((key) => {
+            newKeyToValues[key] = fieldModel.keyToValues[key];
+        });
+    }
     newModel.keyToValues = newKeyToValues;
     return newModel;
 }

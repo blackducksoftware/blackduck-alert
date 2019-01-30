@@ -10,9 +10,9 @@ import { getConfig, testConfig, updateConfig } from 'store/actions/blackduck';
 import * as FieldModelUtil from 'util/fieldModelUtilities';
 import * as DescriptorUtil from 'util/descriptorUtilities';
 
-const KEY_BLACKDUCK_URL = "blackduck.url";
-const KEY_BLACKDUCK_API_KEY = "blackduck.api.key";
-const KEY_BLACKDUCK_TIMEOUT = "blackduck.timeout";
+const KEY_BLACKDUCK_URL = 'blackduck.url';
+const KEY_BLACKDUCK_API_KEY = 'blackduck.api.key';
+const KEY_BLACKDUCK_TIMEOUT = 'blackduck.timeout';
 
 
 const fieldNames = [

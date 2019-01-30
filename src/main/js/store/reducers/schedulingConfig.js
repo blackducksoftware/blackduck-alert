@@ -13,13 +13,12 @@ import {
 
 const initialState = {
     fetching: false,
-    purgeDataFrequencyDays: null,
-    dailyDigestHourOfDay: null,
     updateStatus: null,
-    errorMessage: null,
-    errorFields: [],
-    accumulating: false,
-    accumulatorError: null
+    error: {
+        message: '',
+        fieldErrors: {}
+    },
+    config: {}
 };
 
 const config = (state = initialState, action) => {
@@ -33,7 +32,11 @@ const config = (state = initialState, action) => {
         case SCHEDULING_CONFIG_FETCHED:
             return Object.assign({}, state, {
                 fetching: false,
-                ...action.config
+                error: {
+                    message: '',
+                    fieldErrors: {}
+                },
+                config: action.config
             });
 
         case SCHEDULING_CONFIG_FETCH_ERROR:
@@ -47,38 +50,29 @@ const config = (state = initialState, action) => {
         case SCHEDULING_CONFIG_UPDATE_ERROR:
             return Object.assign({}, state, {
                 updateStatus: 'ERROR',
-                errorMessage: action.message,
-                errorFields: action.errors
+                error: {
+                    message: action.message,
+                    fieldErrors: action.errors
+                }
             });
 
         case SCHEDULING_CONFIG_UPDATING:
             return Object.assign({}, state, {
                 updateStatus: 'UPDATING',
-                errorMessage: null,
-                errorFields: null
-
+                error: {
+                    message: '',
+                    fieldErrors: {}
+                }
             });
 
         case SCHEDULING_CONFIG_UPDATED:
             return Object.assign({}, state, {
-                updateStatus: 'UPDATED'
-            });
-
-        case SCHEDULING_ACCUMULATOR_RUNNING:
-            return Object.assign({}, state, {
-                accumulating: true
-            });
-
-        case SCHEDULING_ACCUMULATOR_ERROR:
-            return Object.assign({}, state, {
-                accumulating: false,
-                accumulatorError: action.accumulatorError
-            });
-
-        case SCHEDULING_ACCUMULATOR_SUCCESS:
-            return Object.assign({}, state, {
-                accumulating: false,
-                accumulatorError: null
+                updateStatus: 'UPDATED',
+                error: {
+                    message: '',
+                    fieldErrors: {}
+                },
+                config: action.config
             });
 
         case SERIALIZE:
