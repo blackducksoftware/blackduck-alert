@@ -13,11 +13,12 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
-import com.synopsys.integration.alert.common.descriptor.config.context.NoTestActionApi;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.workflow.TaskManager;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
 import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 import com.synopsys.integration.exception.IntegrationException;
@@ -41,8 +42,9 @@ public class SchedulingDescriptorActionApiTest {
     public void validateConfigWithNoErrorsTest() {
         final Map<String, String> fieldErrors = new HashMap<>();
         SchedulingUIConfig schedulingUIConfig = new SchedulingUIConfig();
-        NoTestActionApi noTestActionApi = new NoTestActionApi();
-        SchedulingDescriptor schedulingDescriptor = new SchedulingDescriptor(noTestActionApi, schedulingUIConfig);
+        TaskManager taskManager = Mockito.mock(TaskManager.class);
+        SchedulingDescriptorActionApi schedulingActionApi = new SchedulingDescriptorActionApi(taskManager);
+        SchedulingDescriptor schedulingDescriptor = new SchedulingDescriptor(schedulingActionApi, schedulingUIConfig);
         final Optional<DescriptorActionApi> actionApiOptional = schedulingDescriptor.getActionApi(ConfigContextEnum.GLOBAL);
         assertTrue(actionApiOptional.isPresent());
         DescriptorActionApi actionApi = actionApiOptional.get();
@@ -60,8 +62,9 @@ public class SchedulingDescriptorActionApiTest {
     public void validateConfigHasErrorWhenEmptyStringTest() {
         final Map<String, String> fieldErrors = new HashMap<>();
         SchedulingUIConfig schedulingUIConfig = new SchedulingUIConfig();
-        NoTestActionApi noTestActionApi = new NoTestActionApi();
-        SchedulingDescriptor schedulingDescriptor = new SchedulingDescriptor(noTestActionApi, schedulingUIConfig);
+        TaskManager taskManager = Mockito.mock(TaskManager.class);
+        SchedulingDescriptorActionApi schedulingActionApi = new SchedulingDescriptorActionApi(taskManager);
+        SchedulingDescriptor schedulingDescriptor = new SchedulingDescriptor(schedulingActionApi, schedulingUIConfig);
         final Optional<DescriptorActionApi> actionApiOptional = schedulingDescriptor.getActionApi(ConfigContextEnum.GLOBAL);
         assertTrue(actionApiOptional.isPresent());
         DescriptorActionApi actionApi = actionApiOptional.get();
@@ -79,8 +82,9 @@ public class SchedulingDescriptorActionApiTest {
     public void validateConfigHasErrorWhenValuesNotNumericTest() {
         final Map<String, String> fieldErrors = new HashMap<>();
         SchedulingUIConfig schedulingUIConfig = new SchedulingUIConfig();
-        NoTestActionApi noTestActionApi = new NoTestActionApi();
-        SchedulingDescriptor schedulingDescriptor = new SchedulingDescriptor(noTestActionApi, schedulingUIConfig);
+        TaskManager taskManager = Mockito.mock(TaskManager.class);
+        SchedulingDescriptorActionApi schedulingActionApi = new SchedulingDescriptorActionApi(taskManager);
+        SchedulingDescriptor schedulingDescriptor = new SchedulingDescriptor(schedulingActionApi, schedulingUIConfig);
         final Optional<DescriptorActionApi> actionApiOptional = schedulingDescriptor.getActionApi(ConfigContextEnum.GLOBAL);
         assertTrue(actionApiOptional.isPresent());
         DescriptorActionApi actionApi = actionApiOptional.get();
@@ -98,8 +102,9 @@ public class SchedulingDescriptorActionApiTest {
     public void validateConfigHasErrorWhenHourOutOfRangeTest() {
         final Map<String, String> fieldErrors = new HashMap<>();
         SchedulingUIConfig schedulingUIConfig = new SchedulingUIConfig();
-        NoTestActionApi noTestActionApi = new NoTestActionApi();
-        SchedulingDescriptor schedulingDescriptor = new SchedulingDescriptor(noTestActionApi, schedulingUIConfig);
+        TaskManager taskManager = Mockito.mock(TaskManager.class);
+        SchedulingDescriptorActionApi schedulingActionApi = new SchedulingDescriptorActionApi(taskManager);
+        SchedulingDescriptor schedulingDescriptor = new SchedulingDescriptor(schedulingActionApi, schedulingUIConfig);
         final Optional<DescriptorActionApi> actionApiOptional = schedulingDescriptor.getActionApi(ConfigContextEnum.GLOBAL);
         assertTrue(actionApiOptional.isPresent());
         DescriptorActionApi actionApi = actionApiOptional.get();
@@ -120,8 +125,9 @@ public class SchedulingDescriptorActionApiTest {
     public void validateConfigHasErrorWhenPurgeFrequencyOutOfRangeTest() {
         final Map<String, String> fieldErrors = new HashMap<>();
         SchedulingUIConfig schedulingUIConfig = new SchedulingUIConfig();
-        NoTestActionApi noTestActionApi = new NoTestActionApi();
-        SchedulingDescriptor schedulingDescriptor = new SchedulingDescriptor(noTestActionApi, schedulingUIConfig);
+        TaskManager taskManager = Mockito.mock(TaskManager.class);
+        SchedulingDescriptorActionApi schedulingActionApi = new SchedulingDescriptorActionApi(taskManager);
+        SchedulingDescriptor schedulingDescriptor = new SchedulingDescriptor(schedulingActionApi, schedulingUIConfig);
         final Optional<DescriptorActionApi> actionApiOptional = schedulingDescriptor.getActionApi(ConfigContextEnum.GLOBAL);
         assertTrue(actionApiOptional.isPresent());
         DescriptorActionApi actionApi = actionApiOptional.get();
@@ -142,8 +148,9 @@ public class SchedulingDescriptorActionApiTest {
     @Test
     public void testConfigTest() {
         SchedulingUIConfig schedulingUIConfig = new SchedulingUIConfig();
-        NoTestActionApi noTestActionApi = new NoTestActionApi();
-        SchedulingDescriptor schedulingDescriptor = new SchedulingDescriptor(noTestActionApi, schedulingUIConfig);
+        TaskManager taskManager = Mockito.mock(TaskManager.class);
+        SchedulingDescriptorActionApi schedulingActionApi = new SchedulingDescriptorActionApi(taskManager);
+        SchedulingDescriptor schedulingDescriptor = new SchedulingDescriptor(schedulingActionApi, schedulingUIConfig);
         final Optional<DescriptorActionApi> actionApiOptional = schedulingDescriptor.getActionApi(ConfigContextEnum.GLOBAL);
         assertTrue(actionApiOptional.isPresent());
         DescriptorActionApi actionApi = actionApiOptional.get();
