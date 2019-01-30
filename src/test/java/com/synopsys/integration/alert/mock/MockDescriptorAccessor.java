@@ -1,6 +1,5 @@
 package com.synopsys.integration.alert.mock;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -15,13 +14,13 @@ import com.synopsys.integration.alert.database.api.configuration.model.Registere
 
 public class MockDescriptorAccessor implements BaseDescriptorAccessor {
 
-    private List<ConfigField> configFields;
+    private final List<ConfigField> configFields;
 
-    public MockDescriptorAccessor(List<ConfigField> configFields) {
+    public MockDescriptorAccessor(final List<ConfigField> configFields) {
         this.configFields = configFields;
     }
 
-    public final List<DefinedFieldModel> createDefinedFields(ConfigContextEnum context) {
+    public final List<DefinedFieldModel> createDefinedFields(final ConfigContextEnum context) {
         return configFields.stream()
                    .map(configField -> new DefinedFieldModel(configField.getKey(), context, configField.isSensitive()))
                    .collect(Collectors.toList());
@@ -48,21 +47,6 @@ public class MockDescriptorAccessor implements BaseDescriptorAccessor {
     }
 
     @Override
-    public RegisteredDescriptorModel registerDescriptorWithoutFields(final String descriptorName, final DescriptorType descriptorType) throws AlertDatabaseConstraintException {
-        return null;
-    }
-
-    @Override
-    public RegisteredDescriptorModel registerDescriptor(final String descriptorName, final DescriptorType descriptorType, final Collection<DefinedFieldModel> descriptorFields) throws AlertDatabaseConstraintException {
-        return null;
-    }
-
-    @Override
-    public boolean unregisterDescriptor(final String descriptorName) throws AlertDatabaseConstraintException {
-        return false;
-    }
-
-    @Override
     public List<DefinedFieldModel> getFieldsForDescriptor(final String descriptorName, final ConfigContextEnum context) throws AlertDatabaseConstraintException {
         return createDefinedFields(context);
     }
@@ -70,15 +54,5 @@ public class MockDescriptorAccessor implements BaseDescriptorAccessor {
     @Override
     public List<DefinedFieldModel> getFieldsForDescriptorById(final Long descriptorId, final ConfigContextEnum context) throws AlertDatabaseConstraintException {
         return createDefinedFields(context);
-    }
-
-    @Override
-    public DefinedFieldModel addDescriptorField(final Long descriptorId, final DefinedFieldModel descriptorField) throws AlertDatabaseConstraintException {
-        return null;
-    }
-
-    @Override
-    public boolean removeDescriptorField(final Long descriptorId, final DefinedFieldModel descriptorField) throws AlertDatabaseConstraintException {
-        return false;
     }
 }

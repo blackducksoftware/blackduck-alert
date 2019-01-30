@@ -17,6 +17,7 @@ import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.database.DescriptorMocker;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 
@@ -25,6 +26,8 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
     private final List<Descriptor> descriptors = new LinkedList<>();
     @Autowired
     private BaseDescriptorAccessor descriptorAccessor;
+    @Autowired
+    private DescriptorMocker descriptorMocker;
     @Autowired
     private BaseConfigurationAccessor configurationAccessor;
     private Set<Long> addedConfigurations;
@@ -41,15 +44,15 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
         }
     }
 
-    public void registerDescriptor(final Descriptor descriptor) throws AlertDatabaseConstraintException {
+    public void registerDescriptor(final Descriptor descriptor) {
         for (final ConfigContextEnum context : descriptor.getAppliedUIContexts()) {
-            descriptorAccessor.registerDescriptor(descriptor.getName(), descriptor.getType(), descriptor.getAllDefinedFields(context));
+            descriptorMocker.registerDescriptor(descriptor.getName(), descriptor.getType(), descriptor.getAllDefinedFields(context));
         }
         descriptors.add(descriptor);
     }
 
-    public void unregisterDescriptor(final Descriptor descriptor) throws AlertDatabaseConstraintException {
-        descriptorAccessor.unregisterDescriptor(descriptor.getName());
+    public void unregisterDescriptor(final Descriptor descriptor) {
+        descriptorMocker.unregisterDescriptor(descriptor.getName());
         descriptors.remove(descriptor);
     }
 
