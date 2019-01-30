@@ -106,9 +106,9 @@ public class StartupManager {
         logger.info("Alert Starting...");
         // FIXME move this logic to the build.gradle
         systemStatusUtility.startupOccurred();
-        if (upgradeProcessor.shouldUpgrade()) {
-            upgradeProcessor.runUpgrade();
-        }
+        //        if (upgradeProcessor.shouldUpgrade()) {
+        //            upgradeProcessor.runUpgrade();
+        //        }
         initializeChannelPropertyManagers();
         validate();
         logConfiguration();

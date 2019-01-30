@@ -51,15 +51,7 @@ public class DescriptorRegistrarTestIT extends AlertIntegrationTest {
         final List<DefinedFieldModel> distributionFields = descriptorAccessor.getFieldsForDescriptorById(foundDescriptor.get().getId(), ConfigContextEnum.DISTRIBUTION);
 
         assertEquals(hipChatDescriptor.getAllDefinedFields(ConfigContextEnum.GLOBAL).size(), globalFields.size());
-
-        //        ChannelDistributionUIConfig commonDistributionUIConfig = new ChannelDistributionUIConfig();
-        //        commonDistributionUIConfig.createCommonConfigFields(Set.of(), Set.of()).size();
-        //
-        //        ProviderDistributionUIConfig providerDistributionUIConfig = new ProviderDistributionUIConfig();
-        //        providerDistributionUIConfig.createCommonConfigFields()
-
-        // FIXME When we find out the best way to add common fields to descriptors, update this accordingly and remove the + 6
-        assertEquals(hipChatDescriptor.getAllDefinedFields(ConfigContextEnum.DISTRIBUTION).size() + 6, distributionFields.size());
+        assertEquals(hipChatDescriptor.getAllDefinedFields(ConfigContextEnum.DISTRIBUTION).size(), distributionFields.size());
     }
 
     @Test

@@ -285,6 +285,18 @@
         <sql dbms="h2" stripComments="true">
             CALL DEFINE_FIELD('channel.hipchat.color', FALSE, 'channel_hipchat', 'DISTRIBUTION');
         </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.name', FALSE, 'channel_hipchat', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.channel.name', FALSE, 'channel_hipchat', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.provider.name', FALSE, 'channel_hipchat', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.frequency', FALSE, 'channel_hipchat', 'DISTRIBUTION');
+        </sql>
     </changeSet>
 
     <!-- Register Distribution Slack Fields. Changelog Extension: 10. -->
