@@ -192,15 +192,15 @@ public class StartupManager {
     }
 
     public void scheduleTaskCrons(final String dailyDigestHourOfDay, final String purgeDataFrequencyDays) {
-        final String dailyDigestCron = String.format("0 0 %s 1/1 * ?", dailyDigestHourOfDay);
-        final String purgeDataCron = String.format("0 0 0 1/%s * ?", purgeDataFrequencyDays);
+        final String dailyDigestCron = String.format(DailyTask.CRON_FORMAT, dailyDigestHourOfDay);
+        final String purgeDataCron = String.format(PurgeTask.CRON_FORMAT, purgeDataFrequencyDays);
         taskManager.registerTask(dailyTask);
         taskManager.registerTask(purgeTask);
         taskManager.registerTask(onDemandTask);
         taskManager.registerTask(phoneHomeTask);
         taskManager.scheduleCronTask(dailyDigestCron, dailyTask.getTaskName());
         taskManager.scheduleCronTask(purgeDataCron, purgeTask.getTaskName());
-        taskManager.scheduleCronTask("0 0 12 1/1 * ?", phoneHomeTask.getTaskName());
+        taskManager.scheduleCronTask(PhoneHomeTask.CRON_EXPRESSION, phoneHomeTask.getTaskName());
         taskManager.scheduleExecutionAtFixedRate(OnDemandTask.DEFAULT_INTERVAL_MILLISECONDS, onDemandTask.getTaskName());
 
         logger.info("Daily Digest next run:     {}", taskManager.getNextRunTime(dailyTask.getTaskName()));

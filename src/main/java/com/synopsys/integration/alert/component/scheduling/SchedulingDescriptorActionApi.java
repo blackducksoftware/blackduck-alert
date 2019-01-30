@@ -30,6 +30,7 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.context.NoTestActionApi;
 import com.synopsys.integration.alert.common.workflow.TaskManager;
+import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
 import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
@@ -47,8 +48,21 @@ public class SchedulingDescriptorActionApi extends NoTestActionApi {
 
     @Override
     public FieldModel readConfig(final FieldModel fieldModel) {
+        fieldModel.putField(SchedulingDescriptor.KEY_ACCUMULATOR_NEXT_RUN, new FieldValueModel(List.of(taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME).orElse("")), true));
         fieldModel.putField(SchedulingDescriptor.KEY_DAILY_DIGEST_NEXT_RUN, new FieldValueModel(List.of(taskManager.getNextRunTime(DailyTask.TASK_NAME).orElse("")), true));
         fieldModel.putField(SchedulingDescriptor.KEY_PURGE_DATA_NEXT_RUN, new FieldValueModel(List.of(taskManager.getNextRunTime(PurgeTask.TASK_NAME).orElse("")), true));
         return fieldModel;
     }
+
+    @Override
+    public FieldModel saveConfig(final FieldModel fieldModel) {
+        final String dailyDigestHourOfDay = fieldModel.getFieldValue(SchedulingDescriptor.KEY_DAILY_DIGEST_HOUR_OF_DAY).orElse("");
+        final String purgeDataFrequencyDays = fieldModel.getFieldValue(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS).orElse("");
+        final String dailyDigestCron = String.format(DailyTask.CRON_FORMAT, dailyDigestHourOfDay);
+        final String purgeDataCron = String.format(PurgeTask.CRON_FORMAT, purgeDataFrequencyDays);
+        taskManager.scheduleCronTask(dailyDigestCron, DailyTask.TASK_NAME);
+        taskManager.scheduleCronTask(purgeDataCron, PurgeTask.TASK_NAME);
+        return fieldModel;
+    }
+
 }
