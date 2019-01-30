@@ -166,8 +166,8 @@ public class StartupManager {
             logger.error("Error connecting to DB", e);
             schedulingConfigs = Collections.emptyList();
         }
-        String dailyDigestHourOfDay = null;
-        String purgeDataFrequencyDays = null;
+        String dailyDigestHourOfDay;
+        String purgeDataFrequencyDays;
         if (!schedulingConfigs.isEmpty() && schedulingConfigs.get(0) != null) {
             final ConfigurationModel globalSchedulingConfig = schedulingConfigs.get(0);
             final SchedulingConfiguration schedulingConfiguration = new SchedulingConfiguration(globalSchedulingConfig);
