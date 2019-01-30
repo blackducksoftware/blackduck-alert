@@ -134,11 +134,12 @@ public class ConfigActions {
     public FieldModel saveConfig(final FieldModel fieldModel) throws AlertException, AlertFieldException {
         validateConfig(fieldModel, new HashMap<>());
         final DescriptorActionApi descriptorActionApi = retrieveDescriptorActionApi(fieldModel).orElseThrow(() -> new AlertException("Could not find a Descriptor with the name: " + fieldModel.getDescriptorName()));
-        final FieldModel modelToSave = descriptorActionApi.saveConfig(fieldModel);
-        final String descriptorName = modelToSave.getDescriptorName();
-        final String context = modelToSave.getContext();
-        final Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertFromFieldModel(modelToSave);
-        return convertToFieldModel(configurationAccessor.createConfiguration(descriptorName, EnumUtils.getEnum(ConfigContextEnum.class, context), configurationFieldModelMap.values()));
+        final String descriptorName = fieldModel.getDescriptorName();
+        final String context = fieldModel.getContext();
+        final Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertFromFieldModel(fieldModel);
+        final FieldModel dbSavedModel = convertToFieldModel(configurationAccessor.createConfiguration(descriptorName, EnumUtils.getEnum(ConfigContextEnum.class, context), configurationFieldModelMap.values()));
+        final FieldModel combinedModel = dbSavedModel.combine(fieldModel);
+        return descriptorActionApi.saveConfig(combinedModel);
     }
 
     public String validateConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) throws AlertException, AlertFieldException {
