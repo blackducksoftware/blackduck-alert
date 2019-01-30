@@ -23,8 +23,6 @@
  */
 package com.synopsys.integration.alert.web.model.configuration;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -70,10 +68,6 @@ public class FieldModel extends Config {
 
     public Optional<String> getFieldValue(final String key) {
         return getField(key).flatMap(fieldValueModel -> fieldValueModel.getValue());
-    }
-
-    public Collection<String> getFieldValues(final String key) {
-        return getField(key).map(fieldValueModel -> fieldValueModel.getValues()).orElse(List.of());
     }
 
     public void putField(final String key, final FieldValueModel field) {
