@@ -46,6 +46,7 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.common.exception.AlertUpgradeException;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
+import com.synopsys.integration.alert.common.workflow.TaskManager;
 import com.synopsys.integration.alert.component.scheduling.SchedulingConfiguration;
 import com.synopsys.integration.alert.component.scheduling.SchedulingDescriptor;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
@@ -79,12 +80,13 @@ public class StartupManager {
     private final EncryptionUtility encryptionUtility;
     private final UpgradeProcessor upgradeProcessor;
     private final ProxyManager proxyManager;
+    private final TaskManager taskManager;
 
     @Autowired
     public StartupManager(final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
         final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask, final PhoneHomeTask phoneHomeTask, final AlertStartupInitializer alertStartupInitializer,
         final List<ProviderDescriptor> providerDescriptorList, final SystemStatusUtility systemStatusUtility, final SystemValidator systemValidator, final BaseConfigurationAccessor configurationAccessor,
-        final EncryptionUtility encryptionUtility, final UpgradeProcessor upgradeProcessor, final ProxyManager proxyManager) {
+        final EncryptionUtility encryptionUtility, final UpgradeProcessor upgradeProcessor, final ProxyManager proxyManager, final TaskManager taskManager) {
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
         this.dailyTask = dailyTask;
@@ -99,6 +101,7 @@ public class StartupManager {
         this.encryptionUtility = encryptionUtility;
         this.upgradeProcessor = upgradeProcessor;
         this.proxyManager = proxyManager;
+        this.taskManager = taskManager;
     }
 
     @Transactional
@@ -191,16 +194,19 @@ public class StartupManager {
     public void scheduleTaskCrons(final String dailyDigestHourOfDay, final String purgeDataFrequencyDays) {
         final String dailyDigestCron = String.format("0 0 %s 1/1 * ?", dailyDigestHourOfDay);
         final String purgeDataCron = String.format("0 0 0 1/%s * ?", purgeDataFrequencyDays);
-        dailyTask.scheduleExecution(dailyDigestCron);
-        onDemandTask.scheduleExecutionAtFixedRate(OnDemandTask.DEFAULT_INTERVAL_MILLISECONDS);
-        purgeTask.scheduleExecution(purgeDataCron);
+        taskManager.registerTask(dailyTask);
+        taskManager.registerTask(purgeTask);
+        taskManager.registerTask(onDemandTask);
+        taskManager.registerTask(phoneHomeTask);
+        taskManager.scheduleCronTask(dailyDigestCron, dailyTask.getTaskName());
+        taskManager.scheduleCronTask(purgeDataCron, purgeTask.getTaskName());
+        taskManager.scheduleCronTask("0 0 12 1/1 * ?", phoneHomeTask.getTaskName());
+        taskManager.scheduleExecutionAtFixedRate(OnDemandTask.DEFAULT_INTERVAL_MILLISECONDS, onDemandTask.getTaskName());
 
-        logger.info("Daily Digest next run:     {}", dailyTask.getFormatedNextRunTime().orElse(""));
-        logger.info("On Demand next run:        {}", onDemandTask.getFormatedNextRunTime().orElse(""));
-        logger.info("Purge Old Data next run:   {}", purgeTask.getFormatedNextRunTime().orElse(""));
-
-        phoneHomeTask.scheduleExecution("0 0 12 1/1 * ?");
-        logger.debug("Phone home next run:       {}", phoneHomeTask.getFormatedNextRunTime());
+        logger.info("Daily Digest next run:     {}", taskManager.getNextRunTime(dailyTask.getTaskName()));
+        logger.info("On Demand next run:        {}", taskManager.getNextRunTime(onDemandTask.getTaskName()));
+        logger.info("Purge Old Data next run:   {}", taskManager.getNextRunTime(purgeTask.getTaskName()));
+        logger.debug("Phone home next run:       {}", taskManager.getNextRunTime(phoneHomeTask.getTaskName()));
     }
 
     @Transactional
