@@ -70,8 +70,6 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     public void testGetConfig() throws Exception {
-        registerDescriptor(hipChatDescriptor);
-
         final ConfigurationJobModel emptyConfigurationModel = addJob(HipChatChannel.COMPONENT_NAME, BlackDuckProvider.COMPONENT_NAME, Map.of());
         final String configId = String.valueOf(emptyConfigurationModel.getJobId());
 
@@ -92,14 +90,11 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
                        .filter(fieldModel -> fieldModel.getJobId().equals(configId))
                        .findFirst()
                        .isPresent());
-
-        unregisterDescriptor(hipChatDescriptor);
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     public void testGetConfigById() throws Exception {
-        registerDescriptor(hipChatDescriptor);
         final ConfigurationJobModel emptyConfigurationModel = addJob(HipChatChannel.COMPONENT_NAME, BlackDuckProvider.COMPONENT_NAME, Map.of());
         final String configId = String.valueOf(emptyConfigurationModel.getJobId());
 
@@ -114,14 +109,11 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         final FieldModel fieldModel = gson.fromJson(response, FieldModel.class);
         assertNotNull(fieldModel);
         assertEquals(configId, fieldModel.getId());
-
-        unregisterDescriptor(hipChatDescriptor);
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     public void testDeleteConfig() throws Exception {
-        registerDescriptor(hipChatDescriptor);
         final ConfigurationJobModel emptyConfigurationModel = addJob(HipChatChannel.COMPONENT_NAME, BlackDuckProvider.COMPONENT_NAME, Map.of());
         final String configId = String.valueOf(emptyConfigurationModel.getJobId());
 
@@ -136,18 +128,11 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         final Optional<ConfigurationJobModel> configuration = getConfigurationAccessor().getJobById(id);
 
         assertTrue(configuration.isEmpty());
-
-        unregisterDescriptor(hipChatDescriptor);
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     public void testUpdateConfig() throws Exception {
-        unregisterDescriptor(hipChatDescriptor);
-        registerDescriptor(hipChatDescriptor);
-        final List<ConfigurationJobModel> allJobs = getConfigurationAccessor().getAllJobs();
-        final List<ConfigurationModel> configurationsByDescriptorName1 = getConfigurationAccessor().getConfigurationsByDescriptorName(HipChatChannel.COMPONENT_NAME);
-        final List<ConfigurationModel> configurationsByDescriptorName = getConfigurationAccessor().getConfigurationsByDescriptorName(BlackDuckProvider.COMPONENT_NAME);
         final JobFieldModel fieldModel = createTestJobFieldModel();
         Map<String, Collection<String>> fieldValueModels = new HashMap<>();
         for (FieldModel newFieldModel : fieldModel.getFieldModels()) {
@@ -173,7 +158,6 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     public void testSaveConfig() throws Exception {
-        //        registerDescriptor(hipChatDescriptor);
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(url)
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
@@ -186,14 +170,11 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         final MvcResult mvcResult = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isCreated()).andReturn();
         final String response = mvcResult.getResponse().getContentAsString();
         checkResponse(response);
-
-        unregisterDescriptor(hipChatDescriptor);
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     public void testValidateConfig() throws Exception {
-        registerDescriptor(hipChatDescriptor);
         final String urlPath = url + "/validate";
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(urlPath)
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
@@ -205,7 +186,6 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         request.contentType(contentType);
 
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk());
-        unregisterDescriptor(hipChatDescriptor);
     }
 
     // FIXME Will need to add all configurations to properly run a test check for hipchat.

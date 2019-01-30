@@ -43,6 +43,7 @@ public class NotificationToDistributionEventConverterTestIT extends AlertIntegra
     private CommonDistributionConfiguration createEmailConfig() {
         final ConfigurationJobModel model = Mockito.mock(ConfigurationJobModel.class);
         final List<ConfigurationFieldModel> fields = MockConfigurationModelFactory.createEmailDistributionFieldsProjectOwnerOnly();
+        fields.addAll(MockConfigurationModelFactory.createBlackDuckDistributionFields());
         Mockito.when(model.createKeyToFieldMap()).thenReturn(MockConfigurationModelFactory.mapFieldKeyToFields(fields));
         Mockito.when(model.getJobId()).thenReturn(UUID.randomUUID());
 
@@ -53,6 +54,7 @@ public class NotificationToDistributionEventConverterTestIT extends AlertIntegra
     private CommonDistributionConfiguration createHipChatConfig() {
         final ConfigurationJobModel model = Mockito.mock(ConfigurationJobModel.class);
         final List<ConfigurationFieldModel> fields = MockConfigurationModelFactory.createHipChatDistributionFields();
+        fields.addAll(MockConfigurationModelFactory.createBlackDuckDistributionFields());
         Mockito.when(model.createKeyToFieldMap()).thenReturn(MockConfigurationModelFactory.mapFieldKeyToFields(fields));
         Mockito.when(model.getJobId()).thenReturn(UUID.randomUUID());
 
@@ -63,6 +65,7 @@ public class NotificationToDistributionEventConverterTestIT extends AlertIntegra
     private CommonDistributionConfiguration createSlackConfig() {
         final ConfigurationJobModel model = Mockito.mock(ConfigurationJobModel.class);
         final List<ConfigurationFieldModel> fields = MockConfigurationModelFactory.createSlackDistributionFields();
+        fields.addAll(MockConfigurationModelFactory.createBlackDuckDistributionFields());
         Mockito.when(model.createKeyToFieldMap()).thenReturn(MockConfigurationModelFactory.mapFieldKeyToFields(fields));
         Mockito.when(model.getJobId()).thenReturn(UUID.randomUUID());
 

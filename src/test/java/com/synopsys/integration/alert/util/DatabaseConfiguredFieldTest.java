@@ -21,6 +21,9 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
+import com.synopsys.integration.alert.database.repository.configuration.ConfigGroupRepository;
+import com.synopsys.integration.alert.database.repository.configuration.DescriptorConfigRepository;
+import com.synopsys.integration.alert.database.repository.configuration.FieldValueRepository;
 
 public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
 
@@ -31,9 +34,22 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
     private BaseConfigurationAccessor configurationAccessor;
     private Set<String> addedConfigurations;
 
+    @Autowired
+    private DescriptorConfigRepository descriptorConfigRepository;
+
+    @Autowired
+    private FieldValueRepository fieldValueRepository;
+
+    @Autowired
+    private ConfigGroupRepository configGroupRepository;
+
     @BeforeEach
+    @AfterEach
     public void initializeTest() {
         addedConfigurations = new HashSet<>();
+        configGroupRepository.deleteAllInBatch();
+        descriptorConfigRepository.deleteAllInBatch();
+        fieldValueRepository.deleteAllInBatch();
     }
 
     @AfterEach
@@ -41,18 +57,6 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
         for (final String id : addedConfigurations) {
             deleteConfiguration(id);
         }
-    }
-
-    public void registerDescriptor(final Descriptor descriptor) throws AlertDatabaseConstraintException {
-        //        for (final ConfigContextEnum context : descriptor.getAppliedUIContexts()) {
-        //            descriptorAccessor.registerDescriptor(descriptor.getName(), descriptor.getType(), descriptor.getAllDefinedFields(context));
-        //        }
-        //        descriptors.add(descriptor);
-    }
-
-    public void unregisterDescriptor(final Descriptor descriptor) throws AlertDatabaseConstraintException {
-        //        descriptorAccessor.unregisterDescriptor(descriptor.getName());
-        //        descriptors.remove(descriptor);
     }
 
     public ConfigurationJobModel addJob(String descriptorName, String providerName, final Map<String, Collection<String>> fieldsValues) throws AlertDatabaseConstraintException {

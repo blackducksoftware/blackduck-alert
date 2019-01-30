@@ -41,7 +41,7 @@ public class MockConfigurationModelFactory {
         fields.add(notify);
         fields.add(room);
 
-        final Collection<ConfigurationFieldModel> commonFields = createCommonBlackDuckConfigurationFields("HipChat Test Job", HipChatChannel.COMPONENT_NAME);
+        final Collection<ConfigurationFieldModel> commonFields = createCommonDistributionFields("HipChat Test Job", HipChatChannel.COMPONENT_NAME);
         fields.addAll(commonFields);
         return fields;
     }
@@ -57,7 +57,7 @@ public class MockConfigurationModelFactory {
         fields.add(username);
         fields.add(webhook);
 
-        final Collection<ConfigurationFieldModel> commonFields = createCommonBlackDuckConfigurationFields("Slack Test Job", SlackChannel.COMPONENT_NAME);
+        final Collection<ConfigurationFieldModel> commonFields = createCommonDistributionFields("Slack Test Job", SlackChannel.COMPONENT_NAME);
         fields.addAll(commonFields);
         return fields;
     }
@@ -73,7 +73,7 @@ public class MockConfigurationModelFactory {
         fields.add(projectOwnerOnly);
         fields.add(subjectLine);
 
-        final Collection<ConfigurationFieldModel> commonFields = createCommonBlackDuckConfigurationFields("Email Test Job", EmailChannel.COMPONENT_NAME);
+        final Collection<ConfigurationFieldModel> commonFields = createCommonDistributionFields("Email Test Job", EmailChannel.COMPONENT_NAME);
         fields.addAll(commonFields);
         return fields;
     }
@@ -89,33 +89,41 @@ public class MockConfigurationModelFactory {
         fields.add(projectOwnerOnly);
         fields.add(subjectLine);
 
-        final Collection<ConfigurationFieldModel> commonFields = createCommonBlackDuckConfigurationFields("Email Test Job", EmailChannel.COMPONENT_NAME);
+        final Collection<ConfigurationFieldModel> commonFields = createCommonDistributionFields("Email Test Job", EmailChannel.COMPONENT_NAME);
         fields.addAll(commonFields);
         return fields;
     }
 
-    public static List<ConfigurationFieldModel> createCommonBlackDuckConfigurationFields(final String jobName, final String channelDescriptorName) {
+    public static List<ConfigurationFieldModel> createBlackDuckDistributionFields() {
         final List<ConfigurationFieldModel> fields = new ArrayList<>();
 
-        final ConfigurationFieldModel name = createFieldModel(ChannelDistributionUIConfig.KEY_NAME, jobName);
-        final ConfigurationFieldModel channelName = createFieldModel(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, channelDescriptorName);
-        final ConfigurationFieldModel providerName = createFieldModel(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, BlackDuckProvider.COMPONENT_NAME);
         final ConfigurationFieldModel notificationTypes = createFieldModel(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, List.of(NotificationType.VULNERABILITY.toString(), NotificationType.RULE_VIOLATION.toString()));
-        final ConfigurationFieldModel frequencyType = createFieldModel(ChannelDistributionUIConfig.KEY_FREQUENCY, FrequencyType.REAL_TIME.toString());
         final ConfigurationFieldModel formatType = createFieldModel(ProviderDistributionUIConfig.KEY_FORMAT_TYPE, FormatType.DEFAULT.toString());
         final ConfigurationFieldModel filterByProject = createFieldModel(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT, "true");
         final ConfigurationFieldModel projectNamePattern = createFieldModel(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN, ".*UnitTest.*");
         final ConfigurationFieldModel configuredProject = createFieldModel(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT, List.of("TestProject1", "TestProject2"));
 
-        fields.add(name);
-        fields.add(channelName);
-        fields.add(providerName);
         fields.add(notificationTypes);
-        fields.add(frequencyType);
         fields.add(formatType);
         fields.add(filterByProject);
         fields.add(projectNamePattern);
         fields.add(configuredProject);
+
+        return fields;
+    }
+
+    public static List<ConfigurationFieldModel> createCommonDistributionFields(final String jobName, final String channelDescriptorName) {
+        final List<ConfigurationFieldModel> fields = new ArrayList<>();
+
+        final ConfigurationFieldModel name = createFieldModel(ChannelDistributionUIConfig.KEY_NAME, jobName);
+        final ConfigurationFieldModel channelName = createFieldModel(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, channelDescriptorName);
+        final ConfigurationFieldModel providerName = createFieldModel(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, BlackDuckProvider.COMPONENT_NAME);
+        final ConfigurationFieldModel frequencyType = createFieldModel(ChannelDistributionUIConfig.KEY_FREQUENCY, FrequencyType.REAL_TIME.toString());
+
+        fields.add(name);
+        fields.add(channelName);
+        fields.add(providerName);
+        fields.add(frequencyType);
 
         return fields;
     }

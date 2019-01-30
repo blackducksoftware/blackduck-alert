@@ -93,6 +93,7 @@ public class ConfigurationFieldModelConverter {
         final List<DefinedFieldModel> definedFieldList = new LinkedList<>();
         definedFieldList.addAll(fieldsForContext);
 
+        // FIXME This will probably be better moved out of this method and into a separate call. Then add these fields to the FieldAccessor.
         if (ConfigContextEnum.DISTRIBUTION == context) {
             final Optional<String> providerName = fieldModel.getFieldValue(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
             // include all global field data as well if present in FieldModel
