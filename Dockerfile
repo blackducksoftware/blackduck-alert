@@ -1,5 +1,5 @@
 FROM blackducksoftware/hub-docker-common:1.0.2 as docker-common
-FROM openjdk:8-jre-alpine
+FROM openjdk:12-ea-25-jdk-alpine
 
 ARG VERSION
 
