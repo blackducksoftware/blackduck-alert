@@ -35,7 +35,6 @@ import com.synopsys.integration.alert.database.api.configuration.model.Registere
 import com.synopsys.integration.alert.database.channel.JobConfigReader;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.entity.repository.ConfiguredProjectsRepository;
-import com.synopsys.integration.alert.database.relation.repository.DistributionProjectRepository;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
@@ -69,9 +68,6 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
 
     @Autowired
     private ConfiguredProjectsRepository configuredProjectsRepository;
-
-    @Autowired
-    private DistributionProjectRepository distributionProjectRepository;
 
     private NotificationFilter defaultNotificationFilter;
 
@@ -108,7 +104,6 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
     @AfterEach
     public void cleanup() throws AlertDatabaseConstraintException {
         configuredProjectsRepository.deleteAll();
-        distributionProjectRepository.deleteAll();
         descriptorAccessor.unregisterDescriptor(TEST_DESCRIPTOR_NAME);
     }
 

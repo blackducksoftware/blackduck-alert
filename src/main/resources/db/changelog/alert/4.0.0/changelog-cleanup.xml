@@ -54,6 +54,10 @@
                 schemaName="ALERT"
                 tableName="DISTRIBUTION_NOTIFICATION_TYPES"
         />
+        <dropTable
+                schemaName="ALERT"
+                tableName="DISTRIBUTION_PROJECT_RELATION"
+        />
     </changeSet>
 
     <!-- Drop abandoned tables -->
@@ -61,6 +65,10 @@
         <dropTable
                 schemaName="ALERT"
                 tableName="VULNERABILITIES"
+        />
+        <dropTable
+                schemaName="ALERT"
+                tableName="NOTIFICATION_TYPES"
         />
     </changeSet>
 </databaseChangeLog>
