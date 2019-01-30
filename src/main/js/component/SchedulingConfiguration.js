@@ -75,12 +75,13 @@ class SchedulingConfiguration extends React.Component {
 
 
     decreaseAccumulatorTime() {
-        if (this.state.accumulatorNextRun <= 0) {
+        const nextRunString = FieldModelUtil.getFieldModelSingleValue(this.state.currentConfig, KEY_ACCUMULATOR_NEXT_RUN);
+        const nextRun = parseInt(nextRunString, 10);
+        if (nextRun <= 0) {
             this.props.getConfig();
         } else {
-            const nextRunString = FieldModelUtil.getFieldModelSingleValue(this.state.currentConfig, KEY_ACCUMULATOR_NEXT_RUN);
-            const nextRun = parseInt(nextRunString, 10) - 1;
-            const updatedState = FieldModelUtil.updateFieldModelSingleValue(this.state.currentConfig, KEY_ACCUMULATOR_NEXT_RUN, nextRun);
+            const decrementedValue = nextRun - 1;
+            const updatedState = FieldModelUtil.updateFieldModelSingleValue(this.state.currentConfig, KEY_ACCUMULATOR_NEXT_RUN, decrementedValue);
             this.setState({
                 currentConfig: updatedState
             });
