@@ -100,19 +100,37 @@
         <sql dbms="h2" stripComments="true">
             CALL DEFINE_FIELD('channel.common.configured.project', FALSE, 'provider_blackduck', 'DISTRIBUTION');
         </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('provider.distribution.notification.types', FALSE, 'provider_blackduck', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('provider.distribution.format.type', FALSE, 'provider_blackduck', 'DISTRIBUTION');
+        </sql>
     </changeSet>
 
     <!-- Register Distribution Email Fields. Changelog Extension: 6. -->
 
     <changeSet author="gkillough" id="1548167676836-6">
         <sql dbms="h2" stripComments="true">
-            CALL DEFINE_FIELD('subject.line', FALSE, 'channel_email', 'DISTRIBUTION');
+            CALL DEFINE_FIELD('email.subject.line', FALSE, 'channel_email', 'DISTRIBUTION');
         </sql>
         <sql dbms="h2" stripComments="true">
             CALL DEFINE_FIELD('project.owner.only', FALSE, 'channel_email', 'DISTRIBUTION');
         </sql>
         <sql dbms="h2" stripComments="true">
             CALL DEFINE_FIELD('email.addresses', FALSE, 'channel_email', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.name', FALSE, 'channel_email', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.channel.name', FALSE, 'channel_email', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.provider.name', FALSE, 'channel_email', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.frequency', FALSE, 'channel_email', 'DISTRIBUTION');
         </sql>
     </changeSet>
 
@@ -285,6 +303,18 @@
         <sql dbms="h2" stripComments="true">
             CALL DEFINE_FIELD('channel.hipchat.color', FALSE, 'channel_hipchat', 'DISTRIBUTION');
         </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.name', FALSE, 'channel_hipchat', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.channel.name', FALSE, 'channel_hipchat', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.provider.name', FALSE, 'channel_hipchat', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.frequency', FALSE, 'channel_hipchat', 'DISTRIBUTION');
+        </sql>
     </changeSet>
 
     <!-- Register Distribution Slack Fields. Changelog Extension: 10. -->
@@ -298,6 +328,18 @@
         </sql>
         <sql dbms="h2" stripComments="true">
             CALL DEFINE_FIELD('channel.slack.channel.username', FALSE, 'channel_slack', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.name', FALSE, 'channel_slack', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.channel.name', FALSE, 'channel_slack', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.provider.name', FALSE, 'channel_slack', 'DISTRIBUTION');
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('channel.common.frequency', FALSE, 'channel_slack', 'DISTRIBUTION');
         </sql>
     </changeSet>
 
