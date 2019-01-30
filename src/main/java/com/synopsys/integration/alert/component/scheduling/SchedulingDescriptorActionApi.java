@@ -24,6 +24,8 @@
 package com.synopsys.integration.alert.component.scheduling;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -48,7 +50,8 @@ public class SchedulingDescriptorActionApi extends NoTestActionApi {
 
     @Override
     public FieldModel readConfig(final FieldModel fieldModel) {
-        fieldModel.putField(SchedulingDescriptor.KEY_ACCUMULATOR_NEXT_RUN, new FieldValueModel(List.of(taskManager.getNextRunTime(BlackDuckAccumulator.TASK_NAME).orElse("")), true));
+        Optional<Long> accumulatorNextRun = taskManager.getDifferenceToNextRun(BlackDuckAccumulator.TASK_NAME, TimeUnit.SECONDS);
+        fieldModel.putField(SchedulingDescriptor.KEY_ACCUMULATOR_NEXT_RUN, new FieldValueModel(List.of(accumulatorNextRun.map(value -> String.valueOf(value)).orElse("")), true));
         fieldModel.putField(SchedulingDescriptor.KEY_DAILY_DIGEST_NEXT_RUN, new FieldValueModel(List.of(taskManager.getNextRunTime(DailyTask.TASK_NAME).orElse("")), true));
         fieldModel.putField(SchedulingDescriptor.KEY_PURGE_DATA_NEXT_RUN, new FieldValueModel(List.of(taskManager.getNextRunTime(PurgeTask.TASK_NAME).orElse("")), true));
         return fieldModel;

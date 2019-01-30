@@ -26,6 +26,7 @@ package com.synopsys.integration.alert.common.workflow;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.stereotype.Component;
 
@@ -85,5 +86,14 @@ public class TaskManager {
             Optional.empty();
         }
         return scheduledTaskMap.get(taskName).getFormatedNextRunTime();
+    }
+
+    public Optional<Long> getDifferenceToNextRun(final String taskName, TimeUnit timeUnit) {
+        if (!scheduledTaskMap.containsKey(taskName)) {
+            Optional.empty();
+        }
+        Optional<Long> millisecondsToNextRun = scheduledTaskMap.get(taskName).getMillisecondsToNextRun();
+        return millisecondsToNextRun
+                   .map(value -> timeUnit.convert(value, TimeUnit.MILLISECONDS));
     }
 }
