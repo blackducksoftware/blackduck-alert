@@ -54,9 +54,9 @@ public class SettingsUIConfig extends UIConfig {
         final ConfigField environmentVariableOverride = CheckboxConfigField.create(SettingsDescriptor.KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE, "Startup Environment Variable Override");
 
         final ConfigField proxyHost = TextInputConfigField.create(SettingsDescriptor.KEY_PROXY_HOST, "Proxy Host");
-        final ConfigField proxyPort = TextInputConfigField.create(SettingsDescriptor.KEY_PROXY_PORT, "Proxy Port");
-        final ConfigField proxyUsername = TextInputConfigField.create(SettingsDescriptor.KEY_PROXY_USERNAME, "Proxy Username");
-        final ConfigField proxyPassword = PasswordConfigField.create(SettingsDescriptor.KEY_PROXY_PASSWORD, "Proxy Password");
+        final ConfigField proxyPort = TextInputConfigField.create(SettingsDescriptor.KEY_PROXY_PORT, "Proxy Port", this::validateProxyHost);
+        final ConfigField proxyUsername = TextInputConfigField.create(SettingsDescriptor.KEY_PROXY_USERNAME, "Proxy Username", this::validateProxyHost);
+        final ConfigField proxyPassword = PasswordConfigField.create(SettingsDescriptor.KEY_PROXY_PASSWORD, "Proxy Password", this::validateProxyPassword);
 
         final ConfigField ldapEnabled = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_ENABLED, "LDAP Enabled");
         final ConfigField ldapServer = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_SERVER, "LDAP Server", this::validateLDAPServer);
@@ -75,6 +75,42 @@ public class SettingsUIConfig extends UIConfig {
 
         return List.of(defaultUserPassword, encryptionPassword, encryptionSalt, environmentVariableOverride, proxyHost, proxyPort, proxyUsername, proxyPassword, ldapEnabled, ldapServer, ldapManagerDn, ldapManagerPassword,
             ldapAuthenticationType, ldapReferral, ldapUserSearchBase, ldapUserSearchFilter, ldapUserDNPatterns, ldapUserAttributes, ldapGroupSearchBase, ldapGroupSearchFilter, ldapGroupRoleAttribute, ldapRolePrefix);
+    }
+
+    private Collection<String> validateProxyHost(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        if (fieldToValidate.hasValues()) {
+            final Optional<FieldValueModel> proxyHost = fieldModel.getField(SettingsDescriptor.KEY_PROXY_HOST);
+            if (proxyHost.isPresent()) {
+                FieldValueModel proxyHostField = proxyHost.get();
+                if (!proxyHostField.hasValues()) {
+                    return List.of(SettingsDescriptor.FIELD_ERROR_PROXY_HOST_MISSING);
+                }
+            }
+        }
+        return List.of();
+    }
+
+    private Collection<String> validateProxyPassword(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        if (fieldToValidate.hasValues()) {
+            Collection<String> hostValidation = validateProxyHost(fieldToValidate, fieldModel);
+            if (!hostValidation.isEmpty()) {
+                return hostValidation;
+            }
+            return validateUserNameExists(fieldModel);
+        } else {
+            return validateUserNameExists(fieldModel);
+        }
+    }
+
+    private Collection<String> validateUserNameExists(final FieldModel fieldModel) {
+        final Optional<FieldValueModel> proxyUserName = fieldModel.getField(SettingsDescriptor.KEY_PROXY_USERNAME);
+        if (proxyUserName.isPresent()) {
+            FieldValueModel proxyUserField = proxyUserName.get();
+            if (proxyUserField.hasValues()) {
+                return List.of();
+            }
+        }
+        return List.of(SettingsDescriptor.FIELD_ERROR_PROXY_USER_MISSING);
     }
 
     private Collection<String> validateLDAPServer(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
