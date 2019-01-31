@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.enumeration.FormatType;
+import com.synopsys.integration.alert.common.workflow.TaskManager;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.ProjectSyncTask;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
@@ -21,29 +22,32 @@ public class BlackDuckProviderTest {
     public void testInitialize() {
         final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
         final ProjectSyncTask projectSyncTask = Mockito.mock(ProjectSyncTask.class);
-        final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask, null);
+        Mockito.when(accumulatorTask.getTaskName()).thenReturn(BlackDuckAccumulator.TASK_NAME);
+        Mockito.when(projectSyncTask.getTaskName()).thenReturn(ProjectSyncTask.TASK_NAME);
+        final TaskManager taskManager = Mockito.mock(TaskManager.class);
+        final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask, null, taskManager);
         provider.initialize();
-        Mockito.verify(accumulatorTask).scheduleExecution(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION);
-        Mockito.verify(projectSyncTask).scheduleExecution(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION);
-
+        Mockito.verify(taskManager, Mockito.times(2)).scheduleCronTask(Mockito.anyString(), Mockito.anyString());
     }
 
     @Test
     public void testDestroy() {
         final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
         final ProjectSyncTask projectSyncTask = Mockito.mock(ProjectSyncTask.class);
-        final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask, null);
+        Mockito.when(accumulatorTask.getTaskName()).thenReturn(BlackDuckAccumulator.TASK_NAME);
+        Mockito.when(projectSyncTask.getTaskName()).thenReturn(ProjectSyncTask.TASK_NAME);
+        final TaskManager taskManager = Mockito.mock(TaskManager.class);
+        final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask, null, taskManager);
         provider.destroy();
-        Mockito.verify(accumulatorTask).scheduleExecution(BlackDuckAccumulator.STOP_SCHEDULE_EXPRESSION);
-        Mockito.verify(projectSyncTask).scheduleExecution(BlackDuckAccumulator.STOP_SCHEDULE_EXPRESSION);
-
+        Mockito.verify(taskManager, Mockito.times(2)).unregisterTask(Mockito.anyString());
     }
 
     @Test
     public void testGetNotificationTypes() {
         final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
         final ProjectSyncTask projectSyncTask = Mockito.mock(ProjectSyncTask.class);
-        final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask, null);
+        final TaskManager taskManager = new TaskManager();
+        final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask, null, taskManager);
         final Set<String> expectedNotificationTypes = new LinkedHashSet<>();
         expectedNotificationTypes.add(NotificationType.POLICY_OVERRIDE.name());
         expectedNotificationTypes.add(NotificationType.RULE_VIOLATION.name());
@@ -57,7 +61,8 @@ public class BlackDuckProviderTest {
     public void testGetSupportedFormatTypes() {
         final BlackDuckAccumulator accumulatorTask = Mockito.mock(BlackDuckAccumulator.class);
         final ProjectSyncTask projectSyncTask = Mockito.mock(ProjectSyncTask.class);
-        final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask, null);
+        final TaskManager taskManager = new TaskManager();
+        final BlackDuckProvider provider = new BlackDuckProvider(accumulatorTask, projectSyncTask, null, taskManager);
         final Set<FormatType> expectedNotificationTypes = EnumSet.of(FormatType.DEFAULT, FormatType.DIGEST);
         final Set<FormatType> providerNotificationTypes = provider.getSupportedFormatTypes();
         assertEquals(expectedNotificationTypes, providerNotificationTypes);

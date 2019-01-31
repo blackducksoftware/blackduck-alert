@@ -27,14 +27,11 @@ import java.util.Set;
 
 import javax.validation.constraints.NotNull;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.workflow.processor.MessageContentCollector;
 import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
 
-@Component
+// TODO exclude for now: @Component
 public class PolarisDescriptor extends ProviderDescriptor {
     public static final String KEY_POLARIS_URL = "polaris.url";
     public static final String KEY_POLARIS_ACCESS_TOKEN = "polaris.access.token";
@@ -44,7 +41,7 @@ public class PolarisDescriptor extends ProviderDescriptor {
     public static final String POLARIS_LABEL = "Polaris";
     public static final String POLARIS_URL_NAME = "polaris";
 
-    @Autowired
+    // TODO exclude for now: @Autowired
     public PolarisDescriptor(final PolarisGlobalDescriptorActionApi polarisGlobalDescriptorActionApi, final PolarisGlobalUIConfig polarisGlobalUIConfig, final PolarisDistributionDescriptorActionApi polarisDistributionDescriptorActionApi,
         final PolarisDistributionUIConfig polarisDistributionUIConfig, final @NotNull PolarisProvider provider) {
         super(polarisGlobalDescriptorActionApi, polarisGlobalUIConfig, polarisDistributionDescriptorActionApi, polarisDistributionUIConfig, provider);

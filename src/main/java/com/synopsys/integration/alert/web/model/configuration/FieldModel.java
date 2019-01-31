@@ -77,13 +77,18 @@ public class FieldModel extends Config {
         keyToValues.put(key, field);
     }
 
-    public FieldModel combine(final FieldModel fieldModel) {
+    public FieldModel fill(final FieldModel fieldModel) {
         String id = StringUtils.isNotBlank(getId()) ? getId() : fieldModel.getId();
         String descriptorName = StringUtils.isNotBlank(getDescriptorName()) ? getDescriptorName() : fieldModel.getDescriptorName();
         String context = StringUtils.isNotBlank(getContext()) ? getContext() : fieldModel.getContext();
         final Map<String, FieldValueModel> fieldValueModelMap = new HashMap<>();
         fieldValueModelMap.putAll(this.getKeyToValues());
-        fieldValueModelMap.putAll(fieldModel.getKeyToValues());
+        final Map<String, FieldValueModel> fieldsToAdd = fieldModel.getKeyToValues();
+        for (Map.Entry<String, FieldValueModel> entry : fieldsToAdd.entrySet()) {
+            if (!fieldValueModelMap.containsKey(entry.getKey())) {
+                fieldValueModelMap.put(entry.getKey(), entry.getValue());
+            }
+        }
         final FieldModel newFieldModel = new FieldModel(descriptorName, context, fieldValueModelMap);
         newFieldModel.setId(id);
         return newFieldModel;
