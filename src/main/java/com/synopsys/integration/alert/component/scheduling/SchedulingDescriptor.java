@@ -27,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.ComponentDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.context.NoTestActionApi;
 
 @Component
 public class SchedulingDescriptor extends ComponentDescriptor {
@@ -44,8 +43,8 @@ public class SchedulingDescriptor extends ComponentDescriptor {
     public static final String KEY_PURGE_DATA_NEXT_RUN = "scheduling.purge.data.next.run";
 
     @Autowired
-    public SchedulingDescriptor(final NoTestActionApi noTestActionApi, final SchedulingUIConfig schedulingUIConfig) {
-        super(SCHEDULING_COMPONENT, noTestActionApi, schedulingUIConfig);
+    public SchedulingDescriptor(final SchedulingDescriptorActionApi actionApi, final SchedulingUIConfig schedulingUIConfig) {
+        super(SCHEDULING_COMPONENT, actionApi, schedulingUIConfig);
     }
 
 }

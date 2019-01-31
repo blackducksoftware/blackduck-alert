@@ -11,12 +11,13 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.workflow.TaskManager;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 public class BlackDuckDistributionDescriptorActionApiTest {
-    private final BlackDuckProvider provider = new BlackDuckProvider(null, null, null);
+    private final BlackDuckProvider provider = new BlackDuckProvider(null, null, null, new TaskManager());
     private final BlackDuckDistributionUIConfig blackDuckDistributionUIConfig = new BlackDuckDistributionUIConfig(provider);
 
     @Test

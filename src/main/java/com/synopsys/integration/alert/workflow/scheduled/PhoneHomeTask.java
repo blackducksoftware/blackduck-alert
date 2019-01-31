@@ -55,6 +55,7 @@ public class PhoneHomeTask extends ScheduledTask {
     public static final String TASK_NAME = "phonehome";
     public static final String ARTIFACT_ID = "blackduck-alert";
     public static final Long DEFAULT_TIMEOUT = 10L;
+    public static final String CRON_EXPRESSION = "0 0 12 1/1 * ?";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final BlackDuckProperties blackDuckProperties;

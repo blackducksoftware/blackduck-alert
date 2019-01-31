@@ -58,9 +58,8 @@ import com.synopsys.integration.rest.RestConstants;
 public class BlackDuckAccumulator extends ScheduledTask {
     public static final String DEFAULT_CRON_EXPRESSION = "0 0/1 * 1/1 * *";
     public static final String ENCODING = "UTF-8";
-
+    public static final String TASK_NAME = "blackduck-accumulator-task";
     private static final Logger logger = LoggerFactory.getLogger(BlackDuckAccumulator.class);
-
     private final BlackDuckProperties blackDuckProperties;
     private final NotificationManager notificationManager;
     private final FilePersistenceUtil filePersistenceUtil;
@@ -69,7 +68,7 @@ public class BlackDuckAccumulator extends ScheduledTask {
     @Autowired
     public BlackDuckAccumulator(final TaskScheduler taskScheduler, final BlackDuckProperties blackDuckProperties,
         final NotificationManager notificationManager, final FilePersistenceUtil filePersistenceUtil) {
-        super(taskScheduler, "blackduck-accumulator-task");
+        super(taskScheduler, TASK_NAME);
         this.blackDuckProperties = blackDuckProperties;
         this.notificationManager = notificationManager;
         this.filePersistenceUtil = filePersistenceUtil;

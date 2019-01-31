@@ -38,6 +38,7 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
+import com.synopsys.integration.alert.common.workflow.TaskManager;
 import com.synopsys.integration.alert.provider.blackduck.tasks.BlackDuckAccumulator;
 import com.synopsys.integration.alert.provider.blackduck.tasks.ProjectSyncTask;
 
@@ -48,26 +49,30 @@ public class BlackDuckProvider extends Provider {
 
     private final BlackDuckAccumulator accumulatorTask;
     private final ProjectSyncTask projectSyncTask;
+    private final TaskManager taskManager;
 
     @Autowired
-    public BlackDuckProvider(final BlackDuckAccumulator accumulatorTask, final ProjectSyncTask projectSyncTask, final BlackDuckEmailHandler blackDuckEmailHandler) {
+    public BlackDuckProvider(final BlackDuckAccumulator accumulatorTask, final ProjectSyncTask projectSyncTask, final BlackDuckEmailHandler blackDuckEmailHandler, final TaskManager taskManager) {
         super(BlackDuckProvider.COMPONENT_NAME, blackDuckEmailHandler);
         this.accumulatorTask = accumulatorTask;
         this.projectSyncTask = projectSyncTask;
+        this.taskManager = taskManager;
     }
 
     @Override
     public void initialize() {
         logger.info("Initializing provider...");
-        accumulatorTask.scheduleExecution(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION);
-        projectSyncTask.scheduleExecution(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION);
+        taskManager.registerTask(accumulatorTask);
+        taskManager.registerTask(projectSyncTask);
+        taskManager.scheduleCronTask(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION, accumulatorTask.getTaskName());
+        taskManager.scheduleCronTask(BlackDuckAccumulator.DEFAULT_CRON_EXPRESSION, projectSyncTask.getTaskName());
     }
 
     @Override
     public void destroy() {
         logger.info("Destroying provider...");
-        accumulatorTask.scheduleExecution(BlackDuckAccumulator.STOP_SCHEDULE_EXPRESSION);
-        projectSyncTask.scheduleExecution(BlackDuckAccumulator.STOP_SCHEDULE_EXPRESSION);
+        taskManager.unregisterTask(accumulatorTask.getTaskName());
+        taskManager.unregisterTask(projectSyncTask.getTaskName());
     }
 
     @Override
