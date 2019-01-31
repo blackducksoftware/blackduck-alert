@@ -41,7 +41,6 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
-import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
@@ -94,14 +93,14 @@ public class ConfigurationFieldModelConverter {
         definedFieldList.addAll(fieldsForContext);
 
         // FIXME This will probably be better moved out of this method and into a separate call. Then add these fields to the FieldAccessor.
-        if (ConfigContextEnum.DISTRIBUTION == context) {
-            final Optional<String> providerName = fieldModel.getFieldValue(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
-            // include all global field data as well if present in FieldModel
-            definedFieldList.addAll(descriptorAccessor.getFieldsForDescriptor(descriptorName, ConfigContextEnum.GLOBAL));
-            if (providerName.isPresent()) {
-                definedFieldList.addAll(descriptorAccessor.getFieldsForDescriptor(providerName.get(), context));
-            }
-        }
+        //        if (ConfigContextEnum.DISTRIBUTION == context) {
+        //            final Optional<String> providerName = fieldModel.getFieldValue(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
+        //            // include all global field data as well if present in FieldModel
+        //            definedFieldList.addAll(descriptorAccessor.getFieldsForDescriptor(descriptorName, ConfigContextEnum.GLOBAL));
+        //            if (providerName.isPresent()) {
+        //                definedFieldList.addAll(descriptorAccessor.getFieldsForDescriptor(providerName.get(), context));
+        //            }
+        //        }
         final Optional<ConfigurationModel> savedConfiguration;
         if (StringUtils.isNotBlank(fieldModel.getId())) {
             final Long id = Long.parseLong(fieldModel.getId());
