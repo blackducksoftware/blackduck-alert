@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import TextInput from 'field/input/TextInput';
 import PasswordInput from 'field/input/PasswordInput';
 import ConfigButtons from 'component/common/ConfigButtons';
-import { closeHipChatConfigTest, getConfig, openHipChatConfigTest, testConfig, toggleShowHostServer, updateConfig } from 'store/actions/hipChatConfig';
+import { closeHipChatConfigTest, getConfig, openHipChatConfigTest, testConfig, updateConfig } from 'store/actions/hipChatConfig';
 import ChannelTestModal from 'component/common/ChannelTestModal';
 import * as FieldModelUtil from 'util/fieldModelUtilities';
 
@@ -31,13 +31,13 @@ class HipChatConfiguration extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.getConfig();
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.updateStatus === 'FETCHED' || nextProps.updateStatus === 'UPDATED') {
-            const newState = FieldModelUtil.checkModelOrCreateEmpty(nextProps.currentHipChatConfig, fieldNames);
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (this.props.currentHipChatConfig !== prevProps.currentHipChatConfig && (this.props.updateStatus === 'FETCHED' || this.props.updateStatus === 'UPDATED')) {
+            const newState = FieldModelUtil.checkModelOrCreateEmpty(this.props.currentHipChatConfig, fieldNames);
             this.setState({
                 currentHipChatConfig: newState
             });

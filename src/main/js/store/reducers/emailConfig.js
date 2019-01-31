@@ -27,18 +27,21 @@ const config = (state = initialState, action) => {
         case EMAIL_CONFIG_FETCHING:
             return Object.assign({}, state, {
                 fetching: true,
+                actionMessage: null,
                 updateStatus: 'FETCHING'
             });
 
         case EMAIL_CONFIG_FETCHED:
             return Object.assign({}, state, {
                 fetching: false,
+                actionMessage: null,
                 updateStatus: 'FETCHED',
                 config: action.config
             });
 
         case EMAIL_CONFIG_SHOW_TEST_MODAL:
             return Object.assign({}, state, {
+                actionMessage: null,
                 updateStatus: null,
                 showTestModal: true
             });
@@ -63,6 +66,7 @@ const config = (state = initialState, action) => {
         case EMAIL_CONFIG_UPDATING:
             return Object.assign({}, state, {
                 fetching: false,
+                actionMessage: null,
                 updateStatus: 'UPDATING',
                 error: {
                     message: '',

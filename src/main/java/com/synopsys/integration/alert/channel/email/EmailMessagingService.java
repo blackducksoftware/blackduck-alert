@@ -94,6 +94,7 @@ public class EmailMessagingService {
             final Message message = createMessage(emailAddress, resolvedSubjectLine, session, mimeMultipart, emailProperties);
             sendMessage(emailProperties, session, message);
         } catch (final MessagingException | IOException | TemplateException ex) {
+            logger.error("Could not send the email. " + ex.getMessage(), ex);
             throw new AlertException(ex);
         }
     }
