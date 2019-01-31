@@ -126,13 +126,13 @@ class EmailConfiguration extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.getEmailConfig();
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.updateStatus === 'FETCHED' || nextProps.updateStatus === 'UPDATED') {
-            const newState = FieldModelUtil.checkModelOrCreateEmpty(nextProps.currentEmailConfig, fieldNames);
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (this.props.currentEmailConfig !== prevProps.currentEmailConfig && (this.props.updateStatus === 'FETCHED' || this.props.updateStatus === 'UPDATED')) {
+            const newState = FieldModelUtil.checkModelOrCreateEmpty(this.props.currentEmailConfig, fieldNames);
             this.setState({
                 currentEmailConfig: newState
             });

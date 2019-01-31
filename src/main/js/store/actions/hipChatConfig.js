@@ -135,8 +135,6 @@ export function updateConfig(config) {
                 response.json().then((data) => {
                     const updatedConfig = FieldModelUtil.updateFieldModelSingleValue(config, 'id', data.id);
                     dispatch(configUpdated(updatedConfig, data.message));
-                }).then(() => {
-                    dispatch(getConfig());
                 });
             } else {
                 response.json()

@@ -4,7 +4,7 @@ const initialState = {
     fetching: false,
     updateStatus: null,
     testing: false,
-    testStatus: '',
+    actionMessage: null,
     error: {
         message: '',
         fieldErrors: {}
@@ -19,7 +19,7 @@ const blackduck = (state = initialState, action) => {
                 fetching: true,
                 updateStatus: null,
                 testing: false,
-                testStatus: ''
+                actionMessage: null
             });
 
         case CONFIG_FETCHED:
@@ -27,13 +27,14 @@ const blackduck = (state = initialState, action) => {
                 fetching: false,
                 updateStatus: 'FETCHED',
                 testing: false,
-                testStatus: '',
+                actionMessage: null,
                 config: action.config
             });
 
         case CONFIG_UPDATE_ERROR:
             return Object.assign({}, state, {
                 updateStatus: 'ERROR',
+                actionMessage: null,
                 error: {
                     message: action.message,
                     fieldErrors: action.errors
@@ -44,7 +45,7 @@ const blackduck = (state = initialState, action) => {
                 fetching: false,
                 updateStatus: 'UPDATING',
                 testing: false,
-                testStatus: '',
+                actionMessage: null,
                 error: {
                     message: '',
                     fieldErrors: {}
@@ -56,7 +57,7 @@ const blackduck = (state = initialState, action) => {
                 fetching: false,
                 updateStatus: 'UPDATED',
                 testing: false,
-                testStatus: '',
+                actionMessage: 'Update successful',
                 error: {
                     message: '',
                     fieldErrors: {}
@@ -69,7 +70,7 @@ const blackduck = (state = initialState, action) => {
                 fetching: false,
                 updateStatus: null,
                 testing: true,
-                testStatus: ''
+                actionMessage: null
             });
 
         case CONFIG_TEST_SUCCESS:
@@ -77,7 +78,7 @@ const blackduck = (state = initialState, action) => {
                 fetching: false,
                 updateStatus: null,
                 testing: false,
-                testStatus: 'SUCCESS',
+                actionMessage: 'Test successful',
                 error: {
                     message: '',
                     fieldErrors: {}
@@ -89,7 +90,7 @@ const blackduck = (state = initialState, action) => {
                 fetching: false,
                 updateStatus: null,
                 testing: false,
-                testStatus: 'FAILED',
+                actionMessage: null,
                 error: {
                     message: action.message,
                     fieldErrors: action.errors || {}
