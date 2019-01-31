@@ -25,12 +25,10 @@ package com.synopsys.integration.alert.provider.polaris.descriptor;
 
 import java.util.List;
 
-import org.springframework.stereotype.Component;
-
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 
-@Component
+// TODO exclude for now: @Component
 public class PolarisDistributionUIConfig extends UIConfig {
     public PolarisDistributionUIConfig() {
         super(PolarisDescriptor.POLARIS_LABEL, PolarisDescriptor.POLARIS_URL_NAME, PolarisDescriptor.POLARIS_ICON);

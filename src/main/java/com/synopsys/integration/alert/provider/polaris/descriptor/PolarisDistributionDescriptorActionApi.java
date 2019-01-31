@@ -23,13 +23,11 @@
  */
 package com.synopsys.integration.alert.provider.polaris.descriptor;
 
-import org.springframework.stereotype.Component;
-
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.web.model.configuration.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
-@Component
+// TODO exclude for now: @Component
 public class PolarisDistributionDescriptorActionApi extends DescriptorActionApi {
     @Override
     public void testConfig(final TestConfigModel testConfig) throws IntegrationException {
