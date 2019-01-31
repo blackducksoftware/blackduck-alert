@@ -120,7 +120,6 @@ public class H2StoredProcedureTest {
                     try (final java.sql.ResultSet emailDistributionConfigs = connection.createStatement().executeQuery(
                         "SELECT * FROM ALERT.EMAIL_GROUP_DISTRIBUTION_CONFIG WHERE EMAIL_GROUP_DISTRIBUTION_CONFIG.ID = " + distributionConfigId.toString() + ";")) {
                         if (emailDistributionConfigs.next()) {
-                            // TODO is this all of the fields?
                             final java.lang.String subjectLine = emailDistributionConfigs.getString("EMAIL_SUBJECT_LINE");
                             final java.lang.Boolean projectOwnerOnly = emailDistributionConfigs.getBoolean("PROJECT_OWNER_ONLY");
                             connection.createStatement().executeUpdate(
