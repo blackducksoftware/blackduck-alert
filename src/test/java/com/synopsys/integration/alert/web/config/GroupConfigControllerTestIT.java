@@ -169,6 +169,7 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
 
         final MvcResult mvcResult = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isCreated()).andReturn();
         final String response = mvcResult.getResponse().getContentAsString();
+
         checkResponse(response);
     }
 
@@ -251,6 +252,7 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         Optional<ConfigurationFieldModel> filterByProjectField = Optional.empty();
 
         final ConfigurationJobModel configurationJobModel = configurationModelOptional.get();
+
         for (ConfigurationModel configurationModel : configurationJobModel.getCopyOfConfigurations()) {
             if (roomIdField.isEmpty()) {
                 roomIdField = configurationModel.getField(HipChatDescriptor.KEY_ROOM_ID);
