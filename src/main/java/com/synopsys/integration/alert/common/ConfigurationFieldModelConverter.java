@@ -113,16 +113,23 @@ public class ConfigurationFieldModelConverter {
         final Set<ConfigurationFieldModel> configurationModels = new HashSet<>();
         for (final DefinedFieldModel definedField : definedFieldList) {
             final Optional<FieldValueModel> currentField = fieldModel.getField(definedField.getKey());
-            currentField.ifPresentOrElse(field -> {
-                final Collection<String> values = field.getValues();
+            if (currentField.isPresent()) {
+                final Collection<String> values = currentField.get().getValues();
+                // read and use existing saved values
+                // FIXME this should be done before iterating through the defined fields
                 if (areValuesEmptyOrBlank(values)) {
-                    savedConfiguration.ifPresent(configurationModel -> {
-                        configurationModel.getField(definedField.getKey()).ifPresent(configurationModels::add);
-                    });
+                    if (savedConfiguration.isPresent()) {
+                        Optional<ConfigurationFieldModel> configuredFieldModel = savedConfiguration.get().getField(definedField.getKey());
+                        configuredFieldModel.ifPresent(configurationModels::add);
+                    }
                 } else {
-                    convertFromDefinedFieldModel(definedField, values).ifPresent(configurationModels::add);
+                    Optional<ConfigurationFieldModel> configuredFieldModel = convertFromDefinedFieldModel(definedField, values);
+                    configuredFieldModel.ifPresent(configurationModels::add);
                 }
-            }, () -> convertFromDefinedFieldModel(definedField, List.of()).ifPresent(configurationModels::add));
+            } else {
+                Optional<ConfigurationFieldModel> configuredFieldModel = convertFromDefinedFieldModel(definedField, List.of());
+                configuredFieldModel.ifPresent(configurationModels::add);
+            }
         }
 
         return configurationModels.stream().collect(Collectors.toMap(ConfigurationFieldModel::getFieldKey, Function.identity()));

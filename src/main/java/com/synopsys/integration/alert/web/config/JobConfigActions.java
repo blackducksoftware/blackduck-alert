@@ -113,11 +113,10 @@ public class JobConfigActions {
         }
         final ConfigurationJobModel savedJob = configurationAccessor.createJob(descriptorNames, configurationFieldModels);
         final JobFieldModel savedJobFieldModel = convertToJobFieldModel(savedJob);
-        Set<FieldModel> updatedFieldModels = new HashSet<>();
-        savedJobFieldModel.getFieldModels()
-            .stream()
-            .map(fieldModel -> updatedFieldModels.add(fieldModelProcessor.saveFieldModel(fieldModel)))
-            .collect(Collectors.toSet());
+        Set<FieldModel> updatedFieldModels = savedJobFieldModel.getFieldModels()
+                                                 .stream()
+                                                 .map(fieldModel -> fieldModelProcessor.saveFieldModel(fieldModel))
+                                                 .collect(Collectors.toSet());
         savedJobFieldModel.setFieldModels(updatedFieldModels);
         return savedJobFieldModel;
     }
@@ -132,11 +131,10 @@ public class JobConfigActions {
         }
         final ConfigurationJobModel configurationJobModel = configurationAccessor.updateJob(id, configurationFieldModels);
         final JobFieldModel savedJobFieldModel = convertToJobFieldModel(configurationJobModel);
-        Set<FieldModel> updatedFieldModels = new HashSet<>();
-        savedJobFieldModel.getFieldModels()
-            .stream()
-            .map(fieldModel -> updatedFieldModels.add(fieldModelProcessor.updateFieldModel(fieldModel)))
-            .collect(Collectors.toSet());
+        Set<FieldModel> updatedFieldModels = savedJobFieldModel.getFieldModels()
+                                                 .stream()
+                                                 .map(fieldModel -> fieldModelProcessor.updateFieldModel(fieldModel))
+                                                 .collect(Collectors.toSet());
         savedJobFieldModel.setFieldModels(updatedFieldModels);
         return savedJobFieldModel;
     }
