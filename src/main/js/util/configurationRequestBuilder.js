@@ -84,7 +84,10 @@ export function createValidateRequest(csrfToken, fieldModel) {
 }
 
 export function createTestRequest(csrfToken, fieldModel, destination) {
-    const url = `${CONFIG_API_URL}/test?destination=${encodeURIComponent(destination)}`;
+    let url = `${CONFIG_API_URL}/test`
+    if (destination) {
+        url += `?destination=${encodeURIComponent(destination)}`;
+    }
     return fetch(url, {
         credentials: 'same-origin',
         method: 'POST',

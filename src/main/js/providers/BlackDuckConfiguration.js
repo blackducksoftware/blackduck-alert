@@ -28,9 +28,11 @@ class BlackDuckConfiguration
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTest = this.handleTest.bind(this);
-        this.handleDefaultsAndSetState = this.handleDefaultsAndSetState.bind(this);
-        const fieldModel = FieldModelUtil.createEmptyFieldModel(fieldNames, DescriptorUtil.CONTEXT_TYPE.GLOBAL, 'provider_blackduck');
-        this.handleDefaultsAndSetState(fieldModel);
+        let fieldModel = FieldModelUtil.createEmptyFieldModel(fieldNames, DescriptorUtil.CONTEXT_TYPE.GLOBAL, 'provider_blackduck');
+        fieldModel = this.updateDefaults(fieldModel);
+        this.state = {
+            currentConfig: fieldModel
+        };
     }
 
     componentDidMount() {
@@ -39,20 +41,21 @@ class BlackDuckConfiguration
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.props.currentConfig !== prevProps.currentConfig && (this.props.updateStatus === 'FETCHED' || this.props.updateStatus === 'UPDATED')) {
-            const fieldModel = FieldModelUtil.checkModelOrCreateEmpty(this.props.currentConfig, fieldNames);
-            this.handleDefaultsAndSetState(fieldModel);
+            let fieldModel = FieldModelUtil.checkModelOrCreateEmpty(this.props.currentConfig, fieldNames);
+            fieldModel = this.updateDefaults(fieldModel);
+            this.setState({
+                currentConfig: fieldModel
+            });
         }
     }
 
-    handleDefaultsAndSetState(fieldModel) {
+    updateDefaults(fieldModel) {
         let currentFieldModel = fieldModel;
         const currentTimeout = FieldModelUtil.getFieldModelSingleValue(currentFieldModel, KEY_BLACKDUCK_TIMEOUT);
         if (!currentTimeout) {
             currentFieldModel = FieldModelUtil.updateFieldModelSingleValue(currentFieldModel, KEY_BLACKDUCK_TIMEOUT, 300);
         }
-        this.setState({
-            currentConfig: currentFieldModel
-        });
+        return currentFieldModel;
     }
 
 
