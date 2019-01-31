@@ -36,13 +36,13 @@ import com.synopsys.integration.alert.workflow.scheduled.ScheduledTask;
 public class TaskManager {
     private Map<String, ScheduledTask> scheduledTaskMap = new HashMap<>();
 
-    public void registerTask(final ScheduledTask scheduledTask) {
+    public final void registerTask(final ScheduledTask scheduledTask) {
         if (scheduledTask != null) {
             scheduledTaskMap.put(scheduledTask.getTaskName(), scheduledTask);
         }
     }
 
-    public Optional<ScheduledTask> unregisterTask(final String taskName) {
+    public final Optional<ScheduledTask> unregisterTask(final String taskName) {
         if (!scheduledTaskMap.containsKey(taskName)) {
             return Optional.empty();
         }
@@ -51,7 +51,11 @@ public class TaskManager {
 
     }
 
-    public boolean scheduleCronTask(final String cronExpression, final String taskName) {
+    public final int getTaskCount() {
+        return scheduledTaskMap.size();
+    }
+
+    public final boolean scheduleCronTask(final String cronExpression, final String taskName) {
         if (!scheduledTaskMap.containsKey(taskName)) {
             return false;
         }
@@ -61,7 +65,7 @@ public class TaskManager {
         return true;
     }
 
-    public boolean scheduleExecutionAtFixedRate(final long period, final String taskName) {
+    public final boolean scheduleExecutionAtFixedRate(final long period, final String taskName) {
         if (!scheduledTaskMap.containsKey(taskName)) {
             return false;
         }
@@ -71,7 +75,7 @@ public class TaskManager {
         return true;
     }
 
-    public boolean unScheduleTask(final String taskName) {
+    public final boolean unScheduleTask(final String taskName) {
         if (!scheduledTaskMap.containsKey(taskName)) {
             return false;
         }
@@ -81,14 +85,14 @@ public class TaskManager {
         return true;
     }
 
-    public Optional<String> getNextRunTime(final String taskName) {
+    public final Optional<String> getNextRunTime(final String taskName) {
         if (!scheduledTaskMap.containsKey(taskName)) {
             return Optional.empty();
         }
         return scheduledTaskMap.get(taskName).getFormatedNextRunTime();
     }
 
-    public Optional<Long> getDifferenceToNextRun(final String taskName, TimeUnit timeUnit) {
+    public final Optional<Long> getDifferenceToNextRun(final String taskName, TimeUnit timeUnit) {
         if (!scheduledTaskMap.containsKey(taskName)) {
             return Optional.empty();
         }
