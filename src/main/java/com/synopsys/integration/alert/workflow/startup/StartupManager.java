@@ -104,11 +104,11 @@ public class StartupManager {
     @Transactional
     public void startup() throws AlertUpgradeException {
         logger.info("Alert Starting...");
-        // FIXME move this logic to the build.gradle
+        // FIXME move any descriptor logic to the build.gradle
         systemStatusUtility.startupOccurred();
-        //        if (upgradeProcessor.shouldUpgrade()) {
-        //            upgradeProcessor.runUpgrade();
-        //        }
+        if (upgradeProcessor.shouldUpgrade()) {
+            upgradeProcessor.runUpgrade();
+        }
         initializeChannelPropertyManagers();
         validate();
         logConfiguration();
@@ -131,7 +131,7 @@ public class StartupManager {
     }
 
     public void logConfiguration() {
-        ProxyInfo proxyInfo = proxyManager.createProxyInfo();
+        final ProxyInfo proxyInfo = proxyManager.createProxyInfo();
 
         final boolean authenticatedProxy = StringUtils.isNotBlank(proxyInfo.getPassword().orElse(""));
         logger.info("----------------------------------------");

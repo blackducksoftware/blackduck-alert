@@ -25,6 +25,7 @@ import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
+import com.synopsys.integration.alert.database.DescriptorMocker;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
@@ -45,11 +46,7 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
     public static final String DESCRIPTOR_NAME = "Test Descriptor";
     public static final String FIELD_KEY_INSENSITIVE = "testInsensitiveField";
     public static final String FIELD_KEY_SENSITIVE = "testSensitiveField";
-    public static final DefinedFieldModel DESCRIPTOR_FIELD_INSENSITIVE = new DefinedFieldModel(FIELD_KEY_INSENSITIVE, ConfigContextEnum.DISTRIBUTION, Boolean.FALSE);
-    public static final DefinedFieldModel DESCRIPTOR_FIELD_SENSITIVE = new DefinedFieldModel(FIELD_KEY_SENSITIVE, ConfigContextEnum.DISTRIBUTION, Boolean.TRUE);
 
-    @Autowired
-    private DescriptorAccessor descriptorAccessor;
     @Autowired
     private RegisteredDescriptorRepository registeredDescriptorRepository;
     @Autowired
@@ -66,27 +63,24 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
     private EncryptionUtility encryptionUtility;
     @Autowired
     private DescriptorTypeRepository descriptorTypeRepository;
+    @Autowired
+    private DescriptorMocker descriptorMocker;
 
     private ConfigurationAccessor configurationAccessor;
 
     @BeforeEach
-    public void init() throws AlertDatabaseConstraintException {
-        configurationAccessor = new ConfigurationAccessor(registeredDescriptorRepository, descriptorTypeRepository, definedFieldRepository, descriptorConfigsRepository, configGroupRepository, configContextRepository, fieldValueRepository,
-            encryptionUtility
-        );
-        descriptorAccessor.registerDescriptor(DESCRIPTOR_NAME, DescriptorType.PROVIDER, Arrays.asList(DESCRIPTOR_FIELD_INSENSITIVE, DESCRIPTOR_FIELD_SENSITIVE));
+    public void init() {
+        descriptorConfigsRepository.deleteAllInBatch();
+        configurationAccessor = new ConfigurationAccessor(
+            registeredDescriptorRepository, descriptorTypeRepository, definedFieldRepository, descriptorConfigsRepository, configGroupRepository, configContextRepository, fieldValueRepository, encryptionUtility);
+        descriptorMocker.registerDescriptor(DESCRIPTOR_NAME, DescriptorType.PROVIDER);
+        descriptorMocker.addFieldToDescriptor(DESCRIPTOR_NAME, FIELD_KEY_INSENSITIVE, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION), Boolean.FALSE);
+        descriptorMocker.addFieldToDescriptor(DESCRIPTOR_NAME, FIELD_KEY_SENSITIVE, Set.of(ConfigContextEnum.GLOBAL, ConfigContextEnum.DISTRIBUTION), Boolean.TRUE);
     }
 
     @AfterEach
-    public void cleanup() throws AlertDatabaseConstraintException {
-        descriptorAccessor.unregisterDescriptor(DESCRIPTOR_NAME);
-
-        registeredDescriptorRepository.deleteAllInBatch();
-        definedFieldRepository.deleteAllInBatch();
-        configContextRepository.deleteAllInBatch();
-        descriptorConfigsRepository.deleteAllInBatch();
-        configGroupRepository.deleteAllInBatch();
-        // No need to delete relations as they will be deleted by the tables they reference (CASCADE)
+    public void cleanup() {
+        descriptorMocker.cleanUpDescriptors();
     }
 
     @Test
@@ -343,7 +337,7 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
         final String descriptorName = "Unique Descriptor";
         try {
             // Register a custom descriptor of Channel type
-            descriptorAccessor.registerDescriptor(descriptorName, DescriptorType.CHANNEL, Arrays.asList(new DefinedFieldModel(ChannelDistributionUIConfig.KEY_FREQUENCY, ConfigContextEnum.DISTRIBUTION, Boolean.FALSE)));
+            descriptorMocker.registerDescriptor(descriptorName, DescriptorType.CHANNEL, Arrays.asList(new DefinedFieldModel(ChannelDistributionUIConfig.KEY_FREQUENCY, ConfigContextEnum.DISTRIBUTION, Boolean.FALSE)));
 
             configurationModels = configurationAccessor.getChannelConfigurationsByFrequency(FrequencyType.DAILY);
             assertTrue(configurationModels.isEmpty());
@@ -362,7 +356,7 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
             assertFalse(configurationModels.isEmpty());
             ////////////////////////////////////////////////////////////////////////
         } finally {
-            descriptorAccessor.unregisterDescriptor(descriptorName);
+            descriptorMocker.unregisterDescriptor(descriptorName);
         }
     }
 

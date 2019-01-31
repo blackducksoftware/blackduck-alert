@@ -32,10 +32,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
@@ -55,12 +57,15 @@ public class JobConfigActions {
     private BaseConfigurationAccessor configurationAccessor;
     private FieldModelProcessor fieldModelProcessor;
     private ContentConverter contentConverter;
+    private ConfigurationFieldModelConverter modelConverter;
 
     @Autowired
-    public JobConfigActions(final BaseConfigurationAccessor configurationAccessor, final FieldModelProcessor fieldModelProcessor, final ContentConverter contentConverter) {
+    public JobConfigActions(final BaseConfigurationAccessor configurationAccessor, final FieldModelProcessor fieldModelProcessor, final ContentConverter contentConverter,
+        final ConfigurationFieldModelConverter modelConverter) {
         this.configurationAccessor = configurationAccessor;
         this.fieldModelProcessor = fieldModelProcessor;
         this.contentConverter = contentConverter;
+        this.modelConverter = modelConverter;
     }
 
     public boolean doesJobExist(UUID id) throws AlertDatabaseConstraintException {
@@ -103,11 +108,18 @@ public class JobConfigActions {
         Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
         for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
             descriptorNames.add(fieldModel.getDescriptorName());
-            final Collection<ConfigurationFieldModel> savedFieldsModels = fieldModelProcessor.saveFieldModel(fieldModel).values();
+            final Collection<ConfigurationFieldModel> savedFieldsModels = modelConverter.convertFromFieldModel(fieldModel).values();
             configurationFieldModels.addAll(savedFieldsModels);
         }
         final ConfigurationJobModel savedJob = configurationAccessor.createJob(descriptorNames, configurationFieldModels);
-        return convertToJobFieldModel(savedJob);
+        final JobFieldModel savedJobFieldModel = convertToJobFieldModel(savedJob);
+        Set<FieldModel> updatedFieldModels = new HashSet<>();
+        savedJobFieldModel.getFieldModels()
+            .stream()
+            .map(fieldModel -> updatedFieldModels.add(fieldModelProcessor.saveFieldModel(fieldModel)))
+            .collect(Collectors.toSet());
+        savedJobFieldModel.setFieldModels(updatedFieldModels);
+        return savedJobFieldModel;
     }
 
     public JobFieldModel updateJob(UUID id, JobFieldModel jobFieldModel) throws AlertFieldException, AlertException {

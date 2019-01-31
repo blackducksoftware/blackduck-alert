@@ -88,10 +88,9 @@ public class FieldModelProcessor {
         return descriptorActionApi.map(actionApi -> actionApi.deleteConfig(fieldModel)).orElse(fieldModel);
     }
 
-    public Map<String, ConfigurationFieldModel> saveFieldModel(FieldModel fieldModel) throws AlertDatabaseConstraintException {
+    public FieldModel saveFieldModel(FieldModel fieldModel) {
         final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
-        FieldModel modelToSave = descriptorActionApi.map(actionApi -> actionApi.saveConfig(fieldModel)).orElse(fieldModel);
-        return fieldModelConverter.convertFromFieldModel(modelToSave);
+        return descriptorActionApi.map(actionApi -> actionApi.saveConfig(fieldModel)).orElse(fieldModel);
     }
 
     public Map<String, String> validateFieldModel(FieldModel fieldModel) {

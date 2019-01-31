@@ -35,6 +35,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -48,11 +49,13 @@ import com.synopsys.integration.exception.IntegrationException;
 public class ConfigActions {
     private final BaseConfigurationAccessor configurationAccessor;
     private FieldModelProcessor fieldModelProcessor;
+    private ConfigurationFieldModelConverter modelConverter;
 
     @Autowired
-    public ConfigActions(final BaseConfigurationAccessor configurationAccessor, final FieldModelProcessor fieldModelProcessor) {
+    public ConfigActions(final BaseConfigurationAccessor configurationAccessor, final FieldModelProcessor fieldModelProcessor, final ConfigurationFieldModelConverter modelConverter) {
         this.configurationAccessor = configurationAccessor;
         this.fieldModelProcessor = fieldModelProcessor;
+        this.modelConverter = modelConverter;
     }
 
     public boolean doesConfigExist(final String id) throws AlertException {
@@ -100,9 +103,13 @@ public class ConfigActions {
 
     public FieldModel saveConfig(final FieldModel fieldModel) throws AlertException, AlertFieldException {
         validateConfig(fieldModel, new HashMap<>());
-        Map<String, ConfigurationFieldModel> configurationFieldModelMap = fieldModelProcessor.saveFieldModel(fieldModel);
-        final ConfigurationModel configuration = configurationAccessor.createConfiguration(fieldModel.getDescriptorName(), EnumUtils.getEnum(ConfigContextEnum.class, fieldModel.getContext()), configurationFieldModelMap.values());
-        return fieldModelProcessor.convertToFieldModel(configuration);
+        final String descriptorName = fieldModel.getDescriptorName();
+        final String context = fieldModel.getContext();
+        final Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertFromFieldModel(fieldModel);
+        final ConfigurationModel configuration = configurationAccessor.createConfiguration(descriptorName, EnumUtils.getEnum(ConfigContextEnum.class, context), configurationFieldModelMap.values());
+        final FieldModel dbSavedModel = fieldModelProcessor.convertToFieldModel(configuration);
+        final FieldModel combinedModel = dbSavedModel.combine(fieldModel);
+        return fieldModelProcessor.saveFieldModel(combinedModel);
     }
 
     public String validateConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) throws AlertFieldException {
