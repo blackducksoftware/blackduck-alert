@@ -37,9 +37,9 @@ class BlackDuckConfiguration
         this.props.getConfig();
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.updateStatus === 'FETCHED' || nextProps.updateStatus === 'UPDATED') {
-            const newState = FieldModelUtil.checkModelOrCreateEmpty(nextProps.currentConfig, fieldNames);
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (this.props.currentConfig !== prevProps.currentConfig && (this.props.updateStatus === 'FETCHED' || this.props.updateStatus === 'UPDATED')) {
+            const newState = FieldModelUtil.checkModelOrCreateEmpty(this.props.currentConfig, fieldNames);
             this.setState({
                 currentConfig: newState
             });
@@ -67,7 +67,7 @@ class BlackDuckConfiguration
 
     render() {
         const fieldModel = this.state.currentConfig;
-        const { errorMessage, testStatus, updateStatus } = this.props;
+        const { errorMessage, actionMessage } = this.props;
         return (
             <div>
                 <h1>
@@ -75,16 +75,12 @@ class BlackDuckConfiguration
                     Black Duck
                 </h1>
 
-                {testStatus && testStatus === 'SUCCESS' && <div className="alert alert-success">
-                    <div>Test was successful!</div>
-                </div>}
-
                 {errorMessage && <div className="alert alert-danger">
                     {errorMessage}
                 </div>}
 
-                {updateStatus === 'UPDATED' && <div className="alert alert-success">
-                    {'Update successful'}
+                {actionMessage && <div className="alert alert-success">
+                    {actionMessage}
                 </div>}
 
                 <form className="form-horizontal" onSubmit={this.handleSubmit}>
@@ -131,7 +127,7 @@ BlackDuckConfiguration.propTypes = {
     fieldErrors: PropTypes.object,
     updateStatus: PropTypes.string,
     errorMessage: PropTypes.string,
-    testStatus: PropTypes.string,
+    actionMessage: PropTypes.string,
     getConfig: PropTypes.func.isRequired,
     updateConfig: PropTypes.func.isRequired,
     testConfig: PropTypes.func.isRequired
@@ -143,16 +139,16 @@ BlackDuckConfiguration.defaultProps = {
     errorMessage: null,
     updateStatus: null,
     fieldErrors: {},
-    testStatus: ''
+    actionMessage: null
 };
 
 // Mapping redux state -> react props
 const mapStateToProps = state => ({
     currentConfig: state.blackduck.config,
-    testStatus: state.blackduck.testStatus,
+    actionMessage: state.blackduck.actionMessage,
     updateStatus: state.blackduck.updateStatus,
     errorMessage: state.blackduck.error.message,
-    fieldErrors: state.blackduck.error.fieldErrors,
+    fieldErrors: state.blackduck.error.fieldErrors
 });
 
 // Mapping redux actions -> react props

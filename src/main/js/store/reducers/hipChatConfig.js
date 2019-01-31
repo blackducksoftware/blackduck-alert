@@ -28,12 +28,14 @@ const config = (state = initialState, action) => {
     switch (action.type) {
         case HIPCHAT_CONFIG_FETCHING:
             return Object.assign({}, state, {
+                actionMessage: null,
                 updateStatus: 'FETCHING',
                 testing: false
             });
 
         case HIPCHAT_CONFIG_FETCHED:
             return Object.assign({}, state, {
+                actionMessage: null,
                 updateStatus: 'FETCHED',
                 testing: false,
                 config: action.config
@@ -41,6 +43,7 @@ const config = (state = initialState, action) => {
 
         case HIPCHAT_CONFIG_UPDATING:
             return Object.assign({}, state, {
+                actionMessage: null,
                 updateStatus: 'UPDATING',
                 testing: false,
                 error: {
@@ -74,6 +77,7 @@ const config = (state = initialState, action) => {
 
         case HIPCHAT_CONFIG_TESTING:
             return Object.assign({}, state, {
+                actionMessage: null,
                 updateStatus: null,
                 testing: true
             });

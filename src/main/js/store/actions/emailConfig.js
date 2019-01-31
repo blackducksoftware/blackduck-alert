@@ -95,7 +95,6 @@ export function closeEmailConfigTest() {
 
 export function emailConfigTestSucceeded() {
     return {
-
         type: EMAIL_CONFIG_TEST_SUCCESSFUL
     };
 }
@@ -136,8 +135,6 @@ export function updateEmailConfig(config) {
                 response.json().then((data) => {
                     const updatedConfig = FieldModelUtil.updateFieldModelSingleValue(config, 'id', data.id);
                     dispatch(emailConfigUpdated(updatedConfig, data.message));
-                }).then(() => {
-                    dispatch(getEmailConfig());
                 });
             } else {
                 handleFailureResponse(dispatch, response);
