@@ -28,8 +28,10 @@ class BlackDuckConfiguration
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTest = this.handleTest.bind(this);
+        let fieldModel = FieldModelUtil.createEmptyFieldModel(fieldNames, DescriptorUtil.CONTEXT_TYPE.GLOBAL, 'provider_blackduck');
+        fieldModel = this.updateDefaults(fieldModel);
         this.state = {
-            currentConfig: FieldModelUtil.createEmptyFieldModel(fieldNames, DescriptorUtil.CONTEXT_TYPE.GLOBAL, 'provider_blackduck')
+            currentConfig: fieldModel
         };
     }
 
@@ -39,12 +41,23 @@ class BlackDuckConfiguration
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.props.currentConfig !== prevProps.currentConfig && (this.props.updateStatus === 'FETCHED' || this.props.updateStatus === 'UPDATED')) {
-            const newState = FieldModelUtil.checkModelOrCreateEmpty(this.props.currentConfig, fieldNames);
+            let fieldModel = FieldModelUtil.checkModelOrCreateEmpty(this.props.currentConfig, fieldNames);
+            fieldModel = this.updateDefaults(fieldModel);
             this.setState({
-                currentConfig: newState
+                currentConfig: fieldModel
             });
         }
     }
+
+    updateDefaults(fieldModel) {
+        let currentFieldModel = fieldModel;
+        const currentTimeout = FieldModelUtil.getFieldModelSingleValue(currentFieldModel, KEY_BLACKDUCK_TIMEOUT);
+        if (!currentTimeout) {
+            currentFieldModel = FieldModelUtil.updateFieldModelSingleValue(currentFieldModel, KEY_BLACKDUCK_TIMEOUT, 300);
+        }
+        return currentFieldModel;
+    }
+
 
     handleChange({ target }) {
         const value = target.type === 'checkbox' ? target.checked : target.value;
@@ -108,7 +121,7 @@ class BlackDuckConfiguration
                             id={KEY_BLACKDUCK_TIMEOUT}
                             label="Timeout"
                             name={KEY_BLACKDUCK_TIMEOUT}
-                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_BLACKDUCK_TIMEOUT) | 300}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_BLACKDUCK_TIMEOUT)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(KEY_BLACKDUCK_TIMEOUT)}
                             errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_BLACKDUCK_TIMEOUT)]}
