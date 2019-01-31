@@ -23,7 +23,7 @@
  */
 package com.synopsys.integration.alert.workflow.startup;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -166,28 +166,50 @@ public class StartupManager {
             logger.error("Error connecting to DB", e);
             schedulingConfigs = Collections.emptyList();
         }
-        String dailyDigestHourOfDay;
-        String purgeDataFrequencyDays;
-        if (!schedulingConfigs.isEmpty() && schedulingConfigs.get(0) != null) {
-            final ConfigurationModel globalSchedulingConfig = schedulingConfigs.get(0);
-            final SchedulingConfiguration schedulingConfiguration = new SchedulingConfiguration(globalSchedulingConfig);
-            dailyDigestHourOfDay = schedulingConfiguration.getDailyDigestHourOfDay();
-            purgeDataFrequencyDays = schedulingConfiguration.getDataFrequencyDays();
+        final String defaultDailyHourOfDay = "0";
+        final String defaultPurgeFrequencyInDays = "3";
+        String dailyHourOfDay = defaultDailyHourOfDay;
+        String purgeDataFrequencyDays = defaultPurgeFrequencyInDays;
+
+        final ConfigurationFieldModel defaultHourOfDayField = ConfigurationFieldModel.create(SchedulingDescriptor.KEY_DAILY_DIGEST_HOUR_OF_DAY);
+        defaultHourOfDayField.setFieldValue(dailyHourOfDay);
+        final ConfigurationFieldModel defaultPurgeFrequencyField = ConfigurationFieldModel.create(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS);
+        defaultPurgeFrequencyField.setFieldValue(purgeDataFrequencyDays);
+
+        Optional<ConfigurationModel> schedulingConfig = schedulingConfigs.stream().findFirst();
+        if (schedulingConfig.isPresent()) {
+            final ConfigurationModel globalSchedulingConfig = schedulingConfig.get();
+            List<ConfigurationFieldModel> fields = new ArrayList<>(2);
+            Optional<ConfigurationFieldModel> configuredDailyHour = globalSchedulingConfig.getField(SchedulingDescriptor.KEY_DAILY_DIGEST_HOUR_OF_DAY);
+            Optional<ConfigurationFieldModel> configuredPurgeFrequency = globalSchedulingConfig.getField(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS);
+            boolean updateConfiguration = configuredDailyHour.isEmpty() || configuredPurgeFrequency.isEmpty();
+            if (updateConfiguration) {
+                configuredDailyHour.ifPresentOrElse(fields::add, () -> fields.add(defaultHourOfDayField));
+                configuredPurgeFrequency.ifPresentOrElse(fields::add, () -> fields.add(defaultPurgeFrequencyField));
+                try {
+                    final ConfigurationModel schedulingModel = configurationAccessor.updateConfiguration(globalSchedulingConfig.getConfigurationId(), fields);
+                    logger.info("Saved updated scheduling to DB: {}", schedulingModel.toString());
+                } catch (final AlertDatabaseConstraintException e) {
+                    logger.error("Error saving to DB", e);
+                }
+            }
+
+            if (configuredDailyHour.isPresent()) {
+                dailyHourOfDay = configuredDailyHour.get().getFieldValue().orElse(defaultDailyHourOfDay);
+            }
+
+            if (configuredPurgeFrequency.isPresent()) {
+                purgeDataFrequencyDays = configuredPurgeFrequency.get().getFieldValue().orElse(defaultPurgeFrequencyInDays);
+            }
         } else {
-            dailyDigestHourOfDay = "0";
-            purgeDataFrequencyDays = "3";
-            final ConfigurationFieldModel hourOfDayField = ConfigurationFieldModel.create(SchedulingDescriptor.KEY_DAILY_DIGEST_HOUR_OF_DAY);
-            hourOfDayField.setFieldValue(dailyDigestHourOfDay);
-            final ConfigurationFieldModel purgeFrequencyField = ConfigurationFieldModel.create(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS);
-            purgeFrequencyField.setFieldValue(purgeDataFrequencyDays);
             try {
-                final ConfigurationModel schedulingModel = configurationAccessor.createConfiguration(SchedulingDescriptor.SCHEDULING_COMPONENT, ConfigContextEnum.GLOBAL, Arrays.asList(hourOfDayField, purgeFrequencyField));
+                final ConfigurationModel schedulingModel = configurationAccessor.createConfiguration(SchedulingDescriptor.SCHEDULING_COMPONENT, ConfigContextEnum.GLOBAL, List.of(defaultHourOfDayField, defaultPurgeFrequencyField));
                 logger.info("Saved scheduling to DB: {}", schedulingModel.toString());
             } catch (final AlertDatabaseConstraintException e) {
                 logger.error("Error saving to DB", e);
             }
         }
-        scheduleTaskCrons(dailyDigestHourOfDay, purgeDataFrequencyDays);
+        scheduleTaskCrons(dailyHourOfDay, purgeDataFrequencyDays);
         CompletableFuture.supplyAsync(this::purgeOldData);
     }
 
