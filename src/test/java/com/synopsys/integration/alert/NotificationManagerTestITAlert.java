@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -9,22 +10,61 @@ import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
+import com.synopsys.integration.alert.channel.email.EmailChannel;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
+import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
+import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
+import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
+import com.synopsys.integration.alert.database.entity.configuration.ConfigContextEntity;
+import com.synopsys.integration.alert.database.entity.configuration.ConfigGroupEntity;
+import com.synopsys.integration.alert.database.entity.configuration.DefinedFieldEntity;
+import com.synopsys.integration.alert.database.entity.configuration.DescriptorConfigEntity;
+import com.synopsys.integration.alert.database.entity.configuration.FieldValueEntity;
+import com.synopsys.integration.alert.database.entity.configuration.RegisteredDescriptorEntity;
 import com.synopsys.integration.alert.database.entity.repository.NotificationContentRepository;
+import com.synopsys.integration.alert.database.repository.configuration.ConfigContextRepository;
+import com.synopsys.integration.alert.database.repository.configuration.ConfigGroupRepository;
+import com.synopsys.integration.alert.database.repository.configuration.DefinedFieldRepository;
+import com.synopsys.integration.alert.database.repository.configuration.DescriptorConfigRepository;
+import com.synopsys.integration.alert.database.repository.configuration.FieldValueRepository;
+import com.synopsys.integration.alert.database.repository.configuration.RegisteredDescriptorRepository;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.workflow.NotificationManager;
 
 public class NotificationManagerTestITAlert extends AlertIntegrationTest {
+    private static final String NOTIFICATION_TYPE = "notificationType";
 
     @Autowired
     private NotificationContentRepository notificationContentRepository;
+    @Autowired
+    private AuditNotificationRepository auditNotificationRepository;
+    @Autowired
+    private AuditEntryRepository auditEntryRepository;
+    @Autowired
+    private ConfigGroupRepository configGroupRepository;
+    @Autowired
+    private DescriptorConfigRepository descriptorConfigRepository;
+    @Autowired
+    private RegisteredDescriptorRepository registeredDescriptorRepository;
+    @Autowired
+    private ConfigContextRepository configContextRepository;
+    @Autowired
+    private FieldValueRepository fieldValueRepository;
+    @Autowired
+    private DefinedFieldRepository definedFieldRepository;
 
     @Autowired
     private NotificationManager notificationManager;
@@ -38,12 +78,121 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
 
     @BeforeEach
     public void init() {
-        notificationContentRepository.deleteAllInBatch();
+        cleanDB();
     }
 
     @AfterEach
     public void cleanUpDB() {
+        cleanDB();
+    }
+
+    private void cleanDB() {
         notificationContentRepository.deleteAllInBatch();
+        notificationContentRepository.deleteAllInBatch();
+        auditNotificationRepository.deleteAllInBatch();
+        auditEntryRepository.deleteAllInBatch();
+        configGroupRepository.deleteAllInBatch();
+        descriptorConfigRepository.deleteAllInBatch();
+        fieldValueRepository.deleteAllInBatch();
+    }
+
+    @Test
+    public void testFindAllEmpty() {
+        final PageRequest pageRequest = PageRequest.of(0, 10);
+        Page<NotificationContent> all = notificationManager.findAll(pageRequest, false);
+        assertTrue(all.isEmpty());
+
+        all = notificationManager.findAll(pageRequest, true);
+        assertTrue(all.isEmpty());
+    }
+
+    @Test
+    public void testFindAll() {
+        NotificationContent notificationContent = createNotificationContent();
+        notificationContent = notificationContentRepository.save(notificationContent);
+
+        final PageRequest pageRequest = PageRequest.of(0, 10);
+        Page<NotificationContent> all = notificationManager.findAll(pageRequest, false);
+        assertFalse(all.isEmpty());
+
+        all = notificationManager.findAll(pageRequest, true);
+        assertTrue(all.isEmpty());
+
+        final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(0L, notificationContent.getId());
+        auditNotificationRepository.save(auditNotificationRelation);
+
+        all = notificationManager.findAll(pageRequest, true);
+        assertFalse(all.isEmpty());
+    }
+
+    @Test
+    public void testFindAllWithSearchEmpty() {
+        final PageRequest pageRequest = PageRequest.of(0, 10);
+        Page<NotificationContent> all = notificationManager.findAllWithSearch(EmailChannel.COMPONENT_NAME, pageRequest, false);
+        assertTrue(all.isEmpty());
+
+        all = notificationManager.findAllWithSearch(EmailChannel.COMPONENT_NAME, pageRequest, true);
+        assertTrue(all.isEmpty());
+    }
+
+    @Test
+    public void testFindAllWithSearch() {
+        NotificationContent notificationContent = createNotificationContent();
+        notificationContent = notificationContentRepository.save(notificationContent);
+
+        final PageRequest pageRequest = PageRequest.of(0, 10);
+        Page<NotificationContent> all = notificationManager.findAllWithSearch(EmailChannel.COMPONENT_NAME, pageRequest, false);
+        // Search term should not match anything in the saved notifications
+        assertTrue(all.isEmpty());
+
+        all = notificationManager.findAllWithSearch(NOTIFICATION_TYPE, pageRequest, false);
+        // Search term should match the notification type of the saved notification
+        assertFalse(all.isEmpty());
+
+        all = notificationManager.findAllWithSearch(NOTIFICATION_TYPE, pageRequest, true);
+        // Search term should match the notification type but it was never sent so no match
+        assertTrue(all.isEmpty());
+
+        final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(0L, notificationContent.getId());
+        auditNotificationRepository.save(auditNotificationRelation);
+
+        all = notificationManager.findAllWithSearch(NOTIFICATION_TYPE, pageRequest, true);
+        // Search term should match the notification type and the notification was sent so we get a match
+        assertFalse(all.isEmpty());
+    }
+
+    @Test
+    public void testFindAllWithSearchByFieldValue() {
+        NotificationContent notificationContent = createNotificationContent();
+        notificationContent = notificationContentRepository.save(notificationContent);
+
+        final UUID jobId = UUID.randomUUID();
+
+        final RegisteredDescriptorEntity registeredDescriptorEntity = registeredDescriptorRepository.findFirstByName(EmailChannel.COMPONENT_NAME).orElse(null);
+        final ConfigContextEntity configContextEntity = configContextRepository.findFirstByContext(ConfigContextEnum.GLOBAL.name()).orElse(null);
+
+        DescriptorConfigEntity descriptorConfig = new DescriptorConfigEntity(registeredDescriptorEntity.getId(), configContextEntity.getId());
+        descriptorConfig = descriptorConfigRepository.save(descriptorConfig);
+
+        ConfigGroupEntity configGroupEntity = new ConfigGroupEntity(descriptorConfig.getId(), jobId);
+        configGroupEntity = configGroupRepository.save(configGroupEntity);
+
+        final DefinedFieldEntity definedFieldEntity = definedFieldRepository.findFirstByKey(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).orElse(null);
+
+        FieldValueEntity fieldValueEntity = new FieldValueEntity(descriptorConfig.getId(), definedFieldEntity.getId(), EmailChannel.COMPONENT_NAME);
+        fieldValueEntity = fieldValueRepository.save(fieldValueEntity);
+
+        final String auditStatus = "audit status thing";
+        AuditEntryEntity auditEntryEntity = new AuditEntryEntity(jobId, new Date(), new Date(), auditStatus, "", "");
+        auditEntryEntity = auditEntryRepository.save(auditEntryEntity);
+
+        final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(auditEntryEntity.getId(), notificationContent.getId());
+        auditNotificationRepository.save(auditNotificationRelation);
+
+        final PageRequest pageRequest = PageRequest.of(0, 10);
+        final Page<NotificationContent> all = notificationManager.findAllWithSearch(EmailChannel.COMPONENT_NAME, pageRequest, false);
+        // Search term should match the channel name
+        assertFalse(all.isEmpty());
     }
 
     @Test
@@ -194,7 +343,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
     }
 
     private NotificationContent createNotificationContent(final Date createdAt) {
-        final MockNotificationContent mockedNotificationContent = new MockNotificationContent(createdAt, "provider", createdAt, "notificationType", "{content: \"content is here...\"}", null);
+        final MockNotificationContent mockedNotificationContent = new MockNotificationContent(createdAt, "provider", createdAt, NOTIFICATION_TYPE, "{content: \"content is here...\"}", null);
         return mockedNotificationContent.createEntity();
     }
 

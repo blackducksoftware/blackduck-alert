@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.support.DefaultConversionService;
 
 import com.google.gson.Gson;
-import com.synopsys.integration.alert.FieldRegistrationIntegrationTest;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
@@ -31,20 +30,18 @@ import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor;
 import com.synopsys.integration.alert.database.api.configuration.DescriptorAccessor;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
-import com.synopsys.integration.alert.database.api.configuration.model.RegisteredDescriptorModel;
-import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
+import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
 import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 import com.synopsys.integration.exception.IntegrationException;
 
-public abstract class ChannelDescriptorTest extends FieldRegistrationIntegrationTest {
+public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
     protected Gson gson;
     protected DistributionEvent channelEvent;
 
@@ -59,12 +56,9 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
     protected ConfigurationModel provider_global;
     protected Optional<ConfigurationModel> global_config;
     protected ConfigurationModel distribution_config;
-    @Autowired
-    private BlackDuckDescriptor providerDescriptor;
 
     @BeforeEach
     public void init() throws Exception {
-        registerDescriptors();
         gson = new Gson();
         contentConverter = new ContentConverter(gson, new DefaultConversionService());
         properties = new TestProperties();
@@ -85,15 +79,6 @@ public abstract class ChannelDescriptorTest extends FieldRegistrationIntegration
 
         if (provider_global != null) {
             configurationAccessor.deleteConfiguration(provider_global);
-        }
-        final List<RegisteredDescriptorModel> registeredDescriptorModels = descriptorAccessor.getRegisteredDescriptors();
-
-        for (final RegisteredDescriptorModel registeredDescriptor : registeredDescriptorModels) {
-            try {
-                descriptorAccessor.unregisterDescriptor(registeredDescriptor.getName());
-            } catch (final AlertDatabaseConstraintException ex) {
-                ex.printStackTrace();
-            }
         }
     }
 

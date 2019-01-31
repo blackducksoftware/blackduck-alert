@@ -75,7 +75,7 @@ public class AuditEntryEntity extends DatabaseEntity {
     private List<AuditNotificationRelation> auditNotificationRelations;
 
     @OneToOne
-    @JoinColumn(name = "common_config_id", referencedColumnName = "config_id", insertable = false, updatable = false)
+    @JoinColumn(name = "common_config_id", referencedColumnName = "JOB_ID", insertable = false, updatable = false)
     private ConfigGroupEntity configGroupEntity;
 
     public AuditEntryEntity() {

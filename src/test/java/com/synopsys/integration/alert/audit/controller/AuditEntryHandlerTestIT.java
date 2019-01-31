@@ -46,8 +46,6 @@ import com.synopsys.integration.alert.database.audit.AuditNotificationRepository
 import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.entity.repository.NotificationContentRepository;
-import com.synopsys.integration.alert.database.relation.DistributionNotificationTypeRelation;
-import com.synopsys.integration.alert.database.relation.repository.DistributionNotificationTypeRepository;
 import com.synopsys.integration.alert.database.repository.configuration.DescriptorConfigRepository;
 import com.synopsys.integration.alert.database.repository.configuration.FieldValueRepository;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
@@ -73,8 +71,6 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
     private NotificationContentRepository notificationContentRepository;
     @Autowired
     private BaseConfigurationAccessor baseConfigurationAccessor;
-    @Autowired
-    private DistributionNotificationTypeRepository distributionNotificationTypeRepository;
     @Autowired
     private DescriptorConfigRepository descriptorConfigRepository;
     @Autowired
@@ -166,8 +162,6 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
 
         final Collection<ConfigurationFieldModel> hipChatFields = MockConfigurationModelFactory.createHipChatDistributionFields();
         final ConfigurationJobModel configurationJobModel = baseConfigurationAccessor.createJob(Set.of(HipChatChannel.COMPONENT_NAME, BlackDuckProvider.COMPONENT_NAME), hipChatFields);
-
-        distributionNotificationTypeRepository.save(new DistributionNotificationTypeRelation(configurationJobModel.getJobId(), "POLICY_OVERRIDE"));
 
         final NotificationContent savedNotificationEntity = notificationContentRepository.save(mockNotification.createEntity());
 

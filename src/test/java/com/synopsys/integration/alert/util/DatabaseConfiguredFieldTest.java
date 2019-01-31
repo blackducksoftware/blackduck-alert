@@ -1,7 +1,6 @@
 package com.synopsys.integration.alert.util;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +17,7 @@ import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.database.DescriptorMocker;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
@@ -31,8 +31,9 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
     @Autowired
     private BaseDescriptorAccessor descriptorAccessor;
     @Autowired
+    private DescriptorMocker descriptorMocker;
+    @Autowired
     private BaseConfigurationAccessor configurationAccessor;
-    private Set<String> addedConfigurations;
 
     @Autowired
     private DescriptorConfigRepository descriptorConfigRepository;
@@ -46,17 +47,9 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
     @BeforeEach
     @AfterEach
     public void initializeTest() {
-        addedConfigurations = new HashSet<>();
         configGroupRepository.deleteAllInBatch();
         descriptorConfigRepository.deleteAllInBatch();
         fieldValueRepository.deleteAllInBatch();
-    }
-
-    @AfterEach
-    public void cleanupDB() throws AlertDatabaseConstraintException {
-        for (final String id : addedConfigurations) {
-            deleteConfiguration(id);
-        }
     }
 
     public ConfigurationJobModel addJob(String descriptorName, String providerName, final Map<String, Collection<String>> fieldsValues) throws AlertDatabaseConstraintException {
@@ -66,8 +59,19 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
                                                              .map(entry -> createConfigurationFieldModel(entry.getKey(), entry.getValue()))
                                                              .collect(Collectors.toSet());
         final ConfigurationJobModel configurationJobModel = configurationAccessor.createJob(Set.of(descriptorName, providerName), fieldModels);
-        addedConfigurations.add(configurationJobModel.getJobId().toString());
         return configurationJobModel;
+    }
+
+    public void registerDescriptor(final Descriptor descriptor) {
+        for (final ConfigContextEnum context : descriptor.getAppliedUIContexts()) {
+            descriptorMocker.registerDescriptor(descriptor.getName(), descriptor.getType(), descriptor.getAllDefinedFields(context));
+        }
+        descriptors.add(descriptor);
+    }
+
+    public void unregisterDescriptor(final Descriptor descriptor) {
+        descriptorMocker.unregisterDescriptor(descriptor.getName());
+        descriptors.remove(descriptor);
     }
 
     public ConfigurationModel addConfiguration(final String descriptorName, final ConfigContextEnum context, final Map<String, Collection<String>> fieldsValues) throws AlertDatabaseConstraintException {
@@ -77,7 +81,6 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
                                                              .map(entry -> createConfigurationFieldModel(entry.getKey(), entry.getValue()))
                                                              .collect(Collectors.toSet());
         final ConfigurationModel configurationModel = configurationAccessor.createConfiguration(descriptorName, context, fieldModels);
-        addedConfigurations.add(String.valueOf(configurationModel.getConfigurationId()));
         return configurationModel;
     }
 
@@ -107,10 +110,6 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
 
     public BaseConfigurationAccessor getConfigurationAccessor() {
         return configurationAccessor;
-    }
-
-    public Set<String> getAddedConfigurations() {
-        return addedConfigurations;
     }
 
     public List<Descriptor> getDescriptors() {
