@@ -28,8 +28,10 @@ class BlackDuckConfiguration
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTest = this.handleTest.bind(this);
+        let currentConfig = FieldModelUtil.createEmptyFieldModel(fieldNames, DescriptorUtil.CONTEXT_TYPE.GLOBAL, 'provider_blackduck');
+        currentConfig = FieldModelUtil.updateFieldModelSingleValue(currentConfig, KEY_BLACKDUCK_TIMEOUT, 300);
         this.state = {
-            currentConfig: FieldModelUtil.createEmptyFieldModel(fieldNames, DescriptorUtil.CONTEXT_TYPE.GLOBAL, 'provider_blackduck')
+            currentConfig
         };
     }
 
@@ -39,7 +41,11 @@ class BlackDuckConfiguration
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.props.currentConfig !== prevProps.currentConfig && (this.props.updateStatus === 'FETCHED' || this.props.updateStatus === 'UPDATED')) {
-            const newState = FieldModelUtil.checkModelOrCreateEmpty(this.props.currentConfig, fieldNames);
+            let newState = FieldModelUtil.checkModelOrCreateEmpty(this.props.currentConfig, fieldNames);
+            const currentTimeout = FieldModelUtil.getFieldModelSingleValue(newState, KEY_BLACKDUCK_TIMEOUT);
+            if (!currentTimeout) {
+                newState = FieldModelUtil.updateFieldModelSingleValue(newState, KEY_BLACKDUCK_TIMEOUT, 300);
+            }
             this.setState({
                 currentConfig: newState
             });
@@ -108,7 +114,7 @@ class BlackDuckConfiguration
                             id={KEY_BLACKDUCK_TIMEOUT}
                             label="Timeout"
                             name={KEY_BLACKDUCK_TIMEOUT}
-                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_BLACKDUCK_TIMEOUT) | 300}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_BLACKDUCK_TIMEOUT)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(KEY_BLACKDUCK_TIMEOUT)}
                             errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_BLACKDUCK_TIMEOUT)]}
