@@ -127,11 +127,18 @@ public class JobConfigActions {
         Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
         for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
             final Long fieldModelId = contentConverter.getLongValue(fieldModel.getId());
-            final Collection<ConfigurationFieldModel> updatedFieldModels = fieldModelProcessor.updateFieldModel(fieldModelId, fieldModel);
+            final Collection<ConfigurationFieldModel> updatedFieldModels = fieldModelProcessor.fillFieldModelWithExistingData(fieldModelId, fieldModel);
             configurationFieldModels.addAll(updatedFieldModels);
         }
         final ConfigurationJobModel configurationJobModel = configurationAccessor.updateJob(id, configurationFieldModels);
-        return convertToJobFieldModel(configurationJobModel);
+        final JobFieldModel savedJobFieldModel = convertToJobFieldModel(configurationJobModel);
+        Set<FieldModel> updatedFieldModels = new HashSet<>();
+        savedJobFieldModel.getFieldModels()
+            .stream()
+            .map(fieldModel -> updatedFieldModels.add(fieldModelProcessor.updateFieldModel(fieldModel)))
+            .collect(Collectors.toSet());
+        savedJobFieldModel.setFieldModels(updatedFieldModels);
+        return savedJobFieldModel;
     }
 
     public String validateJob(JobFieldModel jobFieldModel) throws AlertFieldException {

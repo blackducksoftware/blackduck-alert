@@ -28,8 +28,6 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.ProxyManager;
@@ -42,14 +40,14 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.polaris.common.rest.AccessTokenRestConnection;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
-@Component
+// TODO exclude for now: @Component
 public class PolarisProperties extends ProviderProperties {
     public static final Integer DEFAULT_TIMEOUT = 300;
     private static final Logger logger = LoggerFactory.getLogger(PolarisProperties.class);
     private final AlertProperties alertProperties;
     private final ProxyManager proxyManager;
 
-    @Autowired
+    // TODO exclude for now: @Autowired
     public PolarisProperties(final AlertProperties alertProperties, final BaseConfigurationAccessor configurationAccessor, final ProxyManager proxyManager) {
         super(PolarisProvider.COMPONENT_NAME, configurationAccessor);
         this.alertProperties = alertProperties;
@@ -98,7 +96,7 @@ public class PolarisProperties extends ProviderProperties {
 
     public AccessTokenRestConnection createRestConnection(final IntLogger intLogger, final String baseUrl, final String accessToken, final Integer timeout) {
         final Boolean alwaysTrustCertificate = alertProperties.getAlertTrustCertificate().orElse(Boolean.FALSE);
-        ProxyInfo proxyInfo = proxyManager.createProxyInfo();
+        final ProxyInfo proxyInfo = proxyManager.createProxyInfo();
         return new AccessTokenRestConnection(intLogger, timeout, alwaysTrustCertificate, proxyInfo, baseUrl, accessToken);
     }
 

@@ -27,8 +27,6 @@ import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
@@ -40,12 +38,12 @@ import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.polaris.common.rest.AccessTokenRestConnection;
 import com.synopsys.integration.rest.request.Response;
 
-@Component
+// TODO exclude for now: @Component
 public class PolarisGlobalDescriptorActionApi extends DescriptorActionApi {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final PolarisProperties polarisProperties;
 
-    @Autowired
+    // TODO exclude for now: @Autowired
     public PolarisGlobalDescriptorActionApi(final PolarisProperties polarisProperties) {
         this.polarisProperties = polarisProperties;
     }

@@ -72,7 +72,9 @@
         <createProcedure
                 dbms="h2"
                 relativeToChangelogFile="true"
-                schemaName="ALERT">
+                schemaName="ALERT"
+                procedureName="GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG"
+        >
             CREATE ALIAS GET_LATEST_ID_FOR_DESCRIPTOR_CONFIG AS $$
                 java.lang.Integer getLatestIdForDescriptorConfig(final java.sql.Connection connection) throws java.sql.SQLException {
                     try (final java.sql.Statement statement = connection.createStatement()) {
@@ -121,7 +123,9 @@
         <createProcedure
                 dbms="h2"
                 relativeToChangelogFile="true"
-                schemaName="ALERT">
+                schemaName="ALERT"
+                procedureName="MIGRATE_INT_VALUE_INTO_NEWEST_CONFIG"
+        >
             CREATE ALIAS MIGRATE_INT_VALUE_INTO_NEWEST_CONFIG AS $$
                 java.lang.Void migrateIntValueIntoNewestConfig(final java.sql.Connection connection, final java.lang.String schemaName, final java.lang.String tableName, final java.lang.String columnName, final java.lang.String fieldKey)
                     throws java.sql.SQLException {
@@ -147,7 +151,9 @@
         <createProcedure
                 dbms="h2"
                 relativeToChangelogFile="true"
-                schemaName="ALERT">
+                schemaName="ALERT"
+                procedureName="MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG"
+        >
             CREATE ALIAS MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG AS $$
                 java.lang.Void migrateBooleanValueIntoNewestConfig(final java.sql.Connection connection, final java.lang.String schemaName, final java.lang.String tableName, final java.lang.String columnName, final java.lang.String fieldKey)
                     throws java.sql.SQLException {
@@ -173,7 +179,9 @@
         <createProcedure
                 dbms="h2"
                 relativeToChangelogFile="true"
-                schemaName="ALERT">
+                schemaName="ALERT"
+                procedureName="MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG"
+        >
             CREATE ALIAS MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG AS $$
                 java.lang.Void migrateStringValueIntoNewestConfig(final java.sql.Connection connection, final String schemaName, final String tableName, final String columnName, final String fieldKey) throws java.sql.SQLException {
                     final java.lang.String value;
@@ -201,7 +209,9 @@
         <createProcedure
                 dbms="h2"
                 relativeToChangelogFile="true"
-                schemaName="ALERT">
+                schemaName="ALERT"
+                procedureName="MIGRATE_DISTRIBUTION_JOBS_FROM_3_1_0_TO_4_0_0"
+        >
             CREATE ALIAS MIGRATE_DISTRIBUTION_JOBS_FROM_3_1_0_TO_4_0_0
             FOR "com.synopsys.integration.alert.database.H2StoredProcedureTest.migrateDistributionJobs";
         </createProcedure>

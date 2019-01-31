@@ -93,6 +93,11 @@ public class FieldModelProcessor {
         return descriptorActionApi.map(actionApi -> actionApi.saveConfig(fieldModel)).orElse(fieldModel);
     }
 
+    public FieldModel updateFieldModel(FieldModel fieldModel) {
+        final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
+        return descriptorActionApi.map(actionApi -> actionApi.updateConfig(fieldModel)).orElse(fieldModel);
+    }
+
     public Map<String, String> validateFieldModel(FieldModel fieldModel) {
         Map<String, String> fieldErrors = new HashMap<>();
         final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
@@ -119,7 +124,7 @@ public class FieldModelProcessor {
         }
     }
 
-    public Collection<ConfigurationFieldModel> updateFieldModel(Long id, FieldModel fieldModel) throws AlertException {
+    public Collection<ConfigurationFieldModel> fillFieldModelWithExistingData(Long id, FieldModel fieldModel) throws AlertException {
         final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
         FieldModel modelToSave = descriptorActionApi.map(actionApi -> actionApi.updateConfig(fieldModel)).orElse(fieldModel);
         final Optional<ConfigurationModel> configurationModel = getSavedEntity(id);

@@ -26,13 +26,12 @@ package com.synopsys.integration.alert.provider.polaris.descriptor;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
 
-@Component
+// TODO exclude for now: @Component
 public class PolarisDistributionUIConfig extends ProviderDistributionUIConfig {
 
     @Autowired

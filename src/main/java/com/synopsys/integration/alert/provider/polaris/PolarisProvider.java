@@ -26,13 +26,11 @@ package com.synopsys.integration.alert.provider.polaris;
 import java.util.EnumSet;
 import java.util.Set;
 
-import org.springframework.stereotype.Component;
-
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
 
-@Component(PolarisProvider.COMPONENT_NAME)
+// TODO exclude for now: @Component(PolarisProvider.COMPONENT_NAME)
 public class PolarisProvider extends Provider {
     public static final String COMPONENT_NAME = "provider_polaris";
 

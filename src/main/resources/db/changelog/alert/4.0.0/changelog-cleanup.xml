@@ -71,4 +71,20 @@
                 tableName="NOTIFICATION_TYPES"
         />
     </changeSet>
+
+    <!-- Remove migration procedures -->
+    <changeSet author="gkillough" id="1548776599865-5">
+        <sql dbms="h2" stripComments="true">
+            DROP ALIAS IF EXISTS MIGRATE_INT_VALUE_INTO_NEWEST_CONFIG;
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            DROP ALIAS IF EXISTS MIGRATE_BOOLEAN_VALUE_INTO_NEWEST_CONFIG;
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            DROP ALIAS IF EXISTS MIGRATE_STRING_VALUE_INTO_NEWEST_CONFIG;
+        </sql>
+        <sql dbms="h2" stripComments="true">
+            DROP ALIAS IF EXISTS MIGRATE_DISTRIBUTION_JOBS_FROM_3_1_0_TO_4_0_0;
+        </sql>
+    </changeSet>
 </databaseChangeLog>

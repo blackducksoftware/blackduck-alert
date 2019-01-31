@@ -108,7 +108,7 @@ public class ConfigActions {
         final Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertFromFieldModel(fieldModel);
         final ConfigurationModel configuration = configurationAccessor.createConfiguration(descriptorName, EnumUtils.getEnum(ConfigContextEnum.class, context), configurationFieldModelMap.values());
         final FieldModel dbSavedModel = fieldModelProcessor.convertToFieldModel(configuration);
-        final FieldModel combinedModel = dbSavedModel.combine(fieldModel);
+        final FieldModel combinedModel = dbSavedModel.fill(fieldModel);
         return fieldModelProcessor.saveFieldModel(combinedModel);
     }
 
@@ -127,8 +127,11 @@ public class ConfigActions {
 
     public FieldModel updateConfig(final Long id, final FieldModel fieldModel) throws AlertException, AlertFieldException {
         validateConfig(fieldModel, new HashMap<>());
-        final Collection<ConfigurationFieldModel> updatedFields = fieldModelProcessor.updateFieldModel(id, fieldModel);
-        return fieldModelProcessor.convertToFieldModel(configurationAccessor.updateConfiguration(id, updatedFields));
+        final Collection<ConfigurationFieldModel> updatedFields = fieldModelProcessor.fillFieldModelWithExistingData(id, fieldModel);
+        final ConfigurationModel configurationModel = configurationAccessor.updateConfiguration(id, updatedFields);
+        FieldModel dbSavedModel = fieldModelProcessor.convertToFieldModel(configurationModel);
+        FieldModel combinedModel = dbSavedModel.fill(fieldModel);
+        return fieldModelProcessor.updateFieldModel(combinedModel);
     }
 
 }

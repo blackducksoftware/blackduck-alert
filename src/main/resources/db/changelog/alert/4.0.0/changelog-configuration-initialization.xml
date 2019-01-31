@@ -72,7 +72,6 @@
             <column name="NAME" type="VARCHAR(255)" value="component_scheduling"/>
             <column name="TYPE_ID" type="BIGINT(19)" valueComputed="GET_ID_FOR_DESCRIPTOR_TYPE('COMPONENT')"/>
         </insert>
-        <!-- TODO determine if we should add polaris for this release -->
     </changeSet>
 
     <!-- Register Global Black Duck Fields. Changelog Extension: 4. -->
