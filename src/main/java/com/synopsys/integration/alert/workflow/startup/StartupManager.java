@@ -23,7 +23,7 @@
  */
 package com.synopsys.integration.alert.workflow.startup;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -46,6 +46,7 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.common.exception.AlertUpgradeException;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
+import com.synopsys.integration.alert.common.workflow.TaskManager;
 import com.synopsys.integration.alert.component.scheduling.SchedulingConfiguration;
 import com.synopsys.integration.alert.component.scheduling.SchedulingDescriptor;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
@@ -79,12 +80,13 @@ public class StartupManager {
     private final EncryptionUtility encryptionUtility;
     private final UpgradeProcessor upgradeProcessor;
     private final ProxyManager proxyManager;
+    private final TaskManager taskManager;
 
     @Autowired
     public StartupManager(final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
         final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask, final PhoneHomeTask phoneHomeTask, final AlertStartupInitializer alertStartupInitializer,
         final List<ProviderDescriptor> providerDescriptorList, final SystemStatusUtility systemStatusUtility, final SystemValidator systemValidator, final BaseConfigurationAccessor configurationAccessor,
-        final EncryptionUtility encryptionUtility, final UpgradeProcessor upgradeProcessor, final ProxyManager proxyManager) {
+        final EncryptionUtility encryptionUtility, final UpgradeProcessor upgradeProcessor, final ProxyManager proxyManager, final TaskManager taskManager) {
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
         this.dailyTask = dailyTask;
@@ -99,6 +101,7 @@ public class StartupManager {
         this.encryptionUtility = encryptionUtility;
         this.upgradeProcessor = upgradeProcessor;
         this.proxyManager = proxyManager;
+        this.taskManager = taskManager;
     }
 
     @Transactional
@@ -163,44 +166,69 @@ public class StartupManager {
             logger.error("Error connecting to DB", e);
             schedulingConfigs = Collections.emptyList();
         }
-        String dailyDigestHourOfDay = null;
-        String purgeDataFrequencyDays = null;
-        if (!schedulingConfigs.isEmpty() && schedulingConfigs.get(0) != null) {
-            final ConfigurationModel globalSchedulingConfig = schedulingConfigs.get(0);
-            final SchedulingConfiguration schedulingConfiguration = new SchedulingConfiguration(globalSchedulingConfig);
-            dailyDigestHourOfDay = schedulingConfiguration.getDailyDigestHourOfDay();
-            purgeDataFrequencyDays = schedulingConfiguration.getDataFrequencyDays();
+        final String defaultDailyHourOfDay = "0";
+        final String defaultPurgeFrequencyInDays = "3";
+        String dailyHourOfDay = defaultDailyHourOfDay;
+        String purgeDataFrequencyDays = defaultPurgeFrequencyInDays;
+
+        final ConfigurationFieldModel defaultHourOfDayField = ConfigurationFieldModel.create(SchedulingDescriptor.KEY_DAILY_DIGEST_HOUR_OF_DAY);
+        defaultHourOfDayField.setFieldValue(dailyHourOfDay);
+        final ConfigurationFieldModel defaultPurgeFrequencyField = ConfigurationFieldModel.create(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS);
+        defaultPurgeFrequencyField.setFieldValue(purgeDataFrequencyDays);
+
+        Optional<ConfigurationModel> schedulingConfig = schedulingConfigs.stream().findFirst();
+        if (schedulingConfig.isPresent()) {
+            final ConfigurationModel globalSchedulingConfig = schedulingConfig.get();
+            List<ConfigurationFieldModel> fields = new ArrayList<>(2);
+            Optional<ConfigurationFieldModel> configuredDailyHour = globalSchedulingConfig.getField(SchedulingDescriptor.KEY_DAILY_DIGEST_HOUR_OF_DAY);
+            Optional<ConfigurationFieldModel> configuredPurgeFrequency = globalSchedulingConfig.getField(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS);
+            boolean updateConfiguration = configuredDailyHour.isEmpty() || configuredPurgeFrequency.isEmpty();
+            if (updateConfiguration) {
+                configuredDailyHour.ifPresentOrElse(fields::add, () -> fields.add(defaultHourOfDayField));
+                configuredPurgeFrequency.ifPresentOrElse(fields::add, () -> fields.add(defaultPurgeFrequencyField));
+                try {
+                    final ConfigurationModel schedulingModel = configurationAccessor.updateConfiguration(globalSchedulingConfig.getConfigurationId(), fields);
+                    logger.info("Saved updated scheduling to DB: {}", schedulingModel.toString());
+                } catch (final AlertDatabaseConstraintException e) {
+                    logger.error("Error saving to DB", e);
+                }
+            }
+
+            if (configuredDailyHour.isPresent()) {
+                dailyHourOfDay = configuredDailyHour.get().getFieldValue().orElse(defaultDailyHourOfDay);
+            }
+
+            if (configuredPurgeFrequency.isPresent()) {
+                purgeDataFrequencyDays = configuredPurgeFrequency.get().getFieldValue().orElse(defaultPurgeFrequencyInDays);
+            }
         } else {
-            dailyDigestHourOfDay = "0";
-            purgeDataFrequencyDays = "3";
-            final ConfigurationFieldModel hourOfDayField = ConfigurationFieldModel.create(SchedulingDescriptor.KEY_DAILY_DIGEST_HOUR_OF_DAY);
-            hourOfDayField.setFieldValue(dailyDigestHourOfDay);
-            final ConfigurationFieldModel purgeFrequencyField = ConfigurationFieldModel.create(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS);
-            purgeFrequencyField.setFieldValue(purgeDataFrequencyDays);
             try {
-                final ConfigurationModel schedulingModel = configurationAccessor.createConfiguration(SchedulingDescriptor.SCHEDULING_COMPONENT, ConfigContextEnum.GLOBAL, Arrays.asList(hourOfDayField, purgeFrequencyField));
+                final ConfigurationModel schedulingModel = configurationAccessor.createConfiguration(SchedulingDescriptor.SCHEDULING_COMPONENT, ConfigContextEnum.GLOBAL, List.of(defaultHourOfDayField, defaultPurgeFrequencyField));
                 logger.info("Saved scheduling to DB: {}", schedulingModel.toString());
             } catch (final AlertDatabaseConstraintException e) {
                 logger.error("Error saving to DB", e);
             }
         }
-        scheduleTaskCrons(dailyDigestHourOfDay, purgeDataFrequencyDays);
+        scheduleTaskCrons(dailyHourOfDay, purgeDataFrequencyDays);
         CompletableFuture.supplyAsync(this::purgeOldData);
     }
 
     public void scheduleTaskCrons(final String dailyDigestHourOfDay, final String purgeDataFrequencyDays) {
-        final String dailyDigestCron = String.format("0 0 %s 1/1 * ?", dailyDigestHourOfDay);
-        final String purgeDataCron = String.format("0 0 0 1/%s * ?", purgeDataFrequencyDays);
-        dailyTask.scheduleExecution(dailyDigestCron);
-        onDemandTask.scheduleExecutionAtFixedRate(OnDemandTask.DEFAULT_INTERVAL_MILLISECONDS);
-        purgeTask.scheduleExecution(purgeDataCron);
+        final String dailyDigestCron = String.format(DailyTask.CRON_FORMAT, dailyDigestHourOfDay);
+        final String purgeDataCron = String.format(PurgeTask.CRON_FORMAT, purgeDataFrequencyDays);
+        taskManager.registerTask(dailyTask);
+        taskManager.registerTask(purgeTask);
+        taskManager.registerTask(onDemandTask);
+        taskManager.registerTask(phoneHomeTask);
+        taskManager.scheduleCronTask(dailyDigestCron, dailyTask.getTaskName());
+        taskManager.scheduleCronTask(purgeDataCron, purgeTask.getTaskName());
+        taskManager.scheduleCronTask(PhoneHomeTask.CRON_EXPRESSION, phoneHomeTask.getTaskName());
+        taskManager.scheduleExecutionAtFixedRate(OnDemandTask.DEFAULT_INTERVAL_MILLISECONDS, onDemandTask.getTaskName());
 
-        logger.info("Daily Digest next run:     {}", dailyTask.getFormatedNextRunTime().orElse(""));
-        logger.info("On Demand next run:        {}", onDemandTask.getFormatedNextRunTime().orElse(""));
-        logger.info("Purge Old Data next run:   {}", purgeTask.getFormatedNextRunTime().orElse(""));
-
-        phoneHomeTask.scheduleExecution("0 0 12 1/1 * ?");
-        logger.debug("Phone home next run:       {}", phoneHomeTask.getFormatedNextRunTime());
+        logger.info("Daily Digest next run:     {}", taskManager.getNextRunTime(dailyTask.getTaskName()));
+        logger.info("On Demand next run:        {}", taskManager.getNextRunTime(onDemandTask.getTaskName()));
+        logger.info("Purge Old Data next run:   {}", taskManager.getNextRunTime(purgeTask.getTaskName()));
+        logger.debug("Phone home next run:       {}", taskManager.getNextRunTime(phoneHomeTask.getTaskName()));
     }
 
     @Transactional

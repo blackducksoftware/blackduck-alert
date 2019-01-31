@@ -12,8 +12,8 @@ import {
 
 import { verifyLoginByStatus } from 'store/actions/session';
 
-const CONFIG_URL = '/alert/api/configuration/component/component_scheduling';
-const ACCUMULATOR_URL = '/alert/api/configuration/component/component_scheduling/tasks/run';
+import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
+import * as FieldModelUtil from 'util/fieldModelUtilities';
 
 /**
  * Triggers Scheduling Config Fetching reducer
@@ -78,60 +78,24 @@ function schedulingConfigError(message, errors) {
     };
 }
 
-/**
- * Triggers Scheduling Accumulator Running
- * @returns {{type}}
- */
-function runningAccumulator() {
-    return {
-        type: SCHEDULING_ACCUMULATOR_RUNNING
-    };
-}
-
-/**
- * Triggers Scheduling Accumulator Ran
- * @returns {{type}}
- */
-function accumulatorSuccess() {
-    return {
-        type: SCHEDULING_ACCUMULATOR_SUCCESS
-    };
-}
-
-/**
- * Triggers Scheduling Accumulator Ran
- * @returns {{type}}
- */
-function accumulatorError(error) {
-    return {
-        type: SCHEDULING_ACCUMULATOR_ERROR,
-        accumulatorError: error
-    };
-}
-
 export function getSchedulingConfig() {
     return (dispatch, getState) => {
         dispatch(fetchingSchedulingConfig());
         const { csrfToken } = getState().session;
-        fetch(CONFIG_URL, {
-            credentials: 'same-origin',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken
+        const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, 'component_scheduling');
+        request.then((response) => {
+            if (response.ok) {
+                response.json().then((body) => {
+                    if (body.length > 0) {
+                        dispatch(schedulingConfigFetched(body[0]));
+                    } else {
+                        dispatch(schedulingConfigFetched({}));
+                    }
+                });
+            } else {
+                dispatch(verifyLoginByStatus(response.status));
             }
         })
-            .then((response) => {
-                if (response.ok) {
-                    response.json().then((body) => {
-                        if (body.length > 0) {
-                            dispatch(schedulingConfigFetched(body[0]));
-                        } else {
-                            dispatch(schedulingConfigFetched({}));
-                        }
-                    });
-                } else {
-                    dispatch(verifyLoginByStatus(response.status));
-                }
-            })
             .catch(dispatch(schedulingConfigFetchError(console.error)));
     };
 }
@@ -139,23 +103,14 @@ export function getSchedulingConfig() {
 export function updateSchedulingConfig(config) {
     return (dispatch, getState) => {
         dispatch(updatingSchedulingConfig());
-
-        const body = {
-            ...config,
-            id: 1
-        };
         const { csrfToken } = getState().session;
-        fetch(CONFIG_URL, {
-            method: 'PUT',
-            headers: {
-                'content-type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
-            },
-            credentials: 'same-origin',
-            body: JSON.stringify(body)
-        }).then((response) => {
+        const request = ConfigRequestBuilder.createUpdateRequest(csrfToken, config.id, config);
+        request.then((response) => {
             if (response.ok) {
-                response.json().then(() => dispatch(schedulingConfigUpdated({ ...config })));
+                response.json().then((data) => {
+                    const updatedConfig = FieldModelUtil.updateFieldModelSingleValue(config, 'id', data.id);
+                    dispatch(schedulingConfigUpdated(updatedConfig));
+                }).then(() => dispatch(getSchedulingConfig()));
             } else {
                 response.json()
                     .then((data) => {
@@ -174,32 +129,5 @@ export function updateSchedulingConfig(config) {
         }).then(() => {
             dispatch(getSchedulingConfig());
         }).catch(console.error);
-    };
-}
-
-export function runSchedulingAccumulator() {
-    return (dispatch, getState) => {
-        dispatch(runningAccumulator());
-        const { csrfToken } = getState().session;
-        fetch(ACCUMULATOR_URL, {
-            credentials: 'same-origin',
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken
-            }
-        }).then((response) => {
-            if (!response.ok) {
-                response.json().then((json) => {
-                    dispatch(accumulatorError(json.message));
-                });
-                dispatch(verifyLoginByStatus(response.status));
-            } else {
-                dispatch(accumulatorSuccess());
-            }
-        }).then(() => {
-            dispatch(getSchedulingConfig());
-        }).catch((err) => {
-            dispatch(accumulatorError(err));
-        });
     };
 }
