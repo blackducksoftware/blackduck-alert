@@ -23,31 +23,51 @@
  */
 package com.synopsys.integration.alert.web.audit;
 
-import com.synopsys.integration.alert.web.model.MaskedModel;
+import com.synopsys.integration.alert.web.model.Config;
 
-public class JobAuditModel extends MaskedModel {
-    private String timeAuditCreated;
-    private String timeLastSent;
-    private String status;
+public class JobAuditModel extends Config {
+    private String configId;
+    private String name;
+    private String eventType;
+    private AuditJobStatusModel auditJobStatusModel;
+    private String errorMessage;
+    private String errorStackTrace;
 
     public JobAuditModel() {
     }
 
-    public JobAuditModel(final String timeAuditCreated, final String timeLastSent, final String status) {
-        this.timeAuditCreated = timeAuditCreated;
-        this.timeLastSent = timeLastSent;
-        this.status = status;
+    public JobAuditModel(final String id, final String configId, final String name, final String eventType, final AuditJobStatusModel auditJobStatusModel, final String errorMessage, final String errorStackTrace) {
+        super(id);
+        this.configId = configId;
+        this.name = name;
+        this.eventType = eventType;
+        this.auditJobStatusModel = auditJobStatusModel;
+        this.errorMessage = errorMessage;
+        this.errorStackTrace = errorStackTrace;
     }
 
-    public String getTimeAuditCreated() {
-        return timeAuditCreated;
+    public String getConfigId() {
+        return configId;
     }
 
-    public String getTimeLastSent() {
-        return timeLastSent;
+    public String getName() {
+        return name;
     }
 
-    public String getStatus() {
-        return status;
+    public String getEventType() {
+        return eventType;
     }
+
+    public AuditJobStatusModel getAuditJobStatusModel() {
+        return auditJobStatusModel;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public String getErrorStackTrace() {
+        return errorStackTrace;
+    }
+
 }

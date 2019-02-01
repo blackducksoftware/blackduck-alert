@@ -23,41 +23,31 @@
  */
 package com.synopsys.integration.alert.web.audit;
 
-import java.util.List;
+import com.synopsys.integration.alert.web.model.MaskedModel;
 
-import com.synopsys.integration.alert.web.model.Config;
-import com.synopsys.integration.alert.web.model.NotificationConfig;
+public class AuditJobStatusModel extends MaskedModel {
+    private String timeAuditCreated;
+    private String timeLastSent;
+    private String status;
 
-public class AuditEntryModel extends Config {
-    private NotificationConfig notification;
-    private List<JobAuditModel> jobs;
-    private String overallStatus;
-    private String lastSent;
-
-    public AuditEntryModel() {
+    public AuditJobStatusModel() {
     }
 
-    public AuditEntryModel(final String id, final NotificationConfig notification, final List<JobAuditModel> jobs, final String overallStatus, final String lastSent) {
-        super(id);
-        this.notification = notification;
-        this.jobs = jobs;
-        this.overallStatus = overallStatus;
-        this.lastSent = lastSent;
+    public AuditJobStatusModel(final String timeAuditCreated, final String timeLastSent, final String status) {
+        this.timeAuditCreated = timeAuditCreated;
+        this.timeLastSent = timeLastSent;
+        this.status = status;
     }
 
-    public NotificationConfig getNotification() {
-        return notification;
+    public String getTimeAuditCreated() {
+        return timeAuditCreated;
     }
 
-    public List<JobAuditModel> getJobs() {
-        return jobs;
+    public String getTimeLastSent() {
+        return timeLastSent;
     }
 
-    public String getOverallStatus() {
-        return overallStatus;
-    }
-
-    public String getLastSent() {
-        return lastSent;
+    public String getStatus() {
+        return status;
     }
 }
