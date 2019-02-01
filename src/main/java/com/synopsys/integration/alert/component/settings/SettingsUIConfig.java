@@ -84,8 +84,8 @@ public class SettingsUIConfig extends UIConfig {
         boolean portExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_PORT);
         boolean userNameExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_USERNAME);
         boolean passwordExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_PASSWORD);
-        boolean proxyFieldExists = portExists || passwordExists || userNameExists;
-        if (proxyFieldExists && !hostExists) {
+        boolean isHostMissing = (portExists || passwordExists || userNameExists) && !hostExists;
+        if (isHostMissing) {
             result = List.of(SettingsDescriptor.FIELD_ERROR_PROXY_HOST_MISSING);
         }
 
