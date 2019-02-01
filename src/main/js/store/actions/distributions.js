@@ -150,9 +150,8 @@ export function saveDistributionJob(url, config) {
                         const errors = {};
                         for (const key in jsonErrors) {
                             if (jsonErrors.hasOwnProperty(key)) {
-                                const name = key.concat('Error');
                                 const value = jsonErrors[key];
-                                errors[name] = value;
+                                errors[key] = value;
                             }
                         }
                         dispatch(saveJobFailed(errors, json.message));
@@ -187,9 +186,8 @@ export function updateDistributionJob(url, config) {
                         const errors = {};
                         for (const key in jsonErrors) {
                             if (jsonErrors.hasOwnProperty(key)) {
-                                const name = key.concat('Error');
                                 const value = jsonErrors[key];
-                                errors[name] = value;
+                                errors[key] = value;
                             }
                         }
                         dispatch(updateJobFailed(errors, json.message));
@@ -224,9 +222,8 @@ export function testDistributionJob(url, config) {
                         const errors = {};
                         for (const key in jsonErrors) {
                             if (jsonErrors.hasOwnProperty(key)) {
-                                const name = key.concat('Error');
                                 const value = jsonErrors[key];
-                                errors[name] = value;
+                                errors[key] = value;
                             }
                         }
                         dispatch(testJobFailed(errors, json.message));

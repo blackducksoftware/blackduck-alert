@@ -170,9 +170,8 @@ export function saveInitialSystemSetup(setupData) {
                             const errors = {};
                             Object.keys(jsonErrors).forEach((key) => {
                                 if (jsonErrors[key]) {
-                                    const name = key.concat('Error');
                                     const value = jsonErrors[key];
-                                    errors[name] = value;
+                                    errors[key] = value;
                                 }
                             });
                             dispatch(systemSetupUpdateError(body.message, errors));
@@ -200,9 +199,8 @@ export function saveSystemSetup(setupData) {
                         const errors = {};
                         Object.keys(jsonErrors).forEach((key) => {
                             if (jsonErrors[key]) {
-                                const name = key.concat('Error');
                                 const value = jsonErrors[key];
-                                errors[name] = value;
+                                errors[key] = value;
                             }
                         });
                         dispatch(systemSetupUpdateError(body.message, errors));

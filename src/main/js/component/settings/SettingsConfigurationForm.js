@@ -140,7 +140,7 @@ class SettingsConfigurationForm extends Component {
                             isSet={FieldModelUtil.isFieldModelValueSet(fieldModel, KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD)]}
+                            errorValue={this.props.fieldErrors[KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD]}
                         />
                     </div>
                 </div>
@@ -155,7 +155,7 @@ class SettingsConfigurationForm extends Component {
                             isSet={FieldModelUtil.isFieldModelValueSet(fieldModel, KEY_ENCRYPTION_PASSWORD)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(KEY_ENCRYPTION_PASSWORD)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_ENCRYPTION_PASSWORD)]}
+                            errorValue={this.props.fieldErrors[KEY_ENCRYPTION_PASSWORD]}
                         />
                         <PasswordInput
                             id={KEY_ENCRYPTION_GLOBAL_SALT}
@@ -165,7 +165,7 @@ class SettingsConfigurationForm extends Component {
                             isSet={FieldModelUtil.isFieldModelValueSet(fieldModel, KEY_ENCRYPTION_GLOBAL_SALT)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(KEY_ENCRYPTION_GLOBAL_SALT)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_ENCRYPTION_GLOBAL_SALT)]}
+                            errorValue={this.props.fieldErrors[KEY_ENCRYPTION_GLOBAL_SALT]}
                         />
                     </div>
                 </div>
@@ -178,7 +178,7 @@ class SettingsConfigurationForm extends Component {
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE)]}
+                            errorValue={this.props.fieldErrors[KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE]}
                         />
                     </div>
                 </div>
@@ -192,7 +192,7 @@ class SettingsConfigurationForm extends Component {
                                 value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_PROXY_HOST)}
                                 onChange={this.handleChange}
                                 errorName={FieldModelUtil.createFieldModelErrorKey(KEY_PROXY_HOST)}
-                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_PROXY_HOST)]}
+                                errorValue={this.props.fieldErrors[KEY_PROXY_HOST]}
                             />
                             <TextInput
                                 id={KEY_PROXY_PORT}
@@ -201,7 +201,7 @@ class SettingsConfigurationForm extends Component {
                                 value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_PROXY_PORT)}
                                 onChange={this.handleChange}
                                 errorName={FieldModelUtil.createFieldModelErrorKey(KEY_PROXY_PORT)}
-                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_PROXY_PORT)]}
+                                errorValue={this.props.fieldErrors[KEY_PROXY_PORT]}
                             />
                             <TextInput
                                 id={KEY_PROXY_USERNAME}
@@ -210,7 +210,7 @@ class SettingsConfigurationForm extends Component {
                                 value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_PROXY_USERNAME)}
                                 onChange={this.handleChange}
                                 errorName={FieldModelUtil.createFieldModelErrorKey(KEY_PROXY_USERNAME)}
-                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_PROXY_USERNAME)]}
+                                errorValue={this.props.fieldErrors[KEY_PROXY_USERNAME]}
                             />
                             <PasswordInput
                                 id={KEY_PROXY_PASSWORD}
@@ -220,7 +220,7 @@ class SettingsConfigurationForm extends Component {
                                 isSet={FieldModelUtil.isFieldModelValueSet(fieldModel, KEY_PROXY_PASSWORD)}
                                 onChange={this.handleChange}
                                 errorName={FieldModelUtil.createFieldModelErrorKey(KEY_PROXY_PASSWORD)}
-                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_PROXY_PASSWORD)]}
+                                errorValue={this.props.fieldErrors[KEY_PROXY_PASSWORD]}
                             />
                         </CollapsiblePane>
                     </div>
@@ -235,7 +235,7 @@ class SettingsConfigurationForm extends Component {
                                 isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, KEY_LDAP_ENABLED)}
                                 onChange={this.handleChange}
                                 errorName={FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_ENABLED)}
-                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_ENABLED)]}
+                                errorValue={this.props.fieldErrors[KEY_LDAP_ENABLED]}
                             />
                             <TextInput
                                 id={KEY_LDAP_SERVER}
@@ -244,7 +244,7 @@ class SettingsConfigurationForm extends Component {
                                 value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_LDAP_SERVER)}
                                 onChange={this.handleChange}
                                 errorName={FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_SERVER)}
-                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_SERVER)]}
+                                errorValue={this.props.fieldErrors[KEY_LDAP_SERVER]}
                             />
                             <TextInput
                                 id={KEY_LDAP_MANAGER_DN}
@@ -253,7 +253,7 @@ class SettingsConfigurationForm extends Component {
                                 value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_LDAP_MANAGER_DN)}
                                 onChange={this.handleChange}
                                 errorName={FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_MANAGER_DN)}
-                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_MANAGER_DN)]}
+                                errorValue={this.props.fieldErrors[KEY_LDAP_MANAGER_DN]}
                             />
                             <PasswordInput
                                 id={KEY_LDAP_MANAGER_PASSWORD}
@@ -263,7 +263,7 @@ class SettingsConfigurationForm extends Component {
                                 isSet={FieldModelUtil.isFieldModelValueSet(fieldModel, KEY_LDAP_MANAGER_PASSWORD)}
                                 onChange={this.handleChange}
                                 errorName={FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_MANAGER_PASSWORD)}
-                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_MANAGER_PASSWORD)]}
+                                errorValue={this.props.fieldErrors[KEY_LDAP_MANAGER_PASSWORD]}
                             />
                             <label className="col-sm-3 col-form-label text-right">Authentication Type</label>
                             <div className="d-inline-flex flex-column p-2 col-sm-9">
@@ -283,7 +283,7 @@ class SettingsConfigurationForm extends Component {
                                 value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_LDAP_REFERRAL)}
                                 onChange={this.handleChange}
                                 errorName={FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_REFERRAL)}
-                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_REFERRAL)]}
+                                errorValue={this.props.fieldErrors[KEY_LDAP_REFERRAL]}
                             />
                             <TextInput
                                 id={KEY_LDAP_USER_SEARCH_BASE}
@@ -292,7 +292,7 @@ class SettingsConfigurationForm extends Component {
                                 value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_LDAP_USER_SEARCH_BASE)}
                                 onChange={this.handleChange}
                                 errorName={FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_USER_SEARCH_BASE)}
-                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_USER_SEARCH_BASE)]}
+                                errorValue={this.props.fieldErrors[KEY_LDAP_USER_SEARCH_BASE]}
                             />
                             <TextInput
                                 id={KEY_LDAP_USER_SEARCH_FILTER}
@@ -301,7 +301,7 @@ class SettingsConfigurationForm extends Component {
                                 value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_LDAP_USER_SEARCH_FILTER)}
                                 onChange={this.handleChange}
                                 errorName={FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_USER_SEARCH_FILTER)}
-                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_USER_SEARCH_FILTER)]}
+                                errorValue={this.props.fieldErrors[KEY_LDAP_USER_SEARCH_FILTER]}
                             />
                             <TextInput
                                 id={KEY_LDAP_USER_DN_PATTERNS}
@@ -310,7 +310,7 @@ class SettingsConfigurationForm extends Component {
                                 value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_LDAP_USER_DN_PATTERNS)}
                                 onChange={this.handleChange}
                                 errorName={FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_USER_DN_PATTERNS)}
-                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_USER_DN_PATTERNS)]}
+                                errorValue={this.props.fieldErrors[KEY_LDAP_USER_DN_PATTERNS]}
                             />
                             <TextInput
                                 id={KEY_LDAP_USER_ATTRIBUTES}
@@ -319,7 +319,7 @@ class SettingsConfigurationForm extends Component {
                                 value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_LDAP_USER_ATTRIBUTES)}
                                 onChange={this.handleChange}
                                 errorName={FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_USER_ATTRIBUTES)}
-                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_USER_ATTRIBUTES)]}
+                                errorValue={this.props.fieldErrors[KEY_LDAP_USER_ATTRIBUTES]}
                             />
                             <TextInput
                                 id={KEY_LDAP_GROUP_SEARCH_BASE}
@@ -328,7 +328,7 @@ class SettingsConfigurationForm extends Component {
                                 value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_LDAP_GROUP_SEARCH_BASE)}
                                 onChange={this.handleChange}
                                 errorName={FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_GROUP_SEARCH_BASE)}
-                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_GROUP_SEARCH_BASE)]}
+                                errorValue={this.props.fieldErrors[KEY_LDAP_GROUP_SEARCH_BASE]}
                             />
                             <TextInput
                                 id={KEY_LDAP_GROUP_SEARCH_FILTER}
@@ -337,7 +337,7 @@ class SettingsConfigurationForm extends Component {
                                 value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_LDAP_GROUP_SEARCH_FILTER)}
                                 onChange={this.handleChange}
                                 errorName={FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_GROUP_SEARCH_FILTER)}
-                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_GROUP_SEARCH_FILTER)]}
+                                errorValue={this.props.fieldErrors[KEY_LDAP_GROUP_SEARCH_FILTER]}
                             />
                             <TextInput
                                 id={KEY_LDAP_GROUP_ROLE_ATTRIBUTE}
@@ -346,7 +346,7 @@ class SettingsConfigurationForm extends Component {
                                 value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_LDAP_GROUP_ROLE_ATTRIBUTE)}
                                 onChange={this.handleChange}
                                 errorName={FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_GROUP_ROLE_ATTRIBUTE)}
-                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_GROUP_ROLE_ATTRIBUTE)]}
+                                errorValue={this.props.fieldErrors[KEY_LDAP_GROUP_ROLE_ATTRIBUTE]}
                             />
                             <TextInput
                                 id={KEY_LDAP_ROLE_PREFIX}
@@ -355,7 +355,7 @@ class SettingsConfigurationForm extends Component {
                                 value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_LDAP_ROLE_PREFIX)}
                                 onChange={this.handleChange}
                                 errorName={FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_ROLE_PREFIX)}
-                                errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_LDAP_ROLE_PREFIX)]}
+                                errorValue={this.props.fieldErrors[KEY_LDAP_ROLE_PREFIX]}
                             />
                         </CollapsiblePane>
                     </div>
