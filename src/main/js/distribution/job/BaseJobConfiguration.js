@@ -11,7 +11,8 @@ import { frequencyOptions } from 'util/distribution-data';
 import { getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob } from 'store/actions/distributions';
 import { getDistributionDescriptor } from 'store/actions/descriptors';
 import DescriptorOption from 'component/common/DescriptorOption';
-import * as DescriptorUtilities from 'util/descriptorUtilities';
+import * as FieldModelUtil from 'util/fieldModelUtilities';
+import * as DescriptorUtil from 'util/descriptorUtilities';
 
 const { Option, SingleValue } = components;
 
@@ -27,13 +28,26 @@ const CustomProviderTypeLabel = props => (
     </SingleValue>
 );
 
+
+const KEY_NAME = "channel.common.name";
+const KEY_CHANNEL_NAME = "channel.common.channel.name";
+const KEY_PROVIDER_NAME = "channel.common.provider.name";
+const KEY_FREQUENCY = "channel.common.frequency";
+
+const fieldNames = [
+    KEY_NAME,
+    KEY_CHANNEL_NAME,
+    KEY_PROVIDER_NAME,
+    KEY_FREQUENCY
+];
+
 class BaseJobConfiguration extends Component {
     constructor(props) {
         super(props);
         this.state = {
             saving: false,
             success: false,
-            error: {}
+            fieldErrors: {}
         };
         this.loading = false;
         this.handleChange = this.handleChange.bind(this);
@@ -69,10 +83,10 @@ class BaseJobConfiguration extends Component {
             }
         }
         if (!nextProps.fetching && !nextProps.inProgress) {
-            if (nextProps.error.message || nextProps.testingConfig) {
+            if (nextProps.fieldErrors.message || nextProps.testingConfig) {
                 // If there are errors, we only want to update the error messaging. We do not want to clear out the User's changes
                 this.setState({
-                    error: nextProps.error,
+                    fieldErrors: nextProps.fieldErrors,
                     configurationMessage: nextProps.configurationMessage
                 });
             } else if (this.loading) {
@@ -83,7 +97,7 @@ class BaseJobConfiguration extends Component {
                     inProgress: nextProps.inProgress,
                     success: nextProps.success,
                     configurationMessage: nextProps.configurationMessage,
-                    error: nextProps.error ? nextProps.error : {},
+                    fieldErrors: nextProps.fieldErrors ? nextProps.fieldErrors : {},
                     providerOptions
                 });
 
@@ -141,7 +155,7 @@ class BaseJobConfiguration extends Component {
     handleSubmit(event) {
         this.setState({
             saving: true,
-            error: {}
+            fieldErrors: {}
         });
         if (event) {
             event.preventDefault();
@@ -156,7 +170,7 @@ class BaseJobConfiguration extends Component {
 
     handleTestSubmit(event) {
         this.setState({
-            error: {}
+            fieldErrors: {}
         });
 
         if (event) {
@@ -256,7 +270,7 @@ class BaseJobConfiguration extends Component {
     }
 
     createProviderOptions() {
-        const providers = DescriptorUtilities.findDescriptorByTypeAndContext(this.props.descriptors.items, DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
+        const providers = DescriptorUtil.findDescriptorByTypeAndContext(this.props.descriptors.items, DescriptorUtil.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtil.CONTEXT_TYPE.GLOBAL);
         if (providers) {
             const optionList = providers.map(descriptor => ({
                 label: descriptor.label,
@@ -316,8 +330,8 @@ class BaseJobConfiguration extends Component {
                             placeholder="Choose the format for the job"
                             value={formatOptions.find(option => option.value === this.state.formatType)}
                         />
-                        {this.state.error.formatTypeError && <label className="fieldError" name="formatTypeError">
-                            {this.state.error.formatTypeError}
+                        {this.state.fieldErrors.formatTypeError && <label className="fieldError" name="formatTypeError">
+                            {this.state.fieldErrors.formatTypeError}
                         </label>}
                     </div>
                 </div>
@@ -335,8 +349,8 @@ class BaseJobConfiguration extends Component {
                             placeholder="Choose the notification types"
                             value={configuredNotificationOptions}
                         />
-                        {this.state.error.notificationTypesError && <label className="fieldError" name="notificationTypesError">
-                            {this.state.error.notificationTypesError}
+                        {this.state.fieldErrors.notificationTypesError && <label className="fieldError" name="notificationTypesError">
+                            {this.state.fieldErrors.notificationTypesError}
                         </label>}
                     </div>
                 </div>
@@ -363,7 +377,15 @@ class BaseJobConfiguration extends Component {
         }
         return (
             <form className="form-horizontal" onSubmit={this.onSubmit}>
-                <TextInput id="name" label="Job Name" name="name" value={this.state.name} onChange={this.handleChange} errorName="nameError" errorValue={this.state.error.nameError} />
+                <TextInput
+                    id={KEY_NAME}
+                    label="Job Name"
+                    name={KEY_NAME}
+                    value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_NAME)}
+                    onChange={this.handleChange}
+                    errorName={FieldModelUtil.createFieldModelErrorKey(KEY_NAME)}
+                    errorValue={this.props.fieldErrors[KEY_NAME]}
+                />
                 <div className="form-group">
                     <label className="col-sm-3 col-form-label text-right">Frequency</label>
                     <div className="d-inline-flex flex-column p-2 col-sm-9">
@@ -376,8 +398,8 @@ class BaseJobConfiguration extends Component {
                             placeholder="Choose the frequency"
                             value={frequencyOptions.find(option => option.value === this.state.frequency)}
                         />
-                        {this.state.error.frequencyError && <label className="fieldError" name="frequencyError">
-                            {this.state.error.frequencyError}
+                        {this.state.fieldErrors.frequencyError && <label className="fieldError" name="frequencyError">
+                            {this.state.fieldErrors.frequencyError}
                         </label>}
                     </div>
                 </div>
@@ -394,8 +416,8 @@ class BaseJobConfiguration extends Component {
                             value={selectedProviderOption}
                             components={{ Option: CustomProviderTypeOptionLabel, SingleValue: CustomProviderTypeLabel }}
                         />
-                        {this.state.error.providerNameError && <label className="fieldError" name="providerNameError">
-                            {this.state.error.providerNameError}
+                        {this.state.fieldErrors.providerNameError && <label className="fieldError" name="providerNameError">
+                            {this.state.fieldErrors.providerNameError}
                         </label>}
                     </div>
                 </div>
@@ -419,7 +441,7 @@ BaseJobConfiguration.propTypes = {
     success: PropTypes.bool,
     testingConfig: PropTypes.bool,
     configurationMessage: PropTypes.string,
-    error: PropTypes.object,
+    fieldErrors: PropTypes.object,
     distributionConfigId: PropTypes.string,
     handleCancel: PropTypes.func.isRequired,
     handleSaveBtnClick: PropTypes.func.isRequired,
@@ -440,7 +462,7 @@ BaseJobConfiguration.defaultProps = {
     success: false,
     testingConfig: false,
     configurationMessage: '',
-    error: {},
+    fieldErrors: {},
     distributionConfigId: null,
     currentDistributionComponents: null,
     projects: []
@@ -462,7 +484,7 @@ const mapStateToProps = state => ({
     success: state.distributions.success,
     testingConfig: state.distributions.testingConfig,
     configurationMessage: state.distributions.configurationMessage,
-    error: state.distributions.error,
+    fieldErrors: state.distributions.error,
     currentDistributionComponents: state.descriptors.currentDistributionComponents
 });
 
