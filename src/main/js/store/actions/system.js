@@ -187,7 +187,7 @@ export function saveSystemSetup(setupData) {
     return (dispatch, getState) => {
         dispatch(updatingSystemSetup());
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createUpdateRequest(csrfToken, setupData.id, setupData);
+        const request = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, setupData.id, setupData);
         request.then((response) => {
             if (response.ok) {
                 dispatch(systemSetupUpdated());

@@ -126,9 +126,9 @@ export function updateEmailConfig(config) {
         const { csrfToken } = getState().session;
         let request;
         if (config.id) {
-            request = ConfigRequestBuilder.createUpdateRequest(csrfToken, config.id, config);
+            request = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, config.id, config);
         } else {
-            request = ConfigRequestBuilder.createNewConfigurationRequest(csrfToken, config);
+            request = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, config);
         }
         request.then((response) => {
             if (response.ok) {
@@ -146,7 +146,7 @@ export function updateEmailConfig(config) {
 export function sendEmailConfigTest(config, destination) {
     return (dispatch, getState) => {
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createTestRequest(csrfToken, config, destination);
+        const request = ConfigRequestBuilder.createTestRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, config, destination);
         request.then((response) => {
             dispatch(closeEmailConfigTest());
             if (response.ok) {

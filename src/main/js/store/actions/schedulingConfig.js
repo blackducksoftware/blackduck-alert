@@ -1,14 +1,4 @@
-import {
-    SCHEDULING_ACCUMULATOR_ERROR,
-    SCHEDULING_ACCUMULATOR_RUNNING,
-    SCHEDULING_ACCUMULATOR_SUCCESS,
-    SCHEDULING_CONFIG_FETCH_ERROR,
-    SCHEDULING_CONFIG_FETCHED,
-    SCHEDULING_CONFIG_FETCHING,
-    SCHEDULING_CONFIG_UPDATE_ERROR,
-    SCHEDULING_CONFIG_UPDATED,
-    SCHEDULING_CONFIG_UPDATING
-} from 'store/actions/types';
+import { SCHEDULING_CONFIG_FETCH_ERROR, SCHEDULING_CONFIG_FETCHED, SCHEDULING_CONFIG_FETCHING, SCHEDULING_CONFIG_UPDATE_ERROR, SCHEDULING_CONFIG_UPDATED, SCHEDULING_CONFIG_UPDATING } from 'store/actions/types';
 
 import { verifyLoginByStatus } from 'store/actions/session';
 
@@ -104,7 +94,7 @@ export function updateSchedulingConfig(config) {
     return (dispatch, getState) => {
         dispatch(updatingSchedulingConfig());
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createUpdateRequest(csrfToken, config.id, config);
+        const request = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, config.id, config);
         request.then((response) => {
             if (response.ok) {
                 response.json().then((data) => {
