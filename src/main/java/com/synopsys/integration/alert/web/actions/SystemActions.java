@@ -108,20 +108,17 @@ public class SystemActions {
         return model;
     }
 
-    public FieldModel saveRequiredInformation(final FieldModel settingsToSave, final Map<String, String> fieldErrors) {
+    public FieldModel saveRequiredInformation(final FieldModel settingsToSave, final Map<String, String> fieldErrors) throws AlertException, AlertFieldException {
         FieldModel systemSettings = settingsToSave;
-        try {
-            configActions.validateConfig(systemSettings, fieldErrors);
-            if (fieldErrors.isEmpty()) {
-                if (configActions.doesConfigExist(settingsToSave.getId())) {
-                    systemSettings = configActions.updateConfig(Long.valueOf(settingsToSave.getId()), settingsToSave);
-                } else {
-                    systemSettings = configActions.saveConfig(settingsToSave);
-                }
+        configActions.validateConfig(systemSettings, fieldErrors);
+        if (fieldErrors.isEmpty()) {
+            if (configActions.doesConfigExist(settingsToSave.getId())) {
+                systemSettings = configActions.updateConfig(Long.valueOf(settingsToSave.getId()), settingsToSave);
+            } else {
+                systemSettings = configActions.saveConfig(settingsToSave);
             }
-        } catch (final AlertException | AlertFieldException ex) {
-            logger.error("Error saving initial configuration", ex);
         }
+
         return systemSettings;
     }
 
