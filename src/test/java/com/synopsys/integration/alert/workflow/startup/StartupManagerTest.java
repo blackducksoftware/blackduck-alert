@@ -17,7 +17,6 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.common.ProxyManager;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.workflow.TaskManager;
 import com.synopsys.integration.alert.component.scheduling.SchedulingDescriptor;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
@@ -78,9 +77,8 @@ public class StartupManagerTest {
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        final StartupManager startupManager = new StartupManager(testAlertProperties, mockTestGlobalProperties, null, null, null, null, null, null, systemStatusUtility, systemValidator, baseConfigurationAccessor, encryptionUtility
-            , null, proxyManager, taskManager);
+        final StartupManager startupManager = new StartupManager(testAlertProperties, mockTestGlobalProperties, null, null, null, null, null, null, systemStatusUtility, systemValidator, baseConfigurationAccessor,
+            null, proxyManager, taskManager);
 
         startupManager.logConfiguration();
         assertTrue(outputLogger.isLineContainingText("Alert Proxy Authenticated: true"));
@@ -107,11 +105,10 @@ public class StartupManagerTest {
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final ConfigurationModel schedulingModel = Mockito.mock(ConfigurationModel.class);
         Mockito.when(baseConfigurationAccessor.createConfiguration(Mockito.anyString(), Mockito.any(ConfigContextEnum.class), Mockito.anyCollection())).thenReturn(schedulingModel);
         final StartupManager startupManager = new StartupManager(testAlertProperties, null, dailyTask, onDemandTask, purgeTask, phoneHomeTask, null, Collections.emptyList(), systemStatusUtility, systemValidator, baseConfigurationAccessor,
-            encryptionUtility, null, proxyManager, taskManager);
+            null, proxyManager, taskManager);
         //        startupManager.registerDescriptors();
         startupManager.initializeCronJobs();
 
@@ -137,7 +134,6 @@ public class StartupManagerTest {
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final ConfigurationModel schedulingModel = Mockito.mock(ConfigurationModel.class);
         final Map<String, ConfigurationFieldModel> configuredFields = new HashMap<>();
         final ConfigurationFieldModel hourOfDayField = ConfigurationFieldModel.create(SchedulingDescriptor.KEY_DAILY_DIGEST_HOUR_OF_DAY);
@@ -153,7 +149,7 @@ public class StartupManagerTest {
         Mockito.when(baseConfigurationAccessor.getConfigurationsByDescriptorName(SchedulingDescriptor.SCHEDULING_COMPONENT)).thenReturn(configList);
 
         final StartupManager startupManager = new StartupManager(testAlertProperties, null, dailyTask, onDemandTask, purgeTask, phoneHomeTask, null, Collections.emptyList(), systemStatusUtility, systemValidator, baseConfigurationAccessor,
-            encryptionUtility, null, proxyManager, taskManager);
+            null, proxyManager, taskManager);
         //        startupManager.registerDescriptors();
         startupManager.initializeCronJobs();
 
@@ -179,7 +175,6 @@ public class StartupManagerTest {
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final ConfigurationModel schedulingModel = Mockito.mock(ConfigurationModel.class);
         Mockito.when(schedulingModel.getField(Mockito.eq(SchedulingDescriptor.KEY_DAILY_DIGEST_HOUR_OF_DAY))).thenReturn(Optional.empty());
         Mockito.when(schedulingModel.getField(Mockito.eq(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS))).thenReturn(Optional.empty());
@@ -187,7 +182,7 @@ public class StartupManagerTest {
         Mockito.when(baseConfigurationAccessor.getConfigurationsByDescriptorName(SchedulingDescriptor.SCHEDULING_COMPONENT)).thenReturn(configList);
         Mockito.when(baseConfigurationAccessor.updateConfiguration(Mockito.anyLong(), Mockito.anyCollection())).thenReturn(schedulingModel);
         final StartupManager startupManager = new StartupManager(testAlertProperties, null, dailyTask, onDemandTask, purgeTask, phoneHomeTask, null, Collections.emptyList(), systemStatusUtility, systemValidator, baseConfigurationAccessor,
-            encryptionUtility, null, proxyManager, taskManager);
+            null, proxyManager, taskManager);
         //        startupManager.registerDescriptors();
         startupManager.initializeCronJobs();
 
@@ -213,14 +208,13 @@ public class StartupManagerTest {
         final SystemStatusUtility systemStatusUtility = Mockito.mock(SystemStatusUtility.class);
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final ConfigurationModel schedulingModel = Mockito.mock(ConfigurationModel.class);
 
         final List<ConfigurationModel> configList = List.of();
         Mockito.when(baseConfigurationAccessor.getConfigurationsByDescriptorName(SchedulingDescriptor.SCHEDULING_COMPONENT)).thenReturn(configList);
         Mockito.when(baseConfigurationAccessor.createConfiguration(Mockito.anyString(), Mockito.any(ConfigContextEnum.class), Mockito.anyCollection())).thenReturn(schedulingModel);
         final StartupManager startupManager = new StartupManager(testAlertProperties, null, dailyTask, onDemandTask, purgeTask, phoneHomeTask, null, Collections.emptyList(), systemStatusUtility, systemValidator, baseConfigurationAccessor,
-            encryptionUtility, null, proxyManager, taskManager);
+            null, proxyManager, taskManager);
         //        startupManager.registerDescriptors();
         startupManager.initializeCronJobs();
 

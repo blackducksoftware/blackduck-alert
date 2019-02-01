@@ -27,8 +27,9 @@ import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.ChannelDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor;
 import com.synopsys.integration.alert.database.api.configuration.DescriptorAccessor;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
@@ -102,7 +103,6 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
         }
         final FieldModel model = new FieldModel(String.valueOf(configurationModel.getConfigurationId()), getDescriptor().getDestinationName(), context.name(), fieldValueMap);
         return model;
-
     }
 
     public FieldAccessor createValidFieldAccessor(final ConfigurationModel configurationModel) {
@@ -124,8 +124,14 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
         return model;
     }
 
+    public Map<String, String> createValidCommonDistributionFieldMap() {
+        return Map.of(ChannelDistributionUIConfig.KEY_NAME, "name", ChannelDistributionUIConfig.KEY_FREQUENCY, FrequencyType.REAL_TIME.name(), ChannelDistributionUIConfig.KEY_CHANNEL_NAME, "channelName",
+            ChannelDistributionUIConfig.KEY_PROVIDER_NAME, "providerName");
+    }
+
     public Map<String, String> createInvalidCommonDistributionFieldMap() {
-        final Map<String, String> invalidValuesMap = Map.of();
+        final Map<String, String> invalidValuesMap = Map.of(ChannelDistributionUIConfig.KEY_NAME, "", ChannelDistributionUIConfig.KEY_FREQUENCY, "", ChannelDistributionUIConfig.KEY_CHANNEL_NAME, "",
+            ChannelDistributionUIConfig.KEY_PROVIDER_NAME, "");
         return invalidValuesMap;
     }
 
@@ -211,13 +217,12 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
     }
 
     @Test
-    public void testDistributionValidate() throws Exception {
+    public void testDistributionValidate() {
         final Optional<DescriptorActionApi> descriptorActionApi = getDescriptor().getActionApi(ConfigContextEnum.DISTRIBUTION);
         final FieldModel restModel = createValidFieldModel(distribution_config, ConfigContextEnum.DISTRIBUTION);
-        final FieldValueModel jobNameField = restModel.getField(CommonDistributionUIConfig.KEY_NAME).orElseThrow();
+        final FieldValueModel jobNameField = restModel.getField(ChannelDistributionUIConfig.KEY_NAME).orElseThrow();
         jobNameField.setValue(getTestJobName());
         final HashMap<String, String> fieldErrors = new HashMap<>();
-        final List<ConfigurationModel> models = configurationAccessor.getConfigurationsByDescriptorName(getDescriptor().getName());
         assertTrue(descriptorActionApi.isPresent());
         final Map<String, ConfigField> configFieldMap = createFieldMap(ConfigContextEnum.DISTRIBUTION);
         descriptorActionApi.get().validateConfig(configFieldMap, restModel, fieldErrors);

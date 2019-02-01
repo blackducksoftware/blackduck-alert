@@ -131,7 +131,8 @@ public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
     @Override
     public boolean assertDistributionFields(final Set<DefinedFieldModel> distributionFields) {
         final Set<String> fieldNames = Set.of(HipChatDescriptor.KEY_ROOM_ID, HipChatDescriptor.KEY_COLOR, HipChatDescriptor.KEY_NOTIFY);
-        return distributionFields.stream().map(DefinedFieldModel::getKey).allMatch(fieldNames::contains);
+        Set<String> passedFieldNames = distributionFields.stream().map(DefinedFieldModel::getKey).collect(Collectors.toSet());
+        return passedFieldNames.containsAll(fieldNames);
     }
 
     @Override
@@ -157,8 +158,9 @@ public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
     @Test
     public void testInvalidTextRoomID() {
         final Map<String, String> invalidValuesMap = new HashMap<>();
-        invalidValuesMap.putAll(createInvalidCommonDistributionFieldMap());
         invalidValuesMap.putAll(Map.of(HipChatDescriptor.KEY_ROOM_ID, "abcdefg"));
+        int invalidLength = invalidValuesMap.size();
+        invalidValuesMap.putAll(createValidCommonDistributionFieldMap());
         final Map<String, FieldValueModel> fieldModelMap = createFieldValueModelMap(invalidValuesMap);
         final FieldModel model = new FieldModel("1L", getDescriptor().getDestinationName(), ConfigContextEnum.DISTRIBUTION.name(), fieldModelMap);
         final HashMap<String, String> fieldErrors = new HashMap<>();
@@ -167,7 +169,7 @@ public class HipChatChannelDescriptorTestIT extends ChannelDescriptorTest {
         final Map<String, ConfigField> configFieldMap = getDescriptor().getUIConfig(ConfigContextEnum.DISTRIBUTION).get().createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
         spyDescriptorConfig.validateConfig(configFieldMap, model, fieldErrors);
-        assertEquals(model.getKeyToValues().size(), fieldErrors.size());
+        assertEquals(invalidLength, fieldErrors.size());
         Mockito.verify(spyDescriptorConfig).validateConfig(Mockito.any(), Mockito.any(), Mockito.anyMap());
     }
 }

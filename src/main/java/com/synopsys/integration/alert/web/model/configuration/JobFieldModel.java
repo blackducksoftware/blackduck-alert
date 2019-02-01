@@ -21,22 +21,36 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.provider.blackduck.descriptor;
+package com.synopsys.integration.alert.web.model.configuration;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import java.util.Set;
 
-import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.common.descriptor.config.context.ProviderDistributionDescriptorActionApi;
+public class JobFieldModel {
+    private String jobId;
+    private Set<FieldModel> fieldModels;
 
-@Component
-public class BlackDuckDistributionDescriptorActionApi extends ProviderDistributionDescriptorActionApi {
-    private final ContentConverter contentConverter;
-
-    @Autowired
-    public BlackDuckDistributionDescriptorActionApi(final ContentConverter contentConverter) {
-        this.contentConverter = contentConverter;
+    public JobFieldModel() {
+        this(null, null);
     }
 
-    // TODO Add the Delete/update/save overrides here to customize what Blackduck does in each scenario(Modifying projects)
+    public JobFieldModel(final String jobId, final Set<FieldModel> fieldModels) {
+        this.jobId = jobId;
+        this.fieldModels = fieldModels;
+    }
+
+    public String getJobId() {
+        return jobId;
+    }
+
+    public void setJobId(final String jobId) {
+        this.jobId = jobId;
+    }
+
+    public Set<FieldModel> getFieldModels() {
+        return fieldModels;
+    }
+
+    public void setFieldModels(final Set<FieldModel> fieldModels) {
+        this.fieldModels = fieldModels;
+    }
 }

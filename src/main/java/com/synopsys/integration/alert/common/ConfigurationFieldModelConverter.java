@@ -41,7 +41,6 @@ import org.springframework.stereotype.Component;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
-import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
@@ -93,14 +92,15 @@ public class ConfigurationFieldModelConverter {
         final List<DefinedFieldModel> definedFieldList = new LinkedList<>();
         definedFieldList.addAll(fieldsForContext);
 
-        if (ConfigContextEnum.DISTRIBUTION == context) {
-            final Optional<String> providerName = fieldModel.getFieldValue(CommonDistributionUIConfig.KEY_PROVIDER_NAME);
-            // include all global field data as well if present in FieldModel
-            definedFieldList.addAll(descriptorAccessor.getFieldsForDescriptor(descriptorName, ConfigContextEnum.GLOBAL));
-            if (providerName.isPresent()) {
-                definedFieldList.addAll(descriptorAccessor.getFieldsForDescriptor(providerName.get(), context));
-            }
-        }
+        // FIXME This will probably be better moved out of this method and into a separate call. Then add these fields to the FieldAccessor.
+        //        if (ConfigContextEnum.DISTRIBUTION == context) {
+        //            final Optional<String> providerName = fieldModel.getFieldValue(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
+        //            // include all global field data as well if present in FieldModel
+        //            definedFieldList.addAll(descriptorAccessor.getFieldsForDescriptor(descriptorName, ConfigContextEnum.GLOBAL));
+        //            if (providerName.isPresent()) {
+        //                definedFieldList.addAll(descriptorAccessor.getFieldsForDescriptor(providerName.get(), context));
+        //            }
+        //        }
         final Optional<ConfigurationModel> savedConfiguration;
         if (StringUtils.isNotBlank(fieldModel.getId())) {
             final Long id = Long.parseLong(fieldModel.getId());
@@ -112,16 +112,23 @@ public class ConfigurationFieldModelConverter {
         final Set<ConfigurationFieldModel> configurationModels = new HashSet<>();
         for (final DefinedFieldModel definedField : definedFieldList) {
             final Optional<FieldValueModel> currentField = fieldModel.getField(definedField.getKey());
-            currentField.ifPresentOrElse(field -> {
-                final Collection<String> values = field.getValues();
+            if (currentField.isPresent()) {
+                final Collection<String> values = currentField.get().getValues();
+                // read and use existing saved values
+                // FIXME this should be done before iterating through the defined fields
                 if (areValuesEmptyOrBlank(values)) {
-                    savedConfiguration.ifPresent(configurationModel -> {
-                        configurationModel.getField(definedField.getKey()).ifPresent(configurationModels::add);
-                    });
+                    if (savedConfiguration.isPresent()) {
+                        Optional<ConfigurationFieldModel> configuredFieldModel = savedConfiguration.get().getField(definedField.getKey());
+                        configuredFieldModel.ifPresent(configurationModels::add);
+                    }
                 } else {
-                    convertFromDefinedFieldModel(definedField, values).ifPresent(configurationModels::add);
+                    Optional<ConfigurationFieldModel> configuredFieldModel = convertFromDefinedFieldModel(definedField, values);
+                    configuredFieldModel.ifPresent(configurationModels::add);
                 }
-            }, () -> convertFromDefinedFieldModel(definedField, List.of()).ifPresent(configurationModels::add));
+            } else {
+                Optional<ConfigurationFieldModel> configuredFieldModel = convertFromDefinedFieldModel(definedField, List.of());
+                configuredFieldModel.ifPresent(configurationModels::add);
+            }
         }
 
         return configurationModels.stream().collect(Collectors.toMap(ConfigurationFieldModel::getFieldKey, Function.identity()));
