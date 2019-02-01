@@ -179,7 +179,7 @@ class EmailConfiguration extends React.Component {
                         value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_HOST_KEY)}
                         onChange={this.handleChange}
                         errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_HOST_KEY)}
-                        errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_HOST_KEY)]}
+                        errorValue={this.props.fieldErrors[JAVAMAIL_HOST_KEY]}
                     />
 
                     <TextInput
@@ -189,7 +189,7 @@ class EmailConfiguration extends React.Component {
                         value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_FROM_KEY)}
                         onChange={this.handleChange}
                         errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_FROM_KEY)}
-                        errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_FROM_KEY)]}
+                        errorValue={this.props.fieldErrors[JAVAMAIL_FROM_KEY]}
                     />
 
                     <CheckboxInput
@@ -199,7 +199,7 @@ class EmailConfiguration extends React.Component {
                         isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_AUTH_KEY)}
                         onChange={this.handleChange}
                         errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_KEY)}
-                        errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_KEY)]}
+                        errorValue={this.props.fieldErrors[JAVAMAIL_AUTH_KEY]}
                     />
 
                     <TextInput
@@ -209,7 +209,7 @@ class EmailConfiguration extends React.Component {
                         value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_USER_KEY)}
                         onChange={this.handleChange}
                         errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_USER_KEY)}
-                        errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_USER_KEY)]}
+                        errorValue={this.props.fieldErrors[JAVAMAIL_USER_KEY]}
                     />
 
                     <PasswordInput
@@ -220,7 +220,7 @@ class EmailConfiguration extends React.Component {
                         isSet={FieldModelUtil.isFieldModelValueSet(fieldModel, JAVAMAIL_PASSWORD_KEY)}
                         onChange={this.handleChange}
                         errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_PASSWORD_KEY)}
-                        errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_PASSWORD_KEY)]}
+                        errorValue={this.props.fieldErrors[JAVAMAIL_PASSWORD_KEY]}
                     />
                     <CollapsiblePane title="Advanced Settings">
                         <NumberInput
@@ -230,7 +230,7 @@ class EmailConfiguration extends React.Component {
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_PORT_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_PORT_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_PORT_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_PORT_KEY]}
                         />
 
                         <NumberInput
@@ -240,7 +240,7 @@ class EmailConfiguration extends React.Component {
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_CONNECTION_TIMEOUT_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_CONNECTION_TIMEOUT_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_CONNECTION_TIMEOUT_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_CONNECTION_TIMEOUT_KEY]}
                         />
 
                         <NumberInput
@@ -250,7 +250,7 @@ class EmailConfiguration extends React.Component {
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_TIMEOUT_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_TIMEOUT_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_TIMEOUT_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_TIMEOUT_KEY]}
                         />
 
                         <NumberInput
@@ -260,7 +260,7 @@ class EmailConfiguration extends React.Component {
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_WRITETIMEOUT_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_WRITETIMEOUT_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_WRITETIMEOUT_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_WRITETIMEOUT_KEY]}
                         />
 
                         <TextInput
@@ -270,7 +270,7 @@ class EmailConfiguration extends React.Component {
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_LOCALHOST_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_LOCALHOST_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_LOCALHOST_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_LOCALHOST_KEY]}
                         />
 
                         <TextInput
@@ -280,7 +280,7 @@ class EmailConfiguration extends React.Component {
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_LOCALHOST_ADDRESS_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_LOCALHOST_ADDRESS_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_LOCALHOST_ADDRESS_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_LOCALHOST_ADDRESS_KEY]}
                         />
 
                         <NumberInput
@@ -290,7 +290,7 @@ class EmailConfiguration extends React.Component {
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_LOCALHOST_PORT_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_LOCALHOST_PORT_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_LOCALHOST_PORT_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_LOCALHOST_PORT_KEY]}
                         />
 
                         <CheckboxInput
@@ -300,7 +300,7 @@ class EmailConfiguration extends React.Component {
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_EHLO_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_EHLO_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_EHLO_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_EHLO_KEY]}
                         />
 
                         <TextInput
@@ -310,7 +310,7 @@ class EmailConfiguration extends React.Component {
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_AUTH_MECHANISMS_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_MECHANISMS_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_MECHANISMS_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_AUTH_MECHANISMS_KEY]}
                         />
 
                         <CheckboxInput
@@ -320,7 +320,7 @@ class EmailConfiguration extends React.Component {
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_AUTH_LOGIN_DISABLE_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_LOGIN_DISABLE_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_LOGIN_DISABLE_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_AUTH_LOGIN_DISABLE_KEY]}
                         />
 
                         <CheckboxInput
@@ -330,7 +330,7 @@ class EmailConfiguration extends React.Component {
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_AUTH_LOGIN_PLAIN_DISABLE_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_LOGIN_PLAIN_DISABLE_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_LOGIN_PLAIN_DISABLE_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_AUTH_LOGIN_PLAIN_DISABLE_KEY]}
                         />
 
                         <CheckboxInput
@@ -340,7 +340,7 @@ class EmailConfiguration extends React.Component {
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_AUTH_DIGEST_MD5_DISABLE_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_DIGEST_MD5_DISABLE_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_DIGEST_MD5_DISABLE_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_AUTH_DIGEST_MD5_DISABLE_KEY]}
                         />
 
                         <CheckboxInput
@@ -350,7 +350,7 @@ class EmailConfiguration extends React.Component {
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_AUTH_NTLM_DISABLE_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_NTLM_DISABLE_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_NTLM_DISABLE_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_AUTH_NTLM_DISABLE_KEY]}
                         />
 
                         <TextInput
@@ -360,7 +360,7 @@ class EmailConfiguration extends React.Component {
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_AUTH_NTLM_DOMAIN_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_NTLM_DOMAIN_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_NTLM_DOMAIN_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_AUTH_NTLM_DOMAIN_KEY]}
                         />
 
                         <NumberInput
@@ -370,7 +370,7 @@ class EmailConfiguration extends React.Component {
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_AUTH_NTLM_FLAGS_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_NTLM_FLAGS_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_NTLM_FLAGS_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_AUTH_NTLM_FLAGS_KEY]}
                         />
 
                         <CheckboxInput
@@ -380,7 +380,7 @@ class EmailConfiguration extends React.Component {
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_AUTH_XOAUTH2_DISABLE_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_XOAUTH2_DISABLE_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_AUTH_XOAUTH2_DISABLE_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_AUTH_XOAUTH2_DISABLE_KEY]}
                         />
 
                         <TextInput
@@ -390,7 +390,7 @@ class EmailConfiguration extends React.Component {
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SUBMITTER_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SUBMITTER_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SUBMITTER_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_SUBMITTER_KEY]}
                         />
 
                         <TextInput
@@ -400,7 +400,7 @@ class EmailConfiguration extends React.Component {
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_DSN_NOTIFY_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_DSN_NOTIFY_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_DSN_NOTIFY_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_DSN_NOTIFY_KEY]}
                         />
 
                         <TextInput
@@ -410,7 +410,7 @@ class EmailConfiguration extends React.Component {
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_DSN_RET_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_DSN_RET_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_DSN_RET_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_DSN_RET_KEY]}
                         />
 
                         <CheckboxInput
@@ -420,7 +420,7 @@ class EmailConfiguration extends React.Component {
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_ALLOW_8_BITMIME_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_ALLOW_8_BITMIME_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_ALLOW_8_BITMIME_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_ALLOW_8_BITMIME_KEY]}
                         />
 
                         <CheckboxInput
@@ -430,7 +430,7 @@ class EmailConfiguration extends React.Component {
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_SEND_PARTIAL_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SEND_PARTIAL_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SEND_PARTIAL_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_SEND_PARTIAL_KEY]}
                         />
 
                         <CheckboxInput
@@ -440,7 +440,7 @@ class EmailConfiguration extends React.Component {
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_SASL_ENABLE_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SASL_ENABLE_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SASL_ENABLE_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_SASL_ENABLE_KEY]}
                         />
 
                         <TextInput
@@ -450,7 +450,7 @@ class EmailConfiguration extends React.Component {
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SASL_MECHANISMS_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SASL_MECHANISMS_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SASL_MECHANISMS_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_SASL_MECHANISMS_KEY]}
                         />
 
                         <TextInput
@@ -460,7 +460,7 @@ class EmailConfiguration extends React.Component {
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SASL_AUTHORIZATION_ID_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SASL_AUTHORIZATION_ID_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SASL_AUTHORIZATION_ID_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_SASL_AUTHORIZATION_ID_KEY]}
                         />
 
                         <TextInput
@@ -470,7 +470,7 @@ class EmailConfiguration extends React.Component {
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SASL_REALM_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SASL_REALM_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SASL_REALM_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_SASL_REALM_KEY]}
                         />
 
                         <CheckboxInput
@@ -480,7 +480,7 @@ class EmailConfiguration extends React.Component {
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_SASL_USE_CANONICAL_HOSTNAME_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SASL_USE_CANONICAL_HOSTNAME_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SASL_USE_CANONICAL_HOSTNAME_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_SASL_USE_CANONICAL_HOSTNAME_KEY]}
                         />
 
                         <CheckboxInput
@@ -490,7 +490,7 @@ class EmailConfiguration extends React.Component {
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_QUITWAIT_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_QUITWAIT_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_QUITWAIT_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_QUITWAIT_KEY]}
                         />
 
                         <CheckboxInput
@@ -500,7 +500,7 @@ class EmailConfiguration extends React.Component {
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_REPORT_SUCCESS_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_REPORT_SUCCESS_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_REPORT_SUCCESS_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_REPORT_SUCCESS_KEY]}
                         />
 
                         <CheckboxInput
@@ -510,7 +510,7 @@ class EmailConfiguration extends React.Component {
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_SSL_ENABLE_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SSL_ENABLE_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SSL_ENABLE_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_SSL_ENABLE_KEY]}
                         />
 
                         <CheckboxInput
@@ -520,7 +520,7 @@ class EmailConfiguration extends React.Component {
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_SSL_CHECKSERVERIDENTITY_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SSL_CHECKSERVERIDENTITY_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SSL_CHECKSERVERIDENTITY_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_SSL_CHECKSERVERIDENTITY_KEY]}
                         />
 
                         <TextInput
@@ -530,7 +530,7 @@ class EmailConfiguration extends React.Component {
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SSL_TRUST_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SSL_TRUST_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SSL_TRUST_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_SSL_TRUST_KEY]}
                         />
 
                         <TextInput
@@ -540,7 +540,7 @@ class EmailConfiguration extends React.Component {
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SSL_PROTOCOLS_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SSL_PROTOCOLS_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SSL_PROTOCOLS_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_SSL_PROTOCOLS_KEY]}
                         />
 
                         <TextInput
@@ -550,7 +550,7 @@ class EmailConfiguration extends React.Component {
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SSL_CIPHERSUITES_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SSL_CIPHERSUITES_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SSL_CIPHERSUITES_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_SSL_CIPHERSUITES_KEY]}
                         />
 
                         <CheckboxInput
@@ -560,7 +560,7 @@ class EmailConfiguration extends React.Component {
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_STARTTLS_ENABLE_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_STARTTLS_ENABLE_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_STARTTLS_ENABLE_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_STARTTLS_ENABLE_KEY]}
                         />
 
                         <CheckboxInput
@@ -570,7 +570,7 @@ class EmailConfiguration extends React.Component {
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_STARTTLS_REQUIRED_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_STARTTLS_REQUIRED_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_STARTTLS_REQUIRED_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_STARTTLS_REQUIRED_KEY]}
                         />
 
                         <TextInput
@@ -580,7 +580,7 @@ class EmailConfiguration extends React.Component {
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_PROXY_HOST_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_PROXY_HOST_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_PROXY_HOST_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_PROXY_HOST_KEY]}
                         />
 
                         <NumberInput
@@ -590,7 +590,7 @@ class EmailConfiguration extends React.Component {
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_PROXY_PORT_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_PROXY_PORT_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_PROXY_PORT_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_PROXY_PORT_KEY]}
                         />
 
                         <TextInput
@@ -600,7 +600,7 @@ class EmailConfiguration extends React.Component {
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SOCKS_HOST_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SOCKS_HOST_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SOCKS_HOST_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_SOCKS_HOST_KEY]}
                         />
 
                         <NumberInput
@@ -610,7 +610,7 @@ class EmailConfiguration extends React.Component {
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_SOCKS_PORT_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SOCKS_PORT_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_SOCKS_PORT_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_SOCKS_PORT_KEY]}
                         />
 
                         <TextInput
@@ -620,7 +620,7 @@ class EmailConfiguration extends React.Component {
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, JAVAMAIL_MAILEXTENSION_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_MAILEXTENSION_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_MAILEXTENSION_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_MAILEXTENSION_KEY]}
                         />
 
                         <CheckboxInput
@@ -630,7 +630,7 @@ class EmailConfiguration extends React.Component {
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_USERSET_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_USERSET_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_USERSET_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_USERSET_KEY]}
                         />
 
                         <CheckboxInput
@@ -640,7 +640,7 @@ class EmailConfiguration extends React.Component {
                             isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, JAVAMAIL_NOOP_STRICT_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_NOOP_STRICT_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(JAVAMAIL_NOOP_STRICT_KEY)]}
+                            errorValue={this.props.fieldErrors[JAVAMAIL_NOOP_STRICT_KEY]}
                         />
                     </CollapsiblePane>
                     <ConfigButtons

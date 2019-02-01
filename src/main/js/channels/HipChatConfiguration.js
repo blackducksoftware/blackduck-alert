@@ -85,7 +85,7 @@ class HipChatConfiguration extends React.Component {
                         isSet={FieldModelUtil.isFieldModelValueSet(fieldModel, KEY_API_KEY)}
                         onChange={this.handleChange}
                         errorName={FieldModelUtil.createFieldModelErrorKey(KEY_API_KEY)}
-                        errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_API_KEY)]}
+                        errorValue={this.props.fieldErrors[KEY_API_KEY]}
                     />
                     <div>
                         <TextInput
@@ -95,7 +95,7 @@ class HipChatConfiguration extends React.Component {
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_HOST_SERVER)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(KEY_HOST_SERVER)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_HOST_SERVER)]}
+                            errorValue={this.props.fieldErrors[KEY_HOST_SERVER]}
                         />
                     </div>
 
