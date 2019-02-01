@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
+import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -50,12 +51,15 @@ public class ConfigActions {
     private final BaseConfigurationAccessor configurationAccessor;
     private FieldModelProcessor fieldModelProcessor;
     private ConfigurationFieldModelConverter modelConverter;
+    private ContentConverter contentConverter;
 
     @Autowired
-    public ConfigActions(final BaseConfigurationAccessor configurationAccessor, final FieldModelProcessor fieldModelProcessor, final ConfigurationFieldModelConverter modelConverter) {
+    public ConfigActions(final BaseConfigurationAccessor configurationAccessor, final FieldModelProcessor fieldModelProcessor, final ConfigurationFieldModelConverter modelConverter,
+        final ContentConverter contentConverter) {
         this.configurationAccessor = configurationAccessor;
         this.fieldModelProcessor = fieldModelProcessor;
         this.modelConverter = modelConverter;
+        this.contentConverter = contentConverter;
     }
 
     public boolean doesConfigExist(final String id) throws AlertException {
@@ -72,7 +76,7 @@ public class ConfigActions {
             final List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationByDescriptorNameAndContext(descriptorName, context);
             if (configurationModels != null) {
                 for (final ConfigurationModel configurationModel : configurationModels) {
-                    final FieldModel fieldModel = fieldModelProcessor.readFieldModel(configurationModel);
+                    final FieldModel fieldModel = fieldModelProcessor.performReadAction(configurationModel);
                     fields.add(fieldModel);
                 }
             }
@@ -84,7 +88,7 @@ public class ConfigActions {
         Optional<FieldModel> optionalModel = Optional.empty();
         final Optional<ConfigurationModel> configurationModel = configurationAccessor.getConfigurationById(id);
         if (configurationModel.isPresent()) {
-            final FieldModel fieldModel = fieldModelProcessor.readFieldModel(configurationModel.get());
+            final FieldModel fieldModel = fieldModelProcessor.performReadAction(configurationModel.get());
             optionalModel = Optional.of(fieldModel);
         }
         return optionalModel;
@@ -95,8 +99,8 @@ public class ConfigActions {
             final Optional<ConfigurationModel> configuration = configurationAccessor.getConfigurationById(id);
             if (configuration.isPresent()) {
                 final ConfigurationModel configurationModel = configuration.get();
-                final FieldModel fieldModel = fieldModelProcessor.deleteFieldModel(configurationModel);
-                configurationAccessor.deleteConfiguration(Long.valueOf(fieldModel.getId()));
+                final FieldModel fieldModel = fieldModelProcessor.performDeleteAction(configurationModel);
+                configurationAccessor.deleteConfiguration(contentConverter.getLongValue(fieldModel.getId()));
             }
         }
     }
@@ -109,7 +113,7 @@ public class ConfigActions {
         final ConfigurationModel configuration = configurationAccessor.createConfiguration(descriptorName, EnumUtils.getEnum(ConfigContextEnum.class, context), configurationFieldModelMap.values());
         final FieldModel dbSavedModel = fieldModelProcessor.convertToFieldModel(configuration);
         final FieldModel combinedModel = dbSavedModel.fill(fieldModel);
-        return fieldModelProcessor.saveFieldModel(combinedModel);
+        return fieldModelProcessor.performSaveAction(combinedModel);
     }
 
     public String validateConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) throws AlertFieldException {
@@ -131,7 +135,7 @@ public class ConfigActions {
         final ConfigurationModel configurationModel = configurationAccessor.updateConfiguration(id, updatedFields);
         FieldModel dbSavedModel = fieldModelProcessor.convertToFieldModel(configurationModel);
         FieldModel combinedModel = dbSavedModel.fill(fieldModel);
-        return fieldModelProcessor.updateFieldModel(combinedModel);
+        return fieldModelProcessor.performUpdateAction(combinedModel);
     }
 
 }

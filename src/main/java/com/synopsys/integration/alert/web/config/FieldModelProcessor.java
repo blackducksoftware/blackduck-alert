@@ -77,24 +77,24 @@ public class FieldModelProcessor {
         this.fieldModelConverter = fieldModelConverter;
     }
 
-    public FieldModel readFieldModel(final ConfigurationModel configurationModel) throws AlertDatabaseConstraintException {
+    public FieldModel performReadAction(final ConfigurationModel configurationModel) throws AlertDatabaseConstraintException {
         final FieldModel fieldModel = convertToFieldModel(configurationModel);
         final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
         return descriptorActionApi.map(actionApi -> actionApi.readConfig(fieldModel)).orElse(fieldModel);
     }
 
-    public FieldModel deleteFieldModel(final ConfigurationModel configurationModel) throws AlertDatabaseConstraintException {
+    public FieldModel performDeleteAction(final ConfigurationModel configurationModel) throws AlertDatabaseConstraintException {
         final FieldModel fieldModel = convertToFieldModel(configurationModel);
         final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
         return descriptorActionApi.map(actionApi -> actionApi.deleteConfig(fieldModel)).orElse(fieldModel);
     }
 
-    public FieldModel saveFieldModel(final FieldModel fieldModel) {
+    public FieldModel performSaveAction(final FieldModel fieldModel) {
         final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
         return descriptorActionApi.map(actionApi -> actionApi.saveConfig(fieldModel)).orElse(fieldModel);
     }
 
-    public FieldModel updateFieldModel(final FieldModel fieldModel) {
+    public FieldModel performUpdateAction(final FieldModel fieldModel) {
         final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
         return descriptorActionApi.map(actionApi -> actionApi.updateConfig(fieldModel)).orElse(fieldModel);
     }
@@ -126,15 +126,13 @@ public class FieldModelProcessor {
     }
 
     public Collection<ConfigurationFieldModel> fillFieldModelWithExistingData(final Long id, final FieldModel fieldModel) throws AlertException {
-        final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
-        final FieldModel modelToSave = descriptorActionApi.map(actionApi -> actionApi.updateConfig(fieldModel)).orElse(fieldModel);
         final Optional<ConfigurationModel> configurationModel = getSavedEntity(id);
         if (configurationModel.isPresent()) {
-            final Map<String, ConfigurationFieldModel> fieldModels = fieldModelConverter.convertFromFieldModel(modelToSave);
+            final Map<String, ConfigurationFieldModel> fieldModels = fieldModelConverter.convertFromFieldModel(fieldModel);
             return updateConfigurationWithSavedConfiguration(fieldModels, configurationModel.get().getCopyOfFieldList());
         }
 
-        return fieldModelConverter.convertFromFieldModel(modelToSave).values();
+        return fieldModelConverter.convertFromFieldModel(fieldModel).values();
     }
 
     public Optional<Descriptor> retrieveDescriptor(final String descriptorName) {
