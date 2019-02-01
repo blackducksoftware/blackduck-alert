@@ -57,7 +57,7 @@ public class PolarisGlobalUIConfig extends UIConfig {
     }
 
     private Collection<String> validateAPIToken(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-        final String accessToken = fieldToValidate.getValue().orElse(null);
+        final String accessToken = fieldToValidate.getValue().orElse("");
         if (accessToken.length() < 32 || accessToken.length() > 64) {
             return List.of("Invalid Polaris Access Token.");
         }
@@ -65,7 +65,7 @@ public class PolarisGlobalUIConfig extends UIConfig {
     }
 
     private Collection<String> validateTimeout(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-        final String polarisTimeout = fieldToValidate.getValue().orElse(null);
+        final String polarisTimeout = fieldToValidate.getValue().orElse("");
         if (!StringUtils.isNumeric(polarisTimeout) || NumberUtils.toInt(polarisTimeout.trim()) < 0) {
             return List.of("Must be an Integer greater than zero (0).");
         }
