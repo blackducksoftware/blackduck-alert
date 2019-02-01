@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.nio.charset.Charset;
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
@@ -29,12 +30,14 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.web.actions.SystemActions;
+import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.SystemSetupModel;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
 
@@ -230,14 +233,12 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void testSaveWithErrors() {
+    public void testSaveWithErrors() throws Exception {
         final FieldModel model = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, "GLOBAL", Map.of());
         Mockito.when(systemActions.isSystemInitialized()).thenReturn(Boolean.FALSE);
-        Mockito.doAnswer(invocation -> {
-            final Map<String, String> fieldErrors = invocation.getArgument(1);
-            fieldErrors.put("propertyKey", "error");
-            return invocation.getArgument(0);
-        }).when(systemActions).saveRequiredInformation(Mockito.any(FieldModel.class), Mockito.anyMap());
+        final Map<String, String> fieldErrors = new HashMap<>();
+        fieldErrors.put("propertyKey", "error");
+        Mockito.when(systemActions.saveRequiredInformation(Mockito.any(FieldModel.class), Mockito.anyMap())).thenThrow(new AlertFieldException(fieldErrors));
         ResponseFactory responseFactory = new ResponseFactory();
         final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
         final ResponseEntity<String> response = handler.initialSystemSetup(model);
@@ -248,7 +249,23 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void testSave() {
+    public void testSaveThrowsAlertException() throws Exception {
+        final FieldModel model = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, "GLOBAL", Map.of());
+        Mockito.when(systemActions.isSystemInitialized()).thenReturn(Boolean.FALSE);
+        final Map<String, String> fieldErrors = new HashMap<>();
+        fieldErrors.put("propertyKey", "error");
+        Mockito.when(systemActions.saveRequiredInformation(Mockito.any(FieldModel.class), Mockito.anyMap())).thenThrow(new AlertException("Test exception"));
+        ResponseFactory responseFactory = new ResponseFactory();
+        final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
+        final ResponseEntity<String> response = handler.initialSystemSetup(model);
+        Mockito.verify(systemActions).isSystemInitialized();
+        Mockito.verify(systemActions).saveRequiredInformation(Mockito.any(FieldModel.class), Mockito.anyMap());
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    public void testSave() throws Exception {
         final FieldModel model = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, "GLOBAL", Map.of());
         Mockito.when(systemActions.isSystemInitialized()).thenReturn(Boolean.FALSE);
         ResponseFactory responseFactory = new ResponseFactory();

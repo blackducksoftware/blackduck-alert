@@ -43,8 +43,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.web.actions.SystemActions;
-import com.synopsys.integration.alert.web.model.ResponseBodyBuilder;
+import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.SystemMessageModel;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
 
@@ -113,18 +114,15 @@ public class SystemController extends BaseController {
     }
 
     private ResponseEntity<String> saveSystemSettings(final FieldModel model) {
-        final HashMap<String, String> fieldErrors = new HashMap<>();
-        final FieldModel savedConfig = systemActions.saveRequiredInformation(model, fieldErrors);
-        // FIXME this logic is a bit strange. We check to see if field errors is empty then pass the thing that's empty.
-        //  handling the exception that validation normally throws here may be simpler to understand.
-        if (fieldErrors.isEmpty()) {
+        try {
+            final HashMap<String, String> fieldErrors = new HashMap<>();
+            final FieldModel savedConfig = systemActions.saveRequiredInformation(model, fieldErrors);
             return responseFactory.createOkContentResponse(contentConverter.getJsonString(savedConfig));
+        } catch (AlertFieldException ex) {
+            return responseFactory.createFieldErrorResponse(model.getId(), "Invalid System Setup", ex.getFieldErrors());
+        } catch (AlertException ex) {
+            return responseFactory.createBadRequestResponse(model.getId(), ex.getMessage());
         }
-
-        final ResponseBodyBuilder responseBodyBuilder = new ResponseBodyBuilder("Invalid System Setup");
-        responseBodyBuilder.putErrors(fieldErrors);
-        final String responseBody = responseBodyBuilder.build();
-        return responseFactory.createMessageResponse(HttpStatus.BAD_REQUEST, responseBody);
     }
 
 }

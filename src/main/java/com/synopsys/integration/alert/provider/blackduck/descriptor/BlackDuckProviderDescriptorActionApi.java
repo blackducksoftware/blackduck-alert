@@ -106,6 +106,11 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
     }
 
     @Override
+    public FieldModel updateConfig(final FieldModel fieldModel) {
+        return saveConfig(fieldModel);
+    }
+
+    @Override
     public FieldModel saveConfig(final FieldModel fieldModel) {
         systemValidator.validate();
         return super.saveConfig(fieldModel);
