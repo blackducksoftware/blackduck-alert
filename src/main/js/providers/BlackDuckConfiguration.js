@@ -105,7 +105,7 @@ class BlackDuckConfiguration
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_BLACKDUCK_URL)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(KEY_BLACKDUCK_URL)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_BLACKDUCK_URL)]}
+                            errorValue={this.props.fieldErrors[KEY_BLACKDUCK_URL]}
                         />
                         <PasswordInput
                             id={KEY_BLACKDUCK_API_KEY}
@@ -115,7 +115,7 @@ class BlackDuckConfiguration
                             isSet={FieldModelUtil.isFieldModelValueSet(fieldModel, KEY_BLACKDUCK_API_KEY)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(KEY_BLACKDUCK_API_KEY)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_BLACKDUCK_API_KEY)]}
+                            errorValue={this.props.fieldErrors[KEY_BLACKDUCK_API_KEY]}
                         />
                         <NumberInput
                             id={KEY_BLACKDUCK_TIMEOUT}
@@ -124,7 +124,7 @@ class BlackDuckConfiguration
                             value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_BLACKDUCK_TIMEOUT)}
                             onChange={this.handleChange}
                             errorName={FieldModelUtil.createFieldModelErrorKey(KEY_BLACKDUCK_TIMEOUT)}
-                            errorValue={this.props.fieldErrors[FieldModelUtil.createFieldModelErrorKey(KEY_BLACKDUCK_TIMEOUT)]}
+                            errorValue={this.props.fieldErrors[KEY_BLACKDUCK_TIMEOUT]}
                         />
                     </div>
                     <ConfigButtons isFixed={false} includeSave includeTest type="submit" onTestClick={this.handleTest} />

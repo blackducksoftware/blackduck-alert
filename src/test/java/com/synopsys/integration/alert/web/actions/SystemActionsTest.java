@@ -117,7 +117,7 @@ public class SystemActionsTest {
     }
 
     @Test
-    public void testSaveRequiredInformation() {
+    public void testSaveRequiredInformation() throws Exception {
         final SystemActions systemActions = new SystemActions(systemStatusUtility, systemMessageUtility, configActions);
         final String defaultAdminPassword = "defaultPassword";
         final String globalEncryptionPassword = "password";
