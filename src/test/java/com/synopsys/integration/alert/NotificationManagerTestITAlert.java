@@ -20,7 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import com.synopsys.integration.alert.channel.email.EmailChannel;
-import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
@@ -177,7 +177,7 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
         ConfigGroupEntity configGroupEntity = new ConfigGroupEntity(descriptorConfig.getId(), jobId);
         configGroupEntity = configGroupRepository.save(configGroupEntity);
 
-        final DefinedFieldEntity definedFieldEntity = definedFieldRepository.findFirstByKey(CommonDistributionUIConfig.KEY_CHANNEL_NAME).orElse(null);
+        final DefinedFieldEntity definedFieldEntity = definedFieldRepository.findFirstByKey(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).orElse(null);
 
         FieldValueEntity fieldValueEntity = new FieldValueEntity(descriptorConfig.getId(), definedFieldEntity.getId(), EmailChannel.COMPONENT_NAME);
         fieldValueEntity = fieldValueRepository.save(fieldValueEntity);

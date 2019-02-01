@@ -29,44 +29,61 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
+import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
+import com.synopsys.integration.alert.database.api.configuration.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
 import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 
-@Component
-public class CommonDistributionUIConfig {
+public abstract class ChannelDistributionUIConfig extends UIConfig {
     public static final String KEY_NAME = "channel.common.name";
     public static final String KEY_CHANNEL_NAME = "channel.common.channel.name";
     public static final String KEY_PROVIDER_NAME = "channel.common.provider.name";
     public static final String KEY_FREQUENCY = "channel.common.frequency";
-    private final Logger logger = LoggerFactory.getLogger(CommonDistributionUIConfig.class);
-    private final ConfigurationAccessor configurationAccessor;
+    private final Logger logger = LoggerFactory.getLogger(ChannelDistributionUIConfig.class);
+    private final BaseConfigurationAccessor configurationAccessor;
+    private BaseDescriptorAccessor descriptorAccessor;
 
-    @Autowired
-    public CommonDistributionUIConfig(final ConfigurationAccessor configurationAccessor) {
+    public ChannelDistributionUIConfig(final String label, final String urlName, final String fontAwesomeIcon, final BaseConfigurationAccessor configurationAccessor, final BaseDescriptorAccessor descriptorAccessor) {
+        super(label, urlName, fontAwesomeIcon);
         this.configurationAccessor = configurationAccessor;
+        this.descriptorAccessor = descriptorAccessor;
     }
 
-    public List<ConfigField> createCommonConfigFields(final Set<String> channelDescriptors, final Set<String> providerDescriptors) {
+    @Override
+    public List<ConfigField> createFields() {
         final ConfigField name = TextInputConfigField.createRequired(KEY_NAME, "Name");
         final ConfigField frequency = SelectConfigField.createRequired(KEY_FREQUENCY, "Frequency", Arrays.stream(FrequencyType.values()).map(type -> type.getDisplayName()).collect(Collectors.toList()), this::validateJobName);
-        final ConfigField channelName = SelectConfigField.createRequired(KEY_CHANNEL_NAME, "Channel Type", channelDescriptors);
-        final ConfigField providerName = SelectConfigField.createRequired(KEY_PROVIDER_NAME, "Provider Type", providerDescriptors);
+        final ConfigField channelName = SelectConfigField.createRequired(KEY_CHANNEL_NAME, "Channel Type", getDescriptorNames(DescriptorType.CHANNEL));
+        final ConfigField providerName = SelectConfigField.createRequired(KEY_PROVIDER_NAME, "Provider Type", getDescriptorNames(DescriptorType.PROVIDER));
 
-        return List.of(name, channelName, frequency, providerName);
+        final List<ConfigField> configFields = List.of(name, channelName, frequency, providerName);
+        final List<ConfigField> channelDistributionFields = createChannelDistributionFields();
+        return Stream.concat(configFields.stream(), channelDistributionFields.stream()).collect(Collectors.toList());
+    }
+
+    public abstract List<ConfigField> createChannelDistributionFields();
+
+    private Collection<String> getDescriptorNames(DescriptorType descriptorType) {
+        try {
+            return descriptorAccessor.getRegisteredDescriptorsByType(descriptorType).stream().map(RegisteredDescriptorModel::getName).collect(Collectors.toSet());
+        } catch (AlertDatabaseConstraintException e) {
+            logger.error("There was an error when retrieving data from the DB when building fields.");
+        }
+        return Set.of();
     }
 
     private Collection<String> validateJobName(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
@@ -77,7 +94,7 @@ public class CommonDistributionUIConfig {
             try {
                 final List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorName(descriptorName);
                 final Boolean foundDuplicateName = configurations.stream()
-                                                       .map(configurationModel -> configurationModel.getField(CommonDistributionUIConfig.KEY_NAME).orElse(null))
+                                                       .map(configurationModel -> configurationModel.getField(ChannelDistributionUIConfig.KEY_NAME).orElse(null))
                                                        .filter(configurationFieldModel -> (null != configurationFieldModel) && configurationFieldModel.getFieldValue().isPresent())
                                                        .anyMatch(configurationFieldModel -> jobName.equals(configurationFieldModel.getFieldValue().get()));
                 if (foundDuplicateName) {

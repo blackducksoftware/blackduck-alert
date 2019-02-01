@@ -22,7 +22,7 @@ import org.springframework.core.io.ClassPathResource;
 import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.common.configuration.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
@@ -178,11 +178,11 @@ public class MessageContentAggregatorTest extends AlertIntegrationTest {
         final ConfigurationFieldModel projectNamePatternModel = Mockito.mock(ConfigurationFieldModel.class);
         final ConfigurationFieldModel configuredProjectsModel = Mockito.mock(ConfigurationFieldModel.class);
 
-        fieldModelMap.put(CommonDistributionUIConfig.KEY_NAME, nameModel);
-        fieldModelMap.put(CommonDistributionUIConfig.KEY_CHANNEL_NAME, channelModel);
-        fieldModelMap.put(CommonDistributionUIConfig.KEY_PROVIDER_NAME, providerModel);
+        fieldModelMap.put(ChannelDistributionUIConfig.KEY_NAME, nameModel);
+        fieldModelMap.put(ChannelDistributionUIConfig.KEY_CHANNEL_NAME, channelModel);
+        fieldModelMap.put(ChannelDistributionUIConfig.KEY_PROVIDER_NAME, providerModel);
         fieldModelMap.put(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, notificationTypeModel);
-        fieldModelMap.put(CommonDistributionUIConfig.KEY_FREQUENCY, frequencyTypeModel);
+        fieldModelMap.put(ChannelDistributionUIConfig.KEY_FREQUENCY, frequencyTypeModel);
         fieldModelMap.put(ProviderDistributionUIConfig.KEY_FORMAT_TYPE, formatTypeModel);
         fieldModelMap.put(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT, filterByProjectModel);
         fieldModelMap.put(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN, projectNamePatternModel);

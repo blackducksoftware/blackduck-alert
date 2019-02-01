@@ -1,11 +1,11 @@
 package com.synopsys.integration.alert.util;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterEach;
@@ -19,7 +19,11 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.database.DescriptorMocker;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
+import com.synopsys.integration.alert.database.repository.configuration.ConfigGroupRepository;
+import com.synopsys.integration.alert.database.repository.configuration.DescriptorConfigRepository;
+import com.synopsys.integration.alert.database.repository.configuration.FieldValueRepository;
 
 public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
 
@@ -30,18 +34,32 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
     private DescriptorMocker descriptorMocker;
     @Autowired
     private BaseConfigurationAccessor configurationAccessor;
-    private Set<Long> addedConfigurations;
+
+    @Autowired
+    private DescriptorConfigRepository descriptorConfigRepository;
+
+    @Autowired
+    private FieldValueRepository fieldValueRepository;
+
+    @Autowired
+    private ConfigGroupRepository configGroupRepository;
 
     @BeforeEach
-    public void initializeTest() throws AlertDatabaseConstraintException {
-        addedConfigurations = new HashSet<>();
+    @AfterEach
+    public void initializeTest() {
+        configGroupRepository.deleteAllInBatch();
+        descriptorConfigRepository.deleteAllInBatch();
+        fieldValueRepository.deleteAllInBatch();
     }
 
-    @AfterEach
-    public void cleanupDB() throws AlertDatabaseConstraintException {
-        for (final Long id : addedConfigurations) {
-            deleteConfiguration(id);
-        }
+    public ConfigurationJobModel addJob(String descriptorName, String providerName, final Map<String, Collection<String>> fieldsValues) throws AlertDatabaseConstraintException {
+        final Set<ConfigurationFieldModel> fieldModels = fieldsValues
+                                                             .entrySet()
+                                                             .stream()
+                                                             .map(entry -> createConfigurationFieldModel(entry.getKey(), entry.getValue()))
+                                                             .collect(Collectors.toSet());
+        final ConfigurationJobModel configurationJobModel = configurationAccessor.createJob(Set.of(descriptorName, providerName), fieldModels);
+        return configurationJobModel;
     }
 
     public void registerDescriptor(final Descriptor descriptor) {
@@ -63,7 +81,6 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
                                                              .map(entry -> createConfigurationFieldModel(entry.getKey(), entry.getValue()))
                                                              .collect(Collectors.toSet());
         final ConfigurationModel configurationModel = configurationAccessor.createConfiguration(descriptorName, context, fieldModels);
-        addedConfigurations.add(configurationModel.getConfigurationId());
         return configurationModel;
     }
 
@@ -73,9 +90,17 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
         return configurationFieldModel;
     }
 
-    public void deleteConfiguration(final Long id) throws AlertDatabaseConstraintException {
-        if (configurationAccessor.getConfigurationById(id).isPresent()) {
-            configurationAccessor.deleteConfiguration(id);
+    public void deleteConfiguration(final String id) throws AlertDatabaseConstraintException {
+        try {
+            final long longId = Long.parseLong(id);
+            if (configurationAccessor.getConfigurationById(longId).isPresent()) {
+                configurationAccessor.deleteConfiguration(longId);
+            }
+        } catch (NumberFormatException e) {
+            UUID uuid = UUID.fromString(id);
+            if (configurationAccessor.getJobById(uuid).isPresent()) {
+                configurationAccessor.deleteJob(uuid);
+            }
         }
     }
 
@@ -85,10 +110,6 @@ public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
 
     public BaseConfigurationAccessor getConfigurationAccessor() {
         return configurationAccessor;
-    }
-
-    public Set<Long> getAddedConfigurations() {
-        return addedConfigurations;
     }
 
     public List<Descriptor> getDescriptors() {

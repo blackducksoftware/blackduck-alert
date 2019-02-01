@@ -23,7 +23,6 @@ import com.synopsys.integration.blackduck.notification.content.LicenseLimitNotif
 
 public class BlackDuckLicenseLimitCollectorTest {
     private final Gson gson = new Gson();
-    private final JsonExtractor jsonExtractor = new JsonExtractor(gson);
     private final List<MessageContentProcessor> messageContentProcessorList = Arrays.asList(new DefaultMessageContentProcessor(), new DigestMessageContentProcessor());
 
     @Test

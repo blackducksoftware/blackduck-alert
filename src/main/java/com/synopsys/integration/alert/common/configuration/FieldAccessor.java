@@ -40,6 +40,10 @@ public class FieldAccessor {
         this.fields = fields;
     }
 
+    public void addFields(Map<String, ConfigurationFieldModel> newFields) {
+        fields.putAll(newFields);
+    }
+
     public Map<String, ConfigurationFieldModel> getFields() {
         return fields;
     }
