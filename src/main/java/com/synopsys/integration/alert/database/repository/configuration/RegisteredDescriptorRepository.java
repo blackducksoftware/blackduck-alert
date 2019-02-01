@@ -31,7 +31,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.database.entity.configuration.RegisteredDescriptorEntity;
 
 @Component
@@ -50,6 +50,6 @@ public interface RegisteredDescriptorRepository extends JpaRepository<Registered
                        + "INNER JOIN entity.descriptorConfigEntities descriptorConfigEntity ON entity.id = descriptorConfigEntity.descriptorId "
                        + "INNER JOIN descriptorConfigEntity.fieldValueEntities fieldValueEntity ON descriptorConfigEntity.id = fieldValueEntity.configId "
                        + "INNER JOIN fieldValueEntity.definedFieldEntity definedFieldEntity ON definedFieldEntity.id = fieldValueEntity.fieldId "
-                       + "WHERE entity.typeId = ?1 AND definedFieldEntity.key = '" + CommonDistributionUIConfig.KEY_FREQUENCY + "' AND fieldValueEntity.value = ?2")
+                       + "WHERE entity.typeId = ?1 AND definedFieldEntity.key = '" + ChannelDistributionUIConfig.KEY_FREQUENCY + "' AND fieldValueEntity.value = ?2")
     List<RegisteredDescriptorEntity> findByTypeIdAndFrequency(Long descriptorTypeId, String frequency);
 }

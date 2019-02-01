@@ -2,58 +2,86 @@ package com.synopsys.integration.alert.audit.mock;
 
 import java.util.Date;
 
-import org.json.JSONException;
-import org.junit.jupiter.api.Test;
-import org.skyscreamer.jsonassert.JSONAssert;
-
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
+import com.synopsys.integration.alert.mock.model.MockRestModelUtil;
+import com.synopsys.integration.alert.web.audit.AuditJobStatusModel;
 import com.synopsys.integration.alert.web.audit.JobAuditModel;
 
-public class MockJobAuditModel {
-    private final Gson gson = new Gson();
+public class MockJobAuditModel extends MockRestModelUtil<JobAuditModel> {
+    private final String id = "1";
+    private final String configId = "22";
+    private final String name = "name";
+    private final String eventType = "eventType";
     private final String timeAuditCreated = new Date(400).toString();
     private final String timeLastSent = new Date(500).toString();
     private final String status = AuditEntryStatus.SUCCESS.name();
+    private final String errorMessage = "errorMessage";
+    private final String errorStackTrace = "errorStackTrace";
 
-    public JobAuditModel createRestModel() {
-        return new JobAuditModel(timeAuditCreated, timeLastSent, status);
+    public String getConfigId() {
+        return configId;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getEventType() {
+        return eventType;
+    }
+
+    public String getTimeAuditCreated() {
+        return timeAuditCreated;
+    }
+
+    public String getTimeLastSent() {
+        return timeLastSent;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public String getErrorStackTrace() {
+        return errorStackTrace;
+    }
+
+    @Override
+    public JobAuditModel createRestModel() {
+        return new JobAuditModel(id, configId, name, eventType, new AuditJobStatusModel(timeAuditCreated, timeLastSent, status), errorMessage, errorStackTrace);
+    }
+
+    @Override
     public JobAuditModel createEmptyRestModel() {
         return new JobAuditModel();
     }
 
+    @Override
     public String getRestModelJson() {
         final JsonObject json = new JsonObject();
-        json.addProperty("timeAuditCreated", timeAuditCreated);
-        json.addProperty("timeLastSent", timeLastSent);
-        json.addProperty("status", status);
+        json.addProperty("id", id);
+        json.addProperty("configId", configId);
+        json.addProperty("name", name);
+        json.addProperty("eventType", eventType);
 
+        final JsonObject auditInfo = new JsonObject();
+        auditInfo.addProperty("timeAuditCreated", timeAuditCreated);
+        auditInfo.addProperty("timeLastSent", timeLastSent);
+        auditInfo.addProperty("status", status);
+
+        json.add("auditJobStatusModel", auditInfo);
+        json.addProperty("errorMessage", errorMessage);
+        json.addProperty("errorStackTrace", errorStackTrace);
         return json.toString();
     }
 
-    public String getEmptyRestModelJson() {
-        return "{}";
+    @Override
+    public Long getId() {
+        return Long.valueOf(id);
     }
-
-    public void verifyEmptyRestModel() throws JSONException {
-        final String emptyRestModel = createEmptyRestModel().toString();
-        final String json = getEmptyRestModelJson();
-        JSONAssert.assertEquals(emptyRestModel, json, false);
-    }
-
-    public void verifyRestModel() throws JSONException {
-        final String restModel = gson.toJson(createRestModel());
-        final String json = getRestModelJson();
-        JSONAssert.assertEquals(restModel, json, false);
-    }
-
-    @Test
-    public void testConfiguration() throws JSONException {
-        verifyEmptyRestModel();
-        verifyRestModel();
-    }
-
 }

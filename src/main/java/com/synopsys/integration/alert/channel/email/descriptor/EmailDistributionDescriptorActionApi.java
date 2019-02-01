@@ -41,7 +41,7 @@ import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.context.ChannelDistributionDescriptorActionApi;
-import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
@@ -69,10 +69,10 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
         final Set<String> emailAddresses = new HashSet<>();
 
         final Optional<String> filterByProject = fieldAccessor.getString(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT);
-        final Optional<String> providerName = fieldAccessor.getString(CommonDistributionUIConfig.KEY_PROVIDER_NAME);
+        final Optional<String> providerName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
 
         if (providerName.isPresent() && BlackDuckProvider.COMPONENT_NAME.equals(providerName.get())) {
-            Set<BlackDuckProjectEntity> blackDuckProjectEntities = null;
+            Set<BlackDuckProjectEntity> blackDuckProjectEntities;
             if (filterByProject.isPresent() && BooleanUtils.toBoolean(filterByProject.get())) {
                 final Optional<ConfigurationFieldModel> projectField = fieldAccessor.getField(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT);
                 final Set<String> configuredProjects = projectField.map(field -> field.getFieldValues()).orElse(Set.of()).stream().collect(Collectors.toSet());

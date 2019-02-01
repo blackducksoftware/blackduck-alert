@@ -108,7 +108,7 @@ public class AuditEntryActions {
         return Optional.empty();
     }
 
-    public Optional<JobAuditModel> getAuditInfoForJob(final UUID jobId) {
+    public Optional<AuditJobStatusModel> getAuditInfoForJob(final UUID jobId) {
         if (jobId != null) {
             final Optional<AuditEntryEntity> auditEntryEntity = auditEntryRepository.findFirstByCommonConfigIdOrderByTimeLastSentDesc(jobId);
             return auditEntryEntity.map(value -> {
@@ -124,7 +124,7 @@ public class AuditEntryActions {
                 if (null != value.getStatus()) {
                     status = value.getStatus();
                 }
-                return new JobAuditModel(timeCreated, timeLastSent, status);
+                return new AuditJobStatusModel(timeCreated, timeLastSent, status);
             });
         }
         return Optional.empty();
@@ -218,7 +218,7 @@ public class AuditEntryActions {
         AuditEntryStatus overallStatus = null;
         String lastSent = null;
         Date lastSentDate = null;
-        final List<JobModel> jobModels = new ArrayList<>();
+        final List<JobAuditModel> jobAuditModels = new ArrayList<>();
         for (final AuditEntryEntity auditEntryEntity : auditEntryEntities) {
             final UUID commonConfigId = auditEntryEntity.getCommonConfigId();
 
@@ -252,8 +252,8 @@ public class AuditEntryActions {
             if (null != status) {
                 statusDisplayName = status.getDisplayName();
             }
-            final JobAuditModel jobAuditModel = new JobAuditModel(timeCreated, timeLastSent, statusDisplayName);
-            jobModels.add(new JobModel(id, configId, distributionConfigName, eventType, jobAuditModel, errorMessage, errorStackTrace));
+            final AuditJobStatusModel auditJobStatusModel = new AuditJobStatusModel(timeCreated, timeLastSent, statusDisplayName);
+            jobAuditModels.add(new JobAuditModel(id, configId, distributionConfigName, eventType, auditJobStatusModel, errorMessage, errorStackTrace));
         }
         final String id = notificationContentConverter.getContentConverter().getStringValue(notificationContentEntry.getId());
         final NotificationConfig notificationConfig = (NotificationConfig) notificationContentConverter.populateConfigFromEntity(notificationContentEntry);
@@ -262,7 +262,7 @@ public class AuditEntryActions {
         if (null != overallStatus) {
             overallStatusDisplayName = overallStatus.getDisplayName();
         }
-        return new AuditEntryModel(id, notificationConfig, jobModels, overallStatusDisplayName, lastSent);
+        return new AuditEntryModel(id, notificationConfig, jobAuditModels, overallStatusDisplayName, lastSent);
     }
 
     private AuditEntryStatus getWorstStatus(final AuditEntryStatus overallStatus, final AuditEntryStatus currentStatus) {

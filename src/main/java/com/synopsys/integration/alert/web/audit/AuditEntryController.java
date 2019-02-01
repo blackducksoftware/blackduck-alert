@@ -47,9 +47,9 @@ import com.synopsys.integration.exception.IntegrationException;
 @RestController
 @RequestMapping(BaseController.BASE_PATH + "/audit")
 public class AuditEntryController extends BaseController {
-    private AuditEntryActions auditEntryActions;
-    private ContentConverter contentConverter;
-    private ResponseFactory responseFactory;
+    private final AuditEntryActions auditEntryActions;
+    private final ContentConverter contentConverter;
+    private final ResponseFactory responseFactory;
 
     @Autowired
     public AuditEntryController(final AuditEntryActions auditEntryActions, final ContentConverter contentConverter, final ResponseFactory responseFactory) {
@@ -68,7 +68,7 @@ public class AuditEntryController extends BaseController {
     @GetMapping(value = "/{id}")
     public ResponseEntity<String> get(@PathVariable(value = "id") final Long id) {
         final Optional<AuditEntryModel> auditEntryModel = auditEntryActions.get(id);
-        String stringId = contentConverter.getStringValue(id);
+        final String stringId = contentConverter.getStringValue(id);
         if (auditEntryModel.isPresent()) {
             return responseFactory.createOkResponse(stringId, contentConverter.getJsonString(auditEntryModel.get()));
         } else {
@@ -78,8 +78,8 @@ public class AuditEntryController extends BaseController {
 
     @GetMapping(value = "/job/{jobId}")
     public ResponseEntity<String> getAuditInfoForJob(@PathVariable(value = "jobId") final UUID jobId) {
-        final Optional<JobAuditModel> jobAuditModel = auditEntryActions.getAuditInfoForJob(jobId);
-        String jobIdString = jobId.toString();
+        final Optional<AuditJobStatusModel> jobAuditModel = auditEntryActions.getAuditInfoForJob(jobId);
+        final String jobIdString = jobId.toString();
         if (jobAuditModel.isPresent()) {
             return responseFactory.createOkResponse(jobIdString, contentConverter.getJsonString(jobAuditModel.get()));
         } else {
@@ -98,7 +98,7 @@ public class AuditEntryController extends BaseController {
     }
 
     private ResponseEntity<String> resendNotification(final Long notificationId, final UUID commonConfigId) {
-        String stringNotificationId = contentConverter.getStringValue(notificationId);
+        final String stringNotificationId = contentConverter.getStringValue(notificationId);
         try {
             final AlertPagedModel<AuditEntryModel> auditEntries = auditEntryActions.resendNotification(notificationId, commonConfigId);
             return responseFactory.createOkResponse(stringNotificationId, contentConverter.getJsonString(auditEntries));
