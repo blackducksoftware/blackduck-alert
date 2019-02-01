@@ -32,7 +32,6 @@ import com.synopsys.integration.alert.database.api.configuration.model.Configura
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.database.channel.JobConfigReader;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
-import com.synopsys.integration.alert.database.entity.repository.ConfiguredProjectsRepository;
 import com.synopsys.integration.alert.mock.MockConfigurationModelFactory;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
@@ -63,9 +62,6 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
 
     @Autowired
     private ConfigurationAccessor configurationAccessor;
-
-    @Autowired
-    private ConfiguredProjectsRepository configuredProjectsRepository;
 
     private NotificationFilter defaultNotificationFilter;
 
@@ -99,7 +95,6 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
 
     @AfterEach
     public void cleanup() {
-        configuredProjectsRepository.deleteAll();
         descriptorMocker.cleanUpDescriptors();
     }
 
