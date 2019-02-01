@@ -64,8 +64,8 @@ class Details extends Component {
                 configId: entry.configId,
                 name: entry.name,
                 eventType: entry.eventType,
-                timeLastSent: entry.jobAuditModel.timeLastSent,
-                status: entry.jobAuditModel.status
+                timeLastSent: entry.auditJobStatusModel.timeLastSent,
+                status: entry.auditJobStatusModel.status
             };
             return result;
         });

@@ -21,12 +21,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.entity.repository;
+package com.synopsys.integration.alert.web.audit;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.synopsys.integration.alert.web.model.MaskedModel;
 
-import com.synopsys.integration.alert.database.entity.ConfiguredProjectEntity;
+public class AuditJobStatusModel extends MaskedModel {
+    private String timeAuditCreated;
+    private String timeLastSent;
+    private String status;
 
-public interface ConfiguredProjectsRepository extends JpaRepository<ConfiguredProjectEntity, Long> {
-    ConfiguredProjectEntity findByProjectName(final String projectName);
+    public AuditJobStatusModel() {
+    }
+
+    public AuditJobStatusModel(final String timeAuditCreated, final String timeLastSent, final String status) {
+        this.timeAuditCreated = timeAuditCreated;
+        this.timeLastSent = timeLastSent;
+        this.status = status;
+    }
+
+    public String getTimeAuditCreated() {
+        return timeAuditCreated;
+    }
+
+    public String getTimeLastSent() {
+        return timeLastSent;
+    }
+
+    public String getStatus() {
+        return status;
+    }
 }
