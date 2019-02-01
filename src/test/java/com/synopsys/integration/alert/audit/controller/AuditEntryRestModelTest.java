@@ -31,7 +31,7 @@ public class AuditEntryRestModelTest extends RestModelTest<AuditEntryModel> {
     @Override
     public void assertRestModelFieldsFull(final AuditEntryModel restModel) {
         assertEquals(getMockUtil().getNotification(), restModel.getNotification());
-        assertEquals(getMockUtil().getJobModels(), restModel.getJobs());
+        assertEquals(getMockUtil().getJobAuditModels(), restModel.getJobs());
         assertEquals(getMockUtil().getOverallStatus(), restModel.getOverallStatus());
         assertEquals(getMockUtil().getTimeLastSent(), restModel.getLastSent());
         assertEquals(getMockUtil().getId().toString(), restModel.getId());
