@@ -34,6 +34,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.EnumUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,10 +63,10 @@ import com.synopsys.integration.exception.IntegrationException;
 @Component
 public class FieldModelProcessor {
     private static final Logger logger = LoggerFactory.getLogger(FieldModelProcessor.class);
-    private BaseDescriptorAccessor descriptorAccessor;
-    private BaseConfigurationAccessor configurationAccessor;
-    private DescriptorMap descriptorMap;
-    private ConfigurationFieldModelConverter fieldModelConverter;
+    private final BaseDescriptorAccessor descriptorAccessor;
+    private final BaseConfigurationAccessor configurationAccessor;
+    private final DescriptorMap descriptorMap;
+    private final ConfigurationFieldModelConverter fieldModelConverter;
 
     @Autowired
     public FieldModelProcessor(final BaseDescriptorAccessor descriptorAccessor, final BaseConfigurationAccessor configurationAccessor, final DescriptorMap descriptorMap,
@@ -76,30 +77,30 @@ public class FieldModelProcessor {
         this.fieldModelConverter = fieldModelConverter;
     }
 
-    public FieldModel readFieldModel(ConfigurationModel configurationModel) throws AlertDatabaseConstraintException {
-        FieldModel fieldModel = convertToFieldModel(configurationModel);
+    public FieldModel readFieldModel(final ConfigurationModel configurationModel) throws AlertDatabaseConstraintException {
+        final FieldModel fieldModel = convertToFieldModel(configurationModel);
         final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
         return descriptorActionApi.map(actionApi -> actionApi.readConfig(fieldModel)).orElse(fieldModel);
     }
 
-    public FieldModel deleteFieldModel(ConfigurationModel configurationModel) throws AlertDatabaseConstraintException {
+    public FieldModel deleteFieldModel(final ConfigurationModel configurationModel) throws AlertDatabaseConstraintException {
         final FieldModel fieldModel = convertToFieldModel(configurationModel);
         final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
         return descriptorActionApi.map(actionApi -> actionApi.deleteConfig(fieldModel)).orElse(fieldModel);
     }
 
-    public FieldModel saveFieldModel(FieldModel fieldModel) {
+    public FieldModel saveFieldModel(final FieldModel fieldModel) {
         final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
         return descriptorActionApi.map(actionApi -> actionApi.saveConfig(fieldModel)).orElse(fieldModel);
     }
 
-    public FieldModel updateFieldModel(FieldModel fieldModel) {
+    public FieldModel updateFieldModel(final FieldModel fieldModel) {
         final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
         return descriptorActionApi.map(actionApi -> actionApi.updateConfig(fieldModel)).orElse(fieldModel);
     }
 
-    public Map<String, String> validateFieldModel(FieldModel fieldModel) {
-        Map<String, String> fieldErrors = new HashMap<>();
+    public Map<String, String> validateFieldModel(final FieldModel fieldModel) {
+        final Map<String, String> fieldErrors = new HashMap<>();
         final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
         if (descriptorActionApi.isPresent()) {
             final Map<String, ConfigField> configFields = retrieveUIConfigFields(fieldModel.getContext(), fieldModel.getDescriptorName())
@@ -110,7 +111,7 @@ public class FieldModelProcessor {
         return fieldErrors;
     }
 
-    public String testFieldModel(FieldModel fieldModel, String destination) throws IntegrationException {
+    public String testFieldModel(final FieldModel fieldModel, final String destination) throws IntegrationException {
         final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
         if (descriptorActionApi.isPresent()) {
             final DescriptorActionApi descriptorApi = descriptorActionApi.get();
@@ -124,9 +125,9 @@ public class FieldModelProcessor {
         }
     }
 
-    public Collection<ConfigurationFieldModel> fillFieldModelWithExistingData(Long id, FieldModel fieldModel) throws AlertException {
+    public Collection<ConfigurationFieldModel> fillFieldModelWithExistingData(final Long id, final FieldModel fieldModel) throws AlertException {
         final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
-        FieldModel modelToSave = descriptorActionApi.map(actionApi -> actionApi.updateConfig(fieldModel)).orElse(fieldModel);
+        final FieldModel modelToSave = descriptorActionApi.map(actionApi -> actionApi.updateConfig(fieldModel)).orElse(fieldModel);
         final Optional<ConfigurationModel> configurationModel = getSavedEntity(id);
         if (configurationModel.isPresent()) {
             final Map<String, ConfigurationFieldModel> fieldModels = fieldModelConverter.convertFromFieldModel(modelToSave);
@@ -177,7 +178,7 @@ public class FieldModelProcessor {
         fields.put(key, fieldValueModel);
     }
 
-    private List<ConfigField> retrieveUIConfigFields(final String context, String descriptorName) {
+    private List<ConfigField> retrieveUIConfigFields(final String context, final String descriptorName) {
         final ConfigContextEnum descriptorContext = EnumUtils.getEnum(ConfigContextEnum.class, context);
         return retrieveUIConfigFields(descriptorContext, descriptorName);
     }
@@ -204,12 +205,20 @@ public class FieldModelProcessor {
         final Collection<ConfigurationFieldModel> sensitiveFields = savedConfiguration.stream().filter(fieldModel -> fieldModel.isSensitive()).collect(Collectors.toSet());
         for (final ConfigurationFieldModel fieldModel : sensitiveFields) {
             final String key = fieldModel.getFieldKey();
-            if (newConfiguration.containsKey(key)) {
+            if (newConfiguration.containsKey(key) && doesFieldHaveNoValue(newConfiguration.get(key))) {
                 final ConfigurationFieldModel newFieldModel = newConfiguration.get(key);
                 newFieldModel.setFieldValues(fieldModel.getFieldValues());
             }
         }
         return newConfiguration.values();
+    }
+
+    private boolean doesFieldHaveNoValue(final ConfigurationFieldModel configurationFieldModel) {
+        final Collection<String> fieldValues = configurationFieldModel.getFieldValues();
+        if (fieldValues.isEmpty()) {
+            return true;
+        }
+        return fieldValues.stream().allMatch(StringUtils::isBlank);
     }
 
 }
