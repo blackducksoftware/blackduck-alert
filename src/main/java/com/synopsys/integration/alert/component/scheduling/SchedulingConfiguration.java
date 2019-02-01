@@ -33,7 +33,7 @@ public class SchedulingConfiguration extends Configuration {
     public SchedulingConfiguration(final ConfigurationModel configurationModel) {
         super(configurationModel.getCopyOfKeyToFieldMap());
 
-        dailyDigestHourOfDay = getFieldAccessor().getString(SchedulingDescriptor.KEY_DAILY_DIGEST_HOUR_OF_DAY).orElse(null);
+        dailyDigestHourOfDay = getFieldAccessor().getString(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY).orElse(null);
         dataFrequencyDays = getFieldAccessor().getString(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS).orElse(null);
     }
 
