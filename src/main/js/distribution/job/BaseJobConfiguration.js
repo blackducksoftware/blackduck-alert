@@ -33,12 +33,16 @@ const KEY_NAME = "channel.common.name";
 const KEY_CHANNEL_NAME = "channel.common.channel.name";
 const KEY_PROVIDER_NAME = "channel.common.provider.name";
 const KEY_FREQUENCY = "channel.common.frequency";
+const KEY_NOTIFICATION_TYPES = "provider.distribution.notification.types";
+const KEY_FORMAT_TYPE = "provider.distribution.format.type";
 
 const fieldNames = [
     KEY_NAME,
     KEY_CHANNEL_NAME,
     KEY_PROVIDER_NAME,
-    KEY_FREQUENCY
+    KEY_FREQUENCY,
+    KEY_NOTIFICATION_TYPES,
+    KEY_FORMAT_TYPE
 ];
 
 class BaseJobConfiguration extends Component {
@@ -47,7 +51,8 @@ class BaseJobConfiguration extends Component {
         this.state = {
             saving: false,
             success: false,
-            fieldErrors: {}
+            fieldErrors: {},
+            currentConfig: {}
         };
         this.loading = false;
         this.handleChange = this.handleChange.bind(this);
@@ -182,34 +187,36 @@ class BaseJobConfiguration extends Component {
     }
 
     buildJsonBody() {
-        const configuration = Object.assign({}, {
-            id: this.state.id,
-            distributionConfigId: this.state.distributionConfigId,
-            name: this.state.name,
-            providerName: this.state.providerName,
-            distributionType: this.state.distributionType,
-            frequency: this.state.frequency,
-            formatType: this.state.formatType,
-            filterByProject: !this.state.includeAllProjects,
-            notificationTypes: this.state.notificationTypes,
-            configuredProjects: this.state.configuredProjects,
-            projectNamePattern: this.state.projectNamePattern
-        }, this.props.getParentConfiguration());
-        configuration.includeAllProjects = !configuration.filterByProject;
-        if (configuration.notificationTypes && configuration.notificationTypes.length > 0) {
-            configuration.notificationTypes = configuration.notificationTypes;
-        } else {
-            configuration.notificationTypes = null;
-        }
+        // const configuration = Object.assign({}, {
+        //     id: this.state.id,
+        //     distributionConfigId: this.state.distributionConfigId,
+        //     name: this.state.name,
+        //     providerName: this.state.providerName,
+        //     distributionType: this.state.distributionType,
+        //     frequency: this.state.frequency,
+        //     formatType: this.state.formatType,
+        //     filterByProject: !this.state.includeAllProjects,
+        //     notificationTypes: this.state.notificationTypes,
+        //     configuredProjects: this.state.configuredProjects,
+        //     projectNamePattern: this.state.projectNamePattern
+        // }, this.props.getParentConfiguration());
+        // configuration.includeAllProjects = !configuration.filterByProject;
+        // if (configuration.notificationTypes && configuration.notificationTypes.length > 0) {
+        //     configuration.notificationTypes = configuration.notificationTypes;
+        // } else {
+        //     configuration.notificationTypes = null;
+        // }
 
-        const jsonBody = JSON.stringify(configuration);
+        const jsonBody = JSON.stringify(this.state.currentConfig);
         return jsonBody;
     }
 
     handleChange({ target }) {
         const value = target.type === 'checkbox' ? target.checked : target.value;
-        const { name } = target;
-        this.handleStateValues(name, value);
+        const newState = FieldModelUtil.updateFieldModelSingleValue(this.state.currentConfig, target.name, value);
+        this.setState({
+            currentConfig: newState
+        });
     }
 
     handleStateValues(name, value) {
@@ -322,26 +329,26 @@ class BaseJobConfiguration extends Component {
                     <label className="col-sm-3 col-form-label text-right">Format</label>
                     <div className="d-inline-flex flex-column p-2 col-sm-9">
                         <Select
-                            id="formatType"
+                            id={KEY_FORMAT_TYPE}
                             className="typeAheadField"
                             onChange={this.handleFormatChanged}
                             removeSelected
                             options={formatOptions}
                             placeholder="Choose the format for the job"
-                            value={formatOptions.find(option => option.value === this.state.formatType)}
+                            value={formatOptions.find((option) => {
+                                const selectedOption = FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_FORMAT_TYPE);
+                                return option.value === selectedOption;
+                            })}
                         />
-                        {this.state.fieldErrors.formatTypeError && <label className="fieldError" name="formatTypeError">
-                            {this.state.fieldErrors.formatTypeError}
-                        </label>}
                     </div>
                 </div>
                 <div className="form-group">
                     <label className="col-sm-3 col-form-label text-right">Notification Types</label>
                     <div className="d-inline-flex flex-column p-2 col-sm-9">
                         <Select
-                            id="jobType"
+                            id={KEY_NOTIFICATION_TYPES}
                             className="typeAheadField"
-                            onChange={this.handleNotificationChanged}
+                            onChange={this.handleNotificationChanged()}
                             isSearchable
                             isMulti
                             removeSelected
@@ -349,9 +356,6 @@ class BaseJobConfiguration extends Component {
                             placeholder="Choose the notification types"
                             value={configuredNotificationOptions}
                         />
-                        {this.state.fieldErrors.notificationTypesError && <label className="fieldError" name="notificationTypesError">
-                            {this.state.fieldErrors.notificationTypesError}
-                        </label>}
                     </div>
                 </div>
                 {this.props.childContent}
@@ -371,6 +375,7 @@ class BaseJobConfiguration extends Component {
 
     render() {
         const [providerOptions] = this.state;
+        const fieldModel = this.state.currentConfig;
         let selectedProviderOption = null;
         if (providerOptions) {
             selectedProviderOption = providerOptions.find(option => option.value === this.state.providerName);
@@ -390,35 +395,32 @@ class BaseJobConfiguration extends Component {
                     <label className="col-sm-3 col-form-label text-right">Frequency</label>
                     <div className="d-inline-flex flex-column p-2 col-sm-9">
                         <Select
-                            id="jobFrequency"
+                            id={KEY_FREQUENCY}
                             className="typeAheadField"
                             onChange={this.handleFrequencyChanged}
                             isSearchable
                             options={frequencyOptions}
                             placeholder="Choose the frequency"
-                            value={frequencyOptions.find(option => option.value === this.state.frequency)}
+                            value={frequencyOptions.find((option) => {
+                                const selectedOption = FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_FREQUENCY);
+                                return option.value === selectedOption;
+                            })}
                         />
-                        {this.state.fieldErrors.frequencyError && <label className="fieldError" name="frequencyError">
-                            {this.state.fieldErrors.frequencyError}
-                        </label>}
                     </div>
                 </div>
                 <div className="form-group">
                     <label className="col-sm-3 col-form-label text-right">Provider</label>
                     <div className="d-inline-flex flex-column p-2 col-sm-9">
                         <Select
-                            id="providerName"
+                            id={KEY_PROVIDER_NAME}
                             className="typeAheadField"
-                            onChange={this.handleProviderChanged}
+                            onChange={this.handleProviderChanged()}
                             isSearchable
                             options={providerOptions}
                             placeholder="Choose the provider"
                             value={selectedProviderOption}
                             components={{ Option: CustomProviderTypeOptionLabel, SingleValue: CustomProviderTypeLabel }}
                         />
-                        {this.state.fieldErrors.providerNameError && <label className="fieldError" name="providerNameError">
-                            {this.state.fieldErrors.providerNameError}
-                        </label>}
                     </div>
                 </div>
                 {this.renderDistributionForm()}
@@ -449,7 +451,8 @@ BaseJobConfiguration.propTypes = {
     childContent: PropTypes.object.isRequired,
     alertChannelName: PropTypes.string.isRequired,
     currentDistributionComponents: PropTypes.object,
-    projects: PropTypes.arrayOf(PropTypes.any)
+    projects: PropTypes.arrayOf(PropTypes.any),
+    currentConfig: PropTypes.object
 };
 
 BaseJobConfiguration.defaultProps = {
@@ -465,7 +468,8 @@ BaseJobConfiguration.defaultProps = {
     fieldErrors: {},
     distributionConfigId: null,
     currentDistributionComponents: null,
-    projects: []
+    projects: [],
+    currentConfig: {}
 };
 
 const mapDispatchToProps = dispatch => ({
