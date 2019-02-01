@@ -54,10 +54,10 @@ import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class JobConfigActions {
-    private BaseConfigurationAccessor configurationAccessor;
-    private FieldModelProcessor fieldModelProcessor;
-    private ContentConverter contentConverter;
-    private ConfigurationFieldModelConverter modelConverter;
+    private final BaseConfigurationAccessor configurationAccessor;
+    private final FieldModelProcessor fieldModelProcessor;
+    private final ContentConverter contentConverter;
+    private final ConfigurationFieldModelConverter modelConverter;
 
     @Autowired
     public JobConfigActions(final BaseConfigurationAccessor configurationAccessor, final FieldModelProcessor fieldModelProcessor, final ContentConverter contentConverter,
@@ -68,11 +68,11 @@ public class JobConfigActions {
         this.modelConverter = modelConverter;
     }
 
-    public boolean doesJobExist(UUID id) throws AlertDatabaseConstraintException {
+    public boolean doesJobExist(final UUID id) throws AlertDatabaseConstraintException {
         return null != id && configurationAccessor.getJobById(id).isPresent();
     }
 
-    public Optional<JobFieldModel> getJobById(UUID id) throws AlertDatabaseConstraintException {
+    public Optional<JobFieldModel> getJobById(final UUID id) throws AlertDatabaseConstraintException {
         final Optional<ConfigurationJobModel> jobConfiguration = configurationAccessor.getJobById(id);
         if (jobConfiguration.isPresent()) {
             final JobFieldModel jobFieldModel = readJobConfiguration(jobConfiguration.get());
@@ -83,65 +83,65 @@ public class JobConfigActions {
 
     public List<JobFieldModel> getAllJobs() throws AlertDatabaseConstraintException {
         final List<ConfigurationJobModel> allJobs = configurationAccessor.getAllJobs();
-        List<JobFieldModel> jobFieldModels = new LinkedList<>();
-        for (ConfigurationJobModel configurationJobModel : allJobs) {
-            JobFieldModel jobFieldModel = readJobConfiguration(configurationJobModel);
+        final List<JobFieldModel> jobFieldModels = new LinkedList<>();
+        for (final ConfigurationJobModel configurationJobModel : allJobs) {
+            final JobFieldModel jobFieldModel = readJobConfiguration(configurationJobModel);
             jobFieldModels.add(jobFieldModel);
         }
         return jobFieldModels;
     }
 
-    public void deleteJobById(UUID id) throws AlertDatabaseConstraintException {
+    public void deleteJobById(final UUID id) throws AlertDatabaseConstraintException {
         final Optional<ConfigurationJobModel> jobs = configurationAccessor.getJobById(id);
         if (jobs.isPresent()) {
-            ConfigurationJobModel configurationJobModel = jobs.get();
-            for (ConfigurationModel configurationModel : configurationJobModel.getCopyOfConfigurations()) {
-                fieldModelProcessor.deleteFieldModel(configurationModel);
+            final ConfigurationJobModel configurationJobModel = jobs.get();
+            for (final ConfigurationModel configurationModel : configurationJobModel.getCopyOfConfigurations()) {
+                fieldModelProcessor.performDeleteAction(configurationModel);
             }
             configurationAccessor.deleteJob(configurationJobModel.getJobId());
         }
     }
 
-    public JobFieldModel saveJob(JobFieldModel jobFieldModel) throws AlertFieldException, AlertDatabaseConstraintException {
+    public JobFieldModel saveJob(final JobFieldModel jobFieldModel) throws AlertFieldException, AlertDatabaseConstraintException {
         validateJob(jobFieldModel);
-        Set<String> descriptorNames = new HashSet<>();
-        Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
-        for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
+        final Set<String> descriptorNames = new HashSet<>();
+        final Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
+        for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
             descriptorNames.add(fieldModel.getDescriptorName());
             final Collection<ConfigurationFieldModel> savedFieldsModels = modelConverter.convertFromFieldModel(fieldModel).values();
             configurationFieldModels.addAll(savedFieldsModels);
         }
         final ConfigurationJobModel savedJob = configurationAccessor.createJob(descriptorNames, configurationFieldModels);
         final JobFieldModel savedJobFieldModel = convertToJobFieldModel(savedJob);
-        Set<FieldModel> updatedFieldModels = savedJobFieldModel.getFieldModels()
+        final Set<FieldModel> updatedFieldModels = savedJobFieldModel.getFieldModels()
                                                  .stream()
-                                                 .map(fieldModel -> fieldModelProcessor.saveFieldModel(fieldModel))
+                                                 .map(fieldModel -> fieldModelProcessor.performSaveAction(fieldModel))
                                                  .collect(Collectors.toSet());
         savedJobFieldModel.setFieldModels(updatedFieldModels);
         return savedJobFieldModel;
     }
 
-    public JobFieldModel updateJob(UUID id, JobFieldModel jobFieldModel) throws AlertFieldException, AlertException {
+    public JobFieldModel updateJob(final UUID id, final JobFieldModel jobFieldModel) throws AlertFieldException, AlertException {
         validateJob(jobFieldModel);
-        Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
-        for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
+        final Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
+        for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
             final Long fieldModelId = contentConverter.getLongValue(fieldModel.getId());
             final Collection<ConfigurationFieldModel> updatedFieldModels = fieldModelProcessor.fillFieldModelWithExistingData(fieldModelId, fieldModel);
             configurationFieldModels.addAll(updatedFieldModels);
         }
         final ConfigurationJobModel configurationJobModel = configurationAccessor.updateJob(id, configurationFieldModels);
         final JobFieldModel savedJobFieldModel = convertToJobFieldModel(configurationJobModel);
-        Set<FieldModel> updatedFieldModels = savedJobFieldModel.getFieldModels()
+        final Set<FieldModel> updatedFieldModels = savedJobFieldModel.getFieldModels()
                                                  .stream()
-                                                 .map(fieldModel -> fieldModelProcessor.updateFieldModel(fieldModel))
+                                                 .map(fieldModel -> fieldModelProcessor.performUpdateAction(fieldModel))
                                                  .collect(Collectors.toSet());
         savedJobFieldModel.setFieldModels(updatedFieldModels);
         return savedJobFieldModel;
     }
 
-    public String validateJob(JobFieldModel jobFieldModel) throws AlertFieldException {
-        Map<String, String> fieldErrors = new HashMap<>();
-        for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
+    public String validateJob(final JobFieldModel jobFieldModel) throws AlertFieldException {
+        final Map<String, String> fieldErrors = new HashMap<>();
+        for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
             fieldErrors.putAll(fieldModelProcessor.validateFieldModel(fieldModel));
         }
         if (!fieldErrors.isEmpty()) {
@@ -150,10 +150,10 @@ public class JobConfigActions {
         return "Valid";
     }
 
-    public String testJob(JobFieldModel jobFieldModel, String destination) throws IntegrationException {
+    public String testJob(final JobFieldModel jobFieldModel, final String destination) throws IntegrationException {
         validateJob(jobFieldModel);
         FieldModel channelFieldModel = null;
-        for (FieldModel fieldModel : jobFieldModel.getFieldModels()) {
+        for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
             final Optional<Descriptor> descriptor = fieldModelProcessor.retrieveDescriptor(fieldModel.getDescriptorName());
             if (descriptor.filter(foundDescriptor -> DescriptorType.CHANNEL.equals(foundDescriptor.getType())).isPresent()) {
                 channelFieldModel = fieldModel;
@@ -166,18 +166,18 @@ public class JobConfigActions {
         return "No field model of type channel was was sent to test.";
     }
 
-    private JobFieldModel readJobConfiguration(ConfigurationJobModel groupedConfiguration) throws AlertDatabaseConstraintException {
+    private JobFieldModel readJobConfiguration(final ConfigurationJobModel groupedConfiguration) throws AlertDatabaseConstraintException {
         final Set<ConfigurationModel> configurations = groupedConfiguration.getCopyOfConfigurations();
-        Set<FieldModel> constructedFieldModels = new HashSet<>();
-        for (ConfigurationModel configurationModel : configurations) {
-            constructedFieldModels.add(fieldModelProcessor.readFieldModel(configurationModel));
+        final Set<FieldModel> constructedFieldModels = new HashSet<>();
+        for (final ConfigurationModel configurationModel : configurations) {
+            constructedFieldModels.add(fieldModelProcessor.performReadAction(configurationModel));
         }
         return new JobFieldModel(groupedConfiguration.getJobId().toString(), constructedFieldModels);
     }
 
-    private JobFieldModel convertToJobFieldModel(ConfigurationJobModel configurationJobModel) throws AlertDatabaseConstraintException {
-        Set<FieldModel> constructedFieldModels = new HashSet<>();
-        for (ConfigurationModel configurationModel : configurationJobModel.getCopyOfConfigurations()) {
+    private JobFieldModel convertToJobFieldModel(final ConfigurationJobModel configurationJobModel) throws AlertDatabaseConstraintException {
+        final Set<FieldModel> constructedFieldModels = new HashSet<>();
+        for (final ConfigurationModel configurationModel : configurationJobModel.getCopyOfConfigurations()) {
             constructedFieldModels.add(fieldModelProcessor.convertToFieldModel(configurationModel));
         }
         return new JobFieldModel(configurationJobModel.getJobId().toString(), constructedFieldModels);
