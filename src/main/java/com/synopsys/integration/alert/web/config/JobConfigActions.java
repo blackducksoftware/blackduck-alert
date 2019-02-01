@@ -96,7 +96,7 @@ public class JobConfigActions {
         if (jobs.isPresent()) {
             ConfigurationJobModel configurationJobModel = jobs.get();
             for (ConfigurationModel configurationModel : configurationJobModel.getCopyOfConfigurations()) {
-                fieldModelProcessor.deleteFieldModel(configurationModel);
+                fieldModelProcessor.performDeleteAction(configurationModel);
             }
             configurationAccessor.deleteJob(configurationJobModel.getJobId());
         }
@@ -115,7 +115,7 @@ public class JobConfigActions {
         final JobFieldModel savedJobFieldModel = convertToJobFieldModel(savedJob);
         Set<FieldModel> updatedFieldModels = savedJobFieldModel.getFieldModels()
                                                  .stream()
-                                                 .map(fieldModel -> fieldModelProcessor.saveFieldModel(fieldModel))
+                                                 .map(fieldModel -> fieldModelProcessor.performSaveAction(fieldModel))
                                                  .collect(Collectors.toSet());
         savedJobFieldModel.setFieldModels(updatedFieldModels);
         return savedJobFieldModel;
@@ -133,7 +133,7 @@ public class JobConfigActions {
         final JobFieldModel savedJobFieldModel = convertToJobFieldModel(configurationJobModel);
         Set<FieldModel> updatedFieldModels = savedJobFieldModel.getFieldModels()
                                                  .stream()
-                                                 .map(fieldModel -> fieldModelProcessor.updateFieldModel(fieldModel))
+                                                 .map(fieldModel -> fieldModelProcessor.performUpdateAction(fieldModel))
                                                  .collect(Collectors.toSet());
         savedJobFieldModel.setFieldModels(updatedFieldModels);
         return savedJobFieldModel;
@@ -170,7 +170,7 @@ public class JobConfigActions {
         final Set<ConfigurationModel> configurations = groupedConfiguration.getCopyOfConfigurations();
         Set<FieldModel> constructedFieldModels = new HashSet<>();
         for (ConfigurationModel configurationModel : configurations) {
-            constructedFieldModels.add(fieldModelProcessor.readFieldModel(configurationModel));
+            constructedFieldModels.add(fieldModelProcessor.performReadAction(configurationModel));
         }
         return new JobFieldModel(groupedConfiguration.getJobId().toString(), constructedFieldModels);
     }
