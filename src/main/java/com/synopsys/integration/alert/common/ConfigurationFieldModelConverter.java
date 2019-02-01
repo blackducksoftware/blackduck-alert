@@ -41,7 +41,6 @@ import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
-import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 
 @Component
 public class ConfigurationFieldModelConverter {
@@ -82,11 +81,9 @@ public class ConfigurationFieldModelConverter {
         final List<DefinedFieldModel> fieldsForContext = descriptorAccessor.getFieldsForDescriptor(descriptorName, context);
         final Map<String, ConfigurationFieldModel> configurationModels = new HashMap<>();
         for (final DefinedFieldModel definedField : fieldsForContext) {
-            final Optional<FieldValueModel> currentField = fieldModel.getField(definedField.getKey());
-            if (currentField.isPresent()) {
-                Optional<ConfigurationFieldModel> configuredFieldModel = convertFromDefinedFieldModel(definedField, currentField.get().getValues());
-                configuredFieldModel.ifPresent(configurationFieldModel -> configurationModels.put(configurationFieldModel.getFieldKey(), configurationFieldModel));
-            }
+            fieldModel.getField(definedField.getKey())
+                .flatMap(fieldValueModel -> convertFromDefinedFieldModel(definedField, fieldValueModel.getValues()))
+                .ifPresent(configurationFieldModel -> configurationModels.put(configurationFieldModel.getFieldKey(), configurationFieldModel));
         }
 
         return configurationModels;
