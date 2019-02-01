@@ -45,13 +45,11 @@ import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertUpgradeException;
 import com.synopsys.integration.alert.common.provider.Provider;
-import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.common.workflow.TaskManager;
 import com.synopsys.integration.alert.component.scheduling.SchedulingConfiguration;
 import com.synopsys.integration.alert.component.scheduling.SchedulingDescriptor;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
-import com.synopsys.integration.alert.database.security.StringEncryptionConverter;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
@@ -77,7 +75,6 @@ public class StartupManager {
     private final SystemStatusUtility systemStatusUtility;
     private final SystemValidator systemValidator;
     private final BaseConfigurationAccessor configurationAccessor;
-    private final EncryptionUtility encryptionUtility;
     private final UpgradeProcessor upgradeProcessor;
     private final ProxyManager proxyManager;
     private final TaskManager taskManager;
@@ -86,7 +83,7 @@ public class StartupManager {
     public StartupManager(final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
         final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask, final PhoneHomeTask phoneHomeTask, final AlertStartupInitializer alertStartupInitializer,
         final List<ProviderDescriptor> providerDescriptorList, final SystemStatusUtility systemStatusUtility, final SystemValidator systemValidator, final BaseConfigurationAccessor configurationAccessor,
-        final EncryptionUtility encryptionUtility, final UpgradeProcessor upgradeProcessor, final ProxyManager proxyManager, final TaskManager taskManager) {
+        final UpgradeProcessor upgradeProcessor, final ProxyManager proxyManager, final TaskManager taskManager) {
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
         this.dailyTask = dailyTask;
@@ -98,7 +95,6 @@ public class StartupManager {
         this.systemStatusUtility = systemStatusUtility;
         this.systemValidator = systemValidator;
         this.configurationAccessor = configurationAccessor;
-        this.encryptionUtility = encryptionUtility;
         this.upgradeProcessor = upgradeProcessor;
         this.proxyManager = proxyManager;
         this.taskManager = taskManager;
@@ -121,8 +117,6 @@ public class StartupManager {
 
     public void initializeChannelPropertyManagers() {
         try {
-            // manually wire the encryption utility.
-            StringEncryptionConverter.setEncryptionUtility(encryptionUtility);
             alertStartupInitializer.initializeConfigs();
         } catch (final Exception e) {
             logger.error("Error inserting startup values", e);
@@ -176,13 +170,13 @@ public class StartupManager {
         final ConfigurationFieldModel defaultPurgeFrequencyField = ConfigurationFieldModel.create(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS);
         defaultPurgeFrequencyField.setFieldValue(purgeDataFrequencyDays);
 
-        Optional<ConfigurationModel> schedulingConfig = schedulingConfigs.stream().findFirst();
+        final Optional<ConfigurationModel> schedulingConfig = schedulingConfigs.stream().findFirst();
         if (schedulingConfig.isPresent()) {
             final ConfigurationModel globalSchedulingConfig = schedulingConfig.get();
-            List<ConfigurationFieldModel> fields = new ArrayList<>(2);
-            Optional<ConfigurationFieldModel> configuredDailyHour = globalSchedulingConfig.getField(SchedulingDescriptor.KEY_DAILY_DIGEST_HOUR_OF_DAY);
-            Optional<ConfigurationFieldModel> configuredPurgeFrequency = globalSchedulingConfig.getField(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS);
-            boolean updateConfiguration = configuredDailyHour.isEmpty() || configuredPurgeFrequency.isEmpty();
+            final List<ConfigurationFieldModel> fields = new ArrayList<>(2);
+            final Optional<ConfigurationFieldModel> configuredDailyHour = globalSchedulingConfig.getField(SchedulingDescriptor.KEY_DAILY_DIGEST_HOUR_OF_DAY);
+            final Optional<ConfigurationFieldModel> configuredPurgeFrequency = globalSchedulingConfig.getField(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS);
+            final boolean updateConfiguration = configuredDailyHour.isEmpty() || configuredPurgeFrequency.isEmpty();
             if (updateConfiguration) {
                 configuredDailyHour.ifPresentOrElse(fields::add, () -> fields.add(defaultHourOfDayField));
                 configuredPurgeFrequency.ifPresentOrElse(fields::add, () -> fields.add(defaultPurgeFrequencyField));
