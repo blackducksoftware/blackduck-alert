@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
-import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
@@ -62,11 +62,11 @@ public class CommonDistributionConfiguration extends Configuration {
         super(keyToFieldMap);
 
         id = jobUUID;
-        name = getFieldAccessor().getString(CommonDistributionUIConfig.KEY_NAME).orElse(null);
-        channelName = getFieldAccessor().getString(CommonDistributionUIConfig.KEY_CHANNEL_NAME).orElse(null);
-        providerName = getFieldAccessor().getString(CommonDistributionUIConfig.KEY_PROVIDER_NAME).orElse(null);
+        name = getFieldAccessor().getString(ChannelDistributionUIConfig.KEY_NAME).orElse(null);
+        channelName = getFieldAccessor().getString(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).orElse(null);
+        providerName = getFieldAccessor().getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElse(null);
         notificationTypes = getFieldAccessor().getAllStrings(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES).stream().collect(Collectors.toSet());
-        frequencyType = getFieldAccessor().getEnum(CommonDistributionUIConfig.KEY_FREQUENCY, FrequencyType.class).orElse(null);
+        frequencyType = getFieldAccessor().getEnum(ChannelDistributionUIConfig.KEY_FREQUENCY, FrequencyType.class).orElse(null);
         formatType = getFieldAccessor().getEnum(ProviderDistributionUIConfig.KEY_FORMAT_TYPE, FormatType.class).orElse(null);
         filterByProject = getFieldAccessor().getBoolean(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT).orElse(null);
         projectNamePattern = getFieldAccessor().getString(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN).orElse(null);

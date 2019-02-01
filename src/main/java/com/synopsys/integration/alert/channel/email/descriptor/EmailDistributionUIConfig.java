@@ -26,22 +26,26 @@ package com.synopsys.integration.alert.channel.email.descriptor;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 
 @Component
-public class EmailDistributionUIConfig extends UIConfig {
+public class EmailDistributionUIConfig extends ChannelDistributionUIConfig {
 
-    public EmailDistributionUIConfig() {
-        super(EmailDescriptor.EMAIL_LABEL, EmailDescriptor.EMAIL_URL, EmailDescriptor.EMAIL_ICON);
+    @Autowired
+    public EmailDistributionUIConfig(BaseConfigurationAccessor configurationAccessor, BaseDescriptorAccessor descriptorAccessor) {
+        super(EmailDescriptor.EMAIL_LABEL, EmailDescriptor.EMAIL_URL, EmailDescriptor.EMAIL_ICON, configurationAccessor, descriptorAccessor);
     }
 
     @Override
-    public List<ConfigField> createFields() {
+    public List<ConfigField> createChannelDistributionFields() {
         final ConfigField emailAddresses = TextInputConfigField.create(EmailDescriptor.KEY_EMAIL_ADDRESSES, "Email Addresses");
         final ConfigField subjectLine = TextInputConfigField.create(EmailDescriptor.KEY_SUBJECT_LINE, "Subject Line");
         final ConfigField projectOwnerOnly = CheckboxConfigField.create(EmailDescriptor.KEY_PROJECT_OWNER_ONLY, "Project Owner Only");

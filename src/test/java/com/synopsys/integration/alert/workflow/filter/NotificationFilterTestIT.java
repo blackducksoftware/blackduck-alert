@@ -17,9 +17,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.common.configuration.CommonDistributionConfiguration;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
-import com.synopsys.integration.alert.common.descriptor.config.ui.CommonDistributionUIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
@@ -41,7 +42,7 @@ import com.synopsys.integration.alert.workflow.filter.field.JsonExtractor;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 
 public class NotificationFilterTestIT extends AlertIntegrationTest {
-    private static final String TEST_DESCRIPTOR_NAME = "Test Descriptor";
+    private static final String TEST_DESCRIPTOR_NAME = HipChatChannel.COMPONENT_NAME;
     private static final String TEST_DESCRIPTOR_FIELD_KEY = "testFieldKeyForDesc";
     private static final ConfigContextEnum TEST_DESCRIPTOR_FIELD_CONTEXT = ConfigContextEnum.DISTRIBUTION;
 
@@ -70,10 +71,11 @@ public class NotificationFilterTestIT extends AlertIntegrationTest {
     private NotificationFilter defaultNotificationFilter;
 
     @BeforeEach
-    public void init() {
-        final List<ConfigurationFieldModel> fieldList = MockConfigurationModelFactory.createCommonBlackDuckConfigurationFields("Job Name", TEST_DESCRIPTOR_NAME);
+    public void init() throws AlertDatabaseConstraintException {
+        final List<ConfigurationFieldModel> fieldList = MockConfigurationModelFactory.createBlackDuckDistributionFields();
+        fieldList.addAll(MockConfigurationModelFactory.createHipChatDistributionFields());
         final Map<String, ConfigurationFieldModel> fieldMap = MockConfigurationModelFactory.mapFieldKeyToFields(fieldList);
-        fieldMap.get(CommonDistributionUIConfig.KEY_FREQUENCY).setFieldValue(TEST_CONFIG_FREQUENCY.name());
+        fieldMap.get(ChannelDistributionUIConfig.KEY_FREQUENCY).setFieldValue(TEST_CONFIG_FREQUENCY.name());
         fieldMap.get(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES).setFieldValue(TEST_CONFIG_NOTIFICATION_TYPE);
         fieldMap.get(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT).setFieldValue(Boolean.TRUE.toString());
         fieldMap.get(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT).setFieldValue(TEST_CONFIG_PROJECT_NAME);

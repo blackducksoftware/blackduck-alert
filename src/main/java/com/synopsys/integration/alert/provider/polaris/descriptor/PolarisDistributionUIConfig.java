@@ -25,17 +25,22 @@ package com.synopsys.integration.alert.provider.polaris.descriptor;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
-import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
+import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
 
 // TODO exclude for now: @Component
-public class PolarisDistributionUIConfig extends UIConfig {
-    public PolarisDistributionUIConfig() {
-        super(PolarisDescriptor.POLARIS_LABEL, PolarisDescriptor.POLARIS_URL_NAME, PolarisDescriptor.POLARIS_ICON);
+public class PolarisDistributionUIConfig extends ProviderDistributionUIConfig {
+
+    @Autowired
+    public PolarisDistributionUIConfig(PolarisProvider provider) {
+        super(PolarisDescriptor.POLARIS_LABEL, PolarisDescriptor.POLARIS_URL_NAME, PolarisDescriptor.POLARIS_ICON, provider);
     }
 
     @Override
-    public List<ConfigField> createFields() {
+    public List<ConfigField> createProviderDistributionFields() {
         // FIXME implement
         return List.of();
     }
