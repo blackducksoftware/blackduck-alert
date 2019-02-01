@@ -90,7 +90,7 @@ public class ConfigField extends Stringable {
     final Collection<String> validate(final FieldValueModel fieldToValidate, final FieldModel fieldModel, final List<ConfigValidationFunction> validationFunctions) {
         final Collection<String> errors = new LinkedList<>();
         errors.addAll(validateRequiredField(fieldToValidate));
-        final boolean performValidation = errors.isEmpty() && fieldToValidate.hasValues();
+        final boolean performValidation = errors.isEmpty();
         if (performValidation) {
             for (final ConfigValidationFunction validation : validationFunctions) {
                 if (null != validation) {

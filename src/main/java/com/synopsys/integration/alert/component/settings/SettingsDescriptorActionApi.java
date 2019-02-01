@@ -25,9 +25,7 @@ package com.synopsys.integration.alert.component.settings;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -36,7 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.context.NoTestActionApi;
-import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.api.user.UserAccessor;
 import com.synopsys.integration.alert.database.api.user.UserModel;
@@ -56,50 +53,6 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
         this.encryptionUtility = encryptionUtility;
         this.userAccessor = userAccessor;
         this.systemValidator = systemValidator;
-    }
-
-    @Override
-    public void validateConfig(final Map<String, ConfigField> descriptorFields, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
-        super.validateConfig(descriptorFields, fieldModel, fieldErrors);
-        validateLDAPSettings(fieldModel, fieldErrors);
-    }
-
-    private void validateLDAPSettings(final FieldModel fieldModel, final Map<String, String> fieldErrors) {
-        final Optional<FieldValueModel> ldapEnabled = fieldModel.getField(SettingsDescriptor.KEY_LDAP_ENABLED);
-        if (ldapEnabled.isPresent()) {
-            final Boolean isLdapEnabled = Boolean.valueOf(ldapEnabled.get().getValue().orElse("false"));
-            if (isLdapEnabled) {
-                validateRequiredField(SettingsDescriptor.KEY_LDAP_SERVER, fieldModel, fieldErrors, SettingsDescriptor.FIELD_ERROR_LDAP_SERVER_MISSING, (valueModel) -> {
-                    if (StringUtils.isBlank(valueModel.getValue().orElse(""))) {
-                        fieldErrors.put(SettingsDescriptor.KEY_LDAP_SERVER, SettingsDescriptor.FIELD_ERROR_LDAP_SERVER_MISSING);
-                    }
-                    return null;
-                });
-            }
-        }
-    }
-
-    private void validateRequiredField(final String fieldKey, final FieldModel fieldModel, final Map<String, String> fieldErrors, final String fieldMissingMessage, final Function<FieldValueModel, Void> validationFunction) {
-        if (isFieldMissing(fieldKey, fieldModel)) {
-            fieldErrors.put(fieldKey, fieldMissingMessage);
-        } else {
-            validateField(fieldKey, fieldModel, validationFunction);
-        }
-    }
-
-    private boolean isFieldMissing(final String key, final FieldModel fieldModel) {
-        return fieldModel.getField(key).isEmpty();
-    }
-
-    private void validateField(final String fieldKey, final FieldModel fieldModel, final Function<FieldValueModel, Void> validationFunction) {
-        final Optional<FieldValueModel> optionalField = fieldModel.getField(fieldKey);
-        if (optionalField.isPresent()) {
-            final FieldValueModel valueModel = optionalField.get();
-            final boolean validateField = !valueModel.isSet() || valueModel.hasValues();
-            if (validateField) {
-                validationFunction.apply(valueModel);
-            }
-        }
     }
 
     @Override

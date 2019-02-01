@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
@@ -53,9 +54,9 @@ public class SettingsUIConfig extends UIConfig {
         final ConfigField encryptionSalt = PasswordConfigField.createRequired(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, "Encryption Global Salt");
         final ConfigField environmentVariableOverride = CheckboxConfigField.create(SettingsDescriptor.KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE, "Startup Environment Variable Override");
 
-        final ConfigField proxyHost = TextInputConfigField.create(SettingsDescriptor.KEY_PROXY_HOST, "Proxy Host");
-        final ConfigField proxyPort = TextInputConfigField.create(SettingsDescriptor.KEY_PROXY_PORT, "Proxy Port", this::validateProxyHost);
-        final ConfigField proxyUsername = TextInputConfigField.create(SettingsDescriptor.KEY_PROXY_USERNAME, "Proxy Username", this::validateProxyHost);
+        final ConfigField proxyHost = TextInputConfigField.create(SettingsDescriptor.KEY_PROXY_HOST, "Proxy Host", this::validateProxyHost);
+        final ConfigField proxyPort = TextInputConfigField.create(SettingsDescriptor.KEY_PROXY_PORT, "Proxy Port", this::validateProxyPort);
+        final ConfigField proxyUsername = TextInputConfigField.create(SettingsDescriptor.KEY_PROXY_USERNAME, "Proxy Username", this::validateProxyUserName);
         final ConfigField proxyPassword = PasswordConfigField.create(SettingsDescriptor.KEY_PROXY_PASSWORD, "Proxy Password", this::validateProxyPassword);
 
         final ConfigField ldapEnabled = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_ENABLED, "LDAP Enabled");
@@ -78,51 +79,89 @@ public class SettingsUIConfig extends UIConfig {
     }
 
     private Collection<String> validateProxyHost(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-        if (fieldToValidate.hasValues()) {
-            final Optional<FieldValueModel> proxyHost = fieldModel.getField(SettingsDescriptor.KEY_PROXY_HOST);
-            if (proxyHost.isPresent()) {
-                FieldValueModel proxyHostField = proxyHost.get();
-                if (!proxyHostField.hasValues()) {
-                    return List.of(SettingsDescriptor.FIELD_ERROR_PROXY_HOST_MISSING);
+        Collection<String> result = List.of();
+        boolean hostExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_HOST);
+        boolean portExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_PORT);
+        boolean userNameExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_USERNAME);
+        boolean passwordExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_PASSWORD);
+        boolean proxyFieldExists = portExists || passwordExists || userNameExists;
+        if (proxyFieldExists && !hostExists) {
+            result = List.of(SettingsDescriptor.FIELD_ERROR_PROXY_HOST_MISSING);
+        }
+
+        return result;
+    }
+
+    private Collection<String> validateProxyPort(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        Collection<String> result = List.of();
+        boolean portExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_PORT);
+        if (portExists) {
+            Optional<String> proxyPort = fieldToValidate.getValue();
+            String port = proxyPort.orElse("");
+            if (!NumberUtils.isCreatable(port)) {
+                result = List.of(SettingsDescriptor.FIELD_ERROR_PROXY_PORT_INVALID);
+            } else {
+                if (NumberUtils.createInteger(port) <= 1) {
+                    result = List.of(SettingsDescriptor.FIELD_ERROR_PROXY_PORT_INVALID);
                 }
             }
         }
-        return List.of();
+
+        return result;
+    }
+
+    private Collection<String> validateProxyUserName(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        Collection<String> result = List.of();
+        boolean passwordExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_PASSWORD);
+        if (fieldToValidate.hasValues()) {
+            if (passwordExists) {
+                String userValue = fieldToValidate.getValue().orElse("");
+                if (StringUtils.isBlank(userValue)) {
+                    result = List.of(SettingsDescriptor.FIELD_ERROR_PROXY_USER_MISSING);
+                }
+            }
+        } else {
+            if (passwordExists) {
+                result = List.of(SettingsDescriptor.FIELD_ERROR_PROXY_USER_MISSING);
+            }
+        }
+        return result;
     }
 
     private Collection<String> validateProxyPassword(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        Collection<String> result = List.of();
+        boolean userNameExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_USERNAME);
         if (fieldToValidate.hasValues()) {
-            Collection<String> hostValidation = validateProxyHost(fieldToValidate, fieldModel);
-            if (!hostValidation.isEmpty()) {
-                return hostValidation;
+            if (userNameExists) {
+                String passwordValue = fieldToValidate.getValue().orElse("");
+                if (StringUtils.isBlank(passwordValue)) {
+                    result = List.of(SettingsDescriptor.FIELD_ERROR_PROXY_PASSWORD_MISSING);
+                }
             }
-            return validateUserNameExists(fieldModel);
         } else {
-            return validateUserNameExists(fieldModel);
+            if (userNameExists) {
+                result = List.of(SettingsDescriptor.FIELD_ERROR_PROXY_PASSWORD_MISSING);
+            }
         }
+        return result;
     }
 
-    private Collection<String> validateUserNameExists(final FieldModel fieldModel) {
-        final Optional<FieldValueModel> proxyUserName = fieldModel.getField(SettingsDescriptor.KEY_PROXY_USERNAME);
-        if (proxyUserName.isPresent()) {
-            FieldValueModel proxyUserField = proxyUserName.get();
-            if (proxyUserField.hasValues()) {
-                return List.of();
-            }
-        }
-        return List.of(SettingsDescriptor.FIELD_ERROR_PROXY_USER_MISSING);
+    private boolean validateFieldExists(final FieldModel fieldModel, final String fieldKey) {
+        final Optional<String> fieldValue = fieldModel.getFieldValue(fieldKey);
+        return fieldValue.stream().anyMatch(value -> StringUtils.isNotBlank(value));
     }
 
     private Collection<String> validateLDAPServer(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        Collection<String> result = List.of();
         final Optional<FieldValueModel> ldapEnabled = fieldModel.getField(SettingsDescriptor.KEY_LDAP_ENABLED);
         if (ldapEnabled.isPresent()) {
             final Boolean isLdapEnabled = Boolean.valueOf(ldapEnabled.get().getValue().orElse("false"));
             if (isLdapEnabled) {
                 if (!fieldToValidate.hasValues() || StringUtils.isBlank(fieldToValidate.getValue().orElse(""))) {
-                    return List.of(SettingsDescriptor.FIELD_ERROR_LDAP_SERVER_MISSING);
+                    result = List.of(SettingsDescriptor.FIELD_ERROR_LDAP_SERVER_MISSING);
                 }
             }
         }
-        return List.of();
+        return result;
     }
 }
