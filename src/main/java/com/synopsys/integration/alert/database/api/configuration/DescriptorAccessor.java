@@ -52,7 +52,6 @@ import com.synopsys.integration.alert.database.repository.configuration.Register
 
 @Component
 @Transactional
-// TODO think about how we can maintain versions of descriptors through code
 public class DescriptorAccessor implements BaseDescriptorAccessor {
     private final RegisteredDescriptorRepository registeredDescriptorRepository;
     private final DefinedFieldRepository definedFieldRepository;

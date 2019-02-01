@@ -30,14 +30,14 @@ import com.synopsys.integration.alert.web.model.NotificationConfig;
 
 public class AuditEntryModel extends Config {
     private NotificationConfig notification;
-    private List<JobModel> jobs;
+    private List<JobAuditModel> jobs;
     private String overallStatus;
     private String lastSent;
 
     public AuditEntryModel() {
     }
 
-    public AuditEntryModel(final String id, final NotificationConfig notification, final List<JobModel> jobs, final String overallStatus, final String lastSent) {
+    public AuditEntryModel(final String id, final NotificationConfig notification, final List<JobAuditModel> jobs, final String overallStatus, final String lastSent) {
         super(id);
         this.notification = notification;
         this.jobs = jobs;
@@ -49,7 +49,7 @@ public class AuditEntryModel extends Config {
         return notification;
     }
 
-    public List<JobModel> getJobs() {
+    public List<JobAuditModel> getJobs() {
         return jobs;
     }
 
