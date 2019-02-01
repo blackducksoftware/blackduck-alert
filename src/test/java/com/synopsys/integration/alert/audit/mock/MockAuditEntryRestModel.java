@@ -12,14 +12,14 @@ import com.google.gson.reflect.TypeToken;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.mock.model.MockRestModelUtil;
 import com.synopsys.integration.alert.web.audit.AuditEntryModel;
-import com.synopsys.integration.alert.web.audit.JobModel;
+import com.synopsys.integration.alert.web.audit.JobAuditModel;
 import com.synopsys.integration.alert.web.model.NotificationConfig;
 
 public class MockAuditEntryRestModel extends MockRestModelUtil<AuditEntryModel> {
     private final String timeLastSent = new Date(500).toString();
     private final String overallStatus = AuditEntryStatus.SUCCESS.name();
     private final NotificationConfig notification = new NotificationConfig();
-    private final List<JobModel> jobModels = Collections.singletonList(new JobModel());
+    private final List<JobAuditModel> jobAuditModels = Collections.singletonList(new JobAuditModel());
     private final String id = "1";
 
     public String getOverallStatus() {
@@ -30,8 +30,8 @@ public class MockAuditEntryRestModel extends MockRestModelUtil<AuditEntryModel> 
         return notification;
     }
 
-    public List<JobModel> getJobModels() {
-        return jobModels;
+    public List<JobAuditModel> getJobAuditModels() {
+        return jobAuditModels;
     }
 
     public String getTimeLastSent() {
@@ -45,7 +45,7 @@ public class MockAuditEntryRestModel extends MockRestModelUtil<AuditEntryModel> 
 
     @Override
     public AuditEntryModel createRestModel() {
-        return new AuditEntryModel(id, notification, jobModels, overallStatus, timeLastSent);
+        return new AuditEntryModel(id, notification, jobAuditModels, overallStatus, timeLastSent);
     }
 
     @Override
@@ -64,8 +64,8 @@ public class MockAuditEntryRestModel extends MockRestModelUtil<AuditEntryModel> 
         final JsonObject notificationJson = gson.toJsonTree(notification).getAsJsonObject();
         json.add("notification", notificationJson);
 
-        final Type listType = new TypeToken<List<JobModel>>() {}.getType();
-        final JsonArray jobModelJson = gson.toJsonTree(jobModels, listType).getAsJsonArray();
+        final Type listType = new TypeToken<List<JobAuditModel>>() {}.getType();
+        final JsonArray jobModelJson = gson.toJsonTree(jobAuditModels, listType).getAsJsonArray();
         json.add("jobs", jobModelJson);
 
         return json.toString();

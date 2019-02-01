@@ -70,6 +70,10 @@
                 schemaName="ALERT"
                 tableName="NOTIFICATION_TYPES"
         />
+        <dropTable
+                schemaName="ALERT"
+                tableName="CONFIGURED_PROJECTS"
+        />
     </changeSet>
 
     <!-- Remove migration procedures -->
