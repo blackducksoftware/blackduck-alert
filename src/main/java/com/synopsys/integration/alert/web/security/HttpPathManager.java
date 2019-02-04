@@ -50,6 +50,7 @@ public class HttpPathManager {
         "index.html",
         BaseController.BASE_PATH + "/login",
         BaseController.BASE_PATH + "/logout",
+        BaseController.BASE_PATH + "/resetPassword/**",
         BaseController.BASE_PATH + "/about",
         BaseController.BASE_PATH + "/system/messages/latest",
         BaseController.BASE_PATH + "/system/setup/initial"

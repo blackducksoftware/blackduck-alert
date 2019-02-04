@@ -35,25 +35,31 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.component.settings.PasswordResetService;
 import com.synopsys.integration.alert.web.actions.LoginActions;
 import com.synopsys.integration.alert.web.model.LoginConfig;
+import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.LogLevel;
 import com.synopsys.integration.log.PrintStreamIntLogger;
 
 @RestController
-public class LoginController extends BaseController {
+public class AuthenticationController extends BaseController {
     private final LoginActions loginActions;
-    private ResponseFactory responseFactory;
-    private CsrfTokenRepository csrfTokenRepository;
+    private final PasswordResetService passwordResetService;
+    private final ResponseFactory responseFactory;
+    private final CsrfTokenRepository csrfTokenRepository;
 
     @Autowired
-    public LoginController(final LoginActions loginActions, final ResponseFactory responseFactory, final CsrfTokenRepository csrfTokenRepository) {
+    public AuthenticationController(final LoginActions loginActions, final PasswordResetService passwordResetService, final ResponseFactory responseFactory, final CsrfTokenRepository csrfTokenRepository) {
         this.loginActions = loginActions;
+        this.passwordResetService = passwordResetService;
         this.responseFactory = responseFactory;
         this.csrfTokenRepository = csrfTokenRepository;
     }
@@ -89,6 +95,18 @@ public class LoginController extends BaseController {
         } catch (final Exception ex) {
             logger.error(ex.getMessage(), ex);
             return responseFactory.createMessageResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+        }
+    }
+
+    @PostMapping(value = "/resetPassword/{username}")
+    public ResponseEntity<String> resetPassword(@PathVariable final String username) {
+        try {
+            passwordResetService.resetPassword(username);
+            return responseFactory.createOkResponse(null, "Password reset email sent");
+        } catch (final AlertException alertException) {
+            return responseFactory.createBadRequestResponse(null, alertException.getMessage());
+        } catch (final IntegrationException intException) {
+            return responseFactory.createInternalServerErrorResponse(null, intException.getMessage());
         }
     }
 }

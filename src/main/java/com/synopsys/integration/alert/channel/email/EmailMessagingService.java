@@ -63,6 +63,7 @@ public class EmailMessagingService {
         this.emailProperties = emailProperties;
         final String templateDirectoryPath;
         if (StringUtils.isNotBlank(templatesDirectory)) {
+            // TODO this seems wrong:
             templateDirectoryPath = templatesDirectory + "/email";
         } else {
             templateDirectoryPath = System.getProperties().getProperty("user.dir") + "/src/main/resources/email/templates";
