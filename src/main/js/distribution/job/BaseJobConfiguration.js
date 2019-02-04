@@ -8,7 +8,7 @@ import ConfigButtons from 'component/common/ConfigButtons';
 
 import { frequencyOptions } from 'util/distribution-data';
 
-import { getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob } from 'store/actions/distributions';
+import { getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob } from 'store/actions/distributionConfigs';
 import { getDistributionDescriptor } from 'store/actions/descriptors';
 import DescriptorOption from 'component/common/DescriptorOption';
 import * as FieldModelUtil from 'util/fieldModelUtilities';
@@ -162,9 +162,9 @@ class BaseJobConfiguration extends Component {
         }
         const jsonBody = JSON.stringify(this.state.currentConfig);
         if (this.state.currentConfig.id) {
-            this.props.updateDistributionJob(this.props.baseUrl, jsonBody);
+            this.props.updateDistributionJob(jsonBody);
         } else {
-            this.props.saveDistributionJob(this.props.baseUrl, jsonBody);
+            this.props.saveDistributionJob(jsonBody);
         }
     }
 
@@ -178,7 +178,7 @@ class BaseJobConfiguration extends Component {
         }
 
         const jsonBody = JSON.stringify(this.state.currentConfig);
-        this.props.testDistributionJob(this.props.testUrl, jsonBody);
+        this.props.testDistributionJob(jsonBody);
     }
 
     handleChange({ target }) {
@@ -396,8 +396,6 @@ BaseJobConfiguration.propTypes = {
     getDistributionDescriptor: PropTypes.func.isRequired,
     descriptors: PropTypes.arrayOf(PropTypes.object),
     jobs: PropTypes.object,
-    baseUrl: PropTypes.string.isRequired,
-    testUrl: PropTypes.string.isRequired,
     fetching: PropTypes.bool,
     inProgress: PropTypes.bool,
     success: PropTypes.bool,
@@ -418,8 +416,6 @@ BaseJobConfiguration.propTypes = {
 BaseJobConfiguration.defaultProps = {
     descriptors: [],
     jobs: {},
-    baseUrl: '',
-    testUrl: '',
     fetching: false,
     inProgress: false,
     success: false,
@@ -433,10 +429,10 @@ BaseJobConfiguration.defaultProps = {
 };
 
 const mapDispatchToProps = dispatch => ({
-    getDistributionJob: (url, id) => dispatch(getDistributionJob(url, id)),
-    saveDistributionJob: (url, config) => dispatch(saveDistributionJob(url, config)),
-    updateDistributionJob: (url, config) => dispatch(updateDistributionJob(url, config)),
-    testDistributionJob: (url, config) => dispatch(testDistributionJob(url, config)),
+    getDistributionJob: (id) => dispatch(getDistributionJob(id)),
+    saveDistributionJob: (config) => dispatch(saveDistributionJob(config)),
+    updateDistributionJob: (config) => dispatch(updateDistributionJob(config)),
+    testDistributionJob: (config) => dispatch(testDistributionJob(config)),
     getDistributionDescriptor: (provider, channel) => dispatch(getDistributionDescriptor(provider, channel))
 });
 

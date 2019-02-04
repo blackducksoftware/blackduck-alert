@@ -13,6 +13,7 @@ import EditTableCellFormatter from 'component/common/EditTableCellFormatter';
 import JobAddModal from 'distribution/JobAddModal';
 import { logout } from 'store/actions/session';
 import * as DescriptorUtil from 'util/descriptorUtilities';
+import { deleteDistributionJob, fetchDistributionJobs } from '../store/actions/distributions';
 
 /**
  * Selects className based on field value
@@ -127,7 +128,7 @@ class Index extends Component {
             jobConfigTableMessage: 'Loading...',
             inProgress: true
         });
-        this.fetchDistributionJobs();
+        this.props.fetchDistributionJobs();
     }
 
     cancelAutoReload() {
@@ -153,7 +154,7 @@ class Index extends Component {
                 includeAllProjects
                 handleCancel={this.cancelRowSelect}
                 onModalClose={() => {
-                    this.fetchDistributionJobs();
+                    this.props.fetchDistributionJobs();
                     this.startAutoReloadIfConfigured();
                     onModalClose();
                 }}
@@ -174,116 +175,10 @@ class Index extends Component {
             const matchingJobs = jobs.filter(job => dropRowKeys.includes(job.id));
 
             matchingJobs.forEach((job) => {
-                const deleteUrl = `/alert/api/configuration/channel/distribution/${job.distributionType}?id=${job.id}`;
-                fetch(deleteUrl, {
-                    method: 'DELETE',
-                    credentials: 'same-origin',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': this.props.csrfToken
-                    }
-                }).then((response) => {
-                    if (!response.ok) {
-                        response.json().then((json) => {
-                            const jsonErrors = json.errors;
-                            if (jsonErrors) {
-                                const errors = {};
-
-                                Object.keys(jsonErrors).forEach((key) => {
-                                    errors[`${key}Error`] = jsonErrors[key];
-                                });
-                                this.setState({
-                                    errors
-                                });
-                            }
-                            this.setState({
-                                jobConfigTableMessage: json.message
-                            });
-                        });
-                    }
-                }).catch(console.error);
+                this.props.deleteDistributionJob(job);
             });
             next();
         }
-    }
-
-    fetchDistributionJobs() {
-        fetch('/alert/api/configuration/channel/distribution', {
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then((response) => {
-            if (response.ok) {
-                this.setState({ jobConfigTableMessage: '' });
-                response.json().then((jsonArray) => {
-                    const newJobs = [];
-                    if (jsonArray != null && jsonArray.length > 0) {
-                        jsonArray.forEach((item) => {
-                            const jobConfig = {
-                                id: item.id,
-                                distributionConfigId: item.distributionConfigId,
-                                name: item.name,
-                                distributionType: item.distributionType,
-                                providerName: item.providerName,
-                                frequency: item.frequency,
-                                formatType: item.formatType,
-                                notificationTypes: item.notificationTypes,
-                                configuredProjects: item.configuredProjects,
-                                projectNamePattern: item.projectNamePattern
-                            };
-                            const jobConfigWithAuditInfo = this.fetchAuditInfoForJob(jobConfig);
-                            newJobs.push(jobConfigWithAuditInfo);
-                        });
-                    }
-                    this.setState({
-                        jobs: newJobs
-                    });
-                });
-            } else {
-                switch (response.status) {
-                    case 401:
-                    case 403:
-                        this.props.logout();
-                        break;
-                    default:
-                        response.json().then((json) => {
-                            this.setState({ jobConfigTableMessage: json.message });
-                        });
-                }
-            }
-            this.setState({ inProgress: false });
-            this.startAutoReloadIfConfigured();
-        }).catch((error) => {
-            this.startAutoReloadIfConfigured();
-            console.log(error);
-        });
-    }
-
-    fetchAuditInfoForJob(jobConfig) {
-        let lastRan = 'Unknown';
-        let status = 'Unknown';
-        fetch(`/alert/api/audit/job/${jobConfig.distributionConfigId}`, {
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then((response) => {
-            if (response.ok) {
-                response.json().then((jsonObj) => {
-                    if (jsonObj != null) {
-                        lastRan = jsonObj.timeLastSent;
-                        [status] = jsonObj;
-                    }
-                });
-            }
-        }).catch((error) => {
-            console.log(error);
-        });
-        return Object.assign({}, jobConfig, {
-            lastRan,
-            status
-        });
     }
 
     editButtonClicked(currentRowSelected) {
@@ -437,26 +332,25 @@ class Index extends Component {
 }
 
 Index.propTypes = {
-    logout: PropTypes.func.isRequired,
+    deleteDistributionJob: PropTypes.func.isRequired,
+    fetchDistributionJobs: PropTypes.func.isRequired,
     autoRefresh: PropTypes.bool,
-    csrfToken: PropTypes.string,
     descriptors: PropTypes.arrayOf(PropTypes.object)
 };
 
 Index.defaultProps = {
-    csrfToken: null,
     autoRefresh: true,
     descriptors: []
 };
 
 const mapStateToProps = state => ({
-    csrfToken: state.session.csrfToken,
     autoRefresh: state.refresh.autoRefresh,
     descriptors: state.descriptors
 });
 
 const mapDispatchToProps = dispatch => ({
-    logout: () => dispatch(logout())
+    deleteDistributionJob: job => dispatch(deleteDistributionJob(job)),
+    fetchDistributionJobs: () => dispatch(fetchDistributionJobs())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Index);
