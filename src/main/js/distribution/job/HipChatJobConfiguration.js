@@ -182,10 +182,10 @@ HipChatJobConfiguration.defaultProps = {
 };
 
 const mapStateToProps = state => ({
-    jobs: state.distributions.jobs,
-    fieldErrors: state.distributions.error,
-    fetching: state.distributions.fetching,
-    inProgress: state.distributions.inProgress
+    jobs: state.distributionConfigs.jobs,
+    fieldErrors: state.distributionConfigs.error,
+    fetching: state.distributionConfigs.fetching,
+    inProgress: state.distributionConfigs.inProgress
 });
 
 const mapDispatchToProps = dispatch => ({
