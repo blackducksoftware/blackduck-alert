@@ -24,7 +24,6 @@
 package com.synopsys.integration.alert.workflow.filter;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -71,7 +70,7 @@ public class NotificationFilter {
     public Collection<NotificationContent> extractApplicableNotifications(final FrequencyType frequency, final Collection<NotificationContent> notificationList) {
         final List<CommonDistributionConfiguration> unfilteredDistributionConfigs = jobConfigReader.getPopulatedJobConfigs();
         if (unfilteredDistributionConfigs.isEmpty()) {
-            return Collections.emptyList();
+            return List.of();
         }
 
         final List<CommonDistributionConfiguration> distributionConfigs = unfilteredDistributionConfigs
@@ -80,12 +79,12 @@ public class NotificationFilter {
                                                                               .collect(Collectors.toList());
 
         if (distributionConfigs.isEmpty()) {
-            return Collections.emptyList();
+            return List.of();
         }
 
         final Set<String> configuredNotificationTypes = getConfiguredNotificationTypes(distributionConfigs);
         if (configuredNotificationTypes.isEmpty()) {
-            return Collections.emptyList();
+            return List.of();
         }
 
         final List<ProviderContentType> providerContentTypes = getProviderContentTypes();
@@ -112,7 +111,7 @@ public class NotificationFilter {
     public Collection<NotificationContent> extractApplicableNotifications(final Set<ProviderContentType> providerContentTypes, final CommonDistributionConfiguration jobConfiguration, final Collection<NotificationContent> notificationList) {
         final Set<String> configuredNotificationTypes = new HashSet<>(jobConfiguration.getNotificationTypes());
         if (configuredNotificationTypes.isEmpty()) {
-            return Collections.emptyList();
+            return List.of();
         }
 
         final Map<String, List<NotificationContent>> notificationsByType = getNotificationsByType(configuredNotificationTypes, notificationList);
