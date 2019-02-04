@@ -100,7 +100,6 @@ export function deleteDistributionJob(job) {
         const { csrfToken } = getState().session;
         const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, job.id);
         request.then((response) => {
-            debugger;
             if (response.ok) {
                 response.json().then((json) => {
                     dispatch(deletingJobConfigSuccess(json.message));
@@ -137,7 +136,6 @@ export function fetchDistributionJobs() {
                 'Content-Type': 'application/json'
             }
         }).then((response) => {
-            debugger;
             if (response.ok) {
                 response.json().then((jsonArray) => {
                     const newJobs = [];
