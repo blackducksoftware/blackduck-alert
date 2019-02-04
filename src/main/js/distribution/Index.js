@@ -2,18 +2,15 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn } from 'react-bootstrap-table';
-
 import AutoRefresh from 'component/common/AutoRefresh';
 import DescriptorLabel from 'component/common/DescriptorLabel';
 import GroupEmailJobConfiguration from 'distribution/job/GroupEmailJobConfiguration';
 import HipChatJobConfiguration from 'distribution/job/HipChatJobConfiguration';
 import SlackJobConfiguration from 'distribution/job/SlackJobConfiguration';
 import EditTableCellFormatter from 'component/common/EditTableCellFormatter';
-
 import JobAddModal from 'distribution/JobAddModal';
 import { logout } from 'store/actions/session';
-import * as DescriptorUtil from 'util/descriptorUtilities';
-import { deleteDistributionJob, fetchDistributionJobs } from '../store/actions/distributions';
+import { deleteDistributionJob, fetchDistributionJobs } from 'store/actions/distributions';
 
 /**
  * Selects className based on field value
@@ -55,9 +52,6 @@ function frequencyColumnDataFormat(cell) {
 class Index extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            jobs: []
-        };
         this.startAutoReload = this.startAutoReload.bind(this);
         this.startAutoReloadIfConfigured = this.startAutoReloadIfConfigured.bind(this);
         this.cancelAutoReload = this.cancelAutoReload.bind(this);
@@ -71,6 +65,8 @@ class Index extends Component {
         this.saveBtn = this.saveBtn.bind(this);
         this.typeColumnDataFormat = this.typeColumnDataFormat.bind(this);
         this.providerColumnDataFormat = this.providerColumnDataFormat.bind(this);
+
+        this.state = { currentRowSelected: null };
     }
 
     componentDidMount() {
@@ -124,10 +120,6 @@ class Index extends Component {
     }
 
     reloadJobs() {
-        this.setState({
-            jobConfigTableMessage: 'Loading...',
-            inProgress: true
-        });
         this.props.fetchDistributionJobs();
     }
 
@@ -171,7 +163,7 @@ class Index extends Component {
             console.log('Deleting the Job configs');
             // TODO delete the Job configs from the backend
             // dropRowKeys are the Id's of the Job configs
-            const { jobs } = this.state;
+            const { jobs } = this.props;
             const matchingJobs = jobs.filter(job => dropRowKeys.includes(job.id));
 
             matchingJobs.forEach((job) => {
@@ -280,7 +272,7 @@ class Index extends Component {
                     version="4"
                     hover
                     condensed
-                    data={this.state.jobs}
+                    data={this.props.jobs}
                     containerClass="table"
                     insertRow
                     deleteRow
@@ -302,13 +294,13 @@ class Index extends Component {
                     <TableHeaderColumn dataField="" width="48" columnClassName="tableCell" dataFormat={this.editButtonClick} />
                 </BootstrapTable>
 
-                {this.state.inProgress &&
+                {this.props.inProgress &&
                 <div className="progressIcon">
                     <span className="fa fa-spinner fa-pulse" aria-hidden="true" />
                 </div>
                 }
 
-                <p name="jobConfigTableMessage">{this.state.jobConfigTableMessage}</p>
+                <p name="jobConfigTableMessage">{this.props.jobConfigTableMessage}</p>
             </div>
         );
 
@@ -335,7 +327,10 @@ Index.propTypes = {
     deleteDistributionJob: PropTypes.func.isRequired,
     fetchDistributionJobs: PropTypes.func.isRequired,
     autoRefresh: PropTypes.bool,
-    descriptors: PropTypes.arrayOf(PropTypes.object)
+    descriptors: PropTypes.arrayOf(PropTypes.object),
+    inProgress: PropTypes.bool.isRequired,
+    jobs: PropTypes.object.isRequired,
+    jobConfigTableMessage: PropTypes.string.isRequired
 };
 
 Index.defaultProps = {
@@ -345,7 +340,10 @@ Index.defaultProps = {
 
 const mapStateToProps = state => ({
     autoRefresh: state.refresh.autoRefresh,
-    descriptors: state.descriptors
+    descriptors: state.descriptors,
+    inProgress: state.distributions.inProgress,
+    jobs: state.distributions.jobs,
+    jobConfigTableMessage: state.distributions.jobConfigTableMessage
 });
 
 const mapDispatchToProps = dispatch => ({

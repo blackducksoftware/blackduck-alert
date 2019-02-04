@@ -128,10 +128,10 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = state => ({
-    jobs: state.distributions.jobs,
-    fieldErrors: state.distributions.error,
-    fetching: state.distributions.fetching,
-    inProgress: state.distributions.inProgress
+    jobs: state.distributionConfigs.jobs,
+    fieldErrors: state.distributionConfigs.error,
+    fetching: state.distributionConfigs.fetching,
+    inProgress: state.distributionConfigs.inProgress
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(GroupEmailJobConfiguration);

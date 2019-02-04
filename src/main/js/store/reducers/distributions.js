@@ -1,69 +1,51 @@
-import { DISTRIBUTION_JOB_DELETE_ERROR, DISTRIBUTION_JOB_DELETED, DISTRIBUTION_JOB_DELETING, DISTRIBUTION_JOB_FETCH_ERROR_ALL, DISTRIBUTION_JOB_FETCHED_ALL, DISTRIBUTION_JOB_FETCHING_ALL, SERIALIZE } from 'store/actions/types';
+import {
+    DISTRIBUTION_JOB_DELETE_ERROR,
+    DISTRIBUTION_JOB_DELETED,
+    DISTRIBUTION_JOB_DELETING,
+    DISTRIBUTION_JOB_FETCH_ALL_NONE_FOUND,
+    DISTRIBUTION_JOB_FETCH_ERROR_ALL,
+    DISTRIBUTION_JOB_FETCHED_ALL,
+    DISTRIBUTION_JOB_FETCHING_ALL,
+    SERIALIZE
+} from 'store/actions/types';
 
 const initialState = {
-    fetching: false,
     inProgress: false,
-    success: false,
-    jobs: {},
+    jobs: [],
     jobConfigTableMessage: ''
 };
 
 const config = (state = initialState, action) => {
     switch (action.type) {
+        case DISTRIBUTION_JOB_FETCH_ERROR_ALL:
+        case DISTRIBUTION_JOB_FETCH_ALL_NONE_FOUND:
         case DISTRIBUTION_JOB_DELETE_ERROR:
             return Object.assign({}, state, {
-                fetching: false,
                 inProgress: false,
-                success: false,
-                jobConfigTableMessage: action.jobConfigTableMessage,
+                jobConfigTableMessage: action.jobConfigTableMessage
             });
 
+        case DISTRIBUTION_JOB_FETCHED_ALL:
         case DISTRIBUTION_JOB_DELETED:
             return Object.assign({}, state, {
-                fetching: false,
                 inProgress: false,
-                success: false,
                 jobConfigTableMessage: action.jobConfigTableMessage,
-                jobs: {
+                jobs: [
                     ...state.jobs,
                     ...action.jobs
-                }
+                ]
             });
 
         case DISTRIBUTION_JOB_DELETING:
             return Object.assign({}, state, {
-                fetching: false,
-                inProgress: false,
-                success: false,
-                jobConfigTableMessage: action.jobConfigTableMessage,
-            });
-
-        case DISTRIBUTION_JOB_FETCH_ERROR_ALL:
-            return Object.assign({}, state, {
-                fetching: false,
-                inProgress: false,
-                success: false,
-                jobConfigTableMessage: action.jobConfigTableMessage,
-            });
-
-        case DISTRIBUTION_JOB_FETCHED_ALL:
-            return Object.assign({}, state, {
-                fetching: false,
-                inProgress: false,
-                success: false,
-                jobConfigTableMessage: action.jobConfigTableMessage,
-                jobs: {
-                    ...state.jobs,
-                    ...action.jobs
-                }
+                inProgress: true,
+                jobConfigTableMessage: action.jobConfigTableMessage
             });
 
         case DISTRIBUTION_JOB_FETCHING_ALL:
             return Object.assign({}, state, {
-                fetching: false,
                 inProgress: true,
-                success: false,
-                jobConfigTableMessage: '',
+                jobConfigTableMessage: 'Loading...'
             });
 
         case SERIALIZE:
@@ -71,8 +53,7 @@ const config = (state = initialState, action) => {
 
         default:
             return state;
-
     }
-}
+};
 
 export default config;
