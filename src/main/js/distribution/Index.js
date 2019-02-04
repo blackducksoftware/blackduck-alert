@@ -65,6 +65,8 @@ class Index extends Component {
         this.saveBtn = this.saveBtn.bind(this);
         this.typeColumnDataFormat = this.typeColumnDataFormat.bind(this);
         this.providerColumnDataFormat = this.providerColumnDataFormat.bind(this);
+
+        this.state = { currentRowSelected: null };
     }
 
     componentDidMount() {
