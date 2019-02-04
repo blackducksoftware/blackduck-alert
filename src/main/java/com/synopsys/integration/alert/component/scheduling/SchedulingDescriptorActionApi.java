@@ -41,7 +41,7 @@ import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
 @Component
 public class SchedulingDescriptorActionApi extends NoTestActionApi {
 
-    private TaskManager taskManager;
+    private final TaskManager taskManager;
 
     @Autowired
     public SchedulingDescriptorActionApi(final TaskManager taskManager) {
@@ -50,9 +50,9 @@ public class SchedulingDescriptorActionApi extends NoTestActionApi {
 
     @Override
     public FieldModel readConfig(final FieldModel fieldModel) {
-        Optional<Long> accumulatorNextRun = taskManager.getDifferenceToNextRun(BlackDuckAccumulator.TASK_NAME, TimeUnit.SECONDS);
+        final Optional<Long> accumulatorNextRun = taskManager.getDifferenceToNextRun(BlackDuckAccumulator.TASK_NAME, TimeUnit.SECONDS);
         fieldModel.putField(SchedulingDescriptor.KEY_ACCUMULATOR_NEXT_RUN, new FieldValueModel(List.of(accumulatorNextRun.map(value -> String.valueOf(value)).orElse("")), true));
-        fieldModel.putField(SchedulingDescriptor.KEY_DAILY_DIGEST_NEXT_RUN, new FieldValueModel(List.of(taskManager.getNextRunTime(DailyTask.TASK_NAME).orElse("")), true));
+        fieldModel.putField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_NEXT_RUN, new FieldValueModel(List.of(taskManager.getNextRunTime(DailyTask.TASK_NAME).orElse("")), true));
         fieldModel.putField(SchedulingDescriptor.KEY_PURGE_DATA_NEXT_RUN, new FieldValueModel(List.of(taskManager.getNextRunTime(PurgeTask.TASK_NAME).orElse("")), true));
         return fieldModel;
     }
@@ -64,7 +64,7 @@ public class SchedulingDescriptorActionApi extends NoTestActionApi {
 
     @Override
     public FieldModel saveConfig(final FieldModel fieldModel) {
-        final String dailyDigestHourOfDay = fieldModel.getFieldValue(SchedulingDescriptor.KEY_DAILY_DIGEST_HOUR_OF_DAY).orElse("");
+        final String dailyDigestHourOfDay = fieldModel.getFieldValue(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY).orElse("");
         final String purgeDataFrequencyDays = fieldModel.getFieldValue(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS).orElse("");
         final String dailyDigestCron = String.format(DailyTask.CRON_FORMAT, dailyDigestHourOfDay);
         final String purgeDataCron = String.format(PurgeTask.CRON_FORMAT, purgeDataFrequencyDays);
