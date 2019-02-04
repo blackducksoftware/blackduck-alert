@@ -73,7 +73,7 @@ export function getSchedulingConfig() {
     return (dispatch, getState) => {
         dispatch(fetchingSchedulingConfig());
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_SETTINGS);
+        const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_SCHEDULING);
         request.then((response) => {
             if (response.ok) {
                 response.json().then((body) => {
