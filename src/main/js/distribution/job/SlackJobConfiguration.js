@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import TextInput from 'field/input/TextInput';
-import { getDistributionJob } from 'store/actions/distributions';
+import { getDistributionJob } from 'store/actions/distributionConfigs';
 
 import BaseJobConfiguration from 'distribution/job/BaseJobConfiguration';
 import * as FieldModelUtil from 'util/fieldModelUtilities';
