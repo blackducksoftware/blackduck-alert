@@ -120,7 +120,7 @@ class EmailConfiguration extends React.Component {
         super(props);
 
         this.state = {
-            currentEmailConfig: FieldModelUtil.createEmptyFieldModel(fieldNames, DescriptorUtilities.DESCRIPTOR_CONTEXT.GLOBAL, DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_EMAIL)
+            currentEmailConfig: FieldModelUtil.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_EMAIL)
         };
 
         this.handleChange = this.handleChange.bind(this);

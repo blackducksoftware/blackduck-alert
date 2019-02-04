@@ -229,14 +229,14 @@ SchedulingConfiguration.defaultProps = {
     currentConfig: {},
     fieldErrors: {},
     errorMessage: '',
-    updateStatus: '',
+    updateStatus: ''
 };
 
 const mapStateToProps = state => ({
     currentConfig: state.schedulingConfig.config,
     updateStatus: state.schedulingConfig.updateStatus,
     errorMessage: state.schedulingConfig.error.message,
-    fieldErrors: state.schedulingConfig.error.fieldErrors
+    fieldErrors: state.schedulingConfig.error
 });
 
 // Mapping redux actions -> react props
