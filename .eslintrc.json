@@ -6,6 +6,7 @@
     "import"
   ],
   "rules": {
+    "jsx-a11y/label-has-for": 0,
     "function-paren-newline": [
       "error",
       "multiline"

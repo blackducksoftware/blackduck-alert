@@ -133,7 +133,6 @@ export function getDistributionJob(id) {
         if (id) {
             const request = ConfigRequestBuilder.createReadRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, id);
             request.then((response) => {
-                debugger;
                 if (response.ok) {
                     response.json().then((jsonArray) => {
                         if (jsonArray && jsonArray.length > 0) {
@@ -165,7 +164,6 @@ export function saveDistributionJob(config) {
         const { csrfToken } = getState().session;
         const request = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, config);
         request.then((response) => {
-            debugger;
             if (response.ok) {
                 response.json().then((json) => {
                     dispatch(saveJobSuccess(json.message));
@@ -183,7 +181,6 @@ export function updateDistributionJob(config) {
         const { csrfToken } = getState().session;
         const request = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, config.id, config);
         request.then((response) => {
-            debugger;
             if (response.ok) {
                 response.json().then((json) => {
                     dispatch(updateJobSuccess(json.message));
@@ -201,7 +198,6 @@ export function testDistributionJob(config) {
         const { csrfToken } = getState().session;
         const request = ConfigRequestBuilder.createTestRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, config);
         request.then((response) => {
-            debugger;
             if (response.ok) {
                 response.json().then((json) => {
                     dispatch(testJobSuccess(json.message));
