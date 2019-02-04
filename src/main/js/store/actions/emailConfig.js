@@ -11,8 +11,8 @@ import {
 
 import { verifyLoginByStatus } from 'store/actions/session';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
-import * as FieldModelUtil from 'util/fieldModelUtilities';
-import * as DescriptorUtil from 'util/descriptorUtilities';
+import * as FieldModelUtilities from 'util/fieldModelUtilities';
+import * as DescriptorUtilities from 'util/descriptorUtilities';
 
 
 /**
@@ -104,7 +104,7 @@ export function getEmailConfig() {
     return (dispatch, getState) => {
         dispatch(fetchingEmailConfig());
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, DescriptorUtil.DESCRIPTOR_NAME.CHANNEL_EMAIL);
+        const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_EMAIL);
         request.then((response) => {
             if (response.ok) {
                 response.json().then((body) => {
@@ -134,7 +134,7 @@ export function updateEmailConfig(config) {
         request.then((response) => {
             if (response.ok) {
                 response.json().then((data) => {
-                    const updatedConfig = FieldModelUtil.updateFieldModelSingleValue(config, 'id', data.id);
+                    const updatedConfig = FieldModelUtilities.updateFieldModelSingleValue(config, 'id', data.id);
                     dispatch(emailConfigUpdated(updatedConfig, data.message));
                 });
             } else {

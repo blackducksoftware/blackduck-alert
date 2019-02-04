@@ -5,8 +5,8 @@ import TextInput from 'field/input/TextInput';
 import { getDistributionJob } from 'store/actions/distributionConfigs';
 
 import BaseJobConfiguration from 'distribution/job/BaseJobConfiguration';
-import * as FieldModelUtil from 'util/fieldModelUtilities';
-import * as DescriptorUtil from 'util/descriptorUtilities';
+import * as FieldModelUtilities from 'util/fieldModelUtilities';
+import * as DescriptorUtilities from 'util/descriptorUtilities';
 
 const KEY_WEBHOOK = 'channel.slack.webhook';
 const KEY_CHANNEL_NAME = 'channel.slack.channel.name';
@@ -24,7 +24,7 @@ class SlackJobConfiguration extends Component {
         this.handleChange = this.handleChange.bind(this);
         this.getConfiguration = this.getConfiguration.bind(this);
         this.state = {
-            currentConfig: FieldModelUtil.createEmptyFieldModel(fieldNames, DescriptorUtil.CONTEXT_TYPE.DISTRIBUTION, DescriptorUtil.DESCRIPTOR_NAME.CHANNEL_SLACK)
+            currentConfig: FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_SLACK)
         };
         this.loading = false;
     }
@@ -57,7 +57,7 @@ class SlackJobConfiguration extends Component {
 
     handleChange({ target }) {
         const value = target.type === 'checkbox' ? target.checked : target.value;
-        const newState = FieldModelUtil.updateFieldModelSingleValue(this.state.currentConfig, target.name, value);
+        const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, target.name, value);
         this.setState({
             currentConfig: newState
         });
@@ -71,34 +71,34 @@ class SlackJobConfiguration extends Component {
                     id={KEY_WEBHOOK}
                     label="Webhook"
                     name={KEY_WEBHOOK}
-                    value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_WEBHOOK)}
+                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_WEBHOOK)}
                     onChange={this.handleChange}
-                    errorName={FieldModelUtil.createFieldModelErrorKey(KEY_WEBHOOK)}
+                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_WEBHOOK)}
                     errorValue={this.props.fieldErrors[KEY_WEBHOOK]}
                 />
                 <TextInput
                     id={KEY_CHANNEL_NAME}
                     label="Channel Name"
                     name={KEY_CHANNEL_NAME}
-                    value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_CHANNEL_NAME)}
+                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_CHANNEL_NAME)}
                     onChange={this.handleChange}
-                    errorName={FieldModelUtil.createFieldModelErrorKey(KEY_CHANNEL_NAME)}
+                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_CHANNEL_NAME)}
                     errorValue={this.props.fieldErrors[KEY_CHANNEL_NAME]}
                 />
                 <TextInput
                     id={KEY_CHANNEL_USERNAME}
                     label="Channel Username"
                     name={KEY_CHANNEL_USERNAME}
-                    value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_CHANNEL_USERNAME)}
+                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_CHANNEL_USERNAME)}
                     onChange={this.handleChange}
-                    errorName={FieldModelUtil.createFieldModelErrorKey(KEY_CHANNEL_USERNAME)}
+                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_CHANNEL_USERNAME)}
                     errorValue={this.props.fieldErrors[KEY_CHANNEL_USERNAME]}
                 />
             </div>);
         return (<BaseJobConfiguration
             baseUrl={this.props.baseUrl}
             testUrl={this.props.testUrl}
-            alertChannelName={DescriptorUtil.DESCRIPTOR_NAME.CHANNEL_SLACK}
+            alertChannelName={DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_SLACK}
             distributionConfigId={this.props.distributionConfigId}
             handleCancel={this.props.handleCancel}
             handleSaveBtnClick={this.props.handleSaveBtnClick}
@@ -124,8 +124,8 @@ SlackJobConfiguration.propTypes = {
 SlackJobConfiguration.defaultProps = {
     jobs: {},
     distributionConfigId: null,
-    baseUrl: `/alert/api/configuration/channel/distribution/${DescriptorUtil.DESCRIPTOR_NAME.CHANNEL_SLACK}`,
-    testUrl: `/alert/api/configuration/channel/distribution/${DescriptorUtil.DESCRIPTOR_NAME.CHANNEL_SLACK}/test`,
+    baseUrl: `/alert/api/configuration/channel/distribution/${DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_SLACK}`,
+    testUrl: `/alert/api/configuration/channel/distribution/${DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_SLACK}/test`,
     fieldErrors: {},
     fetching: false,
     inProgress: false

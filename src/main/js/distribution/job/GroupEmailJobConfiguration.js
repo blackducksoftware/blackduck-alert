@@ -5,8 +5,8 @@ import TextInput from 'field/input/TextInput';
 import BaseJobConfiguration from 'distribution/job/BaseJobConfiguration';
 import { getDistributionJob } from 'store/actions/distributionConfigs';
 import CheckboxInput from 'field/input/CheckboxInput';
-import * as FieldModelUtil from 'util/fieldModelUtilities';
-import * as DescriptorUtil from 'util/descriptorUtilities';
+import * as FieldModelUtilities from 'util/fieldModelUtilities';
+import * as DescriptorUtilities from 'util/descriptorUtilities';
 
 const KEY_SUBJECT_LINE = 'email.subject.line';
 const KEY_PROJECT_OWNER_ONLY = 'project.owner.only';
@@ -24,7 +24,7 @@ class GroupEmailJobConfiguration extends Component {
         this.handleChange = this.handleChange.bind(this);
         this.getConfiguration = this.getConfiguration.bind(this);
         this.state = {
-            currentConfig: FieldModelUtil.createEmptyFieldModel(fieldNames, DescriptorUtil.CONTEXT_TYPE.DISTRIBUTION, DescriptorUtil.DESCRIPTOR_NAME.CHANNEL_EMAIL)
+            currentConfig: FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_EMAIL)
         };
         this.loading = false;
     }
@@ -52,13 +52,13 @@ class GroupEmailJobConfiguration extends Component {
 
     getConfiguration() {
         return Object.assign({}, this.state, {
-            distributionType: DescriptorUtil.DESCRIPTOR_NAME.CHANNEL_EMAIL
+            distributionType: DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_EMAIL
         });
     }
 
     handleChange({ target }) {
         const value = target.type === 'checkbox' ? target.checked : target.value;
-        const newState = FieldModelUtil.updateFieldModelSingleValue(this.state.currentConfig, target.name, value);
+        const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, target.name, value);
         this.setState({
             currentConfig: newState
         });
@@ -71,18 +71,18 @@ class GroupEmailJobConfiguration extends Component {
                     id={KEY_SUBJECT_LINE}
                     label="Subject Line"
                     name={KEY_SUBJECT_LINE}
-                    value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_SUBJECT_LINE)}
+                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_SUBJECT_LINE)}
                     onChange={this.handleChange}
-                    errorName={FieldModelUtil.createFieldModelErrorKey(KEY_SUBJECT_LINE)}
+                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_SUBJECT_LINE)}
                     errorValue={this.props.fieldErrors[KEY_SUBJECT_LINE]}
                 />
                 <CheckboxInput
                     id={KEY_PROJECT_OWNER_ONLY}
                     label="Project Owner Only"
                     name={KEY_PROJECT_OWNER_ONLY}
-                    isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, KEY_PROJECT_OWNER_ONLY)}
+                    isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, KEY_PROJECT_OWNER_ONLY)}
                     onChange={this.handleChange}
-                    errorName={FieldModelUtil.createFieldModelErrorKey(KEY_PROJECT_OWNER_ONLY)}
+                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_PROJECT_OWNER_ONLY)}
                     errorValue={this.props.fieldErrors[KEY_PROJECT_OWNER_ONLY]}
                 />
             </div>);
@@ -116,8 +116,8 @@ GroupEmailJobConfiguration.propTypes = {
 GroupEmailJobConfiguration.defaultProps = {
     jobs: {},
     distributionConfigId: null,
-    baseUrl: `/alert/api/configuration/channel/distribution/${DescriptorUtil.DESCRIPTOR_NAME.CHANNEL_EMAIL}`,
-    testUrl: `/alert/api/configuration/channel/distribution/${DescriptorUtil.DESCRIPTOR_NAME.CHANNEL_EMAIL}/test`,
+    baseUrl: `/alert/api/configuration/channel/distribution/${DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_EMAIL}`,
+    testUrl: `/alert/api/configuration/channel/distribution/${DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_EMAIL}/test`,
     fieldErrors: {},
     fetching: false,
     inProgress: false

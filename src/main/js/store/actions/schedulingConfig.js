@@ -3,8 +3,8 @@ import { SCHEDULING_CONFIG_FETCH_ERROR, SCHEDULING_CONFIG_FETCHED, SCHEDULING_CO
 import { verifyLoginByStatus } from 'store/actions/session';
 
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
-import * as FieldModelUtil from 'util/fieldModelUtilities';
-import * as DescriptorUtil from 'util/descriptorUtilities';
+import * as FieldModelUtilities from 'util/fieldModelUtilities';
+import * as DescriptorUtilities from 'util/descriptorUtilities';
 
 /**
  * Triggers Scheduling Config Fetching reducer
@@ -73,7 +73,7 @@ export function getSchedulingConfig() {
     return (dispatch, getState) => {
         dispatch(fetchingSchedulingConfig());
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, DescriptorUtil.DESCRIPTOR_NAME.COMPONENT_SETTINGS);
+        const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_SETTINGS);
         request.then((response) => {
             if (response.ok) {
                 response.json().then((body) => {
@@ -99,7 +99,7 @@ export function updateSchedulingConfig(config) {
         request.then((response) => {
             if (response.ok) {
                 response.json().then((data) => {
-                    const updatedConfig = FieldModelUtil.updateFieldModelSingleValue(config, 'id', data.id);
+                    const updatedConfig = FieldModelUtilities.updateFieldModelSingleValue(config, 'id', data.id);
                     dispatch(schedulingConfigUpdated(updatedConfig));
                 }).then(() => dispatch(getSchedulingConfig()));
             } else {

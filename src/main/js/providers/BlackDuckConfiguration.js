@@ -7,8 +7,8 @@ import TextInput from 'field/input/TextInput';
 import ConfigButtons from 'component/common/ConfigButtons';
 
 import { getConfig, testConfig, updateConfig } from 'store/actions/blackduck';
-import * as FieldModelUtil from 'util/fieldModelUtilities';
-import * as DescriptorUtil from 'util/descriptorUtilities';
+import * as FieldModelUtilities from 'util/fieldModelUtilities';
+import * as DescriptorUtilities from 'util/descriptorUtilities';
 
 const KEY_BLACKDUCK_URL = 'blackduck.url';
 const KEY_BLACKDUCK_API_KEY = 'blackduck.api.key';
@@ -28,7 +28,7 @@ class BlackDuckConfiguration
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTest = this.handleTest.bind(this);
-        let fieldModel = FieldModelUtil.createEmptyFieldModel(fieldNames, DescriptorUtil.CONTEXT_TYPE.GLOBAL, DescriptorUtil.DESCRIPTOR_NAME.PROVIDER_BLACKDUCK);
+        let fieldModel = FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, DescriptorUtilities.DESCRIPTOR_NAME.PROVIDER_BLACKDUCK);
         fieldModel = this.updateDefaults(fieldModel);
         this.state = {
             currentConfig: fieldModel
@@ -41,7 +41,7 @@ class BlackDuckConfiguration
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.props.currentConfig !== prevProps.currentConfig && (this.props.updateStatus === 'FETCHED' || this.props.updateStatus === 'UPDATED')) {
-            let fieldModel = FieldModelUtil.checkModelOrCreateEmpty(this.props.currentConfig, fieldNames);
+            let fieldModel = FieldModelUtilities.checkModelOrCreateEmpty(this.props.currentConfig, fieldNames);
             fieldModel = this.updateDefaults(fieldModel);
             this.setState({
                 currentConfig: fieldModel
@@ -51,9 +51,9 @@ class BlackDuckConfiguration
 
     updateDefaults(fieldModel) {
         let currentFieldModel = fieldModel;
-        const currentTimeout = FieldModelUtil.getFieldModelSingleValue(currentFieldModel, KEY_BLACKDUCK_TIMEOUT);
+        const currentTimeout = FieldModelUtilities.getFieldModelSingleValue(currentFieldModel, KEY_BLACKDUCK_TIMEOUT);
         if (!currentTimeout) {
-            currentFieldModel = FieldModelUtil.updateFieldModelSingleValue(currentFieldModel, KEY_BLACKDUCK_TIMEOUT, 300);
+            currentFieldModel = FieldModelUtilities.updateFieldModelSingleValue(currentFieldModel, KEY_BLACKDUCK_TIMEOUT, 300);
         }
         return currentFieldModel;
     }
@@ -61,7 +61,7 @@ class BlackDuckConfiguration
 
     handleChange({ target }) {
         const value = target.type === 'checkbox' ? target.checked : target.value;
-        const newState = FieldModelUtil.updateFieldModelSingleValue(this.state.currentConfig, target.name, value);
+        const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, target.name, value);
         this.setState({
             currentConfig: newState
         });
@@ -102,28 +102,28 @@ class BlackDuckConfiguration
                             id={KEY_BLACKDUCK_URL}
                             label="Url"
                             name={KEY_BLACKDUCK_URL}
-                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_BLACKDUCK_URL)}
+                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_BLACKDUCK_URL)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(KEY_BLACKDUCK_URL)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_BLACKDUCK_URL)}
                             errorValue={this.props.fieldErrors[KEY_BLACKDUCK_URL]}
                         />
                         <PasswordInput
                             id={KEY_BLACKDUCK_API_KEY}
                             label="API Token"
                             name={KEY_BLACKDUCK_API_KEY}
-                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_BLACKDUCK_API_KEY)}
-                            isSet={FieldModelUtil.isFieldModelValueSet(fieldModel, KEY_BLACKDUCK_API_KEY)}
+                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_BLACKDUCK_API_KEY)}
+                            isSet={FieldModelUtilities.isFieldModelValueSet(fieldModel, KEY_BLACKDUCK_API_KEY)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(KEY_BLACKDUCK_API_KEY)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_BLACKDUCK_API_KEY)}
                             errorValue={this.props.fieldErrors[KEY_BLACKDUCK_API_KEY]}
                         />
                         <NumberInput
                             id={KEY_BLACKDUCK_TIMEOUT}
                             label="Timeout"
                             name={KEY_BLACKDUCK_TIMEOUT}
-                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_BLACKDUCK_TIMEOUT)}
+                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_BLACKDUCK_TIMEOUT)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(KEY_BLACKDUCK_TIMEOUT)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_BLACKDUCK_TIMEOUT)}
                             errorValue={this.props.fieldErrors[KEY_BLACKDUCK_TIMEOUT]}
                         />
                     </div>

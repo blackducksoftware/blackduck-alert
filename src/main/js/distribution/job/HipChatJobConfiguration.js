@@ -8,7 +8,7 @@ import { getDistributionJob } from 'store/actions/distributionConfigs';
 
 import BaseJobConfiguration from 'distribution/job/BaseJobConfiguration';
 import * as FieldModelUtil from 'util/fieldModelUtilities';
-import * as DescriptorUtil from 'util/descriptorUtilities';
+import * as DescriptorUtilities from 'util/descriptorUtilities';
 
 const KEY_ROOM_ID = 'channel.hipchat.room.id';
 const KEY_NOTIFY = 'channel.hipchat.notify';
@@ -28,7 +28,7 @@ class HipChatJobConfiguration extends Component {
         this.getConfiguration = this.getConfiguration.bind(this);
         this.createSingleSelectHandler = this.createSingleSelectHandler.bind(this);
         this.state = {
-            currentConfig: FieldModelUtil.createEmptyFieldModel(fieldNames, DescriptorUtil.CONTEXT_TYPE.DISTRIBUTION, DescriptorUtil.DESCRIPTOR_NAME.CHANNEL_HIPCHAT)
+            currentConfig: FieldModelUtil.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_HIPCHAT)
         };
         this.loading = false;
     }
@@ -58,7 +58,7 @@ class HipChatJobConfiguration extends Component {
 
     getConfiguration() {
         return Object.assign({}, this.state, {
-            distributionType: DescriptorUtil.DESCRIPTOR_NAME.CHANNEL_HIPCHAT
+            distributionType: DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_HIPCHAT
         });
     }
 
@@ -166,8 +166,8 @@ HipChatJobConfiguration.propTypes = {
 HipChatJobConfiguration.defaultProps = {
     jobs: {},
     distributionConfigId: null,
-    baseUrl: `/alert/api/configuration/channel/distribution/${DescriptorUtil.DESCRIPTOR_NAME.CHANNEL_HIPCHAT}`,
-    testUrl: `/alert/api/configuration/channel/distribution/${DescriptorUtil.DESCRIPTOR_NAME.CHANNEL_HIPCHAT}/test`,
+    baseUrl: `/alert/api/configuration/channel/distribution/${DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_HIPCHAT}`,
+    testUrl: `/alert/api/configuration/channel/distribution/${DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_HIPCHAT}/test`,
     colorOptions: [
         { label: 'Yellow', value: 'yellow' },
         { label: 'Green', value: 'green' },

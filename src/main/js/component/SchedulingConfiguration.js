@@ -9,7 +9,7 @@ import ConfigButtons from 'component/common/ConfigButtons';
 
 import { dailyDigestOptions, purgeOptions } from 'util/scheduling-data';
 import * as FieldModelUtil from 'util/fieldModelUtilities';
-import * as DescriptorUtil from 'util/descriptorUtilities';
+import * as DescriptorUtilities from 'util/descriptorUtilities';
 
 const KEY_DAILY_DIGEST_HOUR_OF_DAY = 'scheduling.daily.digest.hour';
 const KEY_PURGE_DATA_FREQUENCY_DAYS = 'scheduling.purge.data.frequency';
@@ -24,7 +24,7 @@ class SchedulingConfiguration extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            currentConfig: FieldModelUtil.createEmptyFieldModel(fieldNames, DescriptorUtil.CONTEXT_TYPE.GLOBAL, DescriptorUtil.DESCRIPTOR_NAME.COMPONENT_SCHEDULING)
+            currentConfig: FieldModelUtil.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_SCHEDULING)
         };
         this.decreaseAccumulatorTime = this.decreaseAccumulatorTime.bind(this);
         this.handleDailyDigestChanged = this.handleDailyDigestChanged.bind(this);
