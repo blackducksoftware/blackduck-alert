@@ -2,7 +2,7 @@ import { DISTRIBUTION_JOB_DELETE_ERROR, DISTRIBUTION_JOB_DELETED, DISTRIBUTION_J
 
 const initialState = {
     inProgress: false,
-    jobs: {},
+    jobs: [],
     jobConfigTableMessage: ''
 };
 
@@ -18,10 +18,10 @@ const config = (state = initialState, action) => {
             return Object.assign({}, state, {
                 inProgress: false,
                 jobConfigTableMessage: action.jobConfigTableMessage,
-                jobs: {
+                jobs: [
                     ...state.jobs,
                     ...action.jobs
-                }
+                ]
             });
 
         case DISTRIBUTION_JOB_DELETING:
@@ -40,10 +40,10 @@ const config = (state = initialState, action) => {
             return Object.assign({}, state, {
                 inProgress: false,
                 jobConfigTableMessage: action.jobConfigTableMessage,
-                jobs: {
+                jobs: [
                     ...state.jobs,
                     ...action.jobs
-                }
+                ]
             });
 
         case DISTRIBUTION_JOB_FETCHING_ALL:
