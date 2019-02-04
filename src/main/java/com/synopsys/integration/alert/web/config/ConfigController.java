@@ -144,6 +144,7 @@ public class ConfigController extends BaseController {
             } else {
                 return responseFactory.createBadRequestResponse(stringId, "No configuration with the specified id.");
             }
+
         } catch (final AlertException e) {
             logger.error(e.getMessage(), e);
             return responseFactory.createInternalServerErrorResponse(stringId, e.getMessage());
