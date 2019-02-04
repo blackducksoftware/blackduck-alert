@@ -17,7 +17,7 @@ import {
 } from 'store/actions/types';
 
 import { verifyLoginByStatus } from 'store/actions/session';
-import * as ConfigRequestBuilder from '../../util/configurationRequestBuilder';
+import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 
 function fetchingJob() {
     return {

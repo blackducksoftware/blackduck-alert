@@ -6,6 +6,7 @@ import audit from 'store/reducers/audit';
 import blackduck from 'store/reducers/blackduck';
 import descriptors from 'store/reducers/descriptors';
 import distributions from 'store/reducers/distributions';
+import distributionConfigs from 'store/reducers/distributionConfigs';
 import emailConfig from 'store/reducers/emailConfig';
 import hipChatConfig from 'store/reducers/hipChatConfig';
 import projects from 'store/reducers/projects';
@@ -21,6 +22,7 @@ const rootReducer = combineReducers({
     blackduck,
     descriptors,
     distributions,
+    distributionConfigs,
     emailConfig,
     hipChatConfig,
     projects,
