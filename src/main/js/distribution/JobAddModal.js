@@ -9,7 +9,7 @@ import HipChatJobConfiguration from 'distribution/job/HipChatJobConfiguration';
 import SlackJobConfiguration from 'distribution/job/SlackJobConfiguration';
 import DescriptorOption from 'component/common/DescriptorOption';
 import { resetDistributionDescriptor } from 'store/actions/descriptors';
-import * as DescriptorUtilities from 'util/descriptorUtilities';
+import * as DescriptorUtil from 'util/descriptorUtilities';
 
 const { Option, SingleValue } = components;
 
@@ -46,21 +46,21 @@ class JobAddModal extends Component {
 
     getCurrentJobConfig() {
         switch (this.state.values.typeValue) {
-            case 'channel_email':
+            case DescriptorUtil.DESCRIPTOR_NAME.CHANNEL_EMAIL:
                 return (<GroupEmailJobConfiguration
                     alertChannelName={this.state.values.typeValue}
                     projects={this.props.projects}
                     handleCancel={this.handleClose}
                     handleSaveBtnClick={this.handleSaveBtnClick}
                 />);
-            case 'channel_hipchat':
+            case DescriptorUtil.DESCRIPTOR_NAME.CHANNEL_HIPCHAT:
                 return (<HipChatJobConfiguration
                     alertChannelName={this.state.values.typeValue}
                     projects={this.props.projects}
                     handleCancel={this.handleClose}
                     handleSaveBtnClick={this.handleSaveBtnClick}
                 />);
-            case 'channel_slack':
+            case DescriptorUtil.DESCRIPTOR_NAME.CHANNEL_SLACK:
                 return (<SlackJobConfiguration
                     alertChannelName={this.state.values.typeValue}
                     projects={this.props.projects}
@@ -108,7 +108,7 @@ class JobAddModal extends Component {
     }
 
     createJobTypeOptions() {
-        const channelDescriptors = DescriptorUtilities.findDescriptorByTypeAndContext(this.props.descriptors.items, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+        const channelDescriptors = DescriptorUtil.findDescriptorByTypeAndContext(this.props.descriptors.items, DescriptorUtil.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtil.CONTEXT_TYPE.DISTRIBUTION);
         if (channelDescriptors) {
             const optionList = channelDescriptors.map(descriptor => ({
                 label: descriptor.label,

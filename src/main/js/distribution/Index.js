@@ -12,6 +12,7 @@ import EditTableCellFormatter from 'component/common/EditTableCellFormatter';
 
 import JobAddModal from 'distribution/JobAddModal';
 import { logout } from 'store/actions/session';
+import * as DescriptorUtil from 'util/descriptorUtilities';
 
 /**
  * Selects className based on field value
@@ -82,21 +83,21 @@ class Index extends Component {
     getCurrentJobConfig(currentRowSelected) {
         if (currentRowSelected != null) {
             const { distributionConfigId, distributionType } = currentRowSelected;
-            if (distributionType === 'channel_email') {
+            if (distributionType === DescriptorUtil.DESCRIPTOR_NAME.CHANNEL_EMAIL) {
                 return (<GroupEmailJobConfiguration
                     alertChannelName={distributionType}
                     distributionConfigId={distributionConfigId}
                     handleCancel={this.cancelRowSelect}
                     handleSaveBtnClick={this.saveBtn}
                 />);
-            } else if (distributionType === 'channel_hipchat') {
+            } else if (distributionType === DescriptorUtil.DESCRIPTOR_NAME.CHANNEL_HIPCHAT) {
                 return (<HipChatJobConfiguration
                     alertChannelName={distributionType}
                     distributionConfigId={distributionConfigId}
                     handleCancel={this.cancelRowSelect}
                     handleSaveBtnClick={this.saveBtn}
                 />);
-            } else if (distributionType === 'channel_slack') {
+            } else if (distributionType === DescriptorUtil.DESCRIPTOR_NAME.CHANNEL_SLACK) {
                 return (<SlackJobConfiguration
                     alertChannelName={distributionType}
                     distributionConfigId={distributionConfigId}
@@ -328,7 +329,7 @@ class Index extends Component {
         const defaultValue = <div className="inline">{cell}</div>;
         const { descriptors } = this.props;
         if (descriptors) {
-            const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors.items, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+            const descriptorList = DescriptorUtil.findDescriptorByTypeAndContext(descriptors.items, DescriptorUtil.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtil.CONTEXT_TYPE.DISTRIBUTION);
             if (descriptorList) {
                 const filteredList = descriptorList.filter(descriptor => descriptor.descriptorName === cell);
                 if (filteredList && filteredList.length > 0) {
@@ -346,7 +347,7 @@ class Index extends Component {
         const defaultValue = <div className="inline">{cell}</div>;
         const { descriptors } = this.props;
         if (descriptors) {
-            const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors.items, DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
+            const descriptorList = DescriptorUtil.findDescriptorByTypeAndContext(descriptors.items, DescriptorUtil.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtil.CONTEXT_TYPE.GLOBAL);
             if (descriptorList) {
                 const filteredList = descriptorList.filter(descriptor => descriptor.descriptorName === cell);
                 if (filteredList && filteredList.length > 0) {

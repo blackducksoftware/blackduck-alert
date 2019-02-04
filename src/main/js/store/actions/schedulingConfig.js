@@ -4,6 +4,7 @@ import { verifyLoginByStatus } from 'store/actions/session';
 
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 import * as FieldModelUtil from 'util/fieldModelUtilities';
+import * as DescriptorUtil from 'util/descriptorUtilities';
 
 /**
  * Triggers Scheduling Config Fetching reducer
@@ -72,7 +73,7 @@ export function getSchedulingConfig() {
     return (dispatch, getState) => {
         dispatch(fetchingSchedulingConfig());
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, 'component_scheduling');
+        const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, DescriptorUtil.DESCRIPTOR_NAME.COMPONENT_SETTINGS);
         request.then((response) => {
             if (response.ok) {
                 response.json().then((body) => {

@@ -5,18 +5,26 @@ import TextInput from 'field/input/TextInput';
 import BaseJobConfiguration from 'distribution/job/BaseJobConfiguration';
 import { getDistributionJob } from 'store/actions/distributions';
 import CheckboxInput from 'field/input/CheckboxInput';
+import * as FieldModelUtil from 'util/fieldModelUtilities';
+import * as DescriptorUtil from 'util/descriptorUtilities';
 
+const KEY_SUBJECT_LINE = 'email.subject.line';
+const KEY_PROJECT_OWNER_ONLY = 'project.owner.only';
+const KEY_EMAIL_ADDRESSES = 'email.addresses';
+
+const fieldNames = [
+    KEY_SUBJECT_LINE,
+    KEY_PROJECT_OWNER_ONLY,
+    KEY_EMAIL_ADDRESSES
+];
 
 class GroupEmailJobConfiguration extends Component {
     constructor(props) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
-        this.handleStateValues = this.handleStateValues.bind(this);
         this.getConfiguration = this.getConfiguration.bind(this);
         this.state = {
-            emailSubjectLine: props.emailSubjectLine,
-            projectOwnerOnly: props.projectOwnerOnly,
-            error: {}
+            currentConfig: FieldModelUtil.createEmptyFieldModel(fieldNames, DescriptorUtil.CONTEXT_TYPE.DISTRIBUTION, DescriptorUtil.DESCRIPTOR_NAME.CHANNEL_EMAIL)
         };
         this.loading = false;
     }
@@ -44,42 +52,38 @@ class GroupEmailJobConfiguration extends Component {
 
     getConfiguration() {
         return Object.assign({}, this.state, {
-            distributionType: this.props.distributionType
-        });
-    }
-
-    handleStateValues(name, value) {
-        this.setState({
-            [name]: value
+            distributionType: DescriptorUtil.DESCRIPTOR_NAME.CHANNEL_EMAIL
         });
     }
 
     handleChange({ target }) {
         const value = target.type === 'checkbox' ? target.checked : target.value;
-        const { name } = target;
-        this.handleStateValues(name, value);
+        const newState = FieldModelUtil.updateFieldModelSingleValue(this.state.currentConfig, target.name, value);
+        this.setState({
+            currentConfig: newState
+        });
     }
 
     render() {
         const content = (
             <div>
                 <TextInput
-                    id="jobEmailSubject"
+                    id={KEY_SUBJECT_LINE}
                     label="Subject Line"
-                    name="emailSubjectLine"
-                    value={this.state.emailSubjectLine}
+                    name={KEY_SUBJECT_LINE}
+                    value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_SUBJECT_LINE)}
                     onChange={this.handleChange}
-                    errorName="emailSubjectLineError"
-                    errorValue={this.props.emailSubjectLineError}
+                    errorName={FieldModelUtil.createFieldModelErrorKey(KEY_SUBJECT_LINE)}
+                    errorValue={this.props.fieldErrors[KEY_SUBJECT_LINE]}
                 />
                 <CheckboxInput
-                    id="projectOwnerOnly"
+                    id={KEY_PROJECT_OWNER_ONLY}
                     label="Project Owner Only"
-                    name="projectOwnerOnly"
-                    isChecked={this.state.projectOwnerOnly}
+                    name={KEY_PROJECT_OWNER_ONLY}
+                    isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, KEY_PROJECT_OWNER_ONLY)}
                     onChange={this.handleChange}
-                    errorName="projectOwnerOnlyError"
-                    errorValue={this.props.error.projectOwnerOnlyError}
+                    errorName={FieldModelUtil.createFieldModelErrorKey(KEY_PROJECT_OWNER_ONLY)}
+                    errorValue={this.props.fieldErrors[KEY_PROJECT_OWNER_ONLY]}
                 />
             </div>);
         return (<BaseJobConfiguration
@@ -100,29 +104,21 @@ GroupEmailJobConfiguration.propTypes = {
     distributionConfigId: PropTypes.string,
     baseUrl: PropTypes.string,
     testUrl: PropTypes.string,
-    distributionType: PropTypes.string,
     getDistributionJob: PropTypes.func.isRequired,
-    error: PropTypes.object,
+    fieldErrors: PropTypes.object,
     handleCancel: PropTypes.func.isRequired,
     handleSaveBtnClick: PropTypes.func.isRequired,
     alertChannelName: PropTypes.string.isRequired,
     fetching: PropTypes.bool,
-    inProgress: PropTypes.bool,
-    emailSubjectLine: PropTypes.string,
-    emailSubjectLineError: PropTypes.string,
-    projectOwnerOnly: PropTypes.bool
+    inProgress: PropTypes.bool
 };
 
 GroupEmailJobConfiguration.defaultProps = {
     jobs: {},
     distributionConfigId: null,
-    baseUrl: '/alert/api/configuration/channel/distribution/channel_email',
-    testUrl: '/alert/api/configuration/channel/distribution/channel_email/test',
-    distributionType: 'channel_email',
-    emailSubjectLine: '',
-    emailSubjectLineError: '',
-    projectOwnerOnly: false,
-    error: {},
+    baseUrl: `/alert/api/configuration/channel/distribution/${DescriptorUtil.DESCRIPTOR_NAME.CHANNEL_EMAIL}`,
+    testUrl: `/alert/api/configuration/channel/distribution/${DescriptorUtil.DESCRIPTOR_NAME.CHANNEL_EMAIL}/test`,
+    fieldErrors: {},
     fetching: false,
     inProgress: false
 };
@@ -133,7 +129,7 @@ const mapDispatchToProps = dispatch => ({
 
 const mapStateToProps = state => ({
     jobs: state.distributions.jobs,
-    error: state.distributions.error,
+    fieldErrors: state.distributions.error,
     fetching: state.distributions.fetching,
     inProgress: state.distributions.inProgress
 });

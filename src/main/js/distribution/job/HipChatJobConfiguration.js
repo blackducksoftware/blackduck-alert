@@ -7,19 +7,28 @@ import CheckboxInput from 'field/input/CheckboxInput';
 import { getDistributionJob } from 'store/actions/distributions';
 
 import BaseJobConfiguration from 'distribution/job/BaseJobConfiguration';
+import * as FieldModelUtil from 'util/fieldModelUtilities';
+import * as DescriptorUtil from 'util/descriptorUtilities';
+
+const KEY_ROOM_ID = 'channel.hipchat.room.id';
+const KEY_NOTIFY = 'channel.hipchat.notify';
+const KEY_COLOR = 'channel.hipchat.color';
+
+const fieldNames = [
+    KEY_ROOM_ID,
+    KEY_NOTIFY,
+    KEY_COLOR
+];
 
 class HipChatJobConfiguration extends Component {
     constructor(props) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
-        this.handleColorChanged = this.handleColorChanged.bind(this);
         this.handleStateValues = this.handleStateValues.bind(this);
         this.getConfiguration = this.getConfiguration.bind(this);
+        this.createSingleSelectHandler = this.createSingleSelectHandler.bind(this);
         this.state = {
-            roomId: props.roomId,
-            notify: props.notify,
-            colorOptions: props.colorOptions,
-            error: {}
+            currentConfig: FieldModelUtil.createEmptyFieldModel(fieldNames, DescriptorUtil.CONTEXT_TYPE.DISTRIBUTION, DescriptorUtil.DESCRIPTOR_NAME.CHANNEL_HIPCHAT)
         };
         this.loading = false;
     }
@@ -49,7 +58,7 @@ class HipChatJobConfiguration extends Component {
 
     getConfiguration() {
         return Object.assign({}, this.state, {
-            distributionType: this.props.distributionType
+            distributionType: DescriptorUtil.DESCRIPTOR_NAME.CHANNEL_HIPCHAT
         });
     }
 
@@ -65,31 +74,58 @@ class HipChatJobConfiguration extends Component {
         this.handleStateValues(name, value);
     }
 
-    handleColorChanged(option) {
-        if (option) {
-            this.handleStateValues('color', option.value);
-        } else {
-            this.handleStateValues('color', option);
-        }
+    createSingleSelectHandler(fieldKey) {
+        return (selectedValue) => {
+            if (selectedValue) {
+                const selected = selectedValue.value;
+                const newState = FieldModelUtil.updateFieldModelSingleValue(this.state.currentConfig, fieldKey, selected);
+                this.setState({
+                    settingsData: newState
+                });
+            } else {
+                const newState = FieldModelUtil.updateFieldModelSingleValue(this.state.currentConfig, fieldKey, null);
+                this.setState({
+                    settingsData: newState
+                });
+            }
+        };
     }
+
 
     render() {
         const [colorOptions] = this.state;
+        const fieldModel = this.state.currentConfig;
         let selectedColorOption = null;
         if (colorOptions) {
             selectedColorOption = colorOptions.find(option => option.value === this.state.color);
         }
         const content = (
             <div>
-                <TextInput id="jobHipChatRoomId" label="Room Id" name="roomId" value={this.state.roomId} onChange={this.handleChange} errorName="roomIdError" errorValue={this.props.error.roomIdError} />
-                <CheckboxInput id="jobHipChatNotify" label="Notify" name="notify" isChecked={this.state.notify} onChange={this.handleChange} errorName="notifyError" errorValue={this.props.error.notifyError} />
+                <TextInput
+                    id={KEY_ROOM_ID}
+                    label="Room Id"
+                    name={KEY_ROOM_ID}
+                    value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_ROOM_ID)}
+                    onChange={this.handleChange}
+                    errorName={FieldModelUtil.createFieldModelErrorKey(KEY_ROOM_ID)}
+                    errorValue={this.props.fieldErrors[KEY_ROOM_ID]}
+                />
+                <CheckboxInput
+                    id={KEY_NOTIFY}
+                    label="Notify"
+                    name={KEY_NOTIFY}
+                    isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, KEY_NOTIFY)}
+                    onChange={this.handleChange}
+                    errorName={FieldModelUtil.createFieldModelErrorKey(KEY_NOTIFY)}
+                    errorValue={this.props.fieldErrors[KEY_NOTIFY]}
+                />
                 <div className="form-group">
                     <label className="col-sm-3 col-form-label text-right">Color</label>
                     <div className="d-inline-flex p-2 col-sm-9">
                         <Select
-                            id="jobHipChatColor"
+                            id={KEY_COLOR}
                             className="typeAheadField"
-                            onChange={this.handleColorChanged}
+                            onChange={this.createSingleSelectHandler(KEY_COLOR)}
                             isSearchable
                             options={colorOptions}
                             placeholder="Choose the message color"
@@ -118,26 +154,20 @@ HipChatJobConfiguration.propTypes = {
     distributionConfigId: PropTypes.string,
     baseUrl: PropTypes.string,
     testUrl: PropTypes.string,
-    distributionType: PropTypes.string,
-    roomId: PropTypes.string,
-    notify: PropTypes.bool,
     colorOptions: PropTypes.arrayOf(PropTypes.object),
-    error: PropTypes.object,
+    fieldErrors: PropTypes.object,
     handleCancel: PropTypes.func.isRequired,
     handleSaveBtnClick: PropTypes.func.isRequired,
     alertChannelName: PropTypes.string.isRequired,
     fetching: PropTypes.bool,
-    inProgress: PropTypes.bool,
+    inProgress: PropTypes.bool
 };
 
 HipChatJobConfiguration.defaultProps = {
     jobs: {},
     distributionConfigId: null,
-    baseUrl: '/alert/api/configuration/channel/distribution/channel_hipchat',
-    testUrl: '/alert/api/configuration/channel/distribution/channel_hipchat/test',
-    distributionType: 'channel_hipchat',
-    roomId: '',
-    notify: false,
+    baseUrl: `/alert/api/configuration/channel/distribution/${DescriptorUtil.DESCRIPTOR_NAME.CHANNEL_HIPCHAT}`,
+    testUrl: `/alert/api/configuration/channel/distribution/${DescriptorUtil.DESCRIPTOR_NAME.CHANNEL_HIPCHAT}/test`,
     colorOptions: [
         { label: 'Yellow', value: 'yellow' },
         { label: 'Green', value: 'green' },
@@ -146,14 +176,14 @@ HipChatJobConfiguration.defaultProps = {
         { label: 'Gray', value: 'gray' },
         { label: 'Random', value: 'random' }
     ],
-    error: {},
+    fieldErrors: {},
     fetching: false,
     inProgress: false
 };
 
 const mapStateToProps = state => ({
     jobs: state.distributions.jobs,
-    error: state.distributions.error,
+    fieldErrors: state.distributions.error,
     fetching: state.distributions.fetching,
     inProgress: state.distributions.inProgress
 });

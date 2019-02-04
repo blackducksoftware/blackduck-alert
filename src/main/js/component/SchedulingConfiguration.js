@@ -24,7 +24,7 @@ class SchedulingConfiguration extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            currentConfig: FieldModelUtil.createEmptyFieldModel(fieldNames, DescriptorUtil.CONTEXT_TYPE.GLOBAL, 'component_scheduling')
+            currentConfig: FieldModelUtil.createEmptyFieldModel(fieldNames, DescriptorUtil.CONTEXT_TYPE.GLOBAL, DescriptorUtil.DESCRIPTOR_NAME.COMPONENT_SCHEDULING)
         };
         this.decreaseAccumulatorTime = this.decreaseAccumulatorTime.bind(this);
         this.handleDailyDigestChanged = this.handleDailyDigestChanged.bind(this);

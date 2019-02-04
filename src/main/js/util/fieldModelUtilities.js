@@ -8,6 +8,16 @@ export function getFieldModelSingleValue(fieldModel, key) {
     return undefined;
 }
 
+export function getFieldModelValues(fieldModel, key) {
+    const fieldObject = fieldModel.keyToValues[key];
+    if (fieldObject && fieldObject.values) {
+        if (Object.keys(fieldObject.values).length > 0) {
+            return fieldModel.keyToValues[key].values;
+        }
+    }
+    return undefined;
+}
+
 export function getFieldModelBooleanValue(fieldModel, key) {
     const fieldValue = getFieldModelSingleValue(fieldModel, key);
     if (fieldValue) {
@@ -37,6 +47,22 @@ export function updateFieldModelSingleValue(fieldModel, key, value) {
         copy.keyToValues[key].isSet = false;
     }
     copy.keyToValues[key].values[0] = value;
+    copy.keyToValues[key].isSet = false;
+    return Object.assign({}, copy);
+}
+
+export function updateFieldModelValues(fieldModel, key, values) {
+    const copy = Object.assign({}, fieldModel);
+    if (!copy.keyToValues[key]) {
+        copy.keyToValues[key] = {
+            values: [''],
+            isSet: false
+        };
+    } else if (!copy.keyToValues[key].values) {
+        copy.keyToValues[key].values = [];
+        copy.keyToValues[key].isSet = false;
+    }
+    copy.keyToValues[key].values = values;
     copy.keyToValues[key].isSet = false;
     return Object.assign({}, copy);
 }

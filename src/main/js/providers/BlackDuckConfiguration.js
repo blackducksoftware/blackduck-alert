@@ -28,7 +28,7 @@ class BlackDuckConfiguration
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTest = this.handleTest.bind(this);
-        let fieldModel = FieldModelUtil.createEmptyFieldModel(fieldNames, DescriptorUtil.CONTEXT_TYPE.GLOBAL, 'provider_blackduck');
+        let fieldModel = FieldModelUtil.createEmptyFieldModel(fieldNames, DescriptorUtil.CONTEXT_TYPE.GLOBAL, DescriptorUtil.DESCRIPTOR_NAME.PROVIDER_BLACKDUCK);
         fieldModel = this.updateDefaults(fieldModel);
         this.state = {
             currentConfig: fieldModel
