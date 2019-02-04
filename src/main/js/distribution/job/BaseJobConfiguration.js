@@ -8,7 +8,7 @@ import ConfigButtons from 'component/common/ConfigButtons';
 
 import { frequencyOptions } from 'util/distribution-data';
 
-import { getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob } from 'store/actions/distributions';
+import { getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob } from 'store/actions/distributionConfigs';
 import { getDistributionDescriptor } from 'store/actions/descriptors';
 import DescriptorOption from 'component/common/DescriptorOption';
 import * as FieldModelUtil from 'util/fieldModelUtilities';
