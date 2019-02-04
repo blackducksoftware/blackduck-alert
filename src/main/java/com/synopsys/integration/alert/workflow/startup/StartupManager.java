@@ -165,7 +165,7 @@ public class StartupManager {
         String dailyHourOfDay = defaultDailyHourOfDay;
         String purgeDataFrequencyDays = defaultPurgeFrequencyInDays;
 
-        final ConfigurationFieldModel defaultHourOfDayField = ConfigurationFieldModel.create(SchedulingDescriptor.KEY_DAILY_DIGEST_HOUR_OF_DAY);
+        final ConfigurationFieldModel defaultHourOfDayField = ConfigurationFieldModel.create(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY);
         defaultHourOfDayField.setFieldValue(dailyHourOfDay);
         final ConfigurationFieldModel defaultPurgeFrequencyField = ConfigurationFieldModel.create(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS);
         defaultPurgeFrequencyField.setFieldValue(purgeDataFrequencyDays);
@@ -174,7 +174,7 @@ public class StartupManager {
         if (schedulingConfig.isPresent()) {
             final ConfigurationModel globalSchedulingConfig = schedulingConfig.get();
             final List<ConfigurationFieldModel> fields = new ArrayList<>(2);
-            final Optional<ConfigurationFieldModel> configuredDailyHour = globalSchedulingConfig.getField(SchedulingDescriptor.KEY_DAILY_DIGEST_HOUR_OF_DAY);
+            final Optional<ConfigurationFieldModel> configuredDailyHour = globalSchedulingConfig.getField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY);
             final Optional<ConfigurationFieldModel> configuredPurgeFrequency = globalSchedulingConfig.getField(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS);
             final boolean updateConfiguration = configuredDailyHour.isEmpty() || configuredPurgeFrequency.isEmpty();
             if (updateConfiguration) {

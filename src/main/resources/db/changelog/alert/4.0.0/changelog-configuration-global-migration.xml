@@ -245,7 +245,7 @@
             <column name="CONTEXT_ID" valueComputed="GET_ID_FOR_CONFIG_CONTEXT('GLOBAL')"/>
         </insert>
         <sql dbms="h2" stripComments="true">
-            CALL MIGRATE_INT_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_SCHEDULING_CONFIG', 'ALERT_DIGEST_DAILY_HOUR_OF_DAY', 'scheduling.daily.digest.hour');
+            CALL MIGRATE_INT_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_SCHEDULING_CONFIG', 'ALERT_DIGEST_DAILY_HOUR_OF_DAY', 'scheduling.daily.processor.hour');
         </sql>
         <sql dbms="h2" stripComments="true">
             CALL MIGRATE_INT_VALUE_INTO_NEWEST_CONFIG('ALERT', 'GLOBAL_SCHEDULING_CONFIG', 'ALERT_PURGE_DATA_FREQUENCY_DAYS', 'scheduling.purge.data.frequency');

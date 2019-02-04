@@ -26,6 +26,7 @@ package com.synopsys.integration.alert.provider.blackduck.descriptor;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
@@ -54,10 +55,15 @@ public class BlackDuckProviderUIConfig extends UIConfig {
     }
 
     private Collection<String> validateAPIToken(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-        final String apiKey = fieldToValidate.getValue().orElse(null);
-        if (apiKey.length() < 64 || apiKey.length() > 256) {
-            return List.of("Invalid Black Duck API Token.");
+        Collection<String> result = List.of();
+        final String apiKey = fieldToValidate.getValue().orElse("");
+        if (StringUtils.isBlank(apiKey)) {
+            result = List.of(ConfigField.REQUIRED_FIELD_MISSING);
+        } else {
+            if (apiKey.length() < 64 || apiKey.length() > 256) {
+                return List.of("Invalid Black Duck API Token.");
+            }
         }
-        return List.of();
+        return result;
     }
 }
