@@ -1,10 +1,7 @@
 import {
     DISTRIBUTION_JOB_FETCH_ERROR,
-    DISTRIBUTION_JOB_FETCH_ERROR_ALL,
     DISTRIBUTION_JOB_FETCHED,
-    DISTRIBUTION_JOB_FETCHED_ALL,
     DISTRIBUTION_JOB_FETCHING,
-    DISTRIBUTION_JOB_FETCHING_ALL,
     DISTRIBUTION_JOB_SAVE_ERROR,
     DISTRIBUTION_JOB_SAVED,
     DISTRIBUTION_JOB_SAVING,
@@ -37,26 +34,6 @@ function jobFetched(config) {
 function jobFetchError() {
     return {
         type: DISTRIBUTION_JOB_FETCH_ERROR
-    };
-}
-
-function fetchingAllJobs() {
-    return {
-        type: DISTRIBUTION_JOB_FETCHING_ALL
-    };
-}
-
-function allJobsFetched(jobs) {
-    return {
-        type: DISTRIBUTION_JOB_FETCHED_ALL,
-        jobs
-    };
-}
-
-function fetchingAllJobsError(message) {
-    return {
-        type: DISTRIBUTION_JOB_FETCH_ERROR_ALL,
-        jobConfigTableMessage: message
     };
 }
 
