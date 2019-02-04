@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import TextInput from 'field/input/TextInput';
 import BaseJobConfiguration from 'distribution/job/BaseJobConfiguration';
-import { getDistributionJob } from 'store/actions/distributions';
+import { getDistributionJob } from 'store/actions/distributionConfigs';
 import CheckboxInput from 'field/input/CheckboxInput';
 
 
