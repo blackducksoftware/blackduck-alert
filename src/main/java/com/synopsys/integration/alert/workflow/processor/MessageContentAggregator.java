@@ -24,7 +24,6 @@
 package com.synopsys.integration.alert.workflow.processor;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,19 +61,19 @@ public class MessageContentAggregator {
 
     public Map<CommonDistributionConfiguration, List<AggregateMessageContent>> processNotifications(final Collection<NotificationContent> notificationList) {
         if (notificationList.isEmpty()) {
-            return Collections.emptyMap();
+            return Map.of();
         }
 
         final List<CommonDistributionConfiguration> distributionConfigs = jobConfigReader.getPopulatedJobConfigs();
         if (distributionConfigs.isEmpty()) {
-            return Collections.emptyMap();
+            return Map.of();
         }
         return processNotifications(distributionConfigs, notificationList);
     }
 
     public Map<CommonDistributionConfiguration, List<AggregateMessageContent>> processNotifications(final FrequencyType frequency, final Collection<NotificationContent> notificationList) {
         if (notificationList.isEmpty()) {
-            return Collections.emptyMap();
+            return Map.of();
         }
 
         final List<CommonDistributionConfiguration> distributionConfigs = jobConfigReader.getPopulatedJobConfigs()
@@ -82,7 +81,7 @@ public class MessageContentAggregator {
                                                                               .filter(commonDistributionConfiguration -> frequency.equals(commonDistributionConfiguration.getFrequencyType()))
                                                                               .collect(Collectors.toList());
         if (distributionConfigs.isEmpty()) {
-            return Collections.emptyMap();
+            return Map.of();
         }
 
         return processNotifications(distributionConfigs, notificationList);
@@ -90,7 +89,7 @@ public class MessageContentAggregator {
 
     public Map<CommonDistributionConfiguration, List<AggregateMessageContent>> processNotifications(final List<CommonDistributionConfiguration> distributionConfigs, final Collection<NotificationContent> notificationList) {
         if (notificationList.isEmpty()) {
-            return Collections.emptyMap();
+            return Map.of();
         }
         return distributionConfigs
                    .stream()
@@ -102,7 +101,7 @@ public class MessageContentAggregator {
         if (providerDescriptor.isPresent()) {
             final Collection<NotificationContent> notificationsForJob = filterNotifications(providerDescriptor.get(), jobConfiguration, notificationCollection);
             if (notificationsForJob.isEmpty()) {
-                return Collections.emptyList();
+                return List.of();
             }
 
             final FormatType formatType = jobConfiguration.getFormatType();
@@ -117,7 +116,7 @@ public class MessageContentAggregator {
                                                                       .collect(Collectors.toList());
             return collectedTopics;
         }
-        return Collections.emptyList();
+        return List.of();
     }
 
     private Optional<ProviderDescriptor> getProviderDescriptorByName(final String name) {
