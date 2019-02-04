@@ -8,7 +8,6 @@ import GroupEmailJobConfiguration from 'distribution/job/GroupEmailJobConfigurat
 import HipChatJobConfiguration from 'distribution/job/HipChatJobConfiguration';
 import SlackJobConfiguration from 'distribution/job/SlackJobConfiguration';
 import DescriptorOption from 'component/common/DescriptorOption';
-import { resetDistributionDescriptor } from 'store/actions/descriptors';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 
 const { Option, SingleValue } = components;
@@ -38,10 +37,6 @@ class JobAddModal extends Component {
         this.handleSaveBtnClick = this.handleSaveBtnClick.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.createJobTypeOptions = this.createJobTypeOptions.bind(this);
-    }
-
-    componentDidMount() {
-        this.props.resetDistributionDescriptor();
     }
 
     getCurrentJobConfig() {
@@ -112,7 +107,7 @@ class JobAddModal extends Component {
         if (channelDescriptors) {
             const optionList = channelDescriptors.map(descriptor => ({
                 label: descriptor.label,
-                value: descriptor.descriptorName,
+                value: descriptor.name,
                 icon: descriptor.fontAwesomeIcon
             }));
             return optionList;
@@ -156,7 +151,6 @@ class JobAddModal extends Component {
 }
 
 JobAddModal.propTypes = {
-    resetDistributionDescriptor: PropTypes.func.isRequired,
     onModalClose: PropTypes.func.isRequired,
     descriptors: PropTypes.arrayOf(PropTypes.object),
     projects: PropTypes.arrayOf(PropTypes.object)
@@ -171,8 +165,6 @@ const mapStateToProps = state => ({
     descriptors: state.descriptors
 });
 
-const mapDispatchToProps = dispatch => ({
-    resetDistributionDescriptor: () => dispatch(resetDistributionDescriptor())
-});
+const mapDispatchToProps = dispatch => ({});
 
 export default connect(mapStateToProps, mapDispatchToProps)(JobAddModal);
