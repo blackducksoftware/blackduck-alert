@@ -83,7 +83,7 @@ public class LoginActionsTestIT extends AlertIntegrationTest {
         final String userName = properties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_ACTIVE_USER);
         mockLoginRestModel.setBlackDuckUsername(userName);
         final LoginActions loginActions = new LoginActions(alertDatabaseAuthProvider, ldapManager);
-        userAccessor.addUser(userName, mockLoginRestModel.getBlackDuckPassword());
+        userAccessor.addUser(userName, mockLoginRestModel.getBlackDuckPassword(), "");
         final boolean userAuthenticated = loginActions.authenticateUser(mockLoginRestModel.createRestModel());
 
         assertTrue(userAuthenticated);
