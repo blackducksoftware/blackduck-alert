@@ -14,6 +14,7 @@ import {
 import { verifyLoginByStatus } from 'store/actions/session';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 import * as FieldModelUtil from 'util/fieldModelUtilities';
+import * as DescriptorUtil from 'util/descriptorUtilities';
 
 /**
  * Triggers Config Fetching reducer
@@ -103,7 +104,7 @@ export function getConfig() {
     return (dispatch, getState) => {
         dispatch(fetchingConfig());
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, 'channel_hipchat');
+        const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, DescriptorUtil.DESCRIPTOR_NAME.CHANNEL_HIPCHAT);
         request.then((response) => {
             if (response.ok) {
                 response.json().then((body) => {

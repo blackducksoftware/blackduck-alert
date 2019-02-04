@@ -12,6 +12,7 @@ import {
 import { verifyLoginByStatus } from 'store/actions/session';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 import * as FieldModelUtil from 'util/fieldModelUtilities';
+import * as DescriptorUtil from 'util/descriptorUtilities';
 
 
 /**
@@ -103,7 +104,7 @@ export function getEmailConfig() {
     return (dispatch, getState) => {
         dispatch(fetchingEmailConfig());
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, 'channel_email');
+        const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, DescriptorUtil.DESCRIPTOR_NAME.CHANNEL_EMAIL);
         request.then((response) => {
             if (response.ok) {
                 response.json().then((body) => {

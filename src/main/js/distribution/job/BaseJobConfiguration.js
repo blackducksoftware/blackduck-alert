@@ -29,12 +29,12 @@ const CustomProviderTypeLabel = props => (
 );
 
 
-const KEY_NAME = "channel.common.name";
-const KEY_CHANNEL_NAME = "channel.common.channel.name";
-const KEY_PROVIDER_NAME = "channel.common.provider.name";
-const KEY_FREQUENCY = "channel.common.frequency";
-const KEY_NOTIFICATION_TYPES = "provider.distribution.notification.types";
-const KEY_FORMAT_TYPE = "provider.distribution.format.type";
+const KEY_NAME = 'channel.common.name';
+const KEY_CHANNEL_NAME = 'channel.common.channel.name';
+const KEY_PROVIDER_NAME = 'channel.common.provider.name';
+const KEY_FREQUENCY = 'channel.common.frequency';
+const KEY_NOTIFICATION_TYPES = 'provider.distribution.notification.types';
+const KEY_FORMAT_TYPE = 'provider.distribution.format.type';
 
 const fieldNames = [
     KEY_NAME,
@@ -56,21 +56,16 @@ class BaseJobConfiguration extends Component {
         };
         this.loading = false;
         this.handleChange = this.handleChange.bind(this);
-        this.handleStateValues = this.handleStateValues.bind(this);
-        this.handleSetState = this.handleSetState.bind(this);
-        this.handleFrequencyChanged = this.handleFrequencyChanged.bind(this);
-        this.handleNotificationChanged = this.handleNotificationChanged.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
-        this.handleProjectChanged = this.handleProjectChanged.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTestSubmit = this.handleTestSubmit.bind(this);
         this.handleProviderChanged = this.handleProviderChanged.bind(this);
-        this.handleFormatChanged = this.handleFormatChanged.bind(this);
         this.createProviderOptions = this.createProviderOptions.bind(this);
         this.createNotificationTypeOptions = this.createNotificationTypeOptions.bind(this);
         this.createFormatTypeOptions = this.createFormatTypeOptions.bind(this);
-        this.buildJsonBody = this.buildJsonBody.bind(this);
         this.renderDistributionForm = this.renderDistributionForm.bind(this);
+        this.createSingleSelectHandler = this.createSingleSelectHandler.bind(this);
+        this.createMultiSelectHandler = this.createMultiSelectHandler.bind(this);
     }
 
     componentDidMount() {
@@ -165,8 +160,8 @@ class BaseJobConfiguration extends Component {
         if (event) {
             event.preventDefault();
         }
-        const jsonBody = this.buildJsonBody();
-        if (this.state.id) {
+        const jsonBody = JSON.stringify(this.state.currentConfig);
+        if (this.state.currentConfig.id) {
             this.props.updateDistributionJob(this.props.baseUrl, jsonBody);
         } else {
             this.props.saveDistributionJob(this.props.baseUrl, jsonBody);
@@ -182,33 +177,8 @@ class BaseJobConfiguration extends Component {
             event.preventDefault();
         }
 
-        const jsonBody = this.buildJsonBody();
-        this.props.testDistributionJob(this.props.testUrl, jsonBody);
-    }
-
-    buildJsonBody() {
-        // const configuration = Object.assign({}, {
-        //     id: this.state.id,
-        //     distributionConfigId: this.state.distributionConfigId,
-        //     name: this.state.name,
-        //     providerName: this.state.providerName,
-        //     distributionType: this.state.distributionType,
-        //     frequency: this.state.frequency,
-        //     formatType: this.state.formatType,
-        //     filterByProject: !this.state.includeAllProjects,
-        //     notificationTypes: this.state.notificationTypes,
-        //     configuredProjects: this.state.configuredProjects,
-        //     projectNamePattern: this.state.projectNamePattern
-        // }, this.props.getParentConfiguration());
-        // configuration.includeAllProjects = !configuration.filterByProject;
-        // if (configuration.notificationTypes && configuration.notificationTypes.length > 0) {
-        //     configuration.notificationTypes = configuration.notificationTypes;
-        // } else {
-        //     configuration.notificationTypes = null;
-        // }
-
         const jsonBody = JSON.stringify(this.state.currentConfig);
-        return jsonBody;
+        this.props.testDistributionJob(this.props.testUrl, jsonBody);
     }
 
     handleChange({ target }) {
@@ -216,18 +186,6 @@ class BaseJobConfiguration extends Component {
         const newState = FieldModelUtil.updateFieldModelSingleValue(this.state.currentConfig, target.name, value);
         this.setState({
             currentConfig: newState
-        });
-    }
-
-    handleStateValues(name, value) {
-        this.setState({
-            [name]: value
-        });
-    }
-
-    handleSetState(name, value) {
-        this.setState({
-            [name]: value
         });
     }
 
@@ -243,41 +201,42 @@ class BaseJobConfiguration extends Component {
         }
     }
 
-    handleFrequencyChanged(option) {
-        if (option) {
-            this.handleStateValues('frequency', option.value);
-        } else {
-            this.handleStateValues('frequency', option);
-        }
+    createSingleSelectHandler(fieldKey) {
+        return (selectedValue) => {
+            if (selectedValue) {
+                const selected = selectedValue.value;
+                const newState = FieldModelUtil.updateFieldModelSingleValue(this.state.currentConfig, fieldKey, selected);
+                this.setState({
+                    settingsData: newState
+                });
+            } else {
+                const newState = FieldModelUtil.updateFieldModelSingleValue(this.state.currentConfig, fieldKey, null);
+                this.setState({
+                    settingsData: newState
+                });
+            }
+        };
     }
 
-    handleNotificationChanged(selectedValues) {
-        if (selectedValues && selectedValues.length > 0) {
-            const selected = selectedValues.map(item => item.value);
-            this.handleStateValues('notificationTypes', selected);
-        } else {
-            this.handleStateValues('notificationTypes', []);
-        }
-    }
-
-    handleProjectChanged(selectedValues) {
-        if (selectedValues && selectedValues.length > 0) {
-            this.handleStateValues('configuredProjects', selectedValues);
-        } else {
-            this.handleStateValues('configuredProjects', []);
-        }
-    }
-
-    handleFormatChanged(option) {
-        if (option) {
-            this.handleStateValues('formatType', option.value);
-        } else {
-            this.handleStateValues('formatType', option);
-        }
+    createMultiSelectHandler(fieldKey) {
+        return (selectedValues) => {
+            if (selectedValues && selectedValues.length > 0) {
+                const selected = selectedValues.map(item => item.value);
+                const newState = FieldModelUtil.updateFieldModelValues(this.state.currentConfig, fieldKey, selected);
+                this.setState({
+                    settingsData: newState
+                });
+            } else {
+                const newState = FieldModelUtil.updateFieldModelValues(this.state.currentConfig, fieldKey, []);
+                this.setState({
+                    settingsData: newState
+                });
+            }
+        };
     }
 
     createProviderOptions() {
-        const providers = DescriptorUtil.findDescriptorByTypeAndContext(this.props.descriptors.items, DescriptorUtil.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtil.CONTEXT_TYPE.GLOBAL);
+        const providers = DescriptorUtil.findDescriptorByTypeAndContext(this.props.descriptors.items, DescriptorUtil.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtil.CONTEXT_TYPE.DISTRIBUTION);
         if (providers) {
             const optionList = providers.map(descriptor => ({
                 label: descriptor.label,
@@ -314,6 +273,7 @@ class BaseJobConfiguration extends Component {
     }
 
     renderDistributionForm() {
+        const fieldModel = this.state.currentConfig;
         if (!this.props.currentDistributionComponents) {
             return null;
         }
@@ -331,7 +291,7 @@ class BaseJobConfiguration extends Component {
                         <Select
                             id={KEY_FORMAT_TYPE}
                             className="typeAheadField"
-                            onChange={this.handleFormatChanged}
+                            onChange={this.createSingleSelectHandler(KEY_FORMAT_TYPE)}
                             removeSelected
                             options={formatOptions}
                             placeholder="Choose the format for the job"
@@ -348,7 +308,7 @@ class BaseJobConfiguration extends Component {
                         <Select
                             id={KEY_NOTIFICATION_TYPES}
                             className="typeAheadField"
-                            onChange={this.handleNotificationChanged()}
+                            onChange={this.createMultiSelectHandler(KEY_NOTIFICATION_TYPES)}
                             isSearchable
                             isMulti
                             removeSelected
@@ -397,7 +357,7 @@ class BaseJobConfiguration extends Component {
                         <Select
                             id={KEY_FREQUENCY}
                             className="typeAheadField"
-                            onChange={this.handleFrequencyChanged}
+                            onChange={this.createSingleSelectHandler(KEY_FREQUENCY)}
                             isSearchable
                             options={frequencyOptions}
                             placeholder="Choose the frequency"
@@ -414,7 +374,7 @@ class BaseJobConfiguration extends Component {
                         <Select
                             id={KEY_PROVIDER_NAME}
                             className="typeAheadField"
-                            onChange={this.handleProviderChanged()}
+                            onChange={this.createSingleSelectHandler(KEY_PROVIDER_NAME)}
                             isSearchable
                             options={providerOptions}
                             placeholder="Choose the provider"

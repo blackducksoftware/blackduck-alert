@@ -8,6 +8,7 @@ import ConfigButtons from 'component/common/ConfigButtons';
 import { closeHipChatConfigTest, getConfig, openHipChatConfigTest, testConfig, updateConfig } from 'store/actions/hipChatConfig';
 import ChannelTestModal from 'component/common/ChannelTestModal';
 import * as FieldModelUtil from 'util/fieldModelUtilities';
+import * as DescriptorUtil from 'util/descriptorUtilities';
 
 const ID_KEY = 'id';
 const KEY_API_KEY = 'channel.hipchat.api.key';
@@ -24,7 +25,7 @@ class HipChatConfiguration extends React.Component {
         super(props);
 
         this.state = {
-            currentHipChatConfig: FieldModelUtil.createEmptyFieldModel(fieldNames, 'GLOBAL', 'channel_hipchat')
+            currentHipChatConfig: FieldModelUtil.createEmptyFieldModel(fieldNames, 'GLOBAL', DescriptorUtil.DESCRIPTOR_NAME.CHANNEL_HIPCHAT)
         };
 
         this.handleChange = this.handleChange.bind(this);
