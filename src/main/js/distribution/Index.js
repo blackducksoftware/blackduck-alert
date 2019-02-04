@@ -329,7 +329,7 @@ Index.propTypes = {
     autoRefresh: PropTypes.bool,
     descriptors: PropTypes.arrayOf(PropTypes.object),
     inProgress: PropTypes.bool.isRequired,
-    jobs: PropTypes.object.isRequired,
+    jobs: PropTypes.arrayOf(PropTypes.object).isRequired,
     jobConfigTableMessage: PropTypes.string.isRequired
 };
 
