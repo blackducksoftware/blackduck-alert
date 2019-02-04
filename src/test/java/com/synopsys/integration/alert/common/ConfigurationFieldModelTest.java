@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
-import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.PasswordConfigField;
@@ -20,7 +19,6 @@ import com.synopsys.integration.alert.common.descriptor.config.field.TextInputCo
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
 import com.synopsys.integration.alert.mock.MockDescriptorAccessor;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
@@ -51,8 +49,7 @@ public class ConfigurationFieldModelTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(true);
         final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(configFields);
-        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
-        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, baseConfigurationAccessor);
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor);
         final FieldAccessor accessor = modelConverter.convertToFieldAccessor(fieldModel);
 
         assertEquals(VALUE_FIELD_1, accessor.getString(KEY_FIELD_1).orElseThrow(IllegalArgumentException::new));
@@ -66,8 +63,7 @@ public class ConfigurationFieldModelTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
         final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(configFields);
-        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
-        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, baseConfigurationAccessor);
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor);
         final Map<String, ConfigurationFieldModel> actualModelMap = modelConverter.convertFromFieldModel(fieldModel);
         assertTrue(actualModelMap.containsKey(KEY_FIELD_1));
         assertTrue(actualModelMap.containsKey(KEY_FIELD_2));
@@ -76,44 +72,11 @@ public class ConfigurationFieldModelTest {
     }
 
     @Test
-    public void convertFromFieldModelWithStoredConfigTest() throws Exception {
-        final String fieldKey = "key";
-        final FieldValueModel fieldValueModel = new FieldValueModel(List.of(), true);
-
-        final Map<String, FieldValueModel> valueModelMap = Map.of(fieldKey, fieldValueModel);
-
-        final String fieldId = "1234";
-        final FieldModel fieldModel = new FieldModel("descriptor", "GLOBAL", valueModelMap);
-        fieldModel.setId(fieldId);
-
-        final List<ConfigField> configFields = List.of(TextInputConfigField.create(fieldKey, fieldKey));
-
-        final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
-        Mockito.when(encryptionUtility.isInitialized()).thenReturn(Boolean.TRUE);
-        final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(configFields);
-        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
-
-        final ConfigurationModel configurationModel = new ConfigurationModel(34L, 12L, "GLOBAL");
-        final ConfigurationFieldModel configurationFieldModel = ConfigurationFieldModel.createSensitive(fieldKey);
-        final String fieldValue = "TEST";
-        configurationFieldModel.setFieldValue(fieldValue);
-        configurationModel.put(configurationFieldModel);
-        Mockito.when(baseConfigurationAccessor.getConfigurationById(Mockito.anyLong())).thenReturn(Optional.of(configurationModel));
-
-        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, baseConfigurationAccessor);
-        final Map<String, ConfigurationFieldModel> actualModelMap = modelConverter.convertFromFieldModel(fieldModel);
-
-        assertTrue(actualModelMap.containsKey(fieldKey));
-        assertEquals(fieldValue, actualModelMap.get(fieldKey).getFieldValue().orElseThrow(IllegalArgumentException::new));
-    }
-
-    @Test
     public void convertFromFieldModelEmptyFieldsTest() throws Exception {
         final FieldModel fieldModel = createFieldModel();
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(List.of());
-        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
-        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, baseConfigurationAccessor);
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor);
         final Map<String, ConfigurationFieldModel> actualModelMap = modelConverter.convertFromFieldModel(fieldModel);
         assertTrue(actualModelMap.isEmpty());
     }
@@ -124,8 +87,7 @@ public class ConfigurationFieldModelTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(true);
         final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(configFields);
-        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
-        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, baseConfigurationAccessor);
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor);
         Optional<ConfigurationFieldModel> optionalModel = modelConverter.convertFromDefinedFieldModel(new DefinedFieldModel(KEY_FIELD_1, ConfigContextEnum.GLOBAL, false), VALUE_FIELD_1);
 
         assertTrue(optionalModel.isPresent());
@@ -148,8 +110,7 @@ public class ConfigurationFieldModelTest {
         final List<ConfigField> configFields = createConfigFields();
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(configFields);
-        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
-        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, baseConfigurationAccessor);
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor);
         final Optional<ConfigurationFieldModel> optionalModel = modelConverter.convertFromDefinedFieldModel(new DefinedFieldModel(KEY_FIELD_1, ConfigContextEnum.GLOBAL, true), VALUE_FIELD_1);
         assertTrue(optionalModel.isEmpty());
     }
@@ -160,8 +121,7 @@ public class ConfigurationFieldModelTest {
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         Mockito.when(encryptionUtility.isInitialized()).thenReturn(true);
         final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(configFields);
-        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
-        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, baseConfigurationAccessor);
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor);
         Optional<ConfigurationFieldModel> optionalModel = modelConverter.convertFromDefinedFieldModel(new DefinedFieldModel(KEY_FIELD_1, ConfigContextEnum.GLOBAL, false), List.of(VALUE_FIELD_1, VALUE_FIELD_2));
 
         assertTrue(optionalModel.isPresent());
@@ -184,8 +144,7 @@ public class ConfigurationFieldModelTest {
         final List<ConfigField> configFields = createConfigFields();
         final EncryptionUtility encryptionUtility = Mockito.mock(EncryptionUtility.class);
         final BaseDescriptorAccessor descriptorAccessor = new MockDescriptorAccessor(configFields);
-        final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
-        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor, baseConfigurationAccessor);
+        final ConfigurationFieldModelConverter modelConverter = new ConfigurationFieldModelConverter(encryptionUtility, descriptorAccessor);
         final Optional<ConfigurationFieldModel> optionalModel = modelConverter.convertFromDefinedFieldModel(new DefinedFieldModel(KEY_FIELD_1, ConfigContextEnum.GLOBAL, true), List.of(VALUE_FIELD_1, VALUE_FIELD_2));
         assertTrue(optionalModel.isEmpty());
     }

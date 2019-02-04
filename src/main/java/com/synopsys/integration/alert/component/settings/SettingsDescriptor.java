@@ -65,6 +65,10 @@ public class SettingsDescriptor extends ComponentDescriptor {
     public static final String FIELD_ERROR_DEFAULT_USER_PASSWORD = "Default admin user password missing";
     public static final String FIELD_ERROR_ENCRYPTION_PASSWORD = "Encryption password missing";
     public static final String FIELD_ERROR_ENCRYPTION_GLOBAL_SALT = "Encryption global salt missing";
+    public static final String FIELD_ERROR_PROXY_HOST_MISSING = "Proxy Host missing";
+    public static final String FIELD_ERROR_PROXY_PORT_INVALID = "Proxy Port not a number greater than 1";
+    public static final String FIELD_ERROR_PROXY_USER_MISSING = "Proxy Username missing";
+    public static final String FIELD_ERROR_PROXY_PASSWORD_MISSING = "Proxy Password missing";
     public static final String FIELD_ERROR_LDAP_SERVER_MISSING = "LDAP Server missing";
 
     @Autowired

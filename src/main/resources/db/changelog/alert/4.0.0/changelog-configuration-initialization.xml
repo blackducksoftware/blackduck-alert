@@ -409,10 +409,10 @@
             CALL DEFINE_FIELD('scheduling.accumulator.next.run', FALSE, 'component_scheduling', 'GLOBAL');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL DEFINE_FIELD('scheduling.daily.digest.hour', FALSE, 'component_scheduling', 'GLOBAL');
+            CALL DEFINE_FIELD('scheduling.daily.processor.hour', FALSE, 'component_scheduling', 'GLOBAL');
         </sql>
         <sql dbms="h2" stripComments="true">
-            CALL DEFINE_FIELD('scheduling.daily.digest.next.run', FALSE, 'component_scheduling', 'GLOBAL');
+            CALL DEFINE_FIELD('scheduling.daily.processor.next.run', FALSE, 'component_scheduling', 'GLOBAL');
         </sql>
         <sql dbms="h2" stripComments="true">
             CALL DEFINE_FIELD('scheduling.purge.data.frequency', FALSE, 'component_scheduling', 'GLOBAL');

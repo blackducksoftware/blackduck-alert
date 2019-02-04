@@ -91,6 +91,7 @@ public class EmailChannel extends DistributionChannel {
 
             final HashMap<String, Object> model = new HashMap<>();
             final Map<String, String> contentIdsToFilePaths = new HashMap<>();
+            final String imagesDirectory = getAlertProperties().getAlertImagesDir();
             String templateName = "";
             if (BlackDuckProvider.COMPONENT_NAME.equals(provider)) {
                 templateName = "black_duck_message_content.ftl";
@@ -104,7 +105,6 @@ public class EmailChannel extends DistributionChannel {
                 model.put(EmailPropertyKeys.TEMPLATE_KEY_START_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
                 model.put(EmailPropertyKeys.TEMPLATE_KEY_END_DATE.getPropertyKey(), String.valueOf(System.currentTimeMillis()));
 
-                final String imagesDirectory = getAlertProperties().getAlertImagesDir();
                 final String imageDirectoryPath;
                 if (StringUtils.isNotBlank(imagesDirectory)) {
                     imageDirectoryPath = imagesDirectory + "/Ducky-80.png";
@@ -117,6 +117,13 @@ public class EmailChannel extends DistributionChannel {
                 model.put(EmailPropertyKeys.EMAIL_CONTENT.getPropertyKey(), content);
                 model.put(EmailPropertyKeys.EMAIL_CATEGORY.getPropertyKey(), formatType);
                 model.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), subjectLine);
+                final String imageDirectoryPath;
+                if (StringUtils.isNotBlank(imagesDirectory)) {
+                    imageDirectoryPath = imagesDirectory + "/synopsys.png";
+                } else {
+                    imageDirectoryPath = System.getProperties().getProperty("user.dir") + "/src/main/resources/email/images/synopsys.png";
+                }
+                emailService.addTemplateImage(model, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), imageDirectoryPath);
             }
 
             if (!model.isEmpty() && StringUtils.isNotBlank(templateName)) {

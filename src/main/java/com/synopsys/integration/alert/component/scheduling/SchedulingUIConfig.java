@@ -45,7 +45,7 @@ public class SchedulingUIConfig extends UIConfig {
     @Override
     public List<ConfigField> createFields() {
         final ConfigField digestHour = SelectConfigField
-                                           .createRequired(SchedulingDescriptor.KEY_DAILY_DIGEST_HOUR_OF_DAY, "Daily digest hour of day", List.of("1", "2", "3", "4", "5", "6", "7", "8", "10", "11", "12"), this::validateDigestHourOfDay);
+                                           .createRequired(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, "Daily digest hour of day", List.of("1", "2", "3", "4", "5", "6", "7", "8", "10", "11", "12"), this::validateDigestHourOfDay);
         final ConfigField purgeFrequency = SelectConfigField.createRequired(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, "Purge data frequency in days", List.of("1", "2", "3"), this::validatePurgeFrequency);
         return Arrays.asList(digestHour, purgeFrequency);
     }

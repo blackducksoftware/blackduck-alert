@@ -136,13 +136,13 @@ public class StartupManagerTest {
         final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
         final ConfigurationModel schedulingModel = Mockito.mock(ConfigurationModel.class);
         final Map<String, ConfigurationFieldModel> configuredFields = new HashMap<>();
-        final ConfigurationFieldModel hourOfDayField = ConfigurationFieldModel.create(SchedulingDescriptor.KEY_DAILY_DIGEST_HOUR_OF_DAY);
+        final ConfigurationFieldModel hourOfDayField = ConfigurationFieldModel.create(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY);
         hourOfDayField.setFieldValue("1");
-        configuredFields.put(SchedulingDescriptor.KEY_DAILY_DIGEST_HOUR_OF_DAY, hourOfDayField);
+        configuredFields.put(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, hourOfDayField);
         final ConfigurationFieldModel purgeFrequencyField = ConfigurationFieldModel.create(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS);
         purgeFrequencyField.setFieldValue("2");
         configuredFields.put(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS, purgeFrequencyField);
-        Mockito.when(schedulingModel.getField(Mockito.eq(SchedulingDescriptor.KEY_DAILY_DIGEST_HOUR_OF_DAY))).thenReturn(Optional.of(hourOfDayField));
+        Mockito.when(schedulingModel.getField(Mockito.eq(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY))).thenReturn(Optional.of(hourOfDayField));
         Mockito.when(schedulingModel.getField(Mockito.eq(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS))).thenReturn(Optional.of(purgeFrequencyField));
         Mockito.when(schedulingModel.getCopyOfKeyToFieldMap()).thenReturn(configuredFields);
         final List<ConfigurationModel> configList = List.of(schedulingModel);
@@ -176,7 +176,7 @@ public class StartupManagerTest {
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
         final ConfigurationModel schedulingModel = Mockito.mock(ConfigurationModel.class);
-        Mockito.when(schedulingModel.getField(Mockito.eq(SchedulingDescriptor.KEY_DAILY_DIGEST_HOUR_OF_DAY))).thenReturn(Optional.empty());
+        Mockito.when(schedulingModel.getField(Mockito.eq(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY))).thenReturn(Optional.empty());
         Mockito.when(schedulingModel.getField(Mockito.eq(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS))).thenReturn(Optional.empty());
         final List<ConfigurationModel> configList = List.of(schedulingModel);
         Mockito.when(baseConfigurationAccessor.getConfigurationsByDescriptorName(SchedulingDescriptor.SCHEDULING_COMPONENT)).thenReturn(configList);
