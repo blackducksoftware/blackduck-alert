@@ -126,10 +126,10 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = state => ({
-    jobs: state.distributions.jobs,
-    error: state.distributions.error,
-    fetching: state.distributions.fetching,
-    inProgress: state.distributions.inProgress
+    jobs: state.distributionConfigs.jobs,
+    error: state.distributionConfigs.error,
+    fetching: state.distributionConfigs.fetching,
+    inProgress: state.distributionConfigs.inProgress
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SlackJobConfiguration);

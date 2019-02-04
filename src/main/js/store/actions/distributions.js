@@ -1,8 +1,8 @@
 import { DISTRIBUTION_JOB_DELETE_ERROR, DISTRIBUTION_JOB_DELETED, DISTRIBUTION_JOB_DELETING, DISTRIBUTION_JOB_FETCH_ERROR_ALL, DISTRIBUTION_JOB_FETCHED_ALL, DISTRIBUTION_JOB_FETCHING_ALL } from 'store/actions/types';
 
 import { verifyLoginByStatus } from 'store/actions/session';
-import * as ConfigRequestBuilder from '../../util/configurationRequestBuilder';
-import * as FieldModelUtil from '../../util/fieldModelUtilities';
+import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
+import * as FieldModelUtil from 'util/fieldModelUtilities';
 
 
 function fetchingAllJobs() {

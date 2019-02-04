@@ -127,7 +127,7 @@ HipChatJobConfiguration.propTypes = {
     handleSaveBtnClick: PropTypes.func.isRequired,
     alertChannelName: PropTypes.string.isRequired,
     fetching: PropTypes.bool,
-    inProgress: PropTypes.bool,
+    inProgress: PropTypes.bool
 };
 
 HipChatJobConfiguration.defaultProps = {
@@ -152,10 +152,10 @@ HipChatJobConfiguration.defaultProps = {
 };
 
 const mapStateToProps = state => ({
-    jobs: state.distributions.jobs,
-    error: state.distributions.error,
-    fetching: state.distributions.fetching,
-    inProgress: state.distributions.inProgress
+    jobs: state.distributionConfigs.jobs,
+    error: state.distributionConfigs.error,
+    fetching: state.distributionConfigs.fetching,
+    inProgress: state.distributionConfigs.inProgress
 });
 
 const mapDispatchToProps = dispatch => ({
