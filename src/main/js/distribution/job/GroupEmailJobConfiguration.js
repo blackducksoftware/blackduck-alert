@@ -30,8 +30,8 @@ class GroupEmailJobConfiguration extends Component {
     }
 
     componentDidMount() {
-        const { baseUrl, distributionConfigId } = this.props;
-        this.props.getDistributionJob(baseUrl, distributionConfigId);
+        const { distributionConfigId } = this.props;
+        this.props.getDistributionJob(distributionConfigId);
         this.loading = true;
     }
 
@@ -65,6 +65,7 @@ class GroupEmailJobConfiguration extends Component {
     }
 
     render() {
+        const fieldModel = this.state.currentConfig;
         const content = (
             <div>
                 <TextInput
@@ -87,8 +88,6 @@ class GroupEmailJobConfiguration extends Component {
                 />
             </div>);
         return (<BaseJobConfiguration
-            baseUrl={this.props.baseUrl}
-            testUrl={this.props.testUrl}
             alertChannelName={this.props.alertChannelName}
             distributionConfigId={this.props.distributionConfigId}
             handleCancel={this.props.handleCancel}
@@ -102,8 +101,6 @@ class GroupEmailJobConfiguration extends Component {
 GroupEmailJobConfiguration.propTypes = {
     jobs: PropTypes.object,
     distributionConfigId: PropTypes.string,
-    baseUrl: PropTypes.string,
-    testUrl: PropTypes.string,
     getDistributionJob: PropTypes.func.isRequired,
     fieldErrors: PropTypes.object,
     handleCancel: PropTypes.func.isRequired,
@@ -116,15 +113,13 @@ GroupEmailJobConfiguration.propTypes = {
 GroupEmailJobConfiguration.defaultProps = {
     jobs: {},
     distributionConfigId: null,
-    baseUrl: `/alert/api/configuration/channel/distribution/${DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_EMAIL}`,
-    testUrl: `/alert/api/configuration/channel/distribution/${DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_EMAIL}/test`,
     fieldErrors: {},
     fetching: false,
     inProgress: false
 };
 
 const mapDispatchToProps = dispatch => ({
-    getDistributionJob: (url, id) => dispatch(getDistributionJob(url, id))
+    getDistributionJob: id => dispatch(getDistributionJob(id))
 });
 
 const mapStateToProps = state => ({

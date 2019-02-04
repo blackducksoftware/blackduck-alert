@@ -49,12 +49,13 @@ class BaseJobConfiguration extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            saving: false,
             success: false,
             fieldErrors: {},
-            currentConfig: {}
+            currentConfig: {},
+            providerOptions: {}
         };
         this.loading = false;
+        this.saving = false;
         this.handleChange = this.handleChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -70,13 +71,15 @@ class BaseJobConfiguration extends Component {
 
     componentDidMount() {
         this.loading = true;
+        const providerOptions = this.createProviderOptions();
+        this.setState({
+            providerOptions
+        });
     }
 
     componentWillReceiveProps(nextProps) {
-        if (this.state.saving) {
-            this.setState({
-                saving: false
-            });
+        if (this.saving) {
+            this.saving = false;
             if (nextProps.success && nextProps.handleSaveBtnClick) {
                 nextProps.handleSaveBtnClick(this.state);
                 return;
@@ -91,14 +94,12 @@ class BaseJobConfiguration extends Component {
                 });
             } else if (this.loading) {
                 this.loading = false;
-                const providerOptions = this.createProviderOptions();
                 const stateValues = Object.assign({}, this.state, {
                     fetching: nextProps.fetching,
                     inProgress: nextProps.inProgress,
                     success: nextProps.success,
                     configurationMessage: nextProps.configurationMessage,
-                    fieldErrors: nextProps.fieldErrors ? nextProps.fieldErrors : {},
-                    providerOptions
+                    fieldErrors: nextProps.fieldErrors ? nextProps.fieldErrors : {}
                 });
 
                 if (nextProps.distributionConfigId) {
@@ -130,8 +131,9 @@ class BaseJobConfiguration extends Component {
                             includeAllProjects: true
                         });
                     }
-                    if (!this.state.providerName && providerOptions.length === 1) {
-                        const providerSelection = providerOptions[0].value;
+                    const providers = this.state.providerOptions;
+                    if (!this.state.providerName && providers.length === 1) {
+                        const providerSelection = providers[0].value;
                         nextProps.getDistributionDescriptor(providerSelection, nextProps.alertChannelName);
                         this.setState({
                             providerName: providerSelection
@@ -153,8 +155,8 @@ class BaseJobConfiguration extends Component {
     }
 
     handleSubmit(event) {
+        this.saving = true;
         this.setState({
-            saving: true,
             fieldErrors: {}
         });
         if (event) {
@@ -240,7 +242,7 @@ class BaseJobConfiguration extends Component {
         if (providers) {
             const optionList = providers.map(descriptor => ({
                 label: descriptor.label,
-                value: descriptor.descriptorName,
+                value: descriptor.name,
                 icon: descriptor.fontAwesomeIcon
             }));
             return optionList;
@@ -334,11 +336,11 @@ class BaseJobConfiguration extends Component {
     }
 
     render() {
-        const [providerOptions] = this.state;
+        const providers = this.state.providerOptions;
         const fieldModel = this.state.currentConfig;
         let selectedProviderOption = null;
-        if (providerOptions) {
-            selectedProviderOption = providerOptions.find(option => option.value === this.state.providerName);
+        if (providers) {
+            selectedProviderOption = providers.find(option => option.value === this.state.providerName);
         }
         return (
             <form className="form-horizontal" onSubmit={this.onSubmit}>
@@ -376,7 +378,7 @@ class BaseJobConfiguration extends Component {
                             className="typeAheadField"
                             onChange={this.createSingleSelectHandler(KEY_PROVIDER_NAME)}
                             isSearchable
-                            options={providerOptions}
+                            options={providers}
                             placeholder="Choose the provider"
                             value={selectedProviderOption}
                             components={{ Option: CustomProviderTypeOptionLabel, SingleValue: CustomProviderTypeLabel }}
@@ -429,10 +431,10 @@ BaseJobConfiguration.defaultProps = {
 };
 
 const mapDispatchToProps = dispatch => ({
-    getDistributionJob: (id) => dispatch(getDistributionJob(id)),
-    saveDistributionJob: (config) => dispatch(saveDistributionJob(config)),
-    updateDistributionJob: (config) => dispatch(updateDistributionJob(config)),
-    testDistributionJob: (config) => dispatch(testDistributionJob(config)),
+    getDistributionJob: id => dispatch(getDistributionJob(id)),
+    saveDistributionJob: config => dispatch(saveDistributionJob(config)),
+    updateDistributionJob: config => dispatch(updateDistributionJob(config)),
+    testDistributionJob: config => dispatch(testDistributionJob(config)),
     getDistributionDescriptor: (provider, channel) => dispatch(getDistributionDescriptor(provider, channel))
 });
 

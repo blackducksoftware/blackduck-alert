@@ -30,8 +30,8 @@ class SlackJobConfiguration extends Component {
     }
 
     componentDidMount() {
-        const { baseUrl, distributionConfigId } = this.props;
-        this.props.getDistributionJob(baseUrl, distributionConfigId);
+        const { distributionConfigId } = this.props;
+        this.props.getDistributionJob(distributionConfigId);
         this.loading = true;
     }
 
@@ -96,8 +96,6 @@ class SlackJobConfiguration extends Component {
                 />
             </div>);
         return (<BaseJobConfiguration
-            baseUrl={this.props.baseUrl}
-            testUrl={this.props.testUrl}
             alertChannelName={DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_SLACK}
             distributionConfigId={this.props.distributionConfigId}
             handleCancel={this.props.handleCancel}
@@ -112,8 +110,6 @@ SlackJobConfiguration.propTypes = {
     getDistributionJob: PropTypes.func.isRequired,
     jobs: PropTypes.object,
     distributionConfigId: PropTypes.string,
-    baseUrl: PropTypes.string,
-    testUrl: PropTypes.string,
     fieldErrors: PropTypes.object,
     handleCancel: PropTypes.func.isRequired,
     handleSaveBtnClick: PropTypes.func.isRequired,
@@ -124,15 +120,13 @@ SlackJobConfiguration.propTypes = {
 SlackJobConfiguration.defaultProps = {
     jobs: {},
     distributionConfigId: null,
-    baseUrl: `/alert/api/configuration/channel/distribution/${DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_SLACK}`,
-    testUrl: `/alert/api/configuration/channel/distribution/${DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_SLACK}/test`,
     fieldErrors: {},
     fetching: false,
     inProgress: false
 };
 
 const mapDispatchToProps = dispatch => ({
-    getDistributionJob: (url, id) => dispatch(getDistributionJob(url, id))
+    getDistributionJob: id => dispatch(getDistributionJob(id))
 });
 
 const mapStateToProps = state => ({

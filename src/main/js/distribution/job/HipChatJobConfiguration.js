@@ -34,8 +34,8 @@ class HipChatJobConfiguration extends Component {
     }
 
     componentDidMount() {
-        const { baseUrl, distributionConfigId } = this.props;
-        this.props.getDistributionJob(baseUrl, distributionConfigId);
+        const { distributionConfigId } = this.props;
+        this.props.getDistributionJob(distributionConfigId);
         this.loading = true;
     }
 
@@ -136,8 +136,6 @@ class HipChatJobConfiguration extends Component {
             </div>
         );
         return (<BaseJobConfiguration
-            baseUrl={this.props.baseUrl}
-            testUrl={this.props.testUrl}
             alertChannelName={this.props.alertChannelName}
             distributionConfigId={this.props.distributionConfigId}
             handleCancel={this.props.handleCancel}
@@ -152,8 +150,6 @@ HipChatJobConfiguration.propTypes = {
     getDistributionJob: PropTypes.func.isRequired,
     jobs: PropTypes.object,
     distributionConfigId: PropTypes.string,
-    baseUrl: PropTypes.string,
-    testUrl: PropTypes.string,
     colorOptions: PropTypes.arrayOf(PropTypes.object),
     fieldErrors: PropTypes.object,
     handleCancel: PropTypes.func.isRequired,
@@ -166,8 +162,6 @@ HipChatJobConfiguration.propTypes = {
 HipChatJobConfiguration.defaultProps = {
     jobs: {},
     distributionConfigId: null,
-    baseUrl: `/alert/api/configuration/channel/distribution/${DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_HIPCHAT}`,
-    testUrl: `/alert/api/configuration/channel/distribution/${DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_HIPCHAT}/test`,
     colorOptions: [
         { label: 'Yellow', value: 'yellow' },
         { label: 'Green', value: 'green' },
@@ -189,7 +183,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    getDistributionJob: (url, id) => dispatch(getDistributionJob(url, id))
+    getDistributionJob: id => dispatch(getDistributionJob(id))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(HipChatJobConfiguration);
