@@ -7,8 +7,8 @@ import PasswordInput from 'field/input/PasswordInput';
 import ConfigButtons from 'component/common/ConfigButtons';
 import { closeHipChatConfigTest, getConfig, openHipChatConfigTest, testConfig, updateConfig } from 'store/actions/hipChatConfig';
 import ChannelTestModal from 'component/common/ChannelTestModal';
-import * as FieldModelUtil from 'util/fieldModelUtilities';
-import * as DescriptorUtil from 'util/descriptorUtilities';
+import * as FieldModelUtilities from 'util/fieldModelUtilities';
+import * as DescriptorUtilities from 'util/descriptorUtilities';
 
 const ID_KEY = 'id';
 const KEY_API_KEY = 'channel.hipchat.api.key';
@@ -25,7 +25,7 @@ class HipChatConfiguration extends React.Component {
         super(props);
 
         this.state = {
-            currentHipChatConfig: FieldModelUtil.createEmptyFieldModel(fieldNames, 'GLOBAL', DescriptorUtil.DESCRIPTOR_NAME.CHANNEL_HIPCHAT)
+            currentHipChatConfig: FieldModelUtilities.createEmptyFieldModel(fieldNames, 'GLOBAL', DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_HIPCHAT)
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -38,7 +38,7 @@ class HipChatConfiguration extends React.Component {
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (this.props.currentHipChatConfig !== prevProps.currentHipChatConfig && (this.props.updateStatus === 'FETCHED' || this.props.updateStatus === 'UPDATED')) {
-            const newState = FieldModelUtil.checkModelOrCreateEmpty(this.props.currentHipChatConfig, fieldNames);
+            const newState = FieldModelUtilities.checkModelOrCreateEmpty(this.props.currentHipChatConfig, fieldNames);
             this.setState({
                 currentHipChatConfig: newState
             });
@@ -47,7 +47,7 @@ class HipChatConfiguration extends React.Component {
 
     handleChange({ target }) {
         const value = target.type === 'checkbox' ? target.checked : target.value;
-        const newState = FieldModelUtil.updateFieldModelSingleValue(this.state.currentHipChatConfig, target.name, value);
+        const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.currentHipChatConfig, target.name, value);
         this.setState({
             currentHipChatConfig: newState
         });
@@ -82,10 +82,10 @@ class HipChatConfiguration extends React.Component {
                         id={KEY_API_KEY}
                         label="Api Key"
                         name={KEY_API_KEY}
-                        value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_API_KEY)}
-                        isSet={FieldModelUtil.isFieldModelValueSet(fieldModel, KEY_API_KEY)}
+                        value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_API_KEY)}
+                        isSet={FieldModelUtilities.isFieldModelValueSet(fieldModel, KEY_API_KEY)}
                         onChange={this.handleChange}
-                        errorName={FieldModelUtil.createFieldModelErrorKey(KEY_API_KEY)}
+                        errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_API_KEY)}
                         errorValue={this.props.fieldErrors[KEY_API_KEY]}
                     />
                     <div>
@@ -93,9 +93,9 @@ class HipChatConfiguration extends React.Component {
                             id={KEY_HOST_SERVER}
                             label="HipChat Host Server Url"
                             name={KEY_HOST_SERVER}
-                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_HOST_SERVER)}
+                            value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_HOST_SERVER)}
                             onChange={this.handleChange}
-                            errorName={FieldModelUtil.createFieldModelErrorKey(KEY_HOST_SERVER)}
+                            errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_HOST_SERVER)}
                             errorValue={this.props.fieldErrors[KEY_HOST_SERVER]}
                         />
                     </div>

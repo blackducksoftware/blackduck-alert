@@ -10,7 +10,7 @@ import {
 
 import { verifyLoginByStatus } from 'store/actions/session';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
-import * as FieldModelUtil from 'util/fieldModelUtilities';
+import * as FieldModelUtilities from 'util/fieldModelUtilities';
 
 
 function fetchingAllJobs() {
@@ -68,7 +68,7 @@ function fetchAuditInfoForJob(csrfToken, jobConfig) {
     let lastRan = 'Unknown';
     let status = 'Unknown';
 
-    const configId = FieldModelUtil.getFieldModelSingleValue(jobConfig, 'configId');
+    const configId = FieldModelUtilities.getFieldModelSingleValue(jobConfig, 'configId');
     fetch(`/alert/api/audit/job/${configId}`, {
         credentials: 'same-origin',
         headers: {
@@ -88,8 +88,8 @@ function fetchAuditInfoForJob(csrfToken, jobConfig) {
         console.log(error);
     });
 
-    newConfig = FieldModelUtil.updateFieldModelSingleValue(newConfig, 'lastRan', lastRan);
-    newConfig = FieldModelUtil.updateFieldModelSingleValue(newConfig, 'status', status);
+    newConfig = FieldModelUtilities.updateFieldModelSingleValue(newConfig, 'lastRan', lastRan);
+    newConfig = FieldModelUtilities.updateFieldModelSingleValue(newConfig, 'status', status);
 
     return newConfig;
 }

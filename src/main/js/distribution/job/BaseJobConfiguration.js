@@ -11,8 +11,8 @@ import { frequencyOptions } from 'util/distribution-data';
 import { getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob } from 'store/actions/distributionConfigs';
 import { getDistributionDescriptor } from 'store/actions/descriptors';
 import DescriptorOption from 'component/common/DescriptorOption';
-import * as FieldModelUtil from 'util/fieldModelUtilities';
-import * as DescriptorUtil from 'util/descriptorUtilities';
+import * as FieldModelUtilities from 'util/fieldModelUtilities';
+import * as DescriptorUtilities from 'util/descriptorUtilities';
 
 const { Option, SingleValue } = components;
 
@@ -183,7 +183,7 @@ class BaseJobConfiguration extends Component {
 
     handleChange({ target }) {
         const value = target.type === 'checkbox' ? target.checked : target.value;
-        const newState = FieldModelUtil.updateFieldModelSingleValue(this.state.currentConfig, target.name, value);
+        const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, target.name, value);
         this.setState({
             currentConfig: newState
         });
@@ -205,12 +205,12 @@ class BaseJobConfiguration extends Component {
         return (selectedValue) => {
             if (selectedValue) {
                 const selected = selectedValue.value;
-                const newState = FieldModelUtil.updateFieldModelSingleValue(this.state.currentConfig, fieldKey, selected);
+                const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, fieldKey, selected);
                 this.setState({
                     settingsData: newState
                 });
             } else {
-                const newState = FieldModelUtil.updateFieldModelSingleValue(this.state.currentConfig, fieldKey, null);
+                const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, fieldKey, null);
                 this.setState({
                     settingsData: newState
                 });
@@ -222,12 +222,12 @@ class BaseJobConfiguration extends Component {
         return (selectedValues) => {
             if (selectedValues && selectedValues.length > 0) {
                 const selected = selectedValues.map(item => item.value);
-                const newState = FieldModelUtil.updateFieldModelValues(this.state.currentConfig, fieldKey, selected);
+                const newState = FieldModelUtilities.updateFieldModelValues(this.state.currentConfig, fieldKey, selected);
                 this.setState({
                     settingsData: newState
                 });
             } else {
-                const newState = FieldModelUtil.updateFieldModelValues(this.state.currentConfig, fieldKey, []);
+                const newState = FieldModelUtilities.updateFieldModelValues(this.state.currentConfig, fieldKey, []);
                 this.setState({
                     settingsData: newState
                 });
@@ -236,7 +236,7 @@ class BaseJobConfiguration extends Component {
     }
 
     createProviderOptions() {
-        const providers = DescriptorUtil.findDescriptorByTypeAndContext(this.props.descriptors.items, DescriptorUtil.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtil.CONTEXT_TYPE.DISTRIBUTION);
+        const providers = DescriptorUtilities.findDescriptorByTypeAndContext(this.props.descriptors.items, DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
         if (providers) {
             const optionList = providers.map(descriptor => ({
                 label: descriptor.label,
@@ -296,7 +296,7 @@ class BaseJobConfiguration extends Component {
                             options={formatOptions}
                             placeholder="Choose the format for the job"
                             value={formatOptions.find((option) => {
-                                const selectedOption = FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_FORMAT_TYPE);
+                                const selectedOption = FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_FORMAT_TYPE);
                                 return option.value === selectedOption;
                             })}
                         />
@@ -346,9 +346,9 @@ class BaseJobConfiguration extends Component {
                     id={KEY_NAME}
                     label="Job Name"
                     name={KEY_NAME}
-                    value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_NAME)}
+                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_NAME)}
                     onChange={this.handleChange}
-                    errorName={FieldModelUtil.createFieldModelErrorKey(KEY_NAME)}
+                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_NAME)}
                     errorValue={this.props.fieldErrors[KEY_NAME]}
                 />
                 <div className="form-group">
@@ -362,7 +362,7 @@ class BaseJobConfiguration extends Component {
                             options={frequencyOptions}
                             placeholder="Choose the frequency"
                             value={frequencyOptions.find((option) => {
-                                const selectedOption = FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_FREQUENCY);
+                                const selectedOption = FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_FREQUENCY);
                                 return option.value === selectedOption;
                             })}
                         />
