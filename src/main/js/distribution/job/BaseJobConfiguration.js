@@ -6,8 +6,6 @@ import TextInput from 'field/input/TextInput';
 import ProjectConfiguration from 'distribution/ProjectConfiguration';
 import ConfigButtons from 'component/common/ConfigButtons';
 
-import { frequencyOptions } from 'util/distribution-data';
-
 import { getDistributionJob, saveDistributionJob, testDistributionJob, updateDistributionJob } from 'store/actions/distributionConfigs';
 import { getDistributionDescriptor } from 'store/actions/descriptors';
 import DescriptorOption from 'component/common/DescriptorOption';
@@ -45,13 +43,18 @@ const fieldNames = [
     KEY_FORMAT_TYPE
 ];
 
+const FIELD_MODEL_KEY = {
+    COMMON: 'commonConfig',
+    PROVIDER: 'provider'
+}
+
 class BaseJobConfiguration extends Component {
     constructor(props) {
         super(props);
         this.state = {
             success: false,
             fieldErrors: {},
-            currentConfig: FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, this.props.alertChannelName),
+            commonConfig: FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, this.props.alertChannelName),
             providerConfig: {},
             providerOptions: []
         };
@@ -62,6 +65,9 @@ class BaseJobConfiguration extends Component {
         this.onSubmit = this.onSubmit.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTestSubmit = this.handleTestSubmit.bind(this);
+        this.getSelectedSingleValue = this.getSelectedSingleValue.bind(this);
+        this.getSelectedValues = this.getSelectedValues.bind(this);
+        this.createFrequencyOptions = this.createFrequencyOptions.bind(this);
         this.createProviderOptions = this.createProviderOptions.bind(this);
         this.createNotificationTypeOptions = this.createNotificationTypeOptions.bind(this);
         this.createFormatTypeOptions = this.createFormatTypeOptions.bind(this);
@@ -140,6 +146,27 @@ class BaseJobConfiguration extends Component {
         }
     }
 
+    getSelectedSingleValue(options, fieldModel, fieldKey) {
+        if (options) {
+            if (options.length === 1) {
+                const [selectedProviderOption] = options;
+                return selectedProviderOption;
+            }
+            return options.find(option => option.value === FieldModelUtilities.getFieldModelSingleValue(fieldModel, fieldKey));
+        }
+        return null;
+    }
+
+    getSelectedValues(options, fieldModel, fieldKey) {
+        if (options) {
+            if (options.length === 1) {
+                return options;
+            }
+            return options.filter(option => FieldModelUtilities.getFieldModelValues(fieldModel, fieldKey).indexOf(option.value) !== -1);
+        }
+        return [];
+    }
+
     handleSubmit(event) {
         this.saving = true;
         this.setState({
@@ -149,7 +176,7 @@ class BaseJobConfiguration extends Component {
             event.preventDefault();
         }
         const jsonBody = this.buildJsonBody();
-        if (this.state.currentConfig.id) {
+        if (this.state.commonConfig.id) {
             this.props.updateDistributionJob(jsonBody);
         } else {
             this.props.saveDistributionJob(jsonBody);
@@ -157,7 +184,8 @@ class BaseJobConfiguration extends Component {
     }
 
     buildJsonBody() {
-        const configuration = Object.assign({}, this.state.currentConfig, this.props.getParentConfiguration());
+        const channelSpecific = this.props.getParentConfiguration();
+        const configuration = Object.assign({}, this.state.commonConfig, this.state.providerConfig, channelSpecific);
         return JSON.stringify(configuration);
     }
 
@@ -180,7 +208,7 @@ class BaseJobConfiguration extends Component {
             const value = target.type === 'checkbox' ? target.checked : target.value;
             const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state[fieldModelKey], target.name, value);
             this.setState({
-                currentConfig: newState
+                commonConfig: newState
             });
         };
     }
@@ -233,47 +261,51 @@ class BaseJobConfiguration extends Component {
     }
 
     createNotificationTypeOptions() {
-        const selectedProvider = FieldModelUtilities.getFieldModelSingleValue(this.state.currentConfig, KEY_PROVIDER_NAME);
-        console.log("Selected provider", selectedProvider);
+        const selectedProvider = FieldModelUtilities.getFieldModelSingleValue(this.state.commonConfig, KEY_PROVIDER_NAME);
         if (selectedProvider) {
-            const descriptor = DescriptorUtilities.findDescriptorByTypeAndContext(this.props.descriptors, selectedProvider, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
-            const { options } = DescriptorUtilities.findDescriptorFieldOptions(descriptor, KEY_NOTIFICATION_TYPES);
-            const optionList = options.map(option => Object.assign({}, { label: option, value: option }));
-            return optionList;
+            const [descriptor] = DescriptorUtilities.findDescriptorByNameAndContext(this.props.descriptors.items, selectedProvider, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+            const options = DescriptorUtilities.findDescriptorFieldOptions(descriptor, KEY_NOTIFICATION_TYPES);
+            if (options) {
+                const optionList = options.map(option => Object.assign({}, { label: option, value: option }));
+                return optionList;
+            }
         }
         return [];
     }
 
     createFormatTypeOptions() {
-        const selectedChannel = FieldModelUtilities.getFieldModelSingleValue(this.state.currentConfig, KEY_CHANNEL_NAME);
-        console.log("Selected channel", selectedChannel);
-        if (selectedChannel) {
-            const descriptor = DescriptorUtilities.findDescriptorByTypeAndContext(this.props.descriptors, selectedChannel, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
-            const { options } = DescriptorUtilities.findDescriptorFieldOptions(descriptor, KEY_FORMAT_TYPE);
-            const optionList = options.map(option => Object.assign({}, { label: option, value: option }));
-            return optionList;
+        const selectedProvider = FieldModelUtilities.getFieldModelSingleValue(this.state.commonConfig, KEY_PROVIDER_NAME);
+        if (selectedProvider) {
+            const [descriptor] = DescriptorUtilities.findDescriptorByNameAndContext(this.props.descriptors.items, selectedProvider, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+            const options = DescriptorUtilities.findDescriptorFieldOptions(descriptor, KEY_FORMAT_TYPE);
+            if (options) {
+                return options.map(option => Object.assign({}, { label: option, value: option }));
+            }
         }
         return [];
     }
 
+    createFrequencyOptions() {
+        const [descriptor] = DescriptorUtilities.findDescriptorByNameAndContext(this.props.descriptors.items, this.props.alertChannelName, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+        const options = DescriptorUtilities.findDescriptorFieldOptions(descriptor, KEY_FREQUENCY);
+        if (options) {
+            return options.map(option => Object.assign({}, { label: option, value: option }));
+        }
+        return [];
+    }
+
+
     renderDistributionForm() {
-        const selectedProvider = FieldModelUtilities.getFieldModelSingleValue(this.state.currentConfig, KEY_PROVIDER_NAME);
+        const selectedProvider = FieldModelUtilities.getFieldModelSingleValue(this.state.commonConfig, KEY_PROVIDER_NAME);
         if (!selectedProvider) {
             return null;
         }
 
-        const fieldModel = this.state.currentConfig;
+        const fieldModel = this.state.commonConfig;
         const formatOptions = this.createFormatTypeOptions();
         const notificationOptions = this.createNotificationTypeOptions();
-        let configuredNotificationOptions = null;
-        const selectedNotifications = FieldModelUtilities.getFieldModelValues(fieldModel, KEY_NOTIFICATION_TYPES);
-        if (selectedNotifications) {
-            configuredNotificationOptions = notificationOptions.filter(option => selectedNotifications.indexOf(option.value) !== -1);
-        }
-        console.log("formatOptions", formatOptions);
-        console.log("notificationTypes", notificationOptions);
-        console.log("selectedNotificationOptions", selectedNotifications);
-        console.log("configuredNotifications", configuredNotificationOptions);
+        const selectedFormatType = this.getSelectedSingleValue(formatOptions, fieldModel, KEY_FORMAT_TYPE);
+        const selectedNotifications = this.getSelectedValues(notificationOptions, fieldModel, KEY_NOTIFICATION_TYPES);
 
         return (
             <div>
@@ -283,14 +315,11 @@ class BaseJobConfiguration extends Component {
                         <Select
                             id={KEY_FORMAT_TYPE}
                             className="typeAheadField"
-                            onChange={this.createSingleSelectHandler(KEY_FORMAT_TYPE)}
+                            onChange={this.createSingleSelectHandler(KEY_FORMAT_TYPE, FIELD_MODEL_KEY.COMMON)}
                             removeSelected
                             options={formatOptions}
                             placeholder="Choose the format for the job"
-                            value={formatOptions.find((option) => {
-                                const selectedOption = FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_FORMAT_TYPE);
-                                return option.value === selectedOption;
-                            })}
+                            value={selectedFormatType}
                         />
                     </div>
                 </div>
@@ -300,13 +329,13 @@ class BaseJobConfiguration extends Component {
                         <Select
                             id={KEY_NOTIFICATION_TYPES}
                             className="typeAheadField"
-                            onChange={this.createMultiSelectHandler(KEY_NOTIFICATION_TYPES)}
+                            onChange={this.createMultiSelectHandler(KEY_NOTIFICATION_TYPES, FIELD_MODEL_KEY.COMMON)}
                             isSearchable
                             isMulti
                             removeSelected
                             options={notificationOptions}
                             placeholder="Choose the notification types"
-                            value={configuredNotificationOptions}
+                            value={selectedNotifications}
                         />
                     </div>
                 </div>
@@ -327,15 +356,11 @@ class BaseJobConfiguration extends Component {
 
     render() {
         const providers = this.createProviderOptions();
-        const fieldModel = this.state.currentConfig;
-        let selectedProviderOption = null;
-        if (providers) {
-            if (providers.length === 1) {
-                [selectedProviderOption] = providers;
-            } else {
-                selectedProviderOption = providers.find(option => option.value === this.state.providerName);
-            }
-        }
+        const frequencyOptions = this.createFrequencyOptions();
+        const fieldModel = this.state.commonConfig;
+        const selectedProviderOption = this.getSelectedSingleValue(providers, fieldModel, KEY_PROVIDER_NAME);
+        const selectedFrequencyOption = this.getSelectedSingleValue(frequencyOptions, fieldModel, KEY_FREQUENCY);
+
         return (
             <form className="form-horizontal" onSubmit={this.onSubmit}>
                 <TextInput
@@ -343,7 +368,7 @@ class BaseJobConfiguration extends Component {
                     label="Job Name"
                     name={KEY_NAME}
                     value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_NAME)}
-                    onChange={this.handleChange}
+                    onChange={this.handleChange(FIELD_MODEL_KEY.COMMON)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_NAME)}
                     errorValue={this.props.fieldErrors[KEY_NAME]}
                 />
@@ -353,14 +378,11 @@ class BaseJobConfiguration extends Component {
                         <Select
                             id={KEY_FREQUENCY}
                             className="typeAheadField"
-                            onChange={this.createSingleSelectHandler(KEY_FREQUENCY)}
+                            onChange={this.createSingleSelectHandler(KEY_FREQUENCY, FIELD_MODEL_KEY.COMMON)}
                             isSearchable
                             options={frequencyOptions}
                             placeholder="Choose the frequency"
-                            value={frequencyOptions.find((option) => {
-                                const selectedOption = FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_FREQUENCY);
-                                return option.value === selectedOption;
-                            })}
+                            value={selectedFrequencyOption}
                         />
                     </div>
                 </div>
@@ -370,7 +392,7 @@ class BaseJobConfiguration extends Component {
                         <Select
                             id={KEY_PROVIDER_NAME}
                             className="typeAheadField"
-                            onChange={this.createSingleSelectHandler(KEY_PROVIDER_NAME)}
+                            onChange={this.createSingleSelectHandler(KEY_PROVIDER_NAME, FIELD_MODEL_KEY.COMMON)}
                             isSearchable
                             options={providers}
                             placeholder="Choose the provider"
@@ -406,7 +428,7 @@ BaseJobConfiguration.propTypes = {
     alertChannelName: PropTypes.string.isRequired,
     currentDistributionComponents: PropTypes.object,
     projects: PropTypes.arrayOf(PropTypes.any),
-    currentConfig: PropTypes.object
+    commonConfig: PropTypes.object
 };
 
 BaseJobConfiguration.defaultProps = {
@@ -421,7 +443,7 @@ BaseJobConfiguration.defaultProps = {
     distributionConfigId: null,
     currentDistributionComponents: null,
     projects: [],
-    currentConfig: {}
+    commonConfig: {}
 };
 
 const mapDispatchToProps = dispatch => ({
