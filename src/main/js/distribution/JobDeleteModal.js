@@ -4,22 +4,34 @@ import PropTypes from 'prop-types';
 import { Modal } from 'react-bootstrap';
 import ConfigButtons from 'distribution/job/BaseJobConfiguration';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { deleteDistributionJob } from 'store/actions/distributions';
 
 class JobDeleteModal extends Component {
     constructor(props) {
         super(props);
         this.onSubmit = this.onSubmit.bind(this);
         this.handleClose = this.handleClose.bind(this);
+        this.state = {
+            inProgress: false
+        };
     }
 
 
     onSubmit(event) {
         event.preventDefault();
+        this.setState({
+            inProgress: true
+        });
         this.props.jobs.forEach((job) => {
             this.props.deleteDistributionJob(job);
         });
         this.props.onModalSubmit();
-        this.props.onModalClose();
+        this.setState({
+            inProgress: false
+        });
+        if (!this.props.jobConfigTableMessage) {
+            this.props.onModalClose();
+        }
     }
 
 
@@ -61,7 +73,8 @@ class JobDeleteModal extends Component {
                                 <TableHeaderColumn dataField="status" dataSort columnTitle columnClassName={this.props.statusColumnClassNameFormat}>Status</TableHeaderColumn>
                             </BootstrapTable>
                         </div>
-                        <ConfigButtons cancelId="job-cancel" submitId="job-submit" submitLabel="Confirm" includeSave includeCancel onCancelClick={this.handleClose} />
+                        <p name="jobConfigTableMessage">{this.props.jobConfigTableMessage}</p>
+                        <ConfigButtons performingAction={this.state.inProgress} cancelId="job-cancel" submitId="job-submit" submitLabel="Confirm" includeSave includeCancel onCancelClick={this.handleClose} />
                     </form>
                 </Modal.Body>
 
@@ -71,6 +84,7 @@ class JobDeleteModal extends Component {
 }
 
 JobDeleteModal.propTypes = {
+    jobConfigTableMessage: PropTypes.string.isRequired,
     onModalClose: PropTypes.func.isRequired,
     onModalSubmit: PropTypes.func.isRequired,
     deleteDistributionJob: PropTypes.func.isRequired,
@@ -87,8 +101,12 @@ JobDeleteModal.defaultProps = {
     show: false
 };
 
-const mapStateToProps = state => ({});
+const mapStateToProps = state => ({
+    jobConfigTableMessage: state.distributions.jobConfigTableMessage
+});
 
-const mapDispatchToProps = dispatch => ({});
+const mapDispatchToProps = dispatch => ({
+    deleteDistributionJob: job => dispatch(deleteDistributionJob(job))
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(JobDeleteModal);
