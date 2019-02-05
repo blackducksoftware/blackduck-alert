@@ -59,7 +59,7 @@ public abstract class RepositoryAccessor<D extends DatabaseEntity> {
         repository.deleteAllInBatch();
     }
 
-    public DatabaseEntity saveEntity(final D entity) {
+    public D saveEntity(final D entity) {
         return repository.save(entity);
     }
 }
