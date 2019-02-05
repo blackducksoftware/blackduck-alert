@@ -19,6 +19,18 @@ export const DESCRIPTOR_NAME = {
     PROVIDER_BLACKDUCK: 'provider_blackduck'
 }
 
+export function findDescriptorByNameAndContext(descriptorList, descriptorName, context) {
+    if (!descriptorList) {
+        return null;
+    }
+    const resultList = descriptorList.filter(descriptor => descriptor.name === descriptorName && descriptor.context === context);
+    if (!resultList) {
+        return null;
+    }
+
+    return resultList;
+}
+
 export function findDescriptorByTypeAndContext(descriptorList, descriptorType, context) {
     if (!descriptorList) {
         return null;
@@ -42,8 +54,7 @@ export function findDescriptorField(descriptor, fieldKey) {
 export function findDescriptorFieldOptions(descriptor, fieldKey) {
     const field = findDescriptorField(descriptor, fieldKey);
     if (field) {
-        const { options } = field;
-        return options;
+        return field.options;
     }
     return [];
 }

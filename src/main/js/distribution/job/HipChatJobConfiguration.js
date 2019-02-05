@@ -57,9 +57,7 @@ class HipChatJobConfiguration extends Component {
     }
 
     getConfiguration() {
-        return Object.assign({}, this.state, {
-            distributionType: DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_HIPCHAT
-        });
+        return this.state.currentConfig;
     }
 
     handleStateValues(name, value) {
