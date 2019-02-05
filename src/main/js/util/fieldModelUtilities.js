@@ -35,6 +35,14 @@ export function isFieldModelValueSet(fieldModel, key) {
     return false;
 }
 
+export function hasFieldModelValues(fieldModel, key) {
+    const fieldObject = fieldModel.keyToValues[key];
+    if (fieldObject) {
+        return fieldObject.values && fieldObject.values.every(item => item !== '');
+    }
+    return false;
+}
+
 export function updateFieldModelSingleValue(fieldModel, key, value) {
     const copy = Object.assign({}, fieldModel);
     if (!copy.keyToValues[key]) {
