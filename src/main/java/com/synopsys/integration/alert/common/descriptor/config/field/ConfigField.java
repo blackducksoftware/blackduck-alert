@@ -36,6 +36,8 @@ import com.synopsys.integration.util.Stringable;
 
 public class ConfigField extends Stringable {
     public static final String REQUIRED_FIELD_MISSING = "Required field missing";
+    public static final int MAX_FIELD_LENGTH = 511;
+    public static final String FIELD_LENGTH_LARGE = String.format("Field length is too large (Maximum length of %d).", MAX_FIELD_LENGTH);
     public static final ConfigValidationFunction NO_VALIDATION = (fieldToValidate, fieldModel) -> List.of();
 
     private String key;
@@ -89,7 +91,8 @@ public class ConfigField extends Stringable {
 
     final Collection<String> validate(final FieldValueModel fieldToValidate, final FieldModel fieldModel, final List<ConfigValidationFunction> validationFunctions) {
         final Collection<String> errors = new LinkedList<>();
-        errors.addAll(validateRequiredField(fieldToValidate));
+        validateRequiredField(fieldToValidate, errors);
+        validateLength(fieldToValidate, errors);
         if (errors.isEmpty()) {
             for (final ConfigValidationFunction validation : validationFunctions) {
                 if (null != validation) {
@@ -165,8 +168,7 @@ public class ConfigField extends Stringable {
         this.validationFunction = validationFunction;
     }
 
-    private Collection<String> validateRequiredField(final FieldValueModel fieldToValidate) {
-        final Collection<String> errors = new LinkedList<>();
+    private void validateRequiredField(final FieldValueModel fieldToValidate, final Collection<String> errors) {
         if (isRequired()) {
             if (fieldToValidate.hasValues()) {
                 final boolean valuesAllEmpty = fieldToValidate.getValues().stream().allMatch(StringUtils::isBlank);
@@ -179,6 +181,12 @@ public class ConfigField extends Stringable {
                 }
             }
         }
-        return errors;
+    }
+
+    private void validateLength(final FieldValueModel fieldValueModel, final Collection<String> errors) {
+        final boolean tooLargeFound = fieldValueModel.getValues().stream().anyMatch(value -> MAX_FIELD_LENGTH < value.length());
+        if (tooLargeFound) {
+            errors.add(FIELD_LENGTH_LARGE);
+        }
     }
 }
