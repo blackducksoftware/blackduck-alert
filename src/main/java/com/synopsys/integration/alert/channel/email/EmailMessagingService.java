@@ -54,6 +54,8 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import freemarker.template.TemplateException;
 
 public class EmailMessagingService {
+    private static final String SIMPLE_EMAIL_ADDRESS_PATTERN = ".{1,64}@.+";
+
     private final Logger logger = LoggerFactory.getLogger(EmailMessagingService.class);
 
     private final EmailProperties emailProperties;
@@ -95,8 +97,9 @@ public class EmailMessagingService {
             final Message message = createMessage(emailAddress, resolvedSubjectLine, session, mimeMultipart, emailProperties);
             sendMessage(emailProperties, session, message);
         } catch (final MessagingException | IOException | TemplateException ex) {
-            logger.error("Could not send the email. " + ex.getMessage(), ex);
-            throw new AlertException(ex);
+            final String errorMessage = "Could not send the email. " + ex.getMessage();
+            logger.error(errorMessage, ex);
+            throw new AlertException(errorMessage, ex);
         }
     }
 
@@ -126,10 +129,18 @@ public class EmailMessagingService {
             throw new AlertException("There were no valid email addresses supplied.");
         }
 
+        final String fromString = emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_FROM_KEY);
+        if (StringUtils.isBlank(fromString)) {
+            logger.warn("No 'from' address specified");
+            throw new AlertException(String.format("Required field '%s' was blank", EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey()));
+        } else if (!fromString.matches(SIMPLE_EMAIL_ADDRESS_PATTERN)) {
+            logger.warn("Invalid 'from' address specified: " + fromString);
+            throw new AlertException(String.format("'%s' is not a valid email address", fromString));
+        }
+
         final Message message = new MimeMessage(session);
         message.setContent(mimeMultipart);
-
-        message.setFrom(new InternetAddress(emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey())));
+        message.setFrom(new InternetAddress(fromString));
         message.setRecipients(Message.RecipientType.TO, addresses.toArray(new Address[addresses.size()]));
         message.setSubject(subjectLine);
 
@@ -137,7 +148,7 @@ public class EmailMessagingService {
     }
 
     public void sendMessage(final EmailProperties emailProperties, final Session session, final Message message) throws MessagingException {
-        if (Boolean.valueOf(emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey()))) {
+        if (Boolean.valueOf(emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_AUTH_KEY))) {
             sendAuthenticated(emailProperties, message, session);
         } else {
             Transport.send(message);
@@ -145,10 +156,10 @@ public class EmailMessagingService {
     }
 
     private void sendAuthenticated(final EmailProperties emailProperties, final Message message, final Session session) throws MessagingException {
-        final String host = emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey());
-        final int port = NumberUtils.toInt(emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey()));
-        final String username = emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey());
-        final String password = emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey());
+        final String host = emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_HOST_KEY);
+        final int port = NumberUtils.toInt(emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_PORT_KEY));
+        final String username = emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_USER_KEY);
+        final String password = emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY);
 
         final Transport transport = session.getTransport("smtp");
         try {
