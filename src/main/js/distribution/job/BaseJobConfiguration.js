@@ -34,13 +34,21 @@ const KEY_FREQUENCY = 'channel.common.frequency';
 const KEY_NOTIFICATION_TYPES = 'provider.distribution.notification.types';
 const KEY_FORMAT_TYPE = 'provider.distribution.format.type';
 
+// blackduck common keys
+const KEY_FILTER_BY_PROJECT = 'channel.common.filter.by.project';
+const KEY_PROJECT_NAME_PATTERN = 'channel.common.project.name.pattern';
+const KEY_CONFIGURED_PROJECT = 'channel.common.configured.project';
+
 const fieldNames = [
     KEY_NAME,
     KEY_CHANNEL_NAME,
     KEY_PROVIDER_NAME,
     KEY_FREQUENCY,
     KEY_NOTIFICATION_TYPES,
-    KEY_FORMAT_TYPE
+    KEY_FORMAT_TYPE,
+    KEY_FILTER_BY_PROJECT,
+    KEY_PROJECT_NAME_PATTERN,
+    KEY_CONFIGURED_PROJECT
 ];
 
 const FIELD_MODEL_KEY = {
@@ -306,6 +314,20 @@ class BaseJobConfiguration extends Component {
         const notificationOptions = this.createNotificationTypeOptions();
         const selectedFormatType = this.getSelectedSingleValue(formatOptions, fieldModel, KEY_FORMAT_TYPE);
         const selectedNotifications = this.getSelectedValues(notificationOptions, fieldModel, KEY_NOTIFICATION_TYPES);
+        //
+        // if (!FieldModelUtilities.hasFieldModelValues(fieldModel, KEY_FORMAT_TYPE)) {
+        //     const newState = FieldModelUtilities.updateFieldModelSingleValue(fieldModel, KEY_FORMAT_TYPE, selectedFormatType);
+        //     this.setState({
+        //         commonConfig: newState
+        //     });
+        // }
+        //
+        // if (!FieldModelUtilities.hasFieldModelValues(fieldModel, KEY_NOTIFICATION_TYPES)) {
+        //     const newState = FieldModelUtilities.updateFieldModelSingleValue(fieldModel, KEY_NOTIFICATION_TYPES, selectedNotifications);
+        //     this.setState({
+        //         commonConfig: newState
+        //     });
+        // }
 
         return (
             <div>
@@ -341,12 +363,12 @@ class BaseJobConfiguration extends Component {
                 </div>
                 {this.props.childContent}
                 <ProjectConfiguration
-                    includeAllProjects={this.state.includeAllProjects}
+                    includeAllProjects={!FieldModelUtilities.getFieldModelBooleanValue(fieldModel, KEY_FILTER_BY_PROJECT)}
                     handleChange={this.handleChange}
-                    handleProjectChanged={this.handleProjectChanged}
+                    handleProjectChanged={this.createMultiSelectHandler(KEY_CONFIGURED_PROJECT, FIELD_MODEL_KEY.PROVIDER)}
                     projects={this.props.projects}
-                    configuredProjects={this.state.configuredProjects}
-                    projectNamePattern={this.state.projectNamePattern}
+                    configuredProjects={FieldModelUtilities.getFieldModelValues(fieldModel, KEY_CONFIGURED_PROJECT)}
+                    projectNamePattern={FieldModelUtilities.getFieldModelValues(fieldModel, KEY_PROJECT_NAME_PATTERN)}
                 />
                 <ConfigButtons cancelId="job-cancel" submitId="job-submit" includeTest includeCancel onTestClick={this.handleTestSubmit} onCancelClick={this.props.handleCancel} />
                 <p name="configurationMessage">{this.state.configurationMessage}</p>
@@ -360,6 +382,20 @@ class BaseJobConfiguration extends Component {
         const fieldModel = this.state.commonConfig;
         const selectedProviderOption = this.getSelectedSingleValue(providers, fieldModel, KEY_PROVIDER_NAME);
         const selectedFrequencyOption = this.getSelectedSingleValue(frequencyOptions, fieldModel, KEY_FREQUENCY);
+
+        // if (!FieldModelUtilities.hasFieldModelValues(fieldModel, KEY_PROVIDER_NAME)) {
+        //     const newState = FieldModelUtilities.updateFieldModelSingleValue(fieldModel, KEY_NOTIFICATION_TYPES, selectedProviderOption);
+        //     this.setState({
+        //         commonConfig: newState
+        //     });
+        // }
+        //
+        // if (!FieldModelUtilities.hasFieldModelValues(fieldModel, KEY_FREQUENCY)) {
+        //     const newState = FieldModelUtilities.updateFieldModelSingleValue(fieldModel, KEY_NOTIFICATION_TYPES, selectedFrequencyOption);
+        //     this.setState({
+        //         commonConfig: newState
+        //     });
+        // }
 
         return (
             <form className="form-horizontal" onSubmit={this.onSubmit}>
