@@ -51,6 +51,8 @@ class JobDeleteModal extends Component {
                                 headerContainerClass="scrollable"
                                 bodyContainerClass="tableScrollableBody"
                             >
+                                <TableHeaderColumn dataField="id" isKey hidden>Job Id</TableHeaderColumn>
+                                <TableHeaderColumn dataField="distributionConfigId" hidden>Distribution Id</TableHeaderColumn>
                                 <TableHeaderColumn dataField="name" dataSort columnTitle columnClassName="tableCell">Distribution Job</TableHeaderColumn>
                                 <TableHeaderColumn dataField="distributionType" dataSort columnClassName="tableCell" dataFormat={this.props.typeColumnDataFormat}>Type</TableHeaderColumn>
                                 <TableHeaderColumn dataField="providerName" dataSort columnClassName="tableCell" dataFormat={this.props.providerColumnDataFormat}>Provider</TableHeaderColumn>
