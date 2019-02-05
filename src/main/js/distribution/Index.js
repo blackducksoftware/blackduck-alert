@@ -11,6 +11,7 @@ import EditTableCellFormatter from 'component/common/EditTableCellFormatter';
 import JobAddModal from 'distribution/JobAddModal';
 import { deleteDistributionJob, fetchDistributionJobs } from 'store/actions/distributions';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
+import JobDeleteModal from 'distribution/JobDeleteModal';
 
 /**
  * Selects className based on field value
@@ -65,8 +66,15 @@ class Index extends Component {
         this.saveBtn = this.saveBtn.bind(this);
         this.typeColumnDataFormat = this.typeColumnDataFormat.bind(this);
         this.providerColumnDataFormat = this.providerColumnDataFormat.bind(this);
+        this.onJobDeleteClose = this.onJobDeleteClose.bind(this);
+        this.onJobDeleteSubmit = this.onJobDeleteSubmit.bind(this);
 
-        this.state = { currentRowSelected: null };
+        this.state = {
+            currentRowSelected: null,
+            jobsToDelete: [],
+            showDeleteModal: false,
+            nextDelete: null
+        };
     }
 
     componentDidMount() {
@@ -75,6 +83,18 @@ class Index extends Component {
 
     componentWillUnmount() {
         this.cancelAutoReload();
+    }
+
+    onJobDeleteSubmit() {
+        this.state.nextDelete();
+    }
+
+    onJobDeleteClose() {
+        this.setState({
+            showDeleteModal: false,
+            nextDelete: null,
+            jobsToDelete: []
+        });
     }
 
     getCurrentJobConfig(currentRowSelected) {
@@ -159,18 +179,13 @@ class Index extends Component {
     }
 
     customJobConfigDeletionConfirm(next, dropRowKeys) {
-        if (confirm('Are you sure you want to delete these Job configurations?')) {
-            console.log('Deleting the Job configs');
-            // TODO delete the Job configs from the backend
-            // dropRowKeys are the Id's of the Job configs
-            const { jobs } = this.props;
-            const matchingJobs = jobs.filter(job => dropRowKeys.includes(job.id));
-
-            matchingJobs.forEach((job) => {
-                this.props.deleteDistributionJob(job);
-            });
-            next();
-        }
+        const { jobs } = this.props;
+        const matchingJobs = jobs.filter(job => dropRowKeys.includes(job.id));
+        this.setState({
+            showDeleteModal: true,
+            nextDelete: next,
+            jobsToDelete: matchingJobs
+        });
     }
 
     editButtonClicked(currentRowSelected) {
@@ -310,6 +325,17 @@ class Index extends Component {
         }
         return (
             <div>
+                <JobDeleteModal
+                    onModalSubmit={this.onJobDeleteSubmit}
+                    onModalClose={this.onJobDeleteClose}
+                    deleteDistributionJob={this.props.deleteDistributionJob}
+                    typeColumnDataFormat={this.typeColumnDataFormat}
+                    providerColumnDataFormat={this.providerColumnDataFormat}
+                    frequencyColumnDataFormat={frequencyColumnDataFormat}
+                    statusColumnClassNameFormat={statusColumnClassNameFormat}
+                    jobs={this.state.jobsToDelete}
+                    show={this.state.showDeleteModal}
+                />
                 <h1>
                     <span className="fa fa-truck" />
                     Distribution
