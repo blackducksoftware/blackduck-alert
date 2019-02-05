@@ -51,8 +51,8 @@ class BaseJobConfiguration extends Component {
         this.state = {
             success: false,
             fieldErrors: {},
-            currentConfig: {},
-            providerOptions: {}
+            currentConfig: FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, this.props.alertChannelName),
+            providerOptions: []
         };
         this.loading = false;
         this.saving = false;
@@ -71,10 +71,6 @@ class BaseJobConfiguration extends Component {
 
     componentDidMount() {
         this.loading = true;
-        const providerOptions = this.createProviderOptions();
-        this.setState({
-            providerOptions
-        });
     }
 
     componentWillReceiveProps(nextProps) {
@@ -336,11 +332,15 @@ class BaseJobConfiguration extends Component {
     }
 
     render() {
-        const providers = this.state.providerOptions;
+        const providers = this.createProviderOptions();
         const fieldModel = this.state.currentConfig;
         let selectedProviderOption = null;
         if (providers) {
-            selectedProviderOption = providers.find(option => option.value === this.state.providerName);
+            if (providers.length === 1) {
+                [selectedProviderOption] = providers;
+            } else {
+                selectedProviderOption = providers.find(option => option.value === this.state.providerName);
+            }
         }
         return (
             <form className="form-horizontal" onSubmit={this.onSubmit}>
@@ -397,7 +397,7 @@ BaseJobConfiguration.propTypes = {
     updateDistributionJob: PropTypes.func.isRequired,
     getDistributionDescriptor: PropTypes.func.isRequired,
     descriptors: PropTypes.arrayOf(PropTypes.object),
-    jobs: PropTypes.object,
+    jobs: PropTypes.arrayOf(PropTypes.object),
     fetching: PropTypes.bool,
     inProgress: PropTypes.bool,
     success: PropTypes.bool,
@@ -417,7 +417,7 @@ BaseJobConfiguration.propTypes = {
 
 BaseJobConfiguration.defaultProps = {
     descriptors: [],
-    jobs: {},
+    jobs: [],
     fetching: false,
     inProgress: false,
     success: false,

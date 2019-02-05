@@ -108,7 +108,7 @@ class SlackJobConfiguration extends Component {
 
 SlackJobConfiguration.propTypes = {
     getDistributionJob: PropTypes.func.isRequired,
-    jobs: PropTypes.object,
+    jobs: PropTypes.arrayOf(PropTypes.object),
     distributionConfigId: PropTypes.string,
     fieldErrors: PropTypes.object,
     handleCancel: PropTypes.func.isRequired,
@@ -118,7 +118,7 @@ SlackJobConfiguration.propTypes = {
 };
 
 SlackJobConfiguration.defaultProps = {
-    jobs: {},
+    jobs: [],
     distributionConfigId: null,
     fieldErrors: {},
     fetching: false,
