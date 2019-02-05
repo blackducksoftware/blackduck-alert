@@ -23,10 +23,28 @@ export function findDescriptorByTypeAndContext(descriptorList, descriptorType, c
     if (!descriptorList) {
         return null;
     }
-    const resultList = descriptorList.filter((descriptor) => descriptor.type === descriptorType && descriptor.context === context);
+    const resultList = descriptorList.filter(descriptor => descriptor.type === descriptorType && descriptor.context === context);
     if (!resultList) {
         return null;
     }
 
     return resultList;
 }
+
+export function findDescriptorField(descriptor, fieldKey) {
+    const fieldArray = descriptor.fields;
+    if (fieldArray) {
+        return fieldArray.find(field => field.key === fieldKey);
+    }
+    return null;
+}
+
+export function findDescriptorFieldOptions(descriptor, fieldKey) {
+    const field = findDescriptorField(descriptor, fieldKey);
+    if (field) {
+        const { options } = field;
+        return options;
+    }
+    return [];
+}
+
