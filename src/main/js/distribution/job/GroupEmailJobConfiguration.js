@@ -51,9 +51,7 @@ class GroupEmailJobConfiguration extends Component {
     }
 
     getConfiguration() {
-        return Object.assign({}, this.state, {
-            distributionType: DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_EMAIL
-        });
+        return this.state.currentConfig;
     }
 
     handleChange({ target }) {

@@ -66,7 +66,7 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
     @Override
     public List<ConfigField> createFields() {
         final ConfigField name = TextInputConfigField.createRequired(KEY_NAME, "Name");
-        final ConfigField frequency = SelectConfigField.createRequired(KEY_FREQUENCY, "Frequency", Arrays.stream(FrequencyType.values()).map(type -> type.getDisplayName()).collect(Collectors.toList()), this::validateJobName);
+        final ConfigField frequency = SelectConfigField.createRequired(KEY_FREQUENCY, "Frequency", Arrays.stream(FrequencyType.values()).map(type -> type.name()).collect(Collectors.toList()), this::validateJobName);
         final ConfigField channelName = SelectConfigField.createRequired(KEY_CHANNEL_NAME, "Channel Type", getDescriptorNames(DescriptorType.CHANNEL));
         final ConfigField providerName = SelectConfigField.createRequired(KEY_PROVIDER_NAME, "Provider Type", getDescriptorNames(DescriptorType.PROVIDER));
 
