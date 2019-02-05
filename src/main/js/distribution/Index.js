@@ -9,8 +9,8 @@ import HipChatJobConfiguration from 'distribution/job/HipChatJobConfiguration';
 import SlackJobConfiguration from 'distribution/job/SlackJobConfiguration';
 import EditTableCellFormatter from 'component/common/EditTableCellFormatter';
 import JobAddModal from 'distribution/JobAddModal';
-import { logout } from 'store/actions/session';
 import { deleteDistributionJob, fetchDistributionJobs } from 'store/actions/distributions';
+import * as DescriptorUtilities from 'util/descriptorUtilities';
 
 /**
  * Selects className based on field value
