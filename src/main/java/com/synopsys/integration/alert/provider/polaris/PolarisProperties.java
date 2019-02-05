@@ -27,7 +27,6 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.ProxyManager;
@@ -43,7 +42,6 @@ import com.synopsys.integration.rest.proxy.ProxyInfo;
 // TODO exclude for now: @Component
 public class PolarisProperties extends ProviderProperties {
     public static final Integer DEFAULT_TIMEOUT = 300;
-    private static final Logger logger = LoggerFactory.getLogger(PolarisProperties.class);
     private final AlertProperties alertProperties;
     private final ProxyManager proxyManager;
 

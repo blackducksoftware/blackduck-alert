@@ -31,11 +31,10 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.database.RepositoryAccessor;
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 
 @Component
 @Transactional
-public class BlackDuckProjectRepositoryAccessor extends RepositoryAccessor {
+public class BlackDuckProjectRepositoryAccessor extends RepositoryAccessor<BlackDuckProjectEntity> {
     private final BlackDuckProjectRepository blackDuckProjectRepository;
 
     @Autowired
@@ -47,12 +46,6 @@ public class BlackDuckProjectRepositoryAccessor extends RepositoryAccessor {
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
     public BlackDuckProjectEntity findByName(final String name) {
         return blackDuckProjectRepository.findByName(name);
-    }
-
-    @Override
-    public DatabaseEntity saveEntity(final DatabaseEntity entity) {
-        final BlackDuckProjectEntity blackDuckProjectEntity = (BlackDuckProjectEntity) entity;
-        return blackDuckProjectRepository.save(blackDuckProjectEntity);
     }
 
     public List<BlackDuckProjectEntity> deleteAndSaveAll(final Iterable<BlackDuckProjectEntity> blackDuckProjectEntities) {

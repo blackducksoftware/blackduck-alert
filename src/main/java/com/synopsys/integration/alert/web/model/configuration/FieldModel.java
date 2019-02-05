@@ -78,18 +78,18 @@ public class FieldModel extends Config {
     }
 
     public FieldModel fill(final FieldModel fieldModel) {
-        String id = StringUtils.isNotBlank(getId()) ? getId() : fieldModel.getId();
-        String descriptorName = StringUtils.isNotBlank(getDescriptorName()) ? getDescriptorName() : fieldModel.getDescriptorName();
-        String context = StringUtils.isNotBlank(getContext()) ? getContext() : fieldModel.getContext();
         final Map<String, FieldValueModel> fieldValueModelMap = new HashMap<>();
-        fieldValueModelMap.putAll(this.getKeyToValues());
+        fieldValueModelMap.putAll(getKeyToValues());
         final Map<String, FieldValueModel> fieldsToAdd = fieldModel.getKeyToValues();
-        for (Map.Entry<String, FieldValueModel> entry : fieldsToAdd.entrySet()) {
+        for (final Map.Entry<String, FieldValueModel> entry : fieldsToAdd.entrySet()) {
             if (!fieldValueModelMap.containsKey(entry.getKey())) {
                 fieldValueModelMap.put(entry.getKey(), entry.getValue());
             }
         }
-        final FieldModel newFieldModel = new FieldModel(descriptorName, context, fieldValueModelMap);
+        final String modelDescriptorName = StringUtils.isNotBlank(getDescriptorName()) ? getDescriptorName() : fieldModel.getDescriptorName();
+        final String modelContext = StringUtils.isNotBlank(getContext()) ? getContext() : fieldModel.getContext();
+        final FieldModel newFieldModel = new FieldModel(modelDescriptorName, modelContext, fieldValueModelMap);
+        final String id = StringUtils.isNotBlank(getId()) ? getId() : fieldModel.getId();
         newFieldModel.setId(id);
         return newFieldModel;
     }

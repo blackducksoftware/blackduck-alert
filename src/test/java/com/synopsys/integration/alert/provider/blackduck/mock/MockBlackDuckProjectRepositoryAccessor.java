@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
 
@@ -19,9 +18,7 @@ public class MockBlackDuckProjectRepositoryAccessor extends BlackDuckProjectRepo
     }
 
     @Override
-    public DatabaseEntity saveEntity(final DatabaseEntity entity) {
-        final BlackDuckProjectEntity blackDuckProjectEntity = (BlackDuckProjectEntity) entity;
-
+    public BlackDuckProjectEntity saveEntity(final BlackDuckProjectEntity blackDuckProjectEntity) {
         final BlackDuckProjectEntity newEntity = new BlackDuckProjectEntity(blackDuckProjectEntity.getName(), blackDuckProjectEntity.getDescription(), blackDuckProjectEntity.getHref(), blackDuckProjectEntity.getProjectOwnerEmail());
         if (null == blackDuckProjectEntity.getId()) {
             newEntity.setId(count);
@@ -34,12 +31,12 @@ public class MockBlackDuckProjectRepositoryAccessor extends BlackDuckProjectRepo
     }
 
     @Override
-    public List<? extends DatabaseEntity> readEntities() {
+    public List<BlackDuckProjectEntity> readEntities() {
         return new ArrayList<>(blackDuckProjectEntityMap.values());
     }
 
     @Override
-    public Optional<? extends DatabaseEntity> readEntity(final long id) {
+    public Optional<BlackDuckProjectEntity> readEntity(final long id) {
         return Optional.ofNullable(blackDuckProjectEntityMap.get(Long.valueOf(id)));
     }
 
@@ -53,7 +50,7 @@ public class MockBlackDuckProjectRepositoryAccessor extends BlackDuckProjectRepo
         blackDuckProjectEntityMap.clear();
         final List<BlackDuckProjectEntity> blackDuckProjectEntitiesSaved = new ArrayList<>();
         blackDuckProjectEntities.forEach(blackDuckProjectEntity -> {
-            blackDuckProjectEntitiesSaved.add((BlackDuckProjectEntity) saveEntity(blackDuckProjectEntity));
+            blackDuckProjectEntitiesSaved.add(saveEntity(blackDuckProjectEntity));
         });
         return blackDuckProjectEntitiesSaved;
     }

@@ -115,25 +115,29 @@ public class HipChatChannel extends RestDistributionChannel {
             throw new AlertException("Connection error: see logs for more information.");
         }
         try {
-            final String url = configuredApiUrl + "/v2/room/*/notification";
-            final Map<String, Set<String>> queryParameters = new HashMap<>();
-            queryParameters.put("auth_test", new HashSet<>(Collections.singleton("true")));
-
-            final Map<String, String> requestHeaders = new HashMap<>();
-            requestHeaders.put("Authorization", "Bearer " + apiKey);
-            requestHeaders.put("Content-Type", "application/json");
-
-            final Request request = createPostMessageRequest(url, requestHeaders, queryParameters);
-            try (final Response response = sendGenericRequest(restConnection, request)) {
-                if (RestConstants.OK_200 > response.getStatusCode() || response.getStatusCode() >= RestConstants.BAD_REQUEST_400) {
-                    throw new AlertException("Invalid API key: " + response.getStatusMessage());
-                }
-            } catch (final IOException ioException) {
-                throw new AlertException(ioException.getMessage(), ioException);
-            }
+            sendTestRequest(restConnection, configuredApiUrl, apiKey);
         } catch (final IntegrationException integrationException) {
             logger.error("Unable to create a response", integrationException);
             throw new AlertException("Invalid API key: " + integrationException.getMessage());
+        }
+    }
+
+    private void sendTestRequest(final RestConnection restConnection, final String configuredApiUrl, final String apiKey) throws IntegrationException {
+        final String url = configuredApiUrl + "/v2/room/*/notification";
+        final Map<String, Set<String>> queryParameters = new HashMap<>();
+        queryParameters.put("auth_test", new HashSet<>(Collections.singleton("true")));
+
+        final Map<String, String> requestHeaders = new HashMap<>();
+        requestHeaders.put("Authorization", "Bearer " + apiKey);
+        requestHeaders.put("Content-Type", "application/json");
+
+        final Request request = createPostMessageRequest(url, requestHeaders, queryParameters);
+        try (final Response response = sendGenericRequest(restConnection, request)) {
+            if (RestConstants.OK_200 > response.getStatusCode() || response.getStatusCode() >= RestConstants.BAD_REQUEST_400) {
+                throw new AlertException("Invalid API key: " + response.getStatusMessage());
+            }
+        } catch (final IOException ioException) {
+            throw new AlertException(ioException.getMessage(), ioException);
         }
     }
 

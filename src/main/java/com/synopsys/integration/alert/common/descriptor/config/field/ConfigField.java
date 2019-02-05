@@ -169,7 +169,7 @@ public class ConfigField extends Stringable {
         final Collection<String> errors = new LinkedList<>();
         if (isRequired()) {
             if (fieldToValidate.hasValues()) {
-                final boolean valuesAllEmpty = fieldToValidate.getValues().stream().allMatch(value -> StringUtils.isBlank(value));
+                final boolean valuesAllEmpty = fieldToValidate.getValues().stream().allMatch(StringUtils::isBlank);
                 if (valuesAllEmpty) {
                     errors.add(REQUIRED_FIELD_MISSING);
                 }

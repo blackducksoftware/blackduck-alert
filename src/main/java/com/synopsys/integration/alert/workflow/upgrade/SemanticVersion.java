@@ -28,9 +28,9 @@ import org.apache.commons.lang3.StringUtils;
 import com.synopsys.integration.util.Stringable;
 
 public class SemanticVersion extends Stringable implements Comparable<SemanticVersion> {
-    public static final int LESS_THAN = -1;
-    public static final int GREATER_THAN = 1;
-    public static final int EQUALS = 0;
+    public static final int CONSTANT_LESS_THAN = -1;
+    public static final int CONSTANT_GREATER_THAN = 1;
+    public static final int CONSTANT_EQUALS = 0;
 
     private static final String SNAPSHOT_SUFFIX = "-SNAPSHOT";
 
@@ -71,15 +71,15 @@ public class SemanticVersion extends Stringable implements Comparable<SemanticVe
     }
 
     public boolean isGreaterThan(final SemanticVersion comparedTo) {
-        return compareTo(comparedTo) == GREATER_THAN;
+        return compareTo(comparedTo) == CONSTANT_GREATER_THAN;
     }
 
     public boolean isLessThan(final SemanticVersion comparedTo) {
-        return compareTo(comparedTo) == LESS_THAN;
+        return compareTo(comparedTo) == CONSTANT_LESS_THAN;
     }
 
     public boolean isEqual(final SemanticVersion comparedTo) {
-        return compareTo(comparedTo) == EQUALS;
+        return compareTo(comparedTo) == CONSTANT_EQUALS;
     }
 
     public boolean isGreaterThanOrEqual(final SemanticVersion comparedTo) {
@@ -92,49 +92,49 @@ public class SemanticVersion extends Stringable implements Comparable<SemanticVe
 
     @Override
     public int compareTo(final SemanticVersion comparedTo) {
-        final boolean greaterThan = compareVersions(comparedTo, GREATER_THAN);
-        final boolean lessThan = compareVersions(comparedTo, LESS_THAN);
+        final boolean greaterThan = compareVersions(comparedTo, CONSTANT_GREATER_THAN);
+        final boolean lessThan = compareVersions(comparedTo, CONSTANT_LESS_THAN);
 
         if (greaterThan) {
-            return GREATER_THAN;
+            return CONSTANT_GREATER_THAN;
         }
         if (lessThan) {
-            return LESS_THAN;
+            return CONSTANT_LESS_THAN;
         }
 
         if (isSnapshot() && !comparedTo.isSnapshot()) {
-            return GREATER_THAN;
+            return CONSTANT_GREATER_THAN;
         }
         if (!isSnapshot() && comparedTo.isSnapshot()) {
-            return LESS_THAN;
+            return CONSTANT_LESS_THAN;
         }
 
-        return EQUALS;
+        return CONSTANT_EQUALS;
     }
 
     private boolean compareVersions(final SemanticVersion comparedTo, final int status) {
-        final Integer majorVersion = getMajorVersion().compareTo(comparedTo.getMajorVersion());
-        final Integer minorVersion = getMinorVersion().compareTo(comparedTo.getMinorVersion());
-        final Integer patchVersion = getPatchVersion().compareTo(comparedTo.getPatchVersion());
+        final Integer foundMajorVersion = getMajorVersion().compareTo(comparedTo.getMajorVersion());
+        final Integer foundMinorVersion = getMinorVersion().compareTo(comparedTo.getMinorVersion());
+        final Integer foundPatchVersion = getPatchVersion().compareTo(comparedTo.getPatchVersion());
 
-        return (majorVersion == status)
-                   || (minorVersion == status && majorVersion == EQUALS)
-                   || (patchVersion == status && majorVersion == EQUALS && minorVersion == EQUALS);
+        return (foundMajorVersion == status)
+                   || (foundMinorVersion == status && foundMajorVersion == CONSTANT_EQUALS)
+                   || (foundPatchVersion == status && foundMajorVersion == CONSTANT_EQUALS && foundMinorVersion == CONSTANT_EQUALS);
     }
 
-    private void parseVersion(final String version) {
+    private void parseVersion(String version) {
         if (StringUtils.isBlank(version)) {
             return;
         }
-        final String[] versionParts = StringUtils.split(version, '.');
 
         if (version.contains(SNAPSHOT_SUFFIX)) {
             snapshot = true;
-            version.replace(SNAPSHOT_SUFFIX, "");
+            version = version.replace(SNAPSHOT_SUFFIX, "");
         } else {
             snapshot = false;
         }
 
+        final String[] versionParts = StringUtils.split(version, '.');
         if (3 == versionParts.length) {
             majorVersion = parseStringWithDefault(versionParts[0], 0);
             minorVersion = parseStringWithDefault(versionParts[1], 0);
