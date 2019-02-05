@@ -76,30 +76,26 @@ public class PasswordResetService {
         final FieldAccessor fieldAccessor = new FieldAccessor(emailConfig.getCopyOfKeyToFieldMap());
         final EmailProperties emailProperties = new EmailProperties(fieldAccessor);
 
-        final String tempPassword = generatePasswordForUser(username);
+        final String tempPassword = RandomStringUtils.randomAscii(TEMP_PASSWORD_LENGTH);
         final Map<String, Object> templateFields = Map.of(
             EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), SUBJECT_LINE,
             "tempPassword", tempPassword
         );
-        final EmailTarget passwordResetEmail = new EmailTarget(userModel.getEmailAddress(), TEMPLATE_NAME, templateFields, Map.of());
 
+        final EmailTarget passwordResetEmail = new EmailTarget(userModel.getEmailAddress(), TEMPLATE_NAME, templateFields, Map.of());
+        handleSendAndUpdateDatabase(passwordResetEmail, emailProperties, username, tempPassword);
+    }
+
+    private void handleSendAndUpdateDatabase(final EmailTarget passwordResetEmail, final EmailProperties emailProperties, final String username, final String tempPassword) throws IntegrationException {
         try {
             final EmailMessagingService emailService = new EmailMessagingService(alertProperties.getAlertTemplatesDir(), emailProperties);
             emailService.sendEmailMessage(passwordResetEmail);
+            // Only change the password if there isn't an issue with sending the email
+            userAccessor.changeUserPassword(username, tempPassword);
         } catch (final IOException ioException) {
             throw new IntegrationException("Problem sending password reset email.", ioException);
         } catch (final Exception genericException) {
-            if (AlertException.class.isInstance(genericException)) {
-                throw new AlertException("Problem sending password reset email. " + StringUtils.defaultIfBlank(genericException.getMessage(), ""), genericException);
-            } else {
-                throw new AlertException("Problem sending password reset email. Global email configuration invalid.");
-            }
+            throw new AlertException("Problem sending password reset email. " + StringUtils.defaultIfBlank(genericException.getMessage(), ""), genericException);
         }
-    }
-
-    private String generatePasswordForUser(final String username) {
-        final String tempPassword = RandomStringUtils.randomAscii(TEMP_PASSWORD_LENGTH);
-        userAccessor.changeUserPassword(username, tempPassword);
-        return tempPassword;
     }
 }
