@@ -52,15 +52,16 @@ class BaseJobConfiguration extends Component {
             success: false,
             fieldErrors: {},
             currentConfig: FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, this.props.alertChannelName),
+            providerConfig: {},
             providerOptions: []
         };
         this.loading = false;
         this.saving = false;
+        this.buildJsonBody = this.buildJsonBody.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTestSubmit = this.handleTestSubmit.bind(this);
-        this.handleProviderChanged = this.handleProviderChanged.bind(this);
         this.createProviderOptions = this.createProviderOptions.bind(this);
         this.createNotificationTypeOptions = this.createNotificationTypeOptions.bind(this);
         this.createFormatTypeOptions = this.createFormatTypeOptions.bind(this);
@@ -101,10 +102,7 @@ class BaseJobConfiguration extends Component {
                 if (nextProps.distributionConfigId) {
                     const jobConfig = nextProps.jobs[nextProps.distributionConfigId];
                     if (jobConfig) {
-                        const readDescriptorDistribution = !this.state.providerName && jobConfig.providerName;
-                        if (readDescriptorDistribution) {
-                            nextProps.getDistributionDescriptor(jobConfig.providerName, nextProps.alertChannelName);
-                        }
+
                     }
                     const newState = Object.assign({}, stateValues, {
                         id: jobConfig.id,
@@ -125,14 +123,6 @@ class BaseJobConfiguration extends Component {
                     if (this.state.includeAllProjects == null || undefined === this.state.includeAllProjects) {
                         this.setState({
                             includeAllProjects: true
-                        });
-                    }
-                    const providers = this.state.providerOptions;
-                    if (!this.state.providerName && providers.length === 1) {
-                        const providerSelection = providers[0].value;
-                        nextProps.getDistributionDescriptor(providerSelection, nextProps.alertChannelName);
-                        this.setState({
-                            providerName: providerSelection
                         });
                     }
                     this.setState(stateValues);
@@ -158,12 +148,17 @@ class BaseJobConfiguration extends Component {
         if (event) {
             event.preventDefault();
         }
-        const jsonBody = JSON.stringify(this.state.currentConfig);
+        const jsonBody = this.buildJsonBody();
         if (this.state.currentConfig.id) {
             this.props.updateDistributionJob(jsonBody);
         } else {
             this.props.saveDistributionJob(jsonBody);
         }
+    }
+
+    buildJsonBody() {
+        const configuration = Object.assign({}, this.state.currentConfig, this.props.getParentConfiguration());
+        return JSON.stringify(configuration);
     }
 
     handleTestSubmit(event) {
@@ -175,40 +170,31 @@ class BaseJobConfiguration extends Component {
             event.preventDefault();
         }
 
-        const jsonBody = JSON.stringify(this.state.currentConfig);
+        const jsonBody = this.buildJsonBody();
         this.props.testDistributionJob(jsonBody);
     }
 
-    handleChange({ target }) {
-        const value = target.type === 'checkbox' ? target.checked : target.value;
-        const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, target.name, value);
-        this.setState({
-            currentConfig: newState
-        });
+    handleChange(fieldModelKey) {
+        return (event) => {
+            const { target } = event;
+            const value = target.type === 'checkbox' ? target.checked : target.value;
+            const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state[fieldModelKey], target.name, value);
+            this.setState({
+                currentConfig: newState
+            });
+        };
     }
 
-    handleProviderChanged(option) {
-        if (option) {
-            if (this.state.providerName !== option.value) {
-                this.handleStateValues('providerName', option.value);
-                this.props.getDistributionDescriptor(option.value, this.props.alertChannelName);
-            }
-        } else if (this.state.providerOptions.length > 1) {
-            this.handleStateValues('providerName', option);
-            this.props.getDistributionDescriptor('', this.props.alertChannelName);
-        }
-    }
-
-    createSingleSelectHandler(fieldKey) {
+    createSingleSelectHandler(fieldKey, fieldModelKey) {
         return (selectedValue) => {
             if (selectedValue) {
                 const selected = selectedValue.value;
-                const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, fieldKey, selected);
+                const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state[fieldModelKey], fieldKey, selected);
                 this.setState({
                     settingsData: newState
                 });
             } else {
-                const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, fieldKey, null);
+                const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state[fieldModelKey], fieldKey, null);
                 this.setState({
                     settingsData: newState
                 });
@@ -216,16 +202,16 @@ class BaseJobConfiguration extends Component {
         };
     }
 
-    createMultiSelectHandler(fieldKey) {
+    createMultiSelectHandler(fieldKey, fieldModelKey) {
         return (selectedValues) => {
             if (selectedValues && selectedValues.length > 0) {
                 const selected = selectedValues.map(item => item.value);
-                const newState = FieldModelUtilities.updateFieldModelValues(this.state.currentConfig, fieldKey, selected);
+                const newState = FieldModelUtilities.updateFieldModelValues(this.state[fieldModelKey], fieldKey, selected);
                 this.setState({
                     settingsData: newState
                 });
             } else {
-                const newState = FieldModelUtilities.updateFieldModelValues(this.state.currentConfig, fieldKey, []);
+                const newState = FieldModelUtilities.updateFieldModelValues(this.state[fieldModelKey], fieldKey, []);
                 this.setState({
                     settingsData: newState
                 });
@@ -247,11 +233,11 @@ class BaseJobConfiguration extends Component {
     }
 
     createNotificationTypeOptions() {
-        const { fields } = this.props.currentDistributionComponents;
-        if (fields) {
-            const notificationTypeField = fields.filter(field => field.key === 'notificationTypes');
-            const { options } = notificationTypeField[0];
-
+        const selectedProvider = FieldModelUtilities.getFieldModelSingleValue(this.state.currentConfig, KEY_PROVIDER_NAME);
+        console.log("Selected provider", selectedProvider);
+        if (selectedProvider) {
+            const descriptor = DescriptorUtilities.findDescriptorByTypeAndContext(this.props.descriptors, selectedProvider, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+            const { options } = DescriptorUtilities.findDescriptorFieldOptions(descriptor, KEY_NOTIFICATION_TYPES);
             const optionList = options.map(option => Object.assign({}, { label: option, value: option }));
             return optionList;
         }
@@ -259,11 +245,11 @@ class BaseJobConfiguration extends Component {
     }
 
     createFormatTypeOptions() {
-        const { fields } = this.props.currentDistributionComponents;
-        if (fields) {
-            const formatTypeField = fields.filter(field => field.key === 'formatType');
-            const { options } = formatTypeField[0];
-
+        const selectedChannel = FieldModelUtilities.getFieldModelSingleValue(this.state.currentConfig, KEY_CHANNEL_NAME);
+        console.log("Selected channel", selectedChannel);
+        if (selectedChannel) {
+            const descriptor = DescriptorUtilities.findDescriptorByTypeAndContext(this.props.descriptors, selectedChannel, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+            const { options } = DescriptorUtilities.findDescriptorFieldOptions(descriptor, KEY_FORMAT_TYPE);
             const optionList = options.map(option => Object.assign({}, { label: option, value: option }));
             return optionList;
         }
@@ -271,16 +257,24 @@ class BaseJobConfiguration extends Component {
     }
 
     renderDistributionForm() {
-        const fieldModel = this.state.currentConfig;
-        if (!this.props.currentDistributionComponents) {
+        const selectedProvider = FieldModelUtilities.getFieldModelSingleValue(this.state.currentConfig, KEY_PROVIDER_NAME);
+        if (!selectedProvider) {
             return null;
         }
+
+        const fieldModel = this.state.currentConfig;
         const formatOptions = this.createFormatTypeOptions();
         const notificationOptions = this.createNotificationTypeOptions();
         let configuredNotificationOptions = null;
-        if (this.state.notificationTypes) {
-            configuredNotificationOptions = notificationOptions.filter(option => this.state.notificationTypes.indexOf(option.value) !== -1);
+        const selectedNotifications = FieldModelUtilities.getFieldModelValues(fieldModel, KEY_NOTIFICATION_TYPES);
+        if (selectedNotifications) {
+            configuredNotificationOptions = notificationOptions.filter(option => selectedNotifications.indexOf(option.value) !== -1);
         }
+        console.log("formatOptions", formatOptions);
+        console.log("notificationTypes", notificationOptions);
+        console.log("selectedNotificationOptions", selectedNotifications);
+        console.log("configuredNotifications", configuredNotificationOptions);
+
         return (
             <div>
                 <div className="form-group">
