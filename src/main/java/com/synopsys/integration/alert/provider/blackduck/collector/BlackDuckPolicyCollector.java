@@ -29,9 +29,6 @@ import java.util.SortedSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.synopsys.integration.alert.common.enumeration.ItemOperation;
 import com.synopsys.integration.alert.common.model.CategoryItem;
 import com.synopsys.integration.alert.common.model.CategoryKey;
@@ -43,7 +40,6 @@ import com.synopsys.integration.alert.workflow.filter.field.JsonExtractor;
 
 public abstract class BlackDuckPolicyCollector extends MessageContentCollector {
     public static final String CATEGORY_TYPE = "policy";
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public BlackDuckPolicyCollector(final JsonExtractor jsonExtractor, final List<MessageContentProcessor> messageContentProcessorList, final Collection<ProviderContentType> contentTypes) {
         super(jsonExtractor, messageContentProcessorList, contentTypes);

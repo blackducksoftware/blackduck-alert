@@ -34,10 +34,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -49,29 +46,21 @@ import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
 import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
-import com.synopsys.integration.alert.database.channel.JobConfigReader;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.entity.repository.NotificationContentRepository;
-import com.synopsys.integration.alert.web.model.NotificationContentConverter;
 
 @Component
 @Transactional
 public class NotificationManager {
-    private final Logger logger = LoggerFactory.getLogger(NotificationManager.class);
     private final NotificationContentRepository notificationContentRepository;
     private final AuditEntryRepository auditEntryRepository;
     private final AuditNotificationRepository auditNotificationRepository;
-    private final NotificationContentConverter notificationContentConverter;
-    private final JobConfigReader jobConfigReader;
 
     @Autowired
-    public NotificationManager(final NotificationContentRepository notificationContentRepository, final AuditEntryRepository auditEntryRepository, final AuditNotificationRepository auditNotificationRepository,
-        @Lazy final NotificationContentConverter notificationContentConverter, @Lazy final JobConfigReader jobConfigReader) {
+    public NotificationManager(final NotificationContentRepository notificationContentRepository, final AuditEntryRepository auditEntryRepository, final AuditNotificationRepository auditNotificationRepository) {
         this.notificationContentRepository = notificationContentRepository;
         this.auditEntryRepository = auditEntryRepository;
         this.auditNotificationRepository = auditNotificationRepository;
-        this.notificationContentConverter = notificationContentConverter;
-        this.jobConfigReader = jobConfigReader;
     }
 
     public NotificationContent saveNotification(final NotificationContent notification) {
@@ -159,10 +148,8 @@ public class NotificationManager {
             sortQuery = true;
         }
         Sort.Direction sortingOrder = Sort.Direction.DESC;
-        if (StringUtils.isNotBlank(sortOrder) && sortQuery) {
-            if (Sort.Direction.ASC.name().equalsIgnoreCase(sortOrder)) {
-                sortingOrder = Sort.Direction.ASC;
-            }
+        if (StringUtils.isNotBlank(sortOrder) && sortQuery && Sort.Direction.ASC.name().equalsIgnoreCase(sortOrder)) {
+            sortingOrder = Sort.Direction.ASC;
         }
         return PageRequest.of(page, size, new Sort(sortingOrder, sortingField));
     }
