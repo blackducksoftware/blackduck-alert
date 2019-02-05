@@ -97,7 +97,7 @@ public abstract class Descriptor extends Stringable {
 
     public Set<DefinedFieldModel> getAllDefinedFields(final ConfigContextEnum context) {
         return getUIConfig(context)
-                   .map(uiConfig -> uiConfig.createFields())
+                   .map(UIConfig::createFields)
                    .orElse(List.of())
                    .stream()
                    .map(configField -> new DefinedFieldModel(configField.getKey(), context, configField.isSensitive()))
@@ -131,7 +131,7 @@ public abstract class Descriptor extends Stringable {
         final Optional<DescriptorActionApi> actionApi = getActionApi(configContext);
         final Optional<UIConfig> uiConfig = getUIConfig(configContext);
         final Map<String, ConfigField> configFieldMap = getUIConfig(configContext)
-                                                            .map(config -> config.createFields())
+                                                            .map(UIConfig::createFields)
                                                             .map(fieldList -> fieldList.stream()
                                                                                   .collect(Collectors.toMap(ConfigField::getKey, Function.identity())))
                                                             .orElse(Map.of());
@@ -153,13 +153,4 @@ public abstract class Descriptor extends Stringable {
         return new DescriptorMetadata(label, urlName, getName(), getType(), context, fontAwesomeIcon, uiConfig.createFields());
     }
 
-    private List<ConfigField> retrieveUIConfigFields(final ConfigContextEnum context) {
-        final Optional<UIConfig> uiConfig = getUIConfig(context);
-        return uiConfig.map(config -> config.createFields()).orElse(List.of());
-    }
-
-    private Map<String, ConfigField> createConfigFieldMap(final ConfigContextEnum context) {
-        final List<ConfigField> configFields = retrieveUIConfigFields(context);
-        return configFields.stream().collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-    }
 }

@@ -68,6 +68,8 @@ import com.synopsys.integration.alert.database.repository.configuration.Register
 @Component
 @Transactional
 public class ConfigurationAccessor implements BaseConfigurationAccessor {
+    private static final String NULL_JOB_ID = "The job id cannot be null";
+    private static final String NULL_CONFIG_ID = "The config id cannot be null";
     private final RegisteredDescriptorRepository registeredDescriptorRepository;
     private final DescriptorTypeRepository descriptorTypeRepository;
     private final DefinedFieldRepository definedFieldRepository;
@@ -112,7 +114,7 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
     @Override
     public Optional<ConfigurationJobModel> getJobById(final UUID jobId) throws AlertDatabaseConstraintException {
         if (jobId == null) {
-            throw new AlertDatabaseConstraintException("The job id cannot be null");
+            throw new AlertDatabaseConstraintException(NULL_JOB_ID);
         }
         final List<ConfigGroupEntity> jobConfigEntities = configGroupRepository.findByJobId(jobId);
         return jobConfigEntities
@@ -129,7 +131,7 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
     @Override
     public ConfigurationJobModel updateJob(final UUID jobId, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
         if (jobId == null) {
-            throw new AlertDatabaseConstraintException("The job id cannot be null");
+            throw new AlertDatabaseConstraintException(NULL_JOB_ID);
         }
         final Set<String> descriptorNames = registeredDescriptorRepository.findByJobId(jobId)
                                                 .stream()
@@ -142,7 +144,7 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
     @Override
     public void deleteJob(final UUID jobId) throws AlertDatabaseConstraintException {
         if (jobId == null) {
-            throw new AlertDatabaseConstraintException("The job id cannot be null");
+            throw new AlertDatabaseConstraintException(NULL_JOB_ID);
         }
         configGroupRepository.deleteByJobId(jobId);
     }
@@ -150,7 +152,7 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
     @Override
     public Optional<ConfigurationModel> getConfigurationById(final Long id) throws AlertDatabaseConstraintException {
         if (id == null) {
-            throw new AlertDatabaseConstraintException("The config id cannot be null");
+            throw new AlertDatabaseConstraintException(NULL_CONFIG_ID);
         }
         final Optional<DescriptorConfigEntity> optionalDescriptorConfigEntity = descriptorConfigsRepository.findById(id);
         if (optionalDescriptorConfigEntity.isPresent()) {
@@ -267,7 +269,7 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
     @Override
     public ConfigurationModel updateConfiguration(final Long descriptorConfigId, final Collection<ConfigurationFieldModel> configuredFields) throws AlertDatabaseConstraintException {
         if (descriptorConfigId == null) {
-            throw new AlertDatabaseConstraintException("The config id cannot be null");
+            throw new AlertDatabaseConstraintException(NULL_CONFIG_ID);
         }
         final DescriptorConfigEntity descriptorConfigEntity = descriptorConfigsRepository
                                                                   .findById(descriptorConfigId)
@@ -302,7 +304,7 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
     @Override
     public void deleteConfiguration(final Long descriptorConfigId) throws AlertDatabaseConstraintException {
         if (descriptorConfigId == null) {
-            throw new AlertDatabaseConstraintException("The config id cannot be null");
+            throw new AlertDatabaseConstraintException(NULL_CONFIG_ID);
         }
         descriptorConfigsRepository.deleteById(descriptorConfigId);
     }

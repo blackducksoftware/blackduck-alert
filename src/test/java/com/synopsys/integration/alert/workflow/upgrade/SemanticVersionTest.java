@@ -17,11 +17,11 @@ public class SemanticVersionTest {
         final SemanticVersion lowVersion = new SemanticVersion("0.2.0");
         final SemanticVersion lowestVersion = new SemanticVersion("0.0.9999");
 
-        assertTrue(version.compareTo(higherVersion) == SemanticVersion.LESS_THAN);
-        assertTrue(version.compareTo(highestVersion) == SemanticVersion.LESS_THAN);
-        assertTrue(version.compareTo(lowVersion) == SemanticVersion.GREATER_THAN);
-        assertTrue(version.compareTo(lowestVersion) == SemanticVersion.GREATER_THAN);
-        assertTrue(version.compareTo(version) == SemanticVersion.EQUALS);
-        assertTrue(version.compareTo(versionSnapshot) == SemanticVersion.LESS_THAN);
+        assertTrue(version.compareTo(higherVersion) == SemanticVersion.CONSTANT_LESS_THAN);
+        assertTrue(version.compareTo(highestVersion) == SemanticVersion.CONSTANT_LESS_THAN);
+        assertTrue(version.compareTo(lowVersion) == SemanticVersion.CONSTANT_GREATER_THAN);
+        assertTrue(version.compareTo(lowestVersion) == SemanticVersion.CONSTANT_GREATER_THAN);
+        assertTrue(version.compareTo(version) == SemanticVersion.CONSTANT_EQUALS);
+        assertTrue(version.compareTo(versionSnapshot) == SemanticVersion.CONSTANT_LESS_THAN);
     }
 }
