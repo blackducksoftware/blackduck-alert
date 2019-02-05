@@ -36,6 +36,7 @@ import com.synopsys.integration.alert.database.RepositoryAccessor;
 @Component
 @Transactional
 public class BlackDuckProjectRepositoryAccessor extends RepositoryAccessor<BlackDuckProjectEntity> {
+    private static final int MAX_DESCRIPTION_LENGTH = 250;
     private final BlackDuckProjectRepository blackDuckProjectRepository;
 
     @Autowired
@@ -53,7 +54,7 @@ public class BlackDuckProjectRepositoryAccessor extends RepositoryAccessor<Black
     public BlackDuckProjectEntity saveEntity(final BlackDuckProjectEntity blackDuckProjectEntity) {
         BlackDuckProjectEntity passedBlackDuckProjectEntity = blackDuckProjectEntity;
         final String description = blackDuckProjectEntity.getDescription();
-        if (description.length() > 255) {
+        if (description.length() > MAX_DESCRIPTION_LENGTH) {
             final String trimmedDescription = trimDescription(description);
             passedBlackDuckProjectEntity = new BlackDuckProjectEntity(blackDuckProjectEntity.getName(), trimmedDescription, blackDuckProjectEntity.getHref(), blackDuckProjectEntity.getProjectOwnerEmail());
         }
@@ -66,7 +67,7 @@ public class BlackDuckProjectRepositoryAccessor extends RepositoryAccessor<Black
     }
 
     private String trimDescription(final String projectDescription) {
-        final String trimmedDescription = StringUtils.substring(projectDescription, 0, 250);
+        final String trimmedDescription = StringUtils.substring(projectDescription, 0, MAX_DESCRIPTION_LENGTH);
         return trimmedDescription + "...";
     }
 }
