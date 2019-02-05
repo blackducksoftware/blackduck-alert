@@ -9,7 +9,7 @@ import HipChatJobConfiguration from 'distribution/job/HipChatJobConfiguration';
 import SlackJobConfiguration from 'distribution/job/SlackJobConfiguration';
 import EditTableCellFormatter from 'component/common/EditTableCellFormatter';
 import JobAddModal from 'distribution/JobAddModal';
-import { deleteDistributionJob, fetchDistributionJobs } from 'store/actions/distributions';
+import { fetchDistributionJobs } from 'store/actions/distributions';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import JobDeleteModal from 'distribution/JobDeleteModal';
 
@@ -328,7 +328,6 @@ class Index extends Component {
                 <JobDeleteModal
                     onModalSubmit={this.onJobDeleteSubmit}
                     onModalClose={this.onJobDeleteClose}
-                    deleteDistributionJob={this.props.deleteDistributionJob}
                     typeColumnDataFormat={this.typeColumnDataFormat}
                     providerColumnDataFormat={this.providerColumnDataFormat}
                     frequencyColumnDataFormat={frequencyColumnDataFormat}
@@ -350,7 +349,6 @@ class Index extends Component {
 }
 
 Index.propTypes = {
-    deleteDistributionJob: PropTypes.func.isRequired,
     fetchDistributionJobs: PropTypes.func.isRequired,
     autoRefresh: PropTypes.bool,
     descriptors: PropTypes.arrayOf(PropTypes.object),
@@ -373,7 +371,6 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    deleteDistributionJob: job => dispatch(deleteDistributionJob(job)),
     fetchDistributionJobs: () => dispatch(fetchDistributionJobs())
 });
 
