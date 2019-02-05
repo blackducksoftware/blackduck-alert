@@ -99,7 +99,7 @@ class GroupEmailJobConfiguration extends Component {
 }
 
 GroupEmailJobConfiguration.propTypes = {
-    jobs: PropTypes.object,
+    jobs: PropTypes.arrayOf(PropTypes.object),
     distributionConfigId: PropTypes.string,
     getDistributionJob: PropTypes.func.isRequired,
     fieldErrors: PropTypes.object,
@@ -111,7 +111,7 @@ GroupEmailJobConfiguration.propTypes = {
 };
 
 GroupEmailJobConfiguration.defaultProps = {
-    jobs: {},
+    jobs: [],
     distributionConfigId: null,
     fieldErrors: {},
     fetching: false,

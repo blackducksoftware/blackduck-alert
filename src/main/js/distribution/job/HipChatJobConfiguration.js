@@ -148,7 +148,7 @@ class HipChatJobConfiguration extends Component {
 
 HipChatJobConfiguration.propTypes = {
     getDistributionJob: PropTypes.func.isRequired,
-    jobs: PropTypes.object,
+    jobs: PropTypes.arrayOf(PropTypes.object),
     distributionConfigId: PropTypes.string,
     colorOptions: PropTypes.arrayOf(PropTypes.object),
     fieldErrors: PropTypes.object,
@@ -160,7 +160,7 @@ HipChatJobConfiguration.propTypes = {
 };
 
 HipChatJobConfiguration.defaultProps = {
-    jobs: {},
+    jobs: [],
     distributionConfigId: null,
     colorOptions: [
         { label: 'Yellow', value: 'yellow' },
