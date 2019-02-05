@@ -42,7 +42,9 @@ const session = (state = initialState, action) => {
             return Object.assign({}, initialState, {
                 initializing: false,
                 loggedIn: false,
-                showLogoutConfirm: false
+                showLogoutConfirm: false,
+                errorMessage: null,
+                errors: []
             });
 
         case SESSION_LOGIN_ERROR:

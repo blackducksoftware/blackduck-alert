@@ -40,11 +40,11 @@ import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.database.api.user.UserAccessor;
 import com.synopsys.integration.alert.database.api.user.UserModel;
-import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class PasswordResetService {
@@ -63,9 +63,9 @@ public class PasswordResetService {
         this.configurationAccessor = configurationAccessor;
     }
 
-    public void resetPassword(final String username) throws IntegrationException {
+    public void resetPassword(final String username) throws AlertException {
         final UserModel userModel = userAccessor.getUser(username)
-                                        .orElseThrow(() -> new AlertException("No user exists for the username: " + username));
+                                        .orElseThrow(() -> new AlertDatabaseConstraintException("No user exists for the username: " + username));
         if (StringUtils.isBlank(userModel.getEmailAddress())) {
             throw new AlertException("No email address configured for user: " + username);
         }
@@ -76,7 +76,7 @@ public class PasswordResetService {
         final FieldAccessor fieldAccessor = new FieldAccessor(emailConfig.getCopyOfKeyToFieldMap());
         final EmailProperties emailProperties = new EmailProperties(fieldAccessor);
 
-        final String tempPassword = RandomStringUtils.randomAscii(TEMP_PASSWORD_LENGTH);
+        final String tempPassword = RandomStringUtils.randomAlphanumeric(TEMP_PASSWORD_LENGTH);
         final Map<String, Object> templateFields = Map.of(
             EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), SUBJECT_LINE,
             "tempPassword", tempPassword
@@ -86,14 +86,14 @@ public class PasswordResetService {
         handleSendAndUpdateDatabase(passwordResetEmail, emailProperties, username, tempPassword);
     }
 
-    private void handleSendAndUpdateDatabase(final EmailTarget passwordResetEmail, final EmailProperties emailProperties, final String username, final String tempPassword) throws IntegrationException {
+    private void handleSendAndUpdateDatabase(final EmailTarget passwordResetEmail, final EmailProperties emailProperties, final String username, final String tempPassword) throws AlertException {
         try {
             final EmailMessagingService emailService = new EmailMessagingService(alertProperties.getAlertTemplatesDir(), emailProperties);
             emailService.sendEmailMessage(passwordResetEmail);
             // Only change the password if there isn't an issue with sending the email
             userAccessor.changeUserPassword(username, tempPassword);
         } catch (final IOException ioException) {
-            throw new IntegrationException("Problem sending password reset email.", ioException);
+            throw new AlertException("Problem sending password reset email.", ioException);
         } catch (final Exception genericException) {
             throw new AlertException("Problem sending password reset email. " + StringUtils.defaultIfBlank(genericException.getMessage(), ""), genericException);
         }
