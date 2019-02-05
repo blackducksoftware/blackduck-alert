@@ -79,10 +79,9 @@ public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig 
         final String projectNamePattern = fieldModel.getField(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN).flatMap(field -> field.getValue()).orElse(null);
         final boolean trueTextPresent = Boolean.TRUE.toString().equalsIgnoreCase(filterByProject);
         final boolean falseTextPresent = Boolean.FALSE.toString().equalsIgnoreCase(filterByProject);
-        if (!trueTextPresent && !falseTextPresent) {
-            if ((null == configuredProjects || configuredProjects.isEmpty()) && StringUtils.isBlank(projectNamePattern)) {
-                return List.of("You must select at least one project.");
-            }
+        final boolean missingProject = (null == configuredProjects || configuredProjects.isEmpty()) && StringUtils.isBlank(projectNamePattern);
+        if (!trueTextPresent && !falseTextPresent && missingProject) {
+            return List.of("You must select at least one project.");
         }
         return List.of();
     }

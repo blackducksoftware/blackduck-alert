@@ -34,20 +34,20 @@ import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 
 @Transactional
 // TODO we should strongly consider only allowing reads from a repository accessor; deletes should not necessarily be atomic transactions
-public abstract class RepositoryAccessor {
-    private final JpaRepository<? extends DatabaseEntity, Long> repository;
+public abstract class RepositoryAccessor<D extends DatabaseEntity> {
+    private final JpaRepository<D, Long> repository;
 
-    public RepositoryAccessor(final JpaRepository<? extends DatabaseEntity, Long> repository) {
+    public RepositoryAccessor(final JpaRepository<D, Long> repository) {
         this.repository = repository;
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public List<? extends DatabaseEntity> readEntities() {
+    public List<D> readEntities() {
         return repository.findAll();
     }
 
     @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
-    public Optional<? extends DatabaseEntity> readEntity(final long id) {
+    public Optional<D> readEntity(final long id) {
         return repository.findById(id);
     }
 
@@ -59,5 +59,7 @@ public abstract class RepositoryAccessor {
         repository.deleteAllInBatch();
     }
 
-    public abstract DatabaseEntity saveEntity(final DatabaseEntity entity);
+    public DatabaseEntity saveEntity(final D entity) {
+        return repository.save(entity);
+    }
 }

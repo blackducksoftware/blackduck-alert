@@ -43,6 +43,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.common.exception.AlertMethodNotAllowedException;
 import com.synopsys.integration.alert.web.controller.BaseController;
@@ -58,9 +59,9 @@ public class JobConfigController extends BaseController {
 
     private final Logger logger = LoggerFactory.getLogger(JobConfigController.class);
 
-    private JobConfigActions jobConfigActions;
-    private ResponseFactory responseFactory;
-    private ContentConverter contentConverter;
+    private final JobConfigActions jobConfigActions;
+    private final ResponseFactory responseFactory;
+    private final ContentConverter contentConverter;
 
     @Autowired
     public JobConfigController(final JobConfigActions jobConfigActions, final ResponseFactory responseFactory, final ContentConverter contentConverter) {
@@ -71,7 +72,7 @@ public class JobConfigController extends BaseController {
 
     @GetMapping
     public ResponseEntity<String> getJobs() {
-        List<JobFieldModel> models;
+        final List<JobFieldModel> models;
         try {
             models = jobConfigActions.getAllJobs();
         } catch (final AlertException e) {
@@ -87,8 +88,8 @@ public class JobConfigController extends BaseController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<String> getJob(@PathVariable UUID id) {
-        Optional<JobFieldModel> optionalModel;
+    public ResponseEntity<String> getJob(@PathVariable final UUID id) {
+        final Optional<JobFieldModel> optionalModel;
         try {
             optionalModel = jobConfigActions.getJobById(id);
         } catch (final AlertException e) {
@@ -106,48 +107,54 @@ public class JobConfigController extends BaseController {
     @PostMapping
     public ResponseEntity<String> postConfig(@RequestBody(required = true) final JobFieldModel restModel) {
         if (restModel == null) {
-            return responseFactory.createBadRequestResponse("", "Required request body is missing");
+            return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
-        String id = restModel.getJobId();
-        UUID uuid = UUID.fromString(id);
         try {
-            if (!jobConfigActions.doesJobExist(uuid)) {
-                try {
-                    final JobFieldModel updatedEntity = jobConfigActions.saveJob(restModel);
-                    return responseFactory.createCreatedResponse(updatedEntity.getJobId(), "Created");
-                } catch (final AlertFieldException e) {
-                    return responseFactory.createFieldErrorResponse(id, "There were errors with the configuration.", e.getFieldErrors());
-                }
-            } else {
-                return responseFactory.createConflictResponse(id, "Provided id must not be in use. To update an existing configuration, use PUT.");
-            }
+            return runPostConfig(restModel);
         } catch (final AlertException e) {
             logger.error(e.getMessage(), e);
             return responseFactory.createInternalServerErrorResponse(restModel.getJobId(), e.getMessage());
         }
     }
 
+    private ResponseEntity<String> runPostConfig(final JobFieldModel restModel) throws AlertDatabaseConstraintException {
+        final String id = restModel.getJobId();
+        if (jobConfigActions.doesJobExist(id)) {
+            return responseFactory.createConflictResponse(id, "Provided id must not be in use. To update an existing configuration, use PUT.");
+        }
+
+        try {
+            final JobFieldModel updatedEntity = jobConfigActions.saveJob(restModel);
+            return responseFactory.createCreatedResponse(updatedEntity.getJobId(), "Created");
+        } catch (final AlertFieldException e) {
+            return responseFactory.createFieldErrorResponse(id, "There were errors with the configuration.", e.getFieldErrors());
+        }
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<String> putConfig(@PathVariable final UUID id, @RequestBody(required = true) final JobFieldModel restModel) {
         if (restModel == null) {
-            return responseFactory.createBadRequestResponse("", "Required request body is missing");
+            return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
 
-        String stringId = restModel.getJobId();
         try {
-            if (jobConfigActions.doesJobExist(id)) {
-                try {
-                    final JobFieldModel updatedEntity = jobConfigActions.updateJob(id, restModel);
-                    return responseFactory.createAcceptedResponse(updatedEntity.getJobId(), "Updated");
-                } catch (final AlertFieldException e) {
-                    return responseFactory.createFieldErrorResponse(stringId, "There were errors with the configuration.", e.getFieldErrors());
-                }
-            } else {
-                return responseFactory.createBadRequestResponse(stringId, "No configuration with the specified id.");
-            }
+            return runPutConfig(id, restModel);
         } catch (final AlertException e) {
             logger.error(e.getMessage(), e);
-            return responseFactory.createInternalServerErrorResponse(stringId, e.getMessage());
+            return responseFactory.createInternalServerErrorResponse(restModel.getJobId(), e.getMessage());
+        }
+    }
+
+    private ResponseEntity<String> runPutConfig(final UUID id, final JobFieldModel restModel) throws AlertException {
+        if (!jobConfigActions.doesJobExist(id)) {
+            return responseFactory.createBadRequestResponse(id.toString(), "No configuration with the specified id.");
+        }
+
+        try {
+            final JobFieldModel updatedEntity = jobConfigActions.updateJob(id, restModel);
+            return responseFactory.createAcceptedResponse(updatedEntity.getJobId(), "Updated");
+        } catch (final AlertFieldException e) {
+            return responseFactory.createFieldErrorResponse(id.toString(), "There were errors with the configuration.", e.getFieldErrors());
         }
     }
 
@@ -156,7 +163,7 @@ public class JobConfigController extends BaseController {
         if (null == id) {
             responseFactory.createBadRequestResponse("", "Proper ID is required for deleting.");
         }
-        String stringId = contentConverter.getStringValue(id);
+        final String stringId = contentConverter.getStringValue(id);
         try {
             if (jobConfigActions.doesJobExist(id)) {
                 jobConfigActions.deleteJobById(id);
@@ -173,9 +180,9 @@ public class JobConfigController extends BaseController {
     @PostMapping("/validate")
     public ResponseEntity<String> validateConfig(@RequestBody(required = true) final JobFieldModel restModel) {
         if (restModel == null) {
-            return responseFactory.createBadRequestResponse("", "Required request body is missing");
+            return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
-        String id = restModel.getJobId();
+        final String id = restModel.getJobId();
         try {
             final String responseMessage = jobConfigActions.validateJob(restModel);
             return responseFactory.createOkResponse(id, responseMessage);
@@ -187,9 +194,9 @@ public class JobConfigController extends BaseController {
     @PostMapping("/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = true) final JobFieldModel restModel, @RequestParam(required = false) final String destination) {
         if (restModel == null) {
-            return responseFactory.createBadRequestResponse("", "Required request body is missing");
+            return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
-        String id = restModel.getJobId();
+        final String id = restModel.getJobId();
         try {
             final String responseMessage = jobConfigActions.testJob(restModel, destination);
             return responseFactory.createOkResponse(id, responseMessage);
@@ -198,7 +205,7 @@ public class JobConfigController extends BaseController {
             return responseFactory.createMessageResponse(HttpStatus.valueOf(e.getHttpStatusCode()), id, e.getHttpStatusMessage() + " : " + e.getMessage());
         } catch (final AlertFieldException e) {
             return responseFactory.createFieldErrorResponse(id, e.getMessage(), e.getFieldErrors());
-        } catch (AlertMethodNotAllowedException e) {
+        } catch (final AlertMethodNotAllowedException e) {
             return responseFactory.createMethodNotAllowedResponse(e.getMessage());
         } catch (final AlertException e) {
             return responseFactory.createBadRequestResponse(id, e.getMessage());
