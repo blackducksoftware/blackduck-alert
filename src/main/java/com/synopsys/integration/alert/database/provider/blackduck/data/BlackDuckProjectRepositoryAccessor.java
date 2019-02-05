@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.database.provider.blackduck.data;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
@@ -48,8 +49,24 @@ public class BlackDuckProjectRepositoryAccessor extends RepositoryAccessor<Black
         return blackDuckProjectRepository.findByName(name);
     }
 
+    @Override
+    public BlackDuckProjectEntity saveEntity(final BlackDuckProjectEntity blackDuckProjectEntity) {
+        BlackDuckProjectEntity passedBlackDuckProjectEntity = blackDuckProjectEntity;
+        final String description = blackDuckProjectEntity.getDescription();
+        if (description.length() > 255) {
+            final String trimmedDescription = trimDescription(description);
+            passedBlackDuckProjectEntity = new BlackDuckProjectEntity(blackDuckProjectEntity.getName(), trimmedDescription, blackDuckProjectEntity.getHref(), blackDuckProjectEntity.getProjectOwnerEmail());
+        }
+        return super.saveEntity(passedBlackDuckProjectEntity);
+    }
+
     public List<BlackDuckProjectEntity> deleteAndSaveAll(final Iterable<BlackDuckProjectEntity> blackDuckProjectEntities) {
         blackDuckProjectRepository.deleteAllInBatch();
         return blackDuckProjectRepository.saveAll(blackDuckProjectEntities);
+    }
+
+    private String trimDescription(final String projectDescription) {
+        final String trimmedDescription = StringUtils.substring(projectDescription, 0, 250);
+        return trimmedDescription + "...";
     }
 }
