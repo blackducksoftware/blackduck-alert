@@ -52,7 +52,7 @@ class SlackJobConfiguration extends Component {
     }
 
     getConfiguration() {
-        return Object.assign({}, this.state, {});
+        return this.state.currentConfig;
     }
 
     handleChange({ target }) {

@@ -15,7 +15,7 @@ export function getFieldModelValues(fieldModel, key) {
             return fieldModel.keyToValues[key].values;
         }
     }
-    return undefined;
+    return [];
 }
 
 export function getFieldModelBooleanValue(fieldModel, key) {
