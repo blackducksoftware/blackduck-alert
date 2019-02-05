@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserRepositoryAccessor;
 
@@ -19,9 +18,7 @@ public class MockBlackDuckUserRepositoryAccessor extends BlackDuckUserRepository
     }
 
     @Override
-    public DatabaseEntity saveEntity(final DatabaseEntity entity) {
-        final BlackDuckUserEntity blackDuckUserEntity = (BlackDuckUserEntity) entity;
-
+    public BlackDuckUserEntity saveEntity(final BlackDuckUserEntity blackDuckUserEntity) {
         final BlackDuckUserEntity newEntity = new BlackDuckUserEntity(blackDuckUserEntity.getEmailAddress(), blackDuckUserEntity.getOptOut());
         if (null == blackDuckUserEntity.getId()) {
             newEntity.setId(count);
@@ -34,12 +31,12 @@ public class MockBlackDuckUserRepositoryAccessor extends BlackDuckUserRepository
     }
 
     @Override
-    public List<? extends DatabaseEntity> readEntities() {
+    public List<BlackDuckUserEntity> readEntities() {
         return new ArrayList<>(blackDuckUserEntityMap.values());
     }
 
     @Override
-    public Optional<? extends DatabaseEntity> readEntity(final long id) {
+    public Optional<BlackDuckUserEntity> readEntity(final long id) {
         return Optional.ofNullable(blackDuckUserEntityMap.get(Long.valueOf(id)));
     }
 
