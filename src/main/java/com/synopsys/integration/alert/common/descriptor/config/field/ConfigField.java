@@ -184,7 +184,12 @@ public class ConfigField extends Stringable {
     }
 
     private void validateLength(final FieldValueModel fieldValueModel, final Collection<String> errors) {
-        final boolean tooLargeFound = fieldValueModel.getValues().stream().anyMatch(value -> MAX_FIELD_LENGTH < value.length());
+        final Collection<String> values = fieldValueModel.getValues();
+        if (null == values) {
+            return;
+        }
+
+        final boolean tooLargeFound = values.stream().anyMatch(value -> MAX_FIELD_LENGTH < value.length());
         if (tooLargeFound) {
             errors.add(FIELD_LENGTH_LARGE);
         }
