@@ -29,19 +29,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
-import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
-import com.synopsys.integration.alert.web.model.configuration.FieldModel;
-import com.synopsys.integration.alert.web.model.configuration.TestConfigModel;
-import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.util.Stringable;
 
 public abstract class Descriptor extends Stringable {
@@ -125,27 +120,6 @@ public abstract class Descriptor extends Stringable {
 
     public boolean hasUIConfigForType(final ConfigContextEnum actionApiType) {
         return uiConfigs.containsKey(actionApiType);
-    }
-
-    // TODO where is this supposed to be used?  or should this be deleted?
-    public void validateConfig(final ConfigContextEnum configContext, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
-        final Optional<DescriptorActionApi> actionApi = getActionApi(configContext);
-        final Optional<UIConfig> uiConfig = getUIConfig(configContext);
-        final Map<String, ConfigField> configFieldMap = getUIConfig(configContext)
-                                                            .map(UIConfig::createFields)
-                                                            .map(fieldList -> fieldList.stream()
-                                                                                  .collect(Collectors.toMap(ConfigField::getKey, Function.identity())))
-                                                            .orElse(Map.of());
-        uiConfig.ifPresent(config ->
-                               actionApi.ifPresent(descriptorActionApi -> descriptorActionApi.validateConfig(configFieldMap, fieldModel, fieldErrors)));
-    }
-
-    // TODO where is this supposed to be used?  or should this be deleted?
-    public void testConfig(final ConfigContextEnum actionApiType, final TestConfigModel testConfig) throws IntegrationException {
-        final Optional<DescriptorActionApi> actionApi = getActionApi(actionApiType);
-        if (actionApi.isPresent()) {
-            actionApi.get().testConfig(testConfig);
-        }
     }
 
     private DescriptorMetadata createMetaData(final UIConfig uiConfig, final ConfigContextEnum context) {
