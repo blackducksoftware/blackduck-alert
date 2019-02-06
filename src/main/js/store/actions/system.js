@@ -6,11 +6,14 @@ import {
     SYSTEM_SETUP_FETCH_REDIRECTED,
     SYSTEM_SETUP_FETCHED,
     SYSTEM_SETUP_FETCHING,
+    SYSTEM_SETUP_HIDE_RESET_PASSWORD_MODAL,
+    SYSTEM_SETUP_PASSWORD_RESETTING,
+    SYSTEM_SETUP_SHOW_RESET_PASSWORD_MODAL,
     SYSTEM_SETUP_UPDATE_ERROR,
     SYSTEM_SETUP_UPDATED,
     SYSTEM_SETUP_UPDATING
 } from 'store/actions/types';
-import { verifyLoginByStatus } from 'store/actions/session';
+import { clearLoginError, loginError, verifyLoginByStatus } from 'store/actions/session';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 
 const LATEST_MESSAGES_URL = '/alert/api/system/messages/latest';
@@ -82,6 +85,24 @@ function systemSetupUpdateError(message, errors) {
         type: SYSTEM_SETUP_UPDATE_ERROR,
         message,
         errors
+    };
+}
+
+function resettingPassword() {
+    return {
+        type: SYSTEM_SETUP_PASSWORD_RESETTING
+    };
+}
+
+export function showResetModal() {
+    return {
+        type: SYSTEM_SETUP_SHOW_RESET_PASSWORD_MODAL
+    };
+}
+
+export function hideResetModal() {
+    return {
+        type: SYSTEM_SETUP_HIDE_RESET_PASSWORD_MODAL
     };
 }
 
@@ -209,5 +230,23 @@ export function saveSystemSetup(setupData) {
             }
         })
             .catch(console.error);
+    };
+}
+
+export function sendPasswordResetEmail(username) {
+    return (dispatch) => {
+        dispatch(clearLoginError());
+        dispatch(resettingPassword());
+        const url = `/alert/api/resetPassword/${encodeURIComponent(username)}`;
+        fetch(url, {
+            method: 'POST'
+        }).then((response) => {
+            dispatch(hideResetModal());
+            if (!response.ok) {
+                response.json().then((body) =>
+                    dispatch(loginError(body.message, body.fieldErrors))
+                );
+            }
+        }).catch(console.error);
     };
 }

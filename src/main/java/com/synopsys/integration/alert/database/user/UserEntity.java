@@ -36,6 +36,8 @@ public class UserEntity extends DatabaseEntity {
     private String userName;
     @Column(name = "password")
     private String password;
+    @Column(name = "email_address")
+    private String emailAddress;
     @Column(name = "expired")
     private boolean expired;
     @Column(name = "locked")
@@ -49,18 +51,20 @@ public class UserEntity extends DatabaseEntity {
         // JPA requires default constructor definitions
     }
 
-    public UserEntity(final String userName, final String password) {
+    public UserEntity(final String userName, final String password, final String emailAddress) {
         this.userName = userName;
         this.password = password;
+        this.emailAddress = emailAddress;
         this.expired = false;
         this.locked = false;
         this.passwordExpired = false;
         this.enabled = true;
     }
 
-    public UserEntity(final String userName, final String password, final boolean expired, final boolean locked, final boolean passwordExpired, final boolean enabled) {
+    public UserEntity(final String userName, final String password, final String emailAddress, final boolean expired, final boolean locked, final boolean passwordExpired, final boolean enabled) {
         this.userName = userName;
         this.password = password;
+        this.emailAddress = emailAddress;
         this.expired = expired;
         this.locked = locked;
         this.passwordExpired = passwordExpired;
@@ -68,26 +72,30 @@ public class UserEntity extends DatabaseEntity {
     }
 
     public String getUserName() {
-        return userName;
+        return this.userName;
     }
 
     public String getPassword() {
-        return password;
+        return this.password;
+    }
+
+    public String getEmailAddress() {
+        return emailAddress;
     }
 
     public boolean isExpired() {
-        return expired;
+        return this.expired;
     }
 
     public boolean isLocked() {
-        return locked;
+        return this.locked;
     }
 
     public boolean isPasswordExpired() {
-        return passwordExpired;
+        return this.passwordExpired;
     }
 
     public boolean isEnabled() {
-        return enabled;
+        return this.enabled;
     }
 }
