@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.database.provider.blackduck.data;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
@@ -35,6 +36,7 @@ import com.synopsys.integration.alert.database.RepositoryAccessor;
 @Component
 @Transactional
 public class BlackDuckProjectRepositoryAccessor extends RepositoryAccessor<BlackDuckProjectEntity> {
+    private static final int MAX_DESCRIPTION_LENGTH = 250;
     private final BlackDuckProjectRepository blackDuckProjectRepository;
 
     @Autowired
@@ -48,8 +50,16 @@ public class BlackDuckProjectRepositoryAccessor extends RepositoryAccessor<Black
         return blackDuckProjectRepository.findByName(name);
     }
 
+    @Override
+    public BlackDuckProjectEntity saveEntity(final BlackDuckProjectEntity blackDuckProjectEntity) {
+        final String trimmedDescription = StringUtils.abbreviate(blackDuckProjectEntity.getDescription(), MAX_DESCRIPTION_LENGTH);
+        final BlackDuckProjectEntity trimmedBlackDuckProjectEntity = new BlackDuckProjectEntity(blackDuckProjectEntity.getName(), trimmedDescription, blackDuckProjectEntity.getHref(), blackDuckProjectEntity.getProjectOwnerEmail());
+        return super.saveEntity(trimmedBlackDuckProjectEntity);
+    }
+
     public List<BlackDuckProjectEntity> deleteAndSaveAll(final Iterable<BlackDuckProjectEntity> blackDuckProjectEntities) {
         blackDuckProjectRepository.deleteAllInBatch();
         return blackDuckProjectRepository.saveAll(blackDuckProjectEntities);
     }
+
 }
