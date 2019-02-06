@@ -23,7 +23,6 @@
  */
 package com.synopsys.integration.alert.channel.hipchat.descriptor;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +48,7 @@ public class HipChatDistributionUIConfig extends ChannelDistributionUIConfig {
     public List<ConfigField> createChannelDistributionFields() {
         final ConfigField roomId = NumberConfigField.createRequired(HipChatDescriptor.KEY_ROOM_ID, "Room Id");
         final ConfigField notify = CheckboxConfigField.create(HipChatDescriptor.KEY_NOTIFY, "Notify");
-        final ConfigField color = SelectConfigField.create(HipChatDescriptor.KEY_COLOR, "Color", Arrays.asList("Yellow", "Green", "Red", "Purple", "Gray", "Random"));
+        final ConfigField color = SelectConfigField.create(HipChatDescriptor.KEY_COLOR, "Color", List.of("Yellow", "Green", "Red", "Purple", "Gray", "Random"));
         return List.of(roomId, notify, color);
     }
 }
