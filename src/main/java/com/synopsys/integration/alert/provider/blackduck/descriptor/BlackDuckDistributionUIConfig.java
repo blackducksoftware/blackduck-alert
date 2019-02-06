@@ -75,12 +75,10 @@ public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig 
 
     private Collection<String> validateConfiguredProject(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
         final Collection<String> configuredProjects = Optional.ofNullable(fieldToValidate.getValues()).orElse(List.of());
-        final String filterByProject = fieldModel.getField(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT).flatMap(field -> field.getValue()).orElse(null);
-        final String projectNamePattern = fieldModel.getField(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN).flatMap(field -> field.getValue()).orElse(null);
-        final boolean trueTextPresent = Boolean.TRUE.toString().equalsIgnoreCase(filterByProject);
-        final boolean falseTextPresent = Boolean.FALSE.toString().equalsIgnoreCase(filterByProject);
+        final boolean filterByProject = fieldModel.getField(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT).flatMap(FieldValueModel::getValue).map(Boolean::parseBoolean).orElse(false);
+        final String projectNamePattern = fieldModel.getField(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN).flatMap(FieldValueModel::getValue).orElse(null);
         final boolean missingProject = (null == configuredProjects || configuredProjects.isEmpty()) && StringUtils.isBlank(projectNamePattern);
-        if (!trueTextPresent && !falseTextPresent && missingProject) {
+        if (filterByProject && missingProject) {
             return List.of("You must select at least one project.");
         }
         return List.of();
