@@ -54,8 +54,6 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import freemarker.template.TemplateException;
 
 public class EmailMessagingService {
-    private static final String SIMPLE_EMAIL_ADDRESS_PATTERN = ".{1,64}@.+";
-
     private final Logger logger = LoggerFactory.getLogger(EmailMessagingService.class);
 
     private final EmailProperties emailProperties;
@@ -130,17 +128,23 @@ public class EmailMessagingService {
         }
 
         final String fromString = emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_FROM_KEY);
+        final InternetAddress fromAddress;
         if (StringUtils.isBlank(fromString)) {
             logger.warn("No 'from' address specified");
             throw new AlertException(String.format("Required field '%s' was blank", EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey()));
-        } else if (!fromString.matches(SIMPLE_EMAIL_ADDRESS_PATTERN)) {
-            logger.warn("Invalid 'from' address specified: " + fromString);
-            throw new AlertException(String.format("'%s' is not a valid email address", fromString));
+        } else {
+            fromAddress = new InternetAddress(fromString);
+            try {
+                fromAddress.validate();
+            } catch (final AddressException e) {
+                logger.warn("Invalid 'from' address specified: " + fromString);
+                throw new AlertException(String.format("'%s' is not a valid email address: %s", fromString, e.getMessage()));
+            }
         }
 
         final Message message = new MimeMessage(session);
         message.setContent(mimeMultipart);
-        message.setFrom(new InternetAddress(fromString));
+        message.setFrom(fromAddress);
         message.setRecipients(Message.RecipientType.TO, addresses.toArray(new Address[addresses.size()]));
         message.setSubject(subjectLine);
 

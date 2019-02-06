@@ -88,7 +88,7 @@ public class AuthenticationController extends BaseController {
                 final CsrfToken token = csrfTokenRepository.generateToken(request);
                 csrfTokenRepository.saveToken(token, request, response);
                 response.setHeader(token.getHeaderName(), token.getToken());
-                return responseFactory.createMessageResponse(HttpStatus.OK, "{\"message\":\"Success\"}");
+                return responseFactory.createMessageResponse(HttpStatus.OK, "Success");
             } else {
                 return responseFactory.createMessageResponse(HttpStatus.UNAUTHORIZED, "User not authorized");
             }
@@ -102,7 +102,7 @@ public class AuthenticationController extends BaseController {
 
     @PostMapping(value = "/resetPassword")
     public ResponseEntity<String> resetPassword() {
-        return responseFactory.createBadRequestResponse(null, "Password Reset Error: A username must be specified");
+        return responseFactory.createBadRequestResponse(ResponseFactory.EMPTY_ID, "Password Reset Error: A username must be specified");
     }
 
     @PostMapping(value = "/resetPassword/{username}")
@@ -110,11 +110,11 @@ public class AuthenticationController extends BaseController {
         final String errorPrefix = "Password Reset Error: ";
         try {
             passwordResetService.resetPassword(username);
-            return responseFactory.createOkResponse(null, "Password reset email sent");
+            return responseFactory.createOkResponse(ResponseFactory.EMPTY_ID, "Password reset email sent");
         } catch (final AlertDatabaseConstraintException databaseException) {
-            return responseFactory.createFieldErrorResponse(null, errorPrefix + "Invalid username", Map.of("username", databaseException.getMessage()));
+            return responseFactory.createFieldErrorResponse(ResponseFactory.EMPTY_ID, errorPrefix + "Invalid username", Map.of("username", databaseException.getMessage()));
         } catch (final AlertException e) {
-            return responseFactory.createInternalServerErrorResponse(null, errorPrefix + e.getMessage());
+            return responseFactory.createInternalServerErrorResponse(ResponseFactory.EMPTY_ID, errorPrefix + e.getMessage());
         }
     }
 }
