@@ -28,6 +28,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.ProxyManager;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
@@ -36,7 +37,7 @@ import com.synopsys.integration.alert.provider.polaris.descriptor.PolarisDescrip
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
-import com.synopsys.integration.polaris.common.rest.AccessTokenRestConnection;
+import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 // TODO exclude for now: @Component
@@ -44,12 +45,14 @@ public class PolarisProperties extends ProviderProperties {
     public static final Integer DEFAULT_TIMEOUT = 300;
     private final AlertProperties alertProperties;
     private final ProxyManager proxyManager;
+    private final Gson gson;
 
     // TODO exclude for now: @Autowired
-    public PolarisProperties(final AlertProperties alertProperties, final BaseConfigurationAccessor configurationAccessor, final ProxyManager proxyManager) {
+    public PolarisProperties(final AlertProperties alertProperties, final BaseConfigurationAccessor configurationAccessor, final ProxyManager proxyManager, final Gson gson) {
         super(PolarisProvider.COMPONENT_NAME, configurationAccessor);
         this.alertProperties = alertProperties;
         this.proxyManager = proxyManager;
+        this.gson = gson;
     }
 
     public Optional<String> getUrl() {
@@ -64,23 +67,23 @@ public class PolarisProperties extends ProviderProperties {
                    .orElse(DEFAULT_TIMEOUT);
     }
 
-    public Optional<AccessTokenRestConnection> createRestConnectionSafely(final Logger logger) {
-        return createRestConnectionSafely(new Slf4jIntLogger(logger));
+    public Optional<AccessTokenPolarisHttpClient> createPolarisHttpClientSafely(final Logger logger) {
+        return createPolarisHttpClientSafely(new Slf4jIntLogger(logger));
     }
 
-    public Optional<AccessTokenRestConnection> createRestConnectionSafely(final IntLogger intLogger) {
+    public Optional<AccessTokenPolarisHttpClient> createPolarisHttpClientSafely(final IntLogger intLogger) {
         try {
-            return Optional.of(createRestConnection(intLogger));
+            return Optional.of(createPolarisHttpClient(intLogger));
         } catch (final IntegrationException e) {
             return Optional.empty();
         }
     }
 
-    public AccessTokenRestConnection createRestConnection(final Logger logger) throws IntegrationException {
-        return createRestConnection(new Slf4jIntLogger(logger));
+    public AccessTokenPolarisHttpClient createPolarisHttpClient(final Logger logger) throws IntegrationException {
+        return createPolarisHttpClient(new Slf4jIntLogger(logger));
     }
 
-    public AccessTokenRestConnection createRestConnection(final IntLogger intLogger) throws IntegrationException {
+    public AccessTokenPolarisHttpClient createPolarisHttpClient(final IntLogger intLogger) throws IntegrationException {
         final String errorFormat = "The field %s cannot be blank";
         final String baseUrl = getUrl()
                                    .orElseThrow(() -> new IntegrationException(String.format(errorFormat, "baseUrl")));
@@ -88,14 +91,14 @@ public class PolarisProperties extends ProviderProperties {
                                        .orElseThrow(() -> new IntegrationException(String.format(errorFormat, "accessToken")));
         final Integer timeout = getTimeout();
 
-        return createRestConnection(intLogger, baseUrl, accessToken, timeout);
+        return createPolarisHttpClient(intLogger, baseUrl, accessToken, timeout);
 
     }
 
-    public AccessTokenRestConnection createRestConnection(final IntLogger intLogger, final String baseUrl, final String accessToken, final Integer timeout) {
+    public AccessTokenPolarisHttpClient createPolarisHttpClient(final IntLogger intLogger, final String baseUrl, final String accessToken, final Integer timeout) {
         final Boolean alwaysTrustCertificate = alertProperties.getAlertTrustCertificate().orElse(Boolean.FALSE);
         final ProxyInfo proxyInfo = proxyManager.createProxyInfo();
-        return new AccessTokenRestConnection(intLogger, timeout, alwaysTrustCertificate, proxyInfo, baseUrl, accessToken);
+        return new AccessTokenPolarisHttpClient(intLogger, timeout, alwaysTrustCertificate, proxyInfo, baseUrl, accessToken, gson, null);
     }
 
     private Optional<String> getAccessToken() {

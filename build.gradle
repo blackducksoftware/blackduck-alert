@@ -61,7 +61,7 @@ dependencies {
         exclude group: 'org.apache.pdfbox:pdfbox'
     }
 
-    implementation 'com.synopsys.integration:polaris-common:0.3.0'
+    implementation 'com.synopsys.integration:polaris-common:0.4.1'
 
     // Spring boot
     implementation 'org.springframework.boot:spring-boot-starter'
