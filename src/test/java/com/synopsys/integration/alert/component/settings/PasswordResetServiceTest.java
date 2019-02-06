@@ -3,6 +3,7 @@ package com.synopsys.integration.alert.component.settings;
 import static com.synopsys.integration.alert.util.FieldModelUtil.addConfigurationFieldToMap;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.HashMap;
 import java.util.List;
@@ -10,8 +11,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import org.junit.Test;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.platform.commons.util.StringUtils;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.channel.email.EmailChannel;
@@ -82,23 +84,28 @@ public class PasswordResetServiceTest {
     }
 
     @Test
-    @Tag(TestTags.DEFAULT_INTEGRATION)
+    @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
     public void resetPasswordValidTestIT() throws AlertException {
-        final String username = "username";
-        final UserModel userModel = UserModel.of(username, "", "noreply@synopsys.com", Set.of());
-        final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
-        Mockito.when(userAccessor.getUser(Mockito.eq(username))).thenReturn(Optional.of(userModel));
-        Mockito.when(userAccessor.changeUserPassword(Mockito.eq(username), Mockito.anyString())).thenReturn(true);
-
         final TestProperties testProperties = new TestProperties();
         final Map<String, ConfigurationFieldModel> keyToFieldMap = new HashMap<>();
-        addConfigurationFieldToMap(keyToFieldMap, EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey(), testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST));
-        addConfigurationFieldToMap(keyToFieldMap, EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey(), testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM));
+
+        final String mailSmtpHost = testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST);
+        final String mailSmtpFrom = testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM);
+        assumeTrue(StringUtils.isNotBlank(mailSmtpHost) && StringUtils.isNotBlank(mailSmtpFrom), "Minimum email properties not configured");
+        addConfigurationFieldToMap(keyToFieldMap, EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey(), mailSmtpHost);
+        addConfigurationFieldToMap(keyToFieldMap, EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey(), mailSmtpFrom);
+
         addConfigurationFieldToMap(keyToFieldMap, EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey(), testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_USER));
         addConfigurationFieldToMap(keyToFieldMap, EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey(), testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PASSWORD));
         addConfigurationFieldToMap(keyToFieldMap, EmailPropertyKeys.JAVAMAIL_EHLO_KEY.getPropertyKey(), testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_EHLO));
         addConfigurationFieldToMap(keyToFieldMap, EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey(), testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_AUTH));
         addConfigurationFieldToMap(keyToFieldMap, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT));
+
+        final String username = "username";
+        final UserModel userModel = UserModel.of(username, "", "noreply@synopsys.com", Set.of());
+        final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
+        Mockito.when(userAccessor.getUser(Mockito.eq(username))).thenReturn(Optional.of(userModel));
+        Mockito.when(userAccessor.changeUserPassword(Mockito.eq(username), Mockito.anyString())).thenReturn(true);
 
         final ConfigurationModel emailConfig = Mockito.mock(ConfigurationModel.class);
         Mockito.when(emailConfig.getCopyOfKeyToFieldMap()).thenReturn(keyToFieldMap);
