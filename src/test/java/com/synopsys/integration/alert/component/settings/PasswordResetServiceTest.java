@@ -4,7 +4,6 @@ import static com.synopsys.integration.alert.util.FieldModelUtil.addConfiguratio
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,7 +83,7 @@ public class PasswordResetServiceTest {
 
     @Test
     @Tag(TestTags.DEFAULT_INTEGRATION)
-    public void resetPasswordValidTestIT() throws AlertException, IOException {
+    public void resetPasswordValidTestIT() throws AlertException {
         final String username = "username";
         final UserModel userModel = UserModel.of(username, "", "noreply@synopsys.com", Set.of());
         final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
@@ -107,13 +106,14 @@ public class PasswordResetServiceTest {
         final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
         Mockito.when(baseConfigurationAccessor.getConfigurationByDescriptorNameAndContext(Mockito.eq(EmailChannel.COMPONENT_NAME), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of(emailConfig));
 
-        final AlertProperties alertProperties = new TestAlertProperties();
+        final TestAlertProperties alertProperties = new TestAlertProperties();
+        alertProperties.setAlertTemplatesDir("");
         final PasswordResetService passwordResetService = new PasswordResetService(alertProperties, userAccessor, baseConfigurationAccessor);
         passwordResetService.resetPassword(username);
     }
 
     @Test
-    public void resetPasswordInvalidEmailConfigTest() throws AlertException, IOException {
+    public void resetPasswordInvalidEmailConfigTest() throws AlertException {
         final String username = "username";
         final UserModel userModel = UserModel.of(username, "", "noreply@synopsys.com", Set.of());
         final UserAccessor userAccessor = Mockito.mock(UserAccessor.class);
