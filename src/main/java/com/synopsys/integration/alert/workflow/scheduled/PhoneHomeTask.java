@@ -45,7 +45,7 @@ import com.synopsys.integration.alert.database.api.configuration.ConfigurationAc
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.blackduck.phonehome.BlackDuckPhoneHomeHelper;
-import com.synopsys.integration.blackduck.rest.BlackDuckRestConnection;
+import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.phonehome.PhoneHomeResponse;
@@ -74,16 +74,16 @@ public class PhoneHomeTask extends ScheduledTask {
 
     @Override
     public void run() {
-        final Optional<BlackDuckRestConnection> optionalRestConnection = blackDuckProperties.createRestConnectionAndLogErrors(logger);
-        if (optionalRestConnection.isPresent()) {
+        final Optional<BlackDuckHttpClient> optionalBlackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger);
+        if (optionalBlackDuckHttpClient.isPresent()) {
             final String productVersion = aboutReader.getProductVersion();
             if (AboutReader.PRODUCT_VERSION_UNKNOWN.equals(productVersion)) {
                 return;
             }
             final ExecutorService phoneHomeExecutor = Executors.newSingleThreadExecutor();
             try {
-                final BlackDuckRestConnection restConnection = optionalRestConnection.get();
-                final BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(restConnection, new Slf4jIntLogger(logger));
+                final BlackDuckHttpClient blackDuckHttpClient = optionalBlackDuckHttpClient.get();
+                final BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger));
                 final BlackDuckPhoneHomeHelper blackDuckPhoneHomeHelper = BlackDuckPhoneHomeHelper.createAsynchronousPhoneHomeHelper(blackDuckServicesFactory, phoneHomeExecutor);
 
                 final Map<String, String> metaData = getChannelMetaData();

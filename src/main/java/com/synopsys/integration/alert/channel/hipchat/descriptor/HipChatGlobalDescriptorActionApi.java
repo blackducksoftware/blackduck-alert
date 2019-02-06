@@ -34,7 +34,7 @@ import com.synopsys.integration.alert.common.descriptor.config.context.Descripto
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.web.model.configuration.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
-import com.synopsys.integration.rest.connection.RestConnection;
+import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.request.Request;
 
 @Component
@@ -55,8 +55,8 @@ public class HipChatGlobalDescriptorActionApi extends DescriptorActionApi {
             throw new AlertException("ERROR: Missing global config.");
         }
 
-        final RestConnection restConnection = hipChatChannel.getChannelRestConnectionFactory().createRestConnection();
-        hipChatChannel.testApiKeyAndApiUrlConnection(restConnection, configuredApiUrl, apiKey.get());
+        final IntHttpClient intHttpClient = hipChatChannel.getChannelRestConnectionFactory().createIntHttpClient();
+        hipChatChannel.testApiKeyAndApiUrlConnection(intHttpClient, configuredApiUrl, apiKey.get());
         final Integer parsedRoomId;
         try {
             final String testRoomId = testConfig.getDestination().orElse(null);
@@ -67,7 +67,7 @@ public class HipChatGlobalDescriptorActionApi extends DescriptorActionApi {
 
         final String htmlMessage = "This is a test message sent by Alert.";
         final Request testRequest = hipChatChannel.createRequest(configuredApiUrl, apiKey.get(), parsedRoomId, Boolean.TRUE, "red", htmlMessage);
-        hipChatChannel.sendMessageRequest(restConnection, testRequest, "test");
+        hipChatChannel.sendMessageRequest(intHttpClient, testRequest, "test");
     }
 
 }

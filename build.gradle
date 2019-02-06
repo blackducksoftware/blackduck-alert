@@ -54,7 +54,7 @@ dependencyManagement {
 }
 
 dependencies {
-    implementation('com.blackducksoftware.integration:blackduck-common:40.0.0') {
+    implementation('com.blackducksoftware.integration:blackduck-common:41.2.0') {
         exclude group: 'lodash.escape'
         exclude group: 'dom4j:dom4j'
         exclude group: 'com.google.guava'

@@ -41,7 +41,7 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.HttpMethod;
 import com.synopsys.integration.rest.RestConstants;
 import com.synopsys.integration.rest.body.StringBodyContent;
-import com.synopsys.integration.rest.connection.RestConnection;
+import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.request.Request;
 import com.synopsys.integration.rest.request.Response;
 
@@ -59,10 +59,10 @@ public abstract class RestDistributionChannel extends DistributionChannel {
     @Override
     public void sendMessage(final DistributionEvent event) throws IntegrationException {
         try {
-            final RestConnection restConnection = channelRestConnectionFactory.createRestConnection();
+            final IntHttpClient intHttpClient = channelRestConnectionFactory.createIntHttpClient();
             final List<Request> requests = createRequests(event);
             for (final Request request : requests) {
-                sendMessageRequest(restConnection, request, event.getDestination());
+                sendMessageRequest(intHttpClient, request, event.getDestination());
             }
         } catch (final Exception ex) {
             throw new AlertException(ex);
@@ -88,9 +88,9 @@ public abstract class RestDistributionChannel extends DistributionChannel {
         return requestBuilder.build();
     }
 
-    public void sendMessageRequest(final RestConnection restConnection, final Request request, final String messageType) throws IntegrationException {
+    public void sendMessageRequest(final IntHttpClient intHttpClient, final Request request, final String messageType) throws IntegrationException {
         logger.info("Attempting to send a {} message...", messageType);
-        try (final Response response = sendGenericRequest(restConnection, request)) {
+        try (final Response response = sendGenericRequest(intHttpClient, request)) {
             if (RestConstants.OK_200 <= response.getStatusCode() && response.getStatusCode() < RestConstants.BAD_REQUEST_400) {
                 logger.info("Successfully sent a {} message!", messageType);
             }
@@ -99,8 +99,8 @@ public abstract class RestDistributionChannel extends DistributionChannel {
         }
     }
 
-    public Response sendGenericRequest(final RestConnection restConnection, final Request request) throws IntegrationException {
-        try (final Response response = restConnection.execute(request)) {
+    public Response sendGenericRequest(final IntHttpClient intHttpClient, final Request request) throws IntegrationException {
+        try (final Response response = intHttpClient.execute(request)) {
             logger.trace("Response: " + response.toString());
             return response;
         } catch (final Exception e) {
