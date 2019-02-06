@@ -127,6 +127,7 @@ public abstract class Descriptor extends Stringable {
         return uiConfigs.containsKey(actionApiType);
     }
 
+    // TODO where is this supposed to be used?  or should this be deleted?
     public void validateConfig(final ConfigContextEnum configContext, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
         final Optional<DescriptorActionApi> actionApi = getActionApi(configContext);
         final Optional<UIConfig> uiConfig = getUIConfig(configContext);
@@ -139,6 +140,7 @@ public abstract class Descriptor extends Stringable {
                                actionApi.ifPresent(descriptorActionApi -> descriptorActionApi.validateConfig(configFieldMap, fieldModel, fieldErrors)));
     }
 
+    // TODO where is this supposed to be used?  or should this be deleted?
     public void testConfig(final ConfigContextEnum actionApiType, final TestConfigModel testConfig) throws IntegrationException {
         final Optional<DescriptorActionApi> actionApi = getActionApi(actionApiType);
         if (actionApi.isPresent()) {
