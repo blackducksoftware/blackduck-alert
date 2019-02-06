@@ -54,8 +54,6 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import freemarker.template.TemplateException;
 
 public class EmailMessagingService {
-    private static final String SIMPLE_EMAIL_ADDRESS_PATTERN = ".{1,64}@.+";
-
     private final Logger logger = LoggerFactory.getLogger(EmailMessagingService.class);
 
     private final EmailProperties emailProperties;
@@ -133,9 +131,14 @@ public class EmailMessagingService {
         if (StringUtils.isBlank(fromString)) {
             logger.warn("No 'from' address specified");
             throw new AlertException(String.format("Required field '%s' was blank", EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey()));
-        } else if (!fromString.matches(SIMPLE_EMAIL_ADDRESS_PATTERN)) {
-            logger.warn("Invalid 'from' address specified: " + fromString);
-            throw new AlertException(String.format("'%s' is not a valid email address", fromString));
+        } else {
+            try {
+                final InternetAddress emailAddr = new InternetAddress(fromString);
+                emailAddr.validate();
+            } catch (final AddressException ex) {
+                logger.warn("Invalid 'from' address specified: " + fromString);
+                throw new AlertException(String.format("%s is not a valid email address. %s", fromString, ex.getMessage()));
+            }
         }
 
         final Message message = new MimeMessage(session);
