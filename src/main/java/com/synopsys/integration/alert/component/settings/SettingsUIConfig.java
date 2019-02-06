@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
@@ -56,7 +55,7 @@ public class SettingsUIConfig extends UIConfig {
         final ConfigField environmentVariableOverride = CheckboxConfigField.create(SettingsDescriptor.KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE, "Startup Environment Variable Override");
 
         final ConfigField proxyHost = TextInputConfigField.create(SettingsDescriptor.KEY_PROXY_HOST, "Proxy Host", this::validateProxyHost);
-        final ConfigField proxyPort = NumberConfigField.create(SettingsDescriptor.KEY_PROXY_PORT, "Proxy Port", this::validateProxyPort);
+        final ConfigField proxyPort = NumberConfigField.create(SettingsDescriptor.KEY_PROXY_PORT, "Proxy Port");
         final ConfigField proxyUsername = TextInputConfigField.create(SettingsDescriptor.KEY_PROXY_USERNAME, "Proxy Username", this::validateProxyUserName);
         final ConfigField proxyPassword = PasswordConfigField.create(SettingsDescriptor.KEY_PROXY_PASSWORD, "Proxy Password", this::validateProxyPassword);
 
@@ -88,24 +87,6 @@ public class SettingsUIConfig extends UIConfig {
         final boolean isHostMissing = (portExists || passwordExists || userNameExists) && !hostExists;
         if (isHostMissing) {
             result = List.of(SettingsDescriptor.FIELD_ERROR_PROXY_HOST_MISSING);
-        }
-
-        return result;
-    }
-
-    private Collection<String> validateProxyPort(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-        Collection<String> result = List.of();
-        final boolean portExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_PORT);
-        if (portExists) {
-            final Optional<String> proxyPort = fieldToValidate.getValue();
-            final String port = proxyPort.orElse("");
-            if (!NumberUtils.isCreatable(port)) {
-                result = List.of(SettingsDescriptor.FIELD_ERROR_PROXY_PORT_INVALID);
-            } else {
-                if (NumberUtils.createInteger(port) <= 1) {
-                    result = List.of(SettingsDescriptor.FIELD_ERROR_PROXY_PORT_INVALID);
-                }
-            }
         }
 
         return result;
