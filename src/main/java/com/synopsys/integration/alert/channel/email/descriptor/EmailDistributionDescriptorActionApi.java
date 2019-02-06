@@ -77,7 +77,7 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
                 final Set<String> configuredProjects = projectField.map(ConfigurationFieldModel::getFieldValues).orElse(Set.of()).stream().collect(Collectors.toSet());
                 final String projectNamePattern = fieldAccessor.getString(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN).orElse("");
                 final List<BlackDuckProjectEntity> blackDuckProjects = blackDuckProjectRepositoryAccessor.readEntities();
-                final boolean noProjectsMatchPattern = blackDuckProjects.stream().noneMatch(databaseEntity -> databaseEntity.getName().matches(projectNamePattern));
+                final boolean noProjectsMatchPattern = blackDuckProjects.stream().noneMatch(databaseEntity -> projectNamePattern.matches(databaseEntity.getName()));
                 if (noProjectsMatchPattern && StringUtils.isNotBlank(projectNamePattern)) {
                     final Map<String, String> fieldErrors = new HashMap<>();
                     fieldErrors.put(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN, "Does not match any of the Projects.");
