@@ -7,6 +7,8 @@ import CheckboxInput from 'field/input/CheckboxInput';
 import { getProjects } from 'store/actions/projects';
 import TextInput from 'field/input/TextInput';
 
+import * as FieldModelUtilities from 'util/fieldModelUtilities';
+
 function assignClassName(row, rowIdx) {
     return 'tableRow';
 }
@@ -18,32 +20,38 @@ function assignDataFormat(cell, row) {
     return <div title={cell}> {cellContent} </div>;
 }
 
+const KEY_FILTER_BY_PROJECT = 'channel.common.filter.by.project';
+const KEY_PROJECT_NAME_PATTERN = 'channel.common.project.name.pattern';
+const KEY_CONFIGURED_PROJECT = 'channel.common.configured.project';
+
+const fieldNames = [
+    KEY_FILTER_BY_PROJECT,
+    KEY_PROJECT_NAME_PATTERN,
+    KEY_CONFIGURED_PROJECT
+];
+
+
 class ProjectConfiguration extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            error: {}
-        };
         this.onRowSelected = this.onRowSelected.bind(this);
         this.onRowSelectedAll = this.onRowSelectedAll.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.state = {
+            includeAllProjects: true
+        };
     }
 
     componentWillMount() {
         this.props.getProjects();
     }
 
-    createSelectedArray(selectedArray, row, isSelected) {
-        if (isSelected) {
-            const projectFound = selectedArray.find(project => project === row.name);
-            if (!projectFound) {
-                selectedArray.push(row.name);
-            }
-        } else {
-            const index = selectedArray.indexOf(row.name);
-            if (index >= 0) {
-                selectedArray.splice(index, 1); // if found, remove that element from selected array
-            }
-        }
+    handleChange(event) {
+        const { target } = event
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+        console.log("Project event value ", value);
+        this.setState({ includeAllProjects: value });
+        this.props.handleChange(event);
     }
 
     onRowSelectedAll(isSelected, rows) {
@@ -62,6 +70,20 @@ class ProjectConfiguration extends Component {
         const selected = Object.assign([], this.props.configuredProjects);
         this.createSelectedArray(selected, row, isSelected);
         this.props.handleProjectChanged(selected);
+    }
+
+    createSelectedArray(selectedArray, row, isSelected) {
+        if (isSelected) {
+            const projectFound = selectedArray.find(project => project === row.name);
+            if (!projectFound) {
+                selectedArray.push(row.name);
+            }
+        } else {
+            const index = selectedArray.indexOf(row.name);
+            if (index >= 0) {
+                selectedArray.splice(index, 1); // if found, remove that element from selected array
+            }
+        }
     }
 
     createProjectList() {
@@ -101,16 +123,16 @@ class ProjectConfiguration extends Component {
         };
 
         let projectSelectionDiv = null;
-        if (!this.props.includeAllProjects) {
+        if (!this.state.includeAllProjects) {
             projectSelectionDiv = (<div>
                 <TextInput
-                    id="projectNamePattern"
+                    id={KEY_PROJECT_NAME_PATTERN}
                     label="Project Name Pattern"
-                    name="projectNamePattern"
+                    name={KEY_PROJECT_NAME_PATTERN}
                     value={this.props.projectNamePattern}
                     onChange={this.props.handleChange}
-                    errorName="projectNamePatternError"
-                    errorValue={this.props.error.projectNamePatternError}
+                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_PROJECT_NAME_PATTERN)}
+                    errorValue={this.props.fieldErrors[KEY_PROJECT_NAME_PATTERN]}
                 />
                 <BootstrapTable
                     version="4"
@@ -139,15 +161,15 @@ class ProjectConfiguration extends Component {
         return (
             <div>
                 <CheckboxInput
-                    id="projectConfigurationAll"
+                    id={KEY_FILTER_BY_PROJECT}
                     label="Include all projects"
-                    name="includeAllProjects"
-                    isChecked={this.props.includeAllProjects}
-                    onChange={this.props.handleChange}
-                    errorName="includeAllProjectsError"
-                    errorValue={this.props.includeAllProjectsError}
+                    name={KEY_FILTER_BY_PROJECT}
+                    isChecked={this.state.includeAllProjects}
+                    onChange={this.handleChange}
+                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_FILTER_BY_PROJECT)}
+                    errorValue={this.props.fieldErrors[KEY_FILTER_BY_PROJECT]}
                 />
-                {this.props.error.configuredProjectsError && <label className="fieldError" name="projectTableErrors">{this.props.error.configuredProjectsError}</label>}
+                {this.props.fieldErrors[KEY_CONFIGURED_PROJECT] && <label className="fieldError" name="projectTableErrors">{this.props.fieldErrors[KEY_CONFIGURED_PROJECT]}</label>}
                 {projectSelectionDiv}
             </div>
         );
@@ -159,20 +181,19 @@ ProjectConfiguration.defaultProps = {
     configuredProjects: [],
     projectNamePattern: '',
     errorMsg: null,
-    error: {},
+    fieldErrors: {},
     includeAllProjects: true,
     includeAllProjectsError: ''
 };
 
 ProjectConfiguration.propTypes = {
     includeAllProjects: PropTypes.bool,
-    includeAllProjectsError: PropTypes.string,
     configuredProjects: PropTypes.arrayOf(PropTypes.string),
     projectNamePattern: PropTypes.string,
     projects: PropTypes.arrayOf(PropTypes.any),
     fetching: PropTypes.bool.isRequired,
     errorMsg: PropTypes.string,
-    error: PropTypes.object,
+    fieldErrors: PropTypes.object,
     getProjects: PropTypes.func.isRequired,
     handleChange: PropTypes.func.isRequired,
     handleProjectChanged: PropTypes.func.isRequired

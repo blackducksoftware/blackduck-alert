@@ -1,18 +1,22 @@
 export function getFieldModelSingleValue(fieldModel, key) {
-    const fieldObject = fieldModel.keyToValues[key];
-    if (fieldObject && fieldObject.values) {
-        if (Object.keys(fieldObject.values).length > 0) {
-            return fieldModel.keyToValues[key].values[0];
+    if (fieldModel.keyToValues) {
+        const fieldObject = fieldModel.keyToValues[key];
+        if (fieldObject && fieldObject.values) {
+            if (Object.keys(fieldObject.values).length > 0) {
+                return fieldModel.keyToValues[key].values[0];
+            }
         }
     }
     return undefined;
 }
 
 export function getFieldModelValues(fieldModel, key) {
-    const fieldObject = fieldModel.keyToValues[key];
-    if (fieldObject && fieldObject.values) {
-        if (Object.keys(fieldObject.values).length > 0) {
-            return fieldModel.keyToValues[key].values;
+    if (fieldModel.keyToValues) {
+        const fieldObject = fieldModel.keyToValues[key];
+        if (fieldObject && fieldObject.values) {
+            if (Object.keys(fieldObject.values).length > 0) {
+                return fieldModel.keyToValues[key].values;
+            }
         }
     }
     return [];
@@ -28,23 +32,31 @@ export function getFieldModelBooleanValue(fieldModel, key) {
 }
 
 export function isFieldModelValueSet(fieldModel, key) {
-    const fieldObject = fieldModel.keyToValues[key];
-    if (fieldObject) {
-        return fieldObject.isSet;
+    if (fieldModel.keyToValues) {
+        const fieldObject = fieldModel.keyToValues[key];
+        if (fieldObject) {
+            return fieldObject.isSet;
+        }
     }
     return false;
 }
 
 export function hasFieldModelValues(fieldModel, key) {
-    const fieldObject = fieldModel.keyToValues[key];
-    if (fieldObject) {
-        return fieldObject.values && fieldObject.values.every(item => item !== '');
+    if (fieldModel.keyToValues) {
+        const fieldObject = fieldModel.keyToValues[key];
+        if (fieldObject) {
+            return fieldObject.values && fieldObject.values.every(item => item !== '');
+        }
     }
     return false;
 }
 
 export function updateFieldModelSingleValue(fieldModel, key, value) {
     const copy = Object.assign({}, fieldModel);
+    if (!copy.keyToValues) {
+        copy.keyToValues = {};
+    }
+
     if (!copy.keyToValues[key]) {
         copy.keyToValues[key] = {
             values: [''],
@@ -61,6 +73,10 @@ export function updateFieldModelSingleValue(fieldModel, key, value) {
 
 export function updateFieldModelValues(fieldModel, key, values) {
     const copy = Object.assign({}, fieldModel);
+    if (!copy.keyToValues) {
+        copy.keyToValues = {};
+    }
+
     if (!copy.keyToValues[key]) {
         copy.keyToValues[key] = {
             values: [''],

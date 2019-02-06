@@ -55,7 +55,7 @@ class GroupEmailJobConfiguration extends Component {
     }
 
     handleChange({ target }) {
-        const value = target.type === 'checkbox' ? target.checked : target.value;
+        const value = target.type === 'checkbox' ? target.checked.toString() : target.value;
         const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, target.name, value);
         this.setState({
             currentConfig: newState

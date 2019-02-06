@@ -53,7 +53,7 @@ const fieldNames = [
 
 const FIELD_MODEL_KEY = {
     COMMON: 'commonConfig',
-    PROVIDER: 'provider'
+    PROVIDER: 'providerConfig'
 }
 
 class BaseJobConfiguration extends Component {
@@ -69,7 +69,7 @@ class BaseJobConfiguration extends Component {
         this.loading = false;
         this.saving = false;
         this.buildJsonBody = this.buildJsonBody.bind(this);
-        this.handleChange = this.handleChange.bind(this);
+        this.createChangeHandler = this.createChangeHandler.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTestSubmit = this.handleTestSubmit.bind(this);
@@ -210,13 +210,19 @@ class BaseJobConfiguration extends Component {
         this.props.testDistributionJob(jsonBody);
     }
 
-    handleChange(fieldModelKey) {
+    createChangeHandler(fieldModelKey) {
         return (event) => {
             const { target } = event;
-            const value = target.type === 'checkbox' ? target.checked : target.value;
-            const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state[fieldModelKey], target.name, value);
+            const value = target.type === 'checkbox' ? target.checked.toString() : target.value;
+            console.log("Target", target);
+            console.log("checked", target.checked);
+            console.log("value", value);
+            const fieldModel = this.state[fieldModelKey];
+            console.log("fieldModel", fieldModel);
+            const newState = FieldModelUtilities.updateFieldModelSingleValue(fieldModel, target.name, value);
+            console.log("createChangeHandler: newstate", newState);
             this.setState({
-                commonConfig: newState
+                [fieldModelKey]: newState
             });
         };
     }
@@ -227,14 +233,15 @@ class BaseJobConfiguration extends Component {
                 const selected = selectedValue.value;
                 const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state[fieldModelKey], fieldKey, selected);
                 this.setState({
-                    settingsData: newState
+                    [fieldModelKey]: newState
                 });
             } else {
                 const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state[fieldModelKey], fieldKey, null);
                 this.setState({
-                    settingsData: newState
+                    [fieldModelKey]: newState
                 });
             }
+            console.log("singleSelectHandler: state", this.state);
         };
     }
 
@@ -244,14 +251,15 @@ class BaseJobConfiguration extends Component {
                 const selected = selectedValues.map(item => item.value);
                 const newState = FieldModelUtilities.updateFieldModelValues(this.state[fieldModelKey], fieldKey, selected);
                 this.setState({
-                    settingsData: newState
+                    [fieldModelKey]: newState
                 });
             } else {
                 const newState = FieldModelUtilities.updateFieldModelValues(this.state[fieldModelKey], fieldKey, []);
                 this.setState({
-                    settingsData: newState
+                    [fieldModelKey]: newState
                 });
             }
+            console.log("multiSelectHandler: state", this.state);
         };
     }
 
@@ -304,12 +312,8 @@ class BaseJobConfiguration extends Component {
 
 
     renderDistributionForm() {
-        const selectedProvider = FieldModelUtilities.getFieldModelSingleValue(this.state.commonConfig, KEY_PROVIDER_NAME);
-        if (!selectedProvider) {
-            return null;
-        }
-
         const fieldModel = this.state.commonConfig;
+        const providerFieldModel = this.state.providerConfig;
         const formatOptions = this.createFormatTypeOptions();
         const notificationOptions = this.createNotificationTypeOptions();
         const selectedFormatType = this.getSelectedSingleValue(formatOptions, fieldModel, KEY_FORMAT_TYPE);
@@ -329,6 +333,8 @@ class BaseJobConfiguration extends Component {
         //     });
         // }
 
+        console.log("Rendering distribution items");
+        console.log("current state ", this.state);
         return (
             <div>
                 <div className="form-group">
@@ -363,12 +369,13 @@ class BaseJobConfiguration extends Component {
                 </div>
                 {this.props.childContent}
                 <ProjectConfiguration
-                    includeAllProjects={!FieldModelUtilities.getFieldModelBooleanValue(fieldModel, KEY_FILTER_BY_PROJECT)}
-                    handleChange={this.handleChange}
+                    includeAllProjects={!FieldModelUtilities.getFieldModelBooleanValue(providerFieldModel, KEY_FILTER_BY_PROJECT)}
+                    handleChange={this.createChangeHandler(FIELD_MODEL_KEY.PROVIDER)}
                     handleProjectChanged={this.createMultiSelectHandler(KEY_CONFIGURED_PROJECT, FIELD_MODEL_KEY.PROVIDER)}
                     projects={this.props.projects}
-                    configuredProjects={FieldModelUtilities.getFieldModelValues(fieldModel, KEY_CONFIGURED_PROJECT)}
-                    projectNamePattern={FieldModelUtilities.getFieldModelValues(fieldModel, KEY_PROJECT_NAME_PATTERN)}
+                    configuredProjects={FieldModelUtilities.getFieldModelValues(providerFieldModel, KEY_CONFIGURED_PROJECT)}
+                    projectNamePattern={FieldModelUtilities.getFieldModelSingleValue(providerFieldModel, KEY_PROJECT_NAME_PATTERN)}
+                    fieldErrors={this.props.fieldErrors}
                 />
                 <ConfigButtons cancelId="job-cancel" submitId="job-submit" includeTest includeCancel onTestClick={this.handleTestSubmit} onCancelClick={this.props.handleCancel} />
                 <p name="configurationMessage">{this.state.configurationMessage}</p>
@@ -404,7 +411,7 @@ class BaseJobConfiguration extends Component {
                     label="Job Name"
                     name={KEY_NAME}
                     value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_NAME)}
-                    onChange={this.handleChange(FIELD_MODEL_KEY.COMMON)}
+                    onChange={this.createChangeHandler(FIELD_MODEL_KEY.COMMON)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_NAME)}
                     errorValue={this.props.fieldErrors[KEY_NAME]}
                 />
@@ -437,7 +444,7 @@ class BaseJobConfiguration extends Component {
                         />
                     </div>
                 </div>
-                {this.renderDistributionForm()}
+                {selectedProviderOption && this.renderDistributionForm(selectedProviderOption)}
             </form>
         );
     }
