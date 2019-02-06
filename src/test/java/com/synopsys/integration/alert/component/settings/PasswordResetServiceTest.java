@@ -1,5 +1,6 @@
 package com.synopsys.integration.alert.component.settings;
 
+import static com.synopsys.integration.alert.util.FieldModelUtil.addConfigurationFieldToMap;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -18,12 +19,14 @@ import com.synopsys.integration.alert.channel.email.EmailChannel;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.database.api.user.UserAccessor;
 import com.synopsys.integration.alert.database.api.user.UserModel;
+import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.util.TestTags;
@@ -90,16 +93,13 @@ public class PasswordResetServiceTest {
 
         final TestProperties testProperties = new TestProperties();
         final Map<String, ConfigurationFieldModel> keyToFieldMap = new HashMap<>();
-
-        final String hostKey = TestPropertyKey.TEST_EMAIL_SMTP_HOST.getPropertyKey();
-        final ConfigurationFieldModel hostModel = ConfigurationFieldModel.create(hostKey);
-        hostModel.setFieldValue(testProperties.getProperty(hostKey));
-        keyToFieldMap.put(hostModel.getFieldKey(), hostModel);
-
-        final String fromKey = TestPropertyKey.TEST_EMAIL_SMTP_FROM.getPropertyKey();
-        final ConfigurationFieldModel fromModel = ConfigurationFieldModel.create(fromKey);
-        fromModel.setFieldValue(testProperties.getProperty(fromKey));
-        keyToFieldMap.put(fromModel.getFieldKey(), fromModel);
+        addConfigurationFieldToMap(keyToFieldMap, EmailPropertyKeys.JAVAMAIL_HOST_KEY.getPropertyKey(), testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_HOST));
+        addConfigurationFieldToMap(keyToFieldMap, EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey(), testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_FROM));
+        addConfigurationFieldToMap(keyToFieldMap, EmailPropertyKeys.JAVAMAIL_USER_KEY.getPropertyKey(), testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_USER));
+        addConfigurationFieldToMap(keyToFieldMap, EmailPropertyKeys.JAVAMAIL_PASSWORD_KEY.getPropertyKey(), testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PASSWORD));
+        addConfigurationFieldToMap(keyToFieldMap, EmailPropertyKeys.JAVAMAIL_EHLO_KEY.getPropertyKey(), testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_EHLO));
+        addConfigurationFieldToMap(keyToFieldMap, EmailPropertyKeys.JAVAMAIL_AUTH_KEY.getPropertyKey(), testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_AUTH));
+        addConfigurationFieldToMap(keyToFieldMap, EmailPropertyKeys.JAVAMAIL_PORT_KEY.getPropertyKey(), testProperties.getProperty(TestPropertyKey.TEST_EMAIL_SMTP_PORT));
 
         final ConfigurationModel emailConfig = Mockito.mock(ConfigurationModel.class);
         Mockito.when(emailConfig.getCopyOfKeyToFieldMap()).thenReturn(keyToFieldMap);
@@ -107,9 +107,7 @@ public class PasswordResetServiceTest {
         final BaseConfigurationAccessor baseConfigurationAccessor = Mockito.mock(BaseConfigurationAccessor.class);
         Mockito.when(baseConfigurationAccessor.getConfigurationByDescriptorNameAndContext(Mockito.eq(EmailChannel.COMPONENT_NAME), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of(emailConfig));
 
-        final AlertProperties alertProperties = Mockito.mock(AlertProperties.class);
-        Mockito.when(alertProperties.getAlertTemplatesDir()).thenReturn("");
-
+        final AlertProperties alertProperties = new TestAlertProperties();
         final PasswordResetService passwordResetService = new PasswordResetService(alertProperties, userAccessor, baseConfigurationAccessor);
         passwordResetService.resetPassword(username);
     }
