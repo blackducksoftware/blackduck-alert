@@ -107,7 +107,6 @@ public class PasswordResetServiceTest {
         Mockito.when(baseConfigurationAccessor.getConfigurationByDescriptorNameAndContext(Mockito.eq(EmailChannel.COMPONENT_NAME), Mockito.eq(ConfigContextEnum.GLOBAL))).thenReturn(List.of(emailConfig));
 
         final TestAlertProperties alertProperties = new TestAlertProperties();
-        alertProperties.setAlertTemplatesDir("");
         final PasswordResetService passwordResetService = new PasswordResetService(alertProperties, userAccessor, baseConfigurationAccessor);
         passwordResetService.resetPassword(username);
     }
@@ -149,7 +148,7 @@ public class PasswordResetServiceTest {
             // PASS
         }
 
-        Mockito.when(alertProperties.getAlertTemplatesDir()).thenReturn("");
+        Mockito.when(alertProperties.getAlertTemplatesDir()).thenReturn(null);
         try {
             passwordResetService.resetPassword(username);
             fail("Expected exception to be thrown");
