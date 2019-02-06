@@ -46,7 +46,7 @@ class JobDeleteModal extends Component {
         return (
             <Modal size="lg" show={this.props.show} onHide={this.handleClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Do you want to delete these jobs?</Modal.Title>
+                    <Modal.Title>Are you sure you want to delete these jobs?</Modal.Title>
                 </Modal.Header>
 
                 <Modal.Body>
