@@ -52,13 +52,9 @@ public class BlackDuckProjectRepositoryAccessor extends RepositoryAccessor<Black
 
     @Override
     public BlackDuckProjectEntity saveEntity(final BlackDuckProjectEntity blackDuckProjectEntity) {
-        BlackDuckProjectEntity passedBlackDuckProjectEntity = blackDuckProjectEntity;
-        final String description = blackDuckProjectEntity.getDescription();
-        if (description.length() > MAX_DESCRIPTION_LENGTH) {
-            final String trimmedDescription = trimDescription(description);
-            passedBlackDuckProjectEntity = new BlackDuckProjectEntity(blackDuckProjectEntity.getName(), trimmedDescription, blackDuckProjectEntity.getHref(), blackDuckProjectEntity.getProjectOwnerEmail());
-        }
-        return super.saveEntity(passedBlackDuckProjectEntity);
+        final String trimmedDescription = StringUtils.abbreviate(blackDuckProjectEntity.getDescription(), MAX_DESCRIPTION_LENGTH);
+        final BlackDuckProjectEntity trimmedBlackDuckProjectEntity = new BlackDuckProjectEntity(blackDuckProjectEntity.getName(), trimmedDescription, blackDuckProjectEntity.getHref(), blackDuckProjectEntity.getProjectOwnerEmail());
+        return super.saveEntity(trimmedBlackDuckProjectEntity);
     }
 
     public List<BlackDuckProjectEntity> deleteAndSaveAll(final Iterable<BlackDuckProjectEntity> blackDuckProjectEntities) {
@@ -66,8 +62,4 @@ public class BlackDuckProjectRepositoryAccessor extends RepositoryAccessor<Black
         return blackDuckProjectRepository.saveAll(blackDuckProjectEntities);
     }
 
-    private String trimDescription(final String projectDescription) {
-        final String trimmedDescription = StringUtils.substring(projectDescription, 0, MAX_DESCRIPTION_LENGTH);
-        return trimmedDescription + "...";
-    }
 }
