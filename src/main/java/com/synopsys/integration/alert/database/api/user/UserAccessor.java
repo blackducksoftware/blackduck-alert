@@ -74,7 +74,7 @@ public class UserAccessor {
         final List<UserRoleRelation> roleRelations = userRoleRepository.findAllByUserId(user.getId());
         final List<Long> roleIdsForUser = roleRelations.stream().map(UserRoleRelation::getRoleId).collect(Collectors.toList());
         final Set<String> rolesForUser = new LinkedHashSet<>(roleRepository.getRoleNames(roleIdsForUser));
-        return UserModel.of(user.getUserName(), user.getPassword(), rolesForUser);
+        return UserModel.of(user.getUserName(), user.getPassword(), user.getEmailAddress(), rolesForUser);
     }
 
     public UserModel addOrUpdateUser(final UserModel user) {
@@ -83,7 +83,7 @@ public class UserAccessor {
 
     public UserModel addOrUpdateUser(final UserModel user, final boolean passwordEncoded) {
         final String password = (passwordEncoded ? user.getPassword() : defaultPasswordEncoder.encode(user.getPassword()));
-        final UserEntity userEntity = new UserEntity(user.getName(), password);
+        final UserEntity userEntity = new UserEntity(user.getName(), password, user.getEmailAddress());
         final Collection<String> roles = user.getRoles();
         final List<RoleEntity> roleEntities = roleRepository.findRoleEntitiesByRoleName(roles);
         final List<UserRoleRelation> roleRelations = new LinkedList<>();
@@ -103,15 +103,15 @@ public class UserAccessor {
         return createModel(userRepository.save(userEntity));
     }
 
-    public UserModel addUser(final String userName, final String password) {
-        return addOrUpdateUser(UserModel.of(userName, password, Collections.emptySet()));
+    public UserModel addUser(final String userName, final String password, final String emailAddress) {
+        return addOrUpdateUser(UserModel.of(userName, password, emailAddress, Collections.emptySet()));
     }
 
     public boolean assignRoles(final String username, final Set<String> roles) {
         final Optional<UserEntity> entity = userRepository.findByUserName(username);
         boolean assigned = false;
         if (entity.isPresent()) {
-            final UserModel model = addOrUpdateUser(UserModel.of(entity.get().getUserName(), entity.get().getPassword(), roles));
+            final UserModel model = addOrUpdateUser(UserModel.of(entity.get().getUserName(), entity.get().getPassword(), entity.get().getEmailAddress(), roles));
             assigned = model.getName().equals(username) && model.getRoles().size() == roles.size();
         }
         return assigned;
@@ -121,7 +121,19 @@ public class UserAccessor {
         final Optional<UserEntity> entity = userRepository.findByUserName(username);
         if (entity.isPresent()) {
             final UserEntity oldEntity = entity.get();
-            final UserEntity updatedEntity = new UserEntity(oldEntity.getUserName(), defaultPasswordEncoder.encode(newPassword));
+            final UserEntity updatedEntity = new UserEntity(oldEntity.getUserName(), defaultPasswordEncoder.encode(newPassword), oldEntity.getEmailAddress());
+            updatedEntity.setId(oldEntity.getId());
+            return userRepository.save(updatedEntity) != null;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean changeUserEmailAddress(final String username, final String emailAddress) {
+        final Optional<UserEntity> entity = userRepository.findByUserName(username);
+        if (entity.isPresent()) {
+            final UserEntity oldEntity = entity.get();
+            final UserEntity updatedEntity = new UserEntity(oldEntity.getUserName(), oldEntity.getPassword(), emailAddress);
             updatedEntity.setId(oldEntity.getId());
             return userRepository.save(updatedEntity) != null;
         } else {

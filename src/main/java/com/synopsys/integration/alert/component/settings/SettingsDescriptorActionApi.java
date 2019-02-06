@@ -74,6 +74,7 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
     @Override
     public FieldModel saveConfig(final FieldModel fieldModel) {
         saveDefaultAdminUserPassword(fieldModel);
+        saveDefaultAdminUserEmail(fieldModel);
         saveEncryptionProperties(fieldModel);
         systemValidator.validate();
         return createScrubbedModel(fieldModel);
@@ -92,10 +93,17 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
     private void saveDefaultAdminUserPassword(final FieldModel fieldModel) {
         final Optional<FieldValueModel> optionalPassword = fieldModel.getField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD);
         if (optionalPassword.isPresent()) {
-            final String password = optionalPassword.get().getValue().orElse("");
+            final String password = optionalPassword.flatMap(FieldValueModel::getValue).orElse("");
             if (StringUtils.isNotBlank(password)) {
                 userAccessor.changeUserPassword(UserAccessor.DEFAULT_ADMIN_USER, password);
             }
+        }
+    }
+
+    private void saveDefaultAdminUserEmail(final FieldModel fieldModel) {
+        final Optional<FieldValueModel> optionalEmail = fieldModel.getField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL);
+        if (optionalEmail.isPresent()) {
+            userAccessor.changeUserEmailAddress(UserAccessor.DEFAULT_ADMIN_USER, optionalEmail.flatMap(FieldValueModel::getValue).orElse(""));
         }
     }
 
