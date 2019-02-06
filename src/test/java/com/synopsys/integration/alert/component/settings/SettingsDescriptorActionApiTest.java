@@ -126,6 +126,7 @@ public class SettingsDescriptorActionApiTest {
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
+        fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of("valid_test_value"), false));
@@ -144,6 +145,7 @@ public class SettingsDescriptorActionApiTest {
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
+        fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, new FieldValueModel(List.of(), true));
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, new FieldValueModel(List.of(), true));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, new FieldValueModel(List.of(), true));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(), true));

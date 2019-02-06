@@ -9,7 +9,7 @@ import ConfigButtons from 'component/common/ConfigButtons';
 import * as FieldModelUtil from 'util/fieldModelUtilities';
 import * as DescriptorUtil from 'util/descriptorUtilities';
 
-
+const KEY_DEFAULT_SYSTEM_ADMIN_EMAIL = 'settings.user.default.admin.email';
 const KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD = 'settings.user.default.admin.password';
 const KEY_ENCRYPTION_PASSWORD = 'settings.encryption.password';
 const KEY_ENCRYPTION_GLOBAL_SALT = 'settings.encryption.global.salt';
@@ -38,6 +38,7 @@ const KEY_LDAP_GROUP_ROLE_ATTRIBUTE = 'settings.ldap.group.role.attribute';
 const KEY_LDAP_ROLE_PREFIX = 'settings.ldap.role.prefix';
 
 const fieldNames = [
+    KEY_DEFAULT_SYSTEM_ADMIN_EMAIL,
     KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD,
     KEY_ENCRYPTION_PASSWORD,
     KEY_ENCRYPTION_GLOBAL_SALT,
@@ -132,6 +133,15 @@ class SettingsConfigurationForm extends Component {
                 <div className="form-group">
                     <div className="col-sm-12">
                         <h2>Default System Administrator Configuration</h2>
+                        <TextInput
+                            id={KEY_DEFAULT_SYSTEM_ADMIN_EMAIL}
+                            label="Email Address"
+                            name={KEY_DEFAULT_SYSTEM_ADMIN_EMAIL}
+                            value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_DEFAULT_SYSTEM_ADMIN_EMAIL)}
+                            onChange={this.handleChange}
+                            errorName={FieldModelUtil.createFieldModelErrorKey(KEY_DEFAULT_SYSTEM_ADMIN_EMAIL)}
+                            errorValue={this.props.fieldErrors[KEY_DEFAULT_SYSTEM_ADMIN_EMAIL]}
+                        />
                         <PasswordInput
                             id={KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD}
                             label="Password"

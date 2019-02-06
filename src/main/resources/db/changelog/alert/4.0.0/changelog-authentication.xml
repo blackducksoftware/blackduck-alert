@@ -18,6 +18,7 @@
                 <constraints unique="true" uniqueConstraintName="CONSTRAINT_USER_NAME_UNIQUE"/>
             </column>
             <column name="PASSWORD" type="VARCHAR(2048)"/>
+            <column name="EMAIL_ADDRESS" type="VARCHAR(2048)"/>
             <column name="EXPIRED" type="BOOLEAN" defaultValue="false"/>
             <column name="LOCKED" type="BOOLEAN" defaultValue="false"/>
             <column name="PASSWORD_EXPIRED" type="BOOLEAN" defaultValue="false"/>
