@@ -6,6 +6,8 @@ import TextInput from 'field/input/TextInput';
 import SubmitButton from 'field/input/SubmitButton';
 import Header from 'component/common/Header';
 import { login } from 'store/actions/session';
+import { hideResetModal, sendPasswordResetEmail, showResetModal } from "store/actions/system";
+import ResetPasswordModal from "./component/common/ResetPasswordModal";
 
 class LoginPage extends Component {
     constructor(props) {
@@ -59,14 +61,34 @@ class LoginPage extends Component {
                             />
 
                             <div className="row">
-                                <div className="col-sm-11 text-right">
-                                    {this.props.loggingIn &&
-                                    <div className="progressIcon">
-                                        <span className="fa fa-spinner fa-pulse" aria-hidden="true" />
-                                    </div>
-                                    }
+                                <div className="col-sm-12 text-right">
+                                    <a href="#"
+                                       onClick={(evt) => {
+                                           evt.preventDefault();
+                                           this.props.showResetModal();
+                                       }}
+                                    >Reset Password</a>
+                                    <span>&nbsp;&nbsp;&nbsp;</span>
                                     <SubmitButton id="loginSubmit">Login</SubmitButton>
+                                    <div className="progressIcon">
+                                        {this.props.loggingIn &&
+                                        <span className="fa fa-spinner fa-pulse" aria-hidden="true" />
+                                        }
+                                        {!this.props.loggingIn &&
+                                        <span>&nbsp;&nbsp;</span>
+                                        }
+                                    </div>
                                 </div>
+                            </div>
+                            <div>
+                                <ResetPasswordModal
+                                    showResetModal={this.props.showPasswordResetModal}
+                                    cancelResetModal={this.props.hideResetModal}
+                                    resetPassword={(resetUsername) => {
+                                        this.props.resetPassword(resetUsername);
+                                    }}
+                                    resettingPassword={this.props.resettingPassword}
+                                />
                             </div>
                         </form>
                     </div>
@@ -77,9 +99,14 @@ class LoginPage extends Component {
 }
 
 LoginPage.propTypes = {
+    login: PropTypes.func.isRequired,
     loggingIn: PropTypes.bool.isRequired,
     errorMessage: PropTypes.string,
-    login: PropTypes.func.isRequired
+    showResetModal: PropTypes.func.isRequired,
+    showPasswordResetModal: PropTypes.bool.isRequired,
+    hideResetModal: PropTypes.func.isRequired,
+    resetPassword: PropTypes.func.isRequired,
+    resettingPassword: PropTypes.bool.isRequired
 };
 
 LoginPage.defaultProps = {
@@ -89,11 +116,16 @@ LoginPage.defaultProps = {
 // Redux mappings to be used later....
 const mapStateToProps = state => ({
     loggingIn: state.session.fetching,
-    errorMessage: state.session.errorMessage
+    errorMessage: state.session.errorMessage,
+    resettingPassword: state.system.resettingPassword,
+    showPasswordResetModal: state.system.showPasswordResetModal
 });
 
 const mapDispatchToProps = dispatch => ({
-    login: (username, password) => dispatch(login(username, password))
+    login: (username, password) => dispatch(login(username, password)),
+    resetPassword: resetUsername => dispatch(sendPasswordResetEmail(resetUsername)),
+    showResetModal: () => dispatch(showResetModal()),
+    hideResetModal: () => dispatch(hideResetModal())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(LoginPage);

@@ -19,11 +19,13 @@ public class UserModelTest {
     public void testUserModel() {
         final String expectedUserName = "expectedUser";
         final String expectedPassword = "expectedPassword";
+        final String expectedEmail = "expectedEmail";
         final Set<String> expectedRoles = new LinkedHashSet<>(Arrays.asList(UserRole.values()).stream().map(UserRole::name).collect(Collectors.toList()));
-        final UserModel userModel = UserModel.of(expectedUserName, expectedPassword, expectedRoles);
+        final UserModel userModel = UserModel.of(expectedUserName, expectedPassword, expectedEmail, expectedRoles);
 
         assertEquals(expectedUserName, userModel.getName());
         assertEquals(expectedPassword, userModel.getPassword());
+        assertEquals(expectedEmail, userModel.getEmailAddress());
         assertEquals(expectedRoles.size(), userModel.getRoles().size());
         assertTrue(userModel.hasRole(UserRole.ADMIN.name()));
         assertFalse(userModel.hasRole("UNKNOWN_ROLE"));
@@ -37,16 +39,18 @@ public class UserModelTest {
     public void testUserModelWithEntity() {
         final String expectedUserName = "expectedUser";
         final String expectedPassword = "expectedPassword";
+        final String expectedEmail = "expectedEmail";
         final Set<String> expectedRoles = new LinkedHashSet<>(Arrays.asList(UserRole.values()).stream().map(UserRole::name).collect(Collectors.toList()));
         final boolean expired = true;
         final boolean locked = true;
         final boolean passwordExpired = true;
         final boolean enabled = false;
-        final UserEntity entity = new UserEntity(expectedUserName, expectedPassword, expired, locked, passwordExpired, enabled);
+        final UserEntity entity = new UserEntity(expectedUserName, expectedPassword, expectedEmail, expired, locked, passwordExpired, enabled);
         final UserModel userModel = UserModel.of(entity, expectedRoles);
 
         assertEquals(expectedUserName, userModel.getName());
         assertEquals(expectedPassword, userModel.getPassword());
+        assertEquals(expectedEmail, userModel.getEmailAddress());
         assertEquals(expectedRoles.size(), userModel.getRoles().size());
         assertTrue(userModel.hasRole(UserRole.ADMIN.name()));
         assertFalse(userModel.hasRole("UNKNOWN_ROLE"));
