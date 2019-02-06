@@ -79,17 +79,16 @@ public class SettingsUIConfig extends UIConfig {
     }
 
     private Collection<String> validateProxyHost(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-        Collection<String> result = List.of();
         final boolean hostExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_HOST);
         final boolean portExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_PORT);
         final boolean userNameExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_USERNAME);
         final boolean passwordExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_PASSWORD);
         final boolean isHostMissing = (portExists || passwordExists || userNameExists) && !hostExists;
         if (isHostMissing) {
-            result = List.of(SettingsDescriptor.FIELD_ERROR_PROXY_HOST_MISSING);
+            return List.of(SettingsDescriptor.FIELD_ERROR_PROXY_HOST_MISSING);
         }
 
-        return result;
+        return List.of();
     }
 
     private Collection<String> validateProxyPort(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
