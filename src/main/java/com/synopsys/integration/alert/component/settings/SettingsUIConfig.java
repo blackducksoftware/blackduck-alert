@@ -156,7 +156,8 @@ public class SettingsUIConfig extends UIConfig {
         final Optional<FieldValueModel> ldapEnabled = fieldModel.getField(SettingsDescriptor.KEY_LDAP_ENABLED);
         if (ldapEnabled.isPresent()) {
             final Boolean isLdapEnabled = Boolean.valueOf(ldapEnabled.get().getValue().orElse("false"));
-            if (isLdapEnabled && !fieldToValidate.hasValues() || StringUtils.isBlank(fieldToValidate.getValue().orElse(""))) {
+            final boolean fieldHasNoValue = !fieldToValidate.hasValues() || StringUtils.isBlank(fieldToValidate.getValue().orElse(""));
+            if (isLdapEnabled && fieldHasNoValue) {
                 result = List.of(SettingsDescriptor.FIELD_ERROR_LDAP_SERVER_MISSING);
             }
         }
