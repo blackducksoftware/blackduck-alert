@@ -38,11 +38,17 @@ function loggedOut() {
     };
 }
 
-function loginError(errorMessage, errors) {
+export function loginError(errorMessage, errors) {
     return {
         type: SESSION_LOGIN_ERROR,
         errorMessage,
         errors: errors || []
+    };
+}
+
+export function clearLoginError() {
+    return (dispatch) => {
+        dispatch(loggedOut())
     };
 }
 
