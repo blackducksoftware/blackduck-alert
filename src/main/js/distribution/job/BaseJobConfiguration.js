@@ -208,7 +208,7 @@ class BaseJobConfiguration extends Component {
             ]
         });
         console.log('configuration to send', configuration);
-        return JSON.stringify(configuration);
+        return configuration;
     }
 
     handleTestSubmit(event) {
