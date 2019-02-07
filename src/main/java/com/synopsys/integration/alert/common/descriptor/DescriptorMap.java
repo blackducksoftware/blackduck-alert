@@ -110,15 +110,15 @@ public class DescriptorMap {
     }
 
     private <D extends Descriptor> Map<String, D> initDescriptorMap(final List<D> descriptorList) throws AlertException {
-        final Map<String, D> descriptorMapping = new HashMap<>(descriptorList.size());
+        final Map<String, D> specificDescriptorMapping = new HashMap<>(descriptorList.size());
         for (final D descriptor : descriptorList) {
             final String descriptorName = descriptor.getName();
-            if (this.descriptorMapping.containsKey(descriptorName)) {
+            if (descriptorMapping.containsKey(descriptorName)) {
                 throw new AlertException("Found duplicate descriptor name of: " + descriptorName);
             }
-            this.descriptorMapping.put(descriptorName, descriptor);
             descriptorMapping.put(descriptorName, descriptor);
+            specificDescriptorMapping.put(descriptorName, descriptor);
         }
-        return descriptorMapping;
+        return specificDescriptorMapping;
     }
 }

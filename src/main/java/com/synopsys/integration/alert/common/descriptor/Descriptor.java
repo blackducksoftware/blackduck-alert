@@ -29,19 +29,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
-import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.DescriptorMetadata;
 import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
-import com.synopsys.integration.alert.web.model.configuration.FieldModel;
-import com.synopsys.integration.alert.web.model.configuration.TestConfigModel;
-import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.util.Stringable;
 
 public abstract class Descriptor extends Stringable {
@@ -97,7 +92,7 @@ public abstract class Descriptor extends Stringable {
 
     public Set<DefinedFieldModel> getAllDefinedFields(final ConfigContextEnum context) {
         return getUIConfig(context)
-                   .map(uiConfig -> uiConfig.createFields())
+                   .map(UIConfig::createFields)
                    .orElse(List.of())
                    .stream()
                    .map(configField -> new DefinedFieldModel(configField.getKey(), context, configField.isSensitive()))
@@ -127,25 +122,6 @@ public abstract class Descriptor extends Stringable {
         return uiConfigs.containsKey(actionApiType);
     }
 
-    public void validateConfig(final ConfigContextEnum configContext, final FieldModel fieldModel, final Map<String, String> fieldErrors) {
-        final Optional<DescriptorActionApi> actionApi = getActionApi(configContext);
-        final Optional<UIConfig> uiConfig = getUIConfig(configContext);
-        final Map<String, ConfigField> configFieldMap = getUIConfig(configContext)
-                                                            .map(config -> config.createFields())
-                                                            .map(fieldList -> fieldList.stream()
-                                                                                  .collect(Collectors.toMap(ConfigField::getKey, Function.identity())))
-                                                            .orElse(Map.of());
-        uiConfig.ifPresent(config ->
-                               actionApi.ifPresent(descriptorActionApi -> descriptorActionApi.validateConfig(configFieldMap, fieldModel, fieldErrors)));
-    }
-
-    public void testConfig(final ConfigContextEnum actionApiType, final TestConfigModel testConfig) throws IntegrationException {
-        final Optional<DescriptorActionApi> actionApi = getActionApi(actionApiType);
-        if (actionApi.isPresent()) {
-            actionApi.get().testConfig(testConfig);
-        }
-    }
-
     private DescriptorMetadata createMetaData(final UIConfig uiConfig, final ConfigContextEnum context) {
         final String label = uiConfig.getLabel();
         final String urlName = uiConfig.getUrlName();
@@ -153,13 +129,4 @@ public abstract class Descriptor extends Stringable {
         return new DescriptorMetadata(label, urlName, getName(), getType(), context, fontAwesomeIcon, uiConfig.createFields());
     }
 
-    private List<ConfigField> retrieveUIConfigFields(final ConfigContextEnum context) {
-        final Optional<UIConfig> uiConfig = getUIConfig(context);
-        return uiConfig.map(config -> config.createFields()).orElse(List.of());
-    }
-
-    private Map<String, ConfigField> createConfigFieldMap(final ConfigContextEnum context) {
-        final List<ConfigField> configFields = retrieveUIConfigFields(context);
-        return configFields.stream().collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-    }
 }

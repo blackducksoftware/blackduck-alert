@@ -34,6 +34,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Configuration
 @Profile("!ssl")
 public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
+    public static final String RESET_PASSWORD_PATH = "/resetPassword/**";
+    public static final String RESET_PASSWORD_WITH_USERNAME_PATH = "/resetPassword/**";
     public static final String H2_CONSOLE_PATH = "/h2/**";
 
     private final HttpPathManager httpPathManager;
@@ -45,11 +47,17 @@ public class AuthenticationHandler extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
-        httpPathManager.addAllowedPath(H2_CONSOLE_PATH);
-        httpPathManager.addCsrfIgnoredPath(H2_CONSOLE_PATH);
+        ignorePaths(H2_CONSOLE_PATH, RESET_PASSWORD_PATH, RESET_PASSWORD_WITH_USERNAME_PATH);
         httpPathManager.completeHttpSecurity(http);
         // The profile above ensures that this will not be used if SSL is enabled.
         http.headers().frameOptions().disable();
+    }
+
+    private void ignorePaths(final String... paths) {
+        for (final String path : paths) {
+            httpPathManager.addAllowedPath(path);
+            httpPathManager.addCsrfIgnoredPath(path);
+        }
     }
 
 }

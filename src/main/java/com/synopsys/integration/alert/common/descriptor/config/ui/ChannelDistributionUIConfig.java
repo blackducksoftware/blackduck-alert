@@ -55,7 +55,7 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
     public static final String KEY_FREQUENCY = "channel.common.frequency";
     private final Logger logger = LoggerFactory.getLogger(ChannelDistributionUIConfig.class);
     private final BaseConfigurationAccessor configurationAccessor;
-    private BaseDescriptorAccessor descriptorAccessor;
+    private final BaseDescriptorAccessor descriptorAccessor;
 
     public ChannelDistributionUIConfig(final String label, final String urlName, final String fontAwesomeIcon, final BaseConfigurationAccessor configurationAccessor, final BaseDescriptorAccessor descriptorAccessor) {
         super(label, urlName, fontAwesomeIcon);
@@ -77,10 +77,10 @@ public abstract class ChannelDistributionUIConfig extends UIConfig {
 
     public abstract List<ConfigField> createChannelDistributionFields();
 
-    private Collection<String> getDescriptorNames(DescriptorType descriptorType) {
+    private Collection<String> getDescriptorNames(final DescriptorType descriptorType) {
         try {
             return descriptorAccessor.getRegisteredDescriptorsByType(descriptorType).stream().map(RegisteredDescriptorModel::getName).collect(Collectors.toSet());
-        } catch (AlertDatabaseConstraintException e) {
+        } catch (final AlertDatabaseConstraintException e) {
             logger.error("There was an error when retrieving data from the DB when building fields.");
         }
         return Set.of();

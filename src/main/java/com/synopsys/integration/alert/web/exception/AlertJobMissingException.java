@@ -23,13 +23,21 @@
  */
 package com.synopsys.integration.alert.web.exception;
 
+import java.util.UUID;
+
 import com.synopsys.integration.alert.common.exception.AlertException;
 
 public class AlertJobMissingException extends AlertException {
     private static final long serialVersionUID = -1163748183484212814L;
 
-    public AlertJobMissingException(final String message) {
+    private final UUID missingUUID;
+
+    public AlertJobMissingException(final String message, final UUID missingUUID) {
         super(message);
+        this.missingUUID = missingUUID;
     }
 
+    public UUID getMissingUUID() {
+        return missingUUID;
+    }
 }
