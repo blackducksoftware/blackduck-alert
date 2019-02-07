@@ -18,7 +18,7 @@ const fieldNames = [
     KEY_EMAIL_ADDRESSES
 ];
 
-class GroupEmailJobConfiguration extends Component {
+class EmailJobConfiguration extends Component {
     constructor(props) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
@@ -96,8 +96,8 @@ class GroupEmailJobConfiguration extends Component {
     }
 }
 
-GroupEmailJobConfiguration.propTypes = {
-    jobs: PropTypes.arrayOf(PropTypes.object),
+EmailJobConfiguration.propTypes = {
+    jobs: PropTypes.object,
     distributionConfigId: PropTypes.string,
     getDistributionJob: PropTypes.func.isRequired,
     fieldErrors: PropTypes.object,
@@ -108,8 +108,8 @@ GroupEmailJobConfiguration.propTypes = {
     inProgress: PropTypes.bool
 };
 
-GroupEmailJobConfiguration.defaultProps = {
-    jobs: [],
+EmailJobConfiguration.defaultProps = {
+    jobs: {},
     distributionConfigId: null,
     fieldErrors: {},
     fetching: false,
@@ -127,4 +127,4 @@ const mapStateToProps = state => ({
     inProgress: state.distributionConfigs.inProgress
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(GroupEmailJobConfiguration);
+export default connect(mapStateToProps, mapDispatchToProps)(EmailJobConfiguration);

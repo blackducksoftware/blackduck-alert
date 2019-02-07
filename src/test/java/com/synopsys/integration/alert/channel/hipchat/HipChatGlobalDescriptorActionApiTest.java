@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.util.TestTags;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
 import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 import com.synopsys.integration.alert.web.model.configuration.TestConfigModel;
-import com.synopsys.integration.rest.connection.RestConnection;
+import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class HipChatGlobalDescriptorActionApiTest {
@@ -110,10 +110,10 @@ public class HipChatGlobalDescriptorActionApiTest {
     @Test
     public void testConfigInvalidDestinationTest() throws Exception {
         final ChannelRestConnectionFactory restConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
-        final RestConnection restConnection = Mockito.mock(RestConnection.class);
+        final IntHttpClient intHttpClient = Mockito.mock(IntHttpClient.class);
         final HipChatChannel hipChatChannel = Mockito.mock(HipChatChannel.class);
 
-        Mockito.when(restConnectionFactory.createRestConnection()).thenReturn(restConnection);
+        Mockito.when(restConnectionFactory.createIntHttpClient()).thenReturn(intHttpClient);
         Mockito.when(hipChatChannel.getChannelRestConnectionFactory()).thenReturn(restConnectionFactory);
         ////////////////////////////////////////
 
@@ -137,10 +137,10 @@ public class HipChatGlobalDescriptorActionApiTest {
     @Test
     public void testConfigTest() throws Exception {
         final ChannelRestConnectionFactory restConnectionFactory = Mockito.mock(ChannelRestConnectionFactory.class);
-        final RestConnection restConnection = Mockito.mock(RestConnection.class);
+        final IntHttpClient intHttpClient = Mockito.mock(IntHttpClient.class);
         final HipChatChannel hipChatChannel = Mockito.mock(HipChatChannel.class);
 
-        Mockito.when(restConnectionFactory.createRestConnection()).thenReturn(restConnection);
+        Mockito.when(restConnectionFactory.createIntHttpClient()).thenReturn(intHttpClient);
         Mockito.when(hipChatChannel.getChannelRestConnectionFactory()).thenReturn(restConnectionFactory);
         ////////////////////////////////////////
 

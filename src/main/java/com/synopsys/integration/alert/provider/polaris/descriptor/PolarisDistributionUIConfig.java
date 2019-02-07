@@ -25,8 +25,6 @@ package com.synopsys.integration.alert.provider.polaris.descriptor;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
@@ -34,8 +32,8 @@ import com.synopsys.integration.alert.provider.polaris.PolarisProvider;
 // TODO exclude for now: @Component
 public class PolarisDistributionUIConfig extends ProviderDistributionUIConfig {
 
-    @Autowired
-    public PolarisDistributionUIConfig(PolarisProvider provider) {
+    // TODO exclude for now: @Autowired
+    public PolarisDistributionUIConfig(final PolarisProvider provider) {
         super(PolarisDescriptor.POLARIS_LABEL, PolarisDescriptor.POLARIS_URL_NAME, PolarisDescriptor.POLARIS_ICON, provider);
     }
 

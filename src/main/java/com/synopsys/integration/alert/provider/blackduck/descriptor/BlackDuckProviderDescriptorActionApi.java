@@ -41,7 +41,7 @@ import com.synopsys.integration.alert.web.model.configuration.TestConfigModel;
 import com.synopsys.integration.alert.workflow.startup.SystemValidator;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigBuilder;
-import com.synopsys.integration.blackduck.rest.BlackDuckRestConnection;
+import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.model.BlackDuckServerVerifier;
 import com.synopsys.integration.blackduck.service.model.RequestFactory;
 import com.synopsys.integration.exception.IntegrationException;
@@ -78,12 +78,13 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
 
         validateBlackDuckConfiguration(blackDuckServerConfigBuilder);
 
-        final BlackDuckRestConnection restConnection = createRestConnection(blackDuckServerConfigBuilder);
+        final BlackDuckServerConfig blackDuckServerConfig = blackDuckServerConfigBuilder.build();
         final BlackDuckServerVerifier blackDuckServerVerifier = new BlackDuckServerVerifier();
-        blackDuckServerVerifier.verifyIsBlackDuckServer(restConnection.getBaseUrl(), restConnection.getProxyInfo(), restConnection.isAlwaysTrustServerCertificate(), restConnection.getTimeoutInSeconds());
+        blackDuckServerVerifier.verifyIsBlackDuckServer(blackDuckServerConfig.getBlackDuckUrl(), blackDuckServerConfig.getProxyInfo(), blackDuckServerConfig.isAlwaysTrustServerCertificate(), blackDuckServerConfig.getTimeout());
 
+        final BlackDuckHttpClient blackDuckHttpClient = blackDuckServerConfig.createBlackDuckHttpClient(blackDuckServerConfigBuilder.getLogger());
         final Request authRequest = RequestFactory.createCommonGetRequest(url);
-        try (final Response response = restConnection.execute(authRequest)) {
+        try (final Response response = blackDuckHttpClient.execute(authRequest)) {
             if (response.isStatusCodeError()) {
                 throw new IntegrationRestException(response.getStatusCode(), response.getStatusMessage(), response.getContentString(), "Connection error");
             }
@@ -98,11 +99,6 @@ public class BlackDuckProviderDescriptorActionApi extends DescriptorActionApi {
             final String errorMessage = StringUtils.join(builderStatus.getErrorMessages(), ", ");
             throw new AlertException("There were issues with the configuration: " + errorMessage);
         }
-    }
-
-    private BlackDuckRestConnection createRestConnection(final BlackDuckServerConfigBuilder blackDuckServerConfigBuilder) {
-        final BlackDuckServerConfig blackDuckServerConfig = blackDuckServerConfigBuilder.build();
-        return blackDuckServerConfig.createRestConnection(blackDuckServerConfigBuilder.getLogger());
     }
 
     @Override

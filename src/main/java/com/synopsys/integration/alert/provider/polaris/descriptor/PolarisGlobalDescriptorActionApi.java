@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.provider.polaris.PolarisProperties;
 import com.synopsys.integration.alert.web.model.configuration.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
-import com.synopsys.integration.polaris.common.rest.AccessTokenRestConnection;
+import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
 import com.synopsys.integration.rest.request.Response;
 
 // TODO exclude for now: @Component
@@ -64,8 +64,8 @@ public class PolarisGlobalDescriptorActionApi extends DescriptorActionApi {
                                     .getInteger(PolarisDescriptor.KEY_POLARIS_TIMEOUT)
                                     .orElseThrow(() -> new AlertException(String.format(errorMessageFormat, PolarisGlobalUIConfig.LABEL_POLARIS_TIMEOUT)));
 
-        final AccessTokenRestConnection accessTokenRestConnection = polarisProperties.createRestConnection(intLogger, url, accessToken, timeout);
-        try (final Response response = accessTokenRestConnection.attemptAuthentication()) {
+        final AccessTokenPolarisHttpClient accessTokenPolarisHttpClient = polarisProperties.createPolarisHttpClient(intLogger, url, accessToken, timeout);
+        try (final Response response = accessTokenPolarisHttpClient.attemptAuthentication()) {
             response.throwExceptionForError();
         } catch (final IOException ioException) {
             throw new AlertException(ioException);
