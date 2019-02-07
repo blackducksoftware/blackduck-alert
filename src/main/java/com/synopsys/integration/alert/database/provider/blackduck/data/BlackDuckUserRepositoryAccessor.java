@@ -29,22 +29,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.database.RepositoryAccessor;
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 
 @Component
-public class BlackDuckUserRepositoryAccessor extends RepositoryAccessor {
+public class BlackDuckUserRepositoryAccessor extends RepositoryAccessor<BlackDuckUserEntity> {
     private final BlackDuckUserRepository blackDuckUserRepository;
 
     @Autowired
     public BlackDuckUserRepositoryAccessor(final BlackDuckUserRepository blackDuckUserRepository) {
         super(blackDuckUserRepository);
         this.blackDuckUserRepository = blackDuckUserRepository;
-    }
-
-    @Override
-    public DatabaseEntity saveEntity(final DatabaseEntity entity) {
-        final BlackDuckUserEntity blackDuckUserEntity = (BlackDuckUserEntity) entity;
-        return blackDuckUserRepository.save(blackDuckUserEntity);
     }
 
     public List<BlackDuckUserEntity> deleteAndSaveAll(final Iterable<BlackDuckUserEntity> userEntitiesToDelete, final Iterable<BlackDuckUserEntity> userEntitiesToAdd) {

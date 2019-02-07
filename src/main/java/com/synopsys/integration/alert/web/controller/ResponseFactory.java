@@ -35,6 +35,7 @@ import com.synopsys.integration.alert.web.model.ResponseBodyBuilder;
 @Component
 public class ResponseFactory {
     public static final String EMPTY_ID = "-1L";
+    public static final String MISSING_REQUEST_BODY = "Required request body is missing";
 
     public ResponseEntity<String> createMessageResponse(final HttpStatus status, final String id, final String message) {
         final String responseBody = new ResponseBodyBuilder(id, message).build();
