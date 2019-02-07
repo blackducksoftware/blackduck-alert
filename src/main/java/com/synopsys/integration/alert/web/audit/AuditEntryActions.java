@@ -138,7 +138,7 @@ public class AuditEntryActions {
         if (null != commonConfigId) {
             final CommonDistributionConfiguration commonDistributionConfig = jobConfigReader.getPopulatedJobConfig(commonConfigId).orElseThrow(() -> {
                 logger.warn("The Distribution Job with Id {} could not be found. This notification could not be sent", commonConfigId);
-                return new AlertJobMissingException("The Distribution Job with this id could not be found.");
+                return new AlertJobMissingException("The Distribution Job with this id could not be found.", commonConfigId);
             });
             distributionEvents = notificationProcessor.processNotifications(commonDistributionConfig, List.of(notificationContent));
         } else {
@@ -190,15 +190,7 @@ public class AuditEntryActions {
                     }
                     return date;
                 };
-                Comparator<Date> dateComparator = new Comparator<Date>() {
-                    @Override
-                    public int compare(final Date date1, final Date date2) {
-                        return date1.compareTo(date2);
-                    }
-                };
-                // the Date.compareTo method result the reverse of what we want for the descending order
-                dateComparator = dateComparator.reversed();
-                comparator = Comparator.comparing(function, Comparator.nullsFirst(dateComparator));
+                comparator = Comparator.comparing(function, Comparator.nullsFirst(Comparator.reverseOrder()));
             } else {
                 comparator = Comparator.comparing(AuditEntryModel::getOverallStatus, Comparator.nullsLast(String::compareTo));
             }
@@ -267,9 +259,7 @@ public class AuditEntryActions {
 
     private AuditEntryStatus getWorstStatus(final AuditEntryStatus overallStatus, final AuditEntryStatus currentStatus) {
         AuditEntryStatus newOverallStatus = overallStatus;
-        if (currentStatus == AuditEntryStatus.FAILURE) {
-            newOverallStatus = currentStatus;
-        } else if (null == overallStatus || (AuditEntryStatus.SUCCESS == overallStatus && AuditEntryStatus.SUCCESS != currentStatus)) {
+        if (null == overallStatus || currentStatus == AuditEntryStatus.FAILURE || (AuditEntryStatus.SUCCESS == overallStatus && AuditEntryStatus.SUCCESS != currentStatus)) {
             newOverallStatus = currentStatus;
         }
 

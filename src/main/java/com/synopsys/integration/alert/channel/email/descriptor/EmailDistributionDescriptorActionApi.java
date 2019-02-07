@@ -37,7 +37,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.channel.email.EmailChannel;
-import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.context.ChannelDistributionDescriptorActionApi;
@@ -58,8 +57,8 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
 
     @Autowired
     public EmailDistributionDescriptorActionApi(final EmailChannel emailChannel, final List<ProviderDescriptor> providerDescriptors, final BlackDuckProjectRepositoryAccessor blackDuckProjectRepositoryAccessor,
-        final BlackDuckEmailHandler blackDuckEmailHandler, final ConfigurationFieldModelConverter modelConverter) {
-        super(emailChannel, providerDescriptors, modelConverter);
+        final BlackDuckEmailHandler blackDuckEmailHandler) {
+        super(emailChannel, providerDescriptors);
         this.blackDuckEmailHandler = blackDuckEmailHandler;
         this.blackDuckProjectRepositoryAccessor = blackDuckProjectRepositoryAccessor;
     }
@@ -72,20 +71,26 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
         final Optional<String> providerName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME);
 
         if (providerName.isPresent() && BlackDuckProvider.COMPONENT_NAME.equals(providerName.get())) {
-            Set<BlackDuckProjectEntity> blackDuckProjectEntities;
+            final Set<BlackDuckProjectEntity> blackDuckProjectEntities;
             if (filterByProject.isPresent() && BooleanUtils.toBoolean(filterByProject.get())) {
                 final Optional<ConfigurationFieldModel> projectField = fieldAccessor.getField(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT);
-                final Set<String> configuredProjects = projectField.map(field -> field.getFieldValues()).orElse(Set.of()).stream().collect(Collectors.toSet());
-                final Optional<String> projectNamePattern = fieldAccessor.getString(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN);
-                blackDuckProjectEntities = blackDuckProjectRepositoryAccessor.readEntities()
+                final Set<String> configuredProjects = projectField.map(ConfigurationFieldModel::getFieldValues).orElse(Set.of()).stream().collect(Collectors.toSet());
+                final String projectNamePattern = fieldAccessor.getString(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN).orElse("");
+                final List<BlackDuckProjectEntity> blackDuckProjects = blackDuckProjectRepositoryAccessor.readEntities();
+                final boolean noProjectsMatchPattern = blackDuckProjects.stream().noneMatch(databaseEntity -> projectNamePattern.matches(databaseEntity.getName()));
+                if (noProjectsMatchPattern && StringUtils.isNotBlank(projectNamePattern)) {
+                    final Map<String, String> fieldErrors = new HashMap<>();
+                    fieldErrors.put(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN, "Does not match any of the Projects.");
+                    throw new AlertFieldException(fieldErrors);
+                }
+
+                blackDuckProjectEntities = blackDuckProjects
                                                .stream()
-                                               .map(databaseEntity -> (BlackDuckProjectEntity) databaseEntity)
-                                               .filter(databaseEntity -> doesProjectMatchConfiguration(databaseEntity.getName(), projectNamePattern.orElse(""), configuredProjects))
+                                               .filter(databaseEntity -> doesProjectMatchConfiguration(databaseEntity.getName(), projectNamePattern, configuredProjects))
                                                .collect(Collectors.toSet());
             } else {
                 blackDuckProjectEntities = blackDuckProjectRepositoryAccessor.readEntities()
                                                .stream()
-                                               .map(databaseEntity -> (BlackDuckProjectEntity) databaseEntity)
                                                .collect(Collectors.toSet());
 
             }
@@ -109,7 +114,7 @@ public class EmailDistributionDescriptorActionApi extends ChannelDistributionDes
                     } else {
                         errorMessage = String.format("Could not find any email addresses for the projects: %s", projects);
                     }
-                    fieldErrors.put("configuredProjects", errorMessage);
+                    fieldErrors.put(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT, errorMessage);
                     throw new AlertFieldException(fieldErrors);
                 }
             }

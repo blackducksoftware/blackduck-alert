@@ -51,7 +51,7 @@ public class SchedulingDescriptorActionApi extends NoTestActionApi {
     @Override
     public FieldModel readConfig(final FieldModel fieldModel) {
         final Optional<Long> accumulatorNextRun = taskManager.getDifferenceToNextRun(BlackDuckAccumulator.TASK_NAME, TimeUnit.SECONDS);
-        fieldModel.putField(SchedulingDescriptor.KEY_ACCUMULATOR_NEXT_RUN, new FieldValueModel(List.of(accumulatorNextRun.map(value -> String.valueOf(value)).orElse("")), true));
+        fieldModel.putField(SchedulingDescriptor.KEY_ACCUMULATOR_NEXT_RUN, new FieldValueModel(List.of(accumulatorNextRun.map(String::valueOf).orElse("")), true));
         fieldModel.putField(SchedulingDescriptor.KEY_DAILY_PROCESSOR_NEXT_RUN, new FieldValueModel(List.of(taskManager.getNextRunTime(DailyTask.TASK_NAME).orElse("")), true));
         fieldModel.putField(SchedulingDescriptor.KEY_PURGE_DATA_NEXT_RUN, new FieldValueModel(List.of(taskManager.getNextRunTime(PurgeTask.TASK_NAME).orElse("")), true));
         return fieldModel;
