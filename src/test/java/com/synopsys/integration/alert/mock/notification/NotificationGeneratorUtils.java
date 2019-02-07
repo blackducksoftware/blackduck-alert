@@ -16,7 +16,7 @@ import com.synopsys.integration.blackduck.api.generated.component.ResourceMetada
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.generated.view.ComponentVersionView;
 import com.synopsys.integration.blackduck.api.generated.view.NotificationView;
-import com.synopsys.integration.blackduck.api.generated.view.VulnerabilityV2View;
+import com.synopsys.integration.blackduck.api.generated.view.VulnerabilityView;
 import com.synopsys.integration.blackduck.notification.CommonNotificationView;
 import com.synopsys.integration.blackduck.notification.NotificationDetailResult;
 import com.synopsys.integration.blackduck.notification.NotificationDetailResults;
@@ -27,7 +27,7 @@ import com.synopsys.integration.blackduck.notification.content.VulnerabilityNoti
 import com.synopsys.integration.blackduck.notification.content.VulnerabilitySourceQualifiedId;
 import com.synopsys.integration.blackduck.notification.content.detail.NotificationContentDetail;
 import com.synopsys.integration.blackduck.notification.content.detail.NotificationContentDetailFactory;
-import com.synopsys.integration.blackduck.rest.BlackDuckRestConnection;
+import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.bucket.BlackDuckBucket;
@@ -65,7 +65,7 @@ public class NotificationGeneratorUtils {
         factory.populateContentDetails(notificationContentDetails, notificationGroup, content);
 
         return Arrays.asList(new NotificationDetailResult(content, commonNotificationView.getContentType(), commonNotificationView.getCreatedAt(), commonNotificationView.getType(), notificationGroup,
-                commonNotificationView.getNotificationState(), notificationContentDetails));
+            commonNotificationView.getNotificationState(), notificationContentDetails));
     }
 
     public static List<NotificationDetailResult> createNotificationDetailList(final NotificationView view, final RuleViolationClearedNotificationContent content) {
@@ -76,7 +76,7 @@ public class NotificationGeneratorUtils {
         factory.populateContentDetails(notificationContentDetails, notificationGroup, content);
 
         return Arrays.asList(new NotificationDetailResult(content, commonNotificationView.getContentType(), commonNotificationView.getCreatedAt(), commonNotificationView.getType(), notificationGroup,
-                commonNotificationView.getNotificationState(), notificationContentDetails));
+            commonNotificationView.getNotificationState(), notificationContentDetails));
     }
 
     public static List<NotificationDetailResult> createNotificationDetailList(final NotificationView view, final PolicyOverrideNotificationContent content) {
@@ -87,7 +87,7 @@ public class NotificationGeneratorUtils {
         factory.populateContentDetails(notificationContentDetails, notificationGroup, content);
 
         return Arrays.asList(new NotificationDetailResult(content, commonNotificationView.getContentType(), commonNotificationView.getCreatedAt(), commonNotificationView.getType(), notificationGroup,
-                commonNotificationView.getNotificationState(), notificationContentDetails));
+            commonNotificationView.getNotificationState(), notificationContentDetails));
     }
 
     public static NotificationDetailResult createNotificationDetailList(final NotificationView view, final VulnerabilityNotificationContent content) {
@@ -98,7 +98,7 @@ public class NotificationGeneratorUtils {
         factory.populateContentDetails(notificationContentDetails, notificationGroup, content);
 
         return new NotificationDetailResult(content, commonNotificationView.getContentType(), commonNotificationView.getCreatedAt(), commonNotificationView.getType(), notificationGroup,
-                commonNotificationView.getNotificationState(), notificationContentDetails);
+            commonNotificationView.getNotificationState(), notificationContentDetails);
     }
 
     public static NotificationDetailResults createNotificationResults(final List<NotificationDetailResult> detailList) {
@@ -113,14 +113,14 @@ public class NotificationGeneratorUtils {
 
     @SuppressWarnings("unchecked")
     public static NotificationDetailResults initializeTestData(final BlackDuckProperties blackDuckProperties, final ComponentVersionView versionView, final VulnerabilityNotificationContent content, final BlackDuckBucket bucket)
-            throws IntegrationException {
+        throws IntegrationException {
         final BlackDuckServicesFactory blackDuckServicesFactory = Mockito.mock(BlackDuckServicesFactory.class);
         final BlackDuckService blackDuckService = Mockito.mock(BlackDuckService.class);
         final BlackDuckBucketService bucketService = Mockito.mock(BlackDuckBucketService.class);
-        final List<VulnerabilityV2View> vulnerabilityViewList = createVulnerabilityList();
-        final BlackDuckRestConnection restConnection = Mockito.mock(BlackDuckRestConnection.class);
+        final List<VulnerabilityView> vulnerabilityViewList = createVulnerabilityList();
+        final BlackDuckHttpClient blackDuckHttpClient = Mockito.mock(BlackDuckHttpClient.class);
 
-        Mockito.when(blackDuckProperties.createRestConnectionAndLogErrors(Mockito.any())).thenReturn(Optional.of(restConnection));
+        Mockito.when(blackDuckProperties.createBlackDuckHttpClientAndLogErrors(Mockito.any())).thenReturn(Optional.of(blackDuckHttpClient));
         Mockito.when(blackDuckProperties.createBlackDuckServicesFactory(Mockito.any(), Mockito.any())).thenReturn(blackDuckServicesFactory);
         Mockito.when(blackDuckServicesFactory.createBlackDuckService()).thenReturn(blackDuckService);
         Mockito.when(blackDuckServicesFactory.createBlackDuckBucketService()).thenReturn(bucketService);
@@ -163,68 +163,68 @@ public class NotificationGeneratorUtils {
         return sourceIdList;
     }
 
-    public static List<VulnerabilityV2View> createVulnerabilityList() {
-        final VulnerabilityV2View vuln_1 = new VulnerabilityV2View();
+    public static List<VulnerabilityView> createVulnerabilityList() {
+        final VulnerabilityView vuln_1 = new VulnerabilityView();
         vuln_1.setName("1");
         vuln_1.setSeverity("LOW");
         vuln_1.setMeta(new ResourceMetadata());
         vuln_1.getMeta().setHref("href_1");
 
-        final VulnerabilityV2View vuln_2 = new VulnerabilityV2View();
+        final VulnerabilityView vuln_2 = new VulnerabilityView();
         vuln_2.setName("2");
         vuln_2.setSeverity("LOW");
         vuln_2.setMeta(new ResourceMetadata());
         vuln_2.getMeta().setHref("href_2");
 
-        final VulnerabilityV2View vuln_3 = new VulnerabilityV2View();
+        final VulnerabilityView vuln_3 = new VulnerabilityView();
         vuln_3.setName("3");
         vuln_3.setSeverity("LOW");
         vuln_3.setMeta(new ResourceMetadata());
         vuln_3.getMeta().setHref("href_3");
 
-        final VulnerabilityV2View vuln_4 = new VulnerabilityV2View();
+        final VulnerabilityView vuln_4 = new VulnerabilityView();
         vuln_4.setName("4");
         vuln_4.setSeverity("MEDIUM");
         vuln_4.setMeta(new ResourceMetadata());
         vuln_4.getMeta().setHref("href_4");
 
-        final VulnerabilityV2View vuln_5 = new VulnerabilityV2View();
+        final VulnerabilityView vuln_5 = new VulnerabilityView();
         vuln_5.setName("5");
         vuln_5.setSeverity("HIGH");
         vuln_5.setMeta(new ResourceMetadata());
         vuln_5.getMeta().setHref("href_5");
 
-        final VulnerabilityV2View vuln_6 = new VulnerabilityV2View();
+        final VulnerabilityView vuln_6 = new VulnerabilityView();
         vuln_6.setName("6");
         vuln_6.setSeverity("HIGH");
         vuln_6.setMeta(new ResourceMetadata());
         vuln_6.getMeta().setHref("href_6");
 
-        final VulnerabilityV2View vuln_7 = new VulnerabilityV2View();
+        final VulnerabilityView vuln_7 = new VulnerabilityView();
         vuln_7.setName("7");
         vuln_7.setSeverity("HIGH");
         vuln_7.setMeta(new ResourceMetadata());
         vuln_7.getMeta().setHref("href_7");
 
-        final VulnerabilityV2View vuln_8 = new VulnerabilityV2View();
+        final VulnerabilityView vuln_8 = new VulnerabilityView();
         vuln_8.setName("8");
         vuln_8.setSeverity("HIGH");
         vuln_8.setMeta(new ResourceMetadata());
         vuln_8.getMeta().setHref("href_8");
 
-        final VulnerabilityV2View vuln_9 = new VulnerabilityV2View();
+        final VulnerabilityView vuln_9 = new VulnerabilityView();
         vuln_9.setName("9");
         vuln_9.setSeverity("HIGH");
         vuln_9.setMeta(new ResourceMetadata());
         vuln_9.getMeta().setHref("href_9");
 
-        final VulnerabilityV2View vuln_10 = new VulnerabilityV2View();
+        final VulnerabilityView vuln_10 = new VulnerabilityView();
         vuln_10.setName("10");
         vuln_10.setSeverity("HIGH");
         vuln_10.setMeta(new ResourceMetadata());
         vuln_10.getMeta().setHref("href_10");
 
-        final VulnerabilityV2View vuln_11 = new VulnerabilityV2View();
+        final VulnerabilityView vuln_11 = new VulnerabilityView();
         vuln_11.setName("11");
         vuln_11.setSeverity("HIGH");
         vuln_11.setMeta(new ResourceMetadata());

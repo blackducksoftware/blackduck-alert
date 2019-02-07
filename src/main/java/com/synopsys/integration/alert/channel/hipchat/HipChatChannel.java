@@ -55,7 +55,7 @@ import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.database.audit.AuditUtility;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
-import com.synopsys.integration.rest.connection.RestConnection;
+import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.request.Request;
 import com.synopsys.integration.rest.request.Response;
 
@@ -107,22 +107,22 @@ public class HipChatChannel extends RestDistributionChannel {
         }
     }
 
-    public void testApiKeyAndApiUrlConnection(final RestConnection restConnection, final String configuredApiUrl, final String apiKey) throws IntegrationException {
+    public void testApiKeyAndApiUrlConnection(final IntHttpClient intHttpClient, final String configuredApiUrl, final String apiKey) throws IntegrationException {
         if (StringUtils.isBlank(apiKey)) {
             throw new AlertException("Invalid API key: API key not provided");
         }
-        if (restConnection == null) {
+        if (intHttpClient == null) {
             throw new AlertException("Connection error: see logs for more information.");
         }
         try {
-            sendTestRequest(restConnection, configuredApiUrl, apiKey);
+            sendTestRequest(intHttpClient, configuredApiUrl, apiKey);
         } catch (final IntegrationException integrationException) {
             logger.error("Unable to create a response", integrationException);
             throw new AlertException("Invalid API key: " + integrationException.getMessage());
         }
     }
 
-    private void sendTestRequest(final RestConnection restConnection, final String configuredApiUrl, final String apiKey) throws IntegrationException {
+    private void sendTestRequest(final IntHttpClient intHttpClient, final String configuredApiUrl, final String apiKey) throws IntegrationException {
         final String url = configuredApiUrl + "/v2/room/*/notification";
         final Map<String, Set<String>> queryParameters = new HashMap<>();
         queryParameters.put("auth_test", new HashSet<>(Collections.singleton("true")));
@@ -132,7 +132,7 @@ public class HipChatChannel extends RestDistributionChannel {
         requestHeaders.put("Content-Type", "application/json");
 
         final Request request = createPostMessageRequest(url, requestHeaders, queryParameters);
-        try (final Response response = sendGenericRequest(restConnection, request)) {
+        try (final Response response = sendGenericRequest(intHttpClient, request)) {
             if (RestConstants.OK_200 > response.getStatusCode() || response.getStatusCode() >= RestConstants.BAD_REQUEST_400) {
                 throw new AlertException("Invalid API key: " + response.getStatusMessage());
             }

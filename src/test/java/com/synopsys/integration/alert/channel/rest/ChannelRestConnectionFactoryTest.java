@@ -13,7 +13,7 @@ import org.mockito.Mockito;
 import com.synopsys.integration.alert.common.ProxyManager;
 import com.synopsys.integration.alert.util.OutputLogger;
 import com.synopsys.integration.alert.util.TestAlertProperties;
-import com.synopsys.integration.rest.connection.RestConnection;
+import com.synopsys.integration.rest.client.IntHttpClient;
 import com.synopsys.integration.rest.credentials.Credentials;
 import com.synopsys.integration.rest.credentials.CredentialsBuilder;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
@@ -51,13 +51,13 @@ public class ChannelRestConnectionFactoryTest {
 
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
         testAlertProperties.setAlertTrustCertificate(true);
-        ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
+        final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(expectedProxyInfo);
         final ChannelRestConnectionFactory channelRestConnectionFactory = new ChannelRestConnectionFactory(testAlertProperties, proxyManager);
 
-        final RestConnection restConnection = channelRestConnectionFactory.createRestConnection();
+        final IntHttpClient intHttpClient = channelRestConnectionFactory.createIntHttpClient();
 
-        assertNotNull(restConnection);
-        assertEquals(expectedProxyInfo, restConnection.getProxyInfo());
+        assertNotNull(intHttpClient);
+        assertEquals(expectedProxyInfo, intHttpClient.getProxyInfo());
     }
 }

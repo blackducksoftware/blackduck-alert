@@ -48,7 +48,7 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.workflow.NotificationManager;
 import com.synopsys.integration.alert.workflow.scheduled.ScheduledTask;
 import com.synopsys.integration.blackduck.api.generated.view.NotificationView;
-import com.synopsys.integration.blackduck.rest.BlackDuckRestConnection;
+import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.NotificationService;
 import com.synopsys.integration.log.Slf4jIntLogger;
@@ -169,10 +169,10 @@ public class BlackDuckAccumulator extends ScheduledTask {
     }
 
     protected List<NotificationView> read(final DateRange dateRange) {
-        final Optional<BlackDuckRestConnection> optionalConnection = blackDuckProperties.createRestConnectionAndLogErrors(logger);
-        if (optionalConnection.isPresent()) {
+        final Optional<BlackDuckHttpClient> optionalBlackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger);
+        if (optionalBlackDuckHttpClient.isPresent()) {
             try {
-                final BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(optionalConnection.get(), new Slf4jIntLogger(logger));
+                final BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(optionalBlackDuckHttpClient.get(), new Slf4jIntLogger(logger));
                 final Date startDate = dateRange.getStart();
                 final Date endDate = dateRange.getEnd();
                 logger.info("Accumulating Notifications Between {} and {} ", RestConstants.formatDate(startDate), RestConstants.formatDate(endDate));
