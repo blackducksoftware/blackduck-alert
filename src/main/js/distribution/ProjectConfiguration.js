@@ -38,7 +38,8 @@ class ProjectConfiguration extends Component {
         this.onRowSelectedAll = this.onRowSelectedAll.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.state = {
-            includeAllProjects: this.props.includeAllProjects
+            includeAllProjects: this.props.includeAllProjects,
+            configuredProjects: this.props.configuredProjects
         };
     }
 
@@ -55,20 +56,29 @@ class ProjectConfiguration extends Component {
 
     onRowSelectedAll(isSelected, rows) {
         if (rows) {
-            const selected = Object.assign([], this.props.configuredProjects);
+            const selected = Object.assign([], this.state.configuredProjects);
             rows.forEach((row) => {
                 this.createSelectedArray(selected, row, isSelected);
             });
-            this.props.handleProjectChanged(selected);
+            this.setState({
+                configuredProjects: selected
+            });
+            this.props.handleProjectChanged(selected.map(project => Object.assign({}, { label: project, value: project })));
         } else {
+            this.setState({
+                configuredProjects: []
+            });
             this.props.handleProjectChanged([]);
         }
     }
 
     onRowSelected(row, isSelected) {
-        const selected = Object.assign([], this.props.configuredProjects);
+        const selected = Object.assign([], this.state.configuredProjects);
         this.createSelectedArray(selected, row, isSelected);
-        this.props.handleProjectChanged(selected);
+        this.setState({
+            configuredProjects: selected
+        });
+        this.props.handleProjectChanged(selected.map(project => Object.assign({}, { label: project, value: project })));
     }
 
     createSelectedArray(selectedArray, row, isSelected) {
@@ -116,7 +126,7 @@ class ProjectConfiguration extends Component {
             mode: 'checkbox',
             clickToSelect: true,
             showOnlySelected: true,
-            selected: this.props.configuredProjects,
+            selected: this.state.configuredProjects,
             onSelect: this.onRowSelected,
             onSelectAll: this.onRowSelectedAll
         };

@@ -68,7 +68,7 @@ export function updateFieldModelSingleValue(fieldModel, key, value) {
     }
     copy.keyToValues[key].values[0] = value;
     copy.keyToValues[key].isSet = false;
-    return Object.assign({}, copy);
+    return copy;
 }
 
 export function updateFieldModelValues(fieldModel, key, values) {
@@ -88,7 +88,21 @@ export function updateFieldModelValues(fieldModel, key, values) {
     }
     copy.keyToValues[key].values = values;
     copy.keyToValues[key].isSet = false;
-    return Object.assign({}, copy);
+    return copy;
+}
+
+export function combineFieldModels(sourceModel, modelToAdd) {
+    const copy = Object.assign({}, sourceModel);
+    if (!copy.context) {
+        copy.context = modelToAdd.context;
+    }
+
+    if (!copy.descriptorName) {
+        copy.descriptorName = modelToAdd.descriptorName;
+    }
+    copy.keyToValues = Object.assign({}, sourceModel.keyToValues, modelToAdd.keyToValues);
+
+    return copy;
 }
 
 
