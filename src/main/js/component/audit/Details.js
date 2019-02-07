@@ -28,7 +28,7 @@ class Details extends Component {
         const defaultValue = <div className="inline">Unknown</div>;
         const { descriptors } = this.props;
         if (descriptors) {
-            const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors.items, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+            const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
             if (descriptorList) {
                 const filteredList = descriptorList.filter(descriptor => descriptor.descriptorName === eventType);
                 if (filteredList && filteredList.length > 0) {

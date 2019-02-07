@@ -216,7 +216,7 @@ class Index extends Component {
         const defaultValue = <div className="inline">{cell}</div>;
         const { descriptors } = this.props;
         if (descriptors) {
-            const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors.items, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+            const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
             if (descriptorList) {
                 const filteredList = descriptorList.filter(descriptor => descriptor.descriptorName === cell);
                 if (filteredList && filteredList.length > 0) {
@@ -234,7 +234,7 @@ class Index extends Component {
         const defaultValue = <div className="inline">{cell}</div>;
         const { descriptors } = this.props;
         if (descriptors) {
-            const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors.items, DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
+            const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
             if (descriptorList) {
                 const filteredList = descriptorList.filter(descriptor => descriptor.descriptorName === cell);
                 if (filteredList && filteredList.length > 0) {
