@@ -125,4 +125,32 @@ public class UserAccessorTestIT extends AlertIntegrationTest {
 
         assertFalse(userAccessor.changeUserPassword("bad_user_name", "new_test_password"));
     }
+
+    @Test
+    public void testChangeUserEmailAddress() {
+        final String userName = "testUser";
+        final String password = "testPassword";
+        final String email = "testEmail";
+        final UserModel userModel = userAccessor.addUser(userName, password, email);
+
+        assertNotNull(userModel);
+        assertEquals(userName, userModel.getName());
+        assertEquals(email, userModel.getEmailAddress());
+        assertTrue(userModel.getRoles().isEmpty());
+
+        assertTrue(userAccessor.changeUserEmailAddress(userModel.getName(), "new_test_email"));
+        final Optional<UserModel> foundModel = userAccessor.getUser(userName);
+        assertTrue(foundModel.isPresent());
+        if (foundModel.isPresent()) {
+            final UserModel updatedModel = foundModel.get();
+            assertEquals(userModel.getName(), updatedModel.getName());
+            assertNotEquals(userModel.getEmailAddress(), updatedModel.getEmailAddress());
+        } else {
+            fail();
+        }
+
+        userAccessor.deleteUser(userName);
+
+        assertFalse(userAccessor.changeUserEmailAddress("bad_user_name", "new_test_email"));
+    }
 }
