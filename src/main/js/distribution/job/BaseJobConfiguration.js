@@ -214,13 +214,8 @@ class BaseJobConfiguration extends Component {
         return (event) => {
             const { target } = event;
             const value = target.type === 'checkbox' ? target.checked.toString() : target.value;
-            console.log("Target", target);
-            console.log("checked", target.checked);
-            console.log("value", value);
             const fieldModel = this.state[fieldModelKey];
-            console.log("fieldModel", fieldModel);
             const newState = FieldModelUtilities.updateFieldModelSingleValue(fieldModel, target.name, value);
-            console.log("createChangeHandler: newstate", newState);
             this.setState({
                 [fieldModelKey]: newState
             });
@@ -241,7 +236,6 @@ class BaseJobConfiguration extends Component {
                     [fieldModelKey]: newState
                 });
             }
-            console.log("singleSelectHandler: state", this.state);
         };
     }
 
@@ -259,7 +253,6 @@ class BaseJobConfiguration extends Component {
                     [fieldModelKey]: newState
                 });
             }
-            console.log("multiSelectHandler: state", this.state);
         };
     }
 
@@ -333,8 +326,6 @@ class BaseJobConfiguration extends Component {
         //     });
         // }
 
-        console.log("Rendering distribution items");
-        console.log("current state ", this.state);
         return (
             <div>
                 <div className="form-group">
