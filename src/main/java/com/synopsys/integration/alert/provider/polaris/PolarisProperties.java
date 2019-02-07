@@ -39,6 +39,7 @@ import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
+import com.synopsys.integration.rest.support.AuthenticationSupport;
 
 // TODO exclude for now: @Component
 public class PolarisProperties extends ProviderProperties {
@@ -46,13 +47,15 @@ public class PolarisProperties extends ProviderProperties {
     private final AlertProperties alertProperties;
     private final ProxyManager proxyManager;
     private final Gson gson;
+    private final AuthenticationSupport authenticationSupport;
 
     // TODO exclude for now: @Autowired
-    public PolarisProperties(final AlertProperties alertProperties, final BaseConfigurationAccessor configurationAccessor, final ProxyManager proxyManager, final Gson gson) {
+    public PolarisProperties(final AlertProperties alertProperties, final BaseConfigurationAccessor configurationAccessor, final ProxyManager proxyManager, final Gson gson, final AuthenticationSupport authenticationSupport) {
         super(PolarisProvider.COMPONENT_NAME, configurationAccessor);
         this.alertProperties = alertProperties;
         this.proxyManager = proxyManager;
         this.gson = gson;
+        this.authenticationSupport = authenticationSupport;
     }
 
     public Optional<String> getUrl() {
@@ -98,7 +101,7 @@ public class PolarisProperties extends ProviderProperties {
     public AccessTokenPolarisHttpClient createPolarisHttpClient(final IntLogger intLogger, final String baseUrl, final String accessToken, final Integer timeout) {
         final Boolean alwaysTrustCertificate = alertProperties.getAlertTrustCertificate().orElse(Boolean.FALSE);
         final ProxyInfo proxyInfo = proxyManager.createProxyInfo();
-        return new AccessTokenPolarisHttpClient(intLogger, timeout, alwaysTrustCertificate, proxyInfo, baseUrl, accessToken, gson, null);
+        return new AccessTokenPolarisHttpClient(intLogger, timeout, alwaysTrustCertificate, proxyInfo, baseUrl, accessToken, gson, authenticationSupport);
     }
 
     private Optional<String> getAccessToken() {

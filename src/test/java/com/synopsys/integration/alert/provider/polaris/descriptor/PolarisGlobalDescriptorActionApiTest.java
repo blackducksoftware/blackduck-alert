@@ -35,6 +35,7 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
+import com.synopsys.integration.rest.support.AuthenticationSupport;
 
 public class PolarisGlobalDescriptorActionApiTest {
     private static final String ERROR_POLARIS_ACCESS_TOKEN = "Invalid Polaris Access Token.";
@@ -131,12 +132,13 @@ public class PolarisGlobalDescriptorActionApiTest {
         Mockito.when(alertProperties.getAlertTrustCertificate()).thenReturn(Optional.of(Boolean.TRUE));
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
-        final PolarisProperties polarisProperties = new PolarisProperties(alertProperties, null, proxyManager, new Gson());
+        final PolarisProperties polarisProperties = new PolarisProperties(alertProperties, null, proxyManager, new Gson(), new AuthenticationSupport());
 
         final PolarisGlobalDescriptorActionApi actionApi = new PolarisGlobalDescriptorActionApi(polarisProperties);
         try {
             actionApi.testConfig(testConfigModel);
         } catch (final Exception e) {
+            e.printStackTrace();
             fail("An exception was thrown while testing (seemingly) valid config. " + e.toString());
         }
     }
