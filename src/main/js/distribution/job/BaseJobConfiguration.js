@@ -505,7 +505,7 @@ const mapStateToProps = state => ({
     fieldErrors: state.distributionConfigs.error,
     fetching: state.distributionConfigs.fetching,
     inProgress: state.distributionConfigs.inProgress,
-    descriptors: state.descriptors.items
+    descriptors: state.descriptors.items,
     success: state.distributionConfigs.success,
     testingConfig: state.distributionConfigs.testingConfig,
     configurationMessage: state.distributionConfigs.configurationMessage,
