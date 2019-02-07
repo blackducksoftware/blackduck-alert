@@ -43,7 +43,7 @@ class HipChatJobConfiguration extends Component {
         if (!nextProps.fetching && !nextProps.inProgress) {
             if (this.loading) {
                 this.loading = false;
-                const jobConfig = nextProps.jobs[nextProps.distributionConfigId];
+                const jobConfig = nextProps.job;
                 if (jobConfig) {
                     this.setState({
                         roomId: jobConfig.roomId,
@@ -146,7 +146,7 @@ class HipChatJobConfiguration extends Component {
 
 HipChatJobConfiguration.propTypes = {
     getDistributionJob: PropTypes.func.isRequired,
-    jobs: PropTypes.arrayOf(PropTypes.object),
+    job: PropTypes.object,
     distributionConfigId: PropTypes.string,
     colorOptions: PropTypes.arrayOf(PropTypes.object),
     fieldErrors: PropTypes.object,
@@ -158,7 +158,7 @@ HipChatJobConfiguration.propTypes = {
 };
 
 HipChatJobConfiguration.defaultProps = {
-    jobs: [],
+    job: {},
     distributionConfigId: null,
     colorOptions: [
         { label: 'Yellow', value: 'yellow' },
@@ -174,7 +174,7 @@ HipChatJobConfiguration.defaultProps = {
 };
 
 const mapStateToProps = state => ({
-    jobs: state.distributionConfigs.jobs,
+    job: state.distributionConfigs.job,
     fieldErrors: state.distributionConfigs.error,
     fetching: state.distributionConfigs.fetching,
     inProgress: state.distributionConfigs.inProgress

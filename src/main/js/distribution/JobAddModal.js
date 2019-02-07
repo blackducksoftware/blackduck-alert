@@ -103,7 +103,7 @@ class JobAddModal extends Component {
     }
 
     createJobTypeOptions() {
-        const channelDescriptors = DescriptorUtilities.findDescriptorByTypeAndContext(this.props.descriptors.items, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+        const channelDescriptors = DescriptorUtilities.findDescriptorByTypeAndContext(this.props.descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
         if (channelDescriptors) {
             const optionList = channelDescriptors.map(descriptor => ({
                 label: descriptor.label,
@@ -162,7 +162,7 @@ JobAddModal.defaultProps = {
 };
 
 const mapStateToProps = state => ({
-    descriptors: state.descriptors
+    descriptors: state.descriptors.items
 });
 
 const mapDispatchToProps = dispatch => ({});

@@ -24,9 +24,8 @@ export function getFieldModelValues(fieldModel, key) {
 
 export function getFieldModelBooleanValue(fieldModel, key) {
     const fieldValue = getFieldModelSingleValue(fieldModel, key);
-    if (fieldValue) {
-        const result = fieldValue === 'true';
-        return result;
+    if (fieldValue && fieldValue === 'true') {
+        return true;
     }
     return false;
 }

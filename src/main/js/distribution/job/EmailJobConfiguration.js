@@ -39,7 +39,7 @@ class EmailJobConfiguration extends Component {
         if (!nextProps.fetching && !nextProps.inProgress) {
             if (this.loading) {
                 this.loading = false;
-                const jobConfig = nextProps.jobs[nextProps.distributionConfigId];
+                const jobConfig = nextProps.job;
                 if (jobConfig) {
                     this.setState({
                         emailSubjectLine: jobConfig.emailSubjectLine,
@@ -97,7 +97,7 @@ class EmailJobConfiguration extends Component {
 }
 
 EmailJobConfiguration.propTypes = {
-    jobs: PropTypes.object,
+    job: PropTypes.object,
     distributionConfigId: PropTypes.string,
     getDistributionJob: PropTypes.func.isRequired,
     fieldErrors: PropTypes.object,
@@ -109,7 +109,7 @@ EmailJobConfiguration.propTypes = {
 };
 
 EmailJobConfiguration.defaultProps = {
-    jobs: {},
+    job: {},
     distributionConfigId: null,
     fieldErrors: {},
     fetching: false,
@@ -121,7 +121,7 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = state => ({
-    jobs: state.distributionConfigs.jobs,
+    job: state.distributionConfigs.job,
     fieldErrors: state.distributionConfigs.error,
     fetching: state.distributionConfigs.fetching,
     inProgress: state.distributionConfigs.inProgress
