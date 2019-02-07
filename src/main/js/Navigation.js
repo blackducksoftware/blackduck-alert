@@ -103,7 +103,7 @@ Navigation.propTypes = {
 
 const mapStateToProps = state => ({
     csrfToken: state.session.csrfToken,
-    descriptors: state.descriptors
+    descriptors: state.descriptors.items
 });
 
 const mapDispatchToProps = dispatch => ({

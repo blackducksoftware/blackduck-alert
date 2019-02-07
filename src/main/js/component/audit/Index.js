@@ -452,7 +452,7 @@ const mapStateToProps = state => ({
     csrfToken: state.session.csrfToken,
     fetching: state.audit.fetching,
     autoRefresh: state.refresh.autoRefresh,
-    descriptors: state.descriptors
+    descriptors: state.descriptors.items
 });
 
 const mapDispatchToProps = dispatch => ({

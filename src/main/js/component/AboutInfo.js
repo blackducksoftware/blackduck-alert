@@ -102,7 +102,7 @@ const mapStateToProps = state => ({
     version: state.about.version,
     description: state.about.description,
     projectUrl: state.about.projectUrl,
-    descriptors: state.descriptors
+    descriptors: state.descriptors.items
 });
 
 const mapDispatchToProps = dispatch => ({
