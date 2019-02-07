@@ -19,7 +19,7 @@ const initialState = {
     inProgress: false,
     success: false,
     testingConfig: false,
-    jobs: {},
+    jobs: [],
     error: {
         message: ''
     },
@@ -50,10 +50,10 @@ const config = (state = initialState, action) => {
                 error: {
                     message: ''
                 },
-                jobs: {
+                jobs: [
                     ...state.jobs,
                     ...action.jobs
-                }
+                ]
             });
 
         case DISTRIBUTION_JOB_FETCH_ERROR:
@@ -80,10 +80,10 @@ const config = (state = initialState, action) => {
                 error: {
                     message: ''
                 },
-                jobs: {
+                jobs: [
                     ...state.jobs,
                     ...action.jobs
-                }
+                ]
             });
 
         case DISTRIBUTION_JOB_UPDATED:
