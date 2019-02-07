@@ -38,7 +38,7 @@ class ProjectConfiguration extends Component {
         this.onRowSelectedAll = this.onRowSelectedAll.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.state = {
-            includeAllProjects: true
+            includeAllProjects: this.props.includeAllProjects
         };
     }
 
@@ -49,7 +49,6 @@ class ProjectConfiguration extends Component {
     handleChange(event) {
         const { target } = event
         const value = target.type === 'checkbox' ? target.checked : target.value;
-        console.log("Project event value ", value);
         this.setState({ includeAllProjects: value });
         this.props.handleChange(event);
     }
