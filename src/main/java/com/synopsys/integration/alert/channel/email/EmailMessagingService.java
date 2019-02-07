@@ -25,9 +25,12 @@ package com.synopsys.integration.alert.channel.email;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.mail.Address;
 import javax.mail.Message;
@@ -72,16 +75,19 @@ public class EmailMessagingService {
 
     public void sendEmailMessage(final EmailTarget emailTarget) throws AlertException {
         try {
-            final String emailAddress = StringUtils.trimToEmpty(emailTarget.getEmailAddress());
             final String templateName = StringUtils.trimToEmpty(emailTarget.getTemplateName());
-            final Map<String, Object> model = emailTarget.getModel();
-            if (StringUtils.isBlank(emailAddress) || StringUtils.isBlank(templateName)) {
-                // we've got nothing to do...might as well get out of here...
+            final Set<String> emailAddresses = emailTarget.getEmailAddresses()
+                                                   .stream()
+                                                   .map(String::trim)
+                                                   .filter(StringUtils::isNotBlank)
+                                                   .collect(Collectors.toSet());
+            if (emailAddresses.isEmpty() || StringUtils.isBlank(templateName)) {
+                // Nothing to send
                 return;
             }
 
+            final Map<String, Object> model = emailTarget.getModel();
             final Session session = createMailSession(emailProperties);
-
             final String html = freemarkerTemplatingService.getResolvedTemplate(model, templateName);
 
             final MimeMultipartBuilder mimeMultipartBuilder = new MimeMultipartBuilder();
@@ -91,7 +97,7 @@ public class EmailMessagingService {
             final MimeMultipart mimeMultipart = mimeMultipartBuilder.build();
 
             final String resolvedSubjectLine = freemarkerTemplatingService.getResolvedSubjectLine(model);
-            final Message message = createMessage(emailAddress, resolvedSubjectLine, session, mimeMultipart, emailProperties);
+            final Message message = createMessage(emailAddresses, resolvedSubjectLine, session, mimeMultipart, emailProperties);
             sendMessage(emailProperties, session, message);
         } catch (final MessagingException | IOException | TemplateException ex) {
             final String errorMessage = "Could not send the email. " + ex.getMessage();
@@ -114,12 +120,17 @@ public class EmailMessagingService {
         return Session.getInstance(props);
     }
 
-    private Message createMessage(final String emailAddress, final String subjectLine, final Session session, final MimeMultipart mimeMultipart, final EmailProperties emailProperties) throws AlertException, MessagingException {
+    private Message createMessage(final Collection<String> emailAddresses, final String subjectLine, final Session session, final MimeMultipart mimeMultipart, final EmailProperties emailProperties)
+        throws AlertException, MessagingException {
         final List<InternetAddress> addresses = new ArrayList<>();
-        try {
-            addresses.add(new InternetAddress(emailAddress));
-        } catch (final AddressException e) {
-            logger.warn(String.format("Could not create the address from %s: %s", emailAddress, e.getMessage()));
+        for (final String emailAddress : emailAddresses) {
+            try {
+                final InternetAddress toAddress = new InternetAddress(emailAddress);
+                toAddress.validate();
+                addresses.add(toAddress);
+            } catch (final AddressException e) {
+                logger.warn(String.format("Could not create the address from %s: %s", emailAddress, e.getMessage()));
+            }
         }
 
         if (addresses.isEmpty()) {
