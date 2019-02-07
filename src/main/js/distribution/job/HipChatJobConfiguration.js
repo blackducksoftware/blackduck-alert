@@ -78,12 +78,12 @@ class HipChatJobConfiguration extends Component {
                 const selected = selectedValue.value;
                 const newState = FielModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, fieldKey, selected);
                 this.setState({
-                    settingsData: newState
+                    currentConfig: newState
                 });
             } else {
                 const newState = FielModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, fieldKey, null);
                 this.setState({
-                    settingsData: newState
+                    currentConfig: newState
                 });
             }
         };
@@ -91,7 +91,7 @@ class HipChatJobConfiguration extends Component {
 
 
     render() {
-        const [colorOptions] = this.state;
+        const { colorOptions } = this.state;
         const fieldModel = this.state.currentConfig;
         let selectedColorOption = null;
         if (colorOptions) {
