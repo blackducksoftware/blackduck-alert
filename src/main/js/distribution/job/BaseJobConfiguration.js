@@ -196,10 +196,12 @@ class BaseJobConfiguration extends Component {
 
     buildJsonBody() {
         const channelSpecific = this.props.getParentConfiguration();
+        const channelName = this.state.commonConfig.descriptorName;
         const providerName = FieldModelUtilities.getFieldModelSingleValue(this.state.commonConfig, KEY_PROVIDER_NAME);
         const emptyProviderModel = FieldModelUtilities.createEmptyFieldModel(providerFieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, providerName);
         const updatedProviderFieldModel = FieldModelUtilities.combineFieldModels(emptyProviderModel, this.state.providerConfig);
-        const updatedChannelFieldModel = FieldModelUtilities.combineFieldModels(this.state.commonConfig, channelSpecific);
+        const commonFieldModel = FieldModelUtilities.updateFieldModelSingleValue(this.state.commonConfig, KEY_CHANNEL_NAME, channelName);
+        const updatedChannelFieldModel = FieldModelUtilities.combineFieldModels(commonFieldModel, channelSpecific);
         const configuration = Object.assign({}, {
             jobId: '',
             fieldModels: [
