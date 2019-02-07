@@ -25,9 +25,7 @@ function fetchingJob() {
 function jobFetched(config) {
     return {
         type: DISTRIBUTION_JOB_FETCHED,
-        jobs: {
-            [config.distributionConfigId]: config
-        }
+        job: config
     };
 }
 

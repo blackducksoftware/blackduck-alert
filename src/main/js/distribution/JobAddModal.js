@@ -162,7 +162,7 @@ JobAddModal.defaultProps = {
 };
 
 const mapStateToProps = state => ({
-    descriptors: state.descriptors
+    descriptors: state.descriptors.items
 });
 
 const mapDispatchToProps = dispatch => ({});

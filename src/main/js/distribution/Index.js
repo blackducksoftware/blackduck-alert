@@ -340,7 +340,7 @@ Index.defaultProps = {
 
 const mapStateToProps = state => ({
     autoRefresh: state.refresh.autoRefresh,
-    descriptors: state.descriptors,
+    descriptors: state.descriptors.items,
     inProgress: state.distributions.inProgress,
     jobs: state.distributions.jobs,
     jobConfigTableMessage: state.distributions.jobConfigTableMessage

@@ -57,7 +57,7 @@ const providerFieldNames = [
 const FIELD_MODEL_KEY = {
     COMMON: 'commonConfig',
     PROVIDER: 'providerConfig'
-}
+};
 
 class BaseJobConfiguration extends Component {
     constructor(props) {
@@ -117,10 +117,7 @@ class BaseJobConfiguration extends Component {
                 });
 
                 if (nextProps.distributionConfigId) {
-                    const jobConfig = nextProps.jobs[nextProps.distributionConfigId];
-                    if (jobConfig) {
-
-                    }
+                    const jobConfig = nextProps.job;
                     const newState = Object.assign({}, stateValues, {
                         id: jobConfig.id,
                         distributionConfigId: nextProps.distributionConfigId,
@@ -462,7 +459,7 @@ BaseJobConfiguration.propTypes = {
     updateDistributionJob: PropTypes.func.isRequired,
     getDistributionDescriptor: PropTypes.func.isRequired,
     descriptors: PropTypes.arrayOf(PropTypes.object),
-    jobs: PropTypes.arrayOf(PropTypes.object),
+    job: PropTypes.object,
     fetching: PropTypes.bool,
     inProgress: PropTypes.bool,
     success: PropTypes.bool,
@@ -482,7 +479,7 @@ BaseJobConfiguration.propTypes = {
 
 BaseJobConfiguration.defaultProps = {
     descriptors: [],
-    jobs: [],
+    job: {},
     fetching: false,
     inProgress: false,
     success: false,
@@ -504,14 +501,14 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = state => ({
-    descriptors: state.descriptors,
-    jobs: state.distributions.jobs,
-    fetching: state.distributions.fetching,
-    inProgress: state.distributions.inProgress,
-    success: state.distributions.success,
-    testingConfig: state.distributions.testingConfig,
-    configurationMessage: state.distributions.configurationMessage,
-    fieldErrors: state.distributions.error,
+    job: state.distributionConfigs.job,
+    fieldErrors: state.distributionConfigs.error,
+    fetching: state.distributionConfigs.fetching,
+    inProgress: state.distributionConfigs.inProgress,
+    descriptors: state.descriptors.items
+    success: state.distributionConfigs.success,
+    testingConfig: state.distributionConfigs.testingConfig,
+    configurationMessage: state.distributionConfigs.configurationMessage,
     currentDistributionComponents: state.descriptors.currentDistributionComponents
 });
 
