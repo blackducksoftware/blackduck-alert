@@ -15,10 +15,10 @@ class Navigation extends Component {
 
     createNavItemForDescriptors(decriptorType, context, uriPrefix) {
         const { descriptors } = this.props;
-        if (!descriptors.items) {
+        if (!descriptors) {
             return null;
         }
-        const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors.items, decriptorType, context);
+        const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, decriptorType, context);
         if (!descriptorList) {
             return null;
         }
