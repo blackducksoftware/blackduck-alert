@@ -26,7 +26,7 @@ import com.synopsys.integration.alert.util.TestAlertProperties;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
-import com.synopsys.integration.blackduck.rest.BlackDuckRestConnection;
+import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
 import com.synopsys.integration.log.IntLogger;
 
 public class TestBlackDuckProperties extends BlackDuckProperties {
@@ -91,9 +91,9 @@ public class TestBlackDuckProperties extends BlackDuckProperties {
     }
 
     @Override
-    public Optional<BlackDuckRestConnection> createRestConnection(final IntLogger intLogger) throws AlertException {
+    public Optional<BlackDuckHttpClient> createBlackDuckHttpClient(final IntLogger intLogger) throws AlertException {
         testAlertProperties.setAlertTrustCertificate(true);
-        return super.createRestConnection(intLogger);
+        return super.createBlackDuckHttpClient(intLogger);
     }
 
     @Override
