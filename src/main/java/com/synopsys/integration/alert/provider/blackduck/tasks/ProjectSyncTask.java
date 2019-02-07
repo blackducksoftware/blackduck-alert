@@ -51,7 +51,7 @@ import com.synopsys.integration.alert.workflow.scheduled.ScheduledTask;
 import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;
-import com.synopsys.integration.blackduck.rest.BlackDuckRestConnection;
+import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.ProjectService;
@@ -81,10 +81,10 @@ public class ProjectSyncTask extends ScheduledTask {
     public void run() {
         logger.info("### Starting {}...", getTaskName());
         try {
-            final Optional<BlackDuckRestConnection> optionalConnection = blackDuckProperties.createRestConnectionAndLogErrors(logger);
-            if (optionalConnection.isPresent()) {
-                final BlackDuckRestConnection restConnection = optionalConnection.get();
-                final BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(restConnection, new Slf4jIntLogger(logger));
+            final Optional<BlackDuckHttpClient> optionalBlackDuckHttpClient = blackDuckProperties.createBlackDuckHttpClientAndLogErrors(logger);
+            if (optionalBlackDuckHttpClient.isPresent()) {
+                final BlackDuckHttpClient blackDuckHttpClient = optionalBlackDuckHttpClient.get();
+                final BlackDuckServicesFactory blackDuckServicesFactory = blackDuckProperties.createBlackDuckServicesFactory(blackDuckHttpClient, new Slf4jIntLogger(logger));
                 final BlackDuckService blackDuckService = blackDuckServicesFactory.createBlackDuckService();
                 final ProjectService projectService = blackDuckServicesFactory.createProjectService();
                 final List<ProjectView> projectViews = blackDuckService.getAllResponses(ApiDiscovery.PROJECTS_LINK_RESPONSE);

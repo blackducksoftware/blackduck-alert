@@ -124,9 +124,8 @@ public class UserAccessor {
             final UserEntity updatedEntity = new UserEntity(oldEntity.getUserName(), defaultPasswordEncoder.encode(newPassword), oldEntity.getEmailAddress());
             updatedEntity.setId(oldEntity.getId());
             return userRepository.save(updatedEntity) != null;
-        } else {
-            return false;
         }
+        return false;
     }
 
     public boolean changeUserEmailAddress(final String username, final String emailAddress) {
@@ -136,9 +135,8 @@ public class UserAccessor {
             final UserEntity updatedEntity = new UserEntity(oldEntity.getUserName(), oldEntity.getPassword(), emailAddress);
             updatedEntity.setId(oldEntity.getId());
             return userRepository.save(updatedEntity) != null;
-        } else {
-            return false;
         }
+        return false;
     }
 
     public void deleteUser(final String userName) {

@@ -63,7 +63,6 @@ public class EmailMessagingService {
         this.emailProperties = emailProperties;
         final String templateDirectoryPath;
         if (StringUtils.isNotBlank(templatesDirectory)) {
-            // TODO this seems wrong:
             templateDirectoryPath = templatesDirectory + "/email";
         } else {
             templateDirectoryPath = System.getProperties().getProperty("user.dir") + "/src/main/resources/email/templates";
@@ -128,22 +127,23 @@ public class EmailMessagingService {
         }
 
         final String fromString = emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_FROM_KEY);
+        final InternetAddress fromAddress;
         if (StringUtils.isBlank(fromString)) {
             logger.warn("No 'from' address specified");
             throw new AlertException(String.format("Required field '%s' was blank", EmailPropertyKeys.JAVAMAIL_FROM_KEY.getPropertyKey()));
         } else {
+            fromAddress = new InternetAddress(fromString);
             try {
-                final InternetAddress emailAddr = new InternetAddress(fromString);
-                emailAddr.validate();
-            } catch (final AddressException ex) {
+                fromAddress.validate();
+            } catch (final AddressException e) {
                 logger.warn("Invalid 'from' address specified: " + fromString);
-                throw new AlertException(String.format("%s is not a valid email address. %s", fromString, ex.getMessage()));
+                throw new AlertException(String.format("'%s' is not a valid email address: %s", fromString, e.getMessage()));
             }
         }
 
         final Message message = new MimeMessage(session);
         message.setContent(mimeMultipart);
-        message.setFrom(new InternetAddress(fromString));
+        message.setFrom(fromAddress);
         message.setRecipients(Message.RecipientType.TO, addresses.toArray(new Address[addresses.size()]));
         message.setSubject(subjectLine);
 
