@@ -39,7 +39,7 @@ class SlackJobConfiguration extends Component {
         if (!nextProps.fetching && !nextProps.inProgress) {
             if (this.loading) {
                 this.loading = false;
-                const jobConfig = nextProps.jobs[nextProps.distributionConfigId];
+                const jobConfig = nextProps.job;
                 if (jobConfig) {
                     this.setState({
                         webhook: jobConfig.webhook,
@@ -108,7 +108,7 @@ class SlackJobConfiguration extends Component {
 
 SlackJobConfiguration.propTypes = {
     getDistributionJob: PropTypes.func.isRequired,
-    jobs: PropTypes.arrayOf(PropTypes.object),
+    job: PropTypes.object,
     distributionConfigId: PropTypes.string,
     fieldErrors: PropTypes.object,
     handleCancel: PropTypes.func.isRequired,
@@ -118,7 +118,7 @@ SlackJobConfiguration.propTypes = {
 };
 
 SlackJobConfiguration.defaultProps = {
-    jobs: [],
+    job: {},
     distributionConfigId: null,
     fieldErrors: {},
     fetching: false,
@@ -130,7 +130,7 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = state => ({
-    jobs: state.distributionConfigs.jobs,
+    job: state.distributionConfigs.job,
     fieldErrors: state.distributionConfigs.error,
     fetching: state.distributionConfigs.fetching,
     inProgress: state.distributionConfigs.inProgress

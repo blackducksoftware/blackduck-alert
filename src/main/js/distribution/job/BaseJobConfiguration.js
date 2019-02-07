@@ -57,7 +57,7 @@ const providerFieldNames = [
 const FIELD_MODEL_KEY = {
     COMMON: 'commonConfig',
     PROVIDER: 'providerConfig'
-}
+};
 
 class BaseJobConfiguration extends Component {
     constructor(props) {
@@ -117,10 +117,7 @@ class BaseJobConfiguration extends Component {
                 });
 
                 if (nextProps.distributionConfigId) {
-                    const jobConfig = nextProps.jobs[nextProps.distributionConfigId];
-                    if (jobConfig) {
-
-                    }
+                    const jobConfig = nextProps.job;
                     const newState = Object.assign({}, stateValues, {
                         id: jobConfig.id,
                         distributionConfigId: nextProps.distributionConfigId,
@@ -187,7 +184,7 @@ class BaseJobConfiguration extends Component {
             event.preventDefault();
         }
         const jsonBody = this.buildJsonBody();
-        if (this.state.commonConfig.id) {
+        if (this.state.jobId) {
             this.props.updateDistributionJob(jsonBody);
         } else {
             this.props.saveDistributionJob(jsonBody);
@@ -203,7 +200,7 @@ class BaseJobConfiguration extends Component {
         const commonFieldModel = FieldModelUtilities.updateFieldModelSingleValue(this.state.commonConfig, KEY_CHANNEL_NAME, channelName);
         const updatedChannelFieldModel = FieldModelUtilities.combineFieldModels(commonFieldModel, channelSpecific);
         const configuration = Object.assign({}, {
-            jobId: '',
+            jobId: null,
             fieldModels: [
                 updatedChannelFieldModel,
                 updatedProviderFieldModel
@@ -273,7 +270,7 @@ class BaseJobConfiguration extends Component {
     }
 
     createProviderOptions() {
-        const providers = DescriptorUtilities.findDescriptorByTypeAndContext(this.props.descriptors.items, DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+        const providers = DescriptorUtilities.findDescriptorByTypeAndContext(this.props.descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
         if (providers) {
             const optionList = providers.map(descriptor => ({
                 label: descriptor.label,
@@ -288,7 +285,7 @@ class BaseJobConfiguration extends Component {
     createNotificationTypeOptions() {
         const selectedProvider = FieldModelUtilities.getFieldModelSingleValue(this.state.commonConfig, KEY_PROVIDER_NAME);
         if (selectedProvider) {
-            const [descriptor] = DescriptorUtilities.findDescriptorByNameAndContext(this.props.descriptors.items, selectedProvider, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+            const [descriptor] = DescriptorUtilities.findDescriptorByNameAndContext(this.props.descriptors, selectedProvider, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
             const options = DescriptorUtilities.findDescriptorFieldOptions(descriptor, KEY_NOTIFICATION_TYPES);
             if (options) {
                 const optionList = options.map(option => Object.assign({}, { label: option, value: option }));
@@ -301,7 +298,7 @@ class BaseJobConfiguration extends Component {
     createFormatTypeOptions() {
         const selectedProvider = FieldModelUtilities.getFieldModelSingleValue(this.state.commonConfig, KEY_PROVIDER_NAME);
         if (selectedProvider) {
-            const [descriptor] = DescriptorUtilities.findDescriptorByNameAndContext(this.props.descriptors.items, selectedProvider, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+            const [descriptor] = DescriptorUtilities.findDescriptorByNameAndContext(this.props.descriptors, selectedProvider, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
             const options = DescriptorUtilities.findDescriptorFieldOptions(descriptor, KEY_FORMAT_TYPE);
             if (options) {
                 return options.map(option => Object.assign({}, { label: option, value: option }));
@@ -311,7 +308,7 @@ class BaseJobConfiguration extends Component {
     }
 
     createFrequencyOptions() {
-        const [descriptor] = DescriptorUtilities.findDescriptorByNameAndContext(this.props.descriptors.items, this.props.alertChannelName, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+        const [descriptor] = DescriptorUtilities.findDescriptorByNameAndContext(this.props.descriptors, this.props.alertChannelName, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
         const options = DescriptorUtilities.findDescriptorFieldOptions(descriptor, KEY_FREQUENCY);
         if (options) {
             return options.map(option => Object.assign({}, { label: option, value: option }));
@@ -461,8 +458,8 @@ BaseJobConfiguration.propTypes = {
     saveDistributionJob: PropTypes.func.isRequired,
     updateDistributionJob: PropTypes.func.isRequired,
     getDistributionDescriptor: PropTypes.func.isRequired,
-    descriptors: PropTypes.arrayOf(PropTypes.object),
-    jobs: PropTypes.arrayOf(PropTypes.object),
+    descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
+    job: PropTypes.object,
     fetching: PropTypes.bool,
     inProgress: PropTypes.bool,
     success: PropTypes.bool,
@@ -481,8 +478,7 @@ BaseJobConfiguration.propTypes = {
 };
 
 BaseJobConfiguration.defaultProps = {
-    descriptors: [],
-    jobs: [],
+    job: {},
     fetching: false,
     inProgress: false,
     success: false,
@@ -504,14 +500,14 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = state => ({
-    descriptors: state.descriptors,
-    jobs: state.distributions.jobs,
-    fetching: state.distributions.fetching,
-    inProgress: state.distributions.inProgress,
-    success: state.distributions.success,
-    testingConfig: state.distributions.testingConfig,
-    configurationMessage: state.distributions.configurationMessage,
-    fieldErrors: state.distributions.error,
+    job: state.distributionConfigs.job,
+    fieldErrors: state.distributionConfigs.error,
+    fetching: state.distributionConfigs.fetching,
+    inProgress: state.distributionConfigs.inProgress,
+    descriptors: state.descriptors.items,
+    success: state.distributionConfigs.success,
+    testingConfig: state.distributionConfigs.testingConfig,
+    configurationMessage: state.distributionConfigs.configurationMessage,
     currentDistributionComponents: state.descriptors.currentDistributionComponents
 });
 
