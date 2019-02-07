@@ -30,7 +30,7 @@ public class EmailTargetTest {
         contentIdsToFilePaths.put("test", "value");
 
         final EmailTarget target = new EmailTarget(emailAddress, templateName, model, contentIdsToFilePaths);
-        assertEquals(emailAddress, target.getEmailAddresses());
+        assertEquals(emailAddress, target.getEmailAddresses().stream().findFirst().orElseThrow());
         assertEquals(templateName, target.getTemplateName());
         assertEquals(model, target.getModel());
         assertEquals(contentIdsToFilePaths, target.getContentIdsToFilePaths());
