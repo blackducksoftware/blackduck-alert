@@ -184,7 +184,7 @@ class BaseJobConfiguration extends Component {
             event.preventDefault();
         }
         const jsonBody = this.buildJsonBody();
-        if (this.state.commonConfig.id) {
+        if (this.state.jobId) {
             this.props.updateDistributionJob(jsonBody);
         } else {
             this.props.saveDistributionJob(jsonBody);
@@ -200,7 +200,7 @@ class BaseJobConfiguration extends Component {
         const commonFieldModel = FieldModelUtilities.updateFieldModelSingleValue(this.state.commonConfig, KEY_CHANNEL_NAME, channelName);
         const updatedChannelFieldModel = FieldModelUtilities.combineFieldModels(commonFieldModel, channelSpecific);
         const configuration = Object.assign({}, {
-            jobId: '',
+            jobId: null,
             fieldModels: [
                 updatedChannelFieldModel,
                 updatedProviderFieldModel
