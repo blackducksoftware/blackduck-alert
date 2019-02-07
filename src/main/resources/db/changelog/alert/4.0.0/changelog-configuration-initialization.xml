@@ -426,6 +426,9 @@
 
     <changeSet author="gkillough" id="1548167676836-13">
         <sql dbms="h2" stripComments="true">
+            CALL DEFINE_FIELD('settings.user.default.admin.email', FALSE, 'component_settings', 'GLOBAL');
+        </sql>
+        <sql dbms="h2" stripComments="true">
             CALL DEFINE_FIELD('settings.user.default.admin.password', FALSE, 'component_settings', 'GLOBAL');
         </sql>
         <sql dbms="h2" stripComments="true">

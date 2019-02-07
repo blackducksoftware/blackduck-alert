@@ -34,7 +34,9 @@ public class SettingsDescriptor extends ComponentDescriptor {
     public static final String SETTINGS_LABEL = "Settings";
     public static final String SETTINGS_URL = "settings";
     public static final String SETTINGS_ICON = "cog";
+
     // Values not stored in the database, but keys must be registered
+    public static final String KEY_DEFAULT_SYSTEM_ADMIN_EMAIL = "settings.user.default.admin.email";
     public static final String KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD = "settings.user.default.admin.password";
     public static final String KEY_ENCRYPTION_PASSWORD = "settings.encryption.password";
     public static final String KEY_ENCRYPTION_GLOBAL_SALT = "settings.encryption.global.salt";

@@ -43,7 +43,6 @@ import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.common.exception.AlertUpgradeException;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.workflow.TaskManager;
 import com.synopsys.integration.alert.component.scheduling.SchedulingConfiguration;
@@ -57,7 +56,6 @@ import com.synopsys.integration.alert.workflow.scheduled.PhoneHomeTask;
 import com.synopsys.integration.alert.workflow.scheduled.PurgeTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
 import com.synopsys.integration.alert.workflow.scheduled.frequency.OnDemandTask;
-import com.synopsys.integration.alert.workflow.upgrade.UpgradeProcessor;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 @Component
@@ -75,15 +73,14 @@ public class StartupManager {
     private final SystemStatusUtility systemStatusUtility;
     private final SystemValidator systemValidator;
     private final BaseConfigurationAccessor configurationAccessor;
-    private final UpgradeProcessor upgradeProcessor;
     private final ProxyManager proxyManager;
     private final TaskManager taskManager;
 
     @Autowired
     public StartupManager(final AlertProperties alertProperties, final BlackDuckProperties blackDuckProperties,
         final DailyTask dailyTask, final OnDemandTask onDemandTask, final PurgeTask purgeTask, final PhoneHomeTask phoneHomeTask, final AlertStartupInitializer alertStartupInitializer,
-        final List<ProviderDescriptor> providerDescriptorList, final SystemStatusUtility systemStatusUtility, final SystemValidator systemValidator, final BaseConfigurationAccessor configurationAccessor,
-        final UpgradeProcessor upgradeProcessor, final ProxyManager proxyManager, final TaskManager taskManager) {
+        final List<ProviderDescriptor> providerDescriptorList, final SystemStatusUtility systemStatusUtility, final SystemValidator systemValidator, final BaseConfigurationAccessor configurationAccessor, final ProxyManager proxyManager,
+        final TaskManager taskManager) {
         this.alertProperties = alertProperties;
         this.blackDuckProperties = blackDuckProperties;
         this.dailyTask = dailyTask;
@@ -95,19 +92,15 @@ public class StartupManager {
         this.systemStatusUtility = systemStatusUtility;
         this.systemValidator = systemValidator;
         this.configurationAccessor = configurationAccessor;
-        this.upgradeProcessor = upgradeProcessor;
         this.proxyManager = proxyManager;
         this.taskManager = taskManager;
     }
 
     @Transactional
-    public void startup() throws AlertUpgradeException {
+    public void startup() {
         logger.info("Alert Starting...");
         // FIXME move any descriptor logic to the build.gradle
         systemStatusUtility.startupOccurred();
-        if (upgradeProcessor.shouldUpgrade()) {
-            upgradeProcessor.runUpgrade();
-        }
         initializeChannelPropertyManagers();
         validate();
         logConfiguration();

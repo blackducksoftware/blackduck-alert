@@ -131,7 +131,9 @@ public class ProjectSyncTask extends ScheduledTask {
     public List<BlackDuckProjectEntity> updateProjectDB(final Set<BlackDuckProject> currentProjects) {
         final List<BlackDuckProjectEntity> blackDuckProjectEntities = currentProjects
                                                                           .stream()
-                                                                          .map(blackDuckProject -> new BlackDuckProjectEntity(blackDuckProject.getName(), blackDuckProject.getDescription(), blackDuckProject.getHref(),
+                                                                          .map(blackDuckProject -> new BlackDuckProjectEntity(blackDuckProject.getName(),
+                                                                              blackDuckProject.getDescription(),
+                                                                              blackDuckProject.getHref(),
                                                                               blackDuckProject.getProjectOwnerEmail()))
                                                                           .collect(Collectors.toList());
         logger.info("{} projects", blackDuckProjectEntities.size());

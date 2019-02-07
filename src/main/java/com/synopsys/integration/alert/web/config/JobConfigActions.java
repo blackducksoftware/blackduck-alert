@@ -72,6 +72,10 @@ public class JobConfigActions {
         return null != id && configurationAccessor.getJobById(id).isPresent();
     }
 
+    public boolean doesJobExist(final String id) throws AlertDatabaseConstraintException {
+        return doesJobExist(UUID.fromString(id));
+    }
+
     public Optional<JobFieldModel> getJobById(final UUID id) throws AlertDatabaseConstraintException {
         final Optional<ConfigurationJobModel> jobConfiguration = configurationAccessor.getJobById(id);
         if (jobConfiguration.isPresent()) {
@@ -114,9 +118,9 @@ public class JobConfigActions {
         final ConfigurationJobModel savedJob = configurationAccessor.createJob(descriptorNames, configurationFieldModels);
         final JobFieldModel savedJobFieldModel = convertToJobFieldModel(savedJob);
         final Set<FieldModel> updatedFieldModels = savedJobFieldModel.getFieldModels()
-                                                 .stream()
-                                                 .map(fieldModel -> fieldModelProcessor.performSaveAction(fieldModel))
-                                                 .collect(Collectors.toSet());
+                                                       .stream()
+                                                       .map(fieldModel -> fieldModelProcessor.performSaveAction(fieldModel))
+                                                       .collect(Collectors.toSet());
         savedJobFieldModel.setFieldModels(updatedFieldModels);
         return savedJobFieldModel;
     }
@@ -132,9 +136,9 @@ public class JobConfigActions {
         final ConfigurationJobModel configurationJobModel = configurationAccessor.updateJob(id, configurationFieldModels);
         final JobFieldModel savedJobFieldModel = convertToJobFieldModel(configurationJobModel);
         final Set<FieldModel> updatedFieldModels = savedJobFieldModel.getFieldModels()
-                                                 .stream()
-                                                 .map(fieldModel -> fieldModelProcessor.performUpdateAction(fieldModel))
-                                                 .collect(Collectors.toSet());
+                                                       .stream()
+                                                       .map(fieldModel -> fieldModelProcessor.performUpdateAction(fieldModel))
+                                                       .collect(Collectors.toSet());
         savedJobFieldModel.setFieldModels(updatedFieldModels);
         return savedJobFieldModel;
     }

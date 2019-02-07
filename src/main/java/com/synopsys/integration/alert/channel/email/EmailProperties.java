@@ -36,7 +36,7 @@ public class EmailProperties {
 
     private final Map<String, String> javamailConfigProperties = new HashMap<>();
     private String mailSmtpPassword;
-    private FieldAccessor fieldAccessor;
+    private final FieldAccessor fieldAccessor;
 
     public EmailProperties(final FieldAccessor fieldAccessor) {
         if (fieldAccessor == null) {
@@ -114,25 +114,13 @@ public class EmailProperties {
         return mailSmtpPassword;
     }
 
-    private void addJavaMailOption(EmailPropertyKeys emailPropertyKeys) {
+    private void addJavaMailOption(final EmailPropertyKeys emailPropertyKeys) {
         addJavaMailOption(emailPropertyKeys, fieldAccessor.getString(emailPropertyKeys.getPropertyKey()).orElse(null));
     }
 
     private void addJavaMailOption(final EmailPropertyKeys emailPropertyKey, final String value) {
         if (StringUtils.isNotEmpty(value)) {
             javamailConfigProperties.put(emailPropertyKey.getPropertyKey(), value);
-        }
-    }
-
-    private void addJavaMailOption(final EmailPropertyKeys emailPropertyKey, final Boolean value) {
-        if (value != null) {
-            javamailConfigProperties.put(emailPropertyKey.getPropertyKey(), String.valueOf(value));
-        }
-    }
-
-    private void addJavaMailOption(final EmailPropertyKeys emailPropertyKey, final Integer value) {
-        if (value != null) {
-            javamailConfigProperties.put(emailPropertyKey.getPropertyKey(), String.valueOf(value));
         }
     }
 

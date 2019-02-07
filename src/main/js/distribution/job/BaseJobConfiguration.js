@@ -31,10 +31,10 @@ const KEY_NAME = 'channel.common.name';
 const KEY_CHANNEL_NAME = 'channel.common.channel.name';
 const KEY_PROVIDER_NAME = 'channel.common.provider.name';
 const KEY_FREQUENCY = 'channel.common.frequency';
+
+// provider configuration
 const KEY_NOTIFICATION_TYPES = 'provider.distribution.notification.types';
 const KEY_FORMAT_TYPE = 'provider.distribution.format.type';
-
-// blackduck common keys
 const KEY_FILTER_BY_PROJECT = 'channel.common.filter.by.project';
 const KEY_PROJECT_NAME_PATTERN = 'channel.common.project.name.pattern';
 const KEY_CONFIGURED_PROJECT = 'channel.common.configured.project';
@@ -43,7 +43,10 @@ const fieldNames = [
     KEY_NAME,
     KEY_CHANNEL_NAME,
     KEY_PROVIDER_NAME,
-    KEY_FREQUENCY,
+    KEY_FREQUENCY
+];
+
+const providerFieldNames = [
     KEY_NOTIFICATION_TYPES,
     KEY_FORMAT_TYPE,
     KEY_FILTER_BY_PROJECT,
@@ -53,7 +56,7 @@ const fieldNames = [
 
 const FIELD_MODEL_KEY = {
     COMMON: 'commonConfig',
-    PROVIDER: 'provider'
+    PROVIDER: 'providerConfig'
 }
 
 class BaseJobConfiguration extends Component {
@@ -63,13 +66,13 @@ class BaseJobConfiguration extends Component {
             success: false,
             fieldErrors: {},
             commonConfig: FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, this.props.alertChannelName),
-            providerConfig: {},
+            providerConfig: FieldModelUtilities.createEmptyFieldModel(providerFieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, null),
             providerOptions: []
         };
         this.loading = false;
         this.saving = false;
         this.buildJsonBody = this.buildJsonBody.bind(this);
-        this.handleChange = this.handleChange.bind(this);
+        this.createChangeHandler = this.createChangeHandler.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleTestSubmit = this.handleTestSubmit.bind(this);
@@ -193,7 +196,18 @@ class BaseJobConfiguration extends Component {
 
     buildJsonBody() {
         const channelSpecific = this.props.getParentConfiguration();
-        const configuration = Object.assign({}, this.state.commonConfig, this.state.providerConfig, channelSpecific);
+        const providerName = FieldModelUtilities.getFieldModelSingleValue(this.state.commonConfig, KEY_PROVIDER_NAME);
+        const emptyProviderModel = FieldModelUtilities.createEmptyFieldModel(providerFieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, providerName);
+        const updatedProviderFieldModel = FieldModelUtilities.combineFieldModels(emptyProviderModel, this.state.providerConfig);
+        const updatedChannelFieldModel = FieldModelUtilities.combineFieldModels(this.state.commonConfig, channelSpecific);
+        const configuration = Object.assign({}, {
+            jobId: '',
+            fieldModels: [
+                updatedChannelFieldModel,
+                updatedProviderFieldModel
+            ]
+        });
+        console.log('configuration to send', configuration);
         return JSON.stringify(configuration);
     }
 
@@ -210,13 +224,14 @@ class BaseJobConfiguration extends Component {
         this.props.testDistributionJob(jsonBody);
     }
 
-    handleChange(fieldModelKey) {
+    createChangeHandler(fieldModelKey) {
         return (event) => {
             const { target } = event;
-            const value = target.type === 'checkbox' ? target.checked : target.value;
-            const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state[fieldModelKey], target.name, value);
+            const value = target.type === 'checkbox' ? target.checked.toString() : target.value;
+            const fieldModel = this.state[fieldModelKey];
+            const newState = FieldModelUtilities.updateFieldModelSingleValue(fieldModel, target.name, value);
             this.setState({
-                commonConfig: newState
+                [fieldModelKey]: newState
             });
         };
     }
@@ -227,12 +242,12 @@ class BaseJobConfiguration extends Component {
                 const selected = selectedValue.value;
                 const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state[fieldModelKey], fieldKey, selected);
                 this.setState({
-                    settingsData: newState
+                    [fieldModelKey]: newState
                 });
             } else {
                 const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state[fieldModelKey], fieldKey, null);
                 this.setState({
-                    settingsData: newState
+                    [fieldModelKey]: newState
                 });
             }
         };
@@ -244,12 +259,12 @@ class BaseJobConfiguration extends Component {
                 const selected = selectedValues.map(item => item.value);
                 const newState = FieldModelUtilities.updateFieldModelValues(this.state[fieldModelKey], fieldKey, selected);
                 this.setState({
-                    settingsData: newState
+                    [fieldModelKey]: newState
                 });
             } else {
                 const newState = FieldModelUtilities.updateFieldModelValues(this.state[fieldModelKey], fieldKey, []);
                 this.setState({
-                    settingsData: newState
+                    [fieldModelKey]: newState
                 });
             }
         };
@@ -304,16 +319,11 @@ class BaseJobConfiguration extends Component {
 
 
     renderDistributionForm() {
-        const selectedProvider = FieldModelUtilities.getFieldModelSingleValue(this.state.commonConfig, KEY_PROVIDER_NAME);
-        if (!selectedProvider) {
-            return null;
-        }
-
-        const fieldModel = this.state.commonConfig;
+        const providerFieldModel = this.state.providerConfig;
         const formatOptions = this.createFormatTypeOptions();
         const notificationOptions = this.createNotificationTypeOptions();
-        const selectedFormatType = this.getSelectedSingleValue(formatOptions, fieldModel, KEY_FORMAT_TYPE);
-        const selectedNotifications = this.getSelectedValues(notificationOptions, fieldModel, KEY_NOTIFICATION_TYPES);
+        const selectedFormatType = this.getSelectedSingleValue(formatOptions, providerFieldModel, KEY_FORMAT_TYPE);
+        const selectedNotifications = this.getSelectedValues(notificationOptions, providerFieldModel, KEY_NOTIFICATION_TYPES);
         //
         // if (!FieldModelUtilities.hasFieldModelValues(fieldModel, KEY_FORMAT_TYPE)) {
         //     const newState = FieldModelUtilities.updateFieldModelSingleValue(fieldModel, KEY_FORMAT_TYPE, selectedFormatType);
@@ -337,7 +347,7 @@ class BaseJobConfiguration extends Component {
                         <Select
                             id={KEY_FORMAT_TYPE}
                             className="typeAheadField"
-                            onChange={this.createSingleSelectHandler(KEY_FORMAT_TYPE, FIELD_MODEL_KEY.COMMON)}
+                            onChange={this.createSingleSelectHandler(KEY_FORMAT_TYPE, FIELD_MODEL_KEY.PROVIDER)}
                             removeSelected
                             options={formatOptions}
                             placeholder="Choose the format for the job"
@@ -351,7 +361,7 @@ class BaseJobConfiguration extends Component {
                         <Select
                             id={KEY_NOTIFICATION_TYPES}
                             className="typeAheadField"
-                            onChange={this.createMultiSelectHandler(KEY_NOTIFICATION_TYPES, FIELD_MODEL_KEY.COMMON)}
+                            onChange={this.createMultiSelectHandler(KEY_NOTIFICATION_TYPES, FIELD_MODEL_KEY.PROVIDER)}
                             isSearchable
                             isMulti
                             removeSelected
@@ -363,12 +373,13 @@ class BaseJobConfiguration extends Component {
                 </div>
                 {this.props.childContent}
                 <ProjectConfiguration
-                    includeAllProjects={!FieldModelUtilities.getFieldModelBooleanValue(fieldModel, KEY_FILTER_BY_PROJECT)}
-                    handleChange={this.handleChange}
+                    includeAllProjects={!FieldModelUtilities.getFieldModelBooleanValue(providerFieldModel, KEY_FILTER_BY_PROJECT)}
+                    handleChange={this.createChangeHandler(FIELD_MODEL_KEY.PROVIDER)}
                     handleProjectChanged={this.createMultiSelectHandler(KEY_CONFIGURED_PROJECT, FIELD_MODEL_KEY.PROVIDER)}
                     projects={this.props.projects}
-                    configuredProjects={FieldModelUtilities.getFieldModelValues(fieldModel, KEY_CONFIGURED_PROJECT)}
-                    projectNamePattern={FieldModelUtilities.getFieldModelValues(fieldModel, KEY_PROJECT_NAME_PATTERN)}
+                    configuredProjects={FieldModelUtilities.getFieldModelValues(providerFieldModel, KEY_CONFIGURED_PROJECT)}
+                    projectNamePattern={FieldModelUtilities.getFieldModelSingleValue(providerFieldModel, KEY_PROJECT_NAME_PATTERN)}
+                    fieldErrors={this.props.fieldErrors}
                 />
                 <ConfigButtons cancelId="job-cancel" submitId="job-submit" includeTest includeCancel onTestClick={this.handleTestSubmit} onCancelClick={this.props.handleCancel} />
                 <p name="configurationMessage">{this.state.configurationMessage}</p>
@@ -404,7 +415,7 @@ class BaseJobConfiguration extends Component {
                     label="Job Name"
                     name={KEY_NAME}
                     value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_NAME)}
-                    onChange={this.handleChange(FIELD_MODEL_KEY.COMMON)}
+                    onChange={this.createChangeHandler(FIELD_MODEL_KEY.COMMON)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_NAME)}
                     errorValue={this.props.fieldErrors[KEY_NAME]}
                 />
@@ -437,7 +448,7 @@ class BaseJobConfiguration extends Component {
                         />
                     </div>
                 </div>
-                {this.renderDistributionForm()}
+                {selectedProviderOption && this.renderDistributionForm(selectedProviderOption)}
             </form>
         );
     }

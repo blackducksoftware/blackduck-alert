@@ -106,55 +106,61 @@ public class ConfigController extends BaseController {
     @PostMapping
     public ResponseEntity<String> postConfig(@RequestBody(required = true) final FieldModel restModel) {
         if (restModel == null) {
-            return responseFactory.createBadRequestResponse("", "Required request body is missing");
+            return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
-        final String id = restModel.getId();
         try {
-            if (!configActions.doesConfigExist(id)) {
-                try {
-                    final FieldModel updatedEntity = configActions.saveConfig(restModel);
-                    return responseFactory.createMessageResponse(HttpStatus.CREATED, updatedEntity.getId(), "Created");
-                } catch (final AlertFieldException e) {
-                    return responseFactory.createFieldErrorResponse(id, "There were errors with the configuration.", e.getFieldErrors());
-                }
-            } else {
-                return responseFactory.createConflictResponse(id, "Provided id must not be in use. To update an existing configuration, use PUT.");
-            }
+            return runPostConfig(restModel);
         } catch (final AlertException e) {
             logger.error(e.getMessage(), e);
             return responseFactory.createInternalServerErrorResponse(restModel.getId(), e.getMessage());
         }
     }
 
+    private ResponseEntity<String> runPostConfig(final FieldModel fieldModel) throws AlertException {
+        final String id = fieldModel.getId();
+        if (configActions.doesConfigExist(id)) {
+            return responseFactory.createConflictResponse(id, "Provided id must not be in use. To update an existing configuration, use PUT.");
+        }
+
+        try {
+            final FieldModel updatedEntity = configActions.saveConfig(fieldModel);
+            return responseFactory.createMessageResponse(HttpStatus.CREATED, updatedEntity.getId(), "Created");
+        } catch (final AlertFieldException e) {
+            return responseFactory.createFieldErrorResponse(id, "There were errors with the configuration.", e.getFieldErrors());
+        }
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<String> putConfig(@PathVariable final Long id, @RequestBody(required = true) final FieldModel restModel) {
         if (restModel == null) {
-            return responseFactory.createBadRequestResponse("", "Required request body is missing");
+            return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
 
-        final String stringId = restModel.getId();
         try {
-            if (configActions.doesConfigExist(id)) {
-                try {
-                    final FieldModel updatedEntity = configActions.updateConfig(id, restModel);
-                    return responseFactory.createAcceptedResponse(updatedEntity.getId(), "Updated");
-                } catch (final AlertFieldException e) {
-                    return responseFactory.createFieldErrorResponse(stringId, "There were errors with the configuration.", e.getFieldErrors());
-                }
-            } else {
-                return responseFactory.createBadRequestResponse(stringId, "No configuration with the specified id.");
-            }
-
+            return runPutConfig(id, restModel);
         } catch (final AlertException e) {
             logger.error(e.getMessage(), e);
-            return responseFactory.createInternalServerErrorResponse(stringId, e.getMessage());
+            return responseFactory.createInternalServerErrorResponse(restModel.getId(), e.getMessage());
+        }
+    }
+
+    private ResponseEntity<String> runPutConfig(final Long id, final FieldModel restModel) throws AlertException {
+        if (!configActions.doesConfigExist(id)) {
+            return responseFactory.createBadRequestResponse(contentConverter.getStringValue(id), "No configuration with the specified id.");
+        }
+
+        try {
+            final FieldModel updatedEntity = configActions.updateConfig(id, restModel);
+            return responseFactory.createAcceptedResponse(updatedEntity.getId(), "Updated");
+        } catch (final AlertFieldException e) {
+            return responseFactory.createFieldErrorResponse(id.toString(), "There were errors with the configuration.", e.getFieldErrors());
         }
     }
 
     @PostMapping("/validate")
     public ResponseEntity<String> validateConfig(@RequestBody(required = true) final FieldModel restModel) {
         if (restModel == null) {
-            return responseFactory.createBadRequestResponse("", "Required request body is missing");
+            return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
         final String id = restModel.getId();
         try {
@@ -187,7 +193,7 @@ public class ConfigController extends BaseController {
     @PostMapping("/test")
     public ResponseEntity<String> testConfig(@RequestBody(required = true) final FieldModel restModel, @RequestParam(required = false) final String destination) {
         if (restModel == null) {
-            return responseFactory.createBadRequestResponse("", "Required request body is missing");
+            return responseFactory.createBadRequestResponse("", ResponseFactory.MISSING_REQUEST_BODY);
         }
         final String id = restModel.getId();
         try {

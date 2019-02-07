@@ -92,8 +92,8 @@ public class PolarisGlobalDescriptorActionApiTest {
         fieldErrors.clear();
         Mockito.when(fieldModel.getField(PolarisDescriptor.KEY_POLARIS_ACCESS_TOKEN)).thenReturn(Optional.of(accessTokenField));
         final String longTokenString = "too long";
-        Mockito.when(accessTokenField.getValue()).thenReturn(Optional.of(longTokenString.repeat(64)));
-        Mockito.when(accessTokenField.getValues()).thenReturn(List.of(longTokenString.repeat(64)));
+        Mockito.when(accessTokenField.getValue()).thenReturn(Optional.of(longTokenString.repeat(10)));
+        Mockito.when(accessTokenField.getValues()).thenReturn(List.of(longTokenString.repeat(10)));
         Mockito.when(accessTokenField.hasValues()).thenReturn(true);
         Mockito.when(fieldModel.getField(PolarisDescriptor.KEY_POLARIS_TIMEOUT)).thenReturn(Optional.of(timeoutField));
         final String negativeValue = "-10";
