@@ -28,6 +28,7 @@ import com.synopsys.integration.log.LogLevel;
 import com.synopsys.integration.log.PrintStreamIntLogger;
 import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
+import com.synopsys.integration.rest.support.AuthenticationSupport;
 
 public class PolarisPropertiesTest {
     private static final String POLARIS_URL = "https://polaris";
@@ -38,6 +39,7 @@ public class PolarisPropertiesTest {
     private final ConfigurationModel configurationModel = Mockito.mock(ConfigurationModel.class);
     private final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
     private final Gson gson = new Gson();
+    private final AuthenticationSupport authenticationSupport = new AuthenticationSupport();
 
     @Test
     public void getUrlTest() throws AlertDatabaseConstraintException {
@@ -49,7 +51,7 @@ public class PolarisPropertiesTest {
         );
         Mockito.when(configurationAccessor.getConfigurationByDescriptorNameAndContext(PolarisProvider.COMPONENT_NAME, ConfigContextEnum.GLOBAL)).thenReturn(List.of(configurationModel));
 
-        final PolarisProperties polarisProperties = new PolarisProperties(null, configurationAccessor, proxyManager, gson);
+        final PolarisProperties polarisProperties = new PolarisProperties(null, configurationAccessor, proxyManager, gson, authenticationSupport);
         assertEquals(POLARIS_URL, polarisProperties.getUrl().orElse(null));
     }
 
@@ -60,7 +62,7 @@ public class PolarisPropertiesTest {
         );
         Mockito.when(configurationAccessor.getConfigurationByDescriptorNameAndContext(PolarisProvider.COMPONENT_NAME, ConfigContextEnum.GLOBAL)).thenReturn(List.of(configurationModel));
 
-        final PolarisProperties polarisProperties = new PolarisProperties(null, configurationAccessor, proxyManager, gson);
+        final PolarisProperties polarisProperties = new PolarisProperties(null, configurationAccessor, proxyManager, gson, authenticationSupport);
         assertEquals(Optional.empty(), polarisProperties.getUrl());
     }
 
@@ -74,7 +76,7 @@ public class PolarisPropertiesTest {
         );
         Mockito.when(configurationAccessor.getConfigurationByDescriptorNameAndContext(PolarisProvider.COMPONENT_NAME, ConfigContextEnum.GLOBAL)).thenReturn(List.of(configurationModel));
 
-        final PolarisProperties polarisProperties = new PolarisProperties(null, configurationAccessor, proxyManager, gson);
+        final PolarisProperties polarisProperties = new PolarisProperties(null, configurationAccessor, proxyManager, gson, authenticationSupport);
         assertEquals(POLARIS_TIMEOUT, polarisProperties.getTimeout());
     }
 
@@ -85,7 +87,7 @@ public class PolarisPropertiesTest {
         );
         Mockito.when(configurationAccessor.getConfigurationByDescriptorNameAndContext(PolarisProvider.COMPONENT_NAME, ConfigContextEnum.GLOBAL)).thenReturn(List.of(configurationModel));
 
-        final PolarisProperties polarisProperties = new PolarisProperties(null, configurationAccessor, proxyManager, gson);
+        final PolarisProperties polarisProperties = new PolarisProperties(null, configurationAccessor, proxyManager, gson, authenticationSupport);
         assertEquals(PolarisProperties.DEFAULT_TIMEOUT, polarisProperties.getTimeout());
     }
 
@@ -111,7 +113,7 @@ public class PolarisPropertiesTest {
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
 
         final Logger logger = LoggerFactory.getLogger(getClass());
-        final PolarisProperties polarisProperties = new PolarisProperties(mockAlertProperties, configurationAccessor, proxyManager, gson);
+        final PolarisProperties polarisProperties = new PolarisProperties(mockAlertProperties, configurationAccessor, proxyManager, gson, authenticationSupport);
         try {
             polarisProperties.createPolarisHttpClient(logger);
         } catch (final IntegrationException e) {
@@ -140,7 +142,7 @@ public class PolarisPropertiesTest {
         );
         Mockito.when(configurationAccessor.getConfigurationByDescriptorNameAndContext(PolarisProvider.COMPONENT_NAME, ConfigContextEnum.GLOBAL)).thenReturn(List.of(configurationModel));
 
-        final PolarisProperties polarisProperties1 = new PolarisProperties(mockAlertProperties, configurationAccessor, proxyManager, gson);
+        final PolarisProperties polarisProperties1 = new PolarisProperties(mockAlertProperties, configurationAccessor, proxyManager, gson, authenticationSupport);
         try {
             polarisProperties1.createPolarisHttpClient(intLogger);
             fail("Expected exception to be thrown");
@@ -155,7 +157,7 @@ public class PolarisPropertiesTest {
             )
         );
         Mockito.when(configurationAccessor.getConfigurationByDescriptorNameAndContext(PolarisProvider.COMPONENT_NAME, ConfigContextEnum.GLOBAL)).thenReturn(List.of(configurationModel));
-        final PolarisProperties polarisProperties2 = new PolarisProperties(mockAlertProperties, configurationAccessor, proxyManager, gson);
+        final PolarisProperties polarisProperties2 = new PolarisProperties(mockAlertProperties, configurationAccessor, proxyManager, gson, authenticationSupport);
         try {
             polarisProperties2.createPolarisHttpClient(intLogger);
             fail("Expected exception to be thrown");
@@ -186,7 +188,7 @@ public class PolarisPropertiesTest {
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
 
         final Logger logger = LoggerFactory.getLogger(getClass());
-        final PolarisProperties polarisProperties = new PolarisProperties(mockAlertProperties, configurationAccessor, proxyManager, gson);
+        final PolarisProperties polarisProperties = new PolarisProperties(mockAlertProperties, configurationAccessor, proxyManager, gson, authenticationSupport);
         final Optional<AccessTokenPolarisHttpClient> accessTokenPolarisHttpClient = polarisProperties.createPolarisHttpClientSafely(logger);
         assertTrue(accessTokenPolarisHttpClient.isPresent(), "Expected optional RestConnection to be present");
     }
@@ -198,7 +200,7 @@ public class PolarisPropertiesTest {
         );
         Mockito.when(configurationAccessor.getConfigurationByDescriptorNameAndContext(PolarisProvider.COMPONENT_NAME, ConfigContextEnum.GLOBAL)).thenReturn(List.of(configurationModel));
 
-        final PolarisProperties polarisProperties = new PolarisProperties(null, configurationAccessor, proxyManager, gson);
+        final PolarisProperties polarisProperties = new PolarisProperties(null, configurationAccessor, proxyManager, gson, authenticationSupport);
         assertEquals(Optional.empty(), polarisProperties.createPolarisHttpClientSafely((IntLogger) null));
     }
 }
