@@ -47,8 +47,7 @@ export function getProjects() {
                     dispatch(projectsError(json.message));
                     dispatch(verifyLoginByStatus(response.status));
                 } else {
-                    const jsonArray = JSON.parse(json.message) || [];
-                    const projects = jsonArray.map(({ name, description, url }) => ({ name, description, url }));
+                    const projects = json.map(({ name, description, url }) => ({ name, description, url }));
                     dispatch(projectsFetched(projects));
                 }
             });
