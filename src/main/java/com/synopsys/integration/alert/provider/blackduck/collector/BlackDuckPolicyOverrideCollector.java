@@ -29,8 +29,6 @@ import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -48,7 +46,6 @@ import com.synopsys.integration.alert.workflow.filter.field.JsonFieldAccessor;
 @Component
 @Scope("prototype")
 public class BlackDuckPolicyOverrideCollector extends BlackDuckPolicyCollector {
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     public BlackDuckPolicyOverrideCollector(final JsonExtractor jsonExtractor,

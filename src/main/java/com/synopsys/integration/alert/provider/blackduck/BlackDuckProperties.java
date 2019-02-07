@@ -28,7 +28,6 @@ import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -56,7 +55,6 @@ public class BlackDuckProperties extends ProviderProperties {
     private final Gson gson;
     private final AlertProperties alertProperties;
     private final ProxyManager proxyManager;
-    private Logger logger = LoggerFactory.getLogger(BlackDuckProperties.class);
 
     // the blackduck product hasn't renamed their environment variables from hub to blackduck
     // need to keep hub in the name until
@@ -185,7 +183,7 @@ public class BlackDuckProperties extends ProviderProperties {
     private Properties getBlackDuckProperties() {
         final Properties properties = new Properties();
 
-        ProxyInfo proxyInfo = proxyManager.createProxyInfo();
+        final ProxyInfo proxyInfo = proxyManager.createProxyInfo();
         properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "trust.cert", String.valueOf(alertProperties.getAlertTrustCertificate().orElse(false)));
         properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.host", proxyInfo.getHost().orElse(""));
         properties.setProperty(BlackDuckServerConfigBuilder.BLACKDUCK_SERVER_CONFIG_PROPERTY_KEY_PREFIX + "proxy.port", String.valueOf(proxyInfo.getPort()));

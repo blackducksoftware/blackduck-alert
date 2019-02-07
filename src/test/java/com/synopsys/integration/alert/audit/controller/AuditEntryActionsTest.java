@@ -86,11 +86,8 @@ public class AuditEntryActionsTest {
         Mockito.when(jobConfigReader.getPopulatedJobConfig(Mockito.any())).thenReturn(null);
         Mockito.when(notificationRepository.findAllById(Mockito.anyList())).thenReturn(Collections.singletonList(mockNotificationEntity.createEntity()));
 
-        final ContentConverter contentConverter = new ContentConverter(new Gson(), new DefaultConversionService());
-        final NotificationContentConverter notificationContentConverter = new NotificationContentConverter(contentConverter);
-
-        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, auditEntryRepository, auditNotificationRepository, notificationContentConverter,
-            jobConfigReader), auditNotificationRepository, jobConfigReader, null, null, null);
+        final AuditEntryActions auditEntryActions = new AuditEntryActions(auditEntryRepository, new NotificationManager(notificationRepository, auditEntryRepository, auditNotificationRepository), auditNotificationRepository,
+            jobConfigReader, null, null, null);
 
         AlertPagedModel<AuditEntryModel> restModel = null;
         try {

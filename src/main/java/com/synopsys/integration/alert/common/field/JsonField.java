@@ -35,7 +35,7 @@ import com.synopsys.integration.util.Stringable;
 public class JsonField<T> extends Stringable {
     public static final String LABEL_URL_SUFFIX = "_url";
 
-    private final TypeRef<?> typeRef;
+    private final TypeRef<List<T>> typeRef;
     private final FieldContentIdentifier contentIdentifier;
     private final List<JsonPath> configNameMappings;
     private final JsonPath jsonPath;
@@ -43,37 +43,37 @@ public class JsonField<T> extends Stringable {
     private final String fieldName;
     private final String label;
 
-    public static <T> JsonField<T> createObjectField(final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label, final TypeRef<?> typeRef) {
-        return new JsonField<T>(typeRef, jsonPath, fieldName, contentIdentifier, label);
-    }
-
-    public static JsonField<Long> createLongField(final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label) {
-        return new JsonField<>(new TypeRef<List<Long>>() {}, jsonPath, fieldName, contentIdentifier, label);
-    }
-
-    public static JsonField<String> createStringField(final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label) {
-        return new JsonField<>(new TypeRef<List<String>>() {}, jsonPath, fieldName, contentIdentifier, label);
-    }
-
-    public static JsonField<String> createStringField(final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label, final List<JsonPath> configNameMappings) {
-        return new JsonField<>(new TypeRef<List<String>>() {}, jsonPath, fieldName, contentIdentifier, label, configNameMappings);
-    }
-
-    public static JsonPath createJsonPath(final String pattern, final String... fields) {
-        return JsonPath.compile(String.format(pattern, (Object[]) fields));
-    }
-
-    protected JsonField(final TypeRef<?> typeRef, final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label) {
+    protected JsonField(final TypeRef<List<T>> typeRef, final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label) {
         this(typeRef, jsonPath, fieldName, contentIdentifier, label, null);
     }
 
-    protected JsonField(final TypeRef<?> typeRef, final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label, final List<JsonPath> configNameMappings) {
+    protected JsonField(final TypeRef<List<T>> typeRef, final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label, final List<JsonPath> configNameMappings) {
         this.fieldName = fieldName;
         this.label = label;
         this.typeRef = typeRef;
         this.jsonPath = jsonPath;
         this.contentIdentifier = contentIdentifier;
         this.configNameMappings = configNameMappings;
+    }
+
+    public static <NT> JsonField<NT> createObjectField(final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label, final TypeRef<List<NT>> typeRef) {
+        return new JsonField<>(typeRef, jsonPath, fieldName, contentIdentifier, label);
+    }
+
+    public static JsonField<Long> createLongField(final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label) {
+        return new JsonField<>(new TypeRef<>() {}, jsonPath, fieldName, contentIdentifier, label);
+    }
+
+    public static JsonField<String> createStringField(final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label) {
+        return new JsonField<>(new TypeRef<>() {}, jsonPath, fieldName, contentIdentifier, label);
+    }
+
+    public static JsonField<String> createStringField(final JsonPath jsonPath, final String fieldName, final FieldContentIdentifier contentIdentifier, final String label, final List<JsonPath> configNameMappings) {
+        return new JsonField<>(new TypeRef<>() {}, jsonPath, fieldName, contentIdentifier, label, configNameMappings);
+    }
+
+    public static JsonPath createJsonPath(final String pattern, final String... fields) {
+        return JsonPath.compile(String.format(pattern, (Object[]) fields));
     }
 
     public String getFieldName() {
@@ -96,7 +96,7 @@ public class JsonField<T> extends Stringable {
         return Optional.ofNullable(configNameMappings);
     }
 
-    public TypeRef<?> getTypeRef() {
+    public TypeRef<List<T>> getTypeRef() {
         return typeRef;
     }
 

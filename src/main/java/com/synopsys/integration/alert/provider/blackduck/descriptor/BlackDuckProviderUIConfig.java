@@ -39,7 +39,6 @@ import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 
 @Component
 public class BlackDuckProviderUIConfig extends UIConfig {
-    private static final String PROXY_SUB_GROUP = "Proxy Configuration";
 
     public BlackDuckProviderUIConfig() {
         super(BlackDuckDescriptor.BLACKDUCK_LABEL, BlackDuckDescriptor.BLACKDUCK_URL, BlackDuckDescriptor.BLACKDUCK_ICON);
@@ -55,15 +54,14 @@ public class BlackDuckProviderUIConfig extends UIConfig {
     }
 
     private Collection<String> validateAPIToken(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-        Collection<String> result = List.of();
         final String apiKey = fieldToValidate.getValue().orElse("");
         if (StringUtils.isBlank(apiKey)) {
-            result = List.of(ConfigField.REQUIRED_FIELD_MISSING);
+            return List.of(ConfigField.REQUIRED_FIELD_MISSING);
         } else {
             if (apiKey.length() < 64 || apiKey.length() > 256) {
                 return List.of("Invalid Black Duck API Token.");
             }
         }
-        return result;
+        return List.of();
     }
 }

@@ -56,14 +56,14 @@ public class ProxyManager {
             return configurationAccessor.getConfigurationByDescriptorNameAndContext(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL)
                        .stream()
                        .findFirst();
-        } catch (AlertDatabaseConstraintException ex) {
+        } catch (final AlertDatabaseConstraintException ex) {
             logger.error("Could not find the settings configuration for proxy data", ex);
         }
         return Optional.empty();
     }
 
-    public ProxyInfo createProxyInfo() throws IllegalArgumentException {
-        Optional<ConfigurationModel> settingsConfiguration = getSettingsConfiguration();
+    public ProxyInfo createProxyInfo() {
+        final Optional<ConfigurationModel> settingsConfiguration = getSettingsConfiguration();
         final Optional<String> alertProxyHost = settingsConfiguration.flatMap(configurationModel -> configurationModel.getField(SettingsDescriptor.KEY_PROXY_HOST)).flatMap(ConfigurationFieldModel::getFieldValue);
         final Optional<String> alertProxyPort = settingsConfiguration.flatMap(configurationModel -> configurationModel.getField(SettingsDescriptor.KEY_PROXY_PORT)).flatMap(ConfigurationFieldModel::getFieldValue);
         final Optional<String> alertProxyUsername = settingsConfiguration.flatMap(configurationModel -> configurationModel.getField(SettingsDescriptor.KEY_PROXY_USERNAME)).flatMap(ConfigurationFieldModel::getFieldValue);

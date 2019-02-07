@@ -87,8 +87,7 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
         fields.remove(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD);
         fields.remove(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT);
 
-        final FieldModel modelToSave = new FieldModel(fieldModel.getDescriptorName(), fieldModel.getContext(), fields);
-        return modelToSave;
+        return new FieldModel(fieldModel.getDescriptorName(), fieldModel.getContext(), fields);
     }
 
     private void saveDefaultAdminUserPassword(final FieldModel fieldModel) {

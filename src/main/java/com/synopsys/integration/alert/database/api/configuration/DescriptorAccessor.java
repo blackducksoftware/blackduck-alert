@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -42,7 +41,6 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.database.entity.configuration.ConfigContextEntity;
-import com.synopsys.integration.alert.database.entity.configuration.DefinedFieldEntity;
 import com.synopsys.integration.alert.database.entity.configuration.DescriptorTypeEntity;
 import com.synopsys.integration.alert.database.entity.configuration.RegisteredDescriptorEntity;
 import com.synopsys.integration.alert.database.repository.configuration.ConfigContextRepository;
@@ -197,29 +195,13 @@ public class DescriptorAccessor implements BaseDescriptorAccessor {
                    .orElseThrow(() -> new AlertDatabaseConstraintException("A descriptor with that id did not exist"));
     }
 
-    private List<DefinedFieldModel> getFieldsForDescriptorId(final Long descriptorId, final Long contextId, final ConfigContextEnum context) throws AlertDatabaseConstraintException {
+    private List<DefinedFieldModel> getFieldsForDescriptorId(final Long descriptorId, final Long contextId, final ConfigContextEnum context) {
         final List<DefinedFieldModel> fields = definedFieldRepository.findByDescriptorIdAndContext(descriptorId, contextId)
                                                    .stream()
                                                    .map(entity -> new DefinedFieldModel(entity.getKey(), context, entity.getSensitive()))
                                                    .collect(Collectors.toList());
 
         return fields;
-    }
-
-    private Set<ConfigContextEnum> getContextsForFieldId(final Long fieldId) {
-        return configContextRepository.findByFieldId(fieldId)
-                   .stream()
-                   .map(entity -> ConfigContextEnum.valueOf(entity.getContext()))
-                   .collect(Collectors.toSet());
-    }
-
-    private DefinedFieldEntity findFieldByKey(final String key) throws AlertDatabaseConstraintException {
-        if (StringUtils.isEmpty(key)) {
-            throw new AlertDatabaseConstraintException("The field key cannot be empty");
-        }
-        return definedFieldRepository
-                   .findFirstByKey(key)
-                   .orElseThrow(() -> new AlertDatabaseConstraintException("No field with that key exists"));
     }
 
 }

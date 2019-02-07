@@ -29,15 +29,14 @@ import java.util.Optional;
 
 import com.synopsys.integration.alert.channel.DistributionChannel;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
-import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
+import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 import com.synopsys.integration.alert.web.model.configuration.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
@@ -45,12 +44,10 @@ import com.synopsys.integration.rest.RestConstants;
 public abstract class ChannelDistributionDescriptorActionApi extends DescriptorActionApi {
     private final DistributionChannel distributionChannel;
     private final List<ProviderDescriptor> providerDescriptors;
-    private final ConfigurationFieldModelConverter modelConverter;
 
-    public ChannelDistributionDescriptorActionApi(final DistributionChannel distributionChannel, final List<ProviderDescriptor> providerDescriptors, final ConfigurationFieldModelConverter modelConverter) {
+    public ChannelDistributionDescriptorActionApi(final DistributionChannel distributionChannel, final List<ProviderDescriptor> providerDescriptors) {
         this.distributionChannel = distributionChannel;
         this.providerDescriptors = providerDescriptors;
-        this.modelConverter = modelConverter;
     }
 
     @Override
@@ -60,7 +57,7 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
         distributionChannel.sendMessage(event);
     }
 
-    public DistributionEvent createChannelTestEvent(final String configId, final FieldAccessor fieldAccessor) throws AlertDatabaseConstraintException {
+    public DistributionEvent createChannelTestEvent(final String configId, final FieldAccessor fieldAccessor) {
         final AggregateMessageContent messageContent = createTestNotificationContent();
 
         final String channelName = fieldAccessor.getString(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).orElse("");
@@ -82,7 +79,7 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
 
     private Optional<DescriptorActionApi> getProviderActionApi(final FieldModel fieldModel) {
         final String providerName = fieldModel.getField(ChannelDistributionUIConfig.KEY_PROVIDER_NAME)
-                                        .flatMap(fieldValueModel -> fieldValueModel.getValue())
+                                        .flatMap(FieldValueModel::getValue)
                                         .orElse(null);
         return providerDescriptors.stream()
                    .filter(providerDescriptor -> providerDescriptor.getName().equals(providerName))

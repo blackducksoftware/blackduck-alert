@@ -51,10 +51,8 @@ public abstract class DescriptorActionApi {
         for (final Map.Entry<String, ConfigField> fieldEntry : descriptorFields.entrySet()) {
             final String fieldKey = fieldEntry.getKey();
             final Optional<FieldValueModel> optionalField = fieldModel.getField(fieldKey);
-            if (fieldEntry.getValue().isRequired()) {
-                if (optionalField.isEmpty()) {
-                    fieldErrors.put(fieldKey, ConfigField.REQUIRED_FIELD_MISSING);
-                }
+            if (fieldEntry.getValue().isRequired() && optionalField.isEmpty()) {
+                fieldErrors.put(fieldKey, ConfigField.REQUIRED_FIELD_MISSING);
             }
             // field is present now validate the field
             if (!fieldErrors.containsKey(fieldKey) && optionalField.isPresent()) {
