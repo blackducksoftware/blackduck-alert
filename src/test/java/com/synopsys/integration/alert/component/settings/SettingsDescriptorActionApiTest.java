@@ -39,7 +39,7 @@ public class SettingsDescriptorActionApiTest {
         try {
             actionaApi.testConfig(null);
             fail();
-        } catch (AlertMethodNotAllowedException e) {
+        } catch (final AlertMethodNotAllowedException e) {
             Mockito.verify(encryptionUtility, Mockito.times(0)).isInitialized();
             Mockito.verify(userAccessor, Mockito.times(0)).getUser(Mockito.anyString());
             Mockito.verify(systemValidator, Mockito.times(0)).validate(Mockito.anyMap());
@@ -126,6 +126,7 @@ public class SettingsDescriptorActionApiTest {
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
+        fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, new FieldValueModel(List.of("valid_test_value"), false));
         fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of("valid_test_value"), false));
@@ -144,9 +145,10 @@ public class SettingsDescriptorActionApiTest {
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
-        fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, new FieldValueModel(null, true));
-        fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, new FieldValueModel(null, true));
-        fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(null, true));
+        fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, new FieldValueModel(List.of(), true));
+        fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, new FieldValueModel(List.of(), true));
+        fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, new FieldValueModel(List.of(), true));
+        fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(), true));
         final HashMap<String, String> fieldErrors = new HashMap<>();
         final Map<String, ConfigField> configFieldMap = settingsUIConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
@@ -213,9 +215,9 @@ public class SettingsDescriptorActionApiTest {
         final SystemValidator systemValidator = Mockito.mock(SystemValidator.class);
         final SettingsDescriptorActionApi actionaApi = new SettingsDescriptorActionApi(encryptionUtility, userAccessor, systemValidator);
         final FieldModel fieldModel = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), new HashMap<>());
-        fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, new FieldValueModel(null, true));
-        fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, new FieldValueModel(null, true));
-        fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(null, true));
+        fieldModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, new FieldValueModel(List.of(), true));
+        fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, new FieldValueModel(List.of(), true));
+        fieldModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(), true));
         fieldModel.putField(SettingsDescriptor.KEY_LDAP_ENABLED, new FieldValueModel(List.of("true"), false));
         fieldModel.putField(SettingsDescriptor.KEY_LDAP_SERVER, new FieldValueModel(List.of(""), false));
         final HashMap<String, String> fieldErrors = new HashMap<>();

@@ -7,7 +7,7 @@ import CheckboxInput from 'field/input/CheckboxInput';
 import { getDistributionJob } from 'store/actions/distributionConfigs';
 
 import BaseJobConfiguration from 'distribution/job/BaseJobConfiguration';
-import * as FieldModelUtil from 'util/fieldModelUtilities';
+import * as FielModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 
 const KEY_ROOM_ID = 'channel.hipchat.room.id';
@@ -28,7 +28,7 @@ class HipChatJobConfiguration extends Component {
         this.getConfiguration = this.getConfiguration.bind(this);
         this.createSingleSelectHandler = this.createSingleSelectHandler.bind(this);
         this.state = {
-            currentConfig: FieldModelUtil.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_HIPCHAT)
+            currentConfig: FielModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_HIPCHAT)
         };
         this.loading = false;
     }
@@ -76,14 +76,14 @@ class HipChatJobConfiguration extends Component {
         return (selectedValue) => {
             if (selectedValue) {
                 const selected = selectedValue.value;
-                const newState = FieldModelUtil.updateFieldModelSingleValue(this.state.currentConfig, fieldKey, selected);
+                const newState = FielModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, fieldKey, selected);
                 this.setState({
-                    settingsData: newState
+                    currentConfig: newState
                 });
             } else {
-                const newState = FieldModelUtil.updateFieldModelSingleValue(this.state.currentConfig, fieldKey, null);
+                const newState = FielModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, fieldKey, null);
                 this.setState({
-                    settingsData: newState
+                    currentConfig: newState
                 });
             }
         };
@@ -91,7 +91,7 @@ class HipChatJobConfiguration extends Component {
 
 
     render() {
-        const [colorOptions] = this.state;
+        const { colorOptions } = this.state;
         const fieldModel = this.state.currentConfig;
         let selectedColorOption = null;
         if (colorOptions) {
@@ -103,18 +103,18 @@ class HipChatJobConfiguration extends Component {
                     id={KEY_ROOM_ID}
                     label="Room Id"
                     name={KEY_ROOM_ID}
-                    value={FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_ROOM_ID)}
+                    value={FielModelUtilities.getFieldModelSingleValue(fieldModel, KEY_ROOM_ID)}
                     onChange={this.handleChange}
-                    errorName={FieldModelUtil.createFieldModelErrorKey(KEY_ROOM_ID)}
+                    errorName={FielModelUtilities.createFieldModelErrorKey(KEY_ROOM_ID)}
                     errorValue={this.props.fieldErrors[KEY_ROOM_ID]}
                 />
                 <CheckboxInput
                     id={KEY_NOTIFY}
                     label="Notify"
                     name={KEY_NOTIFY}
-                    isChecked={FieldModelUtil.getFieldModelBooleanValue(fieldModel, KEY_NOTIFY)}
+                    isChecked={FielModelUtilities.getFieldModelBooleanValue(fieldModel, KEY_NOTIFY)}
                     onChange={this.handleChange}
-                    errorName={FieldModelUtil.createFieldModelErrorKey(KEY_NOTIFY)}
+                    errorName={FielModelUtilities.createFieldModelErrorKey(KEY_NOTIFY)}
                     errorValue={this.props.fieldErrors[KEY_NOTIFY]}
                 />
                 <div className="form-group">

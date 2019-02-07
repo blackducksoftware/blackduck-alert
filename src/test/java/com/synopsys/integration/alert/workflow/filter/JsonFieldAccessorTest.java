@@ -43,7 +43,7 @@ public class JsonFieldAccessorTest {
     @Test
     public void getObjectListTest() {
         final List<Object> expectedValues = Arrays.asList(new MyObject("first value"), new MyObject("second value"));
-        final JsonField<MyObject> expectedField = JsonField.createObjectField(JsonPath.compile("$.innerString"), "innerString", null, null, new TypeRef<MyObject>() {});
+        final JsonField<MyObject> expectedField = JsonField.createObjectField(JsonPath.compile("$.innerString"), "innerString", null, null, new TypeRef<List<MyObject>>() {});
         final Map<JsonField, List<Object>> map = new HashMap<>();
         map.put(expectedField, expectedValues);
 
@@ -54,7 +54,7 @@ public class JsonFieldAccessorTest {
     @Test
     public void getFirstObjectTest() {
         final List<Object> expectedValues = Arrays.asList(new MyObject("first value"), new MyObject("second value"));
-        final JsonField<MyObject> expectedField = JsonField.createObjectField(JsonPath.compile("$.innerObject"), "innerObject", null, null, new TypeRef<MyObject>() {});
+        final JsonField<MyObject> expectedField = JsonField.createObjectField(JsonPath.compile("$.innerObject"), "innerObject", null, null, new TypeRef<List<MyObject>>() {});
         final Map<JsonField, List<Object>> map = new HashMap<>();
         map.put(expectedField, expectedValues);
 
@@ -75,7 +75,7 @@ public class JsonFieldAccessorTest {
 
     @Test
     public void getObjectWhenListIsEmptyTest() {
-        final JsonField<MyObject> expectedField = JsonField.createObjectField(JsonPath.compile("$.innerString"), "innerString", null, null, new TypeRef<MyObject>() {});
+        final JsonField<MyObject> expectedField = JsonField.createObjectField(JsonPath.compile("$.innerString"), "innerString", null, null, new TypeRef<List<MyObject>>() {});
         final List<Object> expectedValues = Collections.emptyList();
         final Map<JsonField, List<Object>> map = new HashMap<>();
         map.put(expectedField, expectedValues);
@@ -86,7 +86,7 @@ public class JsonFieldAccessorTest {
 
     @Test
     public void getFirstObjectWhenListIsEmptyTest() {
-        final JsonField<MyObject> expectedField = JsonField.createObjectField(JsonPath.compile("$.innerObject"), "innerObject", null, null, new TypeRef<MyObject>() {});
+        final JsonField<MyObject> expectedField = JsonField.createObjectField(JsonPath.compile("$.innerObject"), "innerObject", null, null, new TypeRef<List<MyObject>>() {});
         final List<Object> expectedValues = Collections.emptyList();
         final Map<JsonField, List<Object>> map = new HashMap<>();
         map.put(expectedField, expectedValues);
@@ -97,7 +97,7 @@ public class JsonFieldAccessorTest {
 
     @Test
     public void getTypedObjectWhenMapIsEmptyTest() {
-        final JsonField<MyObject> expectedField = JsonField.createObjectField(JsonPath.compile("$.innerObject"), "innerObject", null, null, new TypeRef<MyObject>() {});
+        final JsonField<MyObject> expectedField = JsonField.createObjectField(JsonPath.compile("$.innerObject"), "innerObject", null, null, new TypeRef<List<MyObject>>() {});
         final Map<JsonField, List<Object>> map = new HashMap<>();
 
         final JsonFieldAccessor accessor = new JsonFieldAccessor(map);

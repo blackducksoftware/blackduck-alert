@@ -63,7 +63,7 @@ public abstract class ProviderDistributionUIConfig extends UIConfig {
 
     private Collection<String> validateNotificationTypes(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
         final Collection<String> notificationTypes = Optional.ofNullable(fieldToValidate.getValues()).orElse(List.of());
-        if (notificationTypes == null || notificationTypes.size() <= 0) {
+        if (notificationTypes == null || notificationTypes.isEmpty()) {
             return List.of("Must have at least one notification type.");
         }
 

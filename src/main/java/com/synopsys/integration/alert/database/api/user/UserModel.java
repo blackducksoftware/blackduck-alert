@@ -37,6 +37,7 @@ public class UserModel extends Stringable {
     public static final String ROLE_PREFIX = "ROLE_";
     private final String name;
     private final String password;
+    private final String emailAddress;
     private final Set<String> roles;
     private final boolean expired;
     private final boolean locked;
@@ -44,16 +45,17 @@ public class UserModel extends Stringable {
     private final boolean enabled;
 
     public static final UserModel of(final UserEntity userEntity, final Set<String> roles) {
-        return new UserModel(userEntity.getUserName(), userEntity.getPassword(), roles, userEntity.isExpired(), userEntity.isLocked(), userEntity.isPasswordExpired(), userEntity.isEnabled());
+        return new UserModel(userEntity.getUserName(), userEntity.getPassword(), userEntity.getEmailAddress(), roles, userEntity.isExpired(), userEntity.isLocked(), userEntity.isPasswordExpired(), userEntity.isEnabled());
     }
 
-    public static final UserModel of(final String userName, final String password, final Set<String> roles) {
-        return new UserModel(userName, password, roles, false, false, false, true);
+    public static final UserModel of(final String userName, final String password, final String emailAddress, final Set<String> roles) {
+        return new UserModel(userName, password, emailAddress, roles, false, false, false, true);
     }
 
-    private UserModel(final String name, final String password, final Set<String> roles, final boolean expired, final boolean locked, final boolean passwordExpired, final boolean enabled) {
+    private UserModel(final String name, final String password, final String emailAddress, final Set<String> roles, final boolean expired, final boolean locked, final boolean passwordExpired, final boolean enabled) {
         this.name = name;
         this.password = password;
+        this.emailAddress = emailAddress;
         this.roles = roles;
         this.expired = expired;
         this.locked = locked;
@@ -67,6 +69,10 @@ public class UserModel extends Stringable {
 
     public String getPassword() {
         return password;
+    }
+
+    public String getEmailAddress() {
+        return emailAddress;
     }
 
     public Collection<String> getRoles() {

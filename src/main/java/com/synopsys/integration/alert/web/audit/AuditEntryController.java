@@ -105,7 +105,7 @@ public class AuditEntryController extends BaseController {
         } catch (final AlertNotificationPurgedException e) {
             return responseFactory.createGoneResponse(stringNotificationId, e.getMessage());
         } catch (final AlertJobMissingException e) {
-            return responseFactory.createGoneResponse(commonConfigId.toString(), e.getMessage());
+            return responseFactory.createGoneResponse(e.getMissingUUID().toString(), e.getMessage());
         } catch (final IntegrationException e) {
             return responseFactory.createBadRequestResponse(stringNotificationId, e.getMessage());
         }
