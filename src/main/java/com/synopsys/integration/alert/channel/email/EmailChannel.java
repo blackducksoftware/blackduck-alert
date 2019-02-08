@@ -127,10 +127,8 @@ public class EmailChannel extends DistributionChannel {
             }
 
             if (!model.isEmpty() && StringUtils.isNotBlank(templateName)) {
-                for (final String emailAddress : emailAddresses) {
-                    final EmailTarget emailTarget = new EmailTarget(emailAddress, templateName, model, contentIdsToFilePaths);
-                    emailService.sendEmailMessage(emailTarget);
-                }
+                final EmailTarget emailTarget = new EmailTarget(emailAddresses, templateName, model, contentIdsToFilePaths);
+                emailService.sendEmailMessage(emailTarget);
             }
         } catch (final IOException ex) {
             throw new AlertException(ex);

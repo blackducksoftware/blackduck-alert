@@ -24,25 +24,27 @@
 package com.synopsys.integration.alert.channel.email.template;
 
 import java.util.Map;
+import java.util.Set;
 
 public class EmailTarget {
-    private final String emailAddress;
-
+    private final Set<String> emailAddresses;
     private final String templateName;
-
     private final Map<String, Object> model;
-
     private final Map<String, String> contentIdsToFilePaths;
 
-    public EmailTarget(final String emailAddress, final String templateName, final Map<String, Object> model, final Map<String, String> contentIdsToFilePaths) {
-        this.emailAddress = emailAddress;
+    public EmailTarget(final Set<String> emailAddresses, final String templateName, final Map<String, Object> model, final Map<String, String> contentIdsToFilePaths) {
+        this.emailAddresses = emailAddresses;
         this.templateName = templateName;
         this.model = model;
         this.contentIdsToFilePaths = contentIdsToFilePaths;
     }
 
-    public String getEmailAddress() {
-        return emailAddress;
+    public EmailTarget(final String emailAddress, final String templateName, final Map<String, Object> model, final Map<String, String> contentIdsToFilePaths) {
+        this(Set.of(emailAddress), templateName, model, contentIdsToFilePaths);
+    }
+
+    public Set<String> getEmailAddresses() {
+        return emailAddresses;
     }
 
     public String getTemplateName() {
