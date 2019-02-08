@@ -17,7 +17,11 @@ function assignDataFormat(cell, row) {
     const cellContent = (row.missing) ?
         <span className="missingBlackDuckData"><span className="fa fa-exclamation-triangle fa-fw" aria-hidden="true" />{cell}</span> :
         cell;
-    return <div title={cell}> {cellContent} </div>;
+
+    if (cell) {
+        return <div title={cell}> {cellContent} </div>;
+    }
+    return <div> {cellContent} </div>;
 }
 
 const KEY_FILTER_BY_PROJECT = 'channel.common.filter.by.project';
