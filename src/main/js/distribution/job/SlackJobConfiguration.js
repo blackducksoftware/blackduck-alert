@@ -71,7 +71,7 @@ class SlackJobConfiguration extends Component {
                     id={KEY_WEBHOOK}
                     label="Webhook"
                     name={KEY_WEBHOOK}
-                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_WEBHOOK)}
+                    value={FieldModelUtilities.getFieldModelSingleValueOrDefault(fieldModel, KEY_WEBHOOK, '')}
                     onChange={this.handleChange}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_WEBHOOK)}
                     errorValue={this.props.fieldErrors[KEY_WEBHOOK]}
@@ -80,7 +80,7 @@ class SlackJobConfiguration extends Component {
                     id={KEY_CHANNEL_NAME}
                     label="Channel Name"
                     name={KEY_CHANNEL_NAME}
-                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_CHANNEL_NAME)}
+                    value={FieldModelUtilities.getFieldModelSingleValueOrDefault(fieldModel, KEY_CHANNEL_NAME, '')}
                     onChange={this.handleChange}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_CHANNEL_NAME)}
                     errorValue={this.props.fieldErrors[KEY_CHANNEL_NAME]}
@@ -89,7 +89,7 @@ class SlackJobConfiguration extends Component {
                     id={KEY_CHANNEL_USERNAME}
                     label="Channel Username"
                     name={KEY_CHANNEL_USERNAME}
-                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_CHANNEL_USERNAME)}
+                    value={FieldModelUtilities.getFieldModelSingleValueOrDefault(fieldModel, KEY_CHANNEL_USERNAME, '')}
                     onChange={this.handleChange}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_CHANNEL_USERNAME)}
                     errorValue={this.props.fieldErrors[KEY_CHANNEL_USERNAME]}

@@ -103,7 +103,7 @@ class HipChatJobConfiguration extends Component {
                     id={KEY_ROOM_ID}
                     label="Room Id"
                     name={KEY_ROOM_ID}
-                    value={FielModelUtilities.getFieldModelSingleValue(fieldModel, KEY_ROOM_ID)}
+                    value={FielModelUtilities.getFieldModelSingleValueOrDefault(fieldModel, KEY_ROOM_ID, '')}
                     onChange={this.handleChange}
                     errorName={FielModelUtilities.createFieldModelErrorKey(KEY_ROOM_ID)}
                     errorValue={this.props.fieldErrors[KEY_ROOM_ID]}
