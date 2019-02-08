@@ -111,6 +111,7 @@ class BaseJobConfiguration extends Component {
                 providerModel = nextProps.job.fieldModels.find(model => model.descriptorName.startsWith('provider_'));
             }
 
+
             const formatOptions = this.createFormatTypeOptions();
             const notificationOptions = this.createNotificationTypeOptions();
             const selectedFormatType = this.getSelectedSingleValue(formatOptions, providerModel, KEY_FORMAT_TYPE);
@@ -138,7 +139,6 @@ class BaseJobConfiguration extends Component {
             }
 
             this.setState({
-                success: false,
                 fieldErrors: {},
                 jobId: nextProps.job.jobId,
                 commonConfig: channelModel,
@@ -201,7 +201,7 @@ class BaseJobConfiguration extends Component {
         const commonFieldModel = FieldModelUtilities.updateFieldModelSingleValue(this.state.commonConfig, KEY_CHANNEL_NAME, channelName);
         const updatedChannelFieldModel = FieldModelUtilities.combineFieldModels(commonFieldModel, channelSpecific);
         const configuration = Object.assign({}, {
-            jobId: null,
+            jobId: this.state.jobId,
             fieldModels: [
                 updatedChannelFieldModel,
                 updatedProviderFieldModel
