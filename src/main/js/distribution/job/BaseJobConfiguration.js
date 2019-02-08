@@ -223,12 +223,20 @@ class BaseJobConfiguration extends Component {
         this.props.testDistributionJob(jsonBody);
     }
 
-    createChangeHandler(fieldModelKey) {
+    createChangeHandler(fieldModelKey, negateCheckboxValue) {
         return (event) => {
             const { target } = event;
-            const value = target.type === 'checkbox' ? target.checked.toString() : target.value;
+            let targetValue = target.value;
+            if (target.type === 'checkbox') {
+                const { checked } = target;
+                if (negateCheckboxValue) {
+                    targetValue = (!checked).toString();
+                } else {
+                    targetValue = checked.toString();
+                }
+            }
             const fieldModel = this.state[fieldModelKey];
-            const newState = FieldModelUtilities.updateFieldModelSingleValue(fieldModel, target.name, value);
+            const newState = FieldModelUtilities.updateFieldModelSingleValue(fieldModel, target.name, targetValue);
             this.setState({
                 [fieldModelKey]: newState
             });
@@ -373,7 +381,7 @@ class BaseJobConfiguration extends Component {
                 {this.props.childContent}
                 <ProjectConfiguration
                     includeAllProjects={!FieldModelUtilities.getFieldModelBooleanValue(providerFieldModel, KEY_FILTER_BY_PROJECT)}
-                    handleChange={this.createChangeHandler(FIELD_MODEL_KEY.PROVIDER)}
+                    handleChange={this.createChangeHandler(FIELD_MODEL_KEY.PROVIDER, true)}
                     handleProjectChanged={this.createMultiSelectHandler(KEY_CONFIGURED_PROJECT, FIELD_MODEL_KEY.PROVIDER)}
                     projects={this.props.projects}
                     configuredProjects={FieldModelUtilities.getFieldModelValues(providerFieldModel, KEY_CONFIGURED_PROJECT)}
