@@ -54,7 +54,6 @@ class ProjectConfiguration extends Component {
     handleChange(event) {
         const { target } = event
         const value = target.type === 'checkbox' ? target.checked : target.value;
-        console.log("handlechange value ", value);
         this.setState({ includeAllProjects: value });
         this.props.handleChange(event);
     }
