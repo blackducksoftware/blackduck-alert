@@ -206,7 +206,6 @@ class BaseJobConfiguration extends Component {
                 updatedProviderFieldModel
             ]
         });
-        console.log('configuration to send', configuration);
         return configuration;
     }
 

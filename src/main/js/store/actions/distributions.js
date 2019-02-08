@@ -140,7 +140,7 @@ export function fetchDistributionJobs() {
                 response.json().then((jsonArray) => {
                     const newJobs = [];
                     jsonArray.forEach((jobConfig) => {
-                        const jobConfigWithAuditInfo = this.fetchAuditInfoForJob(csrfToken, jobConfig);
+                        const jobConfigWithAuditInfo = fetchAuditInfoForJob(csrfToken, jobConfig);
                         newJobs.push(jobConfigWithAuditInfo);
                     });
                     dispatch(allJobsFetched(newJobs));

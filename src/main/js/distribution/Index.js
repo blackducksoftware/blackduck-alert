@@ -11,6 +11,7 @@ import EditTableCellFormatter from 'component/common/EditTableCellFormatter';
 import JobAddModal from 'distribution/JobAddModal';
 import { deleteDistributionJob, fetchDistributionJobs } from 'store/actions/distributions';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
+import * as FieldModelUtilities from 'util/fieldModelUtilities';
 
 /**
  * Selects className based on field value
@@ -218,7 +219,7 @@ class Index extends Component {
         if (descriptors) {
             const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
             if (descriptorList) {
-                const filteredList = descriptorList.filter(descriptor => descriptor.descriptorName === cell);
+                const filteredList = descriptorList.filter(descriptor => descriptor.name === cell);
                 if (filteredList && filteredList.length > 0) {
                     const foundDescriptor = filteredList[0];
                     return (<DescriptorLabel keyPrefix="distribution-channel-icon" descriptor={foundDescriptor} />);
@@ -236,7 +237,7 @@ class Index extends Component {
         if (descriptors) {
             const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
             if (descriptorList) {
-                const filteredList = descriptorList.filter(descriptor => descriptor.descriptorName === cell);
+                const filteredList = descriptorList.filter(descriptor => descriptor.name === cell);
                 if (filteredList && filteredList.length > 0) {
                     const foundDescriptor = filteredList[0];
                     return (<DescriptorLabel keyPrefix="distribution-provider-icon" descriptor={foundDescriptor} />);
@@ -248,7 +249,38 @@ class Index extends Component {
         return defaultValue;
     }
 
+    createTableData() {
+        const tableData = []
+        if (this.props.jobs) {
+            this.props.jobs.forEach((job) => {
+                const channelModel = job.fieldModels
+                    .find(fieldModel => fieldModel.descriptorName.startsWith('channel_'));
+                const providerModel = job.fieldModels
+                    .find(fieldModel => fieldModel.descriptorName.startsWith('provider_'));
+                const id = job.jobId;
+                const name = FieldModelUtilities.getFieldModelSingleValue(channelModel, 'channel.common.name');
+                const distributionType = channelModel.descriptorName;
+                const providerName = providerModel.descriptorName;
+                const frequency = FieldModelUtilities.getFieldModelSingleValue(channelModel, 'channel.common.frequency');
+                const lastRan = FieldModelUtilities.getFieldModelSingleValue(job, 'lastRan');
+                const status = FieldModelUtilities.getFieldModelSingleValue(job, 'status');
+                const entry = Object.assign({}, {
+                    id,
+                    name,
+                    distributionType,
+                    providerName,
+                    frequency,
+                    lastRan,
+                    status
+                });
+                tableData.push(entry);
+            });
+        }
+        return tableData;
+    }
+
     render() {
+        const tableData = this.createTableData();
         const jobTableOptions = {
             btnGroup: this.createCustomButtonGroup,
             noDataText: 'No jobs configured',
@@ -272,7 +304,7 @@ class Index extends Component {
                     version="4"
                     hover
                     condensed
-                    data={this.props.jobs}
+                    data={tableData}
                     containerClass="table"
                     insertRow
                     deleteRow
@@ -284,7 +316,6 @@ class Index extends Component {
                     bodyContainerClass="tableScrollableBody"
                 >
                     <TableHeaderColumn dataField="id" isKey hidden>Job Id</TableHeaderColumn>
-                    <TableHeaderColumn dataField="distributionConfigId" hidden>Distribution Id</TableHeaderColumn>
                     <TableHeaderColumn dataField="name" dataSort columnTitle columnClassName="tableCell">Distribution Job</TableHeaderColumn>
                     <TableHeaderColumn dataField="distributionType" dataSort columnClassName="tableCell" dataFormat={this.typeColumnDataFormat}>Type</TableHeaderColumn>
                     <TableHeaderColumn dataField="providerName" dataSort columnClassName="tableCell" dataFormat={this.providerColumnDataFormat}>Provider</TableHeaderColumn>
@@ -303,7 +334,6 @@ class Index extends Component {
                 <p name="jobConfigTableMessage">{this.props.jobConfigTableMessage}</p>
             </div>
         );
-
         const currentJobContent = this.getCurrentJobConfig(this.state.currentRowSelected);
         if (currentJobContent !== null) {
             content = currentJobContent;
