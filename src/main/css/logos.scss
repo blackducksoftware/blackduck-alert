@@ -1,0 +1,25 @@
+@import 'variables.scss';
+
+.synopsysLogoSpan {
+  display: inline-flex;
+  font-family: 'Roboto', sans-serif;
+}
+
+.headerStandardSize {
+  font-size: 1.25em;
+  font-weight: lighter;
+}
+
+.synopsysHeaderLogo {
+  background: none;
+  margin: auto;
+  max-height: 17px;
+  width: auto;
+}
+
+.synopsysFooterLogo {
+  background: none;
+  margin: auto;
+  max-height: 12px;
+  width: auto;
+}

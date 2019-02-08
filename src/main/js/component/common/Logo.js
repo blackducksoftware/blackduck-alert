@@ -1,7 +1,23 @@
 import React from 'react';
 
+import '../../../css/logos.scss';
+
 const Logo = () => (
-    <div className="blackduckLogo">
+    <div className="productLogo">
+        <span className="synopsysLogoSpan">
+        <img
+            className="synopsysHeaderLogo"
+            src="https://www.synopsys.com/content/dam/synopsys/company/about/legal/synopsys-logos/whitelogo/synopsys_wht.png"
+            alt="Synopsys"
+        />
+            <span className="headerStandardSize">&nbsp;|&nbsp;ALERT</span>&nbsp;
+        </span>
+    </div>
+);
+
+export default Logo;
+
+/*
         <svg width="217px" height="17px" viewBox="0 0 217 17" version="1.1">
             <defs>
                 <polygon
@@ -77,7 +93,4 @@ const Logo = () => (
                 </g>
             </g>
         </svg>
-    </div>
-);
-
-export default Logo;
+        */

@@ -1,30 +1,32 @@
+@import 'variables.scss';
+
 .footer {
   position: fixed;
   left: 0;
   bottom: 0;
   width: 100%;
-  background-color: #fafafa;
+  background-color: $synopsys-color-section-background;
   height: 24px;
   line-height: 24px;
   text-align: left;
   margin: 0;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid $synopsys-color-light-gray;
   padding-left: 15px;
   padding-right: 15px;
-  font-family: 'Open Sans', sans-serif;
+  font-family: 'Roboto', sans-serif;
   font-size: 11px;
-  color: black;
+  color: $synopsys-color-subhead-copy;
   display: inline-flex;
   transition: opacity .3s ease-in-out 0s;
   z-index: 9999;
 }
 
 .footer a {
-  color: #333;
+  color: $synopsys-color-subhead-copy;
 }
 
 .footer a:hover {
-  color: #333;
+  color: $synopsys-color-subhead-copy;
 }
 
 .productName {
