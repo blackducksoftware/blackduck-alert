@@ -50,6 +50,7 @@ class ProjectConfiguration extends Component {
     handleChange(event) {
         const { target } = event
         const value = target.type === 'checkbox' ? target.checked : target.value;
+        console.log("handlechange value ", value);
         this.setState({ includeAllProjects: value });
         this.props.handleChange(event);
     }
@@ -175,6 +176,7 @@ class ProjectConfiguration extends Component {
                     name={KEY_FILTER_BY_PROJECT}
                     isChecked={this.state.includeAllProjects}
                     onChange={this.handleChange}
+                    negateValue
                     errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_FILTER_BY_PROJECT)}
                     errorValue={this.props.fieldErrors[KEY_FILTER_BY_PROJECT]}
                 />
