@@ -40,6 +40,7 @@ class JobDeleteModal extends Component {
     }
 
     render() {
+        const tableData = this.props.createTableData(this.props.jobs);
         const jobTableOptions = {
             noDataText: 'No jobs configured'
         };
@@ -56,7 +57,7 @@ class JobDeleteModal extends Component {
                                 version="4"
                                 hover
                                 condensed
-                                data={this.props.jobs}
+                                data={tableData}
                                 options={jobTableOptions}
                                 containerClass="table"
                                 trClassName="tableRow"
@@ -84,6 +85,7 @@ class JobDeleteModal extends Component {
 }
 
 JobDeleteModal.propTypes = {
+    createTableData: PropTypes.func.isRequired,
     jobConfigTableMessage: PropTypes.string.isRequired,
     onModalClose: PropTypes.func.isRequired,
     onModalSubmit: PropTypes.func.isRequired,

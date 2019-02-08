@@ -18,7 +18,7 @@ const fieldNames = [
     KEY_EMAIL_ADDRESSES
 ];
 
-class GroupEmailJobConfiguration extends Component {
+class EmailJobConfiguration extends Component {
     constructor(props) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
@@ -39,7 +39,7 @@ class GroupEmailJobConfiguration extends Component {
         if (!nextProps.fetching && !nextProps.inProgress) {
             if (this.loading) {
                 this.loading = false;
-                const jobConfig = nextProps.jobs[nextProps.distributionConfigId];
+                const jobConfig = nextProps.job;
                 if (jobConfig) {
                     this.setState({
                         emailSubjectLine: jobConfig.emailSubjectLine,
@@ -70,7 +70,7 @@ class GroupEmailJobConfiguration extends Component {
                     id={KEY_SUBJECT_LINE}
                     label="Subject Line"
                     name={KEY_SUBJECT_LINE}
-                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_SUBJECT_LINE)}
+                    value={FieldModelUtilities.getFieldModelSingleValueOrDefault(fieldModel, KEY_SUBJECT_LINE, '')}
                     onChange={this.handleChange}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_SUBJECT_LINE)}
                     errorValue={this.props.fieldErrors[KEY_SUBJECT_LINE]}
@@ -96,8 +96,8 @@ class GroupEmailJobConfiguration extends Component {
     }
 }
 
-GroupEmailJobConfiguration.propTypes = {
-    jobs: PropTypes.arrayOf(PropTypes.object),
+EmailJobConfiguration.propTypes = {
+    job: PropTypes.object,
     distributionConfigId: PropTypes.string,
     getDistributionJob: PropTypes.func.isRequired,
     fieldErrors: PropTypes.object,
@@ -108,8 +108,8 @@ GroupEmailJobConfiguration.propTypes = {
     inProgress: PropTypes.bool
 };
 
-GroupEmailJobConfiguration.defaultProps = {
-    jobs: [],
+EmailJobConfiguration.defaultProps = {
+    job: {},
     distributionConfigId: null,
     fieldErrors: {},
     fetching: false,
@@ -121,10 +121,10 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = state => ({
-    jobs: state.distributionConfigs.jobs,
+    job: state.distributionConfigs.job,
     fieldErrors: state.distributionConfigs.error,
     fetching: state.distributionConfigs.fetching,
     inProgress: state.distributionConfigs.inProgress
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(GroupEmailJobConfiguration);
+export default connect(mapStateToProps, mapDispatchToProps)(EmailJobConfiguration);

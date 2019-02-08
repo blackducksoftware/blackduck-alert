@@ -218,7 +218,7 @@ class SchedulingConfiguration extends React.Component {
 
 SchedulingConfiguration.propTypes = {
     currentConfig: PropTypes.object,
-    fieldErrors: PropTypes.string,
+    fieldErrors: PropTypes.object,
     errorMessage: PropTypes.string,
     updateStatus: PropTypes.string,
     getConfig: PropTypes.func.isRequired,
