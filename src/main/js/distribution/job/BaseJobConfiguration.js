@@ -57,7 +57,7 @@ const providerFieldNames = [
 const FIELD_MODEL_KEY = {
     COMMON: 'commonConfig',
     PROVIDER: 'providerConfig'
-}
+};
 
 class BaseJobConfiguration extends Component {
     constructor(props) {
@@ -117,10 +117,7 @@ class BaseJobConfiguration extends Component {
                 });
 
                 if (nextProps.distributionConfigId) {
-                    const jobConfig = nextProps.jobs[nextProps.distributionConfigId];
-                    if (jobConfig) {
-
-                    }
+                    const jobConfig = nextProps.job;
                     const newState = Object.assign({}, stateValues, {
                         id: jobConfig.id,
                         distributionConfigId: nextProps.distributionConfigId,
@@ -187,7 +184,7 @@ class BaseJobConfiguration extends Component {
             event.preventDefault();
         }
         const jsonBody = this.buildJsonBody();
-        if (this.state.commonConfig.id) {
+        if (this.state.jobId) {
             this.props.updateDistributionJob(jsonBody);
         } else {
             this.props.saveDistributionJob(jsonBody);
@@ -196,19 +193,20 @@ class BaseJobConfiguration extends Component {
 
     buildJsonBody() {
         const channelSpecific = this.props.getParentConfiguration();
+        const channelName = this.state.commonConfig.descriptorName;
         const providerName = FieldModelUtilities.getFieldModelSingleValue(this.state.commonConfig, KEY_PROVIDER_NAME);
         const emptyProviderModel = FieldModelUtilities.createEmptyFieldModel(providerFieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, providerName);
         const updatedProviderFieldModel = FieldModelUtilities.combineFieldModels(emptyProviderModel, this.state.providerConfig);
-        const updatedChannelFieldModel = FieldModelUtilities.combineFieldModels(this.state.commonConfig, channelSpecific);
+        const commonFieldModel = FieldModelUtilities.updateFieldModelSingleValue(this.state.commonConfig, KEY_CHANNEL_NAME, channelName);
+        const updatedChannelFieldModel = FieldModelUtilities.combineFieldModels(commonFieldModel, channelSpecific);
         const configuration = Object.assign({}, {
-            jobId: '',
+            jobId: null,
             fieldModels: [
                 updatedChannelFieldModel,
                 updatedProviderFieldModel
             ]
         });
-        console.log('configuration to send', configuration);
-        return JSON.stringify(configuration);
+        return configuration;
     }
 
     handleTestSubmit(event) {
@@ -224,12 +222,20 @@ class BaseJobConfiguration extends Component {
         this.props.testDistributionJob(jsonBody);
     }
 
-    createChangeHandler(fieldModelKey) {
+    createChangeHandler(fieldModelKey, negateCheckboxValue) {
         return (event) => {
             const { target } = event;
-            const value = target.type === 'checkbox' ? target.checked.toString() : target.value;
+            let targetValue = target.value;
+            if (target.type === 'checkbox') {
+                const { checked } = target;
+                if (negateCheckboxValue) {
+                    targetValue = (!checked).toString();
+                } else {
+                    targetValue = checked.toString();
+                }
+            }
             const fieldModel = this.state[fieldModelKey];
-            const newState = FieldModelUtilities.updateFieldModelSingleValue(fieldModel, target.name, value);
+            const newState = FieldModelUtilities.updateFieldModelSingleValue(fieldModel, target.name, targetValue);
             this.setState({
                 [fieldModelKey]: newState
             });
@@ -271,7 +277,7 @@ class BaseJobConfiguration extends Component {
     }
 
     createProviderOptions() {
-        const providers = DescriptorUtilities.findDescriptorByTypeAndContext(this.props.descriptors.items, DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+        const providers = DescriptorUtilities.findDescriptorByTypeAndContext(this.props.descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
         if (providers) {
             const optionList = providers.map(descriptor => ({
                 label: descriptor.label,
@@ -286,7 +292,7 @@ class BaseJobConfiguration extends Component {
     createNotificationTypeOptions() {
         const selectedProvider = FieldModelUtilities.getFieldModelSingleValue(this.state.commonConfig, KEY_PROVIDER_NAME);
         if (selectedProvider) {
-            const [descriptor] = DescriptorUtilities.findDescriptorByNameAndContext(this.props.descriptors.items, selectedProvider, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+            const [descriptor] = DescriptorUtilities.findDescriptorByNameAndContext(this.props.descriptors, selectedProvider, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
             const options = DescriptorUtilities.findDescriptorFieldOptions(descriptor, KEY_NOTIFICATION_TYPES);
             if (options) {
                 const optionList = options.map(option => Object.assign({}, { label: option, value: option }));
@@ -299,7 +305,7 @@ class BaseJobConfiguration extends Component {
     createFormatTypeOptions() {
         const selectedProvider = FieldModelUtilities.getFieldModelSingleValue(this.state.commonConfig, KEY_PROVIDER_NAME);
         if (selectedProvider) {
-            const [descriptor] = DescriptorUtilities.findDescriptorByNameAndContext(this.props.descriptors.items, selectedProvider, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+            const [descriptor] = DescriptorUtilities.findDescriptorByNameAndContext(this.props.descriptors, selectedProvider, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
             const options = DescriptorUtilities.findDescriptorFieldOptions(descriptor, KEY_FORMAT_TYPE);
             if (options) {
                 return options.map(option => Object.assign({}, { label: option, value: option }));
@@ -309,7 +315,7 @@ class BaseJobConfiguration extends Component {
     }
 
     createFrequencyOptions() {
-        const [descriptor] = DescriptorUtilities.findDescriptorByNameAndContext(this.props.descriptors.items, this.props.alertChannelName, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+        const [descriptor] = DescriptorUtilities.findDescriptorByNameAndContext(this.props.descriptors, this.props.alertChannelName, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
         const options = DescriptorUtilities.findDescriptorFieldOptions(descriptor, KEY_FREQUENCY);
         if (options) {
             return options.map(option => Object.assign({}, { label: option, value: option }));
@@ -374,11 +380,11 @@ class BaseJobConfiguration extends Component {
                 {this.props.childContent}
                 <ProjectConfiguration
                     includeAllProjects={!FieldModelUtilities.getFieldModelBooleanValue(providerFieldModel, KEY_FILTER_BY_PROJECT)}
-                    handleChange={this.createChangeHandler(FIELD_MODEL_KEY.PROVIDER)}
+                    handleChange={this.createChangeHandler(FIELD_MODEL_KEY.PROVIDER, true)}
                     handleProjectChanged={this.createMultiSelectHandler(KEY_CONFIGURED_PROJECT, FIELD_MODEL_KEY.PROVIDER)}
                     projects={this.props.projects}
                     configuredProjects={FieldModelUtilities.getFieldModelValues(providerFieldModel, KEY_CONFIGURED_PROJECT)}
-                    projectNamePattern={FieldModelUtilities.getFieldModelSingleValue(providerFieldModel, KEY_PROJECT_NAME_PATTERN)}
+                    projectNamePattern={FieldModelUtilities.getFieldModelSingleValueOrDefault(providerFieldModel, KEY_PROJECT_NAME_PATTERN, '')}
                     fieldErrors={this.props.fieldErrors}
                 />
                 <ConfigButtons cancelId="job-cancel" submitId="job-submit" includeTest includeCancel onTestClick={this.handleTestSubmit} onCancelClick={this.props.handleCancel} />
@@ -414,7 +420,7 @@ class BaseJobConfiguration extends Component {
                     id={KEY_NAME}
                     label="Job Name"
                     name={KEY_NAME}
-                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_NAME)}
+                    value={FieldModelUtilities.getFieldModelSingleValueOrDefault(fieldModel, KEY_NAME, '')}
                     onChange={this.createChangeHandler(FIELD_MODEL_KEY.COMMON)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_NAME)}
                     errorValue={this.props.fieldErrors[KEY_NAME]}
@@ -459,8 +465,8 @@ BaseJobConfiguration.propTypes = {
     saveDistributionJob: PropTypes.func.isRequired,
     updateDistributionJob: PropTypes.func.isRequired,
     getDistributionDescriptor: PropTypes.func.isRequired,
-    descriptors: PropTypes.arrayOf(PropTypes.object),
-    jobs: PropTypes.arrayOf(PropTypes.object),
+    descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
+    job: PropTypes.object,
     fetching: PropTypes.bool,
     inProgress: PropTypes.bool,
     success: PropTypes.bool,
@@ -479,8 +485,7 @@ BaseJobConfiguration.propTypes = {
 };
 
 BaseJobConfiguration.defaultProps = {
-    descriptors: [],
-    jobs: [],
+    job: {},
     fetching: false,
     inProgress: false,
     success: false,
@@ -502,14 +507,14 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = state => ({
-    descriptors: state.descriptors,
-    jobs: state.distributions.jobs,
-    fetching: state.distributions.fetching,
-    inProgress: state.distributions.inProgress,
-    success: state.distributions.success,
-    testingConfig: state.distributions.testingConfig,
-    configurationMessage: state.distributions.configurationMessage,
-    fieldErrors: state.distributions.error,
+    job: state.distributionConfigs.job,
+    fieldErrors: state.distributionConfigs.error,
+    fetching: state.distributionConfigs.fetching,
+    inProgress: state.distributionConfigs.inProgress,
+    descriptors: state.descriptors.items,
+    success: state.distributionConfigs.success,
+    testingConfig: state.distributionConfigs.testingConfig,
+    configurationMessage: state.distributionConfigs.configurationMessage,
     currentDistributionComponents: state.descriptors.currentDistributionComponents
 });
 

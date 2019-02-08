@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.provider.polaris.descriptor;
 
 import static com.synopsys.integration.alert.util.FieldModelUtil.addConfigurationFieldToMap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.AlertProperties;
 import com.synopsys.integration.alert.common.ProxyManager;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
@@ -31,8 +33,9 @@ import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 import com.synopsys.integration.alert.web.model.configuration.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.IntLogger;
-import com.synopsys.integration.polaris.common.rest.AccessTokenRestConnection;
+import com.synopsys.integration.polaris.common.rest.AccessTokenPolarisHttpClient;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
+import com.synopsys.integration.rest.support.AuthenticationSupport;
 
 public class PolarisGlobalDescriptorActionApiTest {
     private static final String ERROR_POLARIS_ACCESS_TOKEN = "Invalid Polaris Access Token.";
@@ -129,12 +132,13 @@ public class PolarisGlobalDescriptorActionApiTest {
         Mockito.when(alertProperties.getAlertTrustCertificate()).thenReturn(Optional.of(Boolean.TRUE));
         final ProxyManager proxyManager = Mockito.mock(ProxyManager.class);
         Mockito.when(proxyManager.createProxyInfo()).thenReturn(ProxyInfo.NO_PROXY_INFO);
-        final PolarisProperties polarisProperties = new PolarisProperties(alertProperties, null, proxyManager);
+        final PolarisProperties polarisProperties = new PolarisProperties(alertProperties, null, proxyManager, new Gson(), new AuthenticationSupport());
 
         final PolarisGlobalDescriptorActionApi actionApi = new PolarisGlobalDescriptorActionApi(polarisProperties);
         try {
             actionApi.testConfig(testConfigModel);
         } catch (final Exception e) {
+            e.printStackTrace();
             fail("An exception was thrown while testing (seemingly) valid config. " + e.toString());
         }
     }
@@ -176,11 +180,11 @@ public class PolarisGlobalDescriptorActionApiTest {
 
     @Test
     public void testConfigThrowsIOExceptionTest() throws IOException, IntegrationException {
-        final AccessTokenRestConnection accessTokenRestConnection = Mockito.mock(AccessTokenRestConnection.class);
-        Mockito.when(accessTokenRestConnection.attemptAuthentication()).thenThrow(new IOException("Do these exceptions really still happen? Wow!"));
+        final AccessTokenPolarisHttpClient accessTokenPolarisHttpClient = Mockito.mock(AccessTokenPolarisHttpClient.class);
+        Mockito.when(accessTokenPolarisHttpClient.attemptAuthentication()).thenThrow(new IntegrationException("Do these exceptions really still happen? Wow!"));
 
         final PolarisProperties polarisProperties = Mockito.mock(PolarisProperties.class);
-        Mockito.when(polarisProperties.createRestConnection(Mockito.any(IntLogger.class), Mockito.anyString(), Mockito.anyString(), Mockito.anyInt())).thenReturn(accessTokenRestConnection);
+        Mockito.when(polarisProperties.createPolarisHttpClient(Mockito.any(IntLogger.class), Mockito.anyString(), Mockito.anyString(), Mockito.anyInt())).thenReturn(accessTokenPolarisHttpClient);
 
         final PolarisGlobalDescriptorActionApi actionApi = new PolarisGlobalDescriptorActionApi(polarisProperties);
 
@@ -197,7 +201,7 @@ public class PolarisGlobalDescriptorActionApiTest {
             actionApi.testConfig(testConfigModel);
             fail("Expected wrapped IOException to be thrown");
         } catch (final IntegrationException e) {
-            assertTrue(IOException.class.isInstance(e.getCause()));
+            assertNotNull(e);
         }
     }
 }

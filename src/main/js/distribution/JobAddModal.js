@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Modal } from 'react-bootstrap';
 import Select, { components } from 'react-select';
 
-import GroupEmailJobConfiguration from 'distribution/job/GroupEmailJobConfiguration';
+import EmailJobConfiguration from 'distribution/job/EmailJobConfiguration';
 import HipChatJobConfiguration from 'distribution/job/HipChatJobConfiguration';
 import SlackJobConfiguration from 'distribution/job/SlackJobConfiguration';
 import DescriptorOption from 'component/common/DescriptorOption';
@@ -42,7 +42,7 @@ class JobAddModal extends Component {
     getCurrentJobConfig() {
         switch (this.state.values.typeValue) {
             case DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_EMAIL:
-                return (<GroupEmailJobConfiguration
+                return (<EmailJobConfiguration
                     alertChannelName={this.state.values.typeValue}
                     projects={this.props.projects}
                     handleCancel={this.handleClose}
@@ -103,7 +103,7 @@ class JobAddModal extends Component {
     }
 
     createJobTypeOptions() {
-        const channelDescriptors = DescriptorUtilities.findDescriptorByTypeAndContext(this.props.descriptors.items, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+        const channelDescriptors = DescriptorUtilities.findDescriptorByTypeAndContext(this.props.descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
         if (channelDescriptors) {
             const optionList = channelDescriptors.map(descriptor => ({
                 label: descriptor.label,
@@ -162,7 +162,7 @@ JobAddModal.defaultProps = {
 };
 
 const mapStateToProps = state => ({
-    descriptors: state.descriptors
+    descriptors: state.descriptors.items
 });
 
 const mapDispatchToProps = dispatch => ({});

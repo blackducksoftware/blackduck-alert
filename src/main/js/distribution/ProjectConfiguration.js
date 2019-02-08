@@ -17,7 +17,11 @@ function assignDataFormat(cell, row) {
     const cellContent = (row.missing) ?
         <span className="missingBlackDuckData"><span className="fa fa-exclamation-triangle fa-fw" aria-hidden="true" />{cell}</span> :
         cell;
-    return <div title={cell}> {cellContent} </div>;
+
+    if (cell) {
+        return <div title={cell}> {cellContent} </div>;
+    }
+    return <div> {cellContent} </div>;
 }
 
 const KEY_FILTER_BY_PROJECT = 'channel.common.filter.by.project';
@@ -175,6 +179,7 @@ class ProjectConfiguration extends Component {
                     name={KEY_FILTER_BY_PROJECT}
                     isChecked={this.state.includeAllProjects}
                     onChange={this.handleChange}
+                    negateValue
                     errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_FILTER_BY_PROJECT)}
                     errorValue={this.props.fieldErrors[KEY_FILTER_BY_PROJECT]}
                 />

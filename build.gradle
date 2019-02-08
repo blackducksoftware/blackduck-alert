@@ -54,14 +54,14 @@ dependencyManagement {
 }
 
 dependencies {
-    implementation('com.blackducksoftware.integration:blackduck-common:40.0.0') {
+    implementation('com.blackducksoftware.integration:blackduck-common:41.2.0') {
         exclude group: 'lodash.escape'
         exclude group: 'dom4j:dom4j'
         exclude group: 'com.google.guava'
         exclude group: 'org.apache.pdfbox:pdfbox'
     }
 
-    implementation 'com.synopsys.integration:polaris-common:0.3.0'
+    implementation 'com.synopsys.integration:polaris-common:0.4.1'
 
     // Spring boot
     implementation 'org.springframework.boot:spring-boot-starter'

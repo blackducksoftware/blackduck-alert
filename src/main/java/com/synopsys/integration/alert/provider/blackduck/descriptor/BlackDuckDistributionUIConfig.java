@@ -52,12 +52,12 @@ public class BlackDuckDistributionUIConfig extends ProviderDistributionUIConfig 
 
     @Override
     public List<ConfigField> createProviderDistributionFields() {
-        final ConfigField filterByProject = CheckboxConfigField.create(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT, "Filter by project");
+        final ConfigField filterByProject = CheckboxConfigField.createRequired(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT, "Filter by project");
         final ConfigField projectNamePattern = TextInputConfigField.create(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN, "Project name pattern", this::validateProjectNamePattern);
 
         // TODO figure out how to create a project listing (Perhaps a new field type called table)
         // TODO create a linkedField that is an endpoint the UI hits to generate a field
-        final ConfigField configuredProject = SelectConfigField.createRequiredEmpty(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT, "Projects", this::validateConfiguredProject);
+        final ConfigField configuredProject = SelectConfigField.createEmpty(BlackDuckDescriptor.KEY_CONFIGURED_PROJECT, "Projects", this::validateConfiguredProject);
         return List.of(filterByProject, projectNamePattern, configuredProject);
     }
 

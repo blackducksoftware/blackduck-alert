@@ -58,6 +58,7 @@ import com.synopsys.integration.alert.common.exception.AlertUpgradeException;
 import com.synopsys.integration.alert.web.security.authentication.database.UserDatabaseService;
 import com.synopsys.integration.alert.workflow.startup.StartupManager;
 import com.synopsys.integration.rest.RestConstants;
+import com.synopsys.integration.rest.support.AuthenticationSupport;
 
 @EnableJpaRepositories(basePackages = { "com.synopsys.integration.alert.database" })
 @EnableTransactionManagement
@@ -125,6 +126,11 @@ public class Application {
     @Bean
     public Gson gson() {
         return new GsonBuilder().setDateFormat(RestConstants.JSON_DATE_FORMAT).create();
+    }
+
+    @Bean
+    public AuthenticationSupport authenticationSupport() {
+        return new AuthenticationSupport();
     }
 
     @Bean
