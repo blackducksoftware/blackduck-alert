@@ -96,6 +96,7 @@ class Index extends Component {
             nextDelete: null,
             jobsToDelete: []
         });
+        this.reloadJobs();
     }
 
     getCurrentJobConfig(currentRowSelected) {

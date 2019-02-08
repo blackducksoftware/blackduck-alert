@@ -56,10 +56,9 @@ function deletingJobConfig() {
     };
 }
 
-function deletingJobConfigSuccess(message) {
+function deletingJobConfigSuccess() {
     return {
-        type: DISTRIBUTION_JOB_DELETED,
-        jobConfigTableMessage: message
+        type: DISTRIBUTION_JOB_DELETED
     };
 }
 
@@ -102,21 +101,17 @@ function fetchAuditInfoForJob(csrfToken, jobConfig) {
 }
 
 export function openJobDeleteModal() {
-    return (dispatch, getState) => {
-        dispatch(openJobDelete());
-    };
+    return (dispatch, getState) => dispatch(openJobDelete());
 }
 
 export function deleteDistributionJob(job) {
     return (dispatch, getState) => {
         dispatch(deletingJobConfig());
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, job.id);
+        const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, job.jobId);
         request.then((response) => {
             if (response.ok) {
-                response.json().then((json) => {
-                    dispatch(deletingJobConfigSuccess(json.message));
-                });
+                dispatch(deletingJobConfigSuccess());
             } else {
                 response.json()
                     .then((data) => {
