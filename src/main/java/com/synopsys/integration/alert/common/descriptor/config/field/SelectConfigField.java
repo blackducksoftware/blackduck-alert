@@ -25,11 +25,17 @@ package com.synopsys.integration.alert.common.descriptor.config.field;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.synopsys.integration.alert.common.enumeration.FieldGroup;
 import com.synopsys.integration.alert.common.enumeration.FieldType;
+import com.synopsys.integration.alert.web.model.configuration.FieldModel;
+import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 
 public class SelectConfigField extends ConfigField {
+    public static final String INVALID_OPTION_SELECTED = "Invalid option selected.";
     private Collection<String> options;
     private boolean searchable;
     private boolean multiSelect;
@@ -103,5 +109,26 @@ public class SelectConfigField extends ConfigField {
 
     public void setOptions(final Collection<String> options) {
         this.options = options;
+    }
+
+    @Override
+    public Collection<String> validate(final FieldValueModel fieldValueModel, final FieldModel fieldModel) {
+        final List<ConfigValidationFunction> validationFunctions;
+        if (null != getValidationFunction()) {
+            validationFunctions = List.of(this::validateIsValidOption, getValidationFunction());
+        } else {
+            validationFunctions = List.of(this::validateIsValidOption);
+        }
+        return validate(fieldValueModel, fieldModel, validationFunctions);
+    }
+
+    private Collection<String> validateIsValidOption(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
+        if (fieldToValidate.hasValues()) {
+            final boolean doesMatchKnownReferral = fieldToValidate.getValues().stream().map(StringUtils::trimToEmpty).allMatch(value -> getOptions().stream().anyMatch(option -> option.equals(value)));
+            if (!doesMatchKnownReferral) {
+                return List.of(INVALID_OPTION_SELECTED);
+            }
+        }
+        return List.of();
     }
 }
