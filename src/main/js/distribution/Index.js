@@ -316,7 +316,7 @@ class Index extends Component {
                 return null;
             }
         };
-        console.log('tabledata', tableData)
+
         let content = (
             <div>
                 <BootstrapTable
