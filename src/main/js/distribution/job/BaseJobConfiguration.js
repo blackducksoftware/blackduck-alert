@@ -142,13 +142,13 @@ class BaseJobConfiguration extends Component {
                     channelModel = FieldModelUtilities.updateFieldModelSingleValue(channelModel, KEY_NOTIFICATION_TYPES, selectedFrequencyOption);
                 }
 
-                this.setState = {
+                this.setState({
                     success: false,
                     fieldErrors: {},
                     jobId: nextProps.job.jobId,
                     commonConfig: channelModel,
                     providerConfig: providerModel
-                };
+                });
             }
         }
     }
@@ -208,7 +208,7 @@ class BaseJobConfiguration extends Component {
         const commonFieldModel = FieldModelUtilities.updateFieldModelSingleValue(this.state.commonConfig, KEY_CHANNEL_NAME, channelName);
         const updatedChannelFieldModel = FieldModelUtilities.combineFieldModels(commonFieldModel, channelSpecific);
         const configuration = Object.assign({}, {
-            jobId: null,
+            jobId: this.state.jobId,
             fieldModels: [
                 updatedChannelFieldModel,
                 updatedProviderFieldModel
