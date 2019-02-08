@@ -70,7 +70,7 @@ class EmailJobConfiguration extends Component {
                     id={KEY_SUBJECT_LINE}
                     label="Subject Line"
                     name={KEY_SUBJECT_LINE}
-                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_SUBJECT_LINE)}
+                    value={FieldModelUtilities.getFieldModelSingleValueOrDefault(fieldModel, KEY_SUBJECT_LINE, '')}
                     onChange={this.handleChange}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_SUBJECT_LINE)}
                     errorValue={this.props.fieldErrors[KEY_SUBJECT_LINE]}

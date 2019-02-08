@@ -10,6 +10,10 @@ export function getFieldModelSingleValue(fieldModel, key) {
     return undefined;
 }
 
+export function getFieldModelSingleValueOrDefault(fieldModel, key, defaultValue) {
+    return getFieldModelSingleValue(fieldModel, key) || defaultValue;
+}
+
 export function getFieldModelValues(fieldModel, key) {
     if (fieldModel.keyToValues) {
         const fieldObject = fieldModel.keyToValues[key];
@@ -28,6 +32,10 @@ export function getFieldModelBooleanValue(fieldModel, key) {
         return true;
     }
     return false;
+}
+
+export function getFieldModelBooleanValueOrDefault(fieldModel, key, defaultValue) {
+    return getFieldModelBooleanValue(fieldModel, key) || defaultValue;
 }
 
 export function isFieldModelValueSet(fieldModel, key) {

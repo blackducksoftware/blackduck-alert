@@ -385,7 +385,7 @@ class BaseJobConfiguration extends Component {
                     handleProjectChanged={this.createMultiSelectHandler(KEY_CONFIGURED_PROJECT, FIELD_MODEL_KEY.PROVIDER)}
                     projects={this.props.projects}
                     configuredProjects={FieldModelUtilities.getFieldModelValues(providerFieldModel, KEY_CONFIGURED_PROJECT)}
-                    projectNamePattern={FieldModelUtilities.getFieldModelSingleValue(providerFieldModel, KEY_PROJECT_NAME_PATTERN)}
+                    projectNamePattern={FieldModelUtilities.getFieldModelSingleValueOrDefault(providerFieldModel, KEY_PROJECT_NAME_PATTERN, '')}
                     fieldErrors={this.props.fieldErrors}
                 />
                 <ConfigButtons cancelId="job-cancel" submitId="job-submit" includeTest includeCancel onTestClick={this.handleTestSubmit} onCancelClick={this.props.handleCancel} />
@@ -421,7 +421,7 @@ class BaseJobConfiguration extends Component {
                     id={KEY_NAME}
                     label="Job Name"
                     name={KEY_NAME}
-                    value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_NAME)}
+                    value={FieldModelUtilities.getFieldModelSingleValueOrDefault(fieldModel, KEY_NAME, '')}
                     onChange={this.createChangeHandler(FIELD_MODEL_KEY.COMMON)}
                     errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_NAME)}
                     errorValue={this.props.fieldErrors[KEY_NAME]}
