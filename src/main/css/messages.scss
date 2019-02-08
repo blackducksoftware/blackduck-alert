@@ -1,18 +1,20 @@
+@import 'variables.scss';
+
 .errorStatus {
-  color: darkred;
+  color: $synopsys-color-platform-red;
 }
 
 .validStatus {
-  color: green;
+  color: $synopsys-color-platform-green;
 }
 
 .warningStatus {
-  color: orange;
+  color: $synopsys-color-orange;
 }
 
 .messageHeader {
   width: 100%;
-  border-top: 1px solid #777777;
+  border-top: 1px solid $synopsys-color-dark-gray;
 }
 
 .messageDate {
