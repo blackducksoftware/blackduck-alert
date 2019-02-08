@@ -76,6 +76,8 @@ public class SettingsDescriptor extends ComponentDescriptor {
     public static final String FIELD_ERROR_LDAP_SERVER_MISSING = "LDAP Server missing";
     public static final String FIELD_ERROR_LDAP_USERNAME_MISSING = "LDAP Manager DN is missing";
     public static final String FIELD_ERROR_LDAP_PASSWORD_MISSING = "LDAP Manager DN password is missing";
+    public static final String FIELD_ERROR_LDAP_AUTHENTICATION_TYPE_INVALID = "Invalid LDAP Authentication type specified.";
+    public static final String FIELD_ERROR_LDAP_REFERRAL_INVALID = "Invalid LDAP Referral specified";
 
     @Autowired
     public SettingsDescriptor(final SettingsDescriptorActionApi componentRestApi, final SettingsUIConfig uiConfig) {
