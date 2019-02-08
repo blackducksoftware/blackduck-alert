@@ -16,6 +16,7 @@ import {
 
 const initialState = {
     fetching: false,
+    saving: false,
     inProgress: false,
     success: false,
     testingConfig: false,
@@ -31,6 +32,7 @@ const config = (state = initialState, action) => {
         case DISTRIBUTION_JOB_FETCHING:
             return Object.assign({}, state, {
                 fetching: true,
+                saving: false,
                 inProgress: true,
                 success: false,
                 testingConfig: false,
@@ -41,6 +43,7 @@ const config = (state = initialState, action) => {
         case DISTRIBUTION_JOB_FETCHED:
             return Object.assign({}, state, {
                 fetching: false,
+                saving: false,
                 inProgress: false,
                 success: false,
                 testingConfig: false,
@@ -52,6 +55,7 @@ const config = (state = initialState, action) => {
         case DISTRIBUTION_JOB_FETCH_ERROR:
             return Object.assign({}, state, {
                 fetching: false,
+                saving: false,
                 inProgress: false,
                 success: false,
                 testingConfig: false,
@@ -66,6 +70,7 @@ const config = (state = initialState, action) => {
         case DISTRIBUTION_JOB_SAVING:
             return Object.assign({}, state, {
                 fetching: false,
+                saving: true,
                 inProgress: true,
                 success: false,
                 testingConfig: false,
@@ -78,6 +83,7 @@ const config = (state = initialState, action) => {
         case DISTRIBUTION_JOB_SAVED:
             return Object.assign({}, state, {
                 fetching: false,
+                saving: false,
                 inProgress: false,
                 success: true,
                 testingConfig: false,
@@ -90,6 +96,7 @@ const config = (state = initialState, action) => {
         case DISTRIBUTION_JOB_SAVE_ERROR:
             return Object.assign({}, state, {
                 fetching: false,
+                saving: false,
                 inProgress: false,
                 success: false,
                 testingConfig: false,
@@ -103,6 +110,7 @@ const config = (state = initialState, action) => {
         case DISTRIBUTION_JOB_TESTING:
             return Object.assign({}, state, {
                 fetching: false,
+                saving: false,
                 inProgress: true,
                 success: false,
                 testingConfig: true,
@@ -113,6 +121,7 @@ const config = (state = initialState, action) => {
         case DISTRIBUTION_JOB_TEST_SUCCESS:
             return Object.assign({}, state, {
                 fetching: false,
+                saving: false,
                 inProgress: false,
                 success: true,
                 testingConfig: true,
@@ -123,6 +132,7 @@ const config = (state = initialState, action) => {
         case DISTRIBUTION_JOB_TEST_FAILURE:
             return Object.assign({}, state, {
                 fetching: false,
+                saving: false,
                 inProgress: false,
                 success: false,
                 testingConfig: true,
