@@ -35,9 +35,7 @@ const config = (state = initialState, action) => {
                 success: false,
                 testingConfig: false,
                 configurationMessage: '',
-                error: {
-                    message: ''
-                }
+                error: {}
             });
 
         case DISTRIBUTION_JOB_FETCHED:
@@ -47,9 +45,7 @@ const config = (state = initialState, action) => {
                 success: false,
                 testingConfig: false,
                 configurationMessage: action.configurationMessage,
-                error: {
-                    message: ''
-                },
+                error: {},
                 job: action.job
             });
 
@@ -74,9 +70,7 @@ const config = (state = initialState, action) => {
                 success: false,
                 testingConfig: false,
                 configurationMessage: 'Saving...',
-                error: {
-                    message: ''
-                },
+                error: {},
                 job: action.job
             });
 
@@ -88,9 +82,7 @@ const config = (state = initialState, action) => {
                 success: true,
                 testingConfig: false,
                 configurationMessage: action.configurationMessage,
-                error: {
-                    message: ''
-                },
+                error: {},
                 ...action
             });
 
@@ -115,9 +107,7 @@ const config = (state = initialState, action) => {
                 success: false,
                 testingConfig: true,
                 configurationMessage: 'Testing...',
-                error: {
-                    message: ''
-                }
+                error: {}
             });
 
         case DISTRIBUTION_JOB_TEST_SUCCESS:
@@ -127,9 +117,7 @@ const config = (state = initialState, action) => {
                 success: true,
                 testingConfig: true,
                 configurationMessage: action.configurationMessage,
-                error: {
-                    message: ''
-                }
+                error: {}
             });
 
         case DISTRIBUTION_JOB_TEST_FAILURE:

@@ -67,7 +67,6 @@ class BaseJobConfiguration extends Component {
             fieldErrors: {},
             commonConfig: FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, this.props.alertChannelName),
             providerConfig: FieldModelUtilities.createEmptyFieldModel(providerFieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, null),
-            providerOptions: []
         };
         this.loading = false;
         this.saving = false;
@@ -92,6 +91,7 @@ class BaseJobConfiguration extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        console.log("base next props ", nextProps);
         if (this.saving) {
             this.saving = false;
             if (nextProps.success && nextProps.handleSaveBtnClick) {
@@ -108,39 +108,47 @@ class BaseJobConfiguration extends Component {
                 });
             } else if (this.loading) {
                 this.loading = false;
-                const stateValues = Object.assign({}, this.state, {
-                    fetching: nextProps.fetching,
-                    inProgress: nextProps.inProgress,
-                    success: nextProps.success,
-                    configurationMessage: nextProps.configurationMessage,
-                    fieldErrors: nextProps.fieldErrors ? nextProps.fieldErrors : {}
-                });
-
-                if (nextProps.distributionConfigId) {
-                    const jobConfig = nextProps.job;
-                    const newState = Object.assign({}, stateValues, {
-                        id: jobConfig.id,
-                        distributionConfigId: nextProps.distributionConfigId,
-                        name: jobConfig.name,
-                        providerName: jobConfig.providerName,
-                        distributionType: jobConfig.distributionType,
-                        frequency: jobConfig.frequency,
-                        formatType: jobConfig.formatType,
-                        includeAllProjects: jobConfig.filterByProject === 'false',
-                        filterByProject: jobConfig.filterByProject,
-                        notificationTypes: jobConfig.notificationTypes,
-                        configuredProjects: jobConfig.configuredProjects,
-                        projectNamePattern: jobConfig.projectNamePattern
-                    });
-                    this.setState(newState);
-                } else {
-                    if (this.state.includeAllProjects == null || undefined === this.state.includeAllProjects) {
-                        this.setState({
-                            includeAllProjects: true
-                        });
-                    }
-                    this.setState(stateValues);
+                let channelModel = FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, this.props.alertChannelName);
+                let providerModel = FieldModelUtilities.createEmptyFieldModel(providerFieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, null);
+                const { job } = nextProps;
+                if (job && job.fieldModels) {
+                    channelModel = nextProps.job.fieldModels.find(model => model.descriptorName.startsWith('channel_'));
+                    providerModel = nextProps.job.fieldModels.find(model => model.descriptorName.startsWith('provider_'));
                 }
+
+                const formatOptions = this.createFormatTypeOptions();
+                const notificationOptions = this.createNotificationTypeOptions();
+                const selectedFormatType = this.getSelectedSingleValue(formatOptions, providerModel, KEY_FORMAT_TYPE);
+                const selectedNotifications = this.getSelectedValues(notificationOptions, providerModel, KEY_NOTIFICATION_TYPES);
+
+                if (!FieldModelUtilities.hasFieldModelValues(providerModel, KEY_FORMAT_TYPE)) {
+                    providerModel = FieldModelUtilities.updateFieldModelSingleValue(providerModel, KEY_FORMAT_TYPE, selectedFormatType);
+                }
+
+                if (!FieldModelUtilities.hasFieldModelValues(providerModel, KEY_NOTIFICATION_TYPES)) {
+                    providerModel = FieldModelUtilities.updateFieldModelSingleValue(providerModel, KEY_NOTIFICATION_TYPES, selectedNotifications);
+                }
+
+                const providers = this.createProviderOptions();
+                const frequencyOptions = this.createFrequencyOptions();
+                const selectedProviderOption = this.getSelectedSingleValue(providers, channelModel, KEY_PROVIDER_NAME);
+                const selectedFrequencyOption = this.getSelectedSingleValue(frequencyOptions, channelModel, KEY_FREQUENCY);
+
+                if (!FieldModelUtilities.hasFieldModelValues(channelModel, KEY_PROVIDER_NAME)) {
+                    channelModel = FieldModelUtilities.updateFieldModelSingleValue(channelModel, KEY_NOTIFICATION_TYPES, selectedProviderOption);
+                }
+
+                if (!FieldModelUtilities.hasFieldModelValues(channelModel, KEY_FREQUENCY)) {
+                    channelModel = FieldModelUtilities.updateFieldModelSingleValue(channelModel, KEY_NOTIFICATION_TYPES, selectedFrequencyOption);
+                }
+
+                this.setState = {
+                    success: false,
+                    fieldErrors: {},
+                    jobId: nextProps.job.jobId,
+                    commonConfig: channelModel,
+                    providerConfig: providerModel
+                };
             }
         }
     }
@@ -330,20 +338,6 @@ class BaseJobConfiguration extends Component {
         const notificationOptions = this.createNotificationTypeOptions();
         const selectedFormatType = this.getSelectedSingleValue(formatOptions, providerFieldModel, KEY_FORMAT_TYPE);
         const selectedNotifications = this.getSelectedValues(notificationOptions, providerFieldModel, KEY_NOTIFICATION_TYPES);
-        //
-        // if (!FieldModelUtilities.hasFieldModelValues(fieldModel, KEY_FORMAT_TYPE)) {
-        //     const newState = FieldModelUtilities.updateFieldModelSingleValue(fieldModel, KEY_FORMAT_TYPE, selectedFormatType);
-        //     this.setState({
-        //         commonConfig: newState
-        //     });
-        // }
-        //
-        // if (!FieldModelUtilities.hasFieldModelValues(fieldModel, KEY_NOTIFICATION_TYPES)) {
-        //     const newState = FieldModelUtilities.updateFieldModelSingleValue(fieldModel, KEY_NOTIFICATION_TYPES, selectedNotifications);
-        //     this.setState({
-        //         commonConfig: newState
-        //     });
-        // }
 
         return (
             <div>
@@ -400,20 +394,6 @@ class BaseJobConfiguration extends Component {
         const selectedProviderOption = this.getSelectedSingleValue(providers, fieldModel, KEY_PROVIDER_NAME);
         const selectedFrequencyOption = this.getSelectedSingleValue(frequencyOptions, fieldModel, KEY_FREQUENCY);
 
-        // if (!FieldModelUtilities.hasFieldModelValues(fieldModel, KEY_PROVIDER_NAME)) {
-        //     const newState = FieldModelUtilities.updateFieldModelSingleValue(fieldModel, KEY_NOTIFICATION_TYPES, selectedProviderOption);
-        //     this.setState({
-        //         commonConfig: newState
-        //     });
-        // }
-        //
-        // if (!FieldModelUtilities.hasFieldModelValues(fieldModel, KEY_FREQUENCY)) {
-        //     const newState = FieldModelUtilities.updateFieldModelSingleValue(fieldModel, KEY_NOTIFICATION_TYPES, selectedFrequencyOption);
-        //     this.setState({
-        //         commonConfig: newState
-        //     });
-        // }
-
         return (
             <form className="form-horizontal" onSubmit={this.onSubmit}>
                 <TextInput
@@ -464,24 +444,20 @@ BaseJobConfiguration.propTypes = {
     testDistributionJob: PropTypes.func.isRequired,
     saveDistributionJob: PropTypes.func.isRequired,
     updateDistributionJob: PropTypes.func.isRequired,
-    getDistributionDescriptor: PropTypes.func.isRequired,
     descriptors: PropTypes.arrayOf(PropTypes.object).isRequired,
-    job: PropTypes.object,
+    job: PropTypes.object.isRequired,
     fetching: PropTypes.bool,
     inProgress: PropTypes.bool,
     success: PropTypes.bool,
     testingConfig: PropTypes.bool,
     configurationMessage: PropTypes.string,
     fieldErrors: PropTypes.object,
-    distributionConfigId: PropTypes.string,
     handleCancel: PropTypes.func.isRequired,
     handleSaveBtnClick: PropTypes.func.isRequired,
     getParentConfiguration: PropTypes.func.isRequired,
     childContent: PropTypes.object.isRequired,
     alertChannelName: PropTypes.string.isRequired,
-    currentDistributionComponents: PropTypes.object,
     projects: PropTypes.arrayOf(PropTypes.any),
-    commonConfig: PropTypes.object
 };
 
 BaseJobConfiguration.defaultProps = {
@@ -492,30 +468,24 @@ BaseJobConfiguration.defaultProps = {
     testingConfig: false,
     configurationMessage: '',
     fieldErrors: {},
-    distributionConfigId: null,
-    currentDistributionComponents: null,
-    projects: [],
-    commonConfig: {}
+    projects: []
 };
 
 const mapDispatchToProps = dispatch => ({
     getDistributionJob: id => dispatch(getDistributionJob(id)),
     saveDistributionJob: config => dispatch(saveDistributionJob(config)),
     updateDistributionJob: config => dispatch(updateDistributionJob(config)),
-    testDistributionJob: config => dispatch(testDistributionJob(config)),
-    getDistributionDescriptor: (provider, channel) => dispatch(getDistributionDescriptor(provider, channel))
+    testDistributionJob: config => dispatch(testDistributionJob(config))
 });
 
 const mapStateToProps = state => ({
-    job: state.distributionConfigs.job,
     fieldErrors: state.distributionConfigs.error,
     fetching: state.distributionConfigs.fetching,
     inProgress: state.distributionConfigs.inProgress,
     descriptors: state.descriptors.items,
     success: state.distributionConfigs.success,
     testingConfig: state.distributionConfigs.testingConfig,
-    configurationMessage: state.distributionConfigs.configurationMessage,
-    currentDistributionComponents: state.descriptors.currentDistributionComponents
+    configurationMessage: state.distributionConfigs.configurationMessage
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(BaseJobConfiguration);
