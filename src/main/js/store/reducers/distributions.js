@@ -1,5 +1,6 @@
 import {
     DISTRIBUTION_JOB_DELETE_ERROR,
+    DISTRIBUTION_JOB_DELETE_OPEN_MODAL,
     DISTRIBUTION_JOB_DELETED,
     DISTRIBUTION_JOB_DELETING,
     DISTRIBUTION_JOB_FETCH_ALL_NONE_FOUND,
@@ -12,14 +13,21 @@ import {
 const initialState = {
     inProgress: false,
     jobs: [],
-    jobConfigTableMessage: ''
+    jobConfigTableMessage: '',
+    jobDeleteMessage: ''
 };
 
 const config = (state = initialState, action) => {
     switch (action.type) {
+        case DISTRIBUTION_JOB_DELETE_OPEN_MODAL:
+        case DISTRIBUTION_JOB_DELETE_ERROR:
+            return Object.assign({}, state, {
+                inProgress: false,
+                jobDeleteMessage: action.jobDeleteMessage
+            });
+
         case DISTRIBUTION_JOB_FETCH_ERROR_ALL:
         case DISTRIBUTION_JOB_FETCH_ALL_NONE_FOUND:
-        case DISTRIBUTION_JOB_DELETE_ERROR:
             return Object.assign({}, state, {
                 inProgress: false,
                 jobConfigTableMessage: action.jobConfigTableMessage

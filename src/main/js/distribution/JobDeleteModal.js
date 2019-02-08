@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Modal } from 'react-bootstrap';
-import ConfigButtons from 'distribution/job/BaseJobConfiguration';
+import ConfigButtons from 'component/common/ConfigButtons';
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
 import { deleteDistributionJob } from 'store/actions/distributions';
 
@@ -29,7 +29,7 @@ class JobDeleteModal extends Component {
         this.setState({
             inProgress: false
         });
-        if (!this.props.jobConfigTableMessage) {
+        if (!this.props.jobDeleteMessage) {
             this.props.onModalClose();
         }
     }
@@ -73,7 +73,7 @@ class JobDeleteModal extends Component {
                                 <TableHeaderColumn dataField="status" dataSort columnTitle columnClassName={this.props.statusColumnClassNameFormat}>Status</TableHeaderColumn>
                             </BootstrapTable>
                         </div>
-                        <p name="jobConfigTableMessage">{this.props.jobConfigTableMessage}</p>
+                        <p name="jobDeleteMessage">{this.props.jobDeleteMessage}</p>
                         <ConfigButtons performingAction={this.state.inProgress} cancelId="job-cancel" submitId="job-submit" submitLabel="Confirm" includeSave includeCancel onCancelClick={this.handleClose} />
                     </form>
                 </Modal.Body>
@@ -85,7 +85,7 @@ class JobDeleteModal extends Component {
 
 JobDeleteModal.propTypes = {
     createTableData: PropTypes.func.isRequired,
-    jobConfigTableMessage: PropTypes.string.isRequired,
+    jobDeleteMessage: PropTypes.string.isRequired,
     onModalClose: PropTypes.func.isRequired,
     onModalSubmit: PropTypes.func.isRequired,
     deleteDistributionJob: PropTypes.func.isRequired,
@@ -103,7 +103,7 @@ JobDeleteModal.defaultProps = {
 };
 
 const mapStateToProps = state => ({
-    jobConfigTableMessage: state.distributions.jobConfigTableMessage
+    jobDeleteMessage: state.distributions.jobDeleteMessage
 });
 
 const mapDispatchToProps = dispatch => ({
