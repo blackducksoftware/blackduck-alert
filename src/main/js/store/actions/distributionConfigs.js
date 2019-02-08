@@ -109,9 +109,9 @@ export function getDistributionJob(id) {
             const request = ConfigRequestBuilder.createReadRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, id);
             request.then((response) => {
                 if (response.ok) {
-                    response.json().then((jsonArray) => {
-                        if (jsonArray && jsonArray.length > 0) {
-                            dispatch(jobFetched(jsonArray[0]));
+                    response.json().then((json) => {
+                        if (json) {
+                            dispatch(jobFetched(json));
                         } else {
                             dispatch(jobFetchError());
                         }

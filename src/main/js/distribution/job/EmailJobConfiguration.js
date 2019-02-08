@@ -30,9 +30,11 @@ class EmailJobConfiguration extends Component {
     }
 
     componentDidMount() {
-        const { distributionConfigId } = this.props;
-        this.props.getDistributionJob(distributionConfigId);
-        this.loading = true;
+        const { jobId } = this.props;
+        if (jobId) {
+            this.props.getDistributionJob(jobId);
+            this.loading = true;
+        }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -40,10 +42,11 @@ class EmailJobConfiguration extends Component {
             if (this.loading) {
                 this.loading = false;
                 const jobConfig = nextProps.job;
-                if (jobConfig) {
+                if (jobConfig && jobConfig.fieldModels) {
+                    const channelModel = jobConfig.fieldModels.find(model => model.descriptorName.startsWith('channel_'));
                     this.setState({
-                        emailSubjectLine: jobConfig.emailSubjectLine,
-                        projectOwnerOnly: jobConfig.projectOwnerOnly
+                        jobConfig,
+                        currentConfig: channelModel
                     });
                 }
             }
@@ -87,7 +90,7 @@ class EmailJobConfiguration extends Component {
             </div>);
         return (<BaseJobConfiguration
             alertChannelName={this.props.alertChannelName}
-            distributionConfigId={this.props.distributionConfigId}
+            job={this.state.jobConfig}
             handleCancel={this.props.handleCancel}
             handleSaveBtnClick={this.props.handleSaveBtnClick}
             getParentConfiguration={this.getConfiguration}
@@ -98,7 +101,7 @@ class EmailJobConfiguration extends Component {
 
 EmailJobConfiguration.propTypes = {
     job: PropTypes.object,
-    distributionConfigId: PropTypes.string,
+    jobId: PropTypes.string,
     getDistributionJob: PropTypes.func.isRequired,
     fieldErrors: PropTypes.object,
     handleCancel: PropTypes.func.isRequired,
@@ -109,8 +112,8 @@ EmailJobConfiguration.propTypes = {
 };
 
 EmailJobConfiguration.defaultProps = {
-    job: {},
-    distributionConfigId: null,
+    job: null,
+    jobId: null,
     fieldErrors: {},
     fetching: false,
     inProgress: false
