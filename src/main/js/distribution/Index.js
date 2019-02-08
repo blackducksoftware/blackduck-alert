@@ -9,7 +9,7 @@ import HipChatJobConfiguration from 'distribution/job/HipChatJobConfiguration';
 import SlackJobConfiguration from 'distribution/job/SlackJobConfiguration';
 import EditTableCellFormatter from 'component/common/EditTableCellFormatter';
 import JobAddModal from 'distribution/JobAddModal';
-import { fetchDistributionJobs } from 'store/actions/distributions';
+import { fetchDistributionJobs, openJobDeleteModal } from 'store/actions/distributions';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 import JobDeleteModal from 'distribution/JobDeleteModal';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
@@ -182,6 +182,7 @@ class Index extends Component {
     customJobConfigDeletionConfirm(next, dropRowKeys) {
         const { jobs } = this.props;
         const matchingJobs = jobs.filter(job => dropRowKeys.includes(job.jobId));
+        this.props.openJobDeleteModal();
         this.setState({
             showDeleteModal: true,
             nextDelete: next,
@@ -380,6 +381,7 @@ class Index extends Component {
 }
 
 Index.propTypes = {
+    openJobDeleteModal: PropTypes.func.isRequired,
     fetchDistributionJobs: PropTypes.func.isRequired,
     autoRefresh: PropTypes.bool,
     descriptors: PropTypes.arrayOf(PropTypes.object),
@@ -403,6 +405,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
+    openJobDeleteModal: () => dispatch(openJobDeleteModal()),
     fetchDistributionJobs: () => dispatch(fetchDistributionJobs())
 });
 
