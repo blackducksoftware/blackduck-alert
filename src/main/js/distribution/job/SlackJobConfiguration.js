@@ -30,9 +30,11 @@ class SlackJobConfiguration extends Component {
     }
 
     componentDidMount() {
-        const { distributionConfigId } = this.props;
-        this.props.getDistributionJob(distributionConfigId);
-        this.loading = true;
+        const { jobId } = this.props;
+        if (jobId) {
+            this.props.getDistributionJob(jobId);
+            this.loading = true;
+        }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -40,11 +42,11 @@ class SlackJobConfiguration extends Component {
             if (this.loading) {
                 this.loading = false;
                 const jobConfig = nextProps.job;
-                if (jobConfig) {
+                if (jobConfig && jobConfig.fieldModels) {
+                    const channelModel = jobConfig.fieldModels.find(model => model.descriptorName.startsWith('channel_'));
                     this.setState({
-                        webhook: jobConfig.webhook,
-                        channelUsername: jobConfig.channelUsername,
-                        channelName: jobConfig.channelName
+                        jobConfig,
+                        currentConfig: channelModel
                     });
                 }
             }
@@ -97,7 +99,7 @@ class SlackJobConfiguration extends Component {
             </div>);
         return (<BaseJobConfiguration
             alertChannelName={DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_SLACK}
-            distributionConfigId={this.props.distributionConfigId}
+            job={this.state.jobConfig}
             handleCancel={this.props.handleCancel}
             handleSaveBtnClick={this.props.handleSaveBtnClick}
             getParentConfiguration={this.getConfiguration}
@@ -109,7 +111,7 @@ class SlackJobConfiguration extends Component {
 SlackJobConfiguration.propTypes = {
     getDistributionJob: PropTypes.func.isRequired,
     job: PropTypes.object,
-    distributionConfigId: PropTypes.string,
+    jobId: PropTypes.string,
     fieldErrors: PropTypes.object,
     handleCancel: PropTypes.func.isRequired,
     handleSaveBtnClick: PropTypes.func.isRequired,
@@ -118,8 +120,8 @@ SlackJobConfiguration.propTypes = {
 };
 
 SlackJobConfiguration.defaultProps = {
-    job: {},
-    distributionConfigId: null,
+    job: null,
+    jobId: null,
     fieldErrors: {},
     fetching: false,
     inProgress: false

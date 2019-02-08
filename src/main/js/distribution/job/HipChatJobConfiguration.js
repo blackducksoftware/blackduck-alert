@@ -7,7 +7,7 @@ import CheckboxInput from 'field/input/CheckboxInput';
 import { getDistributionJob } from 'store/actions/distributionConfigs';
 
 import BaseJobConfiguration from 'distribution/job/BaseJobConfiguration';
-import * as FielModelUtilities from 'util/fieldModelUtilities';
+import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 
 const KEY_ROOM_ID = 'channel.hipchat.room.id';
@@ -28,15 +28,17 @@ class HipChatJobConfiguration extends Component {
         this.getConfiguration = this.getConfiguration.bind(this);
         this.createSingleSelectHandler = this.createSingleSelectHandler.bind(this);
         this.state = {
-            currentConfig: FielModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_HIPCHAT)
+            currentConfig: FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_HIPCHAT)
         };
         this.loading = false;
     }
 
     componentDidMount() {
-        const { distributionConfigId } = this.props;
-        this.props.getDistributionJob(distributionConfigId);
-        this.loading = true;
+        const { jobId } = this.props;
+        if (jobId) {
+            this.props.getDistributionJob(jobId);
+            this.loading = true;
+        }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -44,11 +46,11 @@ class HipChatJobConfiguration extends Component {
             if (this.loading) {
                 this.loading = false;
                 const jobConfig = nextProps.job;
-                if (jobConfig) {
+                if (jobConfig && jobConfig.fieldModels) {
+                    const channelModel = jobConfig.fieldModels.find(model => model.descriptorName.startsWith('channel_'));
                     this.setState({
-                        roomId: jobConfig.roomId,
-                        notify: jobConfig.notify,
-                        color: jobConfig.color,
+                        jobConfig,
+                        currentConfig: channelModel,
                         colorOptions: nextProps.colorOptions
                     });
                 }
@@ -76,12 +78,12 @@ class HipChatJobConfiguration extends Component {
         return (selectedValue) => {
             if (selectedValue) {
                 const selected = selectedValue.value;
-                const newState = FielModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, fieldKey, selected);
+                const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, fieldKey, selected);
                 this.setState({
                     currentConfig: newState
                 });
             } else {
-                const newState = FielModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, fieldKey, null);
+                const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, fieldKey, null);
                 this.setState({
                     currentConfig: newState
                 });
@@ -95,7 +97,7 @@ class HipChatJobConfiguration extends Component {
         const fieldModel = this.state.currentConfig;
         let selectedColorOption = null;
         if (colorOptions) {
-            selectedColorOption = colorOptions.find(option => option.value === this.state.color);
+            selectedColorOption = colorOptions.find(option => option.value === FieldModelUtilities.getFieldModelSingleValue(this.state.currentConfig, KEY_COLOR));
         }
         const content = (
             <div>
@@ -103,18 +105,18 @@ class HipChatJobConfiguration extends Component {
                     id={KEY_ROOM_ID}
                     label="Room Id"
                     name={KEY_ROOM_ID}
-                    value={FielModelUtilities.getFieldModelSingleValueOrDefault(fieldModel, KEY_ROOM_ID, '')}
+                    value={FieldModelUtilities.getFieldModelSingleValueOrDefault(fieldModel, KEY_ROOM_ID, '')}
                     onChange={this.handleChange}
-                    errorName={FielModelUtilities.createFieldModelErrorKey(KEY_ROOM_ID)}
+                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_ROOM_ID)}
                     errorValue={this.props.fieldErrors[KEY_ROOM_ID]}
                 />
                 <CheckboxInput
                     id={KEY_NOTIFY}
                     label="Notify"
                     name={KEY_NOTIFY}
-                    isChecked={FielModelUtilities.getFieldModelBooleanValue(fieldModel, KEY_NOTIFY)}
+                    isChecked={FieldModelUtilities.getFieldModelBooleanValue(fieldModel, KEY_NOTIFY)}
                     onChange={this.handleChange}
-                    errorName={FielModelUtilities.createFieldModelErrorKey(KEY_NOTIFY)}
+                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_NOTIFY)}
                     errorValue={this.props.fieldErrors[KEY_NOTIFY]}
                 />
                 <div className="form-group">
@@ -135,7 +137,7 @@ class HipChatJobConfiguration extends Component {
         );
         return (<BaseJobConfiguration
             alertChannelName={this.props.alertChannelName}
-            distributionConfigId={this.props.distributionConfigId}
+            job={this.state.jobConfig}
             handleCancel={this.props.handleCancel}
             handleSaveBtnClick={this.props.handleSaveBtnClick}
             getParentConfiguration={this.getConfiguration}
@@ -147,7 +149,7 @@ class HipChatJobConfiguration extends Component {
 HipChatJobConfiguration.propTypes = {
     getDistributionJob: PropTypes.func.isRequired,
     job: PropTypes.object,
-    distributionConfigId: PropTypes.string,
+    jobId: PropTypes.string,
     colorOptions: PropTypes.arrayOf(PropTypes.object),
     fieldErrors: PropTypes.object,
     handleCancel: PropTypes.func.isRequired,
@@ -158,8 +160,8 @@ HipChatJobConfiguration.propTypes = {
 };
 
 HipChatJobConfiguration.defaultProps = {
-    job: {},
-    distributionConfigId: null,
+    job: null,
+    jobId: null,
     colorOptions: [
         { label: 'Yellow', value: 'yellow' },
         { label: 'Green', value: 'green' },

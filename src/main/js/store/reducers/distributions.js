@@ -42,7 +42,6 @@ const config = (state = initialState, action) => {
                 deleteSuccess: false,
                 jobConfigTableMessage: action.jobConfigTableMessage,
                 jobs: [
-                    ...state.jobs,
                     ...action.jobs
                 ]
             });
