@@ -11,27 +11,21 @@ class JobDeleteModal extends Component {
         super(props);
         this.onSubmit = this.onSubmit.bind(this);
         this.handleClose = this.handleClose.bind(this);
-        this.state = {
-            inProgress: false
-        };
+
     }
 
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (this.props.deleteSuccess !== prevProps.deleteSuccess && this.props.deleteSuccess === true) {
+            this.props.onModalClose();
+        }
+    }
 
     onSubmit(event) {
         event.preventDefault();
-        this.setState({
-            inProgress: true
-        });
         this.props.jobs.forEach((job) => {
             this.props.deleteDistributionJob(job);
         });
         this.props.onModalSubmit();
-        this.setState({
-            inProgress: false
-        });
-        if (!this.props.jobDeleteMessage) {
-            this.props.onModalClose();
-        }
     }
 
     handleClose() {
@@ -74,7 +68,7 @@ class JobDeleteModal extends Component {
                             </BootstrapTable>
                         </div>
                         <p name="jobDeleteMessage">{this.props.jobDeleteMessage}</p>
-                        <ConfigButtons performingAction={this.state.inProgress} cancelId="job-cancel" submitId="job-submit" submitLabel="Confirm" includeSave includeCancel onCancelClick={this.handleClose} />
+                        <ConfigButtons performingAction={this.props.inProgress} cancelId="job-cancel" submitId="job-submit" submitLabel="Confirm" includeSave includeCancel onCancelClick={this.handleClose} />
                     </form>
                 </Modal.Body>
 
@@ -93,17 +87,23 @@ JobDeleteModal.propTypes = {
     providerColumnDataFormat: PropTypes.func.isRequired,
     frequencyColumnDataFormat: PropTypes.func.isRequired,
     statusColumnClassNameFormat: PropTypes.func.isRequired,
+    deleteSuccess: PropTypes.bool,
+    inProgress: PropTypes.bool,
     jobs: PropTypes.arrayOf(PropTypes.object),
     show: PropTypes.bool
 };
 
 JobDeleteModal.defaultProps = {
     jobs: [],
-    show: false
+    show: false,
+    inProgress: false,
+    deleteSuccess: false
 };
 
 const mapStateToProps = state => ({
-    jobDeleteMessage: state.distributions.jobDeleteMessage
+    jobDeleteMessage: state.distributions.jobDeleteMessage,
+    deleteSuccess: state.distributions.deleteSuccess,
+    inProgress: state.distributions.inProgress
 });
 
 const mapDispatchToProps = dispatch => ({
