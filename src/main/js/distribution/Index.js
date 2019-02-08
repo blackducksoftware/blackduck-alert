@@ -181,7 +181,7 @@ class Index extends Component {
 
     customJobConfigDeletionConfirm(next, dropRowKeys) {
         const { jobs } = this.props;
-        const matchingJobs = jobs.filter(job => dropRowKeys.includes(job.id));
+        const matchingJobs = jobs.filter(job => dropRowKeys.includes(job.jobId));
         this.setState({
             showDeleteModal: true,
             nextDelete: next,
@@ -385,12 +385,13 @@ Index.propTypes = {
     descriptors: PropTypes.arrayOf(PropTypes.object),
     inProgress: PropTypes.bool.isRequired,
     jobs: PropTypes.arrayOf(PropTypes.object).isRequired,
-    jobConfigTableMessage: PropTypes.string.isRequired
+    jobConfigTableMessage: PropTypes.string
 };
 
 Index.defaultProps = {
     autoRefresh: true,
-    descriptors: []
+    descriptors: [],
+    jobConfigTableMessage: ''
 };
 
 const mapStateToProps = state => ({

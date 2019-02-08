@@ -34,7 +34,6 @@ class JobDeleteModal extends Component {
         }
     }
 
-
     handleClose() {
         this.props.onModalClose();
     }
