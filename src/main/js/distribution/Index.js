@@ -66,6 +66,7 @@ class Index extends Component {
         this.saveBtn = this.saveBtn.bind(this);
         this.typeColumnDataFormat = this.typeColumnDataFormat.bind(this);
         this.providerColumnDataFormat = this.providerColumnDataFormat.bind(this);
+        this.getCurrentJobConfig = this.getCurrentJobConfig.bind(this);
 
         this.state = { currentRowSelected: null };
     }
@@ -80,25 +81,25 @@ class Index extends Component {
 
     getCurrentJobConfig(currentRowSelected) {
         if (currentRowSelected != null) {
-            const { distributionConfigId, distributionType } = currentRowSelected;
+            const { id, distributionType } = currentRowSelected;
             if (distributionType === DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_EMAIL) {
                 return (<EmailJobConfiguration
                     alertChannelName={distributionType}
-                    distributionConfigId={distributionConfigId}
+                    jobId={id}
                     handleCancel={this.cancelRowSelect}
                     handleSaveBtnClick={this.saveBtn}
                 />);
             } else if (distributionType === DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_HIPCHAT) {
                 return (<HipChatJobConfiguration
                     alertChannelName={distributionType}
-                    distributionConfigId={distributionConfigId}
+                    jobId={id}
                     handleCancel={this.cancelRowSelect}
                     handleSaveBtnClick={this.saveBtn}
                 />);
             } else if (distributionType === DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_SLACK) {
                 return (<SlackJobConfiguration
                     alertChannelName={distributionType}
-                    distributionConfigId={distributionConfigId}
+                    jobId={id}
                     handleCancel={this.cancelRowSelect}
                     handleSaveBtnClick={this.saveBtn}
                 />);
@@ -298,6 +299,7 @@ class Index extends Component {
                 return null;
             }
         };
+        console.log('tabledata', tableData)
         let content = (
             <div>
                 <BootstrapTable

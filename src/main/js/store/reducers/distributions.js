@@ -31,7 +31,6 @@ const config = (state = initialState, action) => {
                 inProgress: false,
                 jobConfigTableMessage: action.jobConfigTableMessage,
                 jobs: [
-                    ...state.jobs,
                     ...action.jobs
                 ]
             });
