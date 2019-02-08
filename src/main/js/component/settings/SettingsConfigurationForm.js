@@ -97,7 +97,7 @@ class SettingsConfigurationForm extends Component {
     getReferralOptions() {
         return [{ label: 'Ignore', value: 'ignore' },
             { label: 'Follow', value: 'follow' },
-            { label: 'Throw Exception', value: 'throw' }];
+            { label: 'Throw', value: 'throw' }];
     }
 
     handleChange({ target }) {
