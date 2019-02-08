@@ -63,13 +63,10 @@ class BaseJobConfiguration extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            success: false,
             fieldErrors: {},
             commonConfig: FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, this.props.alertChannelName),
             providerConfig: FieldModelUtilities.createEmptyFieldModel(providerFieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, null)
         };
-        this.loading = false;
-        this.saving = false;
         this.buildJsonBody = this.buildJsonBody.bind(this);
         this.createChangeHandler = this.createChangeHandler.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
@@ -86,18 +83,11 @@ class BaseJobConfiguration extends Component {
         this.createMultiSelectHandler = this.createMultiSelectHandler.bind(this);
     }
 
-    componentDidMount() {
-        this.loading = true;
-    }
-
     componentWillReceiveProps(nextProps) {
-        console.log("base next props ", nextProps);
-        if (this.saving) {
-            this.saving = false;
-            if (nextProps.success && nextProps.handleSaveBtnClick) {
-                nextProps.handleSaveBtnClick(this.state);
-                return;
-            }
+        console.log('base next props ', nextProps);
+        if (this.props.saving && nextProps.success) {
+            this.props.handleSaveBtnClick(this.state);
+            return;
         }
         if (!nextProps.fetching && !nextProps.inProgress) {
             if (nextProps.fieldErrors.message || nextProps.testingConfig) {
@@ -106,50 +96,54 @@ class BaseJobConfiguration extends Component {
                     fieldErrors: nextProps.fieldErrors,
                     configurationMessage: nextProps.configurationMessage
                 });
-            } else if (this.loading) {
-                this.loading = false;
-                let channelModel = FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, this.props.alertChannelName);
-                let providerModel = FieldModelUtilities.createEmptyFieldModel(providerFieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, null);
-                const { job } = nextProps;
-                if (job && job.fieldModels) {
-                    channelModel = nextProps.job.fieldModels.find(model => model.descriptorName.startsWith('channel_'));
-                    providerModel = nextProps.job.fieldModels.find(model => model.descriptorName.startsWith('provider_'));
-                }
-
-                const formatOptions = this.createFormatTypeOptions();
-                const notificationOptions = this.createNotificationTypeOptions();
-                const selectedFormatType = this.getSelectedSingleValue(formatOptions, providerModel, KEY_FORMAT_TYPE);
-                const selectedNotifications = this.getSelectedValues(notificationOptions, providerModel, KEY_NOTIFICATION_TYPES);
-
-                if (!FieldModelUtilities.hasFieldModelValues(providerModel, KEY_FORMAT_TYPE)) {
-                    providerModel = FieldModelUtilities.updateFieldModelSingleValue(providerModel, KEY_FORMAT_TYPE, selectedFormatType);
-                }
-
-                if (!FieldModelUtilities.hasFieldModelValues(providerModel, KEY_NOTIFICATION_TYPES)) {
-                    providerModel = FieldModelUtilities.updateFieldModelSingleValue(providerModel, KEY_NOTIFICATION_TYPES, selectedNotifications);
-                }
-
-                const providers = this.createProviderOptions();
-                const frequencyOptions = this.createFrequencyOptions();
-                const selectedProviderOption = this.getSelectedSingleValue(providers, channelModel, KEY_PROVIDER_NAME);
-                const selectedFrequencyOption = this.getSelectedSingleValue(frequencyOptions, channelModel, KEY_FREQUENCY);
-
-                if (!FieldModelUtilities.hasFieldModelValues(channelModel, KEY_PROVIDER_NAME)) {
-                    channelModel = FieldModelUtilities.updateFieldModelSingleValue(channelModel, KEY_NOTIFICATION_TYPES, selectedProviderOption);
-                }
-
-                if (!FieldModelUtilities.hasFieldModelValues(channelModel, KEY_FREQUENCY)) {
-                    channelModel = FieldModelUtilities.updateFieldModelSingleValue(channelModel, KEY_NOTIFICATION_TYPES, selectedFrequencyOption);
-                }
-
-                this.setState = {
-                    success: false,
-                    fieldErrors: {},
-                    jobId: nextProps.job.jobId,
-                    commonConfig: channelModel,
-                    providerConfig: providerModel
-                };
             }
+            let channelModel = this.state.commonConfig;
+            let providerModel = this.state.providerConfig;
+            if (!channelModel) {
+                channelModel = FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, this.props.alertChannelName);
+            }
+            if (!providerModel) {
+                providerModel = FieldModelUtilities.createEmptyFieldModel(providerFieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, null);
+            }
+            const { job } = nextProps;
+            if (job && job.fieldModels) {
+                channelModel = nextProps.job.fieldModels.find(model => model.descriptorName.startsWith('channel_'));
+                providerModel = nextProps.job.fieldModels.find(model => model.descriptorName.startsWith('provider_'));
+            }
+
+            const formatOptions = this.createFormatTypeOptions();
+            const notificationOptions = this.createNotificationTypeOptions();
+            const selectedFormatType = this.getSelectedSingleValue(formatOptions, providerModel, KEY_FORMAT_TYPE);
+            const selectedNotifications = this.getSelectedValues(notificationOptions, providerModel, KEY_NOTIFICATION_TYPES);
+
+            if (!FieldModelUtilities.hasFieldModelValues(providerModel, KEY_FORMAT_TYPE)) {
+                providerModel = FieldModelUtilities.updateFieldModelSingleValue(providerModel, KEY_FORMAT_TYPE, selectedFormatType);
+            }
+
+            if (!FieldModelUtilities.hasFieldModelValues(providerModel, KEY_NOTIFICATION_TYPES)) {
+                providerModel = FieldModelUtilities.updateFieldModelSingleValue(providerModel, KEY_NOTIFICATION_TYPES, selectedNotifications);
+            }
+
+            const providers = this.createProviderOptions();
+            const frequencyOptions = this.createFrequencyOptions();
+            const selectedProviderOption = this.getSelectedSingleValue(providers, channelModel, KEY_PROVIDER_NAME);
+            const selectedFrequencyOption = this.getSelectedSingleValue(frequencyOptions, channelModel, KEY_FREQUENCY);
+
+            if (!FieldModelUtilities.hasFieldModelValues(channelModel, KEY_PROVIDER_NAME)) {
+                channelModel = FieldModelUtilities.updateFieldModelSingleValue(channelModel, KEY_NOTIFICATION_TYPES, selectedProviderOption);
+            }
+
+            if (!FieldModelUtilities.hasFieldModelValues(channelModel, KEY_FREQUENCY)) {
+                channelModel = FieldModelUtilities.updateFieldModelSingleValue(channelModel, KEY_NOTIFICATION_TYPES, selectedFrequencyOption);
+            }
+
+            this.setState({
+                success: false,
+                fieldErrors: {},
+                jobId: nextProps.job.jobId,
+                commonConfig: channelModel,
+                providerConfig: providerModel
+            });
         }
     }
 
@@ -184,7 +178,6 @@ class BaseJobConfiguration extends Component {
     }
 
     handleSubmit(event) {
-        this.saving = true;
         this.setState({
             fieldErrors: {}
         });
@@ -448,6 +441,7 @@ BaseJobConfiguration.propTypes = {
     job: PropTypes.object.isRequired,
     fetching: PropTypes.bool,
     inProgress: PropTypes.bool,
+    saving: PropTypes.bool,
     success: PropTypes.bool,
     testingConfig: PropTypes.bool,
     configurationMessage: PropTypes.string,
@@ -464,6 +458,7 @@ BaseJobConfiguration.defaultProps = {
     job: {},
     fetching: false,
     inProgress: false,
+    saving: false,
     success: false,
     testingConfig: false,
     configurationMessage: '',
@@ -483,6 +478,7 @@ const mapStateToProps = state => ({
     fetching: state.distributionConfigs.fetching,
     inProgress: state.distributionConfigs.inProgress,
     descriptors: state.descriptors.items,
+    saving: state.distributionConfigs.saving,
     success: state.distributionConfigs.success,
     testingConfig: state.distributionConfigs.testingConfig,
     configurationMessage: state.distributionConfigs.configurationMessage
