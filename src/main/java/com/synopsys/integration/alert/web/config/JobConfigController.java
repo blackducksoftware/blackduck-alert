@@ -99,7 +99,7 @@ public class JobConfigController extends BaseController {
         }
 
         if (optionalModel.isPresent()) {
-            return responseFactory.createOkResponse(contentConverter.getStringValue(id), contentConverter.getJsonString(optionalModel.get()));
+            return responseFactory.createOkContentResponse(contentConverter.getJsonString(optionalModel.get()));
         }
 
         return responseFactory.createNotFoundResponse("Configuration not found for the specified id");
