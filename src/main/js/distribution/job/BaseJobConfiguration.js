@@ -66,7 +66,7 @@ class BaseJobConfiguration extends Component {
             success: false,
             fieldErrors: {},
             commonConfig: FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, this.props.alertChannelName),
-            providerConfig: FieldModelUtilities.createEmptyFieldModel(providerFieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, null),
+            providerConfig: FieldModelUtilities.createEmptyFieldModel(providerFieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, null)
         };
         this.loading = false;
         this.saving = false;
@@ -457,7 +457,7 @@ BaseJobConfiguration.propTypes = {
     getParentConfiguration: PropTypes.func.isRequired,
     childContent: PropTypes.object.isRequired,
     alertChannelName: PropTypes.string.isRequired,
-    projects: PropTypes.arrayOf(PropTypes.any),
+    projects: PropTypes.arrayOf(PropTypes.any)
 };
 
 BaseJobConfiguration.defaultProps = {
