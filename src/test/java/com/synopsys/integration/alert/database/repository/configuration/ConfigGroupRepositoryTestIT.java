@@ -10,6 +10,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.database.entity.configuration.ConfigContextEntity;
@@ -18,6 +19,7 @@ import com.synopsys.integration.alert.database.entity.configuration.DescriptorCo
 import com.synopsys.integration.alert.database.entity.configuration.RegisteredDescriptorEntity;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
+@Transactional
 public class ConfigGroupRepositoryTestIT extends AlertIntegrationTest {
     @Autowired
     private RegisteredDescriptorRepository registeredDescriptorRepository;

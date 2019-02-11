@@ -19,6 +19,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.support.DefaultConversionService;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
@@ -35,12 +36,14 @@ import com.synopsys.integration.alert.database.api.configuration.DescriptorAcces
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.database.api.configuration.model.DefinedFieldModel;
+import com.synopsys.integration.alert.database.repository.configuration.RegisteredDescriptorRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
 import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 import com.synopsys.integration.exception.IntegrationException;
 
+@Transactional
 public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
     protected Gson gson;
     protected DistributionEvent channelEvent;
@@ -50,9 +53,11 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
 
     @Autowired
     protected ConfigurationAccessor configurationAccessor;
-
     @Autowired
     protected DescriptorAccessor descriptorAccessor;
+    @Autowired
+    protected RegisteredDescriptorRepository registeredDescriptorRepository;
+
     protected ConfigurationModel provider_global;
     protected Optional<ConfigurationModel> global_config;
     protected ConfigurationModel distribution_config;

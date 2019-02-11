@@ -28,6 +28,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
@@ -43,6 +44,7 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
+import com.synopsys.integration.alert.database.repository.configuration.DescriptorConfigRepository;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.DatabaseConfiguredFieldTest;
@@ -50,10 +52,11 @@ import com.synopsys.integration.alert.web.model.configuration.FieldModel;
 import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 import com.synopsys.integration.alert.web.model.configuration.JobFieldModel;
 
+@Transactional
 public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
     @Autowired
-    HipChatDescriptor hipChatDescriptor;
+    private DescriptorConfigRepository descriptorConfigRepository;
     @Autowired
     private WebApplicationContext webApplicationContext;
     private MockMvc mockMvc;
@@ -123,6 +126,7 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
 
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isAccepted());
+        descriptorConfigRepository.flush();
 
         final UUID id = UUID.fromString(jobId);
         final Optional<ConfigurationJobModel> configuration = getConfigurationAccessor().getJobById(id);
