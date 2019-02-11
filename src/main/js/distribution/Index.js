@@ -9,8 +9,9 @@ import HipChatJobConfiguration from 'distribution/job/HipChatJobConfiguration';
 import SlackJobConfiguration from 'distribution/job/SlackJobConfiguration';
 import EditTableCellFormatter from 'component/common/EditTableCellFormatter';
 import JobAddModal from 'distribution/JobAddModal';
-import { deleteDistributionJob, fetchDistributionJobs } from 'store/actions/distributions';
+import { fetchDistributionJobs, openJobDeleteModal } from 'store/actions/distributions';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
+import JobDeleteModal from 'distribution/JobDeleteModal';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 
 /**
@@ -66,9 +67,16 @@ class Index extends Component {
         this.saveBtn = this.saveBtn.bind(this);
         this.typeColumnDataFormat = this.typeColumnDataFormat.bind(this);
         this.providerColumnDataFormat = this.providerColumnDataFormat.bind(this);
-        this.getCurrentJobConfig = this.getCurrentJobConfig.bind(this);
+        this.onJobDeleteClose = this.onJobDeleteClose.bind(this);
+        this.onJobDeleteSubmit = this.onJobDeleteSubmit.bind(this);
 
-        this.state = { currentRowSelected: null };
+        this.state = {
+            currentRowSelected: null,
+            jobsToDelete: [],
+            showDeleteModal: false,
+            nextDelete: null
+        };
+        this.getCurrentJobConfig = this.getCurrentJobConfig.bind(this);
     }
 
     componentDidMount() {
@@ -77,6 +85,19 @@ class Index extends Component {
 
     componentWillUnmount() {
         this.cancelAutoReload();
+    }
+
+    onJobDeleteSubmit() {
+        this.state.nextDelete();
+    }
+
+    onJobDeleteClose() {
+        this.setState({
+            showDeleteModal: false,
+            nextDelete: null,
+            jobsToDelete: []
+        });
+        this.reloadJobs();
     }
 
     getCurrentJobConfig(currentRowSelected) {
@@ -161,18 +182,14 @@ class Index extends Component {
     }
 
     customJobConfigDeletionConfirm(next, dropRowKeys) {
-        if (confirm('Are you sure you want to delete these Job configurations?')) {
-            console.log('Deleting the Job configs');
-            // TODO delete the Job configs from the backend
-            // dropRowKeys are the Id's of the Job configs
-            const { jobs } = this.props;
-            const matchingJobs = jobs.filter(job => dropRowKeys.includes(job.id));
-
-            matchingJobs.forEach((job) => {
-                this.props.deleteDistributionJob(job);
-            });
-            next();
-        }
+        const { jobs } = this.props;
+        const matchingJobs = jobs.filter(job => dropRowKeys.includes(job.jobId));
+        this.props.openJobDeleteModal();
+        this.setState({
+            showDeleteModal: true,
+            nextDelete: next,
+            jobsToDelete: matchingJobs
+        });
     }
 
     editButtonClicked(currentRowSelected) {
@@ -250,10 +267,10 @@ class Index extends Component {
         return defaultValue;
     }
 
-    createTableData() {
-        const tableData = []
-        if (this.props.jobs) {
-            this.props.jobs.forEach((job) => {
+    createTableData(jobs) {
+        const tableData = [];
+        if (jobs) {
+            jobs.forEach((job) => {
                 const channelModel = job.fieldModels
                     .find(fieldModel => fieldModel.descriptorName.startsWith('channel_'));
                 const providerModel = job.fieldModels
@@ -281,7 +298,7 @@ class Index extends Component {
     }
 
     render() {
-        const tableData = this.createTableData();
+        const tableData = this.createTableData(this.props.jobs);
         const jobTableOptions = {
             btnGroup: this.createCustomButtonGroup,
             noDataText: 'No jobs configured',
@@ -342,6 +359,17 @@ class Index extends Component {
         }
         return (
             <div>
+                <JobDeleteModal
+                    createTableData={this.createTableData}
+                    onModalSubmit={this.onJobDeleteSubmit}
+                    onModalClose={this.onJobDeleteClose}
+                    typeColumnDataFormat={this.typeColumnDataFormat}
+                    providerColumnDataFormat={this.providerColumnDataFormat}
+                    frequencyColumnDataFormat={frequencyColumnDataFormat}
+                    statusColumnClassNameFormat={statusColumnClassNameFormat}
+                    jobs={this.state.jobsToDelete}
+                    show={this.state.showDeleteModal}
+                />
                 <h1>
                     <span className="fa fa-truck" />
                     Distribution
@@ -356,13 +384,13 @@ class Index extends Component {
 }
 
 Index.propTypes = {
-    deleteDistributionJob: PropTypes.func.isRequired,
+    openJobDeleteModal: PropTypes.func.isRequired,
     fetchDistributionJobs: PropTypes.func.isRequired,
     autoRefresh: PropTypes.bool,
     descriptors: PropTypes.arrayOf(PropTypes.object),
     inProgress: PropTypes.bool.isRequired,
     jobs: PropTypes.arrayOf(PropTypes.object).isRequired,
-    jobConfigTableMessage: PropTypes.string.isRequired
+    jobConfigTableMessage: PropTypes.string
 };
 
 Index.defaultProps = {
@@ -380,7 +408,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    deleteDistributionJob: job => dispatch(deleteDistributionJob(job)),
+    openJobDeleteModal: () => dispatch(openJobDeleteModal()),
     fetchDistributionJobs: () => dispatch(fetchDistributionJobs())
 });
 

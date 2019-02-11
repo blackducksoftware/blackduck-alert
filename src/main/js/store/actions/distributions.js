@@ -1,5 +1,6 @@
 import {
     DISTRIBUTION_JOB_DELETE_ERROR,
+    DISTRIBUTION_JOB_DELETE_OPEN_MODAL,
     DISTRIBUTION_JOB_DELETED,
     DISTRIBUTION_JOB_DELETING,
     DISTRIBUTION_JOB_FETCH_ALL_NONE_FOUND,
@@ -42,24 +43,29 @@ function fetchingAllJobsNoneFound() {
 }
 
 
+function openJobDelete() {
+    return {
+        type: DISTRIBUTION_JOB_DELETE_OPEN_MODAL,
+        jobDeleteMessage: ''
+    };
+}
+
 function deletingJobConfig() {
     return {
         type: DISTRIBUTION_JOB_DELETING
     };
 }
 
-function deletingJobConfigSuccess(message) {
+function deletingJobConfigSuccess() {
     return {
-        type: DISTRIBUTION_JOB_DELETED,
-        jobConfigTableMessage: message
+        type: DISTRIBUTION_JOB_DELETED
     };
 }
 
-function jobError(type, message, errors) {
+function jobDeleteError(message) {
     return {
-        type,
-        jobConfigTableMessage: message,
-        errors
+        type: DISTRIBUTION_JOB_DELETE_ERROR,
+        jobDeleteMessage: message
     };
 }
 
@@ -94,29 +100,31 @@ function fetchAuditInfoForJob(csrfToken, jobConfig) {
     return newConfig;
 }
 
+export function openJobDeleteModal() {
+    return (dispatch, getState) => dispatch(openJobDelete());
+}
+
 export function deleteDistributionJob(job) {
     return (dispatch, getState) => {
         dispatch(deletingJobConfig());
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, job.id);
+        const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, job.jobId);
         request.then((response) => {
             if (response.ok) {
-                response.json().then((json) => {
-                    dispatch(deletingJobConfigSuccess(json.message));
-                });
+                dispatch(deletingJobConfigSuccess());
             } else {
                 response.json()
                     .then((data) => {
                         switch (response.status) {
                             case 400:
-                                return dispatch(jobError(DISTRIBUTION_JOB_DELETE_ERROR, data.message, data.errors));
+                                return dispatch(jobDeleteError(data.message));
                             case 401:
-                                dispatch(jobError(DISTRIBUTION_JOB_DELETE_ERROR, data.message, data.errors));
+                                dispatch(jobDeleteError(data.message));
                                 return dispatch(verifyLoginByStatus(response.status));
                             case 412:
-                                return dispatch(jobError(DISTRIBUTION_JOB_DELETE_ERROR, data.message, data.errors));
+                                return dispatch(jobDeleteError(data.message));
                             default: {
-                                return dispatch(jobError(DISTRIBUTION_JOB_DELETE_ERROR, data.message, null));
+                                return dispatch(jobDeleteError(data.message, null));
                             }
                         }
                     });

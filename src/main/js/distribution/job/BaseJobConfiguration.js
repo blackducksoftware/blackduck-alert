@@ -65,7 +65,7 @@ class BaseJobConfiguration extends Component {
         this.state = {
             fieldErrors: {},
             commonConfig: FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, this.props.alertChannelName),
-            providerConfig: FieldModelUtilities.createEmptyFieldModel(providerFieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, null),
+            providerConfig: FieldModelUtilities.createEmptyFieldModel(providerFieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, null)
         };
         this.buildJsonBody = this.buildJsonBody.bind(this);
         this.createChangeHandler = this.createChangeHandler.bind(this);
@@ -110,6 +110,7 @@ class BaseJobConfiguration extends Component {
                 providerModel = nextProps.job.fieldModels.find(model => model.descriptorName.startsWith('provider_'));
             }
 
+
             const formatOptions = this.createFormatTypeOptions();
             const notificationOptions = this.createNotificationTypeOptions();
             const selectedFormatType = this.getSelectedSingleValue(formatOptions, providerModel, KEY_FORMAT_TYPE);
@@ -131,6 +132,7 @@ class BaseJobConfiguration extends Component {
             if (!FieldModelUtilities.hasFieldModelValues(channelModel, KEY_PROVIDER_NAME)) {
                 channelModel = FieldModelUtilities.updateFieldModelSingleValue(channelModel, KEY_NOTIFICATION_TYPES, selectedProviderOption);
             }
+
             if (!FieldModelUtilities.hasFieldModelValues(channelModel, KEY_FREQUENCY)) {
                 channelModel = FieldModelUtilities.updateFieldModelSingleValue(channelModel, KEY_NOTIFICATION_TYPES, selectedFrequencyOption);
             }
@@ -448,7 +450,7 @@ BaseJobConfiguration.propTypes = {
     getParentConfiguration: PropTypes.func.isRequired,
     childContent: PropTypes.object.isRequired,
     alertChannelName: PropTypes.string.isRequired,
-    projects: PropTypes.arrayOf(PropTypes.any),
+    projects: PropTypes.arrayOf(PropTypes.any)
 };
 
 BaseJobConfiguration.defaultProps = {
