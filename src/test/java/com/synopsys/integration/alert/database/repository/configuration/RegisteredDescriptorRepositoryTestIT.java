@@ -9,10 +9,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.database.entity.configuration.RegisteredDescriptorEntity;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
+@Transactional
 public class RegisteredDescriptorRepositoryTestIT extends AlertIntegrationTest {
     public static final String DESCRIPTOR_NAME_1 = "name1";
     public static final String DESCRIPTOR_NAME_2 = "name2";
