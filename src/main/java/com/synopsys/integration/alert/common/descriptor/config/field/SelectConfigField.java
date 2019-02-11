@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.web.model.configuration.FieldModel;
 import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 
 public class SelectConfigField extends ConfigField {
-    public static final String INVALID_OPTION_SELECTED = "Invalid option selected.";
+    public static final String INVALID_OPTION_SELECTED = "Invalid option selected";
     private Collection<String> options;
     private boolean searchable;
     private boolean multiSelect;
