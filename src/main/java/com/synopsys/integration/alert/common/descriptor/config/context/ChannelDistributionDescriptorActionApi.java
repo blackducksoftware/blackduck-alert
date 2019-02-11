@@ -42,7 +42,6 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistri
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
 import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
@@ -132,16 +131,6 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
                 return "Name cannot be blank.";
             }
         }
-
         return "";
-
-    }
-
-    private ConfigurationFieldModel getJobNameField(final ConfigurationModel configurationModel) {
-        final ConfigurationFieldModel configurationFieldModel = configurationModel.getField(ChannelDistributionUIConfig.KEY_NAME).orElse(null);
-        if (null != configurationFieldModel && configurationFieldModel.getFieldValue().isPresent()) {
-
-        }
-
     }
 }
