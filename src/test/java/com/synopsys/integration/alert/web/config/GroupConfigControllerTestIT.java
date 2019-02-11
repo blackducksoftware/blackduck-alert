@@ -115,19 +115,19 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     @WithMockUser(roles = "ADMIN")
     public void testDeleteConfig() throws Exception {
         final ConfigurationJobModel emptyConfigurationModel = addJob(HipChatChannel.COMPONENT_NAME, BlackDuckProvider.COMPONENT_NAME, Map.of());
-        final String configId = String.valueOf(emptyConfigurationModel.getJobId());
+        final String jobId = String.valueOf(emptyConfigurationModel.getJobId());
 
-        final String urlPath = url + "/" + configId;
+        final String urlPath = url + "/" + jobId;
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(urlPath)
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
 
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isAccepted());
 
-        final UUID id = UUID.fromString(configId);
+        final UUID id = UUID.fromString(jobId);
         final Optional<ConfigurationJobModel> configuration = getConfigurationAccessor().getJobById(id);
 
-        assertTrue(configuration.isEmpty());
+        assertTrue(configuration.isEmpty(), "Expected the job to have been deleted");
     }
 
     @Test
