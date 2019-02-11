@@ -8,6 +8,10 @@ import { ConnectedRouter, routerMiddleware } from 'react-router-redux';
 import reducers from 'store/reducers';
 import App from 'App';
 
+// export synopsys_black from '../img/synopsys_black.png';
+// export synopsys_purple from '../img/synopsys_purple.png';
+// export synopsys_white from '../img/synopsys_white.png';
+
 const initialState = {};
 // Setup history
 const history = createHistory();
