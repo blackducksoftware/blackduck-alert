@@ -10,7 +10,7 @@ const Logo = () => (
             src="https://www.synopsys.com/content/dam/synopsys/company/about/legal/synopsys-logos/whitelogo/synopsys_wht.png"
             alt="Synopsys"
         />
-            <span className="headerStandardSize">&nbsp;|&nbsp;ALERT</span>&nbsp;
+            <span className="headerStandardSize"><span className="synopsysHeaderLogoVerticalBarSpace">|</span>ALERT</span>
         </span>
     </div>
 );

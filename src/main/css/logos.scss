@@ -2,7 +2,7 @@
 
 .synopsysLogoSpan {
   display: inline-flex;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Roboto', 'Arial', sans-serif;
 }
 
 .synopsysHeaderLogo {
@@ -12,6 +12,11 @@
   max-height: 17px;
 }
 
+.synopsysHeaderLogoVerticalBarSpace {
+  margin-left: 8px;
+  margin-right: 8px;
+}
+
 .synopsysFooterLogo {
   background: none;
   margin: auto;
@@ -19,8 +24,13 @@
   max-height: 12px;
 }
 
+.synopsysFooterLogoVerticalBarSpace {
+  margin-left: 5.5px;
+  margin-right: 5.5px;
+}
+
 .headerStandardSize {
-  margin-bottom: 2px;
+  margin-bottom: 3px;
   font-size: 1.25em;
   font-weight: lighter;
 }
