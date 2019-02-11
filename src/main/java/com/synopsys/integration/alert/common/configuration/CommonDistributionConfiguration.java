@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.validation.constraints.NotNull;
 
@@ -66,7 +67,7 @@ public class CommonDistributionConfiguration extends Configuration {
         channelName = getFieldAccessor().getString(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).orElse(null);
         providerName = getFieldAccessor().getString(ChannelDistributionUIConfig.KEY_PROVIDER_NAME).orElse(null);
         notificationTypes = getFieldAccessor().getAllStrings(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES).stream().collect(Collectors.toSet());
-        frequencyType = getFieldAccessor().getEnum(ChannelDistributionUIConfig.KEY_FREQUENCY, FrequencyType.class).orElse(null);
+        frequencyType = getFrequencyType(getFieldAccessor().getString(ChannelDistributionUIConfig.KEY_FREQUENCY).orElse(""));
         formatType = getFieldAccessor().getEnum(ProviderDistributionUIConfig.KEY_FORMAT_TYPE, FormatType.class).orElse(null);
         filterByProject = getFieldAccessor().getBoolean(BlackDuckDescriptor.KEY_FILTER_BY_PROJECT).orElse(null);
         projectNamePattern = getFieldAccessor().getString(BlackDuckDescriptor.KEY_PROJECT_NAME_PATTERN).orElse(null);
@@ -111,6 +112,14 @@ public class CommonDistributionConfiguration extends Configuration {
 
     public Set<String> getConfiguredProjects() {
         return configuredProjects;
+    }
+
+    // FIXME this is done as a workaround for now. In the future, we will want to save the enum values to the DB, not the pretty print.
+    private FrequencyType getFrequencyType(final String frequency) {
+        return Stream.of(FrequencyType.values())
+                   .filter(frequencyValue -> frequencyValue.getDisplayName().equals(frequency) || getFieldAccessor().getEnum(frequency, FrequencyType.class).isPresent())
+                   .findFirst()
+                   .orElse(null);
     }
 
 }
