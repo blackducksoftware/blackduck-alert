@@ -19,7 +19,7 @@ import com.synopsys.integration.blackduck.api.core.BlackDuckPathMultipleResponse
 import com.synopsys.integration.blackduck.api.generated.component.ResourceMetadata;
 import com.synopsys.integration.blackduck.api.generated.view.ProjectView;
 import com.synopsys.integration.blackduck.api.generated.view.UserView;
-import com.synopsys.integration.blackduck.rest.BlackDuckRestConnection;
+import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.blackduck.service.ProjectService;
@@ -45,7 +45,7 @@ public class ProjectSyncTaskTest {
         final String groupURL1 = "groupURL1";
         final String groupURL2 = "groupURL2";
 
-        Mockito.when(blackDuckProperties.createRestConnectionAndLogErrors(Mockito.any())).thenReturn(Optional.of(Mockito.mock(BlackDuckRestConnection.class)));
+        Mockito.when(blackDuckProperties.createBlackDuckHttpClientAndLogErrors(Mockito.any())).thenReturn(Optional.of(Mockito.mock(BlackDuckHttpClient.class)));
         final BlackDuckServicesFactory BlackDuckServicesFactory = Mockito.mock(BlackDuckServicesFactory.class);
         Mockito.when(blackDuckProperties.createBlackDuckServicesFactory(Mockito.any(), Mockito.any())).thenReturn(BlackDuckServicesFactory);
 

@@ -7,7 +7,7 @@ import { getDistributionJob } from 'store/actions/distributions';
 import CheckboxInput from 'field/input/CheckboxInput';
 
 
-class GroupEmailJobConfiguration extends Component {
+class EmailJobConfiguration extends Component {
     constructor(props) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
@@ -95,7 +95,7 @@ class GroupEmailJobConfiguration extends Component {
     }
 }
 
-GroupEmailJobConfiguration.propTypes = {
+EmailJobConfiguration.propTypes = {
     jobs: PropTypes.object,
     distributionConfigId: PropTypes.string,
     baseUrl: PropTypes.string,
@@ -113,7 +113,7 @@ GroupEmailJobConfiguration.propTypes = {
     projectOwnerOnly: PropTypes.bool
 };
 
-GroupEmailJobConfiguration.defaultProps = {
+EmailJobConfiguration.defaultProps = {
     jobs: {},
     distributionConfigId: null,
     baseUrl: '/alert/api/configuration/channel/distribution/channel_email',
@@ -138,4 +138,4 @@ const mapStateToProps = state => ({
     inProgress: state.distributions.inProgress
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(GroupEmailJobConfiguration);
+export default connect(mapStateToProps, mapDispatchToProps)(EmailJobConfiguration);
