@@ -33,7 +33,8 @@ const config = (state = initialState, action) => {
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
-                jobConfigTableMessage: action.jobConfigTableMessage
+                jobConfigTableMessage: action.jobConfigTableMessage,
+                jobs: []
             });
 
         case DISTRIBUTION_JOB_FETCHED_ALL:
