@@ -42,6 +42,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistri
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
 import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
@@ -110,8 +111,9 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
 
     private String validateJobNameUnique(final FieldModel fieldModel) {
         final String descriptorName = fieldModel.getDescriptorName();
-        return fieldModel.getField(ChannelDistributionUIConfig.KEY_NAME).map(jobNameField -> {
-            final String jobName = jobNameField.getValue().orElse(null);
+        final Optional<FieldValueModel> jobNameFieldOptional = fieldModel.getField(ChannelDistributionUIConfig.KEY_NAME);
+        if (jobNameFieldOptional.isPresent()) {
+            final String jobName = jobNameFieldOptional.get().getValue().orElse(null);
             if (StringUtils.isNotBlank(jobName)) {
                 try {
                     final List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorName(descriptorName);
@@ -129,8 +131,17 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
             } else {
                 return "Name cannot be blank.";
             }
-            return "";
-        }).orElse("");
+        }
+
+        return "";
+
+    }
+
+    private ConfigurationFieldModel getJobNameField(final ConfigurationModel configurationModel) {
+        final ConfigurationFieldModel configurationFieldModel = configurationModel.getField(ChannelDistributionUIConfig.KEY_NAME).orElse(null);
+        if (null != configurationFieldModel && configurationFieldModel.getFieldValue().isPresent()) {
+
+        }
 
     }
 }
