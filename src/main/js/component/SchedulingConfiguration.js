@@ -8,8 +8,8 @@ import { getSchedulingConfig, updateSchedulingConfig } from 'store/actions/sched
 import ConfigButtons from 'component/common/ConfigButtons';
 
 import { dailyDigestOptions, purgeOptions } from 'util/scheduling-data';
-import * as FieldModelUtil from 'util/fieldModelUtilities';
-import * as DescriptorUtil from 'util/descriptorUtilities';
+import * as FieldModelUtilities from 'util/fieldModelUtilities';
+import * as DescriptorUtilities from 'util/descriptorUtilities';
 
 const KEY_DAILY_DIGEST_HOUR_OF_DAY = 'scheduling.daily.digest.hour';
 const KEY_PURGE_DATA_FREQUENCY_DAYS = 'scheduling.purge.data.frequency';
@@ -24,7 +24,7 @@ class SchedulingConfiguration extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            currentConfig: FieldModelUtil.createEmptyFieldModel(fieldNames, DescriptorUtil.CONTEXT_TYPE.GLOBAL, 'component_scheduling')
+            currentConfig: FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_SCHEDULING)
         };
         this.decreaseAccumulatorTime = this.decreaseAccumulatorTime.bind(this);
         this.handleDailyDigestChanged = this.handleDailyDigestChanged.bind(this);
@@ -38,12 +38,12 @@ class SchedulingConfiguration extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         this.cancelAutoTick();
-        const newState = FieldModelUtil.checkModelOrCreateEmpty(nextProps.currentConfig, fieldNames);
+        const newState = FieldModelUtilities.checkModelOrCreateEmpty(nextProps.currentConfig, fieldNames);
         this.setState({
             currentConfig: newState
         });
 
-        let nextRun = FieldModelUtil.getFieldModelSingleValue(newState, KEY_ACCUMULATOR_NEXT_RUN);
+        let nextRun = FieldModelUtilities.getFieldModelSingleValue(newState, KEY_ACCUMULATOR_NEXT_RUN);
         if (!nextRun) {
             nextRun = 60;
         } else {
@@ -52,7 +52,7 @@ class SchedulingConfiguration extends React.Component {
                 nextRun = 60;
             }
         }
-        const updatedState = FieldModelUtil.updateFieldModelSingleValue(newState, KEY_ACCUMULATOR_NEXT_RUN, nextRun);
+        const updatedState = FieldModelUtilities.updateFieldModelSingleValue(newState, KEY_ACCUMULATOR_NEXT_RUN, nextRun);
         this.setState({
             currentConfig: updatedState
         });
@@ -75,13 +75,13 @@ class SchedulingConfiguration extends React.Component {
 
 
     decreaseAccumulatorTime() {
-        const nextRunString = FieldModelUtil.getFieldModelSingleValue(this.state.currentConfig, KEY_ACCUMULATOR_NEXT_RUN);
+        const nextRunString = FieldModelUtilities.getFieldModelSingleValue(this.state.currentConfig, KEY_ACCUMULATOR_NEXT_RUN);
         const nextRun = parseInt(nextRunString, 10);
         if (nextRun <= 0) {
             this.props.getConfig();
         } else {
             const decrementedValue = nextRun - 1;
-            const updatedState = FieldModelUtil.updateFieldModelSingleValue(this.state.currentConfig, KEY_ACCUMULATOR_NEXT_RUN, decrementedValue);
+            const updatedState = FieldModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, KEY_ACCUMULATOR_NEXT_RUN, decrementedValue);
             this.setState({
                 currentConfig: updatedState
             });
@@ -97,12 +97,12 @@ class SchedulingConfiguration extends React.Component {
     handleDailyDigestChanged(option) {
         if (option) {
             const selected = option.value;
-            const newState = FieldModelUtil.updateFieldModelSingleValue(this.state.currentConfig, KEY_DAILY_DIGEST_HOUR_OF_DAY, selected);
+            const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, KEY_DAILY_DIGEST_HOUR_OF_DAY, selected);
             this.setState({
                 currentConfig: newState
             });
         } else {
-            const newState = FieldModelUtil.updateFieldModelSingleValue(this.state.currentConfig, KEY_DAILY_DIGEST_HOUR_OF_DAY, null);
+            const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, KEY_DAILY_DIGEST_HOUR_OF_DAY, null);
             this.setState({
                 currentConfig: newState
             });
@@ -112,12 +112,12 @@ class SchedulingConfiguration extends React.Component {
     handlePurgeChanged(option) {
         if (option) {
             const selected = option.value;
-            const newState = FieldModelUtil.updateFieldModelSingleValue(this.state.currentConfig, KEY_PURGE_DATA_FREQUENCY_DAYS, selected);
+            const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, KEY_PURGE_DATA_FREQUENCY_DAYS, selected);
             this.setState({
                 currentConfig: newState
             });
         } else {
-            const newState = FieldModelUtil.updateFieldModelSingleValue(this.state.currentConfig, KEY_PURGE_DATA_FREQUENCY_DAYS, null);
+            const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, KEY_PURGE_DATA_FREQUENCY_DAYS, null);
             this.setState({
                 currentConfig: newState
             });
@@ -146,7 +146,7 @@ class SchedulingConfiguration extends React.Component {
                         <label className="col-sm-4 col-form-label text-right">Collecting Black Duck notifications in</label>
                         <div className="d-inline-flex p-2 col-sm-4">
                             <p className="form-control-static accumulator-countdown">
-                                {FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_ACCUMULATOR_NEXT_RUN)} seconds &nbsp;&nbsp;
+                                {FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_ACCUMULATOR_NEXT_RUN)} seconds &nbsp;&nbsp;
                             </p>
                         </div>
                     </div>
@@ -162,7 +162,7 @@ class SchedulingConfiguration extends React.Component {
                                 options={dailyDigestOptions}
                                 placeholder="Choose the hour of day"
                                 value={dailyDigestOptions.find((option) => {
-                                    const runHour = FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_DAILY_DIGEST_HOUR_OF_DAY);
+                                    const runHour = FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_DAILY_DIGEST_HOUR_OF_DAY);
                                     return option.value === runHour;
                                 })}
                             />
@@ -177,7 +177,7 @@ class SchedulingConfiguration extends React.Component {
                         <label className="col-sm-4 col-form-label text-right">Daily Digest Cron Next Run</label>
                         <div className="d-inline-flex p-2 col-sm-4">
                             <p className="form-control-static">
-                                {FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_DAILY_DIGEST_NEXT_RUN)}
+                                {FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_DAILY_DIGEST_NEXT_RUN)}
                             </p>
                         </div>
                     </div>
@@ -192,7 +192,7 @@ class SchedulingConfiguration extends React.Component {
                                 isSearchable
                                 options={purgeOptions}
                                 placeholder="Choose the frequency"
-                                value={purgeOptions.find(option => option.value === FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_PURGE_DATA_FREQUENCY_DAYS))}
+                                value={purgeOptions.find(option => option.value === FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_PURGE_DATA_FREQUENCY_DAYS))}
                             />
                         </div>
                         {fieldErrors && fieldErrors.purgeDataFrequencyDays &&
@@ -205,7 +205,7 @@ class SchedulingConfiguration extends React.Component {
                         <label className="col-sm-4 col-form-label text-right">Purge Cron Next Run</label>
                         <div className="d-inline-flex p-2 col-sm-4">
                             <p className="form-control-static">
-                                {FieldModelUtil.getFieldModelSingleValue(fieldModel, KEY_PURGE_DATA_NEXT_RUN)}
+                                {FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_PURGE_DATA_NEXT_RUN)}
                             </p>
                         </div>
                     </div>
@@ -218,7 +218,7 @@ class SchedulingConfiguration extends React.Component {
 
 SchedulingConfiguration.propTypes = {
     currentConfig: PropTypes.object,
-    fieldErrors: PropTypes.string,
+    fieldErrors: PropTypes.object,
     errorMessage: PropTypes.string,
     updateStatus: PropTypes.string,
     getConfig: PropTypes.func.isRequired,

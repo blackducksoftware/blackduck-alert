@@ -10,6 +10,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.database.entity.configuration.ConfigContextEntity;
@@ -18,6 +19,7 @@ import com.synopsys.integration.alert.database.entity.configuration.DescriptorCo
 import com.synopsys.integration.alert.database.entity.configuration.RegisteredDescriptorEntity;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
+@Transactional
 public class ConfigGroupRepositoryTestIT extends AlertIntegrationTest {
     @Autowired
     private RegisteredDescriptorRepository registeredDescriptorRepository;
@@ -76,39 +78,7 @@ public class ConfigGroupRepositoryTestIT extends AlertIntegrationTest {
     }
 
     @Test
-    public void deleteByJobId() {
-        final ConfigContextEntity configContextEntity = new ConfigContextEntity(ConfigContextEnum.DISTRIBUTION.name());
-        final ConfigContextEntity savedConfigContextEntity = configContextRepository.save(configContextEntity);
-        assertEquals(1, configContextRepository.findAll().size());
-
-        final String descriptorName = "test descriptor";
-        final RegisteredDescriptorEntity registeredDescriptorEntity = new RegisteredDescriptorEntity(descriptorName, 1L);
-        final RegisteredDescriptorEntity savedRegisteredDescriptorEntity = registeredDescriptorRepository.save(registeredDescriptorEntity);
-        assertEquals(1, registeredDescriptorRepository.findAll().size());
-
-        final DescriptorConfigEntity descriptorConfigEntity1 = new DescriptorConfigEntity(savedRegisteredDescriptorEntity.getId(), savedConfigContextEntity.getId());
-        final DescriptorConfigEntity descriptorConfigEntity2 = new DescriptorConfigEntity(savedRegisteredDescriptorEntity.getId(), savedConfigContextEntity.getId());
-        final DescriptorConfigEntity descriptorConfigEntity3 = new DescriptorConfigEntity(savedRegisteredDescriptorEntity.getId(), savedConfigContextEntity.getId());
-        final DescriptorConfigEntity savedDescriptorConfigEntity1 = descriptorConfigRepository.save(descriptorConfigEntity1);
-        final DescriptorConfigEntity savedDescriptorConfigEntity2 = descriptorConfigRepository.save(descriptorConfigEntity2);
-        final DescriptorConfigEntity savedDescriptorConfigEntity3 = descriptorConfigRepository.save(descriptorConfigEntity3);
-        assertEquals(3, descriptorConfigRepository.findAll().size());
-
-        final UUID jobId = UUID.randomUUID();
-        final ConfigGroupEntity configGroupEntity1 = new ConfigGroupEntity(savedDescriptorConfigEntity1.getId(), jobId);
-        final ConfigGroupEntity configGroupEntity2 = new ConfigGroupEntity(savedDescriptorConfigEntity2.getId(), jobId);
-        final ConfigGroupEntity configGroupEntity3 = new ConfigGroupEntity(savedDescriptorConfigEntity3.getId(), UUID.randomUUID());
-        configGroupRepository.save(configGroupEntity1);
-        configGroupRepository.save(configGroupEntity2);
-        configGroupRepository.save(configGroupEntity3);
-        assertEquals(3, configGroupRepository.findAll().size());
-
-        configGroupRepository.deleteByJobId(jobId);
-        assertEquals(1, configGroupRepository.findAll().size());
-    }
-
-    @Test
-    public void onDeleteCascade() {
+    public void onDeleteCascadeTest() {
         final String context = ConfigContextEnum.DISTRIBUTION.name();
         final ConfigContextEntity configContextEntity = new ConfigContextEntity(context);
         final ConfigContextEntity savedConfigContextEntity = configContextRepository.save(configContextEntity);

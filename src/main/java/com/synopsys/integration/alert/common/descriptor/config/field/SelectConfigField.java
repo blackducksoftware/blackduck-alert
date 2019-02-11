@@ -35,7 +35,7 @@ import com.synopsys.integration.alert.web.model.configuration.FieldModel;
 import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 
 public class SelectConfigField extends ConfigField {
-    public static final String INVALID_OPTION_SELECTED = "Invalid option selected.";
+    public static final String INVALID_OPTION_SELECTED = "Invalid option selected";
     private Collection<String> options;
     private boolean searchable;
     private boolean multiSelect;
@@ -63,12 +63,12 @@ public class SelectConfigField extends ConfigField {
         this(key, label, required, sensitive, true, false, options, validationFunction);
     }
 
-    public static SelectConfigField createRequiredEmpty(final String key, final String label) {
-        return new SelectConfigField(key, label, true, false, Collections.emptyList());
+    public static SelectConfigField createEmpty(final String key, final String label) {
+        return new SelectConfigField(key, label, false, false, Collections.emptyList());
     }
 
-    public static SelectConfigField createRequiredEmpty(final String key, final String label, final ConfigValidationFunction validationFunction) {
-        return new SelectConfigField(key, label, true, false, Collections.emptyList(), validationFunction);
+    public static SelectConfigField createEmpty(final String key, final String label, final ConfigValidationFunction validationFunction) {
+        return new SelectConfigField(key, label, false, false, Collections.emptyList(), validationFunction);
     }
 
     public static SelectConfigField createRequired(final String key, final String label, final Collection<String> options) {
@@ -123,13 +123,14 @@ public class SelectConfigField extends ConfigField {
     }
 
     private Collection<String> validateIsValidOption(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-        if (fieldToValidate.hasValues()) {
+        final Collection<String> options = getOptions();
+        if (fieldToValidate.hasValues() && !options.isEmpty()) {
             final boolean doesMatchKnownReferral = fieldToValidate.getValues()
                                                        .stream()
                                                        .map(StringUtils::trimToEmpty)
-                                                       .allMatch(value -> getOptions()
+                                                       .allMatch(value -> options
                                                                               .stream()
-                                                                              .anyMatch(option -> option.equals(value)));
+                                                                              .anyMatch(option -> option.equalsIgnoreCase(value)));
             if (!doesMatchKnownReferral) {
                 return List.of(INVALID_OPTION_SELECTED);
             }

@@ -28,7 +28,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.TextInputConfigField;
@@ -38,8 +37,8 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistrib
 public class SlackUIConfig extends ChannelDistributionUIConfig {
 
     @Autowired
-    public SlackUIConfig(BaseConfigurationAccessor configurationAccessor, BaseDescriptorAccessor descriptorAccessor) {
-        super(SlackDescriptor.SLACK_LABEL, SlackDescriptor.SLACK_URL, SlackDescriptor.SLACK_ICON, configurationAccessor, descriptorAccessor);
+    public SlackUIConfig(final BaseDescriptorAccessor descriptorAccessor) {
+        super(SlackDescriptor.SLACK_LABEL, SlackDescriptor.SLACK_URL, SlackDescriptor.SLACK_ICON, descriptorAccessor);
     }
 
     @Override

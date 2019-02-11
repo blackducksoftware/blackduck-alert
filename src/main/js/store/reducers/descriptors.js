@@ -36,7 +36,6 @@ const config = (state = initialState, action) => {
                     message: ''
                 },
                 items: [
-                    ...state.items,
                     ...action.items
                 ]
             });
