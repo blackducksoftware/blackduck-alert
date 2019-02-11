@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,7 @@ import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
+import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
@@ -54,6 +56,7 @@ import com.synopsys.integration.alert.database.api.configuration.model.Configura
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
+import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 import com.synopsys.integration.alert.web.model.configuration.JobFieldModel;
 import com.synopsys.integration.alert.web.model.configuration.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
@@ -115,6 +118,7 @@ public class JobConfigActions {
 
     public JobFieldModel saveJob(final JobFieldModel jobFieldModel) throws AlertFieldException, AlertDatabaseConstraintException {
         validateJob(jobFieldModel);
+        validateJobNameUnique(jobFieldModel);
         final Set<String> descriptorNames = new HashSet<>();
         final Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
         for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
@@ -124,6 +128,7 @@ public class JobConfigActions {
         }
         final ConfigurationJobModel savedJob = configurationAccessor.createJob(descriptorNames, configurationFieldModels);
         final JobFieldModel savedJobFieldModel = convertToJobFieldModel(savedJob);
+
         final Set<FieldModel> updatedFieldModels = savedJobFieldModel.getFieldModels()
                                                        .stream()
                                                        .map(fieldModel -> fieldModelProcessor.performSaveAction(fieldModel))
@@ -150,6 +155,43 @@ public class JobConfigActions {
         return savedJobFieldModel;
     }
 
+    private void validateJobNameUnique(final JobFieldModel jobFieldModel) throws AlertFieldException {
+        for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
+            validateJobNameUnique(fieldModel);
+        }
+    }
+
+    private void validateJobNameUnique(final FieldModel fieldModel) throws AlertFieldException {
+        final String descriptorName = fieldModel.getDescriptorName();
+        final Optional<FieldValueModel> jobNameFieldOptional = fieldModel.getField(ChannelDistributionUIConfig.KEY_NAME);
+        String error = "";
+        if (jobNameFieldOptional.isPresent()) {
+            final String jobName = jobNameFieldOptional.get().getValue().orElse(null);
+            if (StringUtils.isNotBlank(jobName)) {
+                try {
+                    final List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorName(descriptorName);
+                    final Boolean foundDuplicateName = configurations.stream()
+                                                           .map(configurationModel -> configurationModel.getField(ChannelDistributionUIConfig.KEY_NAME).orElse(null))
+                                                           .filter(configurationFieldModel -> (null != configurationFieldModel) && configurationFieldModel.getFieldValue().isPresent())
+                                                           .anyMatch(configurationFieldModel -> jobName.equals(configurationFieldModel.getFieldValue().get()));
+                    if (foundDuplicateName) {
+                        error = "A distribution configuration with this name already exists.";
+                    }
+                } catch (final AlertDatabaseConstraintException e) {
+                    logger.error("Could not retrieve distributions of {}", jobName);
+                }
+
+            } else {
+                error = "Name cannot be blank.";
+            }
+        }
+        if (StringUtils.isNotBlank(error)) {
+            final Map<String, String> fieldErrors = new HashMap<>();
+            fieldErrors.put(ChannelDistributionUIConfig.KEY_NAME, error);
+            throw new AlertFieldException(fieldErrors);
+        }
+    }
+
     public String validateJob(final JobFieldModel jobFieldModel) throws AlertFieldException {
         final Map<String, String> fieldErrors = new HashMap<>();
         for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
@@ -164,7 +206,7 @@ public class JobConfigActions {
     public String testJob(final JobFieldModel jobFieldModel, final String destination) throws IntegrationException {
         validateJob(jobFieldModel);
         FieldModel channelFieldModel = null;
-        Collection<FieldModel> otherJobModels = new LinkedList<>();
+        final Collection<FieldModel> otherJobModels = new LinkedList<>();
         for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
             final Optional<Descriptor> descriptor = fieldModelProcessor.retrieveDescriptor(fieldModel.getDescriptorName());
             if (descriptor.filter(foundDescriptor -> DescriptorType.CHANNEL.equals(foundDescriptor.getType())).isPresent()) {
@@ -174,14 +216,14 @@ public class JobConfigActions {
             }
         }
 
-        FieldModel testFieldModel = channelFieldModel;
+        final FieldModel testFieldModel = channelFieldModel;
         if (null != testFieldModel) {
             final Optional<DescriptorActionApi> descriptorActionApi = fieldModelProcessor.retrieveDescriptorActionApi(channelFieldModel);
             if (descriptorActionApi.isPresent()) {
                 final Map<String, ConfigurationFieldModel> fields = new HashMap<>();
 
                 fields.putAll(modelConverter.convertFromFieldModel(channelFieldModel));
-                Optional<ConfigurationModel> configurationFieldModel = configurationAccessor.getConfigurationByDescriptorNameAndContext(channelFieldModel.getDescriptorName(), ConfigContextEnum.GLOBAL).stream().findFirst();
+                final Optional<ConfigurationModel> configurationFieldModel = configurationAccessor.getConfigurationByDescriptorNameAndContext(channelFieldModel.getDescriptorName(), ConfigContextEnum.GLOBAL).stream().findFirst();
 
                 configurationFieldModel.ifPresent(model -> fields.putAll(model.getCopyOfKeyToFieldMap()));
 
