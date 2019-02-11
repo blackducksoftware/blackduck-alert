@@ -25,7 +25,7 @@ class HipChatConfiguration extends React.Component {
         super(props);
 
         this.state = {
-            currentHipChatConfig: FieldModelUtilities.createEmptyFieldModel(fieldNames, 'GLOBAL', DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_HIPCHAT)
+            currentHipChatConfig: FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_HIPCHAT)
         };
 
         this.handleChange = this.handleChange.bind(this);
