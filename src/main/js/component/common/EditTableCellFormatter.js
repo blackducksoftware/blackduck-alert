@@ -13,7 +13,7 @@ class EditTableCellFormatter extends Component {
     }
 
     render() {
-        let buttonClass = this.props.buttonClass;
+        let { buttonClass } = this.props;
 
         if (buttonClass) {
             buttonClass = `${buttonClass} tableButton`;
@@ -30,12 +30,13 @@ class EditTableCellFormatter extends Component {
 EditTableCellFormatter.propTypes = {
     currentRowSelected: PropTypes.object.isRequired,
     handleButtonClicked: PropTypes.func.isRequired,
-    buttonClass: PropTypes.string.isRequired,
+    buttonClass: PropTypes.string,
     buttonText: PropTypes.string
 };
 
 EditTableCellFormatter.defaultProps = {
-    buttonText: 'Edit'
+    buttonText: 'Edit',
+    buttonClass: null
 };
 
 export default EditTableCellFormatter;

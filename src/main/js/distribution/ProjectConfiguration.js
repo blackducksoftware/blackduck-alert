@@ -51,11 +51,18 @@ class ProjectConfiguration extends Component {
         this.props.getProjects();
     }
 
-    handleChange(event) {
-        const { target } = event
-        const value = target.type === 'checkbox' ? target.checked : target.value;
-        this.setState({ includeAllProjects: value });
-        this.props.handleChange(event);
+    componentDidUpdate(prevProps) {
+        if (this.props.includeAllProjects !== prevProps.includeAllProjects) {
+            this.setState({
+                includeAllProjects: this.props.includeAllProjects
+            });
+        }
+
+        if (this.props.configuredProjects !== prevProps.configuredProjects) {
+            this.setState({
+                configuredProjects: this.props.configuredProjects
+            });
+        }
     }
 
     onRowSelectedAll(isSelected, rows) {
@@ -83,6 +90,13 @@ class ProjectConfiguration extends Component {
             configuredProjects: selected
         });
         this.props.handleProjectChanged(selected.map(project => Object.assign({}, { label: project, value: project })));
+    }
+
+    handleChange(event) {
+        const { target } = event
+        const value = target.type === 'checkbox' ? target.checked : target.value;
+        this.setState({ includeAllProjects: value });
+        this.props.handleChange(event);
     }
 
     createSelectedArray(selectedArray, row, isSelected) {
@@ -170,7 +184,6 @@ class ProjectConfiguration extends Component {
                 {this.props.errorMsg && <p name="projectTableMessage">{this.props.errorMsg}</p>}
             </div>);
         }
-
         return (
             <div>
                 <CheckboxInput
@@ -201,7 +214,7 @@ ProjectConfiguration.defaultProps = {
 };
 
 ProjectConfiguration.propTypes = {
-    includeAllProjects: PropTypes.bool,
+    includeAllProjects: PropTypes.bool.isRequired,
     configuredProjects: PropTypes.arrayOf(PropTypes.string),
     projectNamePattern: PropTypes.string,
     projects: PropTypes.arrayOf(PropTypes.any),
