@@ -8,12 +8,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackUIConfig;
-import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor;
 import com.synopsys.integration.alert.database.api.configuration.DescriptorAccessor;
 import com.synopsys.integration.alert.database.api.configuration.model.RegisteredDescriptorModel;
 
@@ -21,13 +19,12 @@ public class ChannelDistributionUIConfigTest {
 
     @Test
     public void createCommonConfigFieldsTest() throws AlertDatabaseConstraintException {
-        final BaseConfigurationAccessor accessor = Mockito.mock(ConfigurationAccessor.class);
-        BaseDescriptorAccessor descriptorAccessor = Mockito.mock(DescriptorAccessor.class);
-        RegisteredDescriptorModel registeredDescriptorModel = Mockito.mock(RegisteredDescriptorModel.class);
+        final BaseDescriptorAccessor descriptorAccessor = Mockito.mock(DescriptorAccessor.class);
+        final RegisteredDescriptorModel registeredDescriptorModel = Mockito.mock(RegisteredDescriptorModel.class);
         Mockito.when(registeredDescriptorModel.getName()).thenReturn("example channel");
         Mockito.when(descriptorAccessor.getRegisteredDescriptorsByType(DescriptorType.CHANNEL)).thenReturn(List.of(registeredDescriptorModel));
 
-        final ChannelDistributionUIConfig channelDistributionUIConfig = new SlackUIConfig(accessor, descriptorAccessor);
+        final ChannelDistributionUIConfig channelDistributionUIConfig = new SlackUIConfig(descriptorAccessor);
 
         final List<ConfigField> commonConfigFields = channelDistributionUIConfig.createFields();
         assertContains(commonConfigFields, ChannelDistributionUIConfig.KEY_NAME);

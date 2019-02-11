@@ -115,6 +115,7 @@ public class JobConfigActions {
 
     public JobFieldModel saveJob(final JobFieldModel jobFieldModel) throws AlertFieldException, AlertDatabaseConstraintException {
         validateJob(jobFieldModel);
+        validateCreateJob(jobFieldModel);
         final Set<String> descriptorNames = new HashSet<>();
         final Set<ConfigurationFieldModel> configurationFieldModels = new HashSet<>();
         for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
@@ -124,6 +125,7 @@ public class JobConfigActions {
         }
         final ConfigurationJobModel savedJob = configurationAccessor.createJob(descriptorNames, configurationFieldModels);
         final JobFieldModel savedJobFieldModel = convertToJobFieldModel(savedJob);
+
         final Set<FieldModel> updatedFieldModels = savedJobFieldModel.getFieldModels()
                                                        .stream()
                                                        .map(fieldModel -> fieldModelProcessor.performSaveAction(fieldModel))
@@ -150,6 +152,17 @@ public class JobConfigActions {
         return savedJobFieldModel;
     }
 
+    public String validateCreateJob(final JobFieldModel jobFieldModel) throws AlertFieldException {
+        final Map<String, String> fieldErrors = new HashMap<>();
+        for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
+            fieldErrors.putAll(fieldModelProcessor.validateCreateFieldModel(fieldModel));
+        }
+        if (!fieldErrors.isEmpty()) {
+            throw new AlertFieldException(fieldErrors);
+        }
+        return "Valid";
+    }
+
     public String validateJob(final JobFieldModel jobFieldModel) throws AlertFieldException {
         final Map<String, String> fieldErrors = new HashMap<>();
         for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
@@ -164,7 +177,7 @@ public class JobConfigActions {
     public String testJob(final JobFieldModel jobFieldModel, final String destination) throws IntegrationException {
         validateJob(jobFieldModel);
         FieldModel channelFieldModel = null;
-        Collection<FieldModel> otherJobModels = new LinkedList<>();
+        final Collection<FieldModel> otherJobModels = new LinkedList<>();
         for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
             final Optional<Descriptor> descriptor = fieldModelProcessor.retrieveDescriptor(fieldModel.getDescriptorName());
             if (descriptor.filter(foundDescriptor -> DescriptorType.CHANNEL.equals(foundDescriptor.getType())).isPresent()) {
@@ -174,14 +187,14 @@ public class JobConfigActions {
             }
         }
 
-        FieldModel testFieldModel = channelFieldModel;
+        final FieldModel testFieldModel = channelFieldModel;
         if (null != testFieldModel) {
             final Optional<DescriptorActionApi> descriptorActionApi = fieldModelProcessor.retrieveDescriptorActionApi(channelFieldModel);
             if (descriptorActionApi.isPresent()) {
                 final Map<String, ConfigurationFieldModel> fields = new HashMap<>();
 
                 fields.putAll(modelConverter.convertFromFieldModel(channelFieldModel));
-                Optional<ConfigurationModel> configurationFieldModel = configurationAccessor.getConfigurationByDescriptorNameAndContext(channelFieldModel.getDescriptorName(), ConfigContextEnum.GLOBAL).stream().findFirst();
+                final Optional<ConfigurationModel> configurationFieldModel = configurationAccessor.getConfigurationByDescriptorNameAndContext(channelFieldModel.getDescriptorName(), ConfigContextEnum.GLOBAL).stream().findFirst();
 
                 configurationFieldModel.ifPresent(model -> fields.putAll(model.getCopyOfKeyToFieldMap()));
 
