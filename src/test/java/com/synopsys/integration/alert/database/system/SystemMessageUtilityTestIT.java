@@ -16,12 +16,14 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.SystemMessageSeverity;
 import com.synopsys.integration.alert.common.enumeration.SystemMessageType;
 import com.synopsys.integration.alert.common.model.DateRange;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
+@Transactional
 public class SystemMessageUtilityTestIT extends AlertIntegrationTest {
     public static final String SEVERITY = "severity";
     public static final String TYPE = "type";
