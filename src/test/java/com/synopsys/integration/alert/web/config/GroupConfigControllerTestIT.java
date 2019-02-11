@@ -106,9 +106,9 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         final MvcResult mvcResult = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
         final String response = mvcResult.getResponse().getContentAsString();
 
-        final FieldModel fieldModel = gson.fromJson(response, FieldModel.class);
+        final ConfigurationJobModel fieldModel = gson.fromJson(response, ConfigurationJobModel.class);
         assertNotNull(fieldModel);
-        assertEquals(configId, fieldModel.getId());
+        assertEquals(configId, fieldModel.getJobId().toString());
     }
 
     @Test
