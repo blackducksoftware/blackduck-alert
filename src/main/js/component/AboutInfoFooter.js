@@ -156,7 +156,7 @@ class AboutInfoFooter extends React.Component {
                         alt={projectUrl}
                         href={projectUrl}
                     />
-                    &nbsp;&nbsp;|&nbsp;&nbsp;<strong>ALERT</strong>
+                    &nbsp;|&nbsp;ALERT
                 </span>
                 <span className="productVersion">v{version}</span>
                 <span className="copyright">
