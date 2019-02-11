@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,7 +99,7 @@ public class JobConfigController extends BaseController {
         }
 
         if (optionalModel.isPresent()) {
-            return responseFactory.createOkResponse(contentConverter.getStringValue(id), contentConverter.getJsonString(optionalModel.get()));
+            return responseFactory.createOkContentResponse(contentConverter.getJsonString(optionalModel.get()));
         }
 
         return responseFactory.createNotFoundResponse("Configuration not found for the specified id");
@@ -119,7 +120,7 @@ public class JobConfigController extends BaseController {
 
     private ResponseEntity<String> runPostConfig(final JobFieldModel restModel) throws AlertDatabaseConstraintException {
         final String id = restModel.getJobId();
-        if (jobConfigActions.doesJobExist(id)) {
+        if (StringUtils.isNotBlank(id) && jobConfigActions.doesJobExist(id)) {
             return responseFactory.createConflictResponse(id, "Provided id must not be in use. To update an existing configuration, use PUT.");
         }
 

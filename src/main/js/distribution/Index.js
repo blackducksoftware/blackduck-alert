@@ -2,16 +2,17 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn } from 'react-bootstrap-table';
-
 import AutoRefresh from 'component/common/AutoRefresh';
 import DescriptorLabel from 'component/common/DescriptorLabel';
 import EmailJobConfiguration from 'distribution/job/EmailJobConfiguration';
 import HipChatJobConfiguration from 'distribution/job/HipChatJobConfiguration';
 import SlackJobConfiguration from 'distribution/job/SlackJobConfiguration';
 import EditTableCellFormatter from 'component/common/EditTableCellFormatter';
-
 import JobAddModal from 'distribution/JobAddModal';
-import { logout } from 'store/actions/session';
+import { fetchDistributionJobs, openJobDeleteModal } from 'store/actions/distributions';
+import * as DescriptorUtilities from 'util/descriptorUtilities';
+import JobDeleteModal from 'distribution/JobDeleteModal';
+import * as FieldModelUtilities from 'util/fieldModelUtilities';
 
 /**
  * Selects className based on field value
@@ -53,9 +54,6 @@ function frequencyColumnDataFormat(cell) {
 class Index extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            jobs: []
-        };
         this.startAutoReload = this.startAutoReload.bind(this);
         this.startAutoReloadIfConfigured = this.startAutoReloadIfConfigured.bind(this);
         this.cancelAutoReload = this.cancelAutoReload.bind(this);
@@ -69,6 +67,16 @@ class Index extends Component {
         this.saveBtn = this.saveBtn.bind(this);
         this.typeColumnDataFormat = this.typeColumnDataFormat.bind(this);
         this.providerColumnDataFormat = this.providerColumnDataFormat.bind(this);
+        this.onJobDeleteClose = this.onJobDeleteClose.bind(this);
+        this.onJobDeleteSubmit = this.onJobDeleteSubmit.bind(this);
+
+        this.state = {
+            currentRowSelected: null,
+            jobsToDelete: [],
+            showDeleteModal: false,
+            nextDelete: null
+        };
+        this.getCurrentJobConfig = this.getCurrentJobConfig.bind(this);
     }
 
     componentDidMount() {
@@ -79,27 +87,40 @@ class Index extends Component {
         this.cancelAutoReload();
     }
 
+    onJobDeleteSubmit() {
+        this.state.nextDelete();
+    }
+
+    onJobDeleteClose() {
+        this.setState({
+            showDeleteModal: false,
+            nextDelete: null,
+            jobsToDelete: []
+        });
+        this.reloadJobs();
+    }
+
     getCurrentJobConfig(currentRowSelected) {
         if (currentRowSelected != null) {
-            const { distributionConfigId, distributionType } = currentRowSelected;
-            if (distributionType === 'channel_email') {
+            const { id, distributionType } = currentRowSelected;
+            if (distributionType === DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_EMAIL) {
                 return (<EmailJobConfiguration
                     alertChannelName={distributionType}
-                    distributionConfigId={distributionConfigId}
+                    jobId={id}
                     handleCancel={this.cancelRowSelect}
                     handleSaveBtnClick={this.saveBtn}
                 />);
-            } else if (distributionType === 'channel_hipchat') {
+            } else if (distributionType === DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_HIPCHAT) {
                 return (<HipChatJobConfiguration
                     alertChannelName={distributionType}
-                    distributionConfigId={distributionConfigId}
+                    jobId={id}
                     handleCancel={this.cancelRowSelect}
                     handleSaveBtnClick={this.saveBtn}
                 />);
-            } else if (distributionType === 'channel_slack') {
+            } else if (distributionType === DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_SLACK) {
                 return (<SlackJobConfiguration
                     alertChannelName={distributionType}
-                    distributionConfigId={distributionConfigId}
+                    jobId={id}
                     handleCancel={this.cancelRowSelect}
                     handleSaveBtnClick={this.saveBtn}
                 />);
@@ -122,11 +143,7 @@ class Index extends Component {
     }
 
     reloadJobs() {
-        this.setState({
-            jobConfigTableMessage: 'Loading...',
-            inProgress: true
-        });
-        this.fetchDistributionJobs();
+        this.props.fetchDistributionJobs();
     }
 
     cancelAutoReload() {
@@ -152,7 +169,7 @@ class Index extends Component {
                 includeAllProjects
                 handleCancel={this.cancelRowSelect}
                 onModalClose={() => {
-                    this.fetchDistributionJobs();
+                    this.props.fetchDistributionJobs();
                     this.startAutoReloadIfConfigured();
                     onModalClose();
                 }}
@@ -165,123 +182,13 @@ class Index extends Component {
     }
 
     customJobConfigDeletionConfirm(next, dropRowKeys) {
-        if (confirm('Are you sure you want to delete these Job configurations?')) {
-            console.log('Deleting the Job configs');
-            // TODO delete the Job configs from the backend
-            // dropRowKeys are the Id's of the Job configs
-            const { jobs } = this.state;
-            const matchingJobs = jobs.filter(job => dropRowKeys.includes(job.id));
-
-            matchingJobs.forEach((job) => {
-                const deleteUrl = `/alert/api/configuration/channel/distribution/${job.distributionType}?id=${job.id}`;
-                fetch(deleteUrl, {
-                    method: 'DELETE',
-                    credentials: 'same-origin',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': this.props.csrfToken
-                    }
-                }).then((response) => {
-                    if (!response.ok) {
-                        response.json().then((json) => {
-                            const jsonErrors = json.errors;
-                            if (jsonErrors) {
-                                const errors = {};
-
-                                Object.keys(jsonErrors).forEach((key) => {
-                                    errors[`${key}Error`] = jsonErrors[key];
-                                });
-                                this.setState({
-                                    errors
-                                });
-                            }
-                            this.setState({
-                                jobConfigTableMessage: json.message
-                            });
-                        });
-                    }
-                }).catch(console.error);
-            });
-            next();
-        }
-    }
-
-    fetchDistributionJobs() {
-        fetch('/alert/api/configuration/channel/distribution', {
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then((response) => {
-            if (response.ok) {
-                this.setState({ jobConfigTableMessage: '' });
-                response.json().then((jsonArray) => {
-                    const newJobs = [];
-                    if (jsonArray != null && jsonArray.length > 0) {
-                        jsonArray.forEach((item) => {
-                            const jobConfig = {
-                                id: item.id,
-                                distributionConfigId: item.distributionConfigId,
-                                name: item.name,
-                                distributionType: item.distributionType,
-                                providerName: item.providerName,
-                                frequency: item.frequency,
-                                formatType: item.formatType,
-                                notificationTypes: item.notificationTypes,
-                                configuredProjects: item.configuredProjects,
-                                projectNamePattern: item.projectNamePattern
-                            };
-                            const jobConfigWithAuditInfo = this.fetchAuditInfoForJob(jobConfig);
-                            newJobs.push(jobConfigWithAuditInfo);
-                        });
-                    }
-                    this.setState({
-                        jobs: newJobs
-                    });
-                });
-            } else {
-                switch (response.status) {
-                    case 401:
-                    case 403:
-                        this.props.logout();
-                        break;
-                    default:
-                        response.json().then((json) => {
-                            this.setState({ jobConfigTableMessage: json.message });
-                        });
-                }
-            }
-            this.setState({ inProgress: false });
-            this.startAutoReloadIfConfigured();
-        }).catch((error) => {
-            this.startAutoReloadIfConfigured();
-            console.log(error);
-        });
-    }
-
-    fetchAuditInfoForJob(jobConfig) {
-        let lastRan = 'Unknown';
-        let status = 'Unknown';
-        fetch(`/alert/api/audit/job/${jobConfig.distributionConfigId}`, {
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then((response) => {
-            if (response.ok) {
-                response.json().then((jsonObj) => {
-                    if (jsonObj != null) {
-                        lastRan = jsonObj.timeLastSent;
-                        [status] = jsonObj;
-                    }
-                });
-            }
-        }).catch((error) => {
-            console.log(error);
-        });
-        return Object.assign({}, jobConfig, {
-            lastRan,
-            status
+        const { jobs } = this.props;
+        const matchingJobs = jobs.filter(job => dropRowKeys.includes(job.jobId));
+        this.props.openJobDeleteModal();
+        this.setState({
+            showDeleteModal: true,
+            nextDelete: next,
+            jobsToDelete: matchingJobs
         });
     }
 
@@ -328,9 +235,9 @@ class Index extends Component {
         const defaultValue = <div className="inline">{cell}</div>;
         const { descriptors } = this.props;
         if (descriptors) {
-            const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors.items, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+            const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
             if (descriptorList) {
-                const filteredList = descriptorList.filter(descriptor => descriptor.descriptorName === cell);
+                const filteredList = descriptorList.filter(descriptor => descriptor.name === cell);
                 if (filteredList && filteredList.length > 0) {
                     const foundDescriptor = filteredList[0];
                     return (<DescriptorLabel keyPrefix="distribution-channel-icon" descriptor={foundDescriptor} />);
@@ -346,9 +253,9 @@ class Index extends Component {
         const defaultValue = <div className="inline">{cell}</div>;
         const { descriptors } = this.props;
         if (descriptors) {
-            const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors.items, DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
+            const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
             if (descriptorList) {
-                const filteredList = descriptorList.filter(descriptor => descriptor.descriptorName === cell);
+                const filteredList = descriptorList.filter(descriptor => descriptor.name === cell);
                 if (filteredList && filteredList.length > 0) {
                     const foundDescriptor = filteredList[0];
                     return (<DescriptorLabel keyPrefix="distribution-provider-icon" descriptor={foundDescriptor} />);
@@ -360,7 +267,38 @@ class Index extends Component {
         return defaultValue;
     }
 
+    createTableData(jobs) {
+        const tableData = [];
+        if (jobs) {
+            jobs.forEach((job) => {
+                const channelModel = job.fieldModels
+                    .find(fieldModel => fieldModel.descriptorName.startsWith('channel_'));
+                const providerModel = job.fieldModels
+                    .find(fieldModel => fieldModel.descriptorName.startsWith('provider_'));
+                const id = job.jobId;
+                const name = FieldModelUtilities.getFieldModelSingleValue(channelModel, 'channel.common.name');
+                const distributionType = channelModel.descriptorName;
+                const providerName = providerModel.descriptorName;
+                const frequency = FieldModelUtilities.getFieldModelSingleValue(channelModel, 'channel.common.frequency');
+                const lastRan = FieldModelUtilities.getFieldModelSingleValue(job, 'lastRan');
+                const status = FieldModelUtilities.getFieldModelSingleValue(job, 'status');
+                const entry = Object.assign({}, {
+                    id,
+                    name,
+                    distributionType,
+                    providerName,
+                    frequency,
+                    lastRan,
+                    status
+                });
+                tableData.push(entry);
+            });
+        }
+        return tableData;
+    }
+
     render() {
+        const tableData = this.createTableData(this.props.jobs);
         const jobTableOptions = {
             btnGroup: this.createCustomButtonGroup,
             noDataText: 'No jobs configured',
@@ -378,13 +316,14 @@ class Index extends Component {
                 return null;
             }
         };
+
         let content = (
             <div>
                 <BootstrapTable
                     version="4"
                     hover
                     condensed
-                    data={this.state.jobs}
+                    data={tableData}
                     containerClass="table"
                     insertRow
                     deleteRow
@@ -396,7 +335,6 @@ class Index extends Component {
                     bodyContainerClass="tableScrollableBody"
                 >
                     <TableHeaderColumn dataField="id" isKey hidden>Job Id</TableHeaderColumn>
-                    <TableHeaderColumn dataField="distributionConfigId" hidden>Distribution Id</TableHeaderColumn>
                     <TableHeaderColumn dataField="name" dataSort columnTitle columnClassName="tableCell">Distribution Job</TableHeaderColumn>
                     <TableHeaderColumn dataField="distributionType" dataSort columnClassName="tableCell" dataFormat={this.typeColumnDataFormat}>Type</TableHeaderColumn>
                     <TableHeaderColumn dataField="providerName" dataSort columnClassName="tableCell" dataFormat={this.providerColumnDataFormat}>Provider</TableHeaderColumn>
@@ -406,22 +344,32 @@ class Index extends Component {
                     <TableHeaderColumn dataField="" width="48" columnClassName="tableCell" dataFormat={this.editButtonClick} />
                 </BootstrapTable>
 
-                {this.state.inProgress &&
+                {this.props.inProgress &&
                 <div className="progressIcon">
                     <span className="fa fa-spinner fa-pulse" aria-hidden="true" />
                 </div>
                 }
 
-                <p name="jobConfigTableMessage">{this.state.jobConfigTableMessage}</p>
+                <p name="jobConfigTableMessage">{this.props.jobConfigTableMessage}</p>
             </div>
         );
-
         const currentJobContent = this.getCurrentJobConfig(this.state.currentRowSelected);
         if (currentJobContent !== null) {
             content = currentJobContent;
         }
         return (
             <div>
+                <JobDeleteModal
+                    createTableData={this.createTableData}
+                    onModalSubmit={this.onJobDeleteSubmit}
+                    onModalClose={this.onJobDeleteClose}
+                    typeColumnDataFormat={this.typeColumnDataFormat}
+                    providerColumnDataFormat={this.providerColumnDataFormat}
+                    frequencyColumnDataFormat={frequencyColumnDataFormat}
+                    statusColumnClassNameFormat={statusColumnClassNameFormat}
+                    jobs={this.state.jobsToDelete}
+                    show={this.state.showDeleteModal}
+                />
                 <h1>
                     <span className="fa fa-truck" />
                     Distribution
@@ -436,26 +384,32 @@ class Index extends Component {
 }
 
 Index.propTypes = {
-    logout: PropTypes.func.isRequired,
+    openJobDeleteModal: PropTypes.func.isRequired,
+    fetchDistributionJobs: PropTypes.func.isRequired,
     autoRefresh: PropTypes.bool,
-    csrfToken: PropTypes.string,
-    descriptors: PropTypes.arrayOf(PropTypes.object)
+    descriptors: PropTypes.arrayOf(PropTypes.object),
+    inProgress: PropTypes.bool.isRequired,
+    jobs: PropTypes.arrayOf(PropTypes.object).isRequired,
+    jobConfigTableMessage: PropTypes.string
 };
 
 Index.defaultProps = {
-    csrfToken: null,
     autoRefresh: true,
-    descriptors: []
+    descriptors: [],
+    jobConfigTableMessage: ''
 };
 
 const mapStateToProps = state => ({
-    csrfToken: state.session.csrfToken,
     autoRefresh: state.refresh.autoRefresh,
-    descriptors: state.descriptors
+    descriptors: state.descriptors.items,
+    inProgress: state.distributions.inProgress,
+    jobs: state.distributions.jobs,
+    jobConfigTableMessage: state.distributions.jobConfigTableMessage
 });
 
 const mapDispatchToProps = dispatch => ({
-    logout: () => dispatch(logout())
+    openJobDeleteModal: () => dispatch(openJobDeleteModal()),
+    fetchDistributionJobs: () => dispatch(fetchDistributionJobs())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Index);

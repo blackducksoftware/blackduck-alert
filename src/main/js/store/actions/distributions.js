@@ -1,237 +1,176 @@
 import {
-    DISTRIBUTION_JOB_FETCH_ERROR,
-    DISTRIBUTION_JOB_FETCHED,
-    DISTRIBUTION_JOB_FETCHING,
-    DISTRIBUTION_JOB_SAVE_ERROR,
-    DISTRIBUTION_JOB_SAVED,
-    DISTRIBUTION_JOB_SAVING,
-    DISTRIBUTION_JOB_TEST_FAILURE,
-    DISTRIBUTION_JOB_TEST_SUCCESS,
-    DISTRIBUTION_JOB_TESTING,
-    DISTRIBUTION_JOB_UPDATE_ERROR,
-    DISTRIBUTION_JOB_UPDATED,
-    DISTRIBUTION_JOB_UPDATING
+    DISTRIBUTION_JOB_DELETE_ERROR,
+    DISTRIBUTION_JOB_DELETE_OPEN_MODAL,
+    DISTRIBUTION_JOB_DELETED,
+    DISTRIBUTION_JOB_DELETING,
+    DISTRIBUTION_JOB_FETCH_ALL_NONE_FOUND,
+    DISTRIBUTION_JOB_FETCH_ERROR_ALL,
+    DISTRIBUTION_JOB_FETCHED_ALL,
+    DISTRIBUTION_JOB_FETCHING_ALL
 } from 'store/actions/types';
 
 import { verifyLoginByStatus } from 'store/actions/session';
+import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
+import * as FieldModelUtilities from 'util/fieldModelUtilities';
 
-function fetchingJob() {
+
+function fetchingAllJobs() {
     return {
-        type: DISTRIBUTION_JOB_FETCHING
+        type: DISTRIBUTION_JOB_FETCHING_ALL
     };
 }
 
-function jobFetched(config) {
+function allJobsFetched(jobs) {
     return {
-        type: DISTRIBUTION_JOB_FETCHED,
-        jobs: {
-            [config.distributionConfigId]: config
-        }
+        type: DISTRIBUTION_JOB_FETCHED_ALL,
+        jobs
     };
 }
 
-function jobFetchError() {
+
+function fetchingAllJobsError(message) {
     return {
-        type: DISTRIBUTION_JOB_FETCH_ERROR
+        type: DISTRIBUTION_JOB_FETCH_ERROR_ALL,
+        jobConfigTableMessage: message
     };
 }
 
-function savingJobConfig() {
+function fetchingAllJobsNoneFound() {
     return {
-        type: DISTRIBUTION_JOB_SAVING
+        type: DISTRIBUTION_JOB_FETCH_ALL_NONE_FOUND,
+        jobConfigTableMessage: ''
     };
 }
 
-function saveJobSuccess(message) {
+
+function openJobDelete() {
     return {
-        type: DISTRIBUTION_JOB_SAVED,
-        configurationMessage: message
+        type: DISTRIBUTION_JOB_DELETE_OPEN_MODAL,
+        jobDeleteMessage: ''
     };
 }
 
-function saveJobFailed(errors, message) {
+function deletingJobConfig() {
     return {
-        type: DISTRIBUTION_JOB_SAVE_ERROR,
-        configurationMessage: message,
-        errors
+        type: DISTRIBUTION_JOB_DELETING
     };
 }
 
-function updatingJobConfig() {
+function deletingJobConfigSuccess() {
     return {
-        type: DISTRIBUTION_JOB_UPDATING
+        type: DISTRIBUTION_JOB_DELETED
     };
 }
 
-function updateJobSuccess(message) {
+function jobDeleteError(message) {
     return {
-        type: DISTRIBUTION_JOB_UPDATED,
-        configurationMessage: message
+        type: DISTRIBUTION_JOB_DELETE_ERROR,
+        jobDeleteMessage: message
     };
 }
 
-function updateJobFailed(errors, message) {
-    return {
-        type: DISTRIBUTION_JOB_UPDATE_ERROR,
-        configurationMessage: message,
-        errors
-    };
+function fetchAuditInfoForJob(csrfToken, jobConfig) {
+    let newConfig = Object.assign({}, jobConfig);
+    let lastRan = 'Unknown';
+    let status = 'Unknown';
+
+    if (jobConfig) {
+        fetch(`/alert/api/audit/job/${jobConfig.jobId}`, {
+            credentials: 'same-origin',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Content-Type': 'application/json'
+            }
+        }).then((response) => {
+            if (response.ok) {
+                response.json().then((jsonObj) => {
+                    if (jsonObj != null) {
+                        lastRan = jsonObj.timeLastSent;
+                        [status] = jsonObj;
+                    }
+                });
+            }
+        }).catch((error) => {
+            console.log(error);
+        });
+    }
+    newConfig = FieldModelUtilities.updateFieldModelSingleValue(newConfig, 'lastRan', lastRan);
+    newConfig = FieldModelUtilities.updateFieldModelSingleValue(newConfig, 'status', status);
+
+    return newConfig;
 }
 
-function testingJobConfig() {
-    return {
-        type: DISTRIBUTION_JOB_TESTING
-    };
+export function openJobDeleteModal() {
+    return (dispatch, getState) => dispatch(openJobDelete());
 }
 
-function testJobSuccess(message) {
-    return {
-        type: DISTRIBUTION_JOB_TEST_SUCCESS,
-        configurationMessage: message
-    };
-}
-
-function testJobFailed(errors, message) {
-    return {
-        type: DISTRIBUTION_JOB_TEST_FAILURE,
-        configurationMessage: message,
-        errors
-    };
-}
-
-export function getDistributionJob(url, id) {
+export function deleteDistributionJob(job) {
     return (dispatch, getState) => {
-        dispatch(fetchingJob());
-        if (id) {
-            const getUrl = `${url}?id=${id}`;
-            fetch(getUrl, {
-                credentials: 'same-origin',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            }).then((response) => {
-                if (response.ok) {
-                    response.json().then((jsonArray) => {
-                        if (jsonArray && jsonArray.length > 0) {
-                            dispatch(jobFetched(jsonArray[0]));
-                        } else {
-                            dispatch(jobFetchError());
+        dispatch(deletingJobConfig());
+        const { csrfToken } = getState().session;
+        const request = ConfigRequestBuilder.createDeleteRequest(ConfigRequestBuilder.JOB_API_URL, csrfToken, job.jobId);
+        request.then((response) => {
+            if (response.ok) {
+                dispatch(deletingJobConfigSuccess());
+            } else {
+                response.json()
+                    .then((data) => {
+                        switch (response.status) {
+                            case 400:
+                                return dispatch(jobDeleteError(data.message));
+                            case 401:
+                                dispatch(jobDeleteError(data.message));
+                                return dispatch(verifyLoginByStatus(response.status));
+                            case 412:
+                                return dispatch(jobDeleteError(data.message));
+                            default: {
+                                return dispatch(jobDeleteError(data.message, null));
+                            }
                         }
                     });
-                } else {
-                    dispatch(verifyLoginByStatus(response.status));
+            }
+        }).catch(console.error);
+    };
+}
+
+export function fetchDistributionJobs() {
+    return (dispatch, getState) => {
+        dispatch(fetchingAllJobs());
+        const { csrfToken } = getState().session;
+        fetch(ConfigRequestBuilder.JOB_API_URL, {
+            credentials: 'same-origin',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Content-Type': 'application/json'
+            }
+        }).then((response) => {
+            if (response.ok) {
+                response.json().then((jsonArray) => {
+                    const newJobs = [];
+                    jsonArray.forEach((jobConfig) => {
+                        const jobConfigWithAuditInfo = fetchAuditInfoForJob(csrfToken, jobConfig);
+                        newJobs.push(jobConfigWithAuditInfo);
+                    });
+                    dispatch(allJobsFetched(newJobs));
+                });
+            } else {
+                switch (response.status) {
+                    case 401:
+                    case 403:
+                        dispatch(verifyLoginByStatus(response.status));
+                        break;
+                    case 404:
+                        dispatch(fetchingAllJobsNoneFound());
+                        break;
+                    default:
+                        response.json().then((json) => {
+                            dispatch(fetchingAllJobsError(json.message));
+                        });
                 }
-            }).catch(console.error);
-        } else {
-            dispatch(jobFetchError());
-        }
-    };
-}
-
-export function saveDistributionJob(url, config) {
-    return (dispatch, getState) => {
-        dispatch(savingJobConfig());
-        const { csrfToken } = getState().session;
-        fetch(url, {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
-            },
-            body: config
-        }).then((response) => {
-            if (!response.ok && response.status === 401) {
-                dispatch(verifyLoginByStatus(response.status));
-            } else {
-                response.json().then((json) => {
-                    const jsonErrors = json.errors;
-                    if (jsonErrors) {
-                        const errors = {};
-                        for (const key in jsonErrors) {
-                            if (jsonErrors.hasOwnProperty(key)) {
-                                const value = jsonErrors[key];
-                                errors[key] = value;
-                            }
-                        }
-                        dispatch(saveJobFailed(errors, json.message));
-                    } else {
-                        dispatch(saveJobSuccess(json.message));
-                    }
-                });
             }
-        }).catch(console.error);
-    };
-}
-
-export function updateDistributionJob(url, config) {
-    return (dispatch, getState) => {
-        dispatch(updatingJobConfig());
-        const { csrfToken } = getState().session;
-        fetch(url, {
-            method: 'PUT',
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
-            },
-            body: config
-        }).then((response) => {
-            if (!response.ok && response.status === 401) {
-                dispatch(verifyLoginByStatus(response.status));
-            } else {
-                response.json().then((json) => {
-                    const jsonErrors = json.errors;
-                    if (jsonErrors) {
-                        const errors = {};
-                        for (const key in jsonErrors) {
-                            if (jsonErrors.hasOwnProperty(key)) {
-                                const value = jsonErrors[key];
-                                errors[key] = value;
-                            }
-                        }
-                        dispatch(updateJobFailed(errors, json.message));
-                    } else {
-                        dispatch(updateJobSuccess(json.message));
-                    }
-                });
-            }
-        }).catch(console.error);
-    };
-}
-
-export function testDistributionJob(url, config) {
-    return (dispatch, getState) => {
-        dispatch(testingJobConfig());
-        const { csrfToken } = getState().session;
-        fetch(url, {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
-            },
-            body: config
-        }).then((response) => {
-            if (!response.ok && response.status === 401) {
-                dispatch(verifyLoginByStatus(response.status));
-            } else {
-                response.json().then((json) => {
-                    const jsonErrors = json.errors;
-                    if (jsonErrors) {
-                        const errors = {};
-                        for (const key in jsonErrors) {
-                            if (jsonErrors.hasOwnProperty(key)) {
-                                const value = jsonErrors[key];
-                                errors[key] = value;
-                            }
-                        }
-                        dispatch(testJobFailed(errors, json.message));
-                    } else {
-                        dispatch(testJobSuccess(json.message));
-                    }
-                });
-            }
-        }).catch(console.error);
+        }).catch((error) => {
+            console.log(error);
+            dispatch(fetchingAllJobsError(error));
+        });
     };
 }

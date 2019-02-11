@@ -9,12 +9,14 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.database.entity.configuration.DefinedFieldEntity;
 import com.synopsys.integration.alert.database.entity.configuration.DescriptorFieldRelation;
 import com.synopsys.integration.alert.database.entity.configuration.RegisteredDescriptorEntity;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
+@Transactional
 public class DefinedFieldRepositoryTestIT extends AlertIntegrationTest {
     public static final String FIELD_KEY_1 = "Test Key 1";
     public static final String FIELD_KEY_2 = "Test Key 2";
