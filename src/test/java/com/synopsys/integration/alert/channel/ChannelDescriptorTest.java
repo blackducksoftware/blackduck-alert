@@ -130,8 +130,8 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
     }
 
     public Map<String, String> createValidCommonDistributionFieldMap() {
-        return Map.of(ChannelDistributionUIConfig.KEY_NAME, "name", ChannelDistributionUIConfig.KEY_FREQUENCY, FrequencyType.REAL_TIME.name(), ChannelDistributionUIConfig.KEY_CHANNEL_NAME, "channelName",
-            ChannelDistributionUIConfig.KEY_PROVIDER_NAME, "providerName");
+        return Map.of(ChannelDistributionUIConfig.KEY_NAME, "name", ChannelDistributionUIConfig.KEY_FREQUENCY, FrequencyType.REAL_TIME.name(), ChannelDistributionUIConfig.KEY_CHANNEL_NAME, "channel_slack",
+            ChannelDistributionUIConfig.KEY_PROVIDER_NAME, "provider_blackduck");
     }
 
     public Map<String, String> createInvalidCommonDistributionFieldMap() {
