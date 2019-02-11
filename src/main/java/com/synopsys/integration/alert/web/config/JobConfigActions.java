@@ -183,9 +183,7 @@ public class JobConfigActions {
                 fields.putAll(modelConverter.convertFromFieldModel(channelFieldModel));
                 Optional<ConfigurationModel> configurationFieldModel = configurationAccessor.getConfigurationByDescriptorNameAndContext(channelFieldModel.getDescriptorName(), ConfigContextEnum.GLOBAL).stream().findFirst();
 
-                if (configurationFieldModel.isPresent()) {
-                    fields.putAll(configurationFieldModel.get().getCopyOfKeyToFieldMap());
-                }
+                configurationFieldModel.ifPresent(model -> fields.putAll(model.getCopyOfKeyToFieldMap()));
 
                 for (final FieldModel fieldModel : otherJobModels) {
                     fields.putAll(modelConverter.convertFromFieldModel(fieldModel));
