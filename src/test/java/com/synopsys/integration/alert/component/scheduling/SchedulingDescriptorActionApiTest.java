@@ -98,8 +98,13 @@ public class SchedulingDescriptorActionApiTest {
         final Map<String, ConfigField> configFieldMap = schedulingUIConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
         actionApi.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
-        assertEquals(DAILY_DIGEST_ERROR_MESSAGE, fieldErrors.get(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY));
-        assertEquals(PURGE_FREQUENCY_ERROR_MESSAGE, fieldErrors.get(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS));
+
+        final String actualDailyProcessorError = fieldErrors.get(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY);
+        assertTrue(actualDailyProcessorError.contains(DAILY_DIGEST_ERROR_MESSAGE), "Expected to contain: " + DAILY_DIGEST_ERROR_MESSAGE + ". Actual: " + actualDailyProcessorError);
+
+        final String actualPurgeDataError = fieldErrors.get(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS);
+        assertTrue(actualPurgeDataError.contains(PURGE_FREQUENCY_ERROR_MESSAGE), "Expected to contain: " + PURGE_FREQUENCY_ERROR_MESSAGE + ". Actual: " + actualPurgeDataError);
+
     }
 
     @Test
@@ -117,12 +122,16 @@ public class SchedulingDescriptorActionApiTest {
         final Map<String, ConfigField> configFieldMap = schedulingUIConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
         actionApi.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
-        assertEquals(DAILY_DIGEST_ERROR_MESSAGE, fieldErrors.get(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY));
+
+        String actualError = fieldErrors.get(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY);
+        assertTrue(actualError.contains(DAILY_DIGEST_ERROR_MESSAGE), "Expected to contain: " + DAILY_DIGEST_ERROR_MESSAGE + ". Actual: " + actualError);
 
         fieldErrors.clear();
         FIELD_HOUR_OF_DAY.setValue("24");
         actionApi.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
-        assertEquals(DAILY_DIGEST_ERROR_MESSAGE, fieldErrors.get(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY));
+
+        actualError = fieldErrors.get(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY);
+        assertTrue(actualError.contains(DAILY_DIGEST_ERROR_MESSAGE), "Expected to contain: " + DAILY_DIGEST_ERROR_MESSAGE + ". Actual: " + actualError);
     }
 
     @Test
@@ -140,13 +149,15 @@ public class SchedulingDescriptorActionApiTest {
         final Map<String, ConfigField> configFieldMap = schedulingUIConfig.createFields().stream()
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
         actionApi.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
-        assertEquals(PURGE_FREQUENCY_ERROR_MESSAGE, fieldErrors.get(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS));
+        String actualError = fieldErrors.get(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS);
+        assertTrue(actualError.contains(PURGE_FREQUENCY_ERROR_MESSAGE), "Expected to contain: " + PURGE_FREQUENCY_ERROR_MESSAGE + ". Actual: " + actualError);
 
         fieldErrors.clear();
         FIELD_PURGE_FREQUENCY.setValue("8");
         actionApi.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
 
-        assertEquals(PURGE_FREQUENCY_ERROR_MESSAGE, fieldErrors.get(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS));
+        actualError = fieldErrors.get(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS);
+        assertTrue(actualError.contains(PURGE_FREQUENCY_ERROR_MESSAGE), "Expected to contain: " + PURGE_FREQUENCY_ERROR_MESSAGE + ". Actual: " + actualError);
     }
 
     @Test
