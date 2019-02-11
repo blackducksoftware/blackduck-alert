@@ -88,7 +88,7 @@ class HipChatJobConfiguration extends Component {
 
 
     render() {
-        const { colorOptions } = this.state;
+        const { colorOptions } = this.props;
         const fieldModel = this.state.currentConfig;
         let selectedColorOption = null;
         if (colorOptions) {
