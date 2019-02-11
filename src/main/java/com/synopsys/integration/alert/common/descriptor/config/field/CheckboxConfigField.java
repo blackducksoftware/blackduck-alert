@@ -56,6 +56,14 @@ public class CheckboxConfigField extends ConfigField {
         return new CheckboxConfigField(key, label, false, validationFunction);
     }
 
+    public static CheckboxConfigField createRequired(final String key, final String label) {
+        return new CheckboxConfigField(key, label, true);
+    }
+
+    public static CheckboxConfigField createRequired(final String key, final String label, final ConfigValidationFunction validationFunction) {
+        return new CheckboxConfigField(key, label, true, validationFunction);
+    }
+
     public static CheckboxConfigField createGrouped(final String key, final String label, final FieldGroup group) {
         return new CheckboxConfigField(key, label, false, group);
     }

@@ -34,13 +34,18 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
+import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertException;
@@ -50,10 +55,12 @@ import com.synopsys.integration.alert.database.api.configuration.model.Configura
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
 import com.synopsys.integration.alert.web.model.configuration.JobFieldModel;
+import com.synopsys.integration.alert.web.model.configuration.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class JobConfigActions {
+    private static final Logger logger = LoggerFactory.getLogger(JobConfigActions.class);
     private final BaseConfigurationAccessor configurationAccessor;
     private final FieldModelProcessor fieldModelProcessor;
     private final ContentConverter contentConverter;
@@ -157,15 +164,40 @@ public class JobConfigActions {
     public String testJob(final JobFieldModel jobFieldModel, final String destination) throws IntegrationException {
         validateJob(jobFieldModel);
         FieldModel channelFieldModel = null;
+        Collection<FieldModel> otherJobModels = new LinkedList<>();
         for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
             final Optional<Descriptor> descriptor = fieldModelProcessor.retrieveDescriptor(fieldModel.getDescriptorName());
             if (descriptor.filter(foundDescriptor -> DescriptorType.CHANNEL.equals(foundDescriptor.getType())).isPresent()) {
                 channelFieldModel = fieldModel;
+            } else {
+                otherJobModels.add(fieldModel);
             }
         }
 
-        if (channelFieldModel != null) {
-            return fieldModelProcessor.testFieldModel(channelFieldModel, destination);
+        FieldModel testFieldModel = channelFieldModel;
+        if (null != testFieldModel) {
+            final Optional<DescriptorActionApi> descriptorActionApi = fieldModelProcessor.retrieveDescriptorActionApi(channelFieldModel);
+            if (descriptorActionApi.isPresent()) {
+                final Map<String, ConfigurationFieldModel> fields = new HashMap<>();
+
+                fields.putAll(modelConverter.convertFromFieldModel(channelFieldModel));
+                Optional<ConfigurationModel> configurationFieldModel = configurationAccessor.getConfigurationByDescriptorNameAndContext(channelFieldModel.getDescriptorName(), ConfigContextEnum.GLOBAL).stream().findFirst();
+
+                configurationFieldModel.ifPresent(model -> fields.putAll(model.getCopyOfKeyToFieldMap()));
+
+                for (final FieldModel fieldModel : otherJobModels) {
+                    fields.putAll(modelConverter.convertFromFieldModel(fieldModel));
+                }
+
+                final DescriptorActionApi descriptorApi = descriptorActionApi.get();
+                final FieldAccessor fieldAccessor = new FieldAccessor(fields);
+                final TestConfigModel testConfig = descriptorApi.createTestConfigModel(channelFieldModel.getId(), fieldAccessor, destination);
+                descriptorApi.testConfig(testConfig);
+                return "Successfully sent test message.";
+            } else {
+                logger.error("Descriptor action api did not exist: {}", testFieldModel.getDescriptorName());
+                return "Internal server error. Failed to send test message.";
+            }
         }
         return "No field model of type channel was was sent to test.";
     }

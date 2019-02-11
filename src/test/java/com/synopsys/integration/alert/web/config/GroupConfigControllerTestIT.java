@@ -28,6 +28,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
@@ -43,6 +44,7 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationJobModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
+import com.synopsys.integration.alert.database.repository.configuration.DescriptorConfigRepository;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.alert.util.DatabaseConfiguredFieldTest;
@@ -50,17 +52,18 @@ import com.synopsys.integration.alert.web.model.configuration.FieldModel;
 import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 import com.synopsys.integration.alert.web.model.configuration.JobFieldModel;
 
+@Transactional
 public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
     private final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
     @Autowired
-    HipChatDescriptor hipChatDescriptor;
+    private DescriptorConfigRepository descriptorConfigRepository;
     @Autowired
     private WebApplicationContext webApplicationContext;
     private MockMvc mockMvc;
     @Autowired
     private Gson gson;
 
-    private String url = JobConfigController.JOB_CONFIGURATION_PATH;
+    private final String url = JobConfigController.JOB_CONFIGURATION_PATH;
 
     @BeforeEach
     public void setup() {
@@ -106,36 +109,37 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         final MvcResult mvcResult = mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk()).andReturn();
         final String response = mvcResult.getResponse().getContentAsString();
 
-        final FieldModel fieldModel = gson.fromJson(response, FieldModel.class);
+        final ConfigurationJobModel fieldModel = gson.fromJson(response, ConfigurationJobModel.class);
         assertNotNull(fieldModel);
-        assertEquals(configId, fieldModel.getId());
+        assertEquals(configId, fieldModel.getJobId().toString());
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     public void testDeleteConfig() throws Exception {
         final ConfigurationJobModel emptyConfigurationModel = addJob(HipChatChannel.COMPONENT_NAME, BlackDuckProvider.COMPONENT_NAME, Map.of());
-        final String configId = String.valueOf(emptyConfigurationModel.getJobId());
+        final String jobId = String.valueOf(emptyConfigurationModel.getJobId());
 
-        final String urlPath = url + "/" + configId;
+        final String urlPath = url + "/" + jobId;
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.delete(urlPath)
                                                           .with(SecurityMockMvcRequestPostProcessors.user("admin").roles("ADMIN"))
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());
 
         mockMvc.perform(request).andExpect(MockMvcResultMatchers.status().isAccepted());
+        descriptorConfigRepository.flush();
 
-        final UUID id = UUID.fromString(configId);
+        final UUID id = UUID.fromString(jobId);
         final Optional<ConfigurationJobModel> configuration = getConfigurationAccessor().getJobById(id);
 
-        assertTrue(configuration.isEmpty());
+        assertTrue(configuration.isEmpty(), "Expected the job to have been deleted");
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     public void testUpdateConfig() throws Exception {
         final JobFieldModel fieldModel = createTestJobFieldModel();
-        Map<String, Collection<String>> fieldValueModels = new HashMap<>();
-        for (FieldModel newFieldModel : fieldModel.getFieldModels()) {
+        final Map<String, Collection<String>> fieldValueModels = new HashMap<>();
+        for (final FieldModel newFieldModel : fieldModel.getFieldModels()) {
             fieldValueModels.putAll(newFieldModel.getKeyToValues().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getValues())));
         }
         final ConfigurationJobModel emptyConfigurationModel = addJob(HipChatChannel.COMPONENT_NAME, BlackDuckProvider.COMPONENT_NAME, fieldValueModels);
@@ -216,23 +220,23 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
         final FieldValueModel frequency = new FieldValueModel(List.of(FrequencyType.DAILY.name()), true);
         final FieldValueModel name = new FieldValueModel(List.of("name"), true);
         final FieldValueModel provider = new FieldValueModel(List.of(BlackDuckProvider.COMPONENT_NAME), true);
-        final FieldValueModel channel = new FieldValueModel(List.of("channel"), true);
+        final FieldValueModel channel = new FieldValueModel(List.of("channel_email"), true);
 
         final Map<String, FieldValueModel> fields = Map.of(HipChatDescriptor.KEY_ROOM_ID, roomId, ChannelDistributionUIConfig.KEY_NAME, name, ChannelDistributionUIConfig.KEY_PROVIDER_NAME, provider,
             ChannelDistributionUIConfig.KEY_CHANNEL_NAME, channel, ChannelDistributionUIConfig.KEY_FREQUENCY, frequency);
         final FieldModel fieldModel = new FieldModel(descriptorName, context, fields);
 
-        String bdDescriptorName = BlackDuckProvider.COMPONENT_NAME;
-        String bdContext = ConfigContextEnum.DISTRIBUTION.name();
+        final String bdDescriptorName = BlackDuckProvider.COMPONENT_NAME;
+        final String bdContext = ConfigContextEnum.DISTRIBUTION.name();
 
         final FieldValueModel notificationType = new FieldValueModel(List.of("vulnerability"), true);
         final FieldValueModel formatType = new FieldValueModel(List.of(FormatType.DEFAULT.name()), true);
         final FieldValueModel filterByProject = new FieldValueModel(List.of("false"), true);
-        FieldValueModel projectNames = new FieldValueModel(List.of("project"), true);
+        final FieldValueModel projectNames = new FieldValueModel(List.of("project"), true);
 
-        Map<String, FieldValueModel> bdFields = Map.of(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, notificationType, ProviderDistributionUIConfig.KEY_FORMAT_TYPE,
+        final Map<String, FieldValueModel> bdFields = Map.of(ProviderDistributionUIConfig.KEY_NOTIFICATION_TYPES, notificationType, ProviderDistributionUIConfig.KEY_FORMAT_TYPE,
             formatType, BlackDuckDescriptor.KEY_FILTER_BY_PROJECT, filterByProject, BlackDuckDescriptor.KEY_CONFIGURED_PROJECT, projectNames);
-        FieldModel bdFieldModel = new FieldModel(bdDescriptorName, bdContext, bdFields);
+        final FieldModel bdFieldModel = new FieldModel(bdDescriptorName, bdContext, bdFields);
 
         return new JobFieldModel(UUID.randomUUID().toString(), Set.of(fieldModel, bdFieldModel));
     }
@@ -253,7 +257,7 @@ public class GroupConfigControllerTestIT extends DatabaseConfiguredFieldTest {
 
         final ConfigurationJobModel configurationJobModel = configurationModelOptional.get();
 
-        for (ConfigurationModel configurationModel : configurationJobModel.getCopyOfConfigurations()) {
+        for (final ConfigurationModel configurationModel : configurationJobModel.getCopyOfConfigurations()) {
             if (roomIdField.isEmpty()) {
                 roomIdField = configurationModel.getField(HipChatDescriptor.KEY_ROOM_ID);
             }

@@ -29,10 +29,10 @@ class MainPage extends Component {
 
     createRoutesForDescriptors(descriptorType, context, uriPrefix) {
         const { descriptors } = this.props;
-        if (!descriptors.items) {
+        if (!descriptors) {
             return null;
         }
-        const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors.items, descriptorType, context);
+        const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, descriptorType, context);
 
         if (!descriptorList || descriptorList.length === 0) {
             return null;
@@ -86,7 +86,7 @@ MainPage.propTypes = {
     descriptors: PropTypes.arrayOf(PropTypes.object).isRequired
 };
 const mapStateToProps = state => ({
-    descriptors: state.descriptors
+    descriptors: state.descriptors.items
 });
 
 const mapDispatchToProps = dispatch => ({

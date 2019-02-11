@@ -1,6 +1,7 @@
-const CONFIG_API_URL = '/alert/api/configuration'
+export const CONFIG_API_URL = '/alert/api/configuration';
+export const JOB_API_URL = '/alert/api/configuration/job';
 
-export function createReadAllRequest(csrfToken, context, descriptorName) {
+export function createReadAllRequest(apiUrl, csrfToken, context, descriptorName) {
     const queryParams = Object.assign({}, { context, descriptorName });
     const parameters = [];
     Object.keys(queryParams).forEach((key) => {
@@ -11,7 +12,7 @@ export function createReadAllRequest(csrfToken, context, descriptorName) {
         }
     });
     const queryString = parameters.join('&');
-    const url = `${CONFIG_API_URL}?${queryString}`;
+    const url = `${apiUrl}?${queryString}`;
     return fetch(url, {
         credentials: 'same-origin',
         headers: {
@@ -21,11 +22,11 @@ export function createReadAllRequest(csrfToken, context, descriptorName) {
 }
 
 export function createReadAllGlobalContextRequest(csrfToken, descriptorName) {
-    return createReadAllRequest(csrfToken, 'GLOBAL', descriptorName);
+    return createReadAllRequest(CONFIG_API_URL, csrfToken, 'GLOBAL', descriptorName);
 }
 
-export function createReadRequest(csrfToken, configurationId) {
-    const url = `${CONFIG_API_URL}/${configurationId}`;
+export function createReadRequest(apiUrl, csrfToken, configurationId) {
+    const url = `${apiUrl}/${configurationId}`;
     return fetch(url, {
         credentials: 'same-origin',
         headers: {
@@ -34,8 +35,8 @@ export function createReadRequest(csrfToken, configurationId) {
     });
 }
 
-export function createNewConfigurationRequest(csrfToken, fieldModel) {
-    return fetch(CONFIG_API_URL, {
+export function createNewConfigurationRequest(apiUrl, csrfToken, fieldModel) {
+    return fetch(apiUrl, {
         credentials: 'same-origin',
         method: 'POST',
         body: JSON.stringify(fieldModel),
@@ -46,8 +47,8 @@ export function createNewConfigurationRequest(csrfToken, fieldModel) {
     });
 }
 
-export function createUpdateRequest(csrfToken, configurationId, fieldModel) {
-    const url = `${CONFIG_API_URL}/${configurationId}`;
+export function createUpdateRequest(apiUrl, csrfToken, configurationId, fieldModel) {
+    const url = `${apiUrl}/${configurationId}`;
     return fetch(url, {
         credentials: 'same-origin',
         method: 'PUT',
@@ -59,8 +60,8 @@ export function createUpdateRequest(csrfToken, configurationId, fieldModel) {
     });
 }
 
-export function createDeleteRequest(csrfToken, configurationId) {
-    const url = `${CONFIG_API_URL}/${configurationId}`;
+export function createDeleteRequest(apiUrl, csrfToken, configurationId) {
+    const url = `${apiUrl}/${configurationId}`;
     return fetch(url, {
         credentials: 'same-origin',
         method: 'DELETE',
@@ -70,8 +71,8 @@ export function createDeleteRequest(csrfToken, configurationId) {
     });
 }
 
-export function createValidateRequest(csrfToken, fieldModel) {
-    const url = `${CONFIG_API_URL}/validate`;
+export function createValidateRequest(apiUrl, csrfToken, fieldModel) {
+    const url = `${apiUrl}/validate`;
     return fetch(url, {
         credentials: 'same-origin',
         method: 'POST',
@@ -83,8 +84,8 @@ export function createValidateRequest(csrfToken, fieldModel) {
     });
 }
 
-export function createTestRequest(csrfToken, fieldModel, destination) {
-    let url = `${CONFIG_API_URL}/test`
+export function createTestRequest(apiUrl, csrfToken, fieldModel, destination) {
+    let url = `${apiUrl}/test`;
     if (destination) {
         url += `?destination=${encodeURIComponent(destination)}`;
     }
