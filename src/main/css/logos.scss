@@ -5,21 +5,22 @@
   font-family: 'Roboto', sans-serif;
 }
 
-.headerStandardSize {
-  font-size: 1.25em;
-  font-weight: lighter;
-}
-
 .synopsysHeaderLogo {
   background: none;
   margin: auto;
-  max-height: 17px;
   width: auto;
+  max-height: 17px;
 }
 
 .synopsysFooterLogo {
   background: none;
   margin: auto;
-  max-height: 12px;
   width: auto;
+  max-height: 12px;
+}
+
+.headerStandardSize {
+  margin-bottom: 2px;
+  font-size: 1.25em;
+  font-weight: lighter;
 }
