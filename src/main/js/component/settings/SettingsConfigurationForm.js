@@ -70,7 +70,7 @@ class SettingsConfigurationForm extends Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.createSingleSelectHandler = this.createSingleSelectHandler.bind(this);
         this.state = {
-            settingsData: FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, 'component_settings')
+            settingsData: FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_SETTINGS)
         };
     }
 

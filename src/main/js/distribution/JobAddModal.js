@@ -8,7 +8,6 @@ import EmailJobConfiguration from 'distribution/job/EmailJobConfiguration';
 import HipChatJobConfiguration from 'distribution/job/HipChatJobConfiguration';
 import SlackJobConfiguration from 'distribution/job/SlackJobConfiguration';
 import DescriptorOption from 'component/common/DescriptorOption';
-import { resetDistributionDescriptor } from 'store/actions/descriptors';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 
 const { Option, SingleValue } = components;
@@ -40,27 +39,23 @@ class JobAddModal extends Component {
         this.createJobTypeOptions = this.createJobTypeOptions.bind(this);
     }
 
-    componentDidMount() {
-        this.props.resetDistributionDescriptor();
-    }
-
     getCurrentJobConfig() {
         switch (this.state.values.typeValue) {
-            case 'channel_email':
+            case DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_EMAIL:
                 return (<EmailJobConfiguration
                     alertChannelName={this.state.values.typeValue}
                     projects={this.props.projects}
                     handleCancel={this.handleClose}
                     handleSaveBtnClick={this.handleSaveBtnClick}
                 />);
-            case 'channel_hipchat':
+            case DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_HIPCHAT:
                 return (<HipChatJobConfiguration
                     alertChannelName={this.state.values.typeValue}
                     projects={this.props.projects}
                     handleCancel={this.handleClose}
                     handleSaveBtnClick={this.handleSaveBtnClick}
                 />);
-            case 'channel_slack':
+            case DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_SLACK:
                 return (<SlackJobConfiguration
                     alertChannelName={this.state.values.typeValue}
                     projects={this.props.projects}
@@ -108,11 +103,11 @@ class JobAddModal extends Component {
     }
 
     createJobTypeOptions() {
-        const channelDescriptors = DescriptorUtilities.findDescriptorByTypeAndContext(this.props.descriptors.items, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
+        const channelDescriptors = DescriptorUtilities.findDescriptorByTypeAndContext(this.props.descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.CHANNEL, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
         if (channelDescriptors) {
             const optionList = channelDescriptors.map(descriptor => ({
                 label: descriptor.label,
-                value: descriptor.descriptorName,
+                value: descriptor.name,
                 icon: descriptor.fontAwesomeIcon
             }));
             return optionList;
@@ -124,11 +119,9 @@ class JobAddModal extends Component {
         const jobTypeOptions = this.createJobTypeOptions();
         return (
             <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
-
                 <Modal.Header closeButton>
                     <Modal.Title>New Distribution Job</Modal.Title>
                 </Modal.Header>
-
                 <Modal.Body>
                     <form className="form-horizontal">
                         <div className="form-group">
@@ -156,7 +149,6 @@ class JobAddModal extends Component {
 }
 
 JobAddModal.propTypes = {
-    resetDistributionDescriptor: PropTypes.func.isRequired,
     onModalClose: PropTypes.func.isRequired,
     descriptors: PropTypes.arrayOf(PropTypes.object),
     projects: PropTypes.arrayOf(PropTypes.object)
@@ -168,11 +160,9 @@ JobAddModal.defaultProps = {
 };
 
 const mapStateToProps = state => ({
-    descriptors: state.descriptors
+    descriptors: state.descriptors.items
 });
 
-const mapDispatchToProps = dispatch => ({
-    resetDistributionDescriptor: () => dispatch(resetDistributionDescriptor())
-});
+const mapDispatchToProps = dispatch => ({});
 
 export default connect(mapStateToProps, mapDispatchToProps)(JobAddModal);
