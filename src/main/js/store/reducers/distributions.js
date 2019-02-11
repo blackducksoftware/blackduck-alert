@@ -1,153 +1,71 @@
 import {
-    DISTRIBUTION_JOB_FETCH_ERROR,
-    DISTRIBUTION_JOB_FETCHED,
-    DISTRIBUTION_JOB_FETCHING,
-    DISTRIBUTION_JOB_SAVE_ERROR,
-    DISTRIBUTION_JOB_SAVED,
-    DISTRIBUTION_JOB_SAVING,
-    DISTRIBUTION_JOB_TEST_FAILURE,
-    DISTRIBUTION_JOB_TEST_SUCCESS,
-    DISTRIBUTION_JOB_TESTING,
-    DISTRIBUTION_JOB_UPDATE_ERROR,
-    DISTRIBUTION_JOB_UPDATED,
-    DISTRIBUTION_JOB_UPDATING,
+    DISTRIBUTION_JOB_DELETE_ERROR,
+    DISTRIBUTION_JOB_DELETE_OPEN_MODAL,
+    DISTRIBUTION_JOB_DELETED,
+    DISTRIBUTION_JOB_DELETING,
+    DISTRIBUTION_JOB_FETCH_ALL_NONE_FOUND,
+    DISTRIBUTION_JOB_FETCH_ERROR_ALL,
+    DISTRIBUTION_JOB_FETCHED_ALL,
+    DISTRIBUTION_JOB_FETCHING_ALL,
     SERIALIZE
 } from 'store/actions/types';
 
 const initialState = {
-    fetching: false,
     inProgress: false,
-    success: false,
-    testingConfig: false,
-    error: {
-        message: ''
-    },
-    configurationMessage: ''
+    deleteSuccess: false,
+    jobs: [],
+    jobConfigTableMessage: '',
+    jobDeleteMessage: ''
 };
 
 const config = (state = initialState, action) => {
     switch (action.type) {
-        case DISTRIBUTION_JOB_FETCHING:
+        case DISTRIBUTION_JOB_DELETE_OPEN_MODAL:
+        case DISTRIBUTION_JOB_DELETE_ERROR:
             return Object.assign({}, state, {
-                fetching: true,
-                inProgress: true,
-                success: false,
-                testingConfig: false,
-                configurationMessage: '',
-                error: {
-                    message: ''
-                }
+                inProgress: false,
+                deleteSuccess: false,
+                jobDeleteMessage: action.jobDeleteMessage
             });
 
-        case DISTRIBUTION_JOB_FETCHED:
+        case DISTRIBUTION_JOB_FETCH_ERROR_ALL:
+        case DISTRIBUTION_JOB_FETCH_ALL_NONE_FOUND:
             return Object.assign({}, state, {
-                fetching: false,
                 inProgress: false,
-                success: false,
-                testingConfig: false,
-                configurationMessage: action.configurationMessage,
-                error: {
-                    message: ''
-                },
-                jobs: {
-                    ...state.jobs,
+                deleteSuccess: false,
+                jobConfigTableMessage: action.jobConfigTableMessage,
+                jobs: []
+            });
+
+        case DISTRIBUTION_JOB_FETCHED_ALL:
+            return Object.assign({}, state, {
+                inProgress: false,
+                deleteSuccess: false,
+                jobConfigTableMessage: action.jobConfigTableMessage,
+                jobs: [
                     ...action.jobs
-                }
+                ]
             });
 
-        case DISTRIBUTION_JOB_FETCH_ERROR:
+        case DISTRIBUTION_JOB_DELETED:
             return Object.assign({}, state, {
-                fetching: false,
                 inProgress: false,
-                success: false,
-                testingConfig: false,
-                configurationMessage: action.configurationMessage,
-                error: {
-                    ...action.errors,
-                    message: action.configurationMessage
-                }
+                deleteSuccess: true,
+                jobConfigTableMessage: '',
             });
 
-        case DISTRIBUTION_JOB_UPDATING:
-        case DISTRIBUTION_JOB_SAVING:
+        case DISTRIBUTION_JOB_DELETING:
             return Object.assign({}, state, {
-                fetching: false,
                 inProgress: true,
-                success: false,
-                testingConfig: false,
-                configurationMessage: 'Saving...',
-                error: {
-                    message: ''
-                },
-                jobs: {
-                    ...state.jobs,
-                    ...action.jobs
-                }
+                deleteSuccess: false,
+                jobConfigTableMessage: 'Deleting...'
             });
 
-        case DISTRIBUTION_JOB_UPDATED:
-        case DISTRIBUTION_JOB_SAVED:
+        case DISTRIBUTION_JOB_FETCHING_ALL:
             return Object.assign({}, state, {
-                fetching: false,
-                inProgress: false,
-                success: true,
-                testingConfig: false,
-                configurationMessage: action.configurationMessage,
-                error: {
-                    message: ''
-                },
-                ...action
-            });
-
-        case DISTRIBUTION_JOB_UPDATE_ERROR:
-        case DISTRIBUTION_JOB_SAVE_ERROR:
-            return Object.assign({}, state, {
-                fetching: false,
-                inProgress: false,
-                success: false,
-                testingConfig: false,
-                configurationMessage: action.configurationMessage,
-                error: {
-                    ...action.errors,
-                    message: action.configurationMessage
-                }
-            });
-
-        case DISTRIBUTION_JOB_TESTING:
-            return Object.assign({}, state, {
-                fetching: false,
                 inProgress: true,
-                success: false,
-                testingConfig: true,
-                configurationMessage: 'Testing...',
-                error: {
-                    message: ''
-                }
-            });
-
-        case DISTRIBUTION_JOB_TEST_SUCCESS:
-            return Object.assign({}, state, {
-                fetching: false,
-                inProgress: false,
-                success: true,
-                testingConfig: true,
-                configurationMessage: action.configurationMessage,
-                error: {
-                    message: ''
-                }
-            });
-
-        case DISTRIBUTION_JOB_TEST_FAILURE:
-            return Object.assign({}, state, {
-                fetching: false,
-                inProgress: false,
-                success: false,
-                testingConfig: true,
-                configurationMessage: action.configurationMessage,
-                error: {
-                    ...action.errors,
-                    message: action.configurationMessage
-                }
+                deleteSuccess: false,
+                jobConfigTableMessage: 'Loading...'
             });
 
         case SERIALIZE:
@@ -155,8 +73,7 @@ const config = (state = initialState, action) => {
 
         default:
             return state;
-
     }
-}
+};
 
 export default config;

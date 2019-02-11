@@ -63,12 +63,12 @@ public class SelectConfigField extends ConfigField {
         this(key, label, required, sensitive, true, false, options, validationFunction);
     }
 
-    public static SelectConfigField createRequiredEmpty(final String key, final String label) {
-        return new SelectConfigField(key, label, true, false, Collections.emptyList());
+    public static SelectConfigField createEmpty(final String key, final String label) {
+        return new SelectConfigField(key, label, false, false, Collections.emptyList());
     }
 
-    public static SelectConfigField createRequiredEmpty(final String key, final String label, final ConfigValidationFunction validationFunction) {
-        return new SelectConfigField(key, label, true, false, Collections.emptyList(), validationFunction);
+    public static SelectConfigField createEmpty(final String key, final String label, final ConfigValidationFunction validationFunction) {
+        return new SelectConfigField(key, label, false, false, Collections.emptyList(), validationFunction);
     }
 
     public static SelectConfigField createRequired(final String key, final String label, final Collection<String> options) {

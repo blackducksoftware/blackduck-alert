@@ -15,6 +15,7 @@ import {
 } from 'store/actions/types';
 import { clearLoginError, loginError, verifyLoginByStatus } from 'store/actions/session';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
+import * as DescriptorUtilities from 'util/descriptorUtilities';
 
 const LATEST_MESSAGES_URL = '/alert/api/system/messages/latest';
 const INITIAL_SYSTEM_SETUP_URL = '/alert/api/system/setup/initial';
@@ -147,7 +148,7 @@ export function getSystemSetup() {
     return (dispatch, getState) => {
         dispatch(fetchingSystemSetup());
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, 'component_settings');
+        const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_SETTINGS);
         request.then((response) => {
             if (response.ok) {
                 response.json().then((body) => {
@@ -208,7 +209,7 @@ export function saveSystemSetup(setupData) {
     return (dispatch, getState) => {
         dispatch(updatingSystemSetup());
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createUpdateRequest(csrfToken, setupData.id, setupData);
+        const request = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, setupData.id, setupData);
         request.then((response) => {
             if (response.ok) {
                 dispatch(systemSetupUpdated());

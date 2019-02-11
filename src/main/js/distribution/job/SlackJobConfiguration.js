@@ -2,41 +2,51 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import TextInput from 'field/input/TextInput';
-import { getDistributionJob } from 'store/actions/distributions';
+import { getDistributionJob } from 'store/actions/distributionConfigs';
 
 import BaseJobConfiguration from 'distribution/job/BaseJobConfiguration';
+import * as FieldModelUtilities from 'util/fieldModelUtilities';
+import * as DescriptorUtilities from 'util/descriptorUtilities';
+
+const KEY_WEBHOOK = 'channel.slack.webhook';
+const KEY_CHANNEL_NAME = 'channel.slack.channel.name';
+const KEY_CHANNEL_USERNAME = 'channel.slack.channel.username';
+
+const fieldNames = [
+    KEY_WEBHOOK,
+    KEY_CHANNEL_NAME,
+    KEY_CHANNEL_USERNAME
+];
 
 class SlackJobConfiguration extends Component {
     constructor(props) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
-        this.handleStateValues = this.handleStateValues.bind(this);
         this.getConfiguration = this.getConfiguration.bind(this);
         this.state = {
-            webhook: props.webhook,
-            channelUsername: props.channelUsername,
-            channelName: props.channelName,
-            error: {}
+            currentConfig: FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_SLACK)
         };
         this.loading = false;
     }
 
     componentDidMount() {
-        const { baseUrl, distributionConfigId } = this.props;
-        this.props.getDistributionJob(baseUrl, distributionConfigId);
-        this.loading = true;
+        const { jobId } = this.props;
+        if (jobId) {
+            this.props.getDistributionJob(jobId);
+            this.loading = true;
+        }
     }
 
     componentWillReceiveProps(nextProps) {
         if (!nextProps.fetching && !nextProps.inProgress) {
             if (this.loading) {
                 this.loading = false;
-                const jobConfig = nextProps.jobs[nextProps.distributionConfigId];
-                if (jobConfig) {
+                const jobConfig = nextProps.job;
+                if (jobConfig && jobConfig.fieldModels) {
+                    const channelModel = jobConfig.fieldModels.find(model => model.descriptorName.startsWith('channel_'));
                     this.setState({
-                        webhook: jobConfig.webhook,
-                        channelUsername: jobConfig.channelUsername,
-                        channelName: jobConfig.channelName
+                        jobConfig,
+                        currentConfig: channelModel
                     });
                 }
             }
@@ -44,43 +54,52 @@ class SlackJobConfiguration extends Component {
     }
 
     getConfiguration() {
-        return Object.assign({}, this.state, {
-            distributionType: this.props.distributionType
-        });
+        return this.state.currentConfig;
     }
 
     handleChange({ target }) {
         const value = target.type === 'checkbox' ? target.checked : target.value;
-        const { name } = target;
-        this.handleStateValues(name, value);
-    }
-
-    handleStateValues(name, value) {
+        const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, target.name, value);
         this.setState({
-            [name]: value
+            currentConfig: newState
         });
     }
 
     render() {
+        const fieldModel = this.state.currentConfig;
         const content = (
             <div>
-                <TextInput id="jobSlackWebhook" label="Webhook" name="webhook" value={this.state.webhook} onChange={this.handleChange} errorName="webhookError" errorValue={this.props.error.webhookError} />
-                <TextInput id="jobSlackChannelName" label="Channel Name" name="channelName" value={this.state.channelName} onChange={this.handleChange} errorName="channelNameError" errorValue={this.props.error.channelNameError} />
                 <TextInput
-                    id="jobSlackChannelUsername"
-                    label="Channel Username"
-                    name="channelUsername"
-                    value={this.state.channelUsername}
+                    id={KEY_WEBHOOK}
+                    label="Webhook"
+                    name={KEY_WEBHOOK}
+                    value={FieldModelUtilities.getFieldModelSingleValueOrDefault(fieldModel, KEY_WEBHOOK, '')}
                     onChange={this.handleChange}
-                    errorName="channelUsernameError"
-                    errorValue={this.props.error.channelUsernameError}
+                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_WEBHOOK)}
+                    errorValue={this.props.fieldErrors[KEY_WEBHOOK]}
+                />
+                <TextInput
+                    id={KEY_CHANNEL_NAME}
+                    label="Channel Name"
+                    name={KEY_CHANNEL_NAME}
+                    value={FieldModelUtilities.getFieldModelSingleValueOrDefault(fieldModel, KEY_CHANNEL_NAME, '')}
+                    onChange={this.handleChange}
+                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_CHANNEL_NAME)}
+                    errorValue={this.props.fieldErrors[KEY_CHANNEL_NAME]}
+                />
+                <TextInput
+                    id={KEY_CHANNEL_USERNAME}
+                    label="Channel Username"
+                    name={KEY_CHANNEL_USERNAME}
+                    value={FieldModelUtilities.getFieldModelSingleValueOrDefault(fieldModel, KEY_CHANNEL_USERNAME, '')}
+                    onChange={this.handleChange}
+                    errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_CHANNEL_USERNAME)}
+                    errorValue={this.props.fieldErrors[KEY_CHANNEL_USERNAME]}
                 />
             </div>);
         return (<BaseJobConfiguration
-            baseUrl={this.props.baseUrl}
-            testUrl={this.props.testUrl}
-            alertChannelName={this.props.alertChannelName}
-            distributionConfigId={this.props.distributionConfigId}
+            alertChannelName={DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_SLACK}
+            job={this.state.jobConfig}
             handleCancel={this.props.handleCancel}
             handleSaveBtnClick={this.props.handleSaveBtnClick}
             getParentConfiguration={this.getConfiguration}
@@ -91,45 +110,32 @@ class SlackJobConfiguration extends Component {
 
 SlackJobConfiguration.propTypes = {
     getDistributionJob: PropTypes.func.isRequired,
-    jobs: PropTypes.object,
-    distributionConfigId: PropTypes.string,
-    baseUrl: PropTypes.string,
-    testUrl: PropTypes.string,
-    distributionType: PropTypes.string,
-    webhook: PropTypes.string,
-    channelName: PropTypes.string,
-    channelUsername: PropTypes.string,
-    error: PropTypes.object,
+    job: PropTypes.object,
+    jobId: PropTypes.string,
+    fieldErrors: PropTypes.object,
     handleCancel: PropTypes.func.isRequired,
     handleSaveBtnClick: PropTypes.func.isRequired,
-    alertChannelName: PropTypes.string.isRequired,
     fetching: PropTypes.bool,
     inProgress: PropTypes.bool
 };
 
 SlackJobConfiguration.defaultProps = {
-    jobs: {},
-    distributionConfigId: null,
-    baseUrl: '/alert/api/configuration/channel/distribution/channel_slack',
-    testUrl: '/alert/api/configuration/channel/distribution/channel_slack/test',
-    distributionType: 'channel_slack',
-    webhook: '',
-    channelName: '',
-    channelUsername: '',
-    error: {},
+    job: null,
+    jobId: null,
+    fieldErrors: {},
     fetching: false,
     inProgress: false
 };
 
 const mapDispatchToProps = dispatch => ({
-    getDistributionJob: (url, id) => dispatch(getDistributionJob(url, id))
+    getDistributionJob: id => dispatch(getDistributionJob(id))
 });
 
 const mapStateToProps = state => ({
-    jobs: state.distributions.jobs,
-    error: state.distributions.error,
-    fetching: state.distributions.fetching,
-    inProgress: state.distributions.inProgress
+    job: state.distributionConfigs.job,
+    fieldErrors: state.distributionConfigs.error,
+    fetching: state.distributionConfigs.fetching,
+    inProgress: state.distributionConfigs.inProgress
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SlackJobConfiguration);

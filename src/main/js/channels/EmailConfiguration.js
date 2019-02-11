@@ -11,6 +11,7 @@ import { closeEmailConfigTest, getEmailConfig, openEmailConfigTest, sendEmailCon
 import ChannelTestModal from 'component/common/ChannelTestModal';
 import CollapsiblePane from 'component/common/CollapsiblePane';
 import * as FieldModelUtil from 'util/fieldModelUtilities';
+import * as DescriptorUtilities from 'util/descriptorUtilities';
 
 const ID_KEY = 'id';
 
@@ -119,7 +120,7 @@ class EmailConfiguration extends React.Component {
         super(props);
 
         this.state = {
-            currentEmailConfig: FieldModelUtil.createEmptyFieldModel(fieldNames, 'GLOBAL', 'channel_email')
+            currentEmailConfig: FieldModelUtil.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_EMAIL)
         };
 
         this.handleChange = this.handleChange.bind(this);

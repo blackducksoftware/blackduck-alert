@@ -1,32 +1,69 @@
 export function getFieldModelSingleValue(fieldModel, key) {
-    const fieldObject = fieldModel.keyToValues[key];
-    if (fieldObject && fieldObject.values) {
-        if (Object.keys(fieldObject.values).length > 0) {
-            return fieldModel.keyToValues[key].values[0];
+    if (fieldModel.keyToValues) {
+        const fieldObject = fieldModel.keyToValues[key];
+        if (fieldObject && fieldObject.values) {
+            if (Object.keys(fieldObject.values).length > 0) {
+                return fieldModel.keyToValues[key].values[0];
+            }
         }
     }
     return undefined;
 }
 
+export function getFieldModelSingleValueOrDefault(fieldModel, key, defaultValue) {
+    return getFieldModelSingleValue(fieldModel, key) || defaultValue;
+}
+
+export function getFieldModelValues(fieldModel, key) {
+    if (fieldModel.keyToValues) {
+        const fieldObject = fieldModel.keyToValues[key];
+        if (fieldObject && fieldObject.values) {
+            if (Object.keys(fieldObject.values).length > 0) {
+                return fieldModel.keyToValues[key].values;
+            }
+        }
+    }
+    return [];
+}
+
 export function getFieldModelBooleanValue(fieldModel, key) {
     const fieldValue = getFieldModelSingleValue(fieldModel, key);
-    if (fieldValue) {
-        const result = fieldValue === 'true';
-        return result;
+    if (fieldValue && fieldValue === 'true') {
+        return true;
     }
     return false;
 }
 
+export function getFieldModelBooleanValueOrDefault(fieldModel, key, defaultValue) {
+    return getFieldModelBooleanValue(fieldModel, key) || defaultValue;
+}
+
 export function isFieldModelValueSet(fieldModel, key) {
-    const fieldObject = fieldModel.keyToValues[key];
-    if (fieldObject) {
-        return fieldObject.isSet;
+    if (fieldModel.keyToValues) {
+        const fieldObject = fieldModel.keyToValues[key];
+        if (fieldObject) {
+            return fieldObject.isSet;
+        }
+    }
+    return false;
+}
+
+export function hasFieldModelValues(fieldModel, key) {
+    if (fieldModel.keyToValues) {
+        const fieldObject = fieldModel.keyToValues[key];
+        if (fieldObject) {
+            return fieldObject.values && fieldObject.values.every(item => item !== '');
+        }
     }
     return false;
 }
 
 export function updateFieldModelSingleValue(fieldModel, key, value) {
     const copy = Object.assign({}, fieldModel);
+    if (!copy.keyToValues) {
+        copy.keyToValues = {};
+    }
+
     if (!copy.keyToValues[key]) {
         copy.keyToValues[key] = {
             values: [''],
@@ -38,7 +75,41 @@ export function updateFieldModelSingleValue(fieldModel, key, value) {
     }
     copy.keyToValues[key].values[0] = value;
     copy.keyToValues[key].isSet = false;
-    return Object.assign({}, copy);
+    return copy;
+}
+
+export function updateFieldModelValues(fieldModel, key, values) {
+    const copy = Object.assign({}, fieldModel);
+    if (!copy.keyToValues) {
+        copy.keyToValues = {};
+    }
+
+    if (!copy.keyToValues[key]) {
+        copy.keyToValues[key] = {
+            values: [''],
+            isSet: false
+        };
+    } else if (!copy.keyToValues[key].values) {
+        copy.keyToValues[key].values = [];
+        copy.keyToValues[key].isSet = false;
+    }
+    copy.keyToValues[key].values = values;
+    copy.keyToValues[key].isSet = false;
+    return copy;
+}
+
+export function combineFieldModels(sourceModel, modelToAdd) {
+    const copy = Object.assign({}, sourceModel);
+    if (!copy.context) {
+        copy.context = modelToAdd.context;
+    }
+
+    if (!copy.descriptorName) {
+        copy.descriptorName = modelToAdd.descriptorName;
+    }
+    copy.keyToValues = Object.assign({}, sourceModel.keyToValues, modelToAdd.keyToValues);
+
+    return copy;
 }
 
 

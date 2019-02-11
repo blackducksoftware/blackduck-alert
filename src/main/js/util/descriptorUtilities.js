@@ -10,14 +10,52 @@ export const CONTEXT_TYPE = {
 }
 
 
-export function findDescriptorByTypeAndContext(descriptorList, descriptorType, context) {
+export const DESCRIPTOR_NAME = {
+    CHANNEL_EMAIL: 'channel_email',
+    CHANNEL_HIPCHAT: 'channel_hipchat',
+    CHANNEL_SLACK: 'channel_slack',
+    COMPONENT_SCHEDULING: 'component_scheduling',
+    COMPONENT_SETTINGS: 'component_settings',
+    PROVIDER_BLACKDUCK: 'provider_blackduck'
+}
+
+export function findDescriptorByNameAndContext(descriptorList, descriptorName, context) {
     if (!descriptorList) {
         return null;
     }
-    const resultList = descriptorList.filter((descriptor) => descriptor.type === descriptorType && descriptor.context === context);
+    const resultList = descriptorList.filter(descriptor => descriptor.name === descriptorName && descriptor.context === context);
     if (!resultList) {
         return null;
     }
 
     return resultList;
 }
+
+export function findDescriptorByTypeAndContext(descriptorList, descriptorType, context) {
+    if (!descriptorList) {
+        return null;
+    }
+    const resultList = descriptorList.filter(descriptor => descriptor.type === descriptorType && descriptor.context === context);
+    if (!resultList) {
+        return null;
+    }
+
+    return resultList;
+}
+
+export function findDescriptorField(descriptor, fieldKey) {
+    const fieldArray = descriptor.fields;
+    if (fieldArray) {
+        return fieldArray.find(field => field.key === fieldKey);
+    }
+    return null;
+}
+
+export function findDescriptorFieldOptions(descriptor, fieldKey) {
+    const field = findDescriptorField(descriptor, fieldKey);
+    if (field) {
+        return field.options;
+    }
+    return [];
+}
+
