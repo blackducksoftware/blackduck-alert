@@ -195,7 +195,9 @@ public class ConfigurationAccessorTestIT extends AlertIntegrationTest {
         assertTrue(!configGroupRepository.findByJobId(job.getJobId()).isEmpty());
 
         configurationAccessor.deleteJob(job.getJobId());
-        assertTrue(configGroupRepository.findByJobId(job.getJobId()).isEmpty());
+        configGroupRepository.flush();
+        final List<ConfigGroupEntity> remainingEntries = configGroupRepository.findByJobId(job.getJobId());
+        assertEquals(0, remainingEntries.size());
     }
 
     @Test
