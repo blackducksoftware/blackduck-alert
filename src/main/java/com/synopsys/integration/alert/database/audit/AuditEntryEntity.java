@@ -30,9 +30,10 @@ import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -74,9 +75,9 @@ public class AuditEntryEntity extends DatabaseEntity {
     @JoinColumn(name = "audit_entry_id", referencedColumnName = "id", insertable = false, updatable = false)
     private List<AuditNotificationRelation> auditNotificationRelations;
 
-    @OneToOne
-    @JoinColumn(name = "common_config_id", referencedColumnName = "JOB_ID", insertable = false, updatable = false)
-    private ConfigGroupEntity configGroupEntity;
+    @ManyToMany
+    @JoinTable(joinColumns = @JoinColumn(name = "JOB_ID", referencedColumnName = "common_config_id", insertable = false, updatable = false))
+    private List<ConfigGroupEntity> configGroupEntity;
 
     public AuditEntryEntity() {
         // JPA requires default constructor definitions
@@ -135,7 +136,7 @@ public class AuditEntryEntity extends DatabaseEntity {
         return auditNotificationRelations;
     }
 
-    public ConfigGroupEntity getConfigGroupEntity() {
+    public List<ConfigGroupEntity> getConfigGroupEntity() {
         return configGroupEntity;
     }
 }
