@@ -119,11 +119,9 @@ class JobAddModal extends Component {
         const jobTypeOptions = this.createJobTypeOptions();
         return (
             <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
-
                 <Modal.Header closeButton>
                     <Modal.Title>New Distribution Job</Modal.Title>
                 </Modal.Header>
-
                 <Modal.Body>
                     <form className="form-horizontal">
                         <div className="form-group">
