@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.channel.email.EmailChannel;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
@@ -44,6 +45,7 @@ import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.workflow.NotificationManager;
 
+@Transactional
 public class NotificationManagerTestITAlert extends AlertIntegrationTest {
     private static final String NOTIFICATION_TYPE = "notificationType";
 
@@ -174,13 +176,13 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
         DescriptorConfigEntity descriptorConfig = new DescriptorConfigEntity(registeredDescriptorEntity.getId(), configContextEntity.getId());
         descriptorConfig = descriptorConfigRepository.save(descriptorConfig);
 
-        ConfigGroupEntity configGroupEntity = new ConfigGroupEntity(descriptorConfig.getId(), jobId);
-        configGroupEntity = configGroupRepository.save(configGroupEntity);
+        final ConfigGroupEntity configGroupEntity = new ConfigGroupEntity(descriptorConfig.getId(), jobId);
+        configGroupRepository.save(configGroupEntity);
 
         final DefinedFieldEntity definedFieldEntity = definedFieldRepository.findFirstByKey(ChannelDistributionUIConfig.KEY_CHANNEL_NAME).orElse(null);
 
-        FieldValueEntity fieldValueEntity = new FieldValueEntity(descriptorConfig.getId(), definedFieldEntity.getId(), EmailChannel.COMPONENT_NAME);
-        fieldValueEntity = fieldValueRepository.save(fieldValueEntity);
+        final FieldValueEntity fieldValueEntity = new FieldValueEntity(descriptorConfig.getId(), definedFieldEntity.getId(), EmailChannel.COMPONENT_NAME);
+        fieldValueRepository.save(fieldValueEntity);
 
         final String auditStatus = "audit status thing";
         AuditEntryEntity auditEntryEntity = new AuditEntryEntity(jobId, new Date(), new Date(), auditStatus, "", "");

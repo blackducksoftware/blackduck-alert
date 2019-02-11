@@ -34,6 +34,4 @@ import com.synopsys.integration.alert.database.entity.configuration.ConfigGroupE
 @Component
 public interface ConfigGroupRepository extends JpaRepository<ConfigGroupEntity, Long> {
     List<ConfigGroupEntity> findByJobId(final UUID jobId);
-
-    void deleteByJobId(final UUID jobId);
 }

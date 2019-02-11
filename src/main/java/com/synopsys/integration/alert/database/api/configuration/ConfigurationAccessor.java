@@ -137,7 +137,7 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
                                                 .stream()
                                                 .map(RegisteredDescriptorEntity::getName)
                                                 .collect(Collectors.toSet());
-        configGroupRepository.deleteByJobId(jobId);
+        deleteJob(jobId);
         return createJob(jobId, descriptorNames, configuredFields);
     }
 
@@ -146,7 +146,14 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
         if (jobId == null) {
             throw new AlertDatabaseConstraintException(NULL_JOB_ID);
         }
-        configGroupRepository.deleteByJobId(jobId);
+        final List<Long> configIdsForJob = configGroupRepository
+                                               .findByJobId(jobId)
+                                               .stream()
+                                               .map(ConfigGroupEntity::getConfigId)
+                                               .collect(Collectors.toList());
+        for (final Long configId : configIdsForJob) {
+            deleteConfiguration(configId);
+        }
     }
 
     @Override
