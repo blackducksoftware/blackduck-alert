@@ -31,9 +31,9 @@ class JobAddModal extends Component {
             show: true,
             values: []
         };
-        this.handleChange = this.handleChange.bind(this);
         this.handleTypeChanged = this.handleTypeChanged.bind(this);
         this.getCurrentJobConfig = this.getCurrentJobConfig.bind(this);
+        this.handleTypeChanged = this.handleTypeChanged.bind(this);
         this.handleSaveBtnClick = this.handleSaveBtnClick.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.createJobTypeOptions = this.createJobTypeOptions.bind(this);
@@ -74,18 +74,6 @@ class JobAddModal extends Component {
         onModalClose();
     }
 
-
-    handleChange({ target }) {
-        const { name, type, checked } = target;
-        const value = type === 'checkbox' ? checked : target.value;
-
-        const { values } = this.state;
-        values[name] = value;
-        this.setState({
-            values
-        });
-    }
-
     handleTypeChanged(option) {
         const { values } = this.state;
         if (option) {
@@ -117,13 +105,21 @@ class JobAddModal extends Component {
 
     render() {
         const jobTypeOptions = this.createJobTypeOptions();
+        // event propagation outside of the modal seems to cause a problem not being able to use the tab key to cycle through the form fields.
+        // https://github.com/react-bootstrap/react-bootstrap/issues/3105
+        // https://github.com/facebook/react/issues/11387
         return (
-            <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
-                <Modal.Header closeButton>
-                    <Modal.Title>New Distribution Job</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <form className="form-horizontal">
+            <div
+                onKeyDown={e => e.stopPropagation()}
+                onClick={e => e.stopPropagation()}
+                onFocus={e => e.stopPropagation()}
+                onMouseOver={e => e.stopPropagation()}
+            >
+                <Modal size="lg" show={this.state.show} onHide={this.handleClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>New Distribution Job</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
                         <div className="form-group">
                             <label className="col-sm-3 col-form-label text-right">Type</label>
                             <div className="d-inline-flex p-2 col-sm-9">
@@ -139,11 +135,11 @@ class JobAddModal extends Component {
                                 />
                             </div>
                         </div>
-                    </form>
-                    {this.getCurrentJobConfig()}
-                </Modal.Body>
+                        {this.getCurrentJobConfig()}
+                    </Modal.Body>
 
-            </Modal>
+                </Modal>
+            </div>
         );
     }
 }
