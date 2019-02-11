@@ -1,5 +1,6 @@
 import {
     DISTRIBUTION_JOB_DELETE_ERROR,
+    DISTRIBUTION_JOB_DELETE_OPEN_MODAL,
     DISTRIBUTION_JOB_DELETED,
     DISTRIBUTION_JOB_DELETING,
     DISTRIBUTION_JOB_FETCH_ALL_NONE_FOUND,
@@ -11,39 +12,59 @@ import {
 
 const initialState = {
     inProgress: false,
+    deleteSuccess: false,
     jobs: [],
-    jobConfigTableMessage: ''
+    jobConfigTableMessage: '',
+    jobDeleteMessage: ''
 };
 
 const config = (state = initialState, action) => {
     switch (action.type) {
-        case DISTRIBUTION_JOB_FETCH_ERROR_ALL:
-        case DISTRIBUTION_JOB_FETCH_ALL_NONE_FOUND:
+        case DISTRIBUTION_JOB_DELETE_OPEN_MODAL:
         case DISTRIBUTION_JOB_DELETE_ERROR:
             return Object.assign({}, state, {
                 inProgress: false,
-                jobConfigTableMessage: action.jobConfigTableMessage
+                deleteSuccess: false,
+                jobDeleteMessage: action.jobDeleteMessage
+            });
+
+        case DISTRIBUTION_JOB_FETCH_ERROR_ALL:
+        case DISTRIBUTION_JOB_FETCH_ALL_NONE_FOUND:
+            return Object.assign({}, state, {
+                inProgress: false,
+                deleteSuccess: false,
+                jobConfigTableMessage: action.jobConfigTableMessage,
+                jobs: []
             });
 
         case DISTRIBUTION_JOB_FETCHED_ALL:
-        case DISTRIBUTION_JOB_DELETED:
             return Object.assign({}, state, {
                 inProgress: false,
+                deleteSuccess: false,
                 jobConfigTableMessage: action.jobConfigTableMessage,
                 jobs: [
                     ...action.jobs
                 ]
             });
 
+        case DISTRIBUTION_JOB_DELETED:
+            return Object.assign({}, state, {
+                inProgress: false,
+                deleteSuccess: true,
+                jobConfigTableMessage: '',
+            });
+
         case DISTRIBUTION_JOB_DELETING:
             return Object.assign({}, state, {
                 inProgress: true,
-                jobConfigTableMessage: action.jobConfigTableMessage
+                deleteSuccess: false,
+                jobConfigTableMessage: 'Deleting...'
             });
 
         case DISTRIBUTION_JOB_FETCHING_ALL:
             return Object.assign({}, state, {
                 inProgress: true,
+                deleteSuccess: false,
                 jobConfigTableMessage: 'Loading...'
             });
 
