@@ -68,26 +68,26 @@ function fetchAuditInfoForJob(csrfToken, jobConfig) {
     let lastRan = 'Unknown';
     let status = 'Unknown';
 
-    const configId = FieldModelUtilities.getFieldModelSingleValue(jobConfig, 'configId');
-    fetch(`/alert/api/audit/job/${configId}`, {
-        credentials: 'same-origin',
-        headers: {
-            'X-CSRF-TOKEN': csrfToken,
-            'Content-Type': 'application/json'
-        }
-    }).then((response) => {
-        if (response.ok) {
-            response.json().then((jsonObj) => {
-                if (jsonObj != null) {
-                    lastRan = jsonObj.timeLastSent;
-                    [status] = jsonObj;
-                }
-            });
-        }
-    }).catch((error) => {
-        console.log(error);
-    });
-
+    if (jobConfig) {
+        fetch(`/alert/api/audit/job/${jobConfig.jobId}`, {
+            credentials: 'same-origin',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Content-Type': 'application/json'
+            }
+        }).then((response) => {
+            if (response.ok) {
+                response.json().then((jsonObj) => {
+                    if (jsonObj != null) {
+                        lastRan = jsonObj.timeLastSent;
+                        [status] = jsonObj;
+                    }
+                });
+            }
+        }).catch((error) => {
+            console.log(error);
+        });
+    }
     newConfig = FieldModelUtilities.updateFieldModelSingleValue(newConfig, 'lastRan', lastRan);
     newConfig = FieldModelUtilities.updateFieldModelSingleValue(newConfig, 'status', status);
 
