@@ -25,24 +25,19 @@ package com.synopsys.integration.alert.common.descriptor.config.context;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.synopsys.integration.alert.channel.DistributionChannel;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
-import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistributionUIConfig;
 import com.synopsys.integration.alert.common.descriptor.config.ui.ProviderDistributionUIConfig;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
 import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 import com.synopsys.integration.alert.web.model.configuration.TestConfigModel;
@@ -54,12 +49,10 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
 
     private final DistributionChannel distributionChannel;
     private final List<ProviderDescriptor> providerDescriptors;
-    private final BaseConfigurationAccessor configurationAccessor;
 
-    public ChannelDistributionDescriptorActionApi(final DistributionChannel distributionChannel, final List<ProviderDescriptor> providerDescriptors, final BaseConfigurationAccessor configurationAccessor) {
+    public ChannelDistributionDescriptorActionApi(final DistributionChannel distributionChannel, final List<ProviderDescriptor> providerDescriptors) {
         this.distributionChannel = distributionChannel;
         this.providerDescriptors = providerDescriptors;
-        this.configurationAccessor = configurationAccessor;
     }
 
     @Override
@@ -99,38 +92,4 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
                    .map(providerDescriptor -> providerDescriptor.getActionApi(ConfigContextEnum.DISTRIBUTION).orElse(null));
     }
 
-    @Override
-    public Map<String, String> validateCreate(final FieldModel fieldModel) {
-        final String jobNameError = validateJobNameUnique(fieldModel);
-        if (StringUtils.isNotBlank(jobNameError)) {
-            return Map.of(ChannelDistributionUIConfig.KEY_NAME, jobNameError);
-        }
-        return Map.of();
-    }
-
-    private String validateJobNameUnique(final FieldModel fieldModel) {
-        final String descriptorName = fieldModel.getDescriptorName();
-        final Optional<FieldValueModel> jobNameFieldOptional = fieldModel.getField(ChannelDistributionUIConfig.KEY_NAME);
-        if (jobNameFieldOptional.isPresent()) {
-            final String jobName = jobNameFieldOptional.get().getValue().orElse(null);
-            if (StringUtils.isNotBlank(jobName)) {
-                try {
-                    final List<ConfigurationModel> configurations = configurationAccessor.getConfigurationsByDescriptorName(descriptorName);
-                    final Boolean foundDuplicateName = configurations.stream()
-                                                           .map(configurationModel -> configurationModel.getField(ChannelDistributionUIConfig.KEY_NAME).orElse(null))
-                                                           .filter(configurationFieldModel -> (null != configurationFieldModel) && configurationFieldModel.getFieldValue().isPresent())
-                                                           .anyMatch(configurationFieldModel -> jobName.equals(configurationFieldModel.getFieldValue().get()));
-                    if (foundDuplicateName) {
-                        return "A distribution configuration with this name already exists.";
-                    }
-                } catch (final AlertDatabaseConstraintException e) {
-                    logger.error("Could not retrieve distributions of {}", jobName);
-                }
-
-            } else {
-                return "Name cannot be blank.";
-            }
-        }
-        return "";
-    }
 }

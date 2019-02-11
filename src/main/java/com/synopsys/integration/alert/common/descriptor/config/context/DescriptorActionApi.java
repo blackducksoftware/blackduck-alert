@@ -103,10 +103,6 @@ public abstract class DescriptorActionApi {
         return fieldModel;
     }
 
-    public Map<String, String> validateCreate(final FieldModel fieldModel) {
-        return Map.of();
-    }
-
     public FieldModel deleteConfig(final FieldModel fieldModel) {
         return fieldModel;
     }

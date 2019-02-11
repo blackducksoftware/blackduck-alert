@@ -99,15 +99,6 @@ public class FieldModelProcessor {
         return descriptorActionApi.map(actionApi -> actionApi.updateConfig(fieldModel)).orElse(fieldModel);
     }
 
-    public Map<String, String> validateCreateFieldModel(final FieldModel fieldModel) {
-        final Optional<DescriptorActionApi> descriptorActionApiOptional = retrieveDescriptorActionApi(fieldModel);
-        if (descriptorActionApiOptional.isPresent()) {
-            final DescriptorActionApi descriptorActionApi = descriptorActionApiOptional.get();
-            return descriptorActionApi.validateCreate(fieldModel);
-        }
-        return Map.of();
-    }
-
     public Map<String, String> validateFieldModel(final FieldModel fieldModel) {
         final Map<String, String> fieldErrors = new HashMap<>();
         final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
