@@ -84,7 +84,6 @@ class BaseJobConfiguration extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log('base next props ', nextProps);
         if (this.props.saving && nextProps.success) {
             this.props.handleSaveBtnClick(this.state);
             return;
@@ -331,7 +330,7 @@ class BaseJobConfiguration extends Component {
         const notificationOptions = this.createNotificationTypeOptions();
         const selectedFormatType = this.getSelectedSingleValue(formatOptions, providerFieldModel, KEY_FORMAT_TYPE);
         const selectedNotifications = this.getSelectedValues(notificationOptions, providerFieldModel, KEY_NOTIFICATION_TYPES);
-
+        const includeAllProjects = !FieldModelUtilities.getFieldModelBooleanValue(providerFieldModel, KEY_FILTER_BY_PROJECT);
         return (
             <div>
                 <div className="form-group">
@@ -366,7 +365,7 @@ class BaseJobConfiguration extends Component {
                 </div>
                 {this.props.childContent}
                 <ProjectConfiguration
-                    includeAllProjects={!FieldModelUtilities.getFieldModelBooleanValue(providerFieldModel, KEY_FILTER_BY_PROJECT)}
+                    includeAllProjects={includeAllProjects}
                     handleChange={this.createChangeHandler(FIELD_MODEL_KEY.PROVIDER, true)}
                     handleProjectChanged={this.createMultiSelectHandler(KEY_CONFIGURED_PROJECT, FIELD_MODEL_KEY.PROVIDER)}
                     projects={this.props.projects}

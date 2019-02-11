@@ -24,7 +24,6 @@ class HipChatJobConfiguration extends Component {
     constructor(props) {
         super(props);
         this.handleChange = this.handleChange.bind(this);
-        this.handleStateValues = this.handleStateValues.bind(this);
         this.getConfiguration = this.getConfiguration.bind(this);
         this.createSingleSelectHandler = this.createSingleSelectHandler.bind(this);
         this.state = {
@@ -62,16 +61,12 @@ class HipChatJobConfiguration extends Component {
         return this.state.currentConfig;
     }
 
-    handleStateValues(name, value) {
-        this.setState({
-            [name]: value
-        });
-    }
-
     handleChange({ target }) {
         const value = target.type === 'checkbox' ? target.checked : target.value;
-        const { name } = target;
-        this.handleStateValues(name, value);
+        const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.currentConfig, target.name, value);
+        this.setState({
+            currentConfig: newState
+        });
     }
 
     createSingleSelectHandler(fieldKey) {
@@ -93,7 +88,7 @@ class HipChatJobConfiguration extends Component {
 
 
     render() {
-        const { colorOptions } = this.state;
+        const { colorOptions } = this.props;
         const fieldModel = this.state.currentConfig;
         let selectedColorOption = null;
         if (colorOptions) {
