@@ -367,7 +367,8 @@ Index.propTypes = {
 
 Index.defaultProps = {
     autoRefresh: true,
-    descriptors: []
+    descriptors: [],
+    jobConfigTableMessage: ''
 };
 
 const mapStateToProps = state => ({
