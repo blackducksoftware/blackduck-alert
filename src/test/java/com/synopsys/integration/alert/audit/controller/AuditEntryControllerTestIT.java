@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.synopsys.integration.alert.audit.mock.MockAuditEntryEntity;
@@ -38,6 +39,7 @@ import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.web.controller.BaseController;
 
+@Transactional
 public class AuditEntryControllerTestIT extends AlertIntegrationTest {
 
     private final String auditUrl = BaseController.BASE_PATH + "/audit";

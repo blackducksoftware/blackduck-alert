@@ -19,14 +19,14 @@ const ConfigButtons = props => (
                 display: 'inline-block', paddingRight: '12px', marginRight: '12px', borderRight: '1px solid #aaa'
             }}
             >
-                <GeneralButton id="generalButton" onClick={props.onTestClick}>Test Configuration</GeneralButton>
+                <GeneralButton id="generalButton" onClick={props.onTestClick}>{props.testLabel}</GeneralButton>
             </div>
             }
             {props.includeSave &&
-            <SubmitButton id="submitButton">Save</SubmitButton>
+            <SubmitButton id="submitButton">{props.submitLabel}</SubmitButton>
             }
             {props.includeCancel &&
-            <CancelButton id="cancelButton" onClick={props.onCancelClick} />
+            <CancelButton id="cancelButton" onClick={props.onCancelClick}>{props.cancelLabel}</CancelButton>
             }
         </div>
     </div>
@@ -38,7 +38,10 @@ ConfigButtons.propTypes = {
     includeTest: PropTypes.bool,
     onCancelClick: PropTypes.func,
     onTestClick: PropTypes.func,
-    performingAction: PropTypes.bool
+    performingAction: PropTypes.bool,
+    submitLabel: PropTypes.string,
+    testLabel: PropTypes.string,
+    cancelLabel: PropTypes.string
 };
 
 ConfigButtons.defaultProps = {
@@ -49,7 +52,10 @@ ConfigButtons.defaultProps = {
     onCancelClick: () => {
     },
     onTestClick: (evt) => {
-    }
+    },
+    submitLabel: 'Save',
+    testLabel: 'Test Configuration',
+    cancelLabel: 'Cancel'
 };
 
 export default ConfigButtons;

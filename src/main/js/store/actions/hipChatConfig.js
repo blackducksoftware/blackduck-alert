@@ -13,7 +13,8 @@ import {
 
 import { verifyLoginByStatus } from 'store/actions/session';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
-import * as FieldModelUtil from 'util/fieldModelUtilities';
+import * as FieldModelUtilities from 'util/fieldModelUtilities';
+import * as DescriptorUtilities from 'util/descriptorUtilities';
 
 /**
  * Triggers Config Fetching reducer
@@ -103,7 +104,7 @@ export function getConfig() {
     return (dispatch, getState) => {
         dispatch(fetchingConfig());
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, 'channel_hipchat');
+        const request = ConfigRequestBuilder.createReadAllGlobalContextRequest(csrfToken, DescriptorUtilities.DESCRIPTOR_NAME.CHANNEL_HIPCHAT);
         request.then((response) => {
             if (response.ok) {
                 response.json().then((body) => {
@@ -126,14 +127,14 @@ export function updateConfig(config) {
         const { csrfToken } = getState().session;
         let request;
         if (config.id) {
-            request = ConfigRequestBuilder.createUpdateRequest(csrfToken, config.id, config);
+            request = ConfigRequestBuilder.createUpdateRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, config.id, config);
         } else {
-            request = ConfigRequestBuilder.createNewConfigurationRequest(csrfToken, config);
+            request = ConfigRequestBuilder.createNewConfigurationRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, config);
         }
         request.then((response) => {
             if (response.ok) {
                 response.json().then((data) => {
-                    const updatedConfig = FieldModelUtil.updateFieldModelSingleValue(config, 'id', data.id);
+                    const updatedConfig = FieldModelUtilities.updateFieldModelSingleValue(config, 'id', data.id);
                     dispatch(configUpdated(updatedConfig, data.message));
                 });
             } else {
@@ -159,7 +160,7 @@ export function testConfig(config, destination) {
     return (dispatch, getState) => {
         dispatch(testingConfig());
         const { csrfToken } = getState().session;
-        const request = ConfigRequestBuilder.createTestRequest(csrfToken, config, destination);
+        const request = ConfigRequestBuilder.createTestRequest(ConfigRequestBuilder.CONFIG_API_URL, csrfToken, config, destination);
         request.then((response) => {
             dispatch(closeHipChatConfigTest());
             if (response.ok) {
