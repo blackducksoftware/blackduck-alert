@@ -5,7 +5,7 @@ import { BootstrapTable, DeleteButton, InsertButton, TableHeaderColumn } from 'r
 
 import AutoRefresh from 'component/common/AutoRefresh';
 import DescriptorLabel from 'component/common/DescriptorLabel';
-import GroupEmailJobConfiguration from 'distribution/job/GroupEmailJobConfiguration';
+import EmailJobConfiguration from 'distribution/job/EmailJobConfiguration';
 import HipChatJobConfiguration from 'distribution/job/HipChatJobConfiguration';
 import SlackJobConfiguration from 'distribution/job/SlackJobConfiguration';
 import EditTableCellFormatter from 'component/common/EditTableCellFormatter';
@@ -83,7 +83,7 @@ class Index extends Component {
         if (currentRowSelected != null) {
             const { distributionConfigId, distributionType } = currentRowSelected;
             if (distributionType === 'channel_email') {
-                return (<GroupEmailJobConfiguration
+                return (<EmailJobConfiguration
                     alertChannelName={distributionType}
                     distributionConfigId={distributionConfigId}
                     handleCancel={this.cancelRowSelect}

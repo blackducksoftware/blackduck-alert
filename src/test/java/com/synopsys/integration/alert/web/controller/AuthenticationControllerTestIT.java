@@ -29,6 +29,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.synopsys.integration.alert.common.AlertProperties;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
+import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.component.settings.PasswordResetService;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
@@ -155,6 +158,51 @@ public class AuthenticationControllerTestIT extends AlertIntegrationTest {
         final HttpServletResponse httpResponse = new MockHttpServletResponse();
 
         final ResponseEntity<String> response = loginHandler.login(request, httpResponse, null);
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    }
+
+    @Test
+    public void resetPasswordBlankTest() {
+        final ResponseFactory responseFactory = new ResponseFactory();
+        final AuthenticationController loginHandler = new AuthenticationController(null, null, responseFactory, csrfTokenRepository);
+
+        final ResponseEntity<String> response = loginHandler.resetPassword();
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    public void resetPasswordValidTest() throws AlertException {
+        final PasswordResetService passwordResetService = Mockito.mock(PasswordResetService.class);
+        Mockito.doNothing().when(passwordResetService).resetPassword(Mockito.anyString());
+
+        final ResponseFactory responseFactory = new ResponseFactory();
+        final AuthenticationController loginHandler = new AuthenticationController(null, passwordResetService, responseFactory, csrfTokenRepository);
+
+        final ResponseEntity<String> response = loginHandler.resetPassword("exampleUsername");
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
+    public void resetPasswordDatabaseExceptionTest() throws AlertException {
+        final PasswordResetService passwordResetService = Mockito.mock(PasswordResetService.class);
+        Mockito.doThrow(new AlertDatabaseConstraintException("Test Exception")).when(passwordResetService).resetPassword(Mockito.anyString());
+
+        final ResponseFactory responseFactory = new ResponseFactory();
+        final AuthenticationController loginHandler = new AuthenticationController(null, passwordResetService, responseFactory, csrfTokenRepository);
+
+        final ResponseEntity<String> response = loginHandler.resetPassword("exampleUsername");
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    public void resetPasswordAlertExceptionTest() throws AlertException {
+        final PasswordResetService passwordResetService = Mockito.mock(PasswordResetService.class);
+        Mockito.doThrow(new AlertException("Test Exception")).when(passwordResetService).resetPassword(Mockito.anyString());
+
+        final ResponseFactory responseFactory = new ResponseFactory();
+        final AuthenticationController loginHandler = new AuthenticationController(null, passwordResetService, responseFactory, csrfTokenRepository);
+
+        final ResponseEntity<String> response = loginHandler.resetPassword("exampleUsername");
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     }
 }

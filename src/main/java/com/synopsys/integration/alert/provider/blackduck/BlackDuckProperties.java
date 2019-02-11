@@ -43,7 +43,7 @@ import com.synopsys.integration.alert.database.api.configuration.model.Configura
 import com.synopsys.integration.alert.provider.blackduck.descriptor.BlackDuckDescriptor;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfig;
 import com.synopsys.integration.blackduck.configuration.BlackDuckServerConfigBuilder;
-import com.synopsys.integration.blackduck.rest.BlackDuckRestConnection;
+import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
 import com.synopsys.integration.log.IntLogger;
 import com.synopsys.integration.log.Slf4jIntLogger;
@@ -96,35 +96,35 @@ public class BlackDuckProperties extends ProviderProperties {
         return retrieveGlobalConfig();
     }
 
-    public BlackDuckServicesFactory createBlackDuckServicesFactory(final BlackDuckRestConnection restConnection, final IntLogger logger) {
-        return new BlackDuckServicesFactory(gson, BlackDuckServicesFactory.createDefaultObjectMapper(), restConnection, logger);
+    public BlackDuckServicesFactory createBlackDuckServicesFactory(final BlackDuckHttpClient blackDuckHttpClient, final IntLogger logger) {
+        return new BlackDuckServicesFactory(gson, BlackDuckServicesFactory.createDefaultObjectMapper(), blackDuckHttpClient, logger);
     }
 
-    public Optional<BlackDuckRestConnection> createRestConnectionAndLogErrors(final Logger logger) {
+    public Optional<BlackDuckHttpClient> createBlackDuckHttpClientAndLogErrors(final Logger logger) {
         try {
-            return createRestConnection(logger);
+            return createBlackDuckHttpClient(logger);
         } catch (final Exception e) {
             logger.error(e.getMessage(), e);
         }
         return Optional.empty();
     }
 
-    public Optional<BlackDuckRestConnection> createRestConnection(final Logger logger) throws AlertException {
+    public Optional<BlackDuckHttpClient> createBlackDuckHttpClient(final Logger logger) throws AlertException {
         final IntLogger intLogger = new Slf4jIntLogger(logger);
-        return createRestConnection(intLogger);
+        return createBlackDuckHttpClient(intLogger);
     }
 
-    public Optional<BlackDuckRestConnection> createRestConnection(final IntLogger intLogger) throws AlertException {
+    public Optional<BlackDuckHttpClient> createBlackDuckHttpClient(final IntLogger intLogger) throws AlertException {
         final Optional<BlackDuckServerConfig> blackDuckServerConfig = createBlackDuckServerConfig(intLogger);
         if (blackDuckServerConfig.isPresent()) {
-            return createRestConnection(intLogger, blackDuckServerConfig.get());
+            return createBlackDuckHttpClient(intLogger, blackDuckServerConfig.get());
         }
         return Optional.empty();
     }
 
-    public Optional<BlackDuckRestConnection> createRestConnection(final IntLogger intLogger, final BlackDuckServerConfig blackDuckServerConfig) {
+    public Optional<BlackDuckHttpClient> createBlackDuckHttpClient(final IntLogger intLogger, final BlackDuckServerConfig blackDuckServerConfig) {
         try {
-            return Optional.of(blackDuckServerConfig.createRestConnection(intLogger));
+            return Optional.of(blackDuckServerConfig.createBlackDuckHttpClient(intLogger));
         } catch (final Exception e) {
             intLogger.error(e.getMessage(), e);
         }
