@@ -68,7 +68,7 @@ class SettingsConfigurationForm extends Component {
         super(props);
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleSingleSelectChange = this.handleSingleSelectChange.bind(this);
+        this.createSingleSelectHandler = this.createSingleSelectHandler.bind(this);
         this.state = {
             settingsData: FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.GLOBAL, DescriptorUtilities.DESCRIPTOR_NAME.COMPONENT_SETTINGS)
         };
@@ -94,6 +94,12 @@ class SettingsConfigurationForm extends Component {
             { label: 'Digest-MD5', value: 'digest' }];
     }
 
+    getReferralOptions() {
+        return [{ label: 'Ignore', value: 'ignore' },
+            { label: 'Follow', value: 'follow' },
+            { label: 'Throw', value: 'throw' }];
+    }
+
     handleChange({ target }) {
         const value = target.type === 'checkbox' ? target.checked.toString() : target.value;
         const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.settingsData, target.name, value);
@@ -102,19 +108,21 @@ class SettingsConfigurationForm extends Component {
         });
     }
 
-    handleSingleSelectChange(selectedValue) {
-        if (selectedValue) {
-            const selected = selectedValue.value;
-            const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.settingsData, KEY_LDAP_AUTHENTICATION_TYPE, selected);
-            this.setState({
-                settingsData: newState
-            });
-        } else {
-            const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.settingsData, KEY_LDAP_AUTHENTICATION_TYPE, null);
-            this.setState({
-                settingsData: newState
-            });
-        }
+    createSingleSelectHandler(fieldKey) {
+        return (selectedValue) => {
+            if (selectedValue) {
+                const selected = selectedValue.value;
+                const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.settingsData, fieldKey, selected);
+                this.setState({
+                    settingsData: newState
+                });
+            } else {
+                const newState = FieldModelUtilities.updateFieldModelSingleValue(this.state.settingsData, fieldKey, null);
+                this.setState({
+                    settingsData: newState
+                });
+            }
+        };
     }
 
     handleSubmit(evt) {
@@ -127,6 +135,11 @@ class SettingsConfigurationForm extends Component {
         const selectedAuthenticationType = FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_AUTHENTICATION_TYPE);
         const authenticationTypeOptions = this.getAuthenticationTypes();
         const selectedAuthenticationOption = authenticationTypeOptions.filter(option => option.value === selectedAuthenticationType);
+
+        const selectedReferral = FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_REFERRAL);
+        const referralOptions = this.getReferralOptions();
+        const selectedReferralOption = referralOptions.filter(option => option.value === selectedReferral);
+
         const saving = this.props.updateStatus === 'UPDATING' || this.props.updateStatus === 'FETCHING';
         return (
             <form method="POST" className="form-horizontal loginForm" onSubmit={this.handleSubmit}>
@@ -280,21 +293,25 @@ class SettingsConfigurationForm extends Component {
                                 <Select
                                     id={KEY_LDAP_AUTHENTICATION_TYPE}
                                     className="typeAheadField"
-                                    onChange={this.handleSingleSelectChange}
+                                    onChange={this.createSingleSelectHandler(KEY_LDAP_AUTHENTICATION_TYPE)}
                                     options={this.getAuthenticationTypes()}
                                     placeholder="Choose authentication type"
                                     value={selectedAuthenticationOption}
                                 />
                             </div>
-                            <TextInput
-                                id={KEY_LDAP_REFERRAL}
-                                label="Referral"
-                                name={KEY_LDAP_REFERRAL}
-                                value={FieldModelUtilities.getFieldModelSingleValue(fieldModel, KEY_LDAP_REFERRAL)}
-                                onChange={this.handleChange}
-                                errorName={FieldModelUtilities.createFieldModelErrorKey(KEY_LDAP_REFERRAL)}
-                                errorValue={this.props.fieldErrors[KEY_LDAP_REFERRAL]}
-                            />
+                            <label className="fieldError">{this.props.fieldErrors[KEY_LDAP_AUTHENTICATION_TYPE]}</label>
+                            <label className="col-sm-3 col-form-label text-right">Referral</label>
+                            <div className="d-inline-flex flex-column p-2 col-sm-9">
+                                <Select
+                                    id={KEY_LDAP_REFERRAL}
+                                    className="typeAheadField"
+                                    onChange={this.createSingleSelectHandler(KEY_LDAP_REFERRAL)}
+                                    options={this.getReferralOptions()}
+                                    placeholder="Choose referral type"
+                                    value={selectedReferralOption}
+                                />
+                            </div>
+                            <label className="fieldError">{this.props.fieldErrors[KEY_LDAP_REFERRAL]}</label>
                             <TextInput
                                 id={KEY_LDAP_USER_SEARCH_BASE}
                                 label="User Search Base"
