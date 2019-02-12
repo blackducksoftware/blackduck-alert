@@ -271,27 +271,27 @@ class Index extends Component {
         const tableData = [];
         if (jobs) {
             jobs.forEach((job) => {
-                const channelModel = job.fieldModels
-                    .find(fieldModel => fieldModel.descriptorName.startsWith('channel_'));
-                const providerModel = job.fieldModels
-                    .find(fieldModel => fieldModel.descriptorName.startsWith('provider_'));
-                const id = job.jobId;
-                const name = FieldModelUtilities.getFieldModelSingleValue(channelModel, 'channel.common.name');
-                const distributionType = channelModel.descriptorName;
-                const providerName = providerModel.descriptorName;
-                const frequency = FieldModelUtilities.getFieldModelSingleValue(channelModel, 'channel.common.frequency');
-                const lastRan = FieldModelUtilities.getFieldModelSingleValue(job, 'lastRan');
-                const status = FieldModelUtilities.getFieldModelSingleValue(job, 'status');
-                const entry = Object.assign({}, {
-                    id,
-                    name,
-                    distributionType,
-                    providerName,
-                    frequency,
-                    lastRan,
-                    status
-                });
-                tableData.push(entry);
+                if (job && job.fieldModels) {
+                    const channelModel = job.fieldModels.find(fieldModel => fieldModel.descriptorName.startsWith('channel_'));
+                    const providerModel = job.fieldModels.find(fieldModel => fieldModel.descriptorName.startsWith('provider_'));
+                    const id = job.jobId;
+                    const name = FieldModelUtilities.getFieldModelSingleValue(channelModel, 'channel.common.name');
+                    const distributionType = channelModel.descriptorName;
+                    const providerName = providerModel.descriptorName;
+                    const frequency = FieldModelUtilities.getFieldModelSingleValue(channelModel, 'channel.common.frequency');
+                    const lastRan = FieldModelUtilities.getFieldModelSingleValue(job, 'lastRan');
+                    const status = FieldModelUtilities.getFieldModelSingleValue(job, 'status');
+                    const entry = Object.assign({}, {
+                        id,
+                        name,
+                        distributionType,
+                        providerName,
+                        frequency,
+                        lastRan,
+                        status
+                    });
+                    tableData.push(entry);
+                }
             });
         }
         return tableData;
