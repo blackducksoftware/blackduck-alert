@@ -44,9 +44,11 @@ export function findDescriptorByTypeAndContext(descriptorList, descriptorType, c
 }
 
 export function findDescriptorField(descriptor, fieldKey) {
-    const fieldArray = descriptor.fields;
-    if (fieldArray) {
-        return fieldArray.find(field => field.key === fieldKey);
+    if (descriptor) {
+        const fieldArray = descriptor.fields;
+        if (fieldArray) {
+            return fieldArray.find(field => field.key === fieldKey);
+        }
     }
     return null;
 }
