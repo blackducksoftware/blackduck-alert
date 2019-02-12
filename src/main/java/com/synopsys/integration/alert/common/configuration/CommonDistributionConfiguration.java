@@ -113,4 +113,8 @@ public class CommonDistributionConfiguration extends Configuration {
         return configuredProjects;
     }
 
+    public void addFields(final Map<String, ConfigurationFieldModel> newFields) {
+        getFieldAccessor().addFields(newFields);
+    }
+
 }
