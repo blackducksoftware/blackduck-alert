@@ -81,23 +81,41 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
         nativeQuery = true)
     Page<NotificationContent> findMatchingNotification(@Param("searchTerm") String searchTerm, final Pageable pageable);
 
-    @Query(value = "SELECT entity FROM NotificationContent entity LEFT JOIN entity.auditNotificationRelations relation ON entity.id = relation.notificationId "
-                       + "LEFT JOIN relation.auditEntryEntity auditEntry ON auditEntry.id = relation.auditEntryId "
-                       + "LEFT JOIN auditEntry.configGroupEntity configGroup ON auditEntry.commonConfigId = configGroup.jobId "
-                       + "LEFT JOIN configGroup.descriptorConfigEntity descriptorConfig ON configGroup.configId = descriptorConfig.id "
-                       + "LEFT JOIN descriptorConfig.fieldValueEntities fieldValue ON descriptorConfig.id = fieldValue.configId "
-                       + "LEFT JOIN fieldValue.definedFieldEntity definedField ON fieldValue.fieldId = definedField.id "
-                       + "WHERE entity.id IN (SELECT notificationId FROM entity.auditNotificationRelations WHERE entity.id = notificationId) AND "
-                       + "("
-                       + "LOWER(entity.provider) LIKE %:searchTerm% OR "
-                       + "LOWER(entity.notificationType) LIKE %:searchTerm% OR "
-                       + "LOWER(entity.content) LIKE %:searchTerm% OR "
-                       + "LOWER(entity.createdAt) LIKE %:searchTerm% OR "
-                       + "LOWER(auditEntry.timeLastSent) LIKE %:searchTerm% OR "
-                       + "LOWER(auditEntry.status) LIKE %:searchTerm% OR "
-                       + "(definedField.key = '" + ChannelDistributionUIConfig.KEY_NAME + "' AND LOWER(fieldValue.value) LIKE %:searchTerm% ) OR "
-                       + "(definedField.key = '" + ChannelDistributionUIConfig.KEY_CHANNEL_NAME + "' AND LOWER(fieldValue.value) LIKE %:searchTerm% )"
-                       + ")")
+    //    @Query(value = "SELECT entity FROM NotificationContent entity LEFT JOIN entity.auditNotificationRelations relation ON entity.id = relation.notificationId "
+    //                       + "LEFT JOIN relation.auditEntryEntity auditEntry ON auditEntry.id = relation.auditEntryId "
+    //                       + "LEFT JOIN auditEntry.configGroupEntity configGroup ON auditEntry.commonConfigId = configGroup.jobId "
+    //                       + "LEFT JOIN configGroup.descriptorConfigEntity descriptorConfig ON configGroup.configId = descriptorConfig.id "
+    //                       + "LEFT JOIN descriptorConfig.fieldValueEntities fieldValue ON descriptorConfig.id = fieldValue.configId "
+    //                       + "LEFT JOIN fieldValue.definedFieldEntity definedField ON fieldValue.fieldId = definedField.id "
+    //                       + "WHERE entity.id IN (SELECT notificationId FROM entity.auditNotificationRelations WHERE entity.id = notificationId) AND "
+    //                       + "("
+    //                       + "LOWER(entity.provider) LIKE %:searchTerm% OR "
+    //                       + "LOWER(entity.notificationType) LIKE %:searchTerm% OR "
+    //                       + "LOWER(entity.content) LIKE %:searchTerm% OR "
+    //                       + "LOWER(entity.createdAt) LIKE %:searchTerm% OR "
+    //                       + "LOWER(auditEntry.timeLastSent) LIKE %:searchTerm% OR "
+    //                       + "LOWER(auditEntry.status) LIKE %:searchTerm% OR "
+    //                       + "(definedField.key = '" + ChannelDistributionUIConfig.KEY_NAME + "' AND LOWER(fieldValue.value) LIKE %:searchTerm% ) OR "
+    //                       + "(definedField.key = '" + ChannelDistributionUIConfig.KEY_CHANNEL_NAME + "' AND LOWER(fieldValue.value) LIKE %:searchTerm% )"
+    //                       + ")")
+    @Query(value =
+               "SELECT RAW_NOTIFICATION_CONTENT.ID, RAW_NOTIFICATION_CONTENT.CREATED_AT, RAW_NOTIFICATION_CONTENT.PROVIDER, RAW_NOTIFICATION_CONTENT.PROVIDER_CREATION_TIME, RAW_NOTIFICATION_CONTENT.NOTIFICATION_TYPE, RAW_NOTIFICATION_CONTENT.CONTENT "
+                   + "FROM ALERT.RAW_NOTIFICATION_CONTENT "
+                   + "JOIN ALERT.AUDIT_NOTIFICATION_RELATION ON AUDIT_NOTIFICATION_RELATION.NOTIFICATION_ID = RAW_NOTIFICATION_CONTENT.ID "
+                   + "JOIN ALERT.AUDIT_ENTRIES ON AUDIT_ENTRIES.ID = AUDIT_NOTIFICATION_RELATION.AUDIT_ENTRY_ID "
+                   + "JOIN ALERT.CONFIG_GROUPS ON CONFIG_GROUPS.JOB_ID = AUDIT_ENTRIES.COMMON_CONFIG_ID "
+                   + "JOIN ALERT.DESCRIPTOR_CONFIGS ON DESCRIPTOR_CONFIGS.ID = CONFIG_GROUPS.CONFIG_ID "
+                   + "JOIN ALERT.FIELD_VALUES ON FIELD_VALUES.CONFIG_ID = DESCRIPTOR_CONFIGS.ID "
+                   + "JOIN ALERT.DEFINED_FIELDS ON DEFINED_FIELDS.ID = FIELD_VALUES.FIELD_ID "
+                   + "WHERE RAW_NOTIFICATION_CONTENT.ID IN (SELECT NOTIFICATION_ID FROM (SELECT * FROM ALERT.AUDIT_NOTIFICATION_RELATION WHERE NOTIFICATION_ID = RAW_NOTIFICATION_CONTENT.ID))"
+                   + "AND ( RAW_NOTIFICATION_CONTENT.PROVIDER ILIKE %:searchTerm% "
+                   + "OR RAW_NOTIFICATION_CONTENT.NOTIFICATION_TYPE ILIKE %:searchTerm% "
+                   + "OR RAW_NOTIFICATION_CONTENT.CREATED_AT ILIKE %:searchTerm% "
+                   + "OR AUDIT_ENTRIES.TIME_LAST_SENT ILIKE %:searchTerm% "
+                   + "OR AUDIT_ENTRIES.STATUS ILIKE %:searchTerm% "
+                   + "OR (DEFINED_FIELDS.SOURCE_KEY = '" + ChannelDistributionUIConfig.KEY_NAME + "' AND FIELD_VALUES.FIELD_VALUE ILIKE %:searchTerm%) "
+                   + "OR (DEFINED_FIELDS.SOURCE_KEY = '" + ChannelDistributionUIConfig.KEY_CHANNEL_NAME + "' AND FIELD_VALUES.FIELD_VALUE ILIKE %:searchTerm%));",
+        nativeQuery = true)
     Page<NotificationContent> findMatchingSentNotification(@Param("searchTerm") String searchTerm, final Pageable pageable);
 
 }
