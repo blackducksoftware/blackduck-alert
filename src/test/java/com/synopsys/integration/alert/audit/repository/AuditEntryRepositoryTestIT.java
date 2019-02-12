@@ -21,6 +21,7 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
@@ -31,6 +32,7 @@ public class AuditEntryRepositoryTestIT extends AlertIntegrationTest {
     private AuditEntryRepository auditEntryRepository;
 
     @Test
+    @Transactional
     public void findFirstByCommonConfigIdOrderByTimeLastSentDescTestIT() {
         final UUID commonConfigId = UUID.randomUUID();
 

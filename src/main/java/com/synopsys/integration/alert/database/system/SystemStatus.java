@@ -35,6 +35,8 @@ import com.synopsys.integration.alert.database.entity.BaseEntity;
 @Entity
 @Table(schema = "alert", name = "system_status")
 public class SystemStatus extends BaseEntity {
+    private static final long serialVersionUID = -5482465786237355472L;
+
     @Id
     @Column(name = "id")
     private Long id;

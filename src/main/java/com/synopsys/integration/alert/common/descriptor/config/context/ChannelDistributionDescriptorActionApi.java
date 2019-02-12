@@ -27,6 +27,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.synopsys.integration.alert.channel.DistributionChannel;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
@@ -42,6 +45,8 @@ import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.rest.RestConstants;
 
 public abstract class ChannelDistributionDescriptorActionApi extends DescriptorActionApi {
+    private final Logger logger = LoggerFactory.getLogger(ChannelDistributionDescriptorActionApi.class);
+
     private final DistributionChannel distributionChannel;
     private final List<ProviderDescriptor> providerDescriptors;
 
@@ -86,4 +91,5 @@ public abstract class ChannelDistributionDescriptorActionApi extends DescriptorA
                    .findFirst()
                    .map(providerDescriptor -> providerDescriptor.getActionApi(ConfigContextEnum.DISTRIBUTION).orElse(null));
     }
+
 }
