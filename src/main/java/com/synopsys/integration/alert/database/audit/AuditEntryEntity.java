@@ -70,13 +70,11 @@ public class AuditEntryEntity extends DatabaseEntity {
     @Column(name = "error_stack_trace", length = STACK_TRACE_CHAR_LIMIT)
     private String errorStackTrace;
 
-    @OneToMany
-    @JoinColumn(name = "audit_entry_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @OneToMany(mappedBy = "auditEntryEntity")
     private List<AuditNotificationRelation> auditNotificationRelations;
 
     @ManyToOne
-    // @JoinTable(joinColumns = @JoinColumn(name = "JOB_ID", referencedColumnName = "common_config_id", insertable = false, updatable = false))
-    @JoinColumn(name = "common_config_id", referencedColumnName = "config_id", insertable = false, updatable = false)
+    @JoinColumn(name = "common_config_id", referencedColumnName = "job_id", insertable = false, updatable = false)
     private ConfigGroupEntity configGroupEntity;
 
     public AuditEntryEntity() {
