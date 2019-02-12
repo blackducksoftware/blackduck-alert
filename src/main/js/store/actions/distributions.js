@@ -103,16 +103,8 @@ function fetchAuditInfoForJob(jobConfig) {
             }).finally(() => {
                 newConfig = FieldModelUtilities.updateFieldModelSingleValue(newConfig, 'lastRan', lastRan);
                 newConfig = FieldModelUtilities.updateFieldModelSingleValue(newConfig, 'status', status);
-
-                let jobList = getState().jobs;
-                if (!jobList || jobList.length === 0) {
-                    jobList = [];
-                }
-                // remove this job from the list because it didnt have the audit information
-                jobList = jobList.filter((job, index, arr) => job.jobId !== jobConfig.jobId);
-                // Add the job back to the list with the new audit information
+                const jobList = [];
                 jobList.push(newConfig);
-
                 dispatch(updateJobWithAuditInfo(jobList));
             });
         }
