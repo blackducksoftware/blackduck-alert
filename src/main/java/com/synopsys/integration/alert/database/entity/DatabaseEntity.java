@@ -31,6 +31,8 @@ import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
 public abstract class DatabaseEntity extends BaseEntity {
+    private static final long serialVersionUID = -4842837917165551298L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")

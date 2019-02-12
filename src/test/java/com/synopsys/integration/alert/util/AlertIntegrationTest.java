@@ -31,8 +31,8 @@ import com.synopsys.integration.alert.database.repository.configuration.Register
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = { Application.class, DatabaseDataSource.class, DescriptorMocker.class })
 @TestPropertySource(locations = "classpath:spring-test.properties")
-@Transactional
 @WebAppConfiguration
+@Transactional
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class, TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class })
 public abstract class AlertIntegrationTest {
     @Autowired

@@ -37,6 +37,8 @@ import com.synopsys.integration.alert.database.entity.BaseEntity;
 @Entity
 @Table(schema = "ALERT", name = "CONFIG_GROUPS")
 public class ConfigGroupEntity extends BaseEntity {
+    private static final long serialVersionUID = -8215203462448918700L;
+
     @Id
     @Column(name = "CONFIG_ID")
     private Long configId;
