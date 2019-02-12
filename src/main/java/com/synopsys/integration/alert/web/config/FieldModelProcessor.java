@@ -131,11 +131,12 @@ public class FieldModelProcessor {
         return upToDateFieldModel;
     }
 
-    public FieldModel populateTestFieldModel(final Long id, final FieldModel fieldModel) throws AlertException {
+    private FieldModel populateTestFieldModel(final Long id, final FieldModel fieldModel) throws AlertException {
         final Collection<ConfigurationFieldModel> configurationFieldModels = fillFieldModelWithExistingData(id, fieldModel);
         final Map<String, FieldValueModel> fields = new HashMap<>();
         for (final ConfigurationFieldModel configurationFieldModel : configurationFieldModels) {
-            populateAndSecureFields(configurationFieldModel, fields);
+            final FieldValueModel fieldValueModel = new FieldValueModel(configurationFieldModel.getFieldValues(), configurationFieldModel.isSet());
+            fields.put(configurationFieldModel.getFieldKey(), fieldValueModel);
         }
         final FieldModel newFieldModel = new FieldModel("", "", fields);
         return fieldModel.fill(newFieldModel);
