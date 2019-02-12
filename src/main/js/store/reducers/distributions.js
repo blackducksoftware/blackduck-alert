@@ -71,7 +71,8 @@ const config = (state = initialState, action) => {
             return Object.assign({}, state, {
                 inProgress: true,
                 deleteSuccess: false,
-                jobConfigTableMessage: 'Loading...'
+                jobConfigTableMessage: 'Loading...',
+                jobs: []
             });
 
         case SERIALIZE:
