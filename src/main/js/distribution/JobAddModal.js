@@ -120,21 +120,23 @@ class JobAddModal extends Component {
                         <Modal.Title>New Distribution Job</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <div className="form-group">
-                            <label className="col-sm-3 col-form-label text-right">Type</label>
-                            <div className="d-inline-flex p-2 col-sm-9">
-                                <Select
-                                    id="jobAddType"
-                                    className="typeAheadField"
-                                    onChange={this.handleTypeChanged}
-                                    isClearable={false}
-                                    options={jobTypeOptions}
-                                    placeholder="Choose the Job Type"
-                                    value={jobTypeOptions.find(option => option.value === this.state.values.typeValue)}
-                                    components={{ Option: CustomJobTypeOptionLabel, SingleValue: CustomJobTypeLabel }}
-                                />
+                        <form className="form-horizontal">
+                            <div className="form-group">
+                                <label className="col-sm-3 col-form-label text-right">Type</label>
+                                <div className="d-inline-flex p-2 col-sm-9">
+                                    <Select
+                                        id="jobAddType"
+                                        className="typeAheadField"
+                                        onChange={this.handleTypeChanged}
+                                        isClearable={false}
+                                        options={jobTypeOptions}
+                                        placeholder="Choose the Job Type"
+                                        value={jobTypeOptions.find(option => option.value === this.state.values.typeValue)}
+                                        components={{ Option: CustomJobTypeOptionLabel, SingleValue: CustomJobTypeLabel }}
+                                    />
+                                </div>
                             </div>
-                        </div>
+                        </form>
                         {this.getCurrentJobConfig()}
                     </Modal.Body>
 

@@ -473,7 +473,6 @@ BaseJobConfiguration.defaultProps = {
 };
 
 const mapDispatchToProps = dispatch => ({
-    getDistributionJob: id => dispatch(getDistributionJob(id)),
     saveDistributionJob: config => dispatch(saveDistributionJob(config)),
     updateDistributionJob: config => dispatch(updateDistributionJob(config)),
     testDistributionJob: config => dispatch(testDistributionJob(config))
