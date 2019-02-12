@@ -7,6 +7,7 @@ import {
     DISTRIBUTION_JOB_FETCH_ERROR_ALL,
     DISTRIBUTION_JOB_FETCHED_ALL,
     DISTRIBUTION_JOB_FETCHING_ALL,
+    DISTRIBUTION_JOB_UPDATE_AUDIT_INFO,
     SERIALIZE
 } from 'store/actions/types';
 
@@ -37,21 +38,26 @@ const config = (state = initialState, action) => {
                 jobs: []
             });
 
+        case DISTRIBUTION_JOB_UPDATE_AUDIT_INFO:
+            return Object.assign({}, state, {
+                jobs: [
+                    ...action.jobs,
+                    ...state.jobs
+                ]
+            });
+
         case DISTRIBUTION_JOB_FETCHED_ALL:
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: false,
-                jobConfigTableMessage: action.jobConfigTableMessage,
-                jobs: [
-                    ...action.jobs
-                ]
+                jobConfigTableMessage: action.jobConfigTableMessage
             });
 
         case DISTRIBUTION_JOB_DELETED:
             return Object.assign({}, state, {
                 inProgress: false,
                 deleteSuccess: true,
-                jobConfigTableMessage: '',
+                jobConfigTableMessage: ''
             });
 
         case DISTRIBUTION_JOB_DELETING:

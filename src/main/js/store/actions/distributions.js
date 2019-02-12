@@ -6,13 +6,20 @@ import {
     DISTRIBUTION_JOB_FETCH_ALL_NONE_FOUND,
     DISTRIBUTION_JOB_FETCH_ERROR_ALL,
     DISTRIBUTION_JOB_FETCHED_ALL,
-    DISTRIBUTION_JOB_FETCHING_ALL
+    DISTRIBUTION_JOB_FETCHING_ALL,
+    DISTRIBUTION_JOB_UPDATE_AUDIT_INFO
 } from 'store/actions/types';
 
 import { verifyLoginByStatus } from 'store/actions/session';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 
+function updateJobWithAuditInfo(jobs) {
+    return {
+        type: DISTRIBUTION_JOB_UPDATE_AUDIT_INFO,
+        jobs
+    };
+}
 
 function fetchingAllJobs() {
     return {
@@ -20,10 +27,9 @@ function fetchingAllJobs() {
     };
 }
 
-function allJobsFetched(jobs) {
+function allJobsFetched() {
     return {
-        type: DISTRIBUTION_JOB_FETCHED_ALL,
-        jobs
+        type: DISTRIBUTION_JOB_FETCHED_ALL
     };
 }
 
@@ -69,35 +75,48 @@ function jobDeleteError(message) {
     };
 }
 
-function fetchAuditInfoForJob(csrfToken, jobConfig) {
-    let newConfig = Object.assign({}, jobConfig);
-    let lastRan = 'Unknown';
-    let status = 'Unknown';
+function fetchAuditInfoForJob(jobConfig) {
+    return (dispatch, getState) => {
+        const { csrfToken } = getState().session;
+        let newConfig = Object.assign({}, jobConfig);
+        let lastRan = 'Unknown';
+        let status = 'Unknown';
 
-    if (jobConfig) {
-        fetch(`/alert/api/audit/job/${jobConfig.jobId}`, {
-            credentials: 'same-origin',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken,
-                'Content-Type': 'application/json'
-            }
-        }).then((response) => {
-            if (response.ok) {
-                response.json().then((jsonObj) => {
-                    if (jsonObj != null) {
-                        lastRan = jsonObj.timeLastSent;
-                        [status] = jsonObj;
-                    }
-                });
-            }
-        }).catch((error) => {
-            console.log(error);
-        });
-    }
-    newConfig = FieldModelUtilities.updateFieldModelSingleValue(newConfig, 'lastRan', lastRan);
-    newConfig = FieldModelUtilities.updateFieldModelSingleValue(newConfig, 'status', status);
+        if (jobConfig) {
+            fetch(`/alert/api/audit/job/${jobConfig.jobId}`, {
+                credentials: 'same-origin',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Content-Type': 'application/json'
+                }
+            }).then((response) => {
+                if (response.ok) {
+                    response.json().then((jsonObj) => {
+                        if (jsonObj != null) {
+                            lastRan = jsonObj.timeLastSent;
+                            [status] = jsonObj;
+                        }
+                    });
+                }
+            }).catch((error) => {
+                console.log(error);
+            }).finally(() => {
+                newConfig = FieldModelUtilities.updateFieldModelSingleValue(newConfig, 'lastRan', lastRan);
+                newConfig = FieldModelUtilities.updateFieldModelSingleValue(newConfig, 'status', status);
 
-    return newConfig;
+                let jobList = getState().jobs;
+                if (!jobList || jobList.length === 0) {
+                    jobList = [];
+                }
+                // remove this job from the list because it didnt have the audit information
+                jobList = jobList.filter((job, index, arr) => job.jobId !== jobConfig.jobId);
+                // Add the job back to the list with the new audit information
+                jobList.push(newConfig);
+
+                dispatch(updateJobWithAuditInfo(jobList));
+            });
+        }
+    };
 }
 
 export function openJobDeleteModal() {
@@ -146,12 +165,10 @@ export function fetchDistributionJobs() {
         }).then((response) => {
             if (response.ok) {
                 response.json().then((jsonArray) => {
-                    const newJobs = [];
                     jsonArray.forEach((jobConfig) => {
-                        const jobConfigWithAuditInfo = fetchAuditInfoForJob(csrfToken, jobConfig);
-                        newJobs.push(jobConfigWithAuditInfo);
+                        dispatch(fetchAuditInfoForJob(jobConfig));
                     });
-                    dispatch(allJobsFetched(newJobs));
+                    dispatch(allJobsFetched());
                 });
             } else {
                 switch (response.status) {
