@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.channel.event.NotificationToDistributionEventConverter;
 import com.synopsys.integration.alert.common.configuration.CommonDistributionConfiguration;
+import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
@@ -26,9 +27,12 @@ public class NotificationToDistributionEventConverterTestIT extends AlertIntegra
     @Autowired
     private DescriptorMap descriptorMap;
 
+    @Autowired
+    private BaseConfigurationAccessor configurationAccessor;
+
     @Test
     public void convertToEventsTest() {
-        final NotificationToDistributionEventConverter converter = new NotificationToDistributionEventConverter(descriptorMap);
+        final NotificationToDistributionEventConverter converter = new NotificationToDistributionEventConverter(descriptorMap, configurationAccessor);
         final Map<CommonDistributionConfiguration, List<AggregateMessageContent>> messageContentMap = new HashMap<>();
         final List messageContent = List.of(createMessageContent("test"), createMessageContent("example"));
 
