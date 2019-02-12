@@ -110,9 +110,21 @@ class BaseJobConfiguration extends Component {
                 providerModel = nextProps.job.fieldModels.find(model => model.descriptorName.startsWith('provider_'));
             }
 
+            const providers = this.createProviderOptions();
+            const frequencyOptions = this.createFrequencyOptions();
+            const selectedProviderOption = this.getSelectedSingleValue(providers, channelModel, KEY_PROVIDER_NAME);
 
-            const formatOptions = this.createFormatTypeOptions();
-            const notificationOptions = this.createNotificationTypeOptions();
+            if (!FieldModelUtilities.hasFieldModelValues(channelModel, KEY_PROVIDER_NAME)) {
+                channelModel = FieldModelUtilities.updateFieldModelSingleValue(channelModel, KEY_PROVIDER_NAME, selectedProviderOption.value);
+            }
+
+            const selectedFrequencyOption = this.getSelectedSingleValue(frequencyOptions, channelModel, KEY_FREQUENCY);
+            if (!FieldModelUtilities.hasFieldModelValues(channelModel, KEY_FREQUENCY)) {
+                channelModel = FieldModelUtilities.updateFieldModelSingleValue(channelModel, KEY_FREQUENCY, selectedFrequencyOption);
+            }
+
+            const formatOptions = this.createFormatTypeOptions(selectedProviderOption.value);
+            const notificationOptions = this.createNotificationTypeOptions(selectedProviderOption.value);
             const selectedFormatType = this.getSelectedSingleValue(formatOptions, providerModel, KEY_FORMAT_TYPE);
             const selectedNotifications = this.getSelectedValues(notificationOptions, providerModel, KEY_NOTIFICATION_TYPES);
 
@@ -122,19 +134,6 @@ class BaseJobConfiguration extends Component {
 
             if (!FieldModelUtilities.hasFieldModelValues(providerModel, KEY_NOTIFICATION_TYPES)) {
                 providerModel = FieldModelUtilities.updateFieldModelSingleValue(providerModel, KEY_NOTIFICATION_TYPES, selectedNotifications);
-            }
-
-            const providers = this.createProviderOptions();
-            const frequencyOptions = this.createFrequencyOptions();
-            const selectedProviderOption = this.getSelectedSingleValue(providers, channelModel, KEY_PROVIDER_NAME);
-            const selectedFrequencyOption = this.getSelectedSingleValue(frequencyOptions, channelModel, KEY_FREQUENCY);
-
-            if (!FieldModelUtilities.hasFieldModelValues(channelModel, KEY_PROVIDER_NAME)) {
-                channelModel = FieldModelUtilities.updateFieldModelSingleValue(channelModel, KEY_NOTIFICATION_TYPES, selectedProviderOption);
-            }
-
-            if (!FieldModelUtilities.hasFieldModelValues(channelModel, KEY_FREQUENCY)) {
-                channelModel = FieldModelUtilities.updateFieldModelSingleValue(channelModel, KEY_NOTIFICATION_TYPES, selectedFrequencyOption);
             }
 
             this.setState({
@@ -289,8 +288,7 @@ class BaseJobConfiguration extends Component {
         return [];
     }
 
-    createNotificationTypeOptions() {
-        const selectedProvider = FieldModelUtilities.getFieldModelSingleValue(this.state.commonConfig, KEY_PROVIDER_NAME);
+    createNotificationTypeOptions(selectedProvider) {
         if (selectedProvider) {
             const [descriptor] = DescriptorUtilities.findDescriptorByNameAndContext(this.props.descriptors, selectedProvider, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
             const options = DescriptorUtilities.findDescriptorFieldOptions(descriptor, KEY_NOTIFICATION_TYPES);
@@ -302,8 +300,7 @@ class BaseJobConfiguration extends Component {
         return [];
     }
 
-    createFormatTypeOptions() {
-        const selectedProvider = FieldModelUtilities.getFieldModelSingleValue(this.state.commonConfig, KEY_PROVIDER_NAME);
+    createFormatTypeOptions(selectedProvider) {
         if (selectedProvider) {
             const [descriptor] = DescriptorUtilities.findDescriptorByNameAndContext(this.props.descriptors, selectedProvider, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION);
             const options = DescriptorUtilities.findDescriptorFieldOptions(descriptor, KEY_FORMAT_TYPE);
@@ -331,13 +328,17 @@ class BaseJobConfiguration extends Component {
     }
 
 
-    renderDistributionForm() {
-        const providerFieldModel = this.state.providerConfig;
-        const formatOptions = this.createFormatTypeOptions();
-        const notificationOptions = this.createNotificationTypeOptions();
+    renderDistributionForm(selectedProvider) {
+        let providerFieldModel = this.state.providerConfig;
+        const formatOptions = this.createFormatTypeOptions(selectedProvider);
+        const notificationOptions = this.createNotificationTypeOptions(selectedProvider);
         const selectedFormatType = this.getSelectedSingleValue(formatOptions, providerFieldModel, KEY_FORMAT_TYPE);
         const selectedNotifications = this.getSelectedValues(notificationOptions, providerFieldModel, KEY_NOTIFICATION_TYPES);
-        const includeAllProjects = !FieldModelUtilities.getFieldModelBooleanValue(providerFieldModel, KEY_FILTER_BY_PROJECT);
+        const filterByProject = FieldModelUtilities.getFieldModelBooleanValue(providerFieldModel, KEY_FILTER_BY_PROJECT);
+        const includeAllProjects = !filterByProject
+        if (!FieldModelUtilities.hasFieldModelValues(providerFieldModel, KEY_FILTER_BY_PROJECT)) {
+            providerFieldModel = FieldModelUtilities.updateFieldModelSingleValue(providerFieldModel, KEY_FILTER_BY_PROJECT, filterByProject);
+        }
         return (
             <div>
                 <div className="form-group">
@@ -392,7 +393,6 @@ class BaseJobConfiguration extends Component {
         const fieldModel = this.state.commonConfig;
         const selectedProviderOption = this.getSelectedSingleValue(providers, fieldModel, KEY_PROVIDER_NAME);
         const selectedFrequencyOption = this.getSelectedSingleValue(frequencyOptions, fieldModel, KEY_FREQUENCY);
-
         return (
             <form className="form-horizontal" onSubmit={this.onSubmit}>
                 <TextInput
@@ -433,7 +433,7 @@ class BaseJobConfiguration extends Component {
                         />
                     </div>
                 </div>
-                {selectedProviderOption && this.renderDistributionForm(selectedProviderOption)}
+                {selectedProviderOption && this.renderDistributionForm(selectedProviderOption.value)}
             </form>
         );
     }
