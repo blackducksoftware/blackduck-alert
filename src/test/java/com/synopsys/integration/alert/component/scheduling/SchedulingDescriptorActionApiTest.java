@@ -19,6 +19,7 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
+import com.synopsys.integration.alert.common.descriptor.config.field.SelectConfigField;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.workflow.TaskManager;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
@@ -28,8 +29,6 @@ import com.synopsys.integration.alert.workflow.scheduled.frequency.DailyTask;
 import com.synopsys.integration.exception.IntegrationException;
 
 public class SchedulingDescriptorActionApiTest {
-    public static final String DAILY_DIGEST_ERROR_MESSAGE = "Must be a number between 0 and 23";
-    public static final String PURGE_FREQUENCY_ERROR_MESSAGE = "Must be a number between 1 and 7";
     private static final FieldValueModel FIELD_HOUR_OF_DAY = new FieldValueModel(new ArrayList<>(), false);
     private static final FieldValueModel FIELD_PURGE_FREQUENCY = new FieldValueModel(new ArrayList<>(), false);
     private static final Map<String, FieldValueModel> FIELD_MAP = Map.of(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY, FIELD_HOUR_OF_DAY,
@@ -100,10 +99,10 @@ public class SchedulingDescriptorActionApiTest {
         actionApi.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
 
         final String actualDailyProcessorError = fieldErrors.get(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY);
-        assertTrue(actualDailyProcessorError.contains(DAILY_DIGEST_ERROR_MESSAGE), "Expected to contain: " + DAILY_DIGEST_ERROR_MESSAGE + ". Actual: " + actualDailyProcessorError);
+        assertTrue(actualDailyProcessorError.contains(SelectConfigField.INVALID_OPTION_SELECTED), "Expected to contain: " + SelectConfigField.INVALID_OPTION_SELECTED + ". Actual: " + actualDailyProcessorError);
 
         final String actualPurgeDataError = fieldErrors.get(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS);
-        assertTrue(actualPurgeDataError.contains(PURGE_FREQUENCY_ERROR_MESSAGE), "Expected to contain: " + PURGE_FREQUENCY_ERROR_MESSAGE + ". Actual: " + actualPurgeDataError);
+        assertTrue(actualPurgeDataError.contains(SelectConfigField.INVALID_OPTION_SELECTED), "Expected to contain: " + SelectConfigField.INVALID_OPTION_SELECTED + ". Actual: " + actualPurgeDataError);
 
     }
 
@@ -124,14 +123,14 @@ public class SchedulingDescriptorActionApiTest {
         actionApi.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
 
         String actualError = fieldErrors.get(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY);
-        assertTrue(actualError.contains(DAILY_DIGEST_ERROR_MESSAGE), "Expected to contain: " + DAILY_DIGEST_ERROR_MESSAGE + ". Actual: " + actualError);
+        assertTrue(actualError.contains(SelectConfigField.INVALID_OPTION_SELECTED), "Expected to contain: " + SelectConfigField.INVALID_OPTION_SELECTED + ". Actual: " + actualError);
 
         fieldErrors.clear();
         FIELD_HOUR_OF_DAY.setValue("24");
         actionApi.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
 
         actualError = fieldErrors.get(SchedulingDescriptor.KEY_DAILY_PROCESSOR_HOUR_OF_DAY);
-        assertTrue(actualError.contains(DAILY_DIGEST_ERROR_MESSAGE), "Expected to contain: " + DAILY_DIGEST_ERROR_MESSAGE + ". Actual: " + actualError);
+        assertTrue(actualError.contains(SelectConfigField.INVALID_OPTION_SELECTED), "Expected to contain: " + SelectConfigField.INVALID_OPTION_SELECTED + ". Actual: " + actualError);
     }
 
     @Test
@@ -150,14 +149,14 @@ public class SchedulingDescriptorActionApiTest {
                                                             .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
         actionApi.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
         String actualError = fieldErrors.get(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS);
-        assertTrue(actualError.contains(PURGE_FREQUENCY_ERROR_MESSAGE), "Expected to contain: " + PURGE_FREQUENCY_ERROR_MESSAGE + ". Actual: " + actualError);
+        assertTrue(actualError.contains(SelectConfigField.INVALID_OPTION_SELECTED), "Expected to contain: " + SelectConfigField.INVALID_OPTION_SELECTED + ". Actual: " + actualError);
 
         fieldErrors.clear();
         FIELD_PURGE_FREQUENCY.setValue("8");
         actionApi.validateConfig(configFieldMap, FIELD_MODEL, fieldErrors);
 
         actualError = fieldErrors.get(SchedulingDescriptor.KEY_PURGE_DATA_FREQUENCY_DAYS);
-        assertTrue(actualError.contains(PURGE_FREQUENCY_ERROR_MESSAGE), "Expected to contain: " + PURGE_FREQUENCY_ERROR_MESSAGE + ". Actual: " + actualError);
+        assertTrue(actualError.contains(SelectConfigField.INVALID_OPTION_SELECTED), "Expected to contain: " + SelectConfigField.INVALID_OPTION_SELECTED + ". Actual: " + actualError);
     }
 
     @Test
