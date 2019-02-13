@@ -4,13 +4,13 @@ import PropTypes from 'prop-types';
 const CheckboxInput = (props) => {
     const { errorName, errorValue } = props;
     const {
-        name, label, onChange, readOnly, id, isChecked
+        name, label, onChange, readOnly, id, isChecked, className
     } = props;
     return (
         <div className="form-group">
             <div className="offset-sm-3 col-sm-9">
                 <div className="form-check">
-                    <label>
+                    <label className={className}>
                         <input
                             id={id}
                             type="checkbox"
@@ -43,7 +43,8 @@ CheckboxInput.propTypes = {
     isChecked: PropTypes.bool,
     label: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
-    readOnly: PropTypes.bool
+    readOnly: PropTypes.bool,
+    className: PropTypes.string
 };
 
 CheckboxInput.defaultProps = {
