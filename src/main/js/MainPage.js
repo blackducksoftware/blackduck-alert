@@ -59,13 +59,13 @@ class MainPage extends Component {
             <div>
                 <Navigation />
                 <div className="contentArea">
-                    <Route
+                    {providers && <Route
                         exact
                         path="/alert/"
                         render={() => (
-                            <Redirect to={`/alert/providers/${providers[0].path}`} />
+                            <Redirect to={`${providers[0].props.path}`} />
                         )}
-                    />
+                    />}
                     {providers}
                     {channels}
                     <Route path="/alert/jobs/scheduling" component={SchedulingConfiguration} />
