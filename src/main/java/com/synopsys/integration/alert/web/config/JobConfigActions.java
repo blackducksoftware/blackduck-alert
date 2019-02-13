@@ -209,15 +209,15 @@ public class JobConfigActions {
         final Collection<FieldModel> otherJobModels = new LinkedList<>();
         for (final FieldModel fieldModel : jobFieldModel.getFieldModels()) {
             final Optional<Descriptor> descriptor = fieldModelProcessor.retrieveDescriptor(fieldModel.getDescriptorName());
+            final FieldModel updatedFieldModel = fieldModelProcessor.createTestFieldModel(fieldModel);
             if (descriptor.filter(foundDescriptor -> DescriptorType.CHANNEL.equals(foundDescriptor.getType())).isPresent()) {
-                channelFieldModel = fieldModel;
+                channelFieldModel = updatedFieldModel;
             } else {
-                otherJobModels.add(fieldModel);
+                otherJobModels.add(updatedFieldModel);
             }
         }
 
-        final FieldModel testFieldModel = channelFieldModel;
-        if (null != testFieldModel) {
+        if (null != channelFieldModel) {
             final Optional<DescriptorActionApi> descriptorActionApi = fieldModelProcessor.retrieveDescriptorActionApi(channelFieldModel);
             if (descriptorActionApi.isPresent()) {
                 final Map<String, ConfigurationFieldModel> fields = new HashMap<>();
@@ -237,7 +237,7 @@ public class JobConfigActions {
                 descriptorApi.testConfig(testConfig);
                 return "Successfully sent test message.";
             } else {
-                logger.error("Descriptor action api did not exist: {}", testFieldModel.getDescriptorName());
+                logger.error("Descriptor action api did not exist: {}", channelFieldModel.getDescriptorName());
                 return "Internal server error. Failed to send test message.";
             }
         }

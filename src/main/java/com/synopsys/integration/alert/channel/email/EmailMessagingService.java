@@ -26,6 +26,7 @@ package com.synopsys.integration.alert.channel.email;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -97,8 +98,8 @@ public class EmailMessagingService {
             final MimeMultipart mimeMultipart = mimeMultipartBuilder.build();
 
             final String resolvedSubjectLine = freemarkerTemplatingService.getResolvedSubjectLine(model);
-            final Message message = createMessage(emailAddresses, resolvedSubjectLine, session, mimeMultipart, emailProperties);
-            sendMessage(emailProperties, session, message);
+            final List<Message> messages = createMessages(emailAddresses, resolvedSubjectLine, session, mimeMultipart, emailProperties);
+            sendMessages(emailProperties, session, messages);
         } catch (final MessagingException | IOException | TemplateException ex) {
             final String errorMessage = "Could not send the email. " + ex.getMessage();
             logger.error(errorMessage, ex);
@@ -120,7 +121,7 @@ public class EmailMessagingService {
         return Session.getInstance(props);
     }
 
-    private Message createMessage(final Collection<String> emailAddresses, final String subjectLine, final Session session, final MimeMultipart mimeMultipart, final EmailProperties emailProperties)
+    private List<Message> createMessages(final Collection<String> emailAddresses, final String subjectLine, final Session session, final MimeMultipart mimeMultipart, final EmailProperties emailProperties)
         throws AlertException, MessagingException {
         final List<InternetAddress> addresses = new ArrayList<>();
         for (final String emailAddress : emailAddresses) {
@@ -151,21 +152,35 @@ public class EmailMessagingService {
                 throw new AlertException(String.format("'%s' is not a valid email address: %s", fromString, e.getMessage()));
             }
         }
-
-        final Message message = new MimeMessage(session);
-        message.setContent(mimeMultipart);
-        message.setFrom(fromAddress);
-        message.setRecipients(Message.RecipientType.TO, addresses.toArray(new Address[addresses.size()]));
-        message.setSubject(subjectLine);
-
-        return message;
+        final List<Message> messages = new ArrayList<>(addresses.size());
+        for (final InternetAddress address : addresses) {
+            final Message message = new MimeMessage(session);
+            message.setContent(mimeMultipart);
+            message.setFrom(fromAddress);
+            message.setRecipients(Message.RecipientType.TO, new Address[] { address });
+            message.setSubject(subjectLine);
+            messages.add(message);
+        }
+        return messages;
     }
 
-    public void sendMessage(final EmailProperties emailProperties, final Session session, final Message message) throws MessagingException {
-        if (Boolean.valueOf(emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_AUTH_KEY))) {
-            sendAuthenticated(emailProperties, message, session);
-        } else {
-            Transport.send(message);
+    public void sendMessages(final EmailProperties emailProperties, final Session session, final List<Message> messages) throws AlertException {
+        final Set<String> errorMessages = new HashSet<>();
+        for (final Message message : messages) {
+            try {
+                if (Boolean.valueOf(emailProperties.getJavamailOption(EmailPropertyKeys.JAVAMAIL_AUTH_KEY))) {
+                    sendAuthenticated(emailProperties, message, session);
+                } else {
+                    Transport.send(message);
+                }
+            } catch (final MessagingException e) {
+                errorMessages.add(e.getMessage());
+                logger.error("Could not send this email: " + e.getMessage());
+            }
+        }
+        if (!errorMessages.isEmpty()) {
+            final String errorMessage = "Errors sending emails. " + StringUtils.join(errorMessages, ", ");
+            throw new AlertException(errorMessage);
         }
     }
 
