@@ -41,7 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
-import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.Descriptor;
@@ -57,8 +57,6 @@ import com.synopsys.integration.alert.database.api.configuration.model.Configura
 import com.synopsys.integration.alert.database.api.configuration.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
 import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
-import com.synopsys.integration.alert.web.model.configuration.TestConfigModel;
-import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class FieldModelProcessor {
@@ -67,14 +65,16 @@ public class FieldModelProcessor {
     private final BaseConfigurationAccessor configurationAccessor;
     private final DescriptorMap descriptorMap;
     private final ConfigurationFieldModelConverter fieldModelConverter;
+    private final ContentConverter contentConverter;
 
     @Autowired
     public FieldModelProcessor(final BaseDescriptorAccessor descriptorAccessor, final BaseConfigurationAccessor configurationAccessor, final DescriptorMap descriptorMap,
-        final ConfigurationFieldModelConverter fieldModelConverter) {
+        final ConfigurationFieldModelConverter fieldModelConverter, final ContentConverter contentConverter) {
         this.descriptorAccessor = descriptorAccessor;
         this.configurationAccessor = configurationAccessor;
         this.descriptorMap = descriptorMap;
         this.fieldModelConverter = fieldModelConverter;
+        this.contentConverter = contentConverter;
     }
 
     public FieldModel performReadAction(final ConfigurationModel configurationModel) throws AlertDatabaseConstraintException {
@@ -111,20 +111,6 @@ public class FieldModelProcessor {
         return fieldErrors;
     }
 
-    public String testFieldModel(final FieldModel fieldModel, final String destination) throws IntegrationException {
-        final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
-        if (descriptorActionApi.isPresent()) {
-            final DescriptorActionApi descriptorApi = descriptorActionApi.get();
-            final FieldAccessor fieldAccessor = fieldModelConverter.convertToFieldAccessor(fieldModel);
-            final TestConfigModel testConfig = descriptorApi.createTestConfigModel(fieldModel.getId(), fieldAccessor, destination);
-            descriptorApi.testConfig(testConfig);
-            return "Successfully sent test message.";
-        } else {
-            logger.error("Descriptor action api did not exist: {}", fieldModel.getDescriptorName());
-            return "Internal server error. Failed to send test message.";
-        }
-    }
-
     public Collection<ConfigurationFieldModel> fillFieldModelWithExistingData(final Long id, final FieldModel fieldModel) throws AlertException {
         final Optional<ConfigurationModel> configurationModel = getSavedEntity(id);
         if (configurationModel.isPresent()) {
@@ -133,6 +119,27 @@ public class FieldModelProcessor {
         }
 
         return fieldModelConverter.convertFromFieldModel(fieldModel).values();
+    }
+
+    public FieldModel createTestFieldModel(final FieldModel fieldModel) throws AlertException {
+        final String id = fieldModel.getId();
+        FieldModel upToDateFieldModel = fieldModel;
+        if (StringUtils.isNotBlank(id)) {
+            final Long convertedId = contentConverter.getLongValue(id);
+            upToDateFieldModel = populateTestFieldModel(convertedId, fieldModel);
+        }
+        return upToDateFieldModel;
+    }
+
+    private FieldModel populateTestFieldModel(final Long id, final FieldModel fieldModel) throws AlertException {
+        final Collection<ConfigurationFieldModel> configurationFieldModels = fillFieldModelWithExistingData(id, fieldModel);
+        final Map<String, FieldValueModel> fields = new HashMap<>();
+        for (final ConfigurationFieldModel configurationFieldModel : configurationFieldModels) {
+            final FieldValueModel fieldValueModel = new FieldValueModel(configurationFieldModel.getFieldValues(), configurationFieldModel.isSet());
+            fields.put(configurationFieldModel.getFieldKey(), fieldValueModel);
+        }
+        final FieldModel newFieldModel = new FieldModel("", "", fields);
+        return fieldModel.fill(newFieldModel);
     }
 
     public Optional<Descriptor> retrieveDescriptor(final String descriptorName) {
