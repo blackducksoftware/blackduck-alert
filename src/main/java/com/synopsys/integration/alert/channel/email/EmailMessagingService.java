@@ -179,7 +179,7 @@ public class EmailMessagingService {
             }
         }
         if (!errorMessages.isEmpty()) {
-            final String errorMessage = "Errors sending emails. " + StringUtils.join(errorMessages, System.lineSeparator());
+            final String errorMessage = "Errors sending emails. " + StringUtils.join(errorMessages, ", ");
             throw new AlertException(errorMessage);
         }
     }
