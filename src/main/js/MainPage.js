@@ -49,14 +49,6 @@ class MainPage extends Component {
             }
             return null;
         });
-
-        routeList.unshift(<Route
-            exact
-            path="/alert/"
-            render={() => (
-                <Redirect to={`${uriPrefix}${descriptorList[0].urlName}`} />
-            )}
-        />);
         return routeList;
     }
 
@@ -67,6 +59,13 @@ class MainPage extends Component {
             <div>
                 <Navigation />
                 <div className="contentArea">
+                    <Route
+                        exact
+                        path="/alert/"
+                        render={() => (
+                            <Redirect to={`/alert/providers/${providers[0].path}`} />
+                        )}
+                    />
                     {providers}
                     {channels}
                     <Route path="/alert/jobs/scheduling" component={SchedulingConfiguration} />
