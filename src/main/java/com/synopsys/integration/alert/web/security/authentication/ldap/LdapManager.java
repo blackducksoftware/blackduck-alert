@@ -63,7 +63,8 @@ public class LdapManager {
         try {
             enabled = Boolean.valueOf(getFieldValueOrEmpty(getCurrentConfiguration(), SettingsDescriptor.KEY_LDAP_ENABLED));
         } catch (final AlertDatabaseConstraintException | AlertLDAPConfigurationException ex) {
-            logger.error("Error checking if Ldap is enabled", ex);
+            logger.warn(ex.getMessage());
+            logger.debug("cause: ", ex);
         }
 
         return enabled;
