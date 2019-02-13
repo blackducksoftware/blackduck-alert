@@ -31,7 +31,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -39,9 +38,9 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Type;
 
+import com.synopsys.integration.alert.database.audit.relation.AuditJobRelation;
 import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
-import com.synopsys.integration.alert.database.entity.configuration.ConfigGroupEntity;
 
 @Entity
 @Table(schema = "alert", name = "audit_entries")
@@ -73,9 +72,9 @@ public class AuditEntryEntity extends DatabaseEntity {
     @OneToMany(mappedBy = "auditEntryEntity")
     private List<AuditNotificationRelation> auditNotificationRelations;
 
-    @ManyToOne
-    @JoinColumn(name = "common_config_id", referencedColumnName = "job_id", insertable = false, updatable = false)
-    private ConfigGroupEntity configGroupEntity;
+    @OneToMany
+    @JoinColumn(name = "audit_entry_id", referencedColumnName = "id", insertable = false, updatable = false)
+    private List<AuditJobRelation> auditJobRelations;
 
     public AuditEntryEntity() {
         // JPA requires default constructor definitions
@@ -134,7 +133,7 @@ public class AuditEntryEntity extends DatabaseEntity {
         return auditNotificationRelations;
     }
 
-    public ConfigGroupEntity getConfigGroupEntity() {
-        return configGroupEntity;
+    public List<AuditJobRelation> getAuditJobRelations() {
+        return auditJobRelations;
     }
 }

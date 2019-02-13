@@ -42,28 +42,31 @@ import org.springframework.transaction.annotation.Transactional;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.CategoryItem;
+import com.synopsys.integration.alert.database.audit.relation.AuditJobRelation;
 import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
 
 @Component
 public class AuditUtility {
     private static final Logger logger = LoggerFactory.getLogger(AuditUtility.class);
     private final AuditEntryRepository auditEntryRepository;
+    private final AuditJobRepository auditJobRepository;
     private final AuditNotificationRepository auditNotificationRepository;
 
     @Autowired
-    public AuditUtility(final AuditEntryRepository auditEntryRepository, final AuditNotificationRepository auditNotificationRepository) {
+    public AuditUtility(final AuditEntryRepository auditEntryRepository, final AuditJobRepository auditJobRepository, final AuditNotificationRepository auditNotificationRepository) {
         this.auditEntryRepository = auditEntryRepository;
+        this.auditJobRepository = auditJobRepository;
         this.auditNotificationRepository = auditNotificationRepository;
     }
 
     @Transactional
-    public Map<Long, Long> createAuditEntry(final Map<Long, Long> existingNotificationIdToAuditId, final UUID commonDistributionId, final AggregateMessageContent content) {
+    public Map<Long, Long> createAuditEntry(final Map<Long, Long> existingNotificationIdToAuditId, final UUID jobId, final AggregateMessageContent content) {
         final Map<Long, Long> notificationIdToAuditId = new HashMap<>();
         final Set<Long> notificationIds = content.getCategoryItemList().stream()
                                               .map(CategoryItem::getNotificationId)
                                               .collect(Collectors.toSet());
         for (final Long notificationId : notificationIds) {
-            AuditEntryEntity auditEntryEntity = new AuditEntryEntity(commonDistributionId, new Date(System.currentTimeMillis()), null, null, null, null);
+            AuditEntryEntity auditEntryEntity = new AuditEntryEntity(jobId, new Date(System.currentTimeMillis()), null, null, null, null);
 
             if (null != existingNotificationIdToAuditId && !existingNotificationIdToAuditId.isEmpty()) {
                 final Long auditEntryId = existingNotificationIdToAuditId.get(notificationId);
@@ -74,6 +77,8 @@ public class AuditUtility {
 
             auditEntryEntity.setStatus(AuditEntryStatus.PENDING.toString());
             final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);
+            auditJobRepository.save(new AuditJobRelation(savedAuditEntryEntity.getId(), jobId));
+
             notificationIdToAuditId.put(notificationId, savedAuditEntryEntity.getId());
             final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), notificationId);
             auditNotificationRepository.save(auditNotificationRelation);

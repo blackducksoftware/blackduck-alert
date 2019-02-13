@@ -22,4 +22,34 @@
             <where>STATUS = '0'</where>
         </update>
     </changeSet>
+    <changeSet author="jrichard" id="1544542018669-5">
+        <createTable tableName="AUDIT_JOB_RELATION" schemaName="ALERT">
+            <column name="AUDIT_ENTRY_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="JOB_ID" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <!--<addForeignKeyConstraint-->
+        <!--baseTableSchemaName="ALERT"-->
+        <!--baseTableName="AUDIT_JOB_RELATION"-->
+        <!--baseColumnNames="AUDIT_ENTRY_ID"-->
+        <!--constraintName="FK_JOB_RELATION_AUDIT"-->
+        <!--referencedTableSchemaName="ALERT"-->
+        <!--referencedTableName="AUDIT_ENTRIES"-->
+        <!--referencedColumnNames="ID"-->
+        <!--onDelete="CASCADE"-->
+        <!--/>-->
+        <!--<addForeignKeyConstraint-->
+        <!--baseTableSchemaName="ALERT"-->
+        <!--baseTableName="AUDIT_ENTRIES"-->
+        <!--baseColumnNames="ID"-->
+        <!--constraintName="FK_AUDIT_JOB_RELATION"-->
+        <!--referencedTableSchemaName="ALERT"-->
+        <!--referencedTableName="AUDIT_JOB_RELATION"-->
+        <!--referencedColumnNames="AUDIT_ENTRY_ID"-->
+        <!--onDelete="CASCADE"-->
+        <!--/>-->
+    </changeSet>
 </databaseChangeLog>
