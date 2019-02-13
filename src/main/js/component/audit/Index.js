@@ -377,6 +377,7 @@ class Index extends Component {
                             id="showSentNotificationsID"
                             label="Only show sent notifications"
                             name="onlyShowSentNotifications"
+                            className="tableToggleCheckbox"
                             isChecked={this.state.onlyShowSentNotifications}
                             onChange={this.onOnlyShowSentNotificationsChange}
                         />
