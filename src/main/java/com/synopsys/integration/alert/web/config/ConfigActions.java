@@ -32,26 +32,32 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.ConfigurationFieldModelConverter;
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
+import com.synopsys.integration.alert.web.model.configuration.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 @Component
 public class ConfigActions {
+    private static final Logger logger = LoggerFactory.getLogger(ConfigActions.class);
     private final BaseConfigurationAccessor configurationAccessor;
-    private FieldModelProcessor fieldModelProcessor;
-    private ConfigurationFieldModelConverter modelConverter;
-    private ContentConverter contentConverter;
+    private final FieldModelProcessor fieldModelProcessor;
+    private final ConfigurationFieldModelConverter modelConverter;
+    private final ContentConverter contentConverter;
 
     @Autowired
     public ConfigActions(final BaseConfigurationAccessor configurationAccessor, final FieldModelProcessor fieldModelProcessor, final ConfigurationFieldModelConverter modelConverter,
@@ -126,15 +132,26 @@ public class ConfigActions {
 
     public String testConfig(final FieldModel restModel, final String destination) throws IntegrationException {
         validateConfig(restModel, new HashMap<>());
-        return fieldModelProcessor.testFieldModel(restModel, destination);
+        final Optional<DescriptorActionApi> descriptorActionApi = fieldModelProcessor.retrieveDescriptorActionApi(restModel);
+        if (descriptorActionApi.isPresent()) {
+            final DescriptorActionApi descriptorApi = descriptorActionApi.get();
+            final FieldModel upToDateFieldModel = fieldModelProcessor.createTestFieldModel(restModel);
+            final FieldAccessor fieldAccessor = modelConverter.convertToFieldAccessor(upToDateFieldModel);
+            final TestConfigModel testConfig = descriptorApi.createTestConfigModel(upToDateFieldModel.getId(), fieldAccessor, destination);
+            descriptorApi.testConfig(testConfig);
+            return "Successfully sent test message.";
+        } else {
+            logger.error("Descriptor action api did not exist: {}", restModel.getDescriptorName());
+            return "Internal server error. Failed to send test message.";
+        }
     }
 
     public FieldModel updateConfig(final Long id, final FieldModel fieldModel) throws AlertException, AlertFieldException {
         validateConfig(fieldModel, new HashMap<>());
         final Collection<ConfigurationFieldModel> updatedFields = fieldModelProcessor.fillFieldModelWithExistingData(id, fieldModel);
         final ConfigurationModel configurationModel = configurationAccessor.updateConfiguration(id, updatedFields);
-        FieldModel dbSavedModel = fieldModelProcessor.convertToFieldModel(configurationModel);
-        FieldModel combinedModel = dbSavedModel.fill(fieldModel);
+        final FieldModel dbSavedModel = fieldModelProcessor.convertToFieldModel(configurationModel);
+        final FieldModel combinedModel = dbSavedModel.fill(fieldModel);
         return fieldModelProcessor.performUpdateAction(combinedModel);
     }
 
