@@ -1,6 +1,7 @@
 package com.synopsys.integration.alert.channel.email;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import javax.mail.Message;
@@ -14,13 +15,14 @@ import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
+import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.util.TestProperties;
 
 public class EmailMessagingServiceTest {
 
     @Test
-    public void sendAuthenticatedMessage() throws IOException, MessagingException {
+    public void sendAuthenticatedMessage() throws IOException, MessagingException, AlertException {
         final TestProperties testProperties = new TestProperties();
         final EmailProperties emailProperties = new EmailProperties(createEmailGlobalConfigEntity());
 
@@ -37,7 +39,7 @@ public class EmailMessagingServiceTest {
         final Message message = new MimeMessage(mockSession);
         Mockito.doNothing().when(mockTransport).sendMessage(Mockito.eq(message), Mockito.any());
 
-        emailMessagingService.sendMessage(emailProperties, mockSession, message);
+        emailMessagingService.sendMessages(emailProperties, mockSession, List.of(message));
     }
 
     private FieldAccessor createEmailGlobalConfigEntity() {
