@@ -8,6 +8,7 @@ import {
     SYSTEM_SETUP_FETCHING,
     SYSTEM_SETUP_HIDE_RESET_PASSWORD_MODAL,
     SYSTEM_SETUP_PASSWORD_RESETTING,
+    SYSTEM_SETUP_SHOW_CONFIG,
     SYSTEM_SETUP_SHOW_RESET_PASSWORD_MODAL,
     SYSTEM_SETUP_UPDATE_ERROR,
     SYSTEM_SETUP_UPDATED,
@@ -16,6 +17,7 @@ import {
 import { clearLoginError, loginError, verifyLoginByStatus } from 'store/actions/session';
 import * as ConfigRequestBuilder from 'util/configurationRequestBuilder';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
+import { SYSTEM_SETUP_SHOW } from "./types";
 
 const LATEST_MESSAGES_URL = '/alert/api/system/messages/latest';
 const INITIAL_SYSTEM_SETUP_URL = '/alert/api/system/setup/initial';
@@ -52,6 +54,13 @@ function fetchingSystemSetup() {
 function fetchSetupRedirected() {
     return {
         type: SYSTEM_SETUP_FETCH_REDIRECTED
+    };
+}
+
+function systemSetupShowConfig(settingsData) {
+    return {
+        type: SYSTEM_SETUP_SHOW_CONFIG,
+        settingsData
     };
 }
 
@@ -134,7 +143,7 @@ export function getInitialSystemSetup() {
                     dispatch(fetchSetupRedirected());
                 } else if (response.ok) {
                     response.json().then((body) => {
-                        dispatch(systemSetupFetched(body));
+                        dispatch(systemSetupShowConfig(body));
                     });
                 } else {
                     dispatch(systemSetupFetchError(response.statusText));
