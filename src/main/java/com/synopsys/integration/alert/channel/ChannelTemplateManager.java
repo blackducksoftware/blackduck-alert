@@ -62,8 +62,8 @@ public class ChannelTemplateManager {
         final String destination = event.getDestination();
         if (event instanceof DistributionEvent) {
             final DistributionEvent distributionEvent = (DistributionEvent) event;
-            final UUID commonId = UUID.fromString(distributionEvent.getConfigId());
-            final Map<Long, Long> notificationIdToAuditId = auditUtility.createAuditEntry(distributionEvent.getNotificationIdToAuditId(), commonId, distributionEvent.getContent());
+            final UUID jobId = UUID.fromString(distributionEvent.getConfigId());
+            final Map<Long, Long> notificationIdToAuditId = auditUtility.createAuditEntry(distributionEvent.getNotificationIdToAuditId(), jobId, distributionEvent.getContent());
             distributionEvent.setNotificationIdToAuditId(notificationIdToAuditId);
             final String jsonMessage = contentConverter.getJsonString(distributionEvent);
             jmsTemplate.convertAndSend(destination, jsonMessage);
