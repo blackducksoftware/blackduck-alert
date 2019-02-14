@@ -70,7 +70,7 @@ class Index extends Component {
 
     onResendClick(currentRowSelected) {
         const currentEntry = currentRowSelected || this.state.currentRowSelected;
-        this.props.resendNotification(currentEntry.id);
+        this.props.resendNotification(currentEntry.id, null, this.state.currentPage, this.state.currentPageSize, this.state.searchTerm, this.state.sortField, this.state.sortOrder, this.state.onlyShowSentNotifications);
     }
 
     onStatusFailureClick(currentRowSelected) {
@@ -339,6 +339,12 @@ class Index extends Component {
                         providerNameFormat={this.providerColumnDataFormat}
                         notificationTypeFormat={this.notificationTypeDataFormat}
                         statusFormat={this.statusColumnDataFormat}
+                        currentPage={this.state.currentPage}
+                        currentPageSize={this.state.currentPageSize}
+                        searchTerm={this.state.searchTerm}
+                        sortField={this.state.sortField}
+                        sortOrder={this.state.sortOrder}
+                        onlyShowSentNotifications={this.state.onlyShowSentNotifications}
                     />
                     <BootstrapTable
                         version="4"
@@ -408,7 +414,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
     getAuditData: (totalPageCount, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications) => dispatch(getAuditData(totalPageCount, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications)),
-    resendNotification: (notificationId, commonConfigId) => dispatch(resendNotification(notificationId, commonConfigId))
+    resendNotification: (notificationId, commonConfigId, totalPageCount, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications) => dispatch(resendNotification(notificationId, commonConfigId, totalPageCount, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Index);

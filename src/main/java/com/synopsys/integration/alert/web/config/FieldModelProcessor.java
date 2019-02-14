@@ -77,8 +77,8 @@ public class FieldModelProcessor {
         this.contentConverter = contentConverter;
     }
 
-    public FieldModel performReadAction(final ConfigurationModel configurationModel) throws AlertDatabaseConstraintException {
-        final FieldModel fieldModel = convertToFieldModel(configurationModel);
+    //TODO: revisit the API of this class because we use a mix of objects. FieldModel and ConfigurationModel here.  Is that correct.
+    public FieldModel performReadAction(final FieldModel fieldModel) {
         final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
         return descriptorActionApi.map(actionApi -> actionApi.readConfig(fieldModel)).orElse(fieldModel);
     }
@@ -109,6 +109,23 @@ public class FieldModelProcessor {
             descriptorActionApi.get().validateConfig(configFields, fieldModel, fieldErrors);
         }
         return fieldErrors;
+    }
+
+    public FieldModel trimFieldModelValues(final FieldModel fieldModel) {
+        final Map<String, FieldValueModel> keyToValues = fieldModel.getKeyToValues();
+        if (null == keyToValues) {
+            return new FieldModel(fieldModel.getId(), fieldModel.getDescriptorName(), fieldModel.getContext(), Map.of());
+        }
+
+        final Map<String, FieldValueModel> trimmedValues = keyToValues.entrySet()
+                                                               .stream()
+                                                               .filter(entry -> !isFieldValueEmpty(entry.getValue()))
+                                                               .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        return new FieldModel(fieldModel.getId(), fieldModel.getDescriptorName(), fieldModel.getContext(), trimmedValues);
+    }
+
+    private boolean isFieldValueEmpty(final FieldValueModel fieldValueModel) {
+        return null == fieldValueModel || StringUtils.isBlank(fieldValueModel.getValue().orElse(null));
     }
 
     public Collection<ConfigurationFieldModel> fillFieldModelWithExistingData(final Long id, final FieldModel fieldModel) throws AlertException {

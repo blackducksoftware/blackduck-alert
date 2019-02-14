@@ -21,7 +21,7 @@ class Details extends Component {
 
     onResendClick(currentRowSelected) {
         const currentEntry = currentRowSelected || this.state.currentRowSelected;
-        this.props.resendNotification(this.props.currentEntry.id, currentEntry.configId);
+        this.props.resendNotification(this.props.currentEntry.id, currentEntry.configId, this.props.currentPage, this.props.currentPageSize, this.props.searchTerm, this.props.sortField, this.props.sortOrder, this.props.onlyShowSentNotifications);
     }
 
     getEventType(eventType) {
@@ -163,7 +163,13 @@ Details.propTypes = {
     handleClose: PropTypes.func.isRequired,
     providerNameFormat: PropTypes.func.isRequired,
     notificationTypeFormat: PropTypes.func.isRequired,
-    statusFormat: PropTypes.func.isRequired
+    statusFormat: PropTypes.func.isRequired,
+    currentPage: PropTypes.number.isRequired,
+    currentPageSize: PropTypes.number.isRequired,
+    searchTerm: PropTypes.string.isRequired,
+    sortField: PropTypes.string.isRequired,
+    sortOrder: PropTypes.string.isRequired,
+    onlyShowSentNotifications: PropTypes.bool.isRequired
 };
 
 Details.defaultProps = {

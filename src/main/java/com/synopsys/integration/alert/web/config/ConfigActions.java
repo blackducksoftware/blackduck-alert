@@ -23,9 +23,9 @@
  */
 package com.synopsys.integration.alert.web.config;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -77,14 +77,25 @@ public class ConfigActions {
     }
 
     public List<FieldModel> getConfigs(final ConfigContextEnum context, final String descriptorName) throws AlertException {
-        final List<FieldModel> fields = new ArrayList<>();
+        final List<FieldModel> fields = new LinkedList<>();
         if (context != null && StringUtils.isNotBlank(descriptorName)) {
+            final String contextName = context.name();
+            final Optional<DescriptorActionApi> descriptorActionApi = fieldModelProcessor.retrieveDescriptorActionApi(contextName, descriptorName);
             final List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationByDescriptorNameAndContext(descriptorName, context);
-            if (configurationModels != null) {
+            List<FieldModel> fieldModelList = new LinkedList<>();
+            if (null != configurationModels) {
                 for (final ConfigurationModel configurationModel : configurationModels) {
-                    final FieldModel fieldModel = fieldModelProcessor.performReadAction(configurationModel);
-                    fields.add(fieldModel);
+                    final FieldModel fieldModel = fieldModelProcessor.convertToFieldModel(configurationModel);
+                    fieldModelList.add(fieldModel);
                 }
+            }
+
+            if (descriptorActionApi.isPresent() && fieldModelList.isEmpty()) {
+                fieldModelList.add(new FieldModel(descriptorName, contextName, new HashMap<>()));
+            }
+
+            for (final FieldModel fieldModel : fieldModelList) {
+                fields.add(fieldModelProcessor.performReadAction(fieldModel));
             }
         }
         return fields;
@@ -94,7 +105,8 @@ public class ConfigActions {
         Optional<FieldModel> optionalModel = Optional.empty();
         final Optional<ConfigurationModel> configurationModel = configurationAccessor.getConfigurationById(id);
         if (configurationModel.isPresent()) {
-            final FieldModel fieldModel = fieldModelProcessor.performReadAction(configurationModel.get());
+            final FieldModel configurationFieldModel = fieldModelProcessor.convertToFieldModel(configurationModel.get());
+            final FieldModel fieldModel = fieldModelProcessor.performReadAction(configurationFieldModel);
             optionalModel = Optional.of(fieldModel);
         }
         return optionalModel;
@@ -112,18 +124,20 @@ public class ConfigActions {
     }
 
     public FieldModel saveConfig(final FieldModel fieldModel) throws AlertException, AlertFieldException {
-        validateConfig(fieldModel, new HashMap<>());
-        final String descriptorName = fieldModel.getDescriptorName();
-        final String context = fieldModel.getContext();
-        final Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertFromFieldModel(fieldModel);
+        final FieldModel trimmedFieldMode = fieldModelProcessor.trimFieldModelValues(fieldModel);
+        validateConfig(trimmedFieldMode, new HashMap<>());
+        final String descriptorName = trimmedFieldMode.getDescriptorName();
+        final String context = trimmedFieldMode.getContext();
+        final Map<String, ConfigurationFieldModel> configurationFieldModelMap = modelConverter.convertFromFieldModel(trimmedFieldMode);
         final ConfigurationModel configuration = configurationAccessor.createConfiguration(descriptorName, EnumUtils.getEnum(ConfigContextEnum.class, context), configurationFieldModelMap.values());
         final FieldModel dbSavedModel = fieldModelProcessor.convertToFieldModel(configuration);
-        final FieldModel combinedModel = dbSavedModel.fill(fieldModel);
+        final FieldModel combinedModel = dbSavedModel.fill(trimmedFieldMode);
         return fieldModelProcessor.performSaveAction(combinedModel);
     }
 
     public String validateConfig(final FieldModel fieldModel, final Map<String, String> fieldErrors) throws AlertFieldException {
-        fieldErrors.putAll(fieldModelProcessor.validateFieldModel(fieldModel));
+        final FieldModel trimmedFieldMode = fieldModelProcessor.trimFieldModelValues(fieldModel);
+        fieldErrors.putAll(fieldModelProcessor.validateFieldModel(trimmedFieldMode));
         if (!fieldErrors.isEmpty()) {
             throw new AlertFieldException(fieldErrors);
         }
@@ -147,11 +161,12 @@ public class ConfigActions {
     }
 
     public FieldModel updateConfig(final Long id, final FieldModel fieldModel) throws AlertException, AlertFieldException {
-        validateConfig(fieldModel, new HashMap<>());
-        final Collection<ConfigurationFieldModel> updatedFields = fieldModelProcessor.fillFieldModelWithExistingData(id, fieldModel);
+        final FieldModel trimmedFieldMode = fieldModelProcessor.trimFieldModelValues(fieldModel);
+        validateConfig(trimmedFieldMode, new HashMap<>());
+        final Collection<ConfigurationFieldModel> updatedFields = fieldModelProcessor.fillFieldModelWithExistingData(id, trimmedFieldMode);
         final ConfigurationModel configurationModel = configurationAccessor.updateConfiguration(id, updatedFields);
         final FieldModel dbSavedModel = fieldModelProcessor.convertToFieldModel(configurationModel);
-        final FieldModel combinedModel = dbSavedModel.fill(fieldModel);
+        final FieldModel combinedModel = dbSavedModel.fill(trimmedFieldMode);
         return fieldModelProcessor.performUpdateAction(combinedModel);
     }
 

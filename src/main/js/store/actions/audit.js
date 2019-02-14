@@ -47,10 +47,9 @@ function startingAuditResend() {
  * Triggers Audit items fetched
  * @returns {{type}}
  */
-function auditResentSuccessfully(items) {
+function auditResentSuccessfully() {
     return {
-        type: AUDIT_RESEND_COMPLETE,
-        items
+        type: AUDIT_RESEND_COMPLETE
     };
 }
 
@@ -93,7 +92,7 @@ export function getAuditData(pageNumber, pageSize, searchTerm, sortField, sortOr
     };
 }
 
-export function resendNotification(notificationId, commonConfigId) {
+export function resendNotification(notificationId, commonConfigId, pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications) {
     return (dispatch, getState) => {
         dispatch(startingAuditResend());
         let resendUrl = `/alert/api/audit/resend/${notificationId}/`;
@@ -117,14 +116,13 @@ export function resendNotification(notificationId, commonConfigId) {
                         dispatch(verifyLoginByStatus(response.status));
                         break;
                     default:
-                        return response.json().then((json) => {
+                        response.json().then((json) => {
                             dispatch(auditResendError(json.message));
                         });
                 }
             }
-            return response.json().then((json) => {
-                dispatch(auditResentSuccessfully(JSON.parse(json.message)));
-            });
+            dispatch(auditResentSuccessfully());
+            dispatch(getAuditData(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications));
         }).catch(console.error);
     };
 }
