@@ -101,14 +101,32 @@ public class FieldModelProcessor {
 
     public Map<String, String> validateFieldModel(final FieldModel fieldModel) {
         final Map<String, String> fieldErrors = new HashMap<>();
-        final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
+        final FieldModel trimmedFieldModel = trimFieldModelValues(fieldModel);
+        final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(trimmedFieldModel);
         if (descriptorActionApi.isPresent()) {
-            final Map<String, ConfigField> configFields = retrieveUIConfigFields(fieldModel.getContext(), fieldModel.getDescriptorName())
+            final Map<String, ConfigField> configFields = retrieveUIConfigFields(trimmedFieldModel.getContext(), trimmedFieldModel.getDescriptorName())
                                                               .stream()
                                                               .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-            descriptorActionApi.get().validateConfig(configFields, fieldModel, fieldErrors);
+            descriptorActionApi.get().validateConfig(configFields, trimmedFieldModel, fieldErrors);
         }
         return fieldErrors;
+    }
+
+    public FieldModel trimFieldModelValues(final FieldModel fieldModel) {
+        final Map<String, FieldValueModel> keyToValues = fieldModel.getKeyToValues();
+        if (null == keyToValues) {
+            return new FieldModel(fieldModel.getId(), fieldModel.getDescriptorName(), fieldModel.getContext(), Map.of());
+        }
+
+        final Map<String, FieldValueModel> trimmedValues = keyToValues.entrySet()
+                                                               .stream()
+                                                               .filter(entry -> !isFieldValueEmpty(entry.getValue()))
+                                                               .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        return new FieldModel(fieldModel.getId(), fieldModel.getDescriptorName(), fieldModel.getContext(), trimmedValues);
+    }
+
+    private boolean isFieldValueEmpty(final FieldValueModel fieldValueModel) {
+        return null == fieldValueModel || StringUtils.isBlank(fieldValueModel.getValue().orElse(null));
     }
 
     public Collection<ConfigurationFieldModel> fillFieldModelWithExistingData(final Long id, final FieldModel fieldModel) throws AlertException {
