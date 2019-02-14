@@ -189,7 +189,10 @@ public class ConfigField extends Stringable {
             return;
         }
 
-        final boolean tooLargeFound = values.stream().anyMatch(value -> MAX_FIELD_LENGTH < value.length());
+        final boolean tooLargeFound = values
+                                          .stream()
+                                          .filter(StringUtils::isNotBlank)
+                                          .anyMatch(value -> MAX_FIELD_LENGTH < value.length());
         if (tooLargeFound) {
             errors.add(FIELD_LENGTH_LARGE);
         }
