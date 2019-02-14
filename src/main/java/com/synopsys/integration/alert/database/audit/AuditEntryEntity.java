@@ -37,7 +37,6 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Type;
 
-import com.synopsys.integration.alert.database.audit.relation.AuditJobRelation;
 import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 
@@ -70,9 +69,6 @@ public class AuditEntryEntity extends DatabaseEntity {
 
     @OneToMany(mappedBy = "auditEntryEntity")
     private List<AuditNotificationRelation> auditNotificationRelations;
-
-    @OneToMany(mappedBy = "auditEntryEntity")
-    private List<AuditJobRelation> auditJobRelations;
 
     public AuditEntryEntity() {
         // JPA requires default constructor definitions
@@ -129,9 +125,5 @@ public class AuditEntryEntity extends DatabaseEntity {
 
     public List<AuditNotificationRelation> getAuditNotificationRelations() {
         return auditNotificationRelations;
-    }
-
-    public List<AuditJobRelation> getAuditJobRelations() {
-        return auditJobRelations;
     }
 }

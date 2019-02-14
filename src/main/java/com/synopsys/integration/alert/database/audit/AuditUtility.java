@@ -42,7 +42,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.CategoryItem;
-import com.synopsys.integration.alert.database.audit.relation.AuditJobRelation;
 import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
 
 @Component
@@ -77,7 +76,7 @@ public class AuditUtility {
 
             auditEntryEntity.setStatus(AuditEntryStatus.PENDING.toString());
             final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);
-            auditJobRepository.save(new AuditJobRelation(savedAuditEntryEntity.getId(), jobId));
+            // auditJobRepository.save(new AuditJobRelation(savedAuditEntryEntity.getId(), jobId));
 
             notificationIdToAuditId.put(notificationId, savedAuditEntryEntity.getId());
             final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), notificationId);
