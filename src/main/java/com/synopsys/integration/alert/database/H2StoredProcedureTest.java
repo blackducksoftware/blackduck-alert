@@ -44,17 +44,17 @@ public class H2StoredProcedureTest {
                 final java.lang.Integer formatType = commonDistributionConfig.getInt("FORMAT_TYPE");
                 final String formatTypeString;
                 if (1 == formatType) {
-                    formatTypeString = "DEFAULT";
-                } else {
                     formatTypeString = "DIGEST";
+                } else {
+                    formatTypeString = "DEFAULT";
                 }
 
                 final java.lang.Integer frequency = commonDistributionConfig.getInt("FREQUENCY");
                 final String frequencyString;
                 if (1 == frequency) {
-                    frequencyString = "DAILY";
-                } else {
                     frequencyString = "REAL_TIME";
+                } else {
+                    frequencyString = "DAILY";
                 }
 
                 // Create provider config
