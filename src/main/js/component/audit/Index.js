@@ -329,7 +329,7 @@ class Index extends Component {
         if (descriptors) {
             const descriptorList = DescriptorUtilities.findDescriptorByTypeAndContext(descriptors, DescriptorUtilities.DESCRIPTOR_TYPE.PROVIDER, DescriptorUtilities.CONTEXT_TYPE.GLOBAL);
             if (descriptorList) {
-                const filteredList = descriptorList.filter(descriptor => descriptor.descriptorName === cell);
+                const filteredList = descriptorList.filter(descriptor => descriptor.name === cell);
                 if (filteredList && filteredList.length > 0) {
                     const foundDescriptor = filteredList[0];
                     return (<DescriptorLabel keyPrefix="audit-provider-icon" descriptor={foundDescriptor} />);
