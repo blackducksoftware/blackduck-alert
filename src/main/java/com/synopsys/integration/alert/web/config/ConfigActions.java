@@ -23,9 +23,9 @@
  */
 package com.synopsys.integration.alert.web.config;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -77,14 +77,25 @@ public class ConfigActions {
     }
 
     public List<FieldModel> getConfigs(final ConfigContextEnum context, final String descriptorName) throws AlertException {
-        final List<FieldModel> fields = new ArrayList<>();
+        final List<FieldModel> fields = new LinkedList<>();
         if (context != null && StringUtils.isNotBlank(descriptorName)) {
+            final String contextName = context.name();
+            final Optional<DescriptorActionApi> descriptorActionApi = fieldModelProcessor.retrieveDescriptorActionApi(contextName, descriptorName);
             final List<ConfigurationModel> configurationModels = configurationAccessor.getConfigurationByDescriptorNameAndContext(descriptorName, context);
-            if (configurationModels != null) {
+            List<FieldModel> fieldModelList = new LinkedList<>();
+            if (null != configurationModels) {
                 for (final ConfigurationModel configurationModel : configurationModels) {
-                    final FieldModel fieldModel = fieldModelProcessor.performReadAction(configurationModel);
-                    fields.add(fieldModel);
+                    final FieldModel fieldModel = fieldModelProcessor.convertToFieldModel(configurationModel);
+                    fieldModelList.add(fieldModel);
                 }
+            }
+
+            if (descriptorActionApi.isPresent() && fieldModelList.isEmpty()) {
+                fieldModelList.add(new FieldModel(descriptorName, contextName, new HashMap<>()));
+            }
+
+            for (final FieldModel fieldModel : fieldModelList) {
+                fields.add(fieldModelProcessor.performReadAction(fieldModel));
             }
         }
         return fields;
@@ -94,7 +105,8 @@ public class ConfigActions {
         Optional<FieldModel> optionalModel = Optional.empty();
         final Optional<ConfigurationModel> configurationModel = configurationAccessor.getConfigurationById(id);
         if (configurationModel.isPresent()) {
-            final FieldModel fieldModel = fieldModelProcessor.performReadAction(configurationModel.get());
+            final FieldModel configurationFieldModel = fieldModelProcessor.convertToFieldModel(configurationModel.get());
+            final FieldModel fieldModel = fieldModelProcessor.performReadAction(configurationFieldModel);
             optionalModel = Optional.of(fieldModel);
         }
         return optionalModel;

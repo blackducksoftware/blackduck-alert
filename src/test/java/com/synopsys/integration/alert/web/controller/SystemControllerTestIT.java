@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
@@ -30,6 +31,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
 import com.synopsys.integration.alert.database.system.SystemStatusUtility;
@@ -38,8 +40,8 @@ import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.web.actions.SystemActions;
 import com.synopsys.integration.alert.web.exception.AlertFieldException;
-import com.synopsys.integration.alert.web.model.SystemSetupModel;
 import com.synopsys.integration.alert.web.model.configuration.FieldModel;
+import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 
 public class SystemControllerTestIT extends AlertIntegrationTest {
     protected final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
@@ -91,25 +93,19 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     @Test
     public void testPostInitialSystemSetup() throws Exception {
         final TestProperties testProperties = new TestProperties();
+        final String defaultAdminEmail = "noreply@abcdomain.blackducksoftware.com";
         final String defaultAdminPassword = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_PASSWORD);
-        final boolean defaultAdminPasswordSet = false;
-        final String blackDuckProviderUrl = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_URL);
-        final Integer blackDuckConnectionTimeout = 300;
-        final String blackDuckApiToken = testProperties.getProperty(TestPropertyKey.TEST_BLACKDUCK_PROVIDER_API_KEY);
-        final boolean blackDuckApiTokenSet = false;
         final String globalEncryptionPassword = "password";
-        final boolean isGlobalEncryptionPasswordSet = false;
         final String globalEncryptionSalt = "salt";
-        final boolean isGlobalEncryptionSaltSet = false;
-        final String proxyHost = "";
-        final String proxyPort = "";
-        final String proxyUsername = "";
-        final String proxyPassword = "";
-        final boolean proxyPasswordSet = false;
 
-        final SystemSetupModel configuration = SystemSetupModel.of(defaultAdminPassword, defaultAdminPasswordSet, blackDuckProviderUrl, blackDuckConnectionTimeout, blackDuckApiToken, blackDuckApiTokenSet,
-            globalEncryptionPassword, isGlobalEncryptionPasswordSet, globalEncryptionSalt, isGlobalEncryptionSaltSet,
-            proxyHost, proxyPort, proxyUsername, proxyPassword, proxyPasswordSet);
+        HashMap<String, FieldValueModel> valueModelMap = new HashMap<>();
+
+        valueModelMap.put(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, new FieldValueModel(List.of(defaultAdminEmail), false));
+        valueModelMap.put(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, new FieldValueModel(List.of(defaultAdminPassword), false));
+        valueModelMap.put(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, new FieldValueModel(List.of(globalEncryptionPassword), false));
+        valueModelMap.put(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(globalEncryptionSalt), false));
+
+        final FieldModel configuration = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), valueModelMap);
 
         final MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(systemInitialSetupBaseUrl)
                                                           .with(SecurityMockMvcRequestPostProcessors.csrf());

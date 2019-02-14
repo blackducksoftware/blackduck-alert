@@ -82,13 +82,39 @@ public class SystemValidator {
     public boolean validate(final Map<String, String> fieldErrors) {
         logger.info("----------------------------------------");
         logger.info("Validating system configuration....");
-        final boolean adminUserPasswordValid = validateDefaultAdminPasswordSet(fieldErrors);
+
+        final boolean defaultUserSettingsValid = validateDefaultUser(fieldErrors);
         final boolean encryptionValid = validateEncryptionProperties(fieldErrors);
         final boolean providersValid = validateProviders();
-        final boolean valid = adminUserPasswordValid && encryptionValid && providersValid;
+        final boolean valid = defaultUserSettingsValid && encryptionValid && providersValid;
         logger.info("System configuration valid: {}", valid);
         logger.info("----------------------------------------");
         systemStatusUtility.setSystemInitialized(valid);
+        return valid;
+    }
+
+    public boolean validateDefaultUser(final Map<String, String> fieldErrors) {
+        systemMessageUtility.removeSystemMessagesByType(SystemMessageType.DEFAULT_ADMIN_USER_ERROR);
+        final boolean adminUserEmailValid = validateDefaultAdminEmailSet(fieldErrors);
+        final boolean adminUserPasswordValid = validateDefaultAdminPasswordSet(fieldErrors);
+        return adminUserEmailValid && adminUserPasswordValid;
+    }
+
+    public boolean validateDefaultAdminEmailSet(final Map<String, String> fieldErrors) {
+        final Optional<UserModel> userModel = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER);
+        final boolean valid;
+
+        if (userModel.isPresent()) {
+            valid = StringUtils.isNotBlank(userModel.get().getEmailAddress());
+            if (!valid) {
+                final String errorMessage = SettingsDescriptor.FIELD_ERROR_DEFAULT_USER_EMAIL;
+                fieldErrors.put(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, errorMessage);
+                systemMessageUtility.addSystemMessage(errorMessage, SystemMessageSeverity.ERROR, SystemMessageType.DEFAULT_ADMIN_USER_ERROR);
+            }
+        } else {
+            valid = false;
+        }
+
         return valid;
     }
 
