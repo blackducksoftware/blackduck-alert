@@ -26,15 +26,18 @@ class App extends Component {
     render() {
         if (this.props.initializing) {
             return (<div />);
-        } else {
-            const contentPage = (this.props.systemSetupAttempted) ? ((this.props.loggedIn) ? <MainPage /> : <LoginPage />) : <SetupPage />;
-            return (
-                <div>
-                    {contentPage}
-                    <AboutInfoFooter />
-                </div>
-            );
         }
+        let contentPage = (this.props.loggedIn) ? <MainPage /> : <LoginPage />;
+        if (!this.props.systemInitialized) {
+            contentPage = <SetupPage />;
+        }
+
+        return (
+            <div>
+                {contentPage}
+                <AboutInfoFooter />
+            </div>
+        );
     }
 }
 
@@ -44,14 +47,14 @@ App.propTypes = {
     getConfig: PropTypes.func.isRequired,
     verifyLogin: PropTypes.func.isRequired,
     getSettings: PropTypes.func.isRequired,
-    systemSetupAttempted: PropTypes.bool.isRequired
+    systemInitialized: PropTypes.bool.isRequired
 };
 
 // Redux mappings to be used later....
 const mapStateToProps = state => ({
     loggedIn: state.session.loggedIn,
     initializing: state.session.initializing,
-    systemSetupAttempted: state.system.setupRedirect
+    systemInitialized: state.system.systemInitialized
 });
 
 const mapDispatchToProps = dispatch => ({
