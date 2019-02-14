@@ -1,4 +1,4 @@
-import { AUDIT_FETCH_ERROR, AUDIT_FETCHED, AUDIT_FETCHING } from 'store/actions/types';
+import { AUDIT_FETCH_ERROR, AUDIT_FETCHED, AUDIT_FETCHING, AUDIT_RESEND_COMPLETE, AUDIT_RESEND_ERROR, AUDIT_RESEND_START } from 'store/actions/types';
 
 import { verifyLoginByStatus } from 'store/actions/session';
 
@@ -8,7 +8,7 @@ const FETCH_URL = '/alert/api/audit';
  * Triggers Config Fetching reducer
  * @returns {{type}}
  */
-function fetchingAuditData(items) {
+function fetchingAuditData() {
     return {
         type: AUDIT_FETCHING
     };
@@ -18,10 +18,10 @@ function fetchingAuditData(items) {
  * Triggers Audit items fetched
  * @returns {{type}}
  */
-function auditDataFetched(totalDataCount, items) {
+function auditDataFetched(totalPageCount, items) {
     return {
         type: AUDIT_FETCHED,
-        totalDataCount,
+        totalPageCount,
         items
     };
 }
@@ -29,9 +29,35 @@ function auditDataFetched(totalDataCount, items) {
 function auditDataFetchError(message) {
     return {
         type: AUDIT_FETCH_ERROR,
-        error: {
-            message
-        }
+        message
+    };
+}
+
+/**
+ * Triggers Config Fetching reducer
+ * @returns {{type}}
+ */
+function startingAuditResend() {
+    return {
+        type: AUDIT_RESEND_START
+    };
+}
+
+/**
+ * Triggers Audit items fetched
+ * @returns {{type}}
+ */
+function auditResentSuccessfully(items) {
+    return {
+        type: AUDIT_RESEND_COMPLETE,
+        items
+    };
+}
+
+function auditResendError(message) {
+    return {
+        type: AUDIT_RESEND_ERROR,
+        message
     };
 }
 
@@ -64,5 +90,41 @@ export function getAuditData(pageNumber, pageSize, searchTerm, sortField, sortOr
                 dispatch(verifyLoginByStatus(response.status));
             }
         }).catch(dispatch(auditDataFetchError(console.error)));
+    };
+}
+
+export function resendNotification(notificationId, commonConfigId) {
+    return (dispatch, getState) => {
+        dispatch(startingAuditResend());
+        let resendUrl = `/alert/api/audit/resend/${notificationId}/`;
+        if (commonConfigId) {
+            resendUrl += `job/${commonConfigId}/`;
+        }
+        const { csrfToken } = getState().session;
+
+        fetch(resendUrl, {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            }
+        }).then((response) => {
+            if (!response.ok) {
+                switch (response.status) {
+                    case 401:
+                    case 403:
+                        dispatch(verifyLoginByStatus(response.status));
+                        break;
+                    default:
+                        return response.json().then((json) => {
+                            dispatch(auditResendError(json.message));
+                        });
+                }
+            }
+            return response.json().then((json) => {
+                dispatch(auditResentSuccessfully(JSON.parse(json.message)));
+            });
+        }).catch(console.error);
     };
 }
