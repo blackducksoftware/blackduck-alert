@@ -21,15 +21,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.relation;
+package com.synopsys.integration.alert.database.audit.relation;
 
-import javax.persistence.MappedSuperclass;
+import java.io.Serializable;
+import java.util.UUID;
 
-import com.synopsys.integration.alert.database.entity.BaseEntity;
+public class AuditJobRelationPK implements Serializable {
+    private Long auditId;
+    private UUID jobId;
 
-@MappedSuperclass
-public abstract class DatabaseRelation extends BaseEntity {
-    public DatabaseRelation() {
-        super();
+    public AuditJobRelationPK() {
+        // JPA requires default constructor definitions
+    }
+
+    public AuditJobRelationPK(final Long auditId, final UUID jobId) {
+        this.auditId = auditId;
+        this.jobId = jobId;
+    }
+
+    public Long getAuditId() {
+        return auditId;
+    }
+
+    public UUID getJobId() {
+        return jobId;
     }
 }

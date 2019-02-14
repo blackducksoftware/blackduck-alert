@@ -22,4 +22,67 @@
             <where>STATUS = '0'</where>
         </update>
     </changeSet>
+
+    <!-- Add relational table between audits and jobs -->
+    <changeSet author="gkillough" id="1550150440455-1">
+        <createTable tableName="AUDIT_JOB_RELATION" schemaName="ALERT">
+            <column name="AUDIT_ID" type="BIGINT(19)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="JOB_ID" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey
+                schemaName="ALERT"
+                tableName="AUDIT_JOB_RELATION"
+                columnNames="AUDIT_ID, JOB_ID"
+                constraintName="AUDIT_JOB_RELATION_KEY"
+        />
+        <addForeignKeyConstraint
+                baseTableSchemaName="ALERT"
+                baseTableName="AUDIT_JOB_RELATION"
+                baseColumnNames="AUDIT_ID"
+                constraintName="FK_RELATION_AUDIT_ID"
+                referencedTableSchemaName="ALERT"
+                referencedTableName="AUDIT_ENTRIES"
+                referencedColumnNames="ID"
+                onDelete="CASCADE"
+        />
+    </changeSet>
+
+    <!-- Create migration procedure -->
+    <changeSet author="gkillough" id="1550150440455-2">
+        <createProcedure
+                dbms="h2"
+                relativeToChangelogFile="true"
+                schemaName="ALERT">
+            CREATE ALIAS MIGRATE_AUDIT_JOB_DATA_TO_RELATION AS $$
+                java.lang.Void migrateAuditJobDataToRelation(final java.sql.Connection connection) throws java.sql.SQLException {
+                    try (final java.sql.Statement getAuditEntryStatement = connection.createStatement()) {
+                        final java.sql.ResultSet resultSet = getAuditEntryStatement.executeQuery("SELECT AUDIT_ENTRIES.ID, AUDIT_ENTRIES.COMMON_CONFIG_ID FROM ALERT.AUDIT_ENTRIES;");
+                        while (resultSet.next()) {
+                            final java.lang.Long auditId = resultSet.getLong("ID");
+                            final java.lang.String jobIdAsString = resultSet.getString("COMMON_CONFIG_ID");
+                            final java.util.UUID jobId = java.util.UUID.fromString(jobIdAsString);
+                            try (final java.sql.Statement insertIntoRelationStatement = connection.createStatement()) {
+                                insertIntoRelationStatement.executeUpdate("INSERT INTO ALERT.AUDIT_JOB_RELATION (AUDIT_ID, JOB_ID) VALUES (" + auditId + ", '" + jobId.toString() + "');");
+                            }
+                        }
+                    }
+                    return null;
+                }
+            $$;
+        </createProcedure>
+    </changeSet>
+    <changeSet author="gkillough" id="1550150440455-3">
+        <sql dbms="h2" stripComments="true">
+            CALL MIGRATE_AUDIT_JOB_DATA_TO_RELATION();
+        </sql>
+    </changeSet>
+    <changeSet author="gkillough" id="1550150440455-4">
+        <sql dbms="h2" stripComments="true">
+            DROP ALIAS IF EXISTS MIGRATE_AUDIT_JOB_DATA_TO_RELATION;
+        </sql>
+    </changeSet>
 </databaseChangeLog>
