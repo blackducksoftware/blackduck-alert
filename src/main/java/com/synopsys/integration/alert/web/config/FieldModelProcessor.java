@@ -77,8 +77,8 @@ public class FieldModelProcessor {
         this.contentConverter = contentConverter;
     }
 
-    public FieldModel performReadAction(final ConfigurationModel configurationModel) throws AlertDatabaseConstraintException {
-        final FieldModel fieldModel = convertToFieldModel(configurationModel);
+    //TODO: revisit the API of this class because we use a mix of objects. FieldModel and ConfigurationModel here.  Is that correct.
+    public FieldModel performReadAction(final FieldModel fieldModel) {
         final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
         return descriptorActionApi.map(actionApi -> actionApi.readConfig(fieldModel)).orElse(fieldModel);
     }

@@ -248,7 +248,8 @@ public class JobConfigActions {
         final Set<ConfigurationModel> configurations = groupedConfiguration.getCopyOfConfigurations();
         final Set<FieldModel> constructedFieldModels = new HashSet<>();
         for (final ConfigurationModel configurationModel : configurations) {
-            constructedFieldModels.add(fieldModelProcessor.performReadAction(configurationModel));
+            FieldModel fieldModel = fieldModelProcessor.convertToFieldModel(configurationModel);
+            constructedFieldModels.add(fieldModelProcessor.performReadAction(fieldModel));
         }
         return new JobFieldModel(groupedConfiguration.getJobId().toString(), constructedFieldModels);
     }

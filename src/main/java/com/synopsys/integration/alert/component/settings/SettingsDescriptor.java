@@ -65,6 +65,7 @@ public class SettingsDescriptor extends ComponentDescriptor {
     public static final String KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE = "settings.startup.environment.variable.override";
 
     public static final String FIELD_ERROR_DEFAULT_USER_PASSWORD = "Default admin user password missing";
+    public static final String FIELD_ERROR_DEFAULT_USER_EMAIL = "Default admin user email missing";
     public static final String FIELD_ERROR_ENCRYPTION_PASSWORD = "Encryption password missing";
     public static final String FIELD_ERROR_ENCRYPTION_GLOBAL_SALT = "Encryption global salt missing";
 
