@@ -29,8 +29,6 @@ import com.synopsys.integration.alert.database.entity.BaseEntity;
 
 @MappedSuperclass
 public abstract class DatabaseRelation extends BaseEntity {
-    private static final long serialVersionUID = -8330627658362795085L;
-
     public DatabaseRelation() {
         super();
     }
