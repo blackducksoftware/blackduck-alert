@@ -101,13 +101,12 @@ public class FieldModelProcessor {
 
     public Map<String, String> validateFieldModel(final FieldModel fieldModel) {
         final Map<String, String> fieldErrors = new HashMap<>();
-        final FieldModel trimmedFieldModel = trimFieldModelValues(fieldModel);
-        final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(trimmedFieldModel);
+        final Optional<DescriptorActionApi> descriptorActionApi = retrieveDescriptorActionApi(fieldModel);
         if (descriptorActionApi.isPresent()) {
-            final Map<String, ConfigField> configFields = retrieveUIConfigFields(trimmedFieldModel.getContext(), trimmedFieldModel.getDescriptorName())
+            final Map<String, ConfigField> configFields = retrieveUIConfigFields(fieldModel.getContext(), fieldModel.getDescriptorName())
                                                               .stream()
                                                               .collect(Collectors.toMap(ConfigField::getKey, Function.identity()));
-            descriptorActionApi.get().validateConfig(configFields, trimmedFieldModel, fieldErrors);
+            descriptorActionApi.get().validateConfig(configFields, fieldModel, fieldErrors);
         }
         return fieldErrors;
     }
