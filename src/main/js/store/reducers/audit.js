@@ -21,7 +21,6 @@ const config = (state = initialState, action) => {
             return Object.assign({}, state, {
                 fetching: false,
                 inProgress: false,
-                items: action.items,
                 message: 'Send successful'
             });
 
