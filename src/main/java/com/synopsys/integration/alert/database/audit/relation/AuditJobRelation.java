@@ -34,7 +34,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
-import com.synopsys.integration.alert.database.entity.configuration.ConfigGroupEntity;
 import com.synopsys.integration.alert.database.relation.DatabaseRelation;
 
 @Entity
@@ -48,10 +47,6 @@ public class AuditJobRelation extends DatabaseRelation {
     @Id
     @Column(name = "job_id")
     private UUID jobId;
-
-    @ManyToOne
-    @JoinColumn(name = "job_id", referencedColumnName = "JOB_ID", insertable = false, updatable = false)
-    public ConfigGroupEntity configGroupEntity;
 
     @ManyToOne
     @JoinColumn(name = "audit_id", referencedColumnName = "id", insertable = false, updatable = false)
@@ -72,10 +67,6 @@ public class AuditJobRelation extends DatabaseRelation {
 
     public UUID getJobId() {
         return jobId;
-    }
-
-    public ConfigGroupEntity getConfigGroupEntity() {
-        return configGroupEntity;
     }
 
 }
