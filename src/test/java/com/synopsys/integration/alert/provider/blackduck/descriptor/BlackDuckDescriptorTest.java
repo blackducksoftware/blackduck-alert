@@ -44,6 +44,7 @@ public class BlackDuckDescriptorTest {
         expectedNotificationTypes.add(NotificationType.RULE_VIOLATION.name());
         expectedNotificationTypes.add(NotificationType.RULE_VIOLATION_CLEARED.name());
         expectedNotificationTypes.add(NotificationType.VULNERABILITY.name());
+        expectedNotificationTypes.add(NotificationType.LICENSE_LIMIT.name());
         final Set<String> providerNotificationTypes = descriptor.getProviderContentTypes().stream().map(contentType -> contentType.getNotificationType()).collect(Collectors.toSet());
 
         assertEquals(expectedNotificationTypes, providerNotificationTypes);
