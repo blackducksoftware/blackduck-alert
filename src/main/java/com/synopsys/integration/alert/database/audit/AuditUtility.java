@@ -48,13 +48,11 @@ import com.synopsys.integration.alert.database.audit.relation.AuditNotificationR
 public class AuditUtility {
     private static final Logger logger = LoggerFactory.getLogger(AuditUtility.class);
     private final AuditEntryRepository auditEntryRepository;
-    private final AuditJobRepository auditJobRepository;
     private final AuditNotificationRepository auditNotificationRepository;
 
     @Autowired
-    public AuditUtility(final AuditEntryRepository auditEntryRepository, final AuditJobRepository auditJobRepository, final AuditNotificationRepository auditNotificationRepository) {
+    public AuditUtility(final AuditEntryRepository auditEntryRepository, final AuditNotificationRepository auditNotificationRepository) {
         this.auditEntryRepository = auditEntryRepository;
-        this.auditJobRepository = auditJobRepository;
         this.auditNotificationRepository = auditNotificationRepository;
     }
 
@@ -76,7 +74,6 @@ public class AuditUtility {
 
             auditEntryEntity.setStatus(AuditEntryStatus.PENDING.toString());
             final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);
-            // auditJobRepository.save(new AuditJobRelation(savedAuditEntryEntity.getId(), jobId));
 
             notificationIdToAuditId.put(notificationId, savedAuditEntryEntity.getId());
             final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), notificationId);
