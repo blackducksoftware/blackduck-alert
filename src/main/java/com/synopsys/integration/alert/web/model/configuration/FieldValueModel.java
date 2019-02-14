@@ -28,8 +28,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-
 public class FieldValueModel {
     private Collection<String> values;
     private boolean isSet;
@@ -44,7 +42,7 @@ public class FieldValueModel {
     }
 
     public Collection<String> getValues() {
-        return values.stream().filter(StringUtils::isNotBlank).collect(Collectors.toList());
+        return values.stream().filter(singleValue -> null != singleValue).collect(Collectors.toList());
     }
 
     public void setValues(final Collection<String> values) {
@@ -54,7 +52,7 @@ public class FieldValueModel {
     public Optional<String> getValue() {
         Optional<String> value = Optional.empty();
         if (null != values) {
-            value = values.stream().filter(StringUtils::isNotBlank).findFirst();
+            value = values.stream().filter(singleValue -> null != singleValue).findFirst();
         }
         return value;
     }
