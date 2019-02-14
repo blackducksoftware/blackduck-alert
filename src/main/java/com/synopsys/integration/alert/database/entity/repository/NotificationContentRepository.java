@@ -47,7 +47,7 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
 
     @Query(value = "SELECT entity FROM NotificationContent entity LEFT JOIN entity.auditNotificationRelations relation ON entity.id = relation.notificationId "
                        + "LEFT JOIN relation.auditEntryEntity auditEntry ON auditEntry.id = relation.auditEntryId "
-                       + "LEFT JOIN auditEntry.auditJobRelations auditJobRelation ON auditEntry.id = auditJobRelation.auditEntryId "
+                       + "LEFT JOIN auditEntry.auditJobRelations auditJobRelation ON auditEntry.id = auditJobRelation.auditId "
                        + "LEFT JOIN auditJobRelation.configGroupEntity configGroup ON auditJobRelation.jobId = configGroup.jobId "
                        + "LEFT JOIN configGroup.descriptorConfigEntity descriptorConfig ON configGroup.configId = descriptorConfig.id "
                        + "LEFT JOIN descriptorConfig.fieldValueEntities fieldValue ON descriptorConfig.id = fieldValue.configId "
@@ -64,7 +64,7 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
 
     @Query(value = "SELECT entity FROM NotificationContent entity LEFT JOIN entity.auditNotificationRelations relation ON entity.id = relation.notificationId "
                        + "LEFT JOIN relation.auditEntryEntity auditEntry ON auditEntry.id = relation.auditEntryId "
-                       + "LEFT JOIN auditEntry.auditJobRelations auditJobRelation ON auditEntry.id = auditJobRelation.auditEntryId "
+                       + "LEFT JOIN auditEntry.auditJobRelations auditJobRelation ON auditEntry.id = auditJobRelation.auditId "
                        + "LEFT JOIN auditJobRelation.configGroupEntity configGroup ON auditJobRelation.jobId = configGroup.jobId "
                        + "LEFT JOIN configGroup.descriptorConfigEntity descriptorConfig ON configGroup.configId = descriptorConfig.id "
                        + "LEFT JOIN descriptorConfig.fieldValueEntities fieldValue ON descriptorConfig.id = fieldValue.configId "

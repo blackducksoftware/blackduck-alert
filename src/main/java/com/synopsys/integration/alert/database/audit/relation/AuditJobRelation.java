@@ -42,8 +42,8 @@ import com.synopsys.integration.alert.database.relation.DatabaseRelation;
 @Table(schema = "alert", name = "audit_job_relation")
 public class AuditJobRelation extends DatabaseRelation {
     @Id
-    @Column(name = "audit_entry_id")
-    private Long auditEntryId;
+    @Column(name = "audit_id")
+    private Long auditId;
 
     @Id
     @Column(name = "job_id")
@@ -54,20 +54,20 @@ public class AuditJobRelation extends DatabaseRelation {
     public ConfigGroupEntity configGroupEntity;
 
     @ManyToOne
-    @JoinColumn(name = "audit_entry_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "audit_id", referencedColumnName = "id", insertable = false, updatable = false)
     private AuditEntryEntity auditEntryEntity;
 
     public AuditJobRelation() {
+        // JPA requires default constructor definitions
     }
 
-    public AuditJobRelation(final Long auditEntryId, final UUID jobId) {
-        super();
-        this.auditEntryId = auditEntryId;
+    public AuditJobRelation(final Long auditId, final UUID jobId) {
+        this.auditId = auditId;
         this.jobId = jobId;
     }
 
-    public Long getAuditEntryId() {
-        return auditEntryId;
+    public Long getAuditId() {
+        return auditId;
     }
 
     public UUID getJobId() {
@@ -78,7 +78,4 @@ public class AuditJobRelation extends DatabaseRelation {
         return configGroupEntity;
     }
 
-    public AuditEntryEntity getAuditEntryEntity() {
-        return auditEntryEntity;
-    }
 }

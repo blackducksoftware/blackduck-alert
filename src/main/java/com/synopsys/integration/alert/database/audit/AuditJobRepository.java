@@ -32,7 +32,7 @@ import com.synopsys.integration.alert.database.audit.relation.AuditJobRelation;
 import com.synopsys.integration.alert.database.audit.relation.AuditJobRelationPK;
 
 public interface AuditJobRepository extends JpaRepository<AuditJobRelation, AuditJobRelationPK> {
-    List<AuditJobRelation> findByAuditEntryId(final Long auditEntryId);
+    List<AuditJobRelation> findByAuditId(final Long auditId);
 
     List<AuditJobRelation> findByJobId(final UUID jobId);
 }

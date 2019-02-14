@@ -73,7 +73,7 @@ public class AuditEntryEntity extends DatabaseEntity {
     private List<AuditNotificationRelation> auditNotificationRelations;
 
     @OneToMany
-    @JoinColumn(name = "audit_entry_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "audit_id", referencedColumnName = "id", insertable = false, updatable = false)
     private List<AuditJobRelation> auditJobRelations;
 
     public AuditEntryEntity() {
