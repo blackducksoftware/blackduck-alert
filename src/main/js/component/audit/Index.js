@@ -271,27 +271,27 @@ class Index extends Component {
         }
 
         let term = '';
-        if (searchTerm != null || undefined !== searchTerm) {
+        if (searchTerm) {
             term = searchTerm;
         } else if (this.state.searchTerm) {
             term = this.state.searchTerm;
         }
 
         let sortingField = '';
-        if (sortField != null || undefined !== sortField) {
+        if (sortField) {
             sortingField = sortField;
         } else if (this.state.sortField) {
             sortingField = this.state.sortField;
         }
         let sortingOrder = '';
-        if (sortOrder != null || undefined !== sortOrder) {
+        if (sortOrder) {
             sortingOrder = sortOrder;
         } else if (this.state.sortOrder) {
             sortingOrder = this.state.sortOrder;
         }
 
         let sentNotificationsOnly = false;
-        if (onlyShowSentNotifications != null || undefined !== onlyShowSentNotifications) {
+        if (onlyShowSentNotifications !== null || undefined !== onlyShowSentNotifications) {
             sentNotificationsOnly = onlyShowSentNotifications;
         } else if (this.state.onlyShowSentNotifications) {
             sentNotificationsOnly = this.state.onlyShowSentNotifications;

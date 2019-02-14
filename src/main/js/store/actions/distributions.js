@@ -75,12 +75,21 @@ function jobDeleteError(message) {
     };
 }
 
+function updateJobModelWithAuditInfo(dispatch, jobConfig, lastRan, status) {
+    let newConfig = Object.assign({}, jobConfig);
+    newConfig = FieldModelUtilities.updateFieldModelSingleValue(newConfig, 'lastRan', lastRan);
+    newConfig = FieldModelUtilities.updateFieldModelSingleValue(newConfig, 'status', status);
+    const jobList = [];
+    jobList.push(newConfig);
+    dispatch(updateJobWithAuditInfo(jobList));
+}
+
 function fetchAuditInfoForJob(jobConfig) {
     return (dispatch, getState) => {
         const { csrfToken } = getState().session;
-        let newConfig = Object.assign({}, jobConfig);
+        const newConfig = Object.assign({}, jobConfig);
         let lastRan = 'Unknown';
-        let status = 'Unknown';
+        let currentStatus = 'Unknown';
 
         if (jobConfig) {
             fetch(`/alert/api/audit/job/${jobConfig.jobId}`, {
@@ -92,20 +101,18 @@ function fetchAuditInfoForJob(jobConfig) {
             }).then((response) => {
                 if (response.ok) {
                     response.json().then((jsonObj) => {
-                        if (jsonObj != null) {
-                            lastRan = jsonObj.timeLastSent;
-                            [status] = jsonObj;
+                        const auditInfo = JSON.parse(jsonObj.message);
+                        if (auditInfo != null) {
+                            lastRan = auditInfo.timeLastSent;
+                            currentStatus = auditInfo.status;
                         }
+                        updateJobModelWithAuditInfo(dispatch, newConfig, lastRan, currentStatus);
                     });
+                } else {
+                    updateJobModelWithAuditInfo(dispatch, newConfig, lastRan, currentStatus);
                 }
             }).catch((error) => {
                 console.log(error);
-            }).finally(() => {
-                newConfig = FieldModelUtilities.updateFieldModelSingleValue(newConfig, 'lastRan', lastRan);
-                newConfig = FieldModelUtilities.updateFieldModelSingleValue(newConfig, 'status', status);
-                const jobList = [];
-                jobList.push(newConfig);
-                dispatch(updateJobWithAuditInfo(jobList));
             });
         }
     };
