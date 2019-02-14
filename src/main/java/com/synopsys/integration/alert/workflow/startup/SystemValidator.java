@@ -101,38 +101,31 @@ public class SystemValidator {
     }
 
     public boolean validateDefaultAdminEmailSet(final Map<String, String> fieldErrors) {
-        final Optional<UserModel> userModel = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER);
-        final boolean valid;
+        final Optional<String> emailAddress = userAccessor
+                                                  .getUser(UserAccessor.DEFAULT_ADMIN_USER)
+                                                  .map(UserModel::getEmailAddress)
+                                                  .filter(StringUtils::isNotBlank);
+        final boolean valid = emailAddress.isPresent();
 
-        if (userModel.isPresent()) {
-            valid = StringUtils.isNotBlank(userModel.get().getEmailAddress());
-            if (!valid) {
-                final String errorMessage = SettingsDescriptor.FIELD_ERROR_DEFAULT_USER_EMAIL;
-                fieldErrors.put(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, errorMessage);
-                systemMessageUtility.addSystemMessage(errorMessage, SystemMessageSeverity.ERROR, SystemMessageType.DEFAULT_ADMIN_USER_ERROR);
-            }
-        } else {
-            valid = false;
+        if (!valid) {
+            final String errorMessage = SettingsDescriptor.FIELD_ERROR_DEFAULT_USER_EMAIL;
+            fieldErrors.put(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, errorMessage);
+            systemMessageUtility.addSystemMessage(errorMessage, SystemMessageSeverity.ERROR, SystemMessageType.DEFAULT_ADMIN_USER_ERROR);
         }
-
         return valid;
     }
 
     public boolean validateDefaultAdminPasswordSet(final Map<String, String> fieldErrors) {
-        final Optional<UserModel> userModel = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER);
-        final boolean valid;
-        systemMessageUtility.removeSystemMessagesByType(SystemMessageType.DEFAULT_ADMIN_USER_ERROR);
-        if (userModel.isPresent()) {
-            valid = StringUtils.isNotBlank(userModel.get().getPassword());
-            if (!valid) {
-                final String errorMessage = SettingsDescriptor.FIELD_ERROR_DEFAULT_USER_PASSWORD;
-                fieldErrors.put(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, errorMessage);
-                systemMessageUtility.addSystemMessage(errorMessage, SystemMessageSeverity.ERROR, SystemMessageType.DEFAULT_ADMIN_USER_ERROR);
-            }
-        } else {
-            valid = false;
+        final Optional<String> passwordSet = userAccessor
+                                                 .getUser(UserAccessor.DEFAULT_ADMIN_USER)
+                                                 .map(UserModel::getPassword)
+                                                 .filter(StringUtils::isNotBlank);
+        final boolean valid = passwordSet.isPresent();
+        if (!valid) {
+            final String errorMessage = SettingsDescriptor.FIELD_ERROR_DEFAULT_USER_PASSWORD;
+            fieldErrors.put(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, errorMessage);
+            systemMessageUtility.addSystemMessage(errorMessage, SystemMessageSeverity.ERROR, SystemMessageType.DEFAULT_ADMIN_USER_ERROR);
         }
-
         return valid;
     }
 
