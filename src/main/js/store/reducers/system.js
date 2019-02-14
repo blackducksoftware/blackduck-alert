@@ -14,6 +14,7 @@ import {
     SYSTEM_SETUP_UPDATED,
     SYSTEM_SETUP_UPDATING
 } from 'store/actions/types';
+import { SYSTEM_SETUP_SHOW_CONFIG } from "../actions/types";
 
 const initialState = {
     fetching: false,
@@ -23,7 +24,7 @@ const initialState = {
     latestMessages: [],
     errorMessage: '',
     settingsData: {},
-    setupRedirect: false,
+    systemInitialized: true,
     showPasswordResetModal: false,
     error: {
         message: ''
@@ -58,8 +59,17 @@ const config = (state = initialState, action) => {
             return Object.assign({}, state, {
                 resettingPassword: false,
                 fetchingSetupStatus: '',
-                setupRedirect: true,
+                systemInitialized: true,
                 updateStatus: '',
+                error: {}
+            });
+        case SYSTEM_SETUP_SHOW_CONFIG:
+            return Object.assign({}, state, {
+                resettingPassword: false,
+                systemInitialized: false,
+                fetchingSetupStatus: SYSTEM_SETUP_FETCHED,
+                updateStatus: 'FETCHED',
+                settingsData: action.settingsData,
                 error: {}
             });
         case SYSTEM_SETUP_FETCHED:
