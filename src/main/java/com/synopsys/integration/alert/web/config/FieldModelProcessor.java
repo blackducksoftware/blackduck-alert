@@ -111,6 +111,23 @@ public class FieldModelProcessor {
         return fieldErrors;
     }
 
+    public FieldModel trimFieldModelValues(final FieldModel fieldModel) {
+        final Map<String, FieldValueModel> keyToValues = fieldModel.getKeyToValues();
+        if (null == keyToValues) {
+            return new FieldModel(fieldModel.getId(), fieldModel.getDescriptorName(), fieldModel.getContext(), Map.of());
+        }
+
+        final Map<String, FieldValueModel> trimmedValues = keyToValues.entrySet()
+                                                               .stream()
+                                                               .filter(entry -> !isFieldValueEmpty(entry.getValue()))
+                                                               .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        return new FieldModel(fieldModel.getId(), fieldModel.getDescriptorName(), fieldModel.getContext(), trimmedValues);
+    }
+
+    private boolean isFieldValueEmpty(final FieldValueModel fieldValueModel) {
+        return null == fieldValueModel || StringUtils.isBlank(fieldValueModel.getValue().orElse(null));
+    }
+
     public Collection<ConfigurationFieldModel> fillFieldModelWithExistingData(final Long id, final FieldModel fieldModel) throws AlertException {
         final Optional<ConfigurationModel> configurationModel = getSavedEntity(id);
         if (configurationModel.isPresent()) {
