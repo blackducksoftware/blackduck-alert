@@ -21,15 +21,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.relation;
+package com.synopsys.integration.alert.database.audit;
 
-import javax.persistence.MappedSuperclass;
+import java.util.List;
+import java.util.UUID;
 
-import com.synopsys.integration.alert.database.entity.BaseEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@MappedSuperclass
-public abstract class DatabaseRelation extends BaseEntity {
-    public DatabaseRelation() {
-        super();
-    }
+import com.synopsys.integration.alert.database.audit.relation.AuditJobRelation;
+import com.synopsys.integration.alert.database.audit.relation.AuditJobRelationPK;
+
+public interface AuditJobRepository extends JpaRepository<AuditJobRelation, AuditJobRelationPK> {
+    List<AuditJobRelation> findByAuditId(final Long auditId);
+
+    List<AuditJobRelation> findByJobId(final UUID jobId);
 }
