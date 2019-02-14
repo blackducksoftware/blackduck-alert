@@ -2,12 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { BootstrapTable, ButtonGroup, TableHeaderColumn } from 'react-bootstrap-table';
-import { getAuditData } from 'store/actions/audit';
+import { getAuditData, resendNotification } from 'store/actions/audit';
 import AutoRefresh from 'component/common/AutoRefresh';
 import DescriptorLabel from 'component/common/DescriptorLabel';
 import RefreshTableCellFormatter from 'component/common/RefreshTableCellFormatter';
 import NotificationTypeLegend from 'component/common/NotificationTypeLegend';
-import { logout } from 'store/actions/session';
 import AuditDetails from 'component/audit/Details';
 import CheckboxInput from 'field/input/CheckboxInput';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
@@ -19,7 +18,6 @@ class Index extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            message: '',
             entries: [],
             currentPage: 1,
             currentPageSize: 10,
@@ -36,7 +34,6 @@ class Index extends Component {
         this.setEntriesFromArray = this.setEntriesFromArray.bind(this);
         this.resendButton = this.resendButton.bind(this);
         this.onResendClick = this.onResendClick.bind(this);
-        this.resendNotification = this.resendNotification.bind(this);
         this.cancelRowSelect = this.cancelRowSelect.bind(this);
         this.onStatusFailureClick = this.onStatusFailureClick.bind(this);
         this.statusColumnDataFormat = this.statusColumnDataFormat.bind(this);
@@ -59,7 +56,6 @@ class Index extends Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.items !== this.props.items) {
-            this.setState({ message: '', inProgress: false });
             this.setEntriesFromArray(nextProps.items);
         }
 
@@ -74,7 +70,7 @@ class Index extends Component {
 
     onResendClick(currentRowSelected) {
         const currentEntry = currentRowSelected || this.state.currentRowSelected;
-        this.resendNotification(currentEntry.id);
+        this.props.resendNotification(currentEntry.id);
     }
 
     onStatusFailureClick(currentRowSelected) {
@@ -139,52 +135,6 @@ class Index extends Component {
         this.setState({
             entries
         });
-    }
-
-    resendNotification(notificationId, commonConfigId) {
-        this.setState({
-            message: 'Sending...',
-            inProgress: true
-        });
-
-        let resendUrl = `/alert/api/audit/resend/${notificationId}/`;
-        if (commonConfigId) {
-            resendUrl += `job/${commonConfigId}/`;
-        }
-
-        const { csrfToken } = this.props;
-
-        fetch(resendUrl, {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken
-            }
-        }).then((response) => {
-            this.setState({
-                message: 'Completed',
-                inProgress: false
-            });
-            if (!response.ok) {
-                switch (response.status) {
-                    case 401:
-                    case 403:
-                        this.props.logout();
-                        break;
-                    default:
-                        return response.json().then((json) => {
-                            this.setState({ message: json.message });
-                        });
-                }
-            }
-            return response.json().then((json) => {
-                setTimeout(() => {
-                    this.setState({ message: '' });
-                }, 3000);
-                this.setEntriesFromArray(JSON.parse(json.message));
-            });
-        }).catch(console.error);
     }
 
     statusColumnDataFormat(cell) {
@@ -252,10 +202,6 @@ class Index extends Component {
 
 
     reloadAuditEntries(currentPage, sizePerPage, searchTerm, sortField, sortOrder, onlyShowSentNotifications) {
-        this.setState({
-            message: 'Loading...',
-            inProgress: true
-        });
         let page = 1;
         if (currentPage) {
             page = currentPage;
@@ -361,7 +307,7 @@ class Index extends Component {
         };
 
         const auditFetchInfo = {
-            dataTotalSize: this.props.totalDataCount * this.state.currentPageSize
+            dataTotalSize: this.props.totalPageCount * this.state.currentPageSize
         };
 
         return (
@@ -388,7 +334,7 @@ class Index extends Component {
                         handleClose={this.handleCloseDetails}
                         show={this.state.showDetailModal}
                         currentEntry={this.state.currentRowSelected}
-                        resendNotification={this.resendNotification}
+                        resendNotification={this.props.resendNotification}
                         providerNameFormat={this.providerColumnDataFormat}
                         notificationTypeFormat={this.notificationTypeDataFormat}
                         statusFormat={this.statusColumnDataFormat}
@@ -416,11 +362,11 @@ class Index extends Component {
                         <TableHeaderColumn dataField="id" isKey hidden>Notification Id</TableHeaderColumn>
                     </BootstrapTable>
 
-                    {this.state.inProgress && <div className="progressIcon">
+                    {this.props.inProgress && <div className="progressIcon">
                         <span className="fa fa-spinner fa-pulse fa-fw" aria-hidden="true" />
                     </div>}
 
-                    <p name="message">{this.state.message}</p>
+                    <p name="message">{this.props.message}</p>
                 </div>
             </div>
         );
@@ -428,37 +374,40 @@ class Index extends Component {
 }
 
 Index.defaultProps = {
+    inProgress: false,
+    message: '',
     autoRefresh: true,
     fetching: false,
-    totalDataCount: 0,
-    csrfToken: null,
+    totalPageCount: 0,
     descriptors: [],
     items: []
 };
 
 Index.propTypes = {
+    inProgress: PropTypes.bool,
+    message: PropTypes.string,
     autoRefresh: PropTypes.bool,
-    csrfToken: PropTypes.string,
     fetching: PropTypes.bool,
     items: PropTypes.arrayOf(PropTypes.object),
-    totalDataCount: PropTypes.number,
+    totalPageCount: PropTypes.number,
     getAuditData: PropTypes.func.isRequired,
-    descriptors: PropTypes.arrayOf(PropTypes.object),
-    logout: PropTypes.func.isRequired
+    resendNotification: PropTypes.func.isRequired,
+    descriptors: PropTypes.arrayOf(PropTypes.object)
 };
 
 const mapStateToProps = state => ({
-    totalDataCount: state.audit.totalDataCount,
+    message: state.audit.message,
+    inProgress: state.audit.inProgress,
+    totalPageCount: state.audit.totalPageCount,
     items: state.audit.items,
-    csrfToken: state.session.csrfToken,
     fetching: state.audit.fetching,
     autoRefresh: state.refresh.autoRefresh,
     descriptors: state.descriptors.items
 });
 
 const mapDispatchToProps = dispatch => ({
-    getAuditData: (pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications) => dispatch(getAuditData(pageNumber, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications)),
-    logout: () => dispatch(logout())
+    getAuditData: (totalPageCount, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications) => dispatch(getAuditData(totalPageCount, pageSize, searchTerm, sortField, sortOrder, onlyShowSentNotifications)),
+    resendNotification: (notificationId, commonConfigId) => dispatch(resendNotification(notificationId, commonConfigId))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Index);
