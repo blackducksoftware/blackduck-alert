@@ -237,10 +237,11 @@ class Index extends Component {
         }
 
         let sentNotificationsOnly = false;
-        if (onlyShowSentNotifications !== null || undefined !== onlyShowSentNotifications) {
+        // This seems to be the most correct way of checking if the variable is a boolean and not null or undefined
+        if (typeof onlyShowSentNotifications === typeof true) {
             sentNotificationsOnly = onlyShowSentNotifications;
-        } else if (this.state.onlyShowSentNotifications) {
-            sentNotificationsOnly = this.state.onlyShowSentNotifications;
+        } else if (typeof this.state.onlyShowSentNotifications === typeof true) {
+            sentNotificationsOnly = onlyShowSentNotifications;
         }
 
         this.props.getAuditData(page, size, term, sortingField, sortingOrder, sentNotificationsOnly);
