@@ -27,20 +27,24 @@ import java.io.Serializable;
 import java.util.UUID;
 
 public class AuditJobRelationPK implements Serializable {
-    private static final long serialVersionUID = -9015966905838645720L;
-    private Long auditEntryId;
+    private Long auditId;
     private UUID jobId;
 
     public AuditJobRelationPK() {
         // JPA requires default constructor definitions
     }
 
-    public Long getAuditEntryId() {
-        return auditEntryId;
+    public AuditJobRelationPK(final Long auditId, final UUID jobId) {
+        this.auditId = auditId;
+        this.jobId = jobId;
     }
 
-    public void setAuditEntryId(final Long auditEntryId) {
-        this.auditEntryId = auditEntryId;
+    public Long getAuditId() {
+        return auditId;
+    }
+
+    public void setAuditId(final Long auditId) {
+        this.auditId = auditId;
     }
 
     public UUID getJobId() {
