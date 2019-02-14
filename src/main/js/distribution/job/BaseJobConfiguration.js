@@ -81,6 +81,20 @@ class BaseJobConfiguration extends Component {
         this.renderDistributionForm = this.renderDistributionForm.bind(this);
         this.createSingleSelectHandler = this.createSingleSelectHandler.bind(this);
         this.createMultiSelectHandler = this.createMultiSelectHandler.bind(this);
+        this.updateChannelModel = this.updateChannelModel.bind(this);
+        this.updateProviderModel = this.updateProviderModel.bind(this);
+
+        let channelModel = FieldModelUtilities.createEmptyFieldModel(fieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, this.props.alertChannelName);
+        let providerModel = FieldModelUtilities.createEmptyFieldModel(providerFieldNames, DescriptorUtilities.CONTEXT_TYPE.DISTRIBUTION, null);
+
+        channelModel = this.updateChannelModel(channelModel);
+        providerModel = this.updateProviderModel(FieldModelUtilities.getFieldModelSingleValue(channelModel, KEY_PROVIDER_NAME), providerModel);
+
+        this.state = {
+            fieldErrors: {},
+            commonConfig: channelModel,
+            providerConfig: providerModel
+        };
     }
 
     componentWillReceiveProps(nextProps) {
@@ -110,31 +124,8 @@ class BaseJobConfiguration extends Component {
                 providerModel = nextProps.job.fieldModels.find(model => model.descriptorName.startsWith('provider_'));
             }
 
-            const providers = this.createProviderOptions();
-            const frequencyOptions = this.createFrequencyOptions();
-            const selectedProviderOption = this.getSelectedSingleValue(providers, channelModel, KEY_PROVIDER_NAME);
-
-            if (!FieldModelUtilities.hasFieldModelValues(channelModel, KEY_PROVIDER_NAME)) {
-                channelModel = FieldModelUtilities.updateFieldModelSingleValue(channelModel, KEY_PROVIDER_NAME, selectedProviderOption.value);
-            }
-
-            const selectedFrequencyOption = this.getSelectedSingleValue(frequencyOptions, channelModel, KEY_FREQUENCY);
-            if (!FieldModelUtilities.hasFieldModelValues(channelModel, KEY_FREQUENCY)) {
-                channelModel = FieldModelUtilities.updateFieldModelSingleValue(channelModel, KEY_FREQUENCY, selectedFrequencyOption);
-            }
-
-            const formatOptions = this.createFormatTypeOptions(selectedProviderOption.value);
-            const notificationOptions = this.createNotificationTypeOptions(selectedProviderOption.value);
-            const selectedFormatType = this.getSelectedSingleValue(formatOptions, providerModel, KEY_FORMAT_TYPE);
-            const selectedNotifications = this.getSelectedValues(notificationOptions, providerModel, KEY_NOTIFICATION_TYPES);
-
-            if (!FieldModelUtilities.hasFieldModelValues(providerModel, KEY_FORMAT_TYPE)) {
-                providerModel = FieldModelUtilities.updateFieldModelSingleValue(providerModel, KEY_FORMAT_TYPE, selectedFormatType);
-            }
-
-            if (!FieldModelUtilities.hasFieldModelValues(providerModel, KEY_NOTIFICATION_TYPES)) {
-                providerModel = FieldModelUtilities.updateFieldModelSingleValue(providerModel, KEY_NOTIFICATION_TYPES, selectedNotifications);
-            }
+            channelModel = this.updateChannelModel(channelModel);
+            providerModel = this.updateProviderModel(FieldModelUtilities.getFieldModelSingleValue(channelModel, KEY_PROVIDER_NAME), providerModel);
 
             this.setState({
                 fieldErrors: {},
@@ -144,6 +135,7 @@ class BaseJobConfiguration extends Component {
             });
         }
     }
+
 
     onSubmit(event) {
         event.preventDefault();
@@ -172,7 +164,46 @@ class BaseJobConfiguration extends Component {
             }
             return options.filter(option => FieldModelUtilities.getFieldModelValues(fieldModel, fieldKey).indexOf(option.value) !== -1);
         }
-        return [];
+        return null;
+    }
+
+    updateChannelModel(currentChannelModel) {
+        let channelModel = currentChannelModel;
+        const providers = this.createProviderOptions();
+        const frequencyOptions = this.createFrequencyOptions();
+        const selectedProviderOption = this.getSelectedSingleValue(providers, channelModel, KEY_PROVIDER_NAME);
+
+        if (!FieldModelUtilities.hasFieldModelValues(channelModel, KEY_PROVIDER_NAME)) {
+            channelModel = FieldModelUtilities.updateFieldModelSingleValue(channelModel, KEY_PROVIDER_NAME, selectedProviderOption.value);
+        }
+
+        const selectedFrequencyOption = this.getSelectedSingleValue(frequencyOptions, channelModel, KEY_FREQUENCY);
+        if (!FieldModelUtilities.hasFieldModelValues(channelModel, KEY_FREQUENCY)) {
+            channelModel = FieldModelUtilities.updateFieldModelSingleValue(channelModel, KEY_FREQUENCY, selectedFrequencyOption);
+        }
+        return channelModel;
+    }
+
+    updateProviderModel(selectedProvider, currentProviderModel) {
+        let providerModel = currentProviderModel;
+        const formatOptions = this.createFormatTypeOptions(selectedProvider);
+        const notificationOptions = this.createNotificationTypeOptions(selectedProvider);
+        const selectedFormatType = this.getSelectedSingleValue(formatOptions, providerModel, KEY_FORMAT_TYPE);
+        const selectedNotifications = this.getSelectedValues(notificationOptions, providerModel, KEY_NOTIFICATION_TYPES);
+        const filterByProject = FieldModelUtilities.getFieldModelBooleanValue(providerModel, KEY_FILTER_BY_PROJECT);
+
+        if (!FieldModelUtilities.hasFieldModelValues(providerModel, KEY_FORMAT_TYPE)) {
+            providerModel = FieldModelUtilities.updateFieldModelSingleValue(providerModel, KEY_FORMAT_TYPE, selectedFormatType);
+        }
+
+        if (!FieldModelUtilities.hasFieldModelValues(providerModel, KEY_NOTIFICATION_TYPES)) {
+            providerModel = FieldModelUtilities.updateFieldModelValues(providerModel, KEY_NOTIFICATION_TYPES, selectedNotifications);
+        }
+
+        if (!FieldModelUtilities.hasFieldModelValues(providerModel, KEY_FILTER_BY_PROJECT)) {
+            providerModel = FieldModelUtilities.updateFieldModelSingleValue(providerModel, KEY_FILTER_BY_PROJECT, filterByProject);
+        }
+        return providerModel;
     }
 
     handleSubmit(event) {
@@ -329,16 +360,13 @@ class BaseJobConfiguration extends Component {
 
 
     renderDistributionForm(selectedProvider) {
-        let providerFieldModel = this.state.providerConfig;
+        const providerFieldModel = this.state.providerConfig;
         const formatOptions = this.createFormatTypeOptions(selectedProvider);
         const notificationOptions = this.createNotificationTypeOptions(selectedProvider);
         const selectedFormatType = this.getSelectedSingleValue(formatOptions, providerFieldModel, KEY_FORMAT_TYPE);
         const selectedNotifications = this.getSelectedValues(notificationOptions, providerFieldModel, KEY_NOTIFICATION_TYPES);
         const filterByProject = FieldModelUtilities.getFieldModelBooleanValue(providerFieldModel, KEY_FILTER_BY_PROJECT);
         const includeAllProjects = !filterByProject
-        if (!FieldModelUtilities.hasFieldModelValues(providerFieldModel, KEY_FILTER_BY_PROJECT)) {
-            providerFieldModel = FieldModelUtilities.updateFieldModelSingleValue(providerFieldModel, KEY_FILTER_BY_PROJECT, filterByProject);
-        }
         return (
             <div>
                 <div className="form-group">
@@ -353,6 +381,11 @@ class BaseJobConfiguration extends Component {
                             placeholder="Choose the format for the job"
                             value={selectedFormatType}
                         />
+                        {this.props.fieldErrors[KEY_FORMAT_TYPE] &&
+                        <label className="fieldError" name={FieldModelUtilities.createFieldModelErrorKey(KEY_FORMAT_TYPE)}>
+                            {this.props.fieldErrors[KEY_FORMAT_TYPE]}
+                        </label>
+                        }
                     </div>
                 </div>
                 <div className="form-group">
@@ -369,6 +402,11 @@ class BaseJobConfiguration extends Component {
                             placeholder="Choose the notification types"
                             value={selectedNotifications}
                         />
+                        {this.props.fieldErrors[KEY_NOTIFICATION_TYPES] &&
+                        <label className="fieldError" name={FieldModelUtilities.createFieldModelErrorKey(KEY_NOTIFICATION_TYPES)}>
+                            {this.props.fieldErrors[KEY_NOTIFICATION_TYPES]}
+                        </label>
+                        }
                     </div>
                 </div>
                 {this.props.childContent}
@@ -416,6 +454,11 @@ class BaseJobConfiguration extends Component {
                             placeholder="Choose the frequency"
                             value={selectedFrequencyOption}
                         />
+                        {this.props.fieldErrors[KEY_FREQUENCY] &&
+                        <label className="fieldError" name={FieldModelUtilities.createFieldModelErrorKey(KEY_FREQUENCY)}>
+                            {this.props.fieldErrors[KEY_FREQUENCY]}
+                        </label>
+                        }
                     </div>
                 </div>
                 <div className="form-group">
@@ -431,6 +474,11 @@ class BaseJobConfiguration extends Component {
                             value={selectedProviderOption}
                             components={{ Option: CustomProviderTypeOptionLabel, SingleValue: CustomProviderTypeLabel }}
                         />
+                        {this.props.fieldErrors[KEY_PROVIDER_NAME] &&
+                        <label className="fieldError" name={FieldModelUtilities.createFieldModelErrorKey(KEY_PROVIDER_NAME)}>
+                            {this.props.fieldErrors[KEY_PROVIDER_NAME]}
+                        </label>
+                        }
                     </div>
                 </div>
                 {selectedProviderOption && this.renderDistributionForm(selectedProviderOption.value)}
