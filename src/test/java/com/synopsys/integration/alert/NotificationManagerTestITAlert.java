@@ -25,9 +25,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistrib
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.database.audit.AuditEntryEntity;
 import com.synopsys.integration.alert.database.audit.AuditEntryRepository;
-import com.synopsys.integration.alert.database.audit.AuditJobRepository;
 import com.synopsys.integration.alert.database.audit.AuditNotificationRepository;
-import com.synopsys.integration.alert.database.audit.relation.AuditJobRelation;
 import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
 import com.synopsys.integration.alert.database.entity.NotificationContent;
 import com.synopsys.integration.alert.database.entity.configuration.ConfigContextEntity;
@@ -57,8 +55,6 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
     private AuditNotificationRepository auditNotificationRepository;
     @Autowired
     private AuditEntryRepository auditEntryRepository;
-    @Autowired
-    private AuditJobRepository auditJobRepository;
     @Autowired
     private ConfigGroupRepository configGroupRepository;
     @Autowired
@@ -97,7 +93,6 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
         notificationContentRepository.deleteAllInBatch();
         auditNotificationRepository.deleteAllInBatch();
         auditEntryRepository.deleteAllInBatch();
-        auditJobRepository.deleteAllInBatch();
         configGroupRepository.deleteAllInBatch();
         descriptorConfigRepository.deleteAllInBatch();
         fieldValueRepository.deleteAllInBatch();
@@ -192,7 +187,6 @@ public class NotificationManagerTestITAlert extends AlertIntegrationTest {
         final String auditStatus = "audit status thing";
         AuditEntryEntity auditEntryEntity = new AuditEntryEntity(jobId, new Date(), new Date(), auditStatus, "", "");
         auditEntryEntity = auditEntryRepository.save(auditEntryEntity);
-        auditJobRepository.save(new AuditJobRelation(auditEntryEntity.getId(), jobId));
 
         final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(auditEntryEntity.getId(), notificationContent.getId());
         auditNotificationRepository.save(auditNotificationRelation);
