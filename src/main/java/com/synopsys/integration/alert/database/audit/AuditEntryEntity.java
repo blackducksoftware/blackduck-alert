@@ -29,7 +29,6 @@ import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -72,8 +71,7 @@ public class AuditEntryEntity extends DatabaseEntity {
     @OneToMany(mappedBy = "auditEntryEntity")
     private List<AuditNotificationRelation> auditNotificationRelations;
 
-    @OneToMany
-    @JoinColumn(name = "audit_id", referencedColumnName = "id", insertable = false, updatable = false)
+    @OneToMany(mappedBy = "auditEntryEntity")
     private List<AuditJobRelation> auditJobRelations;
 
     public AuditEntryEntity() {
