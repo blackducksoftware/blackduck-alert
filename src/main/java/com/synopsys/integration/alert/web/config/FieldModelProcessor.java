@@ -119,7 +119,7 @@ public class FieldModelProcessor {
 
         final Map<String, FieldValueModel> trimmedValues = keyToValues.entrySet()
                                                                .stream()
-                                                               .filter(entry -> !isFieldValueEmpty(entry.getValue()) && entry.getValue().isSet())
+                                                               .filter(entry -> !isFieldValueEmpty(entry.getValue()) || entry.getValue().isSet())
                                                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         return new FieldModel(fieldModel.getId(), fieldModel.getDescriptorName(), fieldModel.getContext(), trimmedValues);
     }
