@@ -96,24 +96,24 @@ public class SystemActionsTest {
 
         final Map<String, FieldValueModel> valueMap = new HashMap<>();
         final FieldModel expected = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, "GLOBAL", valueMap);
-        expected.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, new FieldValueModel(List.of(defaultAdminPassword), true));
-        expected.putField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, new FieldValueModel(List.of(globalEncryptionPassword), true));
+        expected.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of(defaultAdminPassword), true));
+        expected.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of(globalEncryptionPassword), true));
         expected.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(globalEncryptionSalt), true));
         expected.putField(SettingsDescriptor.KEY_PROXY_HOST, new FieldValueModel(List.of(proxyHost), true));
         expected.putField(SettingsDescriptor.KEY_PROXY_PORT, new FieldValueModel(List.of(proxyPort), true));
         expected.putField(SettingsDescriptor.KEY_PROXY_USERNAME, new FieldValueModel(List.of(proxyUsername), true));
-        expected.putField(SettingsDescriptor.KEY_PROXY_PASSWORD, new FieldValueModel(List.of(proxyPassword), true));
+        expected.putField(SettingsDescriptor.KEY_PROXY_PWD, new FieldValueModel(List.of(proxyPassword), true));
 
         Mockito.when(configActions.getConfigs(Mockito.any(), Mockito.anyString())).thenReturn(List.of(expected));
 
         final FieldModel actual = systemActions.getCurrentSystemSetup();
 
-        assertEquals(globalEncryptionPassword, actual.getField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD).flatMap(field -> field.getValue()).orElse(null));
+        assertEquals(globalEncryptionPassword, actual.getField(SettingsDescriptor.KEY_ENCRYPTION_PWD).flatMap(field -> field.getValue()).orElse(null));
         assertEquals(globalEncryptionSalt, actual.getField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT).flatMap(field -> field.getValue()).orElse(null));
         assertEquals(proxyHost, actual.getField(SettingsDescriptor.KEY_PROXY_HOST).flatMap(field -> field.getValue()).orElse(null));
         assertEquals(proxyPort, actual.getField(SettingsDescriptor.KEY_PROXY_PORT).flatMap(field -> field.getValue()).orElse(null));
         assertEquals(proxyUsername, actual.getField(SettingsDescriptor.KEY_PROXY_USERNAME).flatMap(field -> field.getValue()).orElse(null));
-        assertEquals(proxyPassword, actual.getField(SettingsDescriptor.KEY_PROXY_PASSWORD).flatMap(field -> field.getValue()).orElse(null));
+        assertEquals(proxyPassword, actual.getField(SettingsDescriptor.KEY_PROXY_PWD).flatMap(field -> field.getValue()).orElse(null));
     }
 
     @Test
@@ -129,13 +129,13 @@ public class SystemActionsTest {
 
         final Map<String, FieldValueModel> valueMap = new HashMap<>();
         final FieldModel model = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, "GLOBAL", valueMap);
-        model.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, new FieldValueModel(List.of(defaultAdminPassword), true));
-        model.putField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, new FieldValueModel(List.of(globalEncryptionPassword), true));
+        model.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of(defaultAdminPassword), true));
+        model.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of(globalEncryptionPassword), true));
         model.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(globalEncryptionSalt), true));
         model.putField(SettingsDescriptor.KEY_PROXY_HOST, new FieldValueModel(List.of(proxyHost), true));
         model.putField(SettingsDescriptor.KEY_PROXY_PORT, new FieldValueModel(List.of(proxyPort), true));
         model.putField(SettingsDescriptor.KEY_PROXY_USERNAME, new FieldValueModel(List.of(proxyUsername), true));
-        model.putField(SettingsDescriptor.KEY_PROXY_PASSWORD, new FieldValueModel(List.of(proxyPassword), true));
+        model.putField(SettingsDescriptor.KEY_PROXY_PWD, new FieldValueModel(List.of(proxyPassword), true));
 
         final Map<String, String> fieldErrors = new HashMap<>();
         systemActions.saveRequiredInformation(model, fieldErrors);

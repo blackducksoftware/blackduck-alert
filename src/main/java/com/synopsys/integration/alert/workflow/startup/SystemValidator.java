@@ -122,8 +122,8 @@ public class SystemValidator {
                                                  .filter(StringUtils::isNotBlank);
         final boolean valid = passwordSet.isPresent();
         if (!valid) {
-            final String errorMessage = SettingsDescriptor.FIELD_ERROR_DEFAULT_USER_PASSWORD;
-            fieldErrors.put(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, errorMessage);
+            final String errorMessage = SettingsDescriptor.FIELD_ERROR_DEFAULT_USER_PWD;
+            fieldErrors.put(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, errorMessage);
             systemMessageUtility.addSystemMessage(errorMessage, SystemMessageSeverity.ERROR, SystemMessageType.DEFAULT_ADMIN_USER_ERROR);
         }
         return valid;
@@ -138,8 +138,8 @@ public class SystemValidator {
         } else {
             logger.error("Encryption utilities: Not Initialized");
             if (!encryptionUtility.isPasswordSet()) {
-                final String errorMessage = SettingsDescriptor.FIELD_ERROR_ENCRYPTION_PASSWORD;
-                fieldErrors.put(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, errorMessage);
+                final String errorMessage = SettingsDescriptor.FIELD_ERROR_ENCRYPTION_PWD;
+                fieldErrors.put(SettingsDescriptor.KEY_ENCRYPTION_PWD, errorMessage);
                 systemMessageUtility.addSystemMessage(errorMessage, SystemMessageSeverity.ERROR, SystemMessageType.ENCRYPTION_CONFIGURATION_ERROR);
             }
 
