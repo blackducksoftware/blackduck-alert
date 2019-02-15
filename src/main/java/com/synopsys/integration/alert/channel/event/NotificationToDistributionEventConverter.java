@@ -26,7 +26,6 @@ package com.synopsys.integration.alert.channel.event;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,35 +33,52 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.configuration.CommonDistributionConfiguration;
+import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.descriptor.DescriptorMap;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
+import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 
 @Component
 public class NotificationToDistributionEventConverter {
     private final Logger logger = LoggerFactory.getLogger(NotificationToDistributionEventConverter.class);
     private final DescriptorMap descriptorMap;
+    private final BaseConfigurationAccessor configurationAccessor;
 
     @Autowired
-    public NotificationToDistributionEventConverter(final DescriptorMap descriptorMap) {
+    public NotificationToDistributionEventConverter(final DescriptorMap descriptorMap, final BaseConfigurationAccessor configurationAccessor) {
         this.descriptorMap = descriptorMap;
+        this.configurationAccessor = configurationAccessor;
     }
 
     public List<DistributionEvent> convertToEvents(final Map<CommonDistributionConfiguration, List<AggregateMessageContent>> messageContentMap) {
         final List<DistributionEvent> distributionEvents = new ArrayList<>();
         for (final Map.Entry<CommonDistributionConfiguration, List<AggregateMessageContent>> entry : messageContentMap.entrySet()) {
             for (final AggregateMessageContent content : entry.getValue()) {
-                final Optional<DistributionEvent> channelEvent = createChannelEvent(entry.getKey(), content);
-                channelEvent.ifPresent(distributionEvents::add);
+                final CommonDistributionConfiguration config = entry.getKey();
+                final String descriptorName = config.getChannelName();
+                final Map<String, ConfigurationFieldModel> globalFields = getGlobalFields(descriptorName);
+                config.addFields(globalFields);
+                descriptorMap.getChannelDescriptor(descriptorName)
+                    .flatMap(channelDescriptor -> channelDescriptor.getActionApi(ConfigContextEnum.DISTRIBUTION))
+                    .map(descriptorActionApi -> descriptorActionApi.createChannelEvent(config, content))
+                    .ifPresent(distributionEvents::add);
             }
         }
         logger.debug("Created {} events.", distributionEvents.size());
         return distributionEvents;
     }
 
-    private Optional<DistributionEvent> createChannelEvent(final CommonDistributionConfiguration config, final AggregateMessageContent messageContent) {
-        return descriptorMap.getChannelDescriptor(config.getChannelName())
-                   .flatMap(channelDescriptor -> channelDescriptor.getActionApi(ConfigContextEnum.DISTRIBUTION))
-                   .map(descriptorActionApi -> descriptorActionApi.createChannelEvent(config, messageContent));
+    private Map<String, ConfigurationFieldModel> getGlobalFields(final String descriptorName) {
+        try {
+            final List<ConfigurationModel> globalConfiguration = configurationAccessor.getConfigurationByDescriptorNameAndContext(descriptorName, ConfigContextEnum.GLOBAL);
+            return globalConfiguration.stream().findFirst().map(ConfigurationModel::getCopyOfKeyToFieldMap).orElse(Map.of());
+        } catch (final AlertDatabaseConstraintException e) {
+            logger.error("There was an error retrieving global config : {}", e.getMessage());
+            return Map.of();
+        }
     }
+
 }

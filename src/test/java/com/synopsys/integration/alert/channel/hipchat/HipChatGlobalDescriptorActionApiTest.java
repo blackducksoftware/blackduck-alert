@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -175,6 +176,7 @@ public class HipChatGlobalDescriptorActionApiTest {
 
     @Test
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
+    @Disabled("Hip Chat public api is currently end of life; need an on premise installation to test")
     public void testConfigITTest() throws Exception {
         final TestProperties properties = new TestProperties();
 

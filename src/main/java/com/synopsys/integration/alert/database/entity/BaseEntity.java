@@ -23,12 +23,14 @@
  */
 package com.synopsys.integration.alert.database.entity;
 
+import java.io.Serializable;
+
 import javax.persistence.MappedSuperclass;
 
 import com.synopsys.integration.util.Stringable;
 
 @MappedSuperclass
-public abstract class BaseEntity extends Stringable {
+public abstract class BaseEntity extends Stringable implements Serializable {
     public BaseEntity() {
         // JPA requires default constructor definitions
     }

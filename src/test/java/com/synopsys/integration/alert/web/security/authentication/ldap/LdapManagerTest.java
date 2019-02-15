@@ -41,7 +41,7 @@ public class LdapManagerTest {
         final ConfigurationFieldModel enabledField = ConfigurationFieldModel.create(SettingsDescriptor.KEY_LDAP_ENABLED);
         final ConfigurationFieldModel serverField = ConfigurationFieldModel.create(SettingsDescriptor.KEY_LDAP_SERVER);
         final ConfigurationFieldModel managerDNField = ConfigurationFieldModel.create(SettingsDescriptor.KEY_LDAP_MANAGER_DN);
-        final ConfigurationFieldModel managerPasswordField = ConfigurationFieldModel.createSensitive(SettingsDescriptor.KEY_LDAP_MANAGER_PASSWORD);
+        final ConfigurationFieldModel managerPasswordField = ConfigurationFieldModel.createSensitive(SettingsDescriptor.KEY_LDAP_MANAGER_PWD);
         final ConfigurationFieldModel authenticationTypeField = ConfigurationFieldModel.create(SettingsDescriptor.KEY_LDAP_AUTHENTICATION_TYPE);
         final ConfigurationFieldModel referralField = ConfigurationFieldModel.create(SettingsDescriptor.KEY_LDAP_REFERRAL);
         final ConfigurationFieldModel userSearchBaseField = ConfigurationFieldModel.create(SettingsDescriptor.KEY_LDAP_USER_SEARCH_BASE);
@@ -97,7 +97,7 @@ public class LdapManagerTest {
         assertEquals(DEFAULT_ENABLED, updatedProperties.getField(SettingsDescriptor.KEY_LDAP_ENABLED).flatMap(field -> field.getFieldValue()).orElse(null));
         assertEquals(DEFAULT_SERVER, updatedProperties.getField(SettingsDescriptor.KEY_LDAP_SERVER).flatMap(field -> field.getFieldValue()).orElse(null));
         assertEquals(DEFAULT_MANAGER_DN, updatedProperties.getField(SettingsDescriptor.KEY_LDAP_MANAGER_DN).flatMap(field -> field.getFieldValue()).orElse(null));
-        assertEquals(DEFAULT_MANAGER_PASSWORD, updatedProperties.getField(SettingsDescriptor.KEY_LDAP_MANAGER_PASSWORD).flatMap(field -> field.getFieldValue()).orElse(null));
+        assertEquals(DEFAULT_MANAGER_PASSWORD, updatedProperties.getField(SettingsDescriptor.KEY_LDAP_MANAGER_PWD).flatMap(field -> field.getFieldValue()).orElse(null));
         assertEquals(DEFAULT_AUTHENTICATION_TYPE, updatedProperties.getField(SettingsDescriptor.KEY_LDAP_AUTHENTICATION_TYPE).flatMap(field -> field.getFieldValue()).orElse(null));
         assertEquals(DEFAULT_REFERRAL, updatedProperties.getField(SettingsDescriptor.KEY_LDAP_REFERRAL).flatMap(field -> field.getFieldValue()).orElse(null));
         assertEquals(DEFAULT_USER_SEARCH_BASE, updatedProperties.getField(SettingsDescriptor.KEY_LDAP_USER_SEARCH_BASE).flatMap(field -> field.getFieldValue()).orElse(null));
@@ -164,7 +164,7 @@ public class LdapManagerTest {
         final ConfigurationModel configurationModel = createConfigurationModel();
         configurationModel.getField(SettingsDescriptor.KEY_LDAP_SERVER).get().setFieldValue(null);
         configurationModel.getField(SettingsDescriptor.KEY_LDAP_MANAGER_DN).get().setFieldValue(managerDN);
-        configurationModel.getField(SettingsDescriptor.KEY_LDAP_MANAGER_PASSWORD).get().setFieldValue(managerPassword);
+        configurationModel.getField(SettingsDescriptor.KEY_LDAP_MANAGER_PWD).get().setFieldValue(managerPassword);
         final ConfigurationAccessor configurationAccessor = Mockito.mock(ConfigurationAccessor.class);
         Mockito.when(configurationAccessor.getConfigurationsByDescriptorName(Mockito.anyString())).thenReturn(List.of(configurationModel));
         final LdapManager ldapManager = new LdapManager(configurationAccessor);

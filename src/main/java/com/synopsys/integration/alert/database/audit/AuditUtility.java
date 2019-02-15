@@ -57,13 +57,13 @@ public class AuditUtility {
     }
 
     @Transactional
-    public Map<Long, Long> createAuditEntry(final Map<Long, Long> existingNotificationIdToAuditId, final UUID commonDistributionId, final AggregateMessageContent content) {
+    public Map<Long, Long> createAuditEntry(final Map<Long, Long> existingNotificationIdToAuditId, final UUID jobId, final AggregateMessageContent content) {
         final Map<Long, Long> notificationIdToAuditId = new HashMap<>();
         final Set<Long> notificationIds = content.getCategoryItemList().stream()
                                               .map(CategoryItem::getNotificationId)
                                               .collect(Collectors.toSet());
         for (final Long notificationId : notificationIds) {
-            AuditEntryEntity auditEntryEntity = new AuditEntryEntity(commonDistributionId, new Date(System.currentTimeMillis()), null, null, null, null);
+            AuditEntryEntity auditEntryEntity = new AuditEntryEntity(jobId, new Date(System.currentTimeMillis()), null, null, null, null);
 
             if (null != existingNotificationIdToAuditId && !existingNotificationIdToAuditId.isEmpty()) {
                 final Long auditEntryId = existingNotificationIdToAuditId.get(notificationId);
@@ -74,6 +74,7 @@ public class AuditUtility {
 
             auditEntryEntity.setStatus(AuditEntryStatus.PENDING.toString());
             final AuditEntryEntity savedAuditEntryEntity = auditEntryRepository.save(auditEntryEntity);
+
             notificationIdToAuditId.put(notificationId, savedAuditEntryEntity.getId());
             final AuditNotificationRelation auditNotificationRelation = new AuditNotificationRelation(savedAuditEntryEntity.getId(), notificationId);
             auditNotificationRepository.save(auditNotificationRelation);

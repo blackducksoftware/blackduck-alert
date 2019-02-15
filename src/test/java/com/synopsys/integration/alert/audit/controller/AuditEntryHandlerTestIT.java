@@ -94,6 +94,8 @@ public class AuditEntryHandlerTestIT extends AlertIntegrationTest {
         notificationContentRepository.deleteAllInBatch();
         descriptorConfigRepository.deleteAllInBatch();
         fieldValueRepository.deleteAllInBatch();
+
+        auditEntryRepository.flush();
     }
 
     @Test

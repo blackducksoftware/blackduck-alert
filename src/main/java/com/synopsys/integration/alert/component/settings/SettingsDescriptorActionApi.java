@@ -60,8 +60,8 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
         final Optional<UserModel> defaultUser = userAccessor.getUser(UserAccessor.DEFAULT_ADMIN_USER);
         final FieldModel newModel = createFieldModelCopy(fieldModel);
         final boolean defaultUserPasswordSet = defaultUser.map(UserModel::getPassword).filter(StringUtils::isNotBlank).isPresent();
-        newModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, new FieldValueModel(null, defaultUserPasswordSet));
-        newModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, new FieldValueModel(null, encryptionUtility.isPasswordSet()));
+        newModel.putField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(null, defaultUserPasswordSet));
+        newModel.putField(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(null, encryptionUtility.isPasswordSet()));
         newModel.putField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(null, encryptionUtility.isPasswordSet()));
         return newModel;
     }
@@ -83,15 +83,15 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
     private FieldModel createScrubbedModel(final FieldModel fieldModel) {
         final HashMap<String, FieldValueModel> fields = new HashMap<>();
         fields.putAll(fieldModel.getKeyToValues());
-        fields.remove(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD);
-        fields.remove(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD);
+        fields.remove(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD);
+        fields.remove(SettingsDescriptor.KEY_ENCRYPTION_PWD);
         fields.remove(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT);
 
         return new FieldModel(fieldModel.getDescriptorName(), fieldModel.getContext(), fields);
     }
 
     private void saveDefaultAdminUserPassword(final FieldModel fieldModel) {
-        final Optional<FieldValueModel> optionalPassword = fieldModel.getField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD);
+        final Optional<FieldValueModel> optionalPassword = fieldModel.getField(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD);
         if (optionalPassword.isPresent()) {
             final String password = optionalPassword.flatMap(FieldValueModel::getValue).orElse("");
             if (StringUtils.isNotBlank(password)) {
@@ -109,7 +109,7 @@ public class SettingsDescriptorActionApi extends NoTestActionApi {
 
     private void saveEncryptionProperties(final FieldModel fieldModel) {
         try {
-            final Optional<FieldValueModel> optionalEncryptionPassword = fieldModel.getField(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD);
+            final Optional<FieldValueModel> optionalEncryptionPassword = fieldModel.getField(SettingsDescriptor.KEY_ENCRYPTION_PWD);
             final Optional<FieldValueModel> optionalEncryptionSalt = fieldModel.getField(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT);
 
             if (optionalEncryptionPassword.isPresent()) {

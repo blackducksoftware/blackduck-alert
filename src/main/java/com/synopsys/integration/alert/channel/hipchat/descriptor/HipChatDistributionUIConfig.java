@@ -28,7 +28,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
 import com.synopsys.integration.alert.common.descriptor.config.field.CheckboxConfigField;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
@@ -40,8 +39,8 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.ChannelDistrib
 public class HipChatDistributionUIConfig extends ChannelDistributionUIConfig {
 
     @Autowired
-    public HipChatDistributionUIConfig(final BaseConfigurationAccessor configurationAccessor, final BaseDescriptorAccessor descriptorAccessor) {
-        super(HipChatDescriptor.HIP_CHAT_LABEL, HipChatDescriptor.HIP_CHAT_URL, HipChatDescriptor.HIP_CHAT_ICON, configurationAccessor, descriptorAccessor);
+    public HipChatDistributionUIConfig(final BaseDescriptorAccessor descriptorAccessor) {
+        super(HipChatDescriptor.HIP_CHAT_LABEL, HipChatDescriptor.HIP_CHAT_URL, HipChatDescriptor.HIP_CHAT_ICON, descriptorAccessor);
     }
 
     @Override

@@ -11,10 +11,10 @@ import { dailyDigestOptions, purgeOptions } from 'util/scheduling-data';
 import * as FieldModelUtilities from 'util/fieldModelUtilities';
 import * as DescriptorUtilities from 'util/descriptorUtilities';
 
-const KEY_DAILY_DIGEST_HOUR_OF_DAY = 'scheduling.daily.digest.hour';
+const KEY_DAILY_DIGEST_HOUR_OF_DAY = 'scheduling.daily.processor.hour';
 const KEY_PURGE_DATA_FREQUENCY_DAYS = 'scheduling.purge.data.frequency';
 const KEY_ACCUMULATOR_NEXT_RUN = 'scheduling.accumulator.next.run';
-const KEY_DAILY_DIGEST_NEXT_RUN = 'scheduling.daily.digest.next.run';
+const KEY_DAILY_DIGEST_NEXT_RUN = 'scheduling.daily.processor.next.run';
 const KEY_PURGE_DATA_NEXT_RUN = 'scheduling.purge.data.next.run';
 
 

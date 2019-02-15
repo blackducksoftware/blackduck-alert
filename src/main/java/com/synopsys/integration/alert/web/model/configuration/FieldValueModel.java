@@ -26,6 +26,7 @@ package com.synopsys.integration.alert.web.model.configuration;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class FieldValueModel {
     private Collection<String> values;
@@ -41,7 +42,10 @@ public class FieldValueModel {
     }
 
     public Collection<String> getValues() {
-        return values;
+        if (null != values) {
+            return values.stream().filter(singleValue -> null != singleValue).collect(Collectors.toList());
+        }
+        return null;
     }
 
     public void setValues(final Collection<String> values) {
@@ -51,7 +55,7 @@ public class FieldValueModel {
     public Optional<String> getValue() {
         Optional<String> value = Optional.empty();
         if (null != values) {
-            value = values.stream().findFirst();
+            value = values.stream().filter(singleValue -> null != singleValue).findFirst();
         }
         return value;
     }

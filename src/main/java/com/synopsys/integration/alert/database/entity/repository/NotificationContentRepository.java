@@ -45,9 +45,9 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
     @Query(value = "SELECT entity FROM NotificationContent entity WHERE entity.id IN (SELECT notificationId FROM entity.auditNotificationRelations WHERE entity.id = notificationId)")
     Page<NotificationContent> findAllSentNotifications(final Pageable pageable);
 
-    @Query(value = "SELECT entity FROM NotificationContent entity LEFT JOIN entity.auditNotificationRelations relation ON entity.id = relation.notificationId "
+    @Query(value = "SELECT DISTINCT entity FROM NotificationContent entity LEFT JOIN entity.auditNotificationRelations relation ON entity.id = relation.notificationId "
                        + "LEFT JOIN relation.auditEntryEntity auditEntry ON auditEntry.id = relation.auditEntryId "
-                       + "LEFT JOIN auditEntry.configGroupEntity configGroup ON auditEntry.commonConfigId = configGroup.jobId "
+                       + "LEFT JOIN ConfigGroupEntity configGroup ON auditEntry.commonConfigId = configGroup.jobId "
                        + "LEFT JOIN configGroup.descriptorConfigEntity descriptorConfig ON configGroup.configId = descriptorConfig.id "
                        + "LEFT JOIN descriptorConfig.fieldValueEntities fieldValue ON descriptorConfig.id = fieldValue.configId "
                        + "LEFT JOIN fieldValue.definedFieldEntity definedField ON fieldValue.fieldId = definedField.id "
@@ -61,9 +61,9 @@ public interface NotificationContentRepository extends JpaRepository<Notificatio
                        + "(definedField.key = '" + ChannelDistributionUIConfig.KEY_CHANNEL_NAME + "' AND LOWER(fieldValue.value) LIKE %:searchTerm% )")
     Page<NotificationContent> findMatchingNotification(@Param("searchTerm") String searchTerm, final Pageable pageable);
 
-    @Query(value = "SELECT entity FROM NotificationContent entity LEFT JOIN entity.auditNotificationRelations relation ON entity.id = relation.notificationId "
+    @Query(value = "SELECT DISTINCT entity FROM NotificationContent entity LEFT JOIN entity.auditNotificationRelations relation ON entity.id = relation.notificationId "
                        + "LEFT JOIN relation.auditEntryEntity auditEntry ON auditEntry.id = relation.auditEntryId "
-                       + "LEFT JOIN auditEntry.configGroupEntity configGroup ON auditEntry.commonConfigId = configGroup.jobId "
+                       + "LEFT JOIN ConfigGroupEntity configGroup ON auditEntry.commonConfigId = configGroup.jobId "
                        + "LEFT JOIN configGroup.descriptorConfigEntity descriptorConfig ON configGroup.configId = descriptorConfig.id "
                        + "LEFT JOIN descriptorConfig.fieldValueEntities fieldValue ON descriptorConfig.id = fieldValue.configId "
                        + "LEFT JOIN fieldValue.definedFieldEntity definedField ON fieldValue.fieldId = definedField.id "

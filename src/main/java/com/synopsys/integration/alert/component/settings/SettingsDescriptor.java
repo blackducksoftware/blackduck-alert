@@ -37,21 +37,21 @@ public class SettingsDescriptor extends ComponentDescriptor {
 
     // Values not stored in the database, but keys must be registered
     public static final String KEY_DEFAULT_SYSTEM_ADMIN_EMAIL = "settings.user.default.admin.email";
-    public static final String KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD = "settings.user.default.admin.password";
-    public static final String KEY_ENCRYPTION_PASSWORD = "settings.encryption.password";
+    public static final String KEY_DEFAULT_SYSTEM_ADMIN_PWD = "settings.user.default.admin.password";
+    public static final String KEY_ENCRYPTION_PWD = "settings.encryption.password";
     public static final String KEY_ENCRYPTION_GLOBAL_SALT = "settings.encryption.global.salt";
 
     // Proxy Keys
     public static final String KEY_PROXY_HOST = "settings.proxy.host";
     public static final String KEY_PROXY_PORT = "settings.proxy.port";
     public static final String KEY_PROXY_USERNAME = "settings.proxy.username";
-    public static final String KEY_PROXY_PASSWORD = "settings.proxy.password";
+    public static final String KEY_PROXY_PWD = "settings.proxy.password";
 
     // LDAP Keys
     public static final String KEY_LDAP_ENABLED = "settings.ldap.enabled";
     public static final String KEY_LDAP_SERVER = "settings.ldap.server";
     public static final String KEY_LDAP_MANAGER_DN = "settings.ldap.manager.dn";
-    public static final String KEY_LDAP_MANAGER_PASSWORD = "settings.ldap.manager.password";
+    public static final String KEY_LDAP_MANAGER_PWD = "settings.ldap.manager.password";
     public static final String KEY_LDAP_AUTHENTICATION_TYPE = "settings.ldap.authentication.type";
     public static final String KEY_LDAP_REFERRAL = "settings.ldap.referral";
     public static final String KEY_LDAP_USER_SEARCH_BASE = "settings.ldap.user.search.base";
@@ -64,18 +64,19 @@ public class SettingsDescriptor extends ComponentDescriptor {
     public static final String KEY_LDAP_ROLE_PREFIX = "settings.ldap.role.prefix";
     public static final String KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE = "settings.startup.environment.variable.override";
 
-    public static final String FIELD_ERROR_DEFAULT_USER_PASSWORD = "Default admin user password missing";
-    public static final String FIELD_ERROR_ENCRYPTION_PASSWORD = "Encryption password missing";
+    public static final String FIELD_ERROR_DEFAULT_USER_PWD = "Default admin user password missing";
+    public static final String FIELD_ERROR_DEFAULT_USER_EMAIL = "Default admin user email missing";
+    public static final String FIELD_ERROR_ENCRYPTION_PWD = "Encryption password missing";
     public static final String FIELD_ERROR_ENCRYPTION_GLOBAL_SALT = "Encryption global salt missing";
 
     public static final String FIELD_ERROR_PROXY_HOST_MISSING = "Proxy Host missing";
     public static final String FIELD_ERROR_PROXY_PORT_INVALID = "Proxy Port not a number greater than 1";
     public static final String FIELD_ERROR_PROXY_USER_MISSING = "Proxy Username missing";
-    public static final String FIELD_ERROR_PROXY_PASSWORD_MISSING = "Proxy Password missing";
+    public static final String FIELD_ERROR_PROXY_PWD_MISSING = "Proxy Password missing";
 
     public static final String FIELD_ERROR_LDAP_SERVER_MISSING = "LDAP Server missing";
     public static final String FIELD_ERROR_LDAP_USERNAME_MISSING = "LDAP Manager DN is missing";
-    public static final String FIELD_ERROR_LDAP_PASSWORD_MISSING = "LDAP Manager DN password is missing";
+    public static final String FIELD_ERROR_LDAP_PWD_MISSING = "LDAP Manager DN password is missing";
 
     @Autowired
     public SettingsDescriptor(final SettingsDescriptorActionApi componentRestApi, final SettingsUIConfig uiConfig) {
