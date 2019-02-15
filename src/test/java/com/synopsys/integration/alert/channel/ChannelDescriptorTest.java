@@ -2,6 +2,7 @@ package com.synopsys.integration.alert.channel;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.util.Collection;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
+import com.synopsys.integration.alert.channel.hipchat.HipChatChannel;
 import com.synopsys.integration.alert.channel.slack.SlackChannel;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
@@ -202,6 +204,8 @@ public abstract class ChannelDescriptorTest extends AlertIntegrationTest {
 
     @Test
     public void testGlobalConfig() {
+        // hipchat has reached end of life cannot test global configuration
+        assumeFalse(HipChatChannel.COMPONENT_NAME.equals(getDescriptor().getName()));
         final Optional<DescriptorActionApi> descriptorActionApi = getDescriptor().getActionApi(ConfigContextEnum.GLOBAL);
         assumeTrue(descriptorActionApi.isPresent());
         final ConfigurationModel configurationModel = global_config.orElse(null);
