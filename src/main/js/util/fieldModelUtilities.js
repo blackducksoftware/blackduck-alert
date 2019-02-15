@@ -52,7 +52,7 @@ export function hasFieldModelValues(fieldModel, key) {
     if (fieldModel.keyToValues) {
         const fieldObject = fieldModel.keyToValues[key];
         if (fieldObject) {
-            return fieldObject.values && fieldObject.values.every(item => item !== '');
+            return fieldObject.values && fieldObject.values.length > 0 && fieldObject.values.every(item => item !== '');
         }
     }
     return false;
@@ -74,9 +74,9 @@ export function updateFieldModelSingleValue(fieldModel, key, value) {
         copy.keyToValues[key].isSet = false;
     }
 
-    //TODO: currently we can have values = [null] which allows filter by project to be set to false and pass validation
-    // need to look at this code to not set null into the array.
-    copy.keyToValues[key].values[0] = value;
+    if (value !== undefined || value !== null) {
+        copy.keyToValues[key].values[0] = value;
+    }
     copy.keyToValues[key].isSet = false;
     return copy;
 }
