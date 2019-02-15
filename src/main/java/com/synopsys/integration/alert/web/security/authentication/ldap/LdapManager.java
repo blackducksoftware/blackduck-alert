@@ -63,7 +63,8 @@ public class LdapManager {
         try {
             enabled = Boolean.valueOf(getFieldValueOrEmpty(getCurrentConfiguration(), SettingsDescriptor.KEY_LDAP_ENABLED));
         } catch (final AlertDatabaseConstraintException | AlertLDAPConfigurationException ex) {
-            logger.error("Error checking if Ldap is enabled", ex);
+            logger.warn(ex.getMessage());
+            logger.debug("cause: ", ex);
         }
 
         return enabled;
@@ -91,7 +92,7 @@ public class LdapManager {
 
                 final String ldapServer = getFieldValueOrEmpty(configuration, SettingsDescriptor.KEY_LDAP_SERVER);
                 final String managerDN = getFieldValueOrEmpty(configuration, SettingsDescriptor.KEY_LDAP_MANAGER_DN);
-                final String managerPassword = getFieldValueOrEmpty(configuration, SettingsDescriptor.KEY_LDAP_MANAGER_PASSWORD);
+                final String managerPassword = getFieldValueOrEmpty(configuration, SettingsDescriptor.KEY_LDAP_MANAGER_PWD);
                 final String ldapReferral = getFieldValueOrEmpty(configuration, SettingsDescriptor.KEY_LDAP_REFERRAL);
                 if (StringUtils.isNotBlank(ldapServer)) {
                     ldapContextSource.setUrl(ldapServer);

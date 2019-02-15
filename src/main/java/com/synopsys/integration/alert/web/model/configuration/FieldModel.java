@@ -82,8 +82,9 @@ public class FieldModel extends Config {
         fieldValueModelMap.putAll(getKeyToValues());
         final Map<String, FieldValueModel> fieldsToAdd = fieldModel.getKeyToValues();
         for (final Map.Entry<String, FieldValueModel> entry : fieldsToAdd.entrySet()) {
-            if (!fieldValueModelMap.containsKey(entry.getKey())) {
-                fieldValueModelMap.put(entry.getKey(), entry.getValue());
+            final String key = entry.getKey();
+            if (!fieldValueModelMap.containsKey(key) || fieldValueModelMap.get(key).getValue().isEmpty()) {
+                fieldValueModelMap.put(key, entry.getValue());
             }
         }
         final String modelDescriptorName = StringUtils.isNotBlank(getDescriptorName()) ? getDescriptorName() : fieldModel.getDescriptorName();

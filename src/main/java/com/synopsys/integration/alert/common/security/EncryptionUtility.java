@@ -66,7 +66,7 @@ public class EncryptionUtility {
                 final TextEncryptor decryptor = Encryptors.delux(getPassword(), getEncodedSalt());
                 return decryptor.decrypt(encryptedValue);
             }
-        } catch (final IllegalArgumentException | NullPointerException ex) {
+        } catch (final IllegalArgumentException | IllegalStateException | NullPointerException ex) {
             logger.error("Error decrypting value", ex);
         }
         return StringUtils.EMPTY;
