@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +48,7 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.workflow.NotificationManager;
 import com.synopsys.integration.alert.workflow.scheduled.ScheduledTask;
+import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.generated.view.NotificationView;
 import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
@@ -178,7 +180,7 @@ public class BlackDuckAccumulator extends ScheduledTask {
                 logger.info("Accumulating Notifications Between {} and {} ", RestConstants.formatDate(startDate), RestConstants.formatDate(endDate));
                 final NotificationService notificationService = blackDuckServicesFactory.createNotificationService();
 
-                final List<NotificationView> notificationViews = notificationService.getAllNotifications(startDate, endDate);
+                final List<NotificationView> notificationViews = notificationService.getFilteredNotifications(startDate, endDate, getNotificationTypes());
                 logger.debug("Read Notification Count: {}", notificationViews.size());
                 return notificationViews;
             } catch (final Exception ex) {
@@ -186,6 +188,10 @@ public class BlackDuckAccumulator extends ScheduledTask {
             }
         }
         return List.of();
+    }
+
+    private List<String> getNotificationTypes() {
+        return Stream.of(NotificationType.values()).filter(type -> type != NotificationType.VERSION_BOM_CODE_LOCATION_BOM_COMPUTED).map(Enum::name).collect(Collectors.toList());
     }
 
     protected List<NotificationContent> process(final List<NotificationView> notifications) {
