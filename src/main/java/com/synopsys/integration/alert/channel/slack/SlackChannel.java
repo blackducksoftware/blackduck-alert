@@ -119,39 +119,42 @@ public class SlackChannel extends RestDistributionChannel {
 
             final Map<String, List<LinkableItem>> itemsOfSameName = categoryItem.getItemsOfSameName();
             for (final Map.Entry<String, List<LinkableItem>> namedItems : itemsOfSameName.entrySet()) {
-                final List<LinkableItem> namedItemsList = namedItems.getValue();
-                if (namedItemsList.size() == 1) {
-                    final LinkableItem namedLinkableItem = namedItemsList.get(0);
-                    mrkdwnBuilder.append(createLinkableItemString(namedLinkableItem, false));
-                } else {
-                    final String name = createSlackString(namedItems.getKey());
-                    mrkdwnBuilder.append(name);
-                    mrkdwnBuilder.append(": ");
-                    for (final LinkableItem item : namedItemsList) {
-                        final String value = createSlackString(item.getValue());
-                        final Optional<String> optionalUrl = item.getUrl();
-
-                        mrkdwnBuilder.append('[');
-                        if (optionalUrl.isPresent()) {
-                            final String url = createSlackString(optionalUrl.get());
-                            mrkdwnBuilder.append('<');
-                            mrkdwnBuilder.append(url);
-                            mrkdwnBuilder.append('|');
-                            mrkdwnBuilder.append(value);
-                            mrkdwnBuilder.append('>');
-                        } else {
-                            mrkdwnBuilder.append(value);
-                        }
-                        mrkdwnBuilder.append(']');
-                    }
-                    mrkdwnBuilder.append(SLACK_LINE_SEPARATOR);
-                }
+                appendFormattedItems(mrkdwnBuilder, namedItems.getKey(), namedItems.getValue());
                 mrkdwnBuilder.append(SLACK_LINE_SEPARATOR);
             }
             mrkdwnBuilder.append(SLACK_LINE_SEPARATOR);
         }
         mrkdwnBuilder.append(SLACK_LINE_SEPARATOR);
         return mrkdwnBuilder.toString();
+    }
+
+    private void appendFormattedItems(final StringBuilder mrkdwnBuilder, final String name, final List<LinkableItem> namedItemsList) {
+        if (namedItemsList.size() == 1) {
+            final LinkableItem namedLinkableItem = namedItemsList.get(0);
+            mrkdwnBuilder.append(createLinkableItemString(namedLinkableItem, false));
+        } else {
+            final String encodedName = createSlackString(name);
+            mrkdwnBuilder.append(encodedName);
+            mrkdwnBuilder.append(": ");
+            for (final LinkableItem item : namedItemsList) {
+                final String value = createSlackString(item.getValue());
+                final Optional<String> optionalUrl = item.getUrl();
+
+                mrkdwnBuilder.append('[');
+                if (optionalUrl.isPresent()) {
+                    final String url = createSlackString(optionalUrl.get());
+                    mrkdwnBuilder.append('<');
+                    mrkdwnBuilder.append(url);
+                    mrkdwnBuilder.append('|');
+                    mrkdwnBuilder.append(value);
+                    mrkdwnBuilder.append('>');
+                } else {
+                    mrkdwnBuilder.append(value);
+                }
+                mrkdwnBuilder.append(']');
+            }
+            mrkdwnBuilder.append(SLACK_LINE_SEPARATOR);
+        }
     }
 
     private String createLinkableItemString(final LinkableItem linkableItem, final boolean bold) {

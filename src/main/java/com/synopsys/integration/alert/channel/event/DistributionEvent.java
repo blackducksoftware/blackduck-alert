@@ -25,6 +25,7 @@ package com.synopsys.integration.alert.channel.event;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -63,8 +64,8 @@ public class DistributionEvent extends ContentEvent {
         if (null != notificationIdToAuditId && !notificationIdToAuditId.isEmpty()) {
             return notificationIdToAuditId.entrySet()
                        .stream()
-                       .filter(entry -> null != entry.getValue())
-                       .map(entry -> entry.getValue())
+                       .map(Map.Entry::getValue)
+                       .filter(Objects::nonNull)
                        .collect(Collectors.toSet());
         }
         return Collections.emptySet();

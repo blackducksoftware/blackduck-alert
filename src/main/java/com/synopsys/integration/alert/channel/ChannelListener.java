@@ -66,7 +66,6 @@ public class ChannelListener implements JmsListenerConfigurer {
     }
 
     private String createListenerId(final String name) {
-        final String listenerId = String.format("%sListener", name);
-        return listenerId;
+        return String.format("%sListener", name);
     }
 }
