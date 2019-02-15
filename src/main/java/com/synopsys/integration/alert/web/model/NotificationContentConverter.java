@@ -69,9 +69,7 @@ public class NotificationContentConverter extends TypeConverter {
         final String id = getContentConverter().getStringValue(notificationEntity.getId());
         final String createdAt = getContentConverter().getStringValue(notificationEntity.getCreatedAt());
         final String providerCreationTime = getContentConverter().getStringValue(notificationEntity.getProviderCreationTime());
-        final NotificationConfig notificationConfig = new NotificationConfig(id, createdAt, notificationEntity.getProvider(), providerCreationTime, notificationEntity.getNotificationType(),
-            notificationEntity.getContent());
-        return notificationConfig;
+        return new NotificationConfig(id, createdAt, notificationEntity.getProvider(), providerCreationTime, notificationEntity.getNotificationType(), notificationEntity.getContent());
     }
 
     public Date parseDateString(final String dateString) {

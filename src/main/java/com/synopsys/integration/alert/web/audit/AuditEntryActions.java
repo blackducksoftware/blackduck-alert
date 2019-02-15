@@ -103,7 +103,7 @@ public class AuditEntryActions {
     public Optional<AuditEntryModel> get(final Long id) {
         if (id != null) {
             final Optional<NotificationContent> notificationContent = notificationManager.findById(id);
-            return notificationContent.map(value -> createRestModel(value));
+            return notificationContent.map(this::createRestModel);
         }
         return Optional.empty();
     }
@@ -183,7 +183,7 @@ public class AuditEntryActions {
             }
             Comparator comparator;
             if (StringUtils.isBlank(sortField) || sortField.equalsIgnoreCase("lastSent")) {
-                final Function<AuditEntryModel, Date> function = (auditEntryModel) -> {
+                final Function<AuditEntryModel, Date> function = auditEntryModel -> {
                     Date date = null;
                     if (StringUtils.isNotBlank(auditEntryModel.getLastSent())) {
                         date = notificationContentConverter.parseDateString(auditEntryModel.getLastSent());

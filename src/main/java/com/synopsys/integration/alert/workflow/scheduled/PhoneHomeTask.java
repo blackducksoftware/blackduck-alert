@@ -111,7 +111,8 @@ public class PhoneHomeTask extends ScheduledTask {
         return createdSupportedChannels
                    .entrySet()
                    .stream()
-                   .collect(Collectors.toMap(Map.Entry::getKey, intValue -> intValue.toString()));
+                   // TODO the valueMapper here seems wrong
+                   .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::toString));
     }
 
 }

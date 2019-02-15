@@ -62,9 +62,7 @@ public class DigestMessageContentProcessor extends MessageContentProcessor {
         final List<AggregateMessageContent> collapsedTopicList = new ArrayList<>(contentList.size());
         for (final AggregateMessageContent topic : contentList) {
             final Map<CategoryKey, CategoryItem> categoryDataCache = new LinkedHashMap<>();
-            topic.getCategoryItemList().forEach(item -> {
-                processOperation(categoryDataCache, item);
-            });
+            topic.getCategoryItemList().forEach(item -> processOperation(categoryDataCache, item));
 
             final Optional<AggregateMessageContent> collapsedContent = rebuildTopic(topic, categoryDataCache.values());
             if (collapsedContent.isPresent()) {

@@ -70,7 +70,7 @@ public class FieldModel extends Config {
     }
 
     public Optional<String> getFieldValue(final String key) {
-        return getField(key).flatMap(fieldValueModel -> fieldValueModel.getValue());
+        return getField(key).flatMap(FieldValueModel::getValue);
     }
 
     public void putField(final String key, final FieldValueModel field) {

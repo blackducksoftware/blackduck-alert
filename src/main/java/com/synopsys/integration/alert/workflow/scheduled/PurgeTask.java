@@ -104,7 +104,6 @@ public class PurgeTask extends ScheduledTask {
         zonedDate = zonedDate.minusDays(dayOffset);
         zonedDate = zonedDate.withZoneSameInstant(ZoneOffset.UTC);
         zonedDate = zonedDate.withHour(0).withMinute(0).withSecond(0).withNano(0);
-        final Date date = Date.from(zonedDate.toInstant());
-        return date;
+        return Date.from(zonedDate.toInstant());
     }
 }

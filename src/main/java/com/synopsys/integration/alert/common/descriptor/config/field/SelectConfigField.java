@@ -123,14 +123,14 @@ public class SelectConfigField extends ConfigField {
     }
 
     private Collection<String> validateIsValidOption(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
-        final Collection<String> options = getOptions();
-        if (fieldToValidate.hasValues() && !options.isEmpty()) {
+        final Collection<String> fieldOptions = getOptions();
+        if (fieldToValidate.hasValues() && !fieldOptions.isEmpty()) {
             final boolean doesMatchKnownReferral = fieldToValidate.getValues()
                                                        .stream()
                                                        .map(StringUtils::trimToEmpty)
-                                                       .allMatch(value -> options
+                                                       .allMatch(value -> fieldOptions
                                                                               .stream()
-                                                                              .anyMatch(option -> option.equalsIgnoreCase(value)));
+                                                                              .anyMatch(fieldOption -> fieldOption.equalsIgnoreCase(value)));
             if (!doesMatchKnownReferral) {
                 return List.of(INVALID_OPTION_SELECTED);
             }

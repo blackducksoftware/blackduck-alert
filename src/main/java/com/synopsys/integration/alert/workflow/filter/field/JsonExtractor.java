@@ -98,11 +98,10 @@ public class JsonExtractor {
     public <T> List<T> getValuesFromConfig(final JsonField<T> field, final CommonDistributionConfiguration config) {
         final Optional<List<JsonPath>> mappings = field.getConfigNameMappings();
         final List<T> values = new ArrayList<>();
-        mappings.ifPresent(mapping -> {
-            mapping.forEach(jsonPath -> {
-                values.addAll(getValuesFromObject(field.getTypeRef(), jsonPath, config));
-            });
-        });
+        mappings.ifPresent(mapping ->
+                               mapping.forEach(jsonPath ->
+                                                   values.addAll(getValuesFromObject(field.getTypeRef(), jsonPath, config)))
+        );
         return values;
     }
 

@@ -211,7 +211,7 @@ public class FieldModelProcessor {
         if (optionalDescriptor.isPresent()) {
             final Descriptor descriptor = optionalDescriptor.get();
             final Optional<UIConfig> uiConfig = descriptor.getUIConfig(context);
-            fieldsToReturn.addAll(uiConfig.map(config -> config.createFields()).orElse(List.of()));
+            fieldsToReturn.addAll(uiConfig.map(UIConfig::createFields).orElse(List.of()));
         }
         return fieldsToReturn;
     }
@@ -223,8 +223,8 @@ public class FieldModelProcessor {
         return Optional.empty();
     }
 
-    private Collection<ConfigurationFieldModel> updateConfigurationWithSavedConfiguration(final Map<String, ConfigurationFieldModel> newConfiguration, final Collection<ConfigurationFieldModel> savedConfiguration) throws AlertException {
-        final Collection<ConfigurationFieldModel> sensitiveFields = savedConfiguration.stream().filter(fieldModel -> fieldModel.isSensitive()).collect(Collectors.toSet());
+    private Collection<ConfigurationFieldModel> updateConfigurationWithSavedConfiguration(final Map<String, ConfigurationFieldModel> newConfiguration, final Collection<ConfigurationFieldModel> savedConfiguration) {
+        final Collection<ConfigurationFieldModel> sensitiveFields = savedConfiguration.stream().filter(ConfigurationFieldModel::isSensitive).collect(Collectors.toSet());
         for (final ConfigurationFieldModel fieldModel : sensitiveFields) {
             final String key = fieldModel.getFieldKey();
             if (newConfiguration.containsKey(key) && doesFieldHaveNoValue(newConfiguration.get(key))) {
