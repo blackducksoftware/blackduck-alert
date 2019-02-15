@@ -25,12 +25,14 @@ package com.synopsys.integration.alert.provider.blackduck.tasks;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -48,13 +50,18 @@ import com.synopsys.integration.alert.provider.blackduck.BlackDuckProperties;
 import com.synopsys.integration.alert.provider.blackduck.BlackDuckProvider;
 import com.synopsys.integration.alert.workflow.NotificationManager;
 import com.synopsys.integration.alert.workflow.scheduled.ScheduledTask;
+import com.synopsys.integration.blackduck.api.generated.discovery.ApiDiscovery;
 import com.synopsys.integration.blackduck.api.generated.enumeration.NotificationType;
 import com.synopsys.integration.blackduck.api.generated.view.NotificationView;
 import com.synopsys.integration.blackduck.rest.BlackDuckHttpClient;
+import com.synopsys.integration.blackduck.service.BlackDuckService;
 import com.synopsys.integration.blackduck.service.BlackDuckServicesFactory;
-import com.synopsys.integration.blackduck.service.NotificationService;
+import com.synopsys.integration.blackduck.service.model.BlackDuckRequestFilter;
+import com.synopsys.integration.blackduck.service.model.RequestFactory;
+import com.synopsys.integration.exception.IntegrationException;
 import com.synopsys.integration.log.Slf4jIntLogger;
 import com.synopsys.integration.rest.RestConstants;
+import com.synopsys.integration.rest.request.Request;
 
 @Component
 public class BlackDuckAccumulator extends ScheduledTask {
@@ -178,9 +185,10 @@ public class BlackDuckAccumulator extends ScheduledTask {
                 final Date startDate = dateRange.getStart();
                 final Date endDate = dateRange.getEnd();
                 logger.info("Accumulating Notifications Between {} and {} ", RestConstants.formatDate(startDate), RestConstants.formatDate(endDate));
-                final NotificationService notificationService = blackDuckServicesFactory.createNotificationService();
 
-                final List<NotificationView> notificationViews = notificationService.getFilteredNotifications(startDate, endDate, getNotificationTypes());
+                // There is a bug in NotificationService.getFilteredNotifications(...) blackduck-common 41.2.0
+                // TODO remove the method getNotifications once the notification service is fixed
+                final List<NotificationView> notificationViews = getNotifications(startDate, endDate, blackDuckServicesFactory.createBlackDuckService());
                 logger.debug("Read Notification Count: {}", notificationViews.size());
                 return notificationViews;
             } catch (final Exception ex) {
@@ -191,7 +199,20 @@ public class BlackDuckAccumulator extends ScheduledTask {
     }
 
     private List<String> getNotificationTypes() {
-        return Stream.of(NotificationType.values()).filter(type -> type != NotificationType.VERSION_BOM_CODE_LOCATION_BOM_COMPUTED).map(Enum::name).collect(Collectors.toList());
+        return Stream.of(NotificationType.values())
+                   .filter(type -> type != NotificationType.VERSION_BOM_CODE_LOCATION_BOM_COMPUTED && type != NotificationType.BOM_EDIT)
+                   .map(Enum::name).collect(Collectors.toList());
+    }
+
+    private List<NotificationView> getNotifications(final Date startDate, final Date endDate, final BlackDuckService blackDuckService) throws IntegrationException {
+        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        final String startDateString = sdf.format(startDate);
+        final String endDateString = sdf.format(endDate);
+        final Request.Builder requestBuilder = RequestFactory.createCommonGetRequestBuilder().addQueryParameter("startDate", startDateString).addQueryParameter("endDate", endDateString);
+        final BlackDuckRequestFilter notificationTypeFilter = BlackDuckRequestFilter.createFilterWithMultipleValues("notificationType", getNotificationTypes());
+        RequestFactory.addBlackDuckFilter(requestBuilder, notificationTypeFilter);
+        return blackDuckService.getResponses(ApiDiscovery.NOTIFICATIONS_LINK_RESPONSE, requestBuilder, true);
     }
 
     protected List<NotificationContent> process(final List<NotificationView> notifications) {
