@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -50,6 +51,7 @@ public class HipChatChannelTest extends ChannelTest {
     @Test
     @Tag(TestTags.DEFAULT_INTEGRATION)
     @Tag(TestTags.CUSTOM_EXTERNAL_CONNECTION)
+    @Disabled("Hip Chat public api is currently end of life; need an on premise installation to test")
     public void sendMessageTestIT() throws IOException, IntegrationException {
         final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
         final TestAlertProperties testAlertProperties = new TestAlertProperties();
