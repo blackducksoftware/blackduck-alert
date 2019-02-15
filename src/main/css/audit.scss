@@ -1,3 +1,5 @@
+@import 'variables.scss';
+
 .notification {
   padding-left: 3px;
   padding-right: 3px;
@@ -6,43 +8,43 @@
 .highVulnerability {
   padding-left: 3px;
   padding-right: 3px;
-  color: #9c251f;
+  color: $synopsys-color-platform-red;
 }
 
 .mediumVulnerability {
   padding-left: 3px;
   padding-right: 3px;
-  color: #e78c87;
+  color: $synopsys-color-platform-red 75%;
 }
 
 .lowVulnerability {
   padding-left: 3px;
   padding-right: 3px;
-  color: #999;
+  color: $synopsys-color-light-gray;
 }
 
 .vulnerability {
   padding-left: 3px;
   padding-right: 3px;
-  color: rgb(221, 221, 221);
+  color: $synopsys-color-lightest-gray;
 }
 
 .policyViolationCleared {
   padding-left: 3px;
   padding-right: 3px;
-  color: #3c763d;
+  color: $synopsys-color-platform-green;
 }
 
 .policyViolationOverride {
   padding-left: 3px;
   padding-right: 3px;
-  color: #444;
+  color: $synopsys-color-dark-gray;
 }
 
 .policyViolation {
   padding-left: 3px;
   padding-right: 3px;
-  color: #a94442;
+  color: $synopsys-color-platform-red 125%;
 }
 
 .inline {

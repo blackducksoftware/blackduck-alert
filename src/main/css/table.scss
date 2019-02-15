@@ -1,3 +1,5 @@
+@import 'variables.scss';
+
 // Adding this class because react-bootstrap-table seems to be incorrectly applying this class to the search bar of the table
 .input-group-sm > .form-control {
   height: auto;
@@ -11,21 +13,22 @@
 .react-bs-table-add-btn,
 .react-bs-table-del-btn {
   line-height: 1.4em;
+
   .fa {
     margin-right: 7px;
   }
 }
 
 .statusSuccess {
-  color: #3c763d;
+  color: $synopsys-color-platform-green;
 }
 
 .statusFailure {
-  color: #9c251f;
+  color: $synopsys-color-platform-red;
 }
 
 .statusPending {
-  color: #999;
+  color: $synopsys-color-light-gray;
 }
 
 .tableButton {
@@ -33,29 +36,31 @@
 }
 
 .addJobButton {
-  border: 1px solid darken(#337ab7, 5%);
-  background-color: #337ab7;
-  color: #FFFFFF;
+  border: 1px solid darken($synopsys-color-platform-blue, 5%);
+  background-color: $synopsys-color-platform-blue;
+  color: $synopsys-color-section-background;
+
   &:hover {
-    background-color: darken(#337ab7, 10%);
-    border-color: darken(#337ab7, 17%);
-    color: #FFFFFF;
+    background-color: darken($synopsys-color-platform-blue, 10%);
+    border-color: darken($synopsys-color-platform-blue, 17%);
+    color: $synopsys-color-section-background;
   }
 }
 
 .deleteJobButton {
   border: 1px solid darken($color-danger, 5%);
   background-color: $color-danger;
-  color: #FFFFFF;
+  color: $synopsys-color-section-background;
+
   &:hover {
     background-color: darken($color-danger, 10%);
     border-color: darken($color-danger, 17%);
-    color: #FFFFFF;
+    color: $synopsys-color-section-background;
   }
 }
 
 .editJobButton {
-  color: #285f8f;
+  color: $synopsys-color-midnight-blue;
   margin-left: auto;
   margin-right: auto;
   padding-top: 0;
@@ -63,7 +68,7 @@
 }
 
 .editJobButtonDisabled {
-  color: #cecece;
+  color: $synopsys-color-lightest-gray;
   padding: 6px 12px;
   border: 3px solid transparent;
   vertical-align: middle;
@@ -83,7 +88,7 @@
 
 .tableEvenRow {
   cursor: pointer;
-  background-color: #f9f9f9;
+  background-color: $synopsys-color-lightest-gray;
 }
 
 .tableCell {
@@ -122,7 +127,7 @@
 .expandableContainer {
   border-radius: $border-radius;
   border: 1px solid $border-color;
-  background-color: white;
+  background-color: $synopsys-color-section-background;
   overflow-y: scroll !important;
   padding-top: 15px;
 }
