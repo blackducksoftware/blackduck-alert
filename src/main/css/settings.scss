@@ -1,9 +1,11 @@
+@import 'variables.scss';
+
 .settingsWrapper {
   padding: 0px;
   font-size: $base-font-size;
   height: 100%;
   width: 100%;
-  font-family: 'Open Sans', sans-serif;
+  font-family: 'Roboto', 'Arial', sans-serif;
   display: inline-block;
   position: relative;
 }
@@ -17,10 +19,10 @@
 }
 
 .settingsBox {
-  background-color: #fff;
+  background-color: $synopsys-color-section-background;
   border: 0;
   border-radius: $border-radius;
-  box-shadow: 1px 1px 10px #999;
+  box-shadow: 1px 1px 10px $synopsys-color-light-gray;
   margin-top: 5px;
   margin-bottom: 29px;
   max-width: 550px;

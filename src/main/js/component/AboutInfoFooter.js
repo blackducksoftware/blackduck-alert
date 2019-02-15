@@ -9,6 +9,9 @@ import { getAboutInfo } from 'store/actions/about';
 import { getLatestMessages } from 'store/actions/system';
 import '../../css/footer.scss';
 import '../../css/messages.scss';
+import '../../css/logos.scss';
+
+//import { synopsys_black } from 'Index.js';
 
 
 class AboutInfoFooter extends React.Component {
@@ -146,14 +149,20 @@ class AboutInfoFooter extends React.Component {
         const errorComponent = this.createErrorComponent();
         return (
             <div className="footer">
-                <a className="productName" alt={projectUrl} href={projectUrl}>
-                    <strong>BLACK</strong>DUCK | Alert
-                </a>
+                <span className="synopsysLogoSpan">
+                    <img
+                        class="synopsysFooterLogo"
+                        src="https://www.synopsys.com/content/dam/synopsys/company/about/legal/synopsys-logos/blacklogo/synopsys_blk.png"
+                        alt={projectUrl}
+                        href={projectUrl}
+                    />
+                    <span className="synopsysFooterLogoVerticalBarSpace">|</span>ALERT
+                </span>
                 <span className="productVersion">v{version}</span>
                 <span className="copyright">
                     &nbsp;© 2019&nbsp;
-                    <a id="aboutLink" href="http://www.blackducksoftware.com">Black Duck Software, Inc</a>
-                    &nbsp;All rights reserved.
+                    <a id="aboutLink" href="https://www.synopsys.com/">Synopsys, Inc.</a>
+                    &nbsp;All rights reserved
                 </span>
                 {errorComponent}
             </div>

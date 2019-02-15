@@ -1,13 +1,33 @@
-$base-background-color: #ddd;
+$synopsys-color-purple: #5A2A82;
+$synopsys-color-light-purple: #80539C;
+$synopsys-color-dark-gray: #646E81;
+$synopsys-color-light-gray: #B1B3B3;
+$synopsys-color-lightest-gray: #E8E7E5;
+$synopsys-color-green: #99CC33;
+$synopsys-color-teal: #00B2A9;
+$synopsys-color-blue: #4C9EC9;
+$synopsys-color-dark-blue: #12788A;
+$synopsys-color-midnight-blue: #1E4681;
+$synopsys-color-orange: #E07C05;
+$synopsys-color-yellow: #FCAF1A;
+
+$synopsys-color-section-background: #F7F7FA;
+$synopsys-color-footer-background: #F0F0F4;
+$synopsys-color-platform-red: #E03C31;
+$synopsys-color-platform-green: #3B7D3C;
+$synopsys-color-platform-blue: #1A87BB;
+$synopsys-color-subhead-copy: #2E3B4E;
+
+$base-background-color: $synopsys-color-section-background;
 $base-font-size: 13px;
 $base-font-weight: 400;
 
-$border-color: #ddd;
+$border-color: $synopsys-color-section-background;
 $border-radius: 3px;
 
 $button-font-size: 13px;
 
-$color-danger: #d9534f;
+$color-danger: $synopsys-color-platform-red;
 
-$navigation-background-color: #2d343e;
-$navigation-border: 1px solid #444;
+$navigation-background-color: $synopsys-color-subhead-copy;
+$navigation-border: 1px solid $synopsys-color-dark-gray;

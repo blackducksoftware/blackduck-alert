@@ -1,6 +1,8 @@
+@import 'variables.scss';
+
 html,
 body {
-  background-color: $base-background-color;
+  background-color: $synopsys-color-footer-background;
   font-size: $base-font-size;
   font-weight: $base-font-weight;
 }
@@ -57,9 +59,9 @@ button + button {
   bottom: 0;
   width: 250px;
   background-color: $navigation-background-color;
-  color: white;
+  color: $synopsys-color-section-background;
   border: 0;
-  box-shadow: 1px 1px 10px #666;
+  box-shadow: 1px 1px 10px $synopsys-color-light-gray;
   z-index: 100;
   padding: 0 20px;
 
@@ -88,7 +90,7 @@ button + button {
         padding: 0;
 
         a {
-          color: white;
+          color: $synopsys-color-section-background;
           text-decoration: none;
           border-left: 4px solid transparent;
           font-weight: 300;
@@ -97,12 +99,12 @@ button + button {
           padding: 8px 10px;
 
           &.activeNav {
-            border-left: 4px solid white;
-            background-color: #3d444e;
+            border-left: 4px solid $synopsys-color-section-background;
+            background-color: $synopsys-color-dark-gray;
           }
 
           &:hover {
-            background-color: #4d545e;
+            background-color: $synopsys-color-dark-gray;
             cursor: pointer;
           }
         }
@@ -115,7 +117,7 @@ button + button {
         &.navHeader {
           text-transform: uppercase;
           font-size: 0.8em;
-          opacity: 0.6;
+          opacity: 0.75;
           margin: 15px 0 5px;
         }
       }
@@ -124,7 +126,7 @@ button + button {
 }
 
 .contentArea {
-  background-color: white;
+  background-color: $synopsys-color-section-background;
   position: fixed;
   overflow: auto;
   top: 0;
@@ -148,7 +150,7 @@ button + button {
   font-size: $base-font-size;
   height: 800px;
   width: 100%;
-  font-family: 'Open Sans', sans-serif;
+  font-family: 'Roboto', 'Arial', sans-serif;
   display: inline-block;
   position: absolute;
 }
@@ -160,7 +162,7 @@ button + button {
 
 .advanced {
   cursor: pointer;
-  color: #285f8f;
+  color: $synopsys-color-platform-blue;
   text-align: right;
 }
 
@@ -172,8 +174,8 @@ button + button {
 
 .submitButtons {
   margin-right: 10px;
-  color: #fff;
-  background: #285f8f;
+  color: $synopsys-color-section-background;
+  background: $synopsys-color-platform-blue;
   text-align: center;
   vertical-align: middle;
   padding: 5px 10px 5px 10px;
@@ -191,8 +193,8 @@ button + button {
 
 .submitButtonsFixed {
   margin-right: 10px;
-  color: #fff;
-  background: #285f8f;
+  color: $synopsys-color-section-background;
+  background: $synopsys-color-platform-blue;
   text-align: center;
   vertical-align: middle;
   padding: 5px 10px 5px 10px;
@@ -210,7 +212,7 @@ button + button {
 }
 
 .configurationError {
-  color: red;
+  color: $synopsys-color-platform-red;
   text-align: center;
 }
 
@@ -227,10 +229,10 @@ form.form-horizontal.loginForm {
 }
 
 .loginBox {
-  background-color: #fff;
+  background-color: $synopsys-color-section-background;
   border: 0;
   border-radius: $border-radius;
-  box-shadow: 1px 1px 10px #999;
+  box-shadow: 1px 1px 10px $synopsys-color-light-gray;
   margin-bottom: 20px;
   max-width: 500px;
   min-height: 175px;
@@ -273,7 +275,7 @@ form.form-horizontal.loginForm {
   width: 75%;
   height: 100%;
   padding: 10px;
-  background-color: white;
+  background-color: $synopsys-color-section-background;
   position: relative;
   overflow: hidden;
 }
@@ -303,8 +305,9 @@ form.form-horizontal.loginForm {
   padding-right: 5px;
 }
 
-.blackduckLogo {
+.productLogo {
   margin-top: 4px;
+  font-family: 'Roboto', sans-serif;
 }
 
 .collapsiblePanel {
