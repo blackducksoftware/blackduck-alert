@@ -45,7 +45,7 @@ public class JsonFieldFilterBuilder implements JsonFilterBuilder {
 
     @Override
     public Predicate<NotificationContent> buildPredicate() {
-        final Predicate<NotificationContent> contentPredicate = (notification) -> {
+        return notification -> {
             final List<String> contentValues = jsonExtractor.getValuesFromJson(jsonField, notification.getContent());
             for (final String contentValue : contentValues) {
                 if (StringUtils.isNotBlank(contentValue) && contentValue.matches(value)) {
@@ -54,6 +54,5 @@ public class JsonFieldFilterBuilder implements JsonFilterBuilder {
             }
             return false;
         };
-        return contentPredicate;
     }
 }

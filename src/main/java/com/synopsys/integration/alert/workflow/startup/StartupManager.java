@@ -175,7 +175,7 @@ public class StartupManager {
                 configuredPurgeFrequency.ifPresentOrElse(fields::add, () -> fields.add(defaultPurgeFrequencyField));
                 try {
                     final ConfigurationModel schedulingModel = configurationAccessor.updateConfiguration(globalSchedulingConfig.getConfigurationId(), fields);
-                    logger.info("Saved updated scheduling to DB: {}", schedulingModel.toString());
+                    logger.info("Saved updated scheduling to DB: {}", schedulingModel);
                 } catch (final AlertDatabaseConstraintException e) {
                     logger.error("Error saving to DB", e);
                 }
@@ -191,7 +191,7 @@ public class StartupManager {
         } else {
             try {
                 final ConfigurationModel schedulingModel = configurationAccessor.createConfiguration(SchedulingDescriptor.SCHEDULING_COMPONENT, ConfigContextEnum.GLOBAL, List.of(defaultHourOfDayField, defaultPurgeFrequencyField));
-                logger.info("Saved scheduling to DB: {}", schedulingModel.toString());
+                logger.info("Saved scheduling to DB: {}", schedulingModel);
             } catch (final AlertDatabaseConstraintException e) {
                 logger.error("Error saving to DB", e);
             }

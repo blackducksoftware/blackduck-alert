@@ -96,10 +96,9 @@ public class ProjectSyncTask extends ScheduledTask {
                 projectToEmailAddresses.forEach((projectId, emails) -> emailAddresses.addAll(emails));
 
                 updateUserDB(emailAddresses);
-                final List<BlackDuckUserEntity> blackDuckUserEntities = (List<BlackDuckUserEntity>) blackDuckUserRepositoryAccessor.readEntities();
+                final List<BlackDuckUserEntity> blackDuckUserEntities = blackDuckUserRepositoryAccessor.readEntities();
 
                 updateUserProjectRelations(projectToEmailAddresses, blackDuckUserEntities);
-
             } else {
                 logger.error("Missing BlackDuck global configuration.");
             }
@@ -157,8 +156,8 @@ public class ProjectSyncTask extends ScheduledTask {
 
                         final Set<String> projectUserEmailAddresses = projectService.getAllActiveUsersForProject(projectView)
                                                                           .stream()
-                                                                          .filter(userView -> StringUtils.isNotBlank(userView.getEmail()))
-                                                                          .map(userView -> userView.getEmail())
+                                                                          .map(UserView::getEmail)
+                                                                          .filter(StringUtils::isNotBlank)
                                                                           .collect(Collectors.toSet());
                         if (StringUtils.isNotBlank(projectEntity.getProjectOwnerEmail())) {
                             projectUserEmailAddresses.add(projectEntity.getProjectOwnerEmail());
@@ -177,7 +176,7 @@ public class ProjectSyncTask extends ScheduledTask {
         final Set<String> emailsToAdd = new HashSet<>();
         final Set<String> emailsToRemove = new HashSet<>();
 
-        final List<BlackDuckUserEntity> blackDuckUserEntities = (List<BlackDuckUserEntity>) blackDuckUserRepositoryAccessor.readEntities();
+        final List<BlackDuckUserEntity> blackDuckUserEntities = blackDuckUserRepositoryAccessor.readEntities();
         final Set<String> storedEmails = blackDuckUserEntities
                                              .stream()
                                              .map(BlackDuckUserEntity::getEmailAddress)
@@ -217,9 +216,7 @@ public class ProjectSyncTask extends ScheduledTask {
                                                     .stream()
                                                     .collect(Collectors.toMap(BlackDuckUserEntity::getEmailAddress, BlackDuckUserEntity::getId));
         final Set<UserProjectRelation> userProjectRelations = new HashSet<>();
-        projectToEmailAddresses.forEach((projectId, emails) -> {
-            emails.forEach(email -> userProjectRelations.add(new UserProjectRelation(emailToUserId.get(email), projectId)));
-        });
+        projectToEmailAddresses.forEach((projectId, emails) -> emails.forEach(email -> userProjectRelations.add(new UserProjectRelation(emailToUserId.get(email), projectId))));
         logger.info("User to project relationships {}", userProjectRelations.size());
         userProjectRelationRepositoryAccessor.deleteAndSaveAll(userProjectRelations);
     }

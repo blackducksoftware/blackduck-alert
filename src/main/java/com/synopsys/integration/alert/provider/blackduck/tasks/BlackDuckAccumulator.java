@@ -241,8 +241,7 @@ public class BlackDuckAccumulator extends ScheduledTask {
         final String provider = BlackDuckProvider.COMPONENT_NAME;
         final String notificationType = notification.getType().name();
         final String jsonContent = notification.getJson();
-        final NotificationContent content = new NotificationContent(createdAt, provider, providerCreationTime, notificationType, jsonContent);
-        return content;
+        return new NotificationContent(createdAt, provider, providerCreationTime, notificationType, jsonContent);
     }
 
     // Expects that the notifications are sorted oldest to newest
