@@ -29,7 +29,7 @@ project.ext.javaTargetCompatibility = JavaVersion.VERSION_11
 // Copied from src/test/java - com.synopsys.integration.alert.TestTags
 project.ext.junitPlatformCustomTestTags = 'BlackDuckConnection, DatabaseConnection, ExternalConnection'
 
-version = '4.0.0-SNAPSHOT'
+version = '4.1.0-SNAPSHOT'
 
 apply plugin: 'maven-publish'
 apply plugin: 'com.blackducksoftware.integration.solution'
