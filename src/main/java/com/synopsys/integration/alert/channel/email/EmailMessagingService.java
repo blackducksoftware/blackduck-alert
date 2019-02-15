@@ -130,7 +130,7 @@ public class EmailMessagingService {
                 toAddress.validate();
                 addresses.add(toAddress);
             } catch (final AddressException e) {
-                logger.warn(String.format("Could not create the address from %s: %s", emailAddress, e.getMessage()));
+                logger.warn("Could not create the address from {}: {}", emailAddress, e.getMessage());
             }
         }
 
@@ -175,7 +175,7 @@ public class EmailMessagingService {
                 }
             } catch (final MessagingException e) {
                 errorMessages.add(e.getMessage());
-                logger.error("Could not send this email: " + e.getMessage());
+                logger.error("Could not send this email: {}", e.getMessage());
             }
         }
         if (!errorMessages.isEmpty()) {
@@ -200,8 +200,8 @@ public class EmailMessagingService {
     }
 
     private String generateContentId(final String value) {
-        final String cid = value.replaceAll("[^A-Za-z0-9]", "bd").trim() + "@blackducksoftware.com";
-        return cid;
+        // TODO should this be changed to '@synopsys.com'?
+        return value.replaceAll("[^A-Za-z0-9]", "bd").trim() + "@blackducksoftware.com";
     }
 
     private String cleanForFreemarker(final String s) {

@@ -101,7 +101,7 @@ public abstract class RestDistributionChannel extends DistributionChannel {
 
     public Response sendGenericRequest(final IntHttpClient intHttpClient, final Request request) throws IntegrationException {
         try (final Response response = intHttpClient.execute(request)) {
-            logger.trace("Response: " + response.toString());
+            logger.trace("Response: {}", response.toString());
             return response;
         } catch (final Exception e) {
             logger.error("Error sending request", e);
