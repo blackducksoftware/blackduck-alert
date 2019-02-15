@@ -42,7 +42,10 @@ public class FieldValueModel {
     }
 
     public Collection<String> getValues() {
-        return values.stream().filter(singleValue -> null != singleValue).collect(Collectors.toList());
+        if (null != values) {
+            return values.stream().filter(singleValue -> null != singleValue).collect(Collectors.toList());
+        }
+        return null;
     }
 
     public void setValues(final Collection<String> values) {
