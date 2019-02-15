@@ -67,7 +67,7 @@ public class ProxyManager {
         final Optional<String> alertProxyHost = settingsConfiguration.flatMap(configurationModel -> configurationModel.getField(SettingsDescriptor.KEY_PROXY_HOST)).flatMap(ConfigurationFieldModel::getFieldValue);
         final Optional<String> alertProxyPort = settingsConfiguration.flatMap(configurationModel -> configurationModel.getField(SettingsDescriptor.KEY_PROXY_PORT)).flatMap(ConfigurationFieldModel::getFieldValue);
         final Optional<String> alertProxyUsername = settingsConfiguration.flatMap(configurationModel -> configurationModel.getField(SettingsDescriptor.KEY_PROXY_USERNAME)).flatMap(ConfigurationFieldModel::getFieldValue);
-        final Optional<String> alertProxyPassword = settingsConfiguration.flatMap(configurationModel -> configurationModel.getField(SettingsDescriptor.KEY_PROXY_PASSWORD)).flatMap(ConfigurationFieldModel::getFieldValue);
+        final Optional<String> alertProxyPassword = settingsConfiguration.flatMap(configurationModel -> configurationModel.getField(SettingsDescriptor.KEY_PROXY_PWD)).flatMap(ConfigurationFieldModel::getFieldValue);
 
         final ProxyInfoBuilder proxyBuilder = new ProxyInfoBuilder();
         if (alertProxyHost.isPresent()) {

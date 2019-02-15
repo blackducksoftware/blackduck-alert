@@ -48,7 +48,7 @@ public class ProxyManagerTest {
         Mockito.when(configurationModel.getField(SettingsDescriptor.KEY_PROXY_HOST)).thenReturn(Optional.of(hostModel));
         Mockito.when(configurationModel.getField(SettingsDescriptor.KEY_PROXY_PORT)).thenReturn(Optional.of(portModel));
         Mockito.when(configurationModel.getField(SettingsDescriptor.KEY_PROXY_USERNAME)).thenReturn(Optional.of(usernameModel));
-        Mockito.when(configurationModel.getField(SettingsDescriptor.KEY_PROXY_PASSWORD)).thenReturn(Optional.of(passwordModel));
+        Mockito.when(configurationModel.getField(SettingsDescriptor.KEY_PROXY_PWD)).thenReturn(Optional.of(passwordModel));
 
         ProxyInfo proxyInfo = proxyManager.createProxyInfo();
         assertEquals(HOST, proxyInfo.getHost().orElse(null));

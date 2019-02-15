@@ -49,20 +49,20 @@ public class SettingsUIConfig extends UIConfig {
     @Override
     public List<ConfigField> createFields() {
         final ConfigField sysAdminEmail = PasswordConfigField.createRequired(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, "Default System Administrator Email");
-        final ConfigField defaultUserPassword = PasswordConfigField.createRequired(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, "Default System Administrator Password");
-        final ConfigField encryptionPassword = PasswordConfigField.createRequired(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, "Encryption Password");
+        final ConfigField defaultUserPassword = PasswordConfigField.createRequired(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, "Default System Administrator Password");
+        final ConfigField encryptionPassword = PasswordConfigField.createRequired(SettingsDescriptor.KEY_ENCRYPTION_PWD, "Encryption Password");
         final ConfigField encryptionSalt = PasswordConfigField.createRequired(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, "Encryption Global Salt");
         final ConfigField environmentVariableOverride = CheckboxConfigField.create(SettingsDescriptor.KEY_STARTUP_ENVIRONMENT_VARIABLE_OVERRIDE, "Startup Environment Variable Override");
 
         final ConfigField proxyHost = TextInputConfigField.create(SettingsDescriptor.KEY_PROXY_HOST, "Proxy Host", this::validateProxyHost);
         final ConfigField proxyPort = NumberConfigField.create(SettingsDescriptor.KEY_PROXY_PORT, "Proxy Port");
         final ConfigField proxyUsername = TextInputConfigField.create(SettingsDescriptor.KEY_PROXY_USERNAME, "Proxy Username", this::validateProxyUserName);
-        final ConfigField proxyPassword = PasswordConfigField.create(SettingsDescriptor.KEY_PROXY_PASSWORD, "Proxy Password", this::validateProxyPassword);
+        final ConfigField proxyPassword = PasswordConfigField.create(SettingsDescriptor.KEY_PROXY_PWD, "Proxy Password", this::validateProxyPassword);
 
         final ConfigField ldapEnabled = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_ENABLED, "LDAP Enabled");
         final ConfigField ldapServer = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_SERVER, "LDAP Server", this::validateLDAPServer);
         final ConfigField ldapManagerDn = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_MANAGER_DN, "LDAP Manager DN", this::validateLDAPUsername);
-        final ConfigField ldapManagerPassword = PasswordConfigField.create(SettingsDescriptor.KEY_LDAP_MANAGER_PASSWORD, "LDAP Manager Password", this::validateLDAPPassword);
+        final ConfigField ldapManagerPassword = PasswordConfigField.create(SettingsDescriptor.KEY_LDAP_MANAGER_PWD, "LDAP Manager Password", this::validateLDAPPassword);
         final ConfigField ldapAuthenticationType = SelectConfigField.create(SettingsDescriptor.KEY_LDAP_AUTHENTICATION_TYPE, "LDAP Authentication Type", List.of("simple", "none", "digest"));
         final ConfigField ldapReferral = SelectConfigField.create(SettingsDescriptor.KEY_LDAP_REFERRAL, "LDAP Referral", List.of("ignore", "follow", "throw"));
         final ConfigField ldapUserSearchBase = TextInputConfigField.create(SettingsDescriptor.KEY_LDAP_USER_SEARCH_BASE, "LDAP User Search Base");
@@ -82,7 +82,7 @@ public class SettingsUIConfig extends UIConfig {
         final boolean hostExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_HOST);
         final boolean portExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_PORT);
         final boolean userNameExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_USERNAME);
-        final boolean passwordExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_PASSWORD);
+        final boolean passwordExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_PWD);
         final boolean isHostMissing = (portExists || passwordExists || userNameExists) && !hostExists;
         if (isHostMissing) {
             return List.of(SettingsDescriptor.FIELD_ERROR_PROXY_HOST_MISSING);
@@ -93,7 +93,7 @@ public class SettingsUIConfig extends UIConfig {
 
     private Collection<String> validateProxyUserName(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
         Collection<String> result = List.of();
-        final boolean passwordExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_PASSWORD);
+        final boolean passwordExists = validateFieldExists(fieldModel, SettingsDescriptor.KEY_PROXY_PWD);
         if (fieldToValidate.hasValues()) {
             if (passwordExists) {
                 final String userValue = fieldToValidate.getValue().orElse("");
@@ -116,12 +116,12 @@ public class SettingsUIConfig extends UIConfig {
             if (userNameExists) {
                 final String passwordValue = fieldToValidate.getValue().orElse("");
                 if (StringUtils.isBlank(passwordValue)) {
-                    result = List.of(SettingsDescriptor.FIELD_ERROR_PROXY_PASSWORD_MISSING);
+                    result = List.of(SettingsDescriptor.FIELD_ERROR_PROXY_PWD_MISSING);
                 }
             }
         } else {
             if (userNameExists) {
-                result = List.of(SettingsDescriptor.FIELD_ERROR_PROXY_PASSWORD_MISSING);
+                result = List.of(SettingsDescriptor.FIELD_ERROR_PROXY_PWD_MISSING);
             }
         }
         return result;
@@ -144,7 +144,7 @@ public class SettingsUIConfig extends UIConfig {
 
     private Collection<String> validateLDAPUsername(final FieldValueModel fieldToValidate, final FieldModel fieldModel) {
         if (isLDAPEnabled(fieldModel)) {
-            final String managerPassword = fieldModel.getField(SettingsDescriptor.KEY_LDAP_MANAGER_PASSWORD).flatMap(FieldValueModel::getValue).orElse("");
+            final String managerPassword = fieldModel.getField(SettingsDescriptor.KEY_LDAP_MANAGER_PWD).flatMap(FieldValueModel::getValue).orElse("");
             final boolean fieldHasNoValue = !fieldToValidate.hasValues() || StringUtils.isBlank(fieldToValidate.getValue().orElse(""));
             if (fieldHasNoValue && StringUtils.isNotBlank(managerPassword)) {
                 return List.of(SettingsDescriptor.FIELD_ERROR_LDAP_USERNAME_MISSING);
@@ -159,7 +159,7 @@ public class SettingsUIConfig extends UIConfig {
             final String managerDN = fieldModel.getField(SettingsDescriptor.KEY_LDAP_MANAGER_DN).flatMap(FieldValueModel::getValue).orElse("");
             final boolean fieldHasNoValue = !fieldToValidate.hasValues() || StringUtils.isBlank(fieldToValidate.getValue().orElse(""));
             if (fieldHasNoValue && StringUtils.isNotBlank(managerDN)) {
-                return List.of(SettingsDescriptor.FIELD_ERROR_LDAP_PASSWORD_MISSING);
+                return List.of(SettingsDescriptor.FIELD_ERROR_LDAP_PWD_MISSING);
             }
         }
 

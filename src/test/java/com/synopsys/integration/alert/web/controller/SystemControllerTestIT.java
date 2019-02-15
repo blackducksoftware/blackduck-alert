@@ -101,8 +101,8 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
         HashMap<String, FieldValueModel> valueModelMap = new HashMap<>();
 
         valueModelMap.put(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, new FieldValueModel(List.of(defaultAdminEmail), false));
-        valueModelMap.put(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PASSWORD, new FieldValueModel(List.of(defaultAdminPassword), false));
-        valueModelMap.put(SettingsDescriptor.KEY_ENCRYPTION_PASSWORD, new FieldValueModel(List.of(globalEncryptionPassword), false));
+        valueModelMap.put(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of(defaultAdminPassword), false));
+        valueModelMap.put(SettingsDescriptor.KEY_ENCRYPTION_PWD, new FieldValueModel(List.of(globalEncryptionPassword), false));
         valueModelMap.put(SettingsDescriptor.KEY_ENCRYPTION_GLOBAL_SALT, new FieldValueModel(List.of(globalEncryptionSalt), false));
 
         final FieldModel configuration = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, ConfigContextEnum.GLOBAL.name(), valueModelMap);
