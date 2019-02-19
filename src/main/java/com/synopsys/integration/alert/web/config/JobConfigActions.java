@@ -130,10 +130,7 @@ public class JobConfigActions {
         final ConfigurationJobModel savedJob = configurationAccessor.createJob(descriptorNames, configurationFieldModels);
         final JobFieldModel savedJobFieldModel = convertToJobFieldModel(savedJob);
 
-        final Set<FieldModel> updatedFieldModels = savedJobFieldModel.getFieldModels()
-                                                       .stream()
-                                                       .map(fieldModel -> fieldModelProcessor.performSaveAction(fieldModel))
-                                                       .collect(Collectors.toSet());
+        final Set<FieldModel> updatedFieldModels = performUpdate(savedJobFieldModel);
         savedJobFieldModel.setFieldModels(updatedFieldModels);
         return savedJobFieldModel;
     }
@@ -149,12 +146,16 @@ public class JobConfigActions {
         }
         final ConfigurationJobModel configurationJobModel = configurationAccessor.updateJob(id, configurationFieldModels);
         final JobFieldModel savedJobFieldModel = convertToJobFieldModel(configurationJobModel);
-        final Set<FieldModel> updatedFieldModels = savedJobFieldModel.getFieldModels()
-                                                       .stream()
-                                                       .map(fieldModel -> fieldModelProcessor.performUpdateAction(fieldModel))
-                                                       .collect(Collectors.toSet());
+        final Set<FieldModel> updatedFieldModels = performUpdate(savedJobFieldModel);
         savedJobFieldModel.setFieldModels(updatedFieldModels);
         return savedJobFieldModel;
+    }
+
+    private Set<FieldModel> performUpdate(final JobFieldModel savedJobFieldModel) {
+        return savedJobFieldModel.getFieldModels()
+                   .stream()
+                   .map(fieldModelProcessor::performUpdateAction)
+                   .collect(Collectors.toSet());
     }
 
     private void validateJobNameUnique(final JobFieldModel jobFieldModel) throws AlertFieldException {
@@ -251,7 +252,7 @@ public class JobConfigActions {
         final Set<ConfigurationModel> configurations = groupedConfiguration.getCopyOfConfigurations();
         final Set<FieldModel> constructedFieldModels = new HashSet<>();
         for (final ConfigurationModel configurationModel : configurations) {
-            FieldModel fieldModel = fieldModelProcessor.convertToFieldModel(configurationModel);
+            final FieldModel fieldModel = fieldModelProcessor.convertToFieldModel(configurationModel);
             constructedFieldModels.add(fieldModelProcessor.performReadAction(fieldModel));
         }
         return new JobFieldModel(groupedConfiguration.getJobId().toString(), constructedFieldModels);

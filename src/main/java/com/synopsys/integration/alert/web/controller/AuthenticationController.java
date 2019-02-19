@@ -29,6 +29,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -47,12 +49,11 @@ import com.synopsys.integration.alert.common.exception.AlertException;
 import com.synopsys.integration.alert.component.settings.PasswordResetService;
 import com.synopsys.integration.alert.web.actions.LoginActions;
 import com.synopsys.integration.alert.web.model.LoginConfig;
-import com.synopsys.integration.log.IntLogger;
-import com.synopsys.integration.log.LogLevel;
-import com.synopsys.integration.log.PrintStreamIntLogger;
 
 @RestController
 public class AuthenticationController extends BaseController {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     private final LoginActions loginActions;
     private final PasswordResetService passwordResetService;
     private final ResponseFactory responseFactory;
@@ -82,7 +83,6 @@ public class AuthenticationController extends BaseController {
 
     @PostMapping(value = "/login")
     public ResponseEntity<String> login(final HttpServletRequest request, final HttpServletResponse response, @RequestBody(required = false) final LoginConfig loginConfig) {
-        final IntLogger logger = new PrintStreamIntLogger(System.out, LogLevel.INFO);
         try {
             if (loginActions.authenticateUser(loginConfig)) {
                 final CsrfToken token = csrfTokenRepository.generateToken(request);

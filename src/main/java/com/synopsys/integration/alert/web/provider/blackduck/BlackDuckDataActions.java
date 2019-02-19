@@ -47,7 +47,7 @@ public class BlackDuckDataActions {
     }
 
     public List<BlackDuckProject> getBlackDuckProjects() {
-        final List<BlackDuckProjectEntity> blackDuckProjectEntities = (List<BlackDuckProjectEntity>) blackDuckProjectRepositoryAccessor.readEntities();
+        final List<BlackDuckProjectEntity> blackDuckProjectEntities = blackDuckProjectRepositoryAccessor.readEntities();
         if (!blackDuckProjectEntities.isEmpty()) {
             final List<BlackDuckProject> projects = new ArrayList<>();
             for (final BlackDuckProjectEntity blackDuckProjectEntity : blackDuckProjectEntities) {

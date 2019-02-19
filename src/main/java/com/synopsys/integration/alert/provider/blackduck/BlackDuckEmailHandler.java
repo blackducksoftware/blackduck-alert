@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -94,10 +95,9 @@ public class BlackDuckEmailHandler extends EmailHandler {
             emailAddresses = userProjectRelations
                                  .stream()
                                  .map(userProjectRelation -> blackDuckUserRepositoryAccessor.readEntity(userProjectRelation.getBlackDuckUserId()))
-                                 .filter(userEntity -> userEntity.isPresent())
-                                 .map(databaseEntity -> (BlackDuckUserEntity) databaseEntity.get())
-                                 .filter(userEntity -> StringUtils.isNotBlank(userEntity.getEmailAddress()))
-                                 .map(userEntity -> userEntity.getEmailAddress())
+                                 .flatMap(Optional::stream)
+                                 .map(BlackDuckUserEntity::getEmailAddress)
+                                 .filter(StringUtils::isNotBlank)
                                  .collect(Collectors.toSet());
         }
         return emailAddresses;

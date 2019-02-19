@@ -263,7 +263,6 @@ public class ConfigurationAccessor implements BaseConfigurationAccessor {
                         fieldValueRepository.save(newFieldValueEntity);
                     }
                 }
-                // TODO find out if this had a different result: createdConfig.configuredFields.put(fieldKey, configuredField);
                 createdConfig.put(configuredField);
             }
         }

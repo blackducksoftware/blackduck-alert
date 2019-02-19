@@ -62,14 +62,14 @@ public abstract class ScheduledTask implements Runnable {
             try {
                 final CronTrigger cronTrigger = new CronTrigger(cron, TimeZone.getTimeZone("UTC"));
                 unscheduleTask();
-                logger.info("Scheduling " + this.getClass().getSimpleName() + " with cron : " + cron);
+                logger.info("Scheduling {} with cron : {}", this.getClass().getSimpleName(), cron);
                 future = taskScheduler.schedule(this, cronTrigger);
             } catch (final IllegalArgumentException e) {
                 logger.error(e.getMessage(), e);
             }
         } else {
             if (future != null) {
-                logger.info("Un-Scheduling " + this.getClass().getSimpleName());
+                logger.info("Un-Scheduling {}", this.getClass().getSimpleName());
                 unscheduleTask();
             }
         }
@@ -78,11 +78,11 @@ public abstract class ScheduledTask implements Runnable {
     public void scheduleExecutionAtFixedRate(final long period) {
         if (period > 0) {
             unscheduleTask();
-            logger.info("Scheduling " + this.getClass().getSimpleName() + " with fixed rate : " + period);
+            logger.info("Scheduling {} with fixed rate : {}", this.getClass().getSimpleName(), period);
             future = taskScheduler.scheduleAtFixedRate(this, period);
         } else {
             if (future != null) {
-                logger.info("Un-Scheduling " + this.getClass().getSimpleName());
+                logger.info("Un-Scheduling {}", this.getClass().getSimpleName());
                 unscheduleTask();
             }
         }
@@ -104,15 +104,14 @@ public abstract class ScheduledTask implements Runnable {
 
     public Optional<String> getFormatedNextRunTime() {
         final Optional<Long> msToNextRun = getMillisecondsToNextRun();
-        if (!msToNextRun.isPresent()) {
-            return Optional.empty();
-        } else {
+        if (msToNextRun.isPresent()) {
             final ZonedDateTime currentUTCTime = ZonedDateTime.now(ZoneOffset.UTC);
             ZonedDateTime nextRunTime = currentUTCTime.plus(msToNextRun.get(), ChronoUnit.MILLIS);
             nextRunTime = nextRunTime.truncatedTo(ChronoUnit.MINUTES).plusMinutes(1);
             final String formattedString = nextRunTime.format(DateTimeFormatter.ofPattern(FORMAT_PATTERN));
             return Optional.of(formattedString + " UTC");
         }
+        return Optional.empty();
     }
 
 }
