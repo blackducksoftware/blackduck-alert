@@ -20,20 +20,19 @@ plugins {
     id 'application'
     id 'com.moowork.node' version '1.2.0'
     id 'com.jfrog.artifactory' version '4.8.1'
-
 }
 
-project.ext.javaSourceCompatibility = JavaVersion.VERSION_11
-project.ext.javaTargetCompatibility = JavaVersion.VERSION_11
+version = '4.1.0-SNAPSHOT'
+mainClassName = 'com.synopsys.integration.alert.Application'
 
 // Copied from src/test/java - com.synopsys.integration.alert.TestTags
 project.ext.junitPlatformCustomTestTags = 'BlackDuckConnection, DatabaseConnection, ExternalConnection'
 
-version = '4.1.0-SNAPSHOT'
+project.ext.javaSourceCompatibility = JavaVersion.VERSION_11
+project.ext.javaTargetCompatibility = JavaVersion.VERSION_11
 
-apply plugin: 'maven-publish'
 apply plugin: 'com.blackducksoftware.integration.solution'
-apply plugin: 'io.spring.dependency-management'
+apply plugin: 'org.springframework.boot'
 apply plugin: 'com.bmuschko.docker-remote-api'
 
 // configure the version of the JaCoCo plugin to 0.8.2 which works for Java 11 until we switch to a gradle wrapper that includes 0.8.2+ by default.
@@ -41,19 +40,33 @@ jacoco {
     toolVersion = "0.8.2"
 }
 
+allprojects {
+    apply plugin: 'maven-publish'
+    apply plugin: 'io.spring.dependency-management'
 
-import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
-import groovy.json.JsonOutput
+    dependencies {
+        //        implementation 'com.blackducksoftware.integration:blackduck-common:42.0.0'
+    }
+}
 
-mainClassName = 'com.synopsys.integration.alert.Application'
+subprojects {
+    version = rootProject.version
+    apply plugin: 'com.blackducksoftware.integration.simple'
 
-dependencyManagement {
-    imports {
-        mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
+    license {
+        header rootProject.file('LICENSE')
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
+        }
     }
 }
 
 dependencies {
+    implementation project(':alert-database')
+
     implementation('com.blackducksoftware.integration:blackduck-common:41.2.0') {
         exclude group: 'lodash.escape'
         exclude group: 'dom4j:dom4j'
@@ -124,6 +137,8 @@ distributions {
 }
 
 // run alert locally
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+import groovy.json.JsonOutput
 
 // disable the test task when running the alert server to speed up startup time.
 gradle.taskGraph.whenReady { graph ->
