@@ -6,8 +6,8 @@ import TextInput from 'field/input/TextInput';
 import SubmitButton from 'field/input/SubmitButton';
 import Header from 'component/common/Header';
 import { login } from 'store/actions/session';
-import { hideResetModal, sendPasswordResetEmail, showResetModal } from "store/actions/system";
-import ResetPasswordModal from "./component/common/ResetPasswordModal";
+import { hideResetModal, sendPasswordResetEmail, showResetModal } from 'store/actions/system';
+import ResetPasswordModal from './component/common/ResetPasswordModal';
 
 class LoginPage extends Component {
     constructor(props) {
@@ -26,8 +26,8 @@ class LoginPage extends Component {
 
     handleSubmit(evt) {
         evt.preventDefault();
-        const { blackDuckUsername, blackDuckPassword } = this.state;
-        this.props.login(blackDuckUsername, blackDuckPassword);
+        const { username, password } = this.state;
+        this.props.login(username, password);
     }
 
     render() {
@@ -46,7 +46,7 @@ class LoginPage extends Component {
                             <TextInput
                                 id="loginUsername"
                                 label="Username"
-                                name="blackDuckUsername"
+                                name="username"
                                 onChange={this.handleChange}
                                 errorName="usernameError"
                                 autoFocus
@@ -55,19 +55,21 @@ class LoginPage extends Component {
                             <PasswordInput
                                 id="loginPassword"
                                 label="Password"
-                                name="blackDuckPassword"
+                                name="password"
                                 onChange={this.handleChange}
                                 errorName="passwordError"
                             />
 
                             <div className="row">
                                 <div className="col-sm-12 text-right">
-                                    <a href="#"
-                                       onClick={(evt) => {
-                                           evt.preventDefault();
-                                           this.props.showResetModal();
-                                       }}
-                                    >Reset Password</a>
+                                    <a
+                                        href="#"
+                                        onClick={(evt) => {
+                                            evt.preventDefault();
+                                            this.props.showResetModal();
+                                        }}
+                                    >Reset Password
+                                    </a>
                                     <span>&nbsp;&nbsp;&nbsp;</span>
                                     <SubmitButton id="loginSubmit">Login</SubmitButton>
                                     <div className="progressIcon">
