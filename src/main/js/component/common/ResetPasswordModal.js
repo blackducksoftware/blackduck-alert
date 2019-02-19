@@ -7,8 +7,7 @@ class ResetPasswordModal extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            resetUsername: '',
-            spinning: false
+            resetUsername: this.props.resetUsername
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -58,6 +57,10 @@ ResetPasswordModal.propTypes = {
     resetPassword: PropTypes.func.isRequired,
     resettingPassword: PropTypes.bool.isRequired
 };
+
+ResetPasswordModal.defaultProps = {
+    resetUsername: ''
+}
 
 const mapStateToProps = state => ({
     showResetModal: state.system.showPasswordResetModal,
