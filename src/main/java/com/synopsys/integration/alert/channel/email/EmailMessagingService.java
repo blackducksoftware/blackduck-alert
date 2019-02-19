@@ -200,8 +200,7 @@ public class EmailMessagingService {
     }
 
     private String generateContentId(final String value) {
-        // TODO should this be changed to '@synopsys.com'?
-        return value.replaceAll("[^A-Za-z0-9]", "bd").trim() + "@blackducksoftware.com";
+        return value.replaceAll("[^A-Za-z0-9]", "bd").trim() + "@synopsys.com";
     }
 
     private String cleanForFreemarker(final String s) {

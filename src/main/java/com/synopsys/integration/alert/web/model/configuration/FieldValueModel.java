@@ -44,10 +44,9 @@ public class FieldValueModel {
 
     public Collection<String> getValues() {
         if (null != values) {
-            return values.stream().filter(Objects::nonNull).collect(Collectors.toList());
+            return values.stream().filter(Objects::nonNull).collect(Collectors.toSet());
         }
-        // FIXME should this return Set.of(); ?
-        return null;
+        return Set.of();
     }
 
     public void setValues(final Collection<String> values) {
