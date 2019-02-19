@@ -86,7 +86,6 @@ class LoginPage extends Component {
                                 <ResetPasswordModal
                                     showResetModal={this.props.showPasswordResetModal}
                                     cancelResetModal={this.props.hideResetModal}
-                                    resetUsername={this.state.username}
                                     resetPassword={(resetUsername) => {
                                         this.props.resetPassword(resetUsername);
                                     }}
