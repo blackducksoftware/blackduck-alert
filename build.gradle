@@ -32,20 +32,15 @@ project.ext.javaSourceCompatibility = JavaVersion.VERSION_11
 project.ext.javaTargetCompatibility = JavaVersion.VERSION_11
 
 apply plugin: 'com.blackducksoftware.integration.solution'
-apply plugin: 'org.springframework.boot'
 apply plugin: 'com.bmuschko.docker-remote-api'
 
-// configure the version of the JaCoCo plugin to 0.8.2 which works for Java 11 until we switch to a gradle wrapper that includes 0.8.2+ by default.
-jacoco {
-    toolVersion = "0.8.2"
-}
-
 allprojects {
+    apply plugin: 'java'
     apply plugin: 'maven-publish'
     apply plugin: 'io.spring.dependency-management'
 
     dependencies {
-        //        implementation 'com.blackducksoftware.integration:blackduck-common:42.0.0'
+        implementation 'com.blackducksoftware.integration:blackduck-common:42.0.0'
     }
 }
 
@@ -62,6 +57,11 @@ subprojects {
             mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
         }
     }
+}
+
+// configure the version of the JaCoCo plugin to 0.8.2 which works for Java 11 until we switch to a gradle wrapper that includes 0.8.2+ by default.
+jacoco {
+    toolVersion = "0.8.2"
 }
 
 dependencies {
