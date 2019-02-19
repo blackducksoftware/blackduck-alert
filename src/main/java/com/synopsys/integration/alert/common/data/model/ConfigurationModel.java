@@ -21,7 +21,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.api.configuration.model;
+package com.synopsys.integration.alert.common.data.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;

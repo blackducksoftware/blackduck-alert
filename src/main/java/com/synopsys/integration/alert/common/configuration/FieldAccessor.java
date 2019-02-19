@@ -31,7 +31,7 @@ import java.util.Set;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.data.model.ConfigurationFieldModel;
 
 public class FieldAccessor {
     private final Map<String, ConfigurationFieldModel> fields;
@@ -40,7 +40,7 @@ public class FieldAccessor {
         this.fields = fields;
     }
 
-    public void addFields(Map<String, ConfigurationFieldModel> newFields) {
+    public void addFields(final Map<String, ConfigurationFieldModel> newFields) {
         fields.putAll(newFields);
     }
 
@@ -48,7 +48,7 @@ public class FieldAccessor {
         return fields;
     }
 
-    public Optional<ConfigurationFieldModel> getField(String key) {
+    public Optional<ConfigurationFieldModel> getField(final String key) {
         return Optional.ofNullable(fields.get(key));
     }
 

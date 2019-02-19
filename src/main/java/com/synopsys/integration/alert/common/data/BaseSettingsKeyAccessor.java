@@ -21,22 +21,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.configuration;
+package com.synopsys.integration.alert.common.data;
 
-import java.util.Map;
+import java.util.List;
+import java.util.Optional;
 
-import javax.validation.constraints.NotNull;
+import com.synopsys.integration.alert.common.data.model.SettingsKeyModel;
 
-import com.synopsys.integration.alert.common.data.model.ConfigurationFieldModel;
+public interface BaseSettingsKeyAccessor {
 
-public class Configuration {
-    private final FieldAccessor fieldAccessor;
+    List<SettingsKeyModel> getSettingsKeys();
 
-    public Configuration(@NotNull final Map<String, ConfigurationFieldModel> keyToFieldMap) {
-        fieldAccessor = new FieldAccessor(keyToFieldMap);
-    }
+    Optional<SettingsKeyModel> getSettingsKeyByKey(final String key);
 
-    public FieldAccessor getFieldAccessor() {
-        return fieldAccessor;
-    }
+    SettingsKeyModel saveSettingsKey(final String key, final String value);
+
+    void deleteSettingsKeyByKey(String key);
+
+    void deleteSettingsKeyById(Long id);
+
 }

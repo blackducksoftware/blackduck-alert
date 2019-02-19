@@ -20,8 +20,8 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+import com.synopsys.integration.alert.common.data.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.common.enumeration.EmailPropertyKeys;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 
 public class EmailPropertiesTest {
     @Test

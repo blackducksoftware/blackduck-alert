@@ -8,12 +8,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.synopsys.integration.alert.channel.slack.descriptor.SlackUIConfig;
-import com.synopsys.integration.alert.common.database.BaseDescriptorAccessor;
+import com.synopsys.integration.alert.common.data.BaseDescriptorAccessor;
+import com.synopsys.integration.alert.common.data.model.RegisteredDescriptorModel;
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.database.api.configuration.DescriptorAccessor;
-import com.synopsys.integration.alert.database.api.configuration.model.RegisteredDescriptorModel;
 
 public class ChannelDistributionUIConfigTest {
 

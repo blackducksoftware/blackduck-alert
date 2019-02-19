@@ -9,11 +9,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.data.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.data.model.ConfigurationFieldModel;
+import com.synopsys.integration.alert.common.data.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 import com.synopsys.integration.rest.proxy.ProxyInfo;
 
 public class ProxyManagerTest {
@@ -35,10 +35,10 @@ public class ProxyManagerTest {
 
     @Test
     public void testCreate() throws Exception {
-        ConfigurationFieldModel hostModel = Mockito.mock(ConfigurationFieldModel.class);
-        ConfigurationFieldModel portModel = Mockito.mock(ConfigurationFieldModel.class);
-        ConfigurationFieldModel usernameModel = Mockito.mock(ConfigurationFieldModel.class);
-        ConfigurationFieldModel passwordModel = Mockito.mock(ConfigurationFieldModel.class);
+        final ConfigurationFieldModel hostModel = Mockito.mock(ConfigurationFieldModel.class);
+        final ConfigurationFieldModel portModel = Mockito.mock(ConfigurationFieldModel.class);
+        final ConfigurationFieldModel usernameModel = Mockito.mock(ConfigurationFieldModel.class);
+        final ConfigurationFieldModel passwordModel = Mockito.mock(ConfigurationFieldModel.class);
 
         Mockito.when(hostModel.getFieldValue()).thenReturn(Optional.of(HOST));
         Mockito.when(portModel.getFieldValue()).thenReturn(Optional.of(PORT));
@@ -50,7 +50,7 @@ public class ProxyManagerTest {
         Mockito.when(configurationModel.getField(SettingsDescriptor.KEY_PROXY_USERNAME)).thenReturn(Optional.of(usernameModel));
         Mockito.when(configurationModel.getField(SettingsDescriptor.KEY_PROXY_PWD)).thenReturn(Optional.of(passwordModel));
 
-        ProxyInfo proxyInfo = proxyManager.createProxyInfo();
+        final ProxyInfo proxyInfo = proxyManager.createProxyInfo();
         assertEquals(HOST, proxyInfo.getHost().orElse(null));
         assertEquals(Integer.valueOf(PORT).intValue(), proxyInfo.getPort());
         assertEquals(USERNAME, proxyInfo.getUsername().orElse(null));

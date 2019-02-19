@@ -37,6 +37,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synopsys.integration.alert.common.data.model.UserModel;
 import com.synopsys.integration.alert.database.relation.UserRoleRelation;
 import com.synopsys.integration.alert.database.relation.repository.UserRoleRepository;
 import com.synopsys.integration.alert.database.user.RoleEntity;
