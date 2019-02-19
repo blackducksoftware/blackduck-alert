@@ -6,6 +6,10 @@ import TextInput from 'field/input/TextInput';
 class ResetPasswordModal extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            resetUsername: this.props.resetUsername
+        };
+
         this.handleChange = this.handleChange.bind(this);
         this.handlePasswordReset = this.handlePasswordReset.bind(this);
     }
