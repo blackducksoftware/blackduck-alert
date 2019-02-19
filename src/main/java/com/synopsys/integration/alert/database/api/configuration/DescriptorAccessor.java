@@ -196,12 +196,10 @@ public class DescriptorAccessor implements BaseDescriptorAccessor {
     }
 
     private List<DefinedFieldModel> getFieldsForDescriptorId(final Long descriptorId, final Long contextId, final ConfigContextEnum context) {
-        final List<DefinedFieldModel> fields = definedFieldRepository.findByDescriptorIdAndContext(descriptorId, contextId)
-                                                   .stream()
-                                                   .map(entity -> new DefinedFieldModel(entity.getKey(), context, entity.getSensitive()))
-                                                   .collect(Collectors.toList());
-
-        return fields;
+        return definedFieldRepository.findByDescriptorIdAndContext(descriptorId, contextId)
+                   .stream()
+                   .map(entity -> new DefinedFieldModel(entity.getKey(), context, entity.getSensitive()))
+                   .collect(Collectors.toList());
     }
 
 }

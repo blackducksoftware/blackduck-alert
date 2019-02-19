@@ -110,11 +110,10 @@ public class MessageContentAggregator {
             notificationsForJob.stream()
                 .filter(notificationContent -> collectorMap.containsKey(notificationContent.getNotificationType()))
                 .forEach(notificationContent -> collectorMap.get(notificationContent.getNotificationType()).insert(notificationContent));
-            final List<AggregateMessageContent> collectedTopics = providerMessageContentCollectors
-                                                                      .stream()
-                                                                      .flatMap(collector -> collector.collect(formatType).stream())
-                                                                      .collect(Collectors.toList());
-            return collectedTopics;
+            return providerMessageContentCollectors
+                       .stream()
+                       .flatMap(collector -> collector.collect(formatType).stream())
+                       .collect(Collectors.toList());
         }
         return List.of();
     }
@@ -126,10 +125,9 @@ public class MessageContentAggregator {
     }
 
     private Collection<NotificationContent> filterNotifications(final ProviderDescriptor providerDescriptor, final CommonDistributionConfiguration jobConfiguration, final Collection<NotificationContent> notificationCollection) {
-        final Predicate<NotificationContent> providerFilter = (notificationContent) -> jobConfiguration.getProviderName().equals(notificationContent.getProvider());
+        final Predicate<NotificationContent> providerFilter = notificationContent -> jobConfiguration.getProviderName().equals(notificationContent.getProvider());
         final Collection<NotificationContent> providerNotifications = applyFilter(notificationCollection, providerFilter);
-        final Collection<NotificationContent> filteredNotificationList = notificationFilter.extractApplicableNotifications(providerDescriptor.getProviderContentTypes(), jobConfiguration, providerNotifications);
-        return filteredNotificationList;
+        return notificationFilter.extractApplicableNotifications(providerDescriptor.getProviderContentTypes(), jobConfiguration, providerNotifications);
     }
 
     private Map<String, MessageContentCollector> createCollectorMap(final Set<MessageContentCollector> providerMessageContentCollectors) {

@@ -44,6 +44,7 @@ import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
 import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
+import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationFieldModel;
 import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 
 @Component
@@ -86,32 +87,31 @@ public class LdapManager {
         try {
             if (!isLdapEnabled()) {
                 return;
-            } else {
-                final ConfigurationModel configuration = getCurrentConfiguration();
-                final LdapContextSource ldapContextSource = new LdapContextSource();
-
-                final String ldapServer = getFieldValueOrEmpty(configuration, SettingsDescriptor.KEY_LDAP_SERVER);
-                final String managerDN = getFieldValueOrEmpty(configuration, SettingsDescriptor.KEY_LDAP_MANAGER_DN);
-                final String managerPassword = getFieldValueOrEmpty(configuration, SettingsDescriptor.KEY_LDAP_MANAGER_PWD);
-                final String ldapReferral = getFieldValueOrEmpty(configuration, SettingsDescriptor.KEY_LDAP_REFERRAL);
-                if (StringUtils.isNotBlank(ldapServer)) {
-                    ldapContextSource.setUrl(ldapServer);
-                    ldapContextSource.setUserDn(managerDN);
-                    ldapContextSource.setPassword(managerPassword);
-                    ldapContextSource.setReferral(ldapReferral);
-                    ldapContextSource.setAuthenticationStrategy(createAuthenticationStrategy(configuration));
-                }
-                contextSource = ldapContextSource;
-                contextSource.afterPropertiesSet();
-                updateAuthenticationProvider(configuration);
             }
+            final ConfigurationModel configuration = getCurrentConfiguration();
+            final LdapContextSource ldapContextSource = new LdapContextSource();
+
+            final String ldapServer = getFieldValueOrEmpty(configuration, SettingsDescriptor.KEY_LDAP_SERVER);
+            final String managerDN = getFieldValueOrEmpty(configuration, SettingsDescriptor.KEY_LDAP_MANAGER_DN);
+            final String managerPassword = getFieldValueOrEmpty(configuration, SettingsDescriptor.KEY_LDAP_MANAGER_PWD);
+            final String ldapReferral = getFieldValueOrEmpty(configuration, SettingsDescriptor.KEY_LDAP_REFERRAL);
+            if (StringUtils.isNotBlank(ldapServer)) {
+                ldapContextSource.setUrl(ldapServer);
+                ldapContextSource.setUserDn(managerDN);
+                ldapContextSource.setPassword(managerPassword);
+                ldapContextSource.setReferral(ldapReferral);
+                ldapContextSource.setAuthenticationStrategy(createAuthenticationStrategy(configuration));
+            }
+            contextSource = ldapContextSource;
+            contextSource.afterPropertiesSet();
+            updateAuthenticationProvider(configuration);
         } catch (final IllegalArgumentException | AlertDatabaseConstraintException ex) {
             throw new AlertLDAPConfigurationException("Error creating LDAP Context Source", ex);
         }
     }
 
     private String getFieldValueOrEmpty(final ConfigurationModel configurationModel, final String fieldKey) {
-        return configurationModel.getField(fieldKey).flatMap(field -> field.getFieldValue()).orElse("");
+        return configurationModel.getField(fieldKey).flatMap(ConfigurationFieldModel::getFieldValue).orElse("");
     }
 
     private DirContextAuthenticationStrategy createAuthenticationStrategy(final ConfigurationModel configuration) {
