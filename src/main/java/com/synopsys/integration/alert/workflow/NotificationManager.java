@@ -119,8 +119,8 @@ public class NotificationManager {
     }
 
     public void deleteNotification(final NotificationContent notification) {
-        notificationContentRepository.delete(notification);
         deleteAuditEntries(notification.getId());
+        notificationContentRepository.delete(notification);
     }
 
     private void deleteAuditEntries(final Long notificationId) {
