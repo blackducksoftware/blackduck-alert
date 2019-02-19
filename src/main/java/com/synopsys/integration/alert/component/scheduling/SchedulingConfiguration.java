@@ -24,7 +24,7 @@
 package com.synopsys.integration.alert.component.scheduling;
 
 import com.synopsys.integration.alert.common.configuration.Configuration;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
+import com.synopsys.integration.alert.common.data.model.ConfigurationModel;
 
 public class SchedulingConfiguration extends Configuration {
     private final String dailyDigestHourOfDay;

@@ -21,23 +21,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.common.database;
+package com.synopsys.integration.alert.common.data.model;
 
-import java.util.List;
-import java.util.Optional;
+import com.synopsys.integration.util.Stringable;
 
-import com.synopsys.integration.alert.database.api.settingskey.SettingsKeyModel;
+public class SettingsKeyModel extends Stringable {
+    private final Long id;
+    private final String key;
+    private final String value;
 
-public interface BaseSettingsKeyAccessor {
+    public SettingsKeyModel(final Long id, final String key, final String value) {
+        this.id = id;
+        this.key = key;
+        this.value = value;
+    }
 
-    List<SettingsKeyModel> getSettingsKeys();
+    public Long getId() {
+        return id;
+    }
 
-    Optional<SettingsKeyModel> getSettingsKeyByKey(final String key);
+    public String getKey() {
+        return key;
+    }
 
-    SettingsKeyModel saveSettingsKey(final String key, final String value);
-
-    void deleteSettingsKeyByKey(String key);
-
-    void deleteSettingsKeyById(Long id);
-
+    public String getValue() {
+        return value;
+    }
 }

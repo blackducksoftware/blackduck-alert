@@ -31,8 +31,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.synopsys.integration.alert.common.data.model.UserModel;
 import com.synopsys.integration.alert.database.api.user.UserAccessor;
-import com.synopsys.integration.alert.database.api.user.UserModel;
 
 @Service
 public class UserDatabaseService implements UserDetailsService {

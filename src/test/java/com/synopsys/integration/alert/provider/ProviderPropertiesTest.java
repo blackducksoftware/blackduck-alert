@@ -7,11 +7,11 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import com.synopsys.integration.alert.common.database.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.data.BaseConfigurationAccessor;
+import com.synopsys.integration.alert.common.data.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.common.provider.ProviderProperties;
-import com.synopsys.integration.alert.database.api.configuration.model.ConfigurationModel;
 
 public class ProviderPropertiesTest {
     private static final String PROVIDER_NAME = "provider_name";

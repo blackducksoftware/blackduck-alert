@@ -21,30 +21,35 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.api.settingskey;
+package com.synopsys.integration.alert.common.data.model;
 
+import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.util.Stringable;
 
-public class SettingsKeyModel extends Stringable {
+public final class RegisteredDescriptorModel extends Stringable {
     private final Long id;
-    private final String key;
-    private final String value;
+    private final String name;
+    private final DescriptorType type;
 
-    public SettingsKeyModel(final Long id, final String key, final String value) {
-        this.id = id;
-        this.key = key;
-        this.value = value;
+    public RegisteredDescriptorModel(final Long registeredDescriptorId, final String registeredDescriptorName, final String registeredDescriptorType) {
+        this(registeredDescriptorId, registeredDescriptorName, DescriptorType.valueOf(registeredDescriptorType));
+    }
+
+    private RegisteredDescriptorModel(final Long registeredDescriptorId, final String registeredDescriptorName, final DescriptorType registeredDescriptorType) {
+        id = registeredDescriptorId;
+        name = registeredDescriptorName;
+        type = registeredDescriptorType;
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getKey() {
-        return key;
+    public String getName() {
+        return name;
     }
 
-    public String getValue() {
-        return value;
+    public DescriptorType getType() {
+        return type;
     }
 }
