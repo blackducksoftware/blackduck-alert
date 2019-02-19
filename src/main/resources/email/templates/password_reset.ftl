@@ -11,9 +11,12 @@
 <strong>Temporary Password: </strong> ${tempPassword}
 <br />
 <br />
-<div style="border: 1px solid #979797;"></div>
-<br />
 <small>For your security, please change your password immediately.</small>
 <br />
+<div style="border: 1px solid #979797;"></div>
+<br />
+<div style="display:inline-block;width:100%;">
+    <img src="cid:${logo_image}" height="33" width="150" />
+</div>
 </body>
 <html>

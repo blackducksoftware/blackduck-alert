@@ -24,6 +24,7 @@
 package com.synopsys.integration.alert.component.settings;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -77,18 +78,27 @@ public class PasswordResetService {
         final EmailProperties emailProperties = new EmailProperties(fieldAccessor);
 
         final String tempPassword = RandomStringUtils.randomAlphanumeric(TEMP_PASSWORD_LENGTH);
-        final Map<String, Object> templateFields = Map.of(
-            EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), SUBJECT_LINE,
-            "tempPassword", tempPassword
-        );
-
-        final EmailTarget passwordResetEmail = new EmailTarget(userModel.getEmailAddress(), TEMPLATE_NAME, templateFields, Map.of());
-        handleSendAndUpdateDatabase(passwordResetEmail, emailProperties, username, tempPassword);
+        final Map<String, Object> templateFields = new HashMap<>();
+        templateFields.put(EmailPropertyKeys.TEMPLATE_KEY_SUBJECT_LINE.getPropertyKey(), SUBJECT_LINE);
+        templateFields.put("tempPassword", tempPassword);
+        handleSendAndUpdateDatabase(emailProperties, templateFields, userModel.getEmailAddress(), username, tempPassword);
     }
 
-    private void handleSendAndUpdateDatabase(final EmailTarget passwordResetEmail, final EmailProperties emailProperties, final String username, final String tempPassword) throws AlertException {
+    private void handleSendAndUpdateDatabase(final EmailProperties emailProperties, final Map<String, Object> templateFields, final String emailAddress, final String username, final String tempPassword) throws AlertException {
         try {
+            final String imagesDirectory = alertProperties.getAlertImagesDir();
+            final String imageDirectoryPath;
+            if (StringUtils.isNotBlank(imagesDirectory)) {
+                imageDirectoryPath = imagesDirectory + "/synopsys.png";
+            } else {
+                imageDirectoryPath = System.getProperties().getProperty("user.dir") + "/src/main/resources/email/images/synopsys.png";
+            }
+
+            final Map<String, String> contentIdsToFilePaths = new HashMap<>();
             final EmailMessagingService emailService = new EmailMessagingService(alertProperties.getAlertTemplatesDir(), emailProperties);
+            emailService.addTemplateImage(templateFields, contentIdsToFilePaths, EmailPropertyKeys.EMAIL_LOGO_IMAGE.getPropertyKey(), imageDirectoryPath);
+
+            final EmailTarget passwordResetEmail = new EmailTarget(emailAddress, TEMPLATE_NAME, templateFields, contentIdsToFilePaths);
             emailService.sendEmailMessage(passwordResetEmail);
             // Only change the password if there isn't an issue with sending the email
             userAccessor.changeUserPassword(username, tempPassword);
