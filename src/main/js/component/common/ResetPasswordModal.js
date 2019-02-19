@@ -57,12 +57,8 @@ ResetPasswordModal.propTypes = {
     resettingPassword: PropTypes.bool.isRequired
 };
 
-ResetPasswordModal.defaultProps = {
-    resetUsername: ''
-}
-
 const mapStateToProps = state => ({
-    showResetModal: state.system.showPasswordResetModal,
+    showResetModal: state.system.showPasswordResetModal
 });
 
 export default ResetPasswordModal;
