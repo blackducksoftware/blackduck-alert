@@ -7,7 +7,7 @@ class ResetPasswordModal extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            resetUsername: this.props.resetUsername
+            resetUsername: ''
         };
 
         this.handleChange = this.handleChange.bind(this);
