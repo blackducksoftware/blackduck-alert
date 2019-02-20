@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.synopsys.integration.alert.common.descriptor.MessageContentCollector;
+import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckLicenseLimitCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyOverrideCollector;
 import com.synopsys.integration.alert.provider.blackduck.collector.BlackDuckPolicyViolationCollector;

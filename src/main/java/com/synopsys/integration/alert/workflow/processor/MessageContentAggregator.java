@@ -38,11 +38,11 @@ import org.springframework.stereotype.Component;
 
 import com.synopsys.integration.alert.common.data.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.data.model.CommonDistributionConfiguration;
-import com.synopsys.integration.alert.common.descriptor.MessageContentCollector;
 import com.synopsys.integration.alert.common.descriptor.ProviderDescriptor;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
+import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 import com.synopsys.integration.alert.database.api.JobConfigReader;
 import com.synopsys.integration.alert.workflow.filter.NotificationFilter;
 

@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 import com.synopsys.integration.alert.common.data.model.UserModel;
-import com.synopsys.integration.alert.database.user.UserEntity;
 import com.synopsys.integration.alert.database.user.UserRole;
 
 public class UserModelTest {
@@ -35,30 +34,5 @@ public class UserModelTest {
         assertFalse(userModel.isLocked());
         assertFalse(userModel.isPasswordExpired());
         assertTrue(userModel.isEnabled());
-    }
-
-    @Test
-    public void testUserModelWithEntity() {
-        final String expectedUserName = "expectedUser";
-        final String expectedPassword = "expectedPassword";
-        final String expectedEmail = "expectedEmail";
-        final Set<String> expectedRoles = new LinkedHashSet<>(Arrays.asList(UserRole.values()).stream().map(UserRole::name).collect(Collectors.toList()));
-        final boolean expired = true;
-        final boolean locked = true;
-        final boolean passwordExpired = true;
-        final boolean enabled = false;
-        final UserEntity entity = new UserEntity(expectedUserName, expectedPassword, expectedEmail, expired, locked, passwordExpired, enabled);
-        final UserModel userModel = UserModel.of(entity.getUserName(), entity.getPassword(), entity.getEmailAddress(), expectedRoles);
-
-        assertEquals(expectedUserName, userModel.getName());
-        assertEquals(expectedPassword, userModel.getPassword());
-        assertEquals(expectedEmail, userModel.getEmailAddress());
-        assertEquals(expectedRoles.size(), userModel.getRoles().size());
-        assertTrue(userModel.hasRole(UserRole.ADMIN.name()));
-        assertFalse(userModel.hasRole("UNKNOWN_ROLE"));
-        assertTrue(userModel.isExpired());
-        assertTrue(userModel.isLocked());
-        assertTrue(userModel.isPasswordExpired());
-        assertFalse(userModel.isEnabled());
     }
 }
