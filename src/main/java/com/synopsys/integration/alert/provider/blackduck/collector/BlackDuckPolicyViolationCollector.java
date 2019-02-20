@@ -85,7 +85,7 @@ public class BlackDuckPolicyViolationCollector extends BlackDuckPolicyCollector 
                 addApplicableItems(categoryItems, notificationContent.getId(), policyLinkableItem, policyUrl, operation, applicableItems);
             }
         }
-        
+
     }
 
     private ItemOperation getOperationFromNotification(final NotificationContent notificationContent) {
