@@ -22,15 +22,16 @@ plugins {
     id 'com.jfrog.artifactory' version '4.8.1'
 }
 
-version = '4.1.0-SNAPSHOT'
-mainClassName = 'com.synopsys.integration.alert.Application'
-
 // Copied from src/test/java - com.synopsys.integration.alert.TestTags
 project.ext.junitPlatformCustomTestTags = 'BlackDuckConnection, DatabaseConnection, ExternalConnection'
 
 project.ext.javaSourceCompatibility = JavaVersion.VERSION_11
 project.ext.javaTargetCompatibility = JavaVersion.VERSION_11
 
+mainClassName = 'com.synopsys.integration.alert.Application'
+version = '4.1.0-SNAPSHOT'
+
+apply plugin: 'idea'
 apply plugin: 'com.blackducksoftware.integration.solution'
 apply plugin: 'com.bmuschko.docker-remote-api'
 
@@ -40,7 +41,7 @@ allprojects {
     apply plugin: 'io.spring.dependency-management'
 
     dependencies {
-        implementation 'com.blackducksoftware.integration:blackduck-common:42.0.0'
+        implementation 'com.blackducksoftware.integration:blackduck-common:41.2.0'
     }
 }
 
@@ -82,7 +83,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-batch'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.ldap:spring-ldap-core'
 
@@ -91,10 +91,6 @@ dependencies {
     implementation 'org.springframework.security:spring-security-web'
     implementation 'org.springframework.security:spring-security-config'
     implementation 'org.springframework.security:spring-security-ldap'
-
-    // Database
-    runtimeOnly 'com.h2database:h2'
-    implementation 'org.liquibase:liquibase-core'
 
     // Email
     implementation 'com.sun.mail:javax.mail:1.6.2'
