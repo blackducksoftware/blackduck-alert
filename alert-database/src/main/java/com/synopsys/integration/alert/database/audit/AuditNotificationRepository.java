@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-database
  *
  * Copyright (C) 2019 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
@@ -21,15 +21,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.relation;
+package com.synopsys.integration.alert.database.audit;
 
-import javax.persistence.MappedSuperclass;
+import java.util.List;
 
-import com.synopsys.integration.alert.database.entity.BaseEntity;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-@MappedSuperclass
-public abstract class DatabaseRelation extends BaseEntity {
-    public DatabaseRelation() {
-        super();
-    }
+public interface AuditNotificationRepository extends JpaRepository<AuditNotificationRelation, AuditNotificationRelationPK> {
+    List<AuditNotificationRelation> findByAuditEntryId(final Long auditEntryId);
+
+    List<AuditNotificationRelation> findByNotificationId(final Long notificationId);
 }

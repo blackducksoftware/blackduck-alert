@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-database
  *
  * Copyright (C) 2019 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
@@ -34,7 +34,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
+import com.synopsys.integration.alert.database.audit.AuditNotificationRelation;
 
 @Entity
 @Table(schema = "alert", name = "raw_notification_content")

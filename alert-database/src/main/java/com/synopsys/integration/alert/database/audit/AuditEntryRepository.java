@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-database
  *
  * Copyright (C) 2019 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
@@ -21,32 +21,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.audit.relation;
+package com.synopsys.integration.alert.database.audit;
 
-import java.io.Serializable;
+import java.util.Optional;
+import java.util.UUID;
 
-public class AuditNotificationRelationPK implements Serializable {
-    private static final long serialVersionUID = -9015966905838645720L;
-    private Long auditEntryId;
-    private Long notificationId;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
-    public AuditNotificationRelationPK() {
-        // JPA requires default constructor definitions
-    }
+public interface AuditEntryRepository extends JpaRepository<AuditEntryEntity, Long> {
+    Optional<AuditEntryEntity> findFirstByCommonConfigIdOrderByTimeLastSentDesc(final UUID commonConfigId);
 
-    public Long getAuditEntryId() {
-        return auditEntryId;
-    }
+    @Query(value = "SELECT entity FROM AuditEntryEntity entity INNER JOIN entity.auditNotificationRelations relation ON entity.id = relation.auditEntryId WHERE entity.commonConfigId = ?2 AND relation.notificationContent.id = ?1")
+    Optional<AuditEntryEntity> findMatchingAudit(Long notificationId, UUID commonConfigId);
 
-    public void setAuditEntryId(final Long auditEntryId) {
-        this.auditEntryId = auditEntryId;
-    }
-
-    public Long getNotificationId() {
-        return notificationId;
-    }
-
-    public void setNotificationId(final Long notificationId) {
-        this.notificationId = notificationId;
-    }
 }

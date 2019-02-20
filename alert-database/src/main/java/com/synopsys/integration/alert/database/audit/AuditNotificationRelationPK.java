@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-database
  *
  * Copyright (C) 2019 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
@@ -23,15 +23,30 @@
  */
 package com.synopsys.integration.alert.database.audit;
 
-import java.util.List;
+import java.io.Serializable;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+public class AuditNotificationRelationPK implements Serializable {
+    private static final long serialVersionUID = -9015966905838645720L;
+    private Long auditEntryId;
+    private Long notificationId;
 
-import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
-import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelationPK;
+    public AuditNotificationRelationPK() {
+        // JPA requires default constructor definitions
+    }
 
-public interface AuditNotificationRepository extends JpaRepository<AuditNotificationRelation, AuditNotificationRelationPK> {
-    List<AuditNotificationRelation> findByAuditEntryId(final Long auditEntryId);
+    public Long getAuditEntryId() {
+        return auditEntryId;
+    }
 
-    List<AuditNotificationRelation> findByNotificationId(final Long notificationId);
+    public void setAuditEntryId(final Long auditEntryId) {
+        this.auditEntryId = auditEntryId;
+    }
+
+    public Long getNotificationId() {
+        return notificationId;
+    }
+
+    public void setNotificationId(final Long notificationId) {
+        this.notificationId = notificationId;
+    }
 }

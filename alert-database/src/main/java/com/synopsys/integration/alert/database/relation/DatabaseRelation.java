@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-database
  *
  * Copyright (C) 2019 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
@@ -21,36 +21,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.entity;
+package com.synopsys.integration.alert.database.relation;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.MappedSuperclass;
 
-@Entity
-@Table(schema = "alert", name = "settings_key")
-public class SettingsKeyEntity extends DatabaseEntity {
+import com.synopsys.integration.alert.database.entity.BaseEntity;
 
-    @Column
-    private String key;
-
-    @Column
-    private String value;
-
-    public SettingsKeyEntity() {
-        // JPA requires default constructor definitions
-    }
-
-    public SettingsKeyEntity(final String key, final String value) {
-        this.key = key;
-        this.value = value;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public String getValue() {
-        return value;
+@MappedSuperclass
+public abstract class DatabaseRelation extends BaseEntity {
+    public DatabaseRelation() {
+        super();
     }
 }
