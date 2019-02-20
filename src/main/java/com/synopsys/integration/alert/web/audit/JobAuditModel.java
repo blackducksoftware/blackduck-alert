@@ -23,7 +23,7 @@
  */
 package com.synopsys.integration.alert.web.audit;
 
-import com.synopsys.integration.alert.web.model.Config;
+import com.synopsys.integration.alert.common.data.model.Config;
 
 public class JobAuditModel extends Config {
     private String configId;

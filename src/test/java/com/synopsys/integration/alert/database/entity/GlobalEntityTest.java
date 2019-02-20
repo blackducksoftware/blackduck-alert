@@ -17,6 +17,7 @@ import static org.junit.Assert.assertNull;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 
+import com.synopsys.integration.alert.database.DatabaseEntity;
 import com.synopsys.integration.alert.mock.MockGlobalEntityUtil;
 
 public abstract class GlobalEntityTest<GE extends DatabaseEntity> {

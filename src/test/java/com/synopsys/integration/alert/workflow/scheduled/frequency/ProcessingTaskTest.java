@@ -17,28 +17,28 @@ import org.mockito.Mockito;
 import org.springframework.scheduling.TaskScheduler;
 
 import com.synopsys.integration.alert.channel.ChannelTemplateManager;
-import com.synopsys.integration.alert.channel.event.DistributionEvent;
-import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+import com.synopsys.integration.alert.common.data.FieldAccessor;
+import com.synopsys.integration.alert.common.data.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.enumeration.FormatType;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.DateRange;
 import com.synopsys.integration.alert.common.model.LinkableItem;
-import com.synopsys.integration.alert.database.entity.NotificationContent;
+import com.synopsys.integration.alert.database.api.NotificationManager;
 import com.synopsys.integration.alert.mock.entity.MockNotificationContent;
-import com.synopsys.integration.alert.workflow.NotificationManager;
 import com.synopsys.integration.alert.workflow.processor.NotificationProcessor;
 import com.synopsys.integration.rest.RestConstants;
 
 public class ProcessingTaskTest {
 
     private final String taskName = "processing-test-task";
-    private List<NotificationContent> modelList;
+    private List<AlertNotificationWrapper> modelList;
     private List<DistributionEvent> eventList;
 
     @BeforeEach
     public void initTest() {
-        final NotificationContent model = new MockNotificationContent(new Date(), "BlackDuck", new Date(), "NotificationType", "{content: \"content is here\"}", null).createEntity();
+        final AlertNotificationWrapper model = new MockNotificationContent(new Date(), "BlackDuck", new Date(), "NotificationType", "{content: \"content is here\"}", null).createEntity();
         final LinkableItem subTopic = new LinkableItem("subTopic", "sub topic ", null);
         final AggregateMessageContent content = new AggregateMessageContent("testTopic", "topic", null, subTopic, Collections.emptyList());
         modelList = Arrays.asList(model);
@@ -109,7 +109,7 @@ public class ProcessingTaskTest {
         final DateRange dateRange = task.getDateRange();
         Mockito.when(notificationManager.findByCreatedAtBetween(dateRange.getStart(), dateRange.getEnd())).thenReturn(modelList);
         final ProcessingTask processingTask = Mockito.spy(task);
-        final List<NotificationContent> actualModelList = processingTask.read(dateRange);
+        final List<AlertNotificationWrapper> actualModelList = processingTask.read(dateRange);
         Mockito.verify(notificationManager).findByCreatedAtBetween(dateRange.getStart(), dateRange.getEnd());
         assertEquals(modelList, actualModelList);
     }
@@ -125,7 +125,7 @@ public class ProcessingTaskTest {
         final DateRange dateRange = task.getDateRange();
         Mockito.when(notificationManager.findByCreatedAtBetween(dateRange.getStart(), dateRange.getEnd())).thenReturn(Collections.emptyList());
         final ProcessingTask processingTask = Mockito.spy(task);
-        final List<NotificationContent> actualModelList = processingTask.read(dateRange);
+        final List<AlertNotificationWrapper> actualModelList = processingTask.read(dateRange);
         Mockito.verify(notificationManager).findByCreatedAtBetween(dateRange.getStart(), dateRange.getEnd());
         assertEquals(Collections.emptyList(), actualModelList);
     }
@@ -141,7 +141,7 @@ public class ProcessingTaskTest {
         final DateRange dateRange = task.getDateRange();
         Mockito.doThrow(new RuntimeException("Exception reading data")).when(notificationManager).findByCreatedAtBetween(dateRange.getStart(), dateRange.getEnd());
         final ProcessingTask processingTask = Mockito.spy(task);
-        final List<NotificationContent> actualModelList = processingTask.read(dateRange);
+        final List<AlertNotificationWrapper> actualModelList = processingTask.read(dateRange);
         Mockito.verify(notificationManager).findByCreatedAtBetween(dateRange.getStart(), dateRange.getEnd());
         assertEquals(Collections.emptyList(), actualModelList);
     }

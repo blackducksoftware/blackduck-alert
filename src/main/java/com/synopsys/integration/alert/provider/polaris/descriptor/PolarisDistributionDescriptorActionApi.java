@@ -23,8 +23,8 @@
  */
 package com.synopsys.integration.alert.provider.polaris.descriptor;
 
+import com.synopsys.integration.alert.common.data.model.TestConfigModel;
 import com.synopsys.integration.alert.common.descriptor.config.context.DescriptorActionApi;
-import com.synopsys.integration.alert.web.model.configuration.TestConfigModel;
 import com.synopsys.integration.exception.IntegrationException;
 
 // TODO exclude for now: @Component

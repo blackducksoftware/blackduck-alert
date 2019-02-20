@@ -13,7 +13,7 @@ import com.synopsys.integration.alert.common.data.model.RegisteredDescriptorMode
 import com.synopsys.integration.alert.common.descriptor.config.field.ConfigField;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
-import com.synopsys.integration.alert.database.api.configuration.DescriptorAccessor;
+import com.synopsys.integration.alert.database.api.DescriptorAccessor;
 
 public class ChannelDistributionUIConfigTest {
 

@@ -43,19 +43,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.data.model.FieldModel;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.actions.SystemActions;
-import com.synopsys.integration.alert.web.exception.AlertFieldException;
 import com.synopsys.integration.alert.web.model.SystemMessageModel;
-import com.synopsys.integration.alert.web.model.configuration.FieldModel;
 
 @RestController
 public class SystemController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(SystemController.class);
 
     private final SystemActions systemActions;
-    private ContentConverter contentConverter;
-    private ResponseFactory responseFactory;
+    private final ContentConverter contentConverter;
+    private final ResponseFactory responseFactory;
 
     @Autowired
     public SystemController(final SystemActions systemActions, final ContentConverter contentConverter, final ResponseFactory responseFactory) {
@@ -118,9 +118,9 @@ public class SystemController extends BaseController {
             final HashMap<String, String> fieldErrors = new HashMap<>();
             final FieldModel savedConfig = systemActions.saveRequiredInformation(model, fieldErrors);
             return responseFactory.createOkContentResponse(contentConverter.getJsonString(savedConfig));
-        } catch (AlertFieldException ex) {
+        } catch (final AlertFieldException ex) {
             return responseFactory.createFieldErrorResponse(model.getId(), "Invalid System Setup", ex.getFieldErrors());
-        } catch (AlertException ex) {
+        } catch (final AlertException ex) {
             return responseFactory.createBadRequestResponse(model.getId(), ex.getMessage());
         }
     }

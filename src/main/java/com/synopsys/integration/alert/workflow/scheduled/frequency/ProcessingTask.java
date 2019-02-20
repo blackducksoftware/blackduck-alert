@@ -34,13 +34,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TaskScheduler;
 
 import com.synopsys.integration.alert.channel.ChannelTemplateManager;
-import com.synopsys.integration.alert.channel.event.DistributionEvent;
+import com.synopsys.integration.alert.common.data.model.AlertNotificationWrapper;
 import com.synopsys.integration.alert.common.enumeration.FrequencyType;
+import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.model.DateRange;
-import com.synopsys.integration.alert.database.entity.NotificationContent;
-import com.synopsys.integration.alert.workflow.NotificationManager;
+import com.synopsys.integration.alert.common.workflow.ScheduledTask;
+import com.synopsys.integration.alert.database.api.NotificationManager;
 import com.synopsys.integration.alert.workflow.processor.NotificationProcessor;
-import com.synopsys.integration.alert.workflow.scheduled.ScheduledTask;
 import com.synopsys.integration.rest.RestConstants;
 
 public abstract class ProcessingTask extends ScheduledTask {
@@ -77,20 +77,20 @@ public abstract class ProcessingTask extends ScheduledTask {
         final String taskName = getTaskName();
         logger.info("{} Task Started...", taskName);
         final DateRange dateRange = getDateRange();
-        final List<NotificationContent> modelList = read(dateRange);
+        final List<AlertNotificationWrapper> modelList = read(dateRange);
         final List<DistributionEvent> eventList = process(modelList);
         channelTemplateManager.sendEvents(eventList);
         lastRunTime = ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC);
         logger.info("{} Task Finished", taskName);
     }
 
-    public List<NotificationContent> read(final DateRange dateRange) {
+    public List<AlertNotificationWrapper> read(final DateRange dateRange) {
         try {
             final String taskName = getTaskName();
             final Date startDate = dateRange.getStart();
             final Date endDate = dateRange.getEnd();
             logger.info("{} Reading Notifications Between {} and {} ", taskName, RestConstants.formatDate(startDate), RestConstants.formatDate(endDate));
-            final List<NotificationContent> entityList = notificationManager.findByCreatedAtBetween(startDate, endDate);
+            final List<AlertNotificationWrapper> entityList = notificationManager.findByCreatedAtBetween(startDate, endDate);
             if (entityList.isEmpty()) {
                 logger.info("{} Notifications Found: 0", taskName);
                 return Collections.emptyList();
@@ -104,7 +104,7 @@ public abstract class ProcessingTask extends ScheduledTask {
         return Collections.emptyList();
     }
 
-    public List<DistributionEvent> process(final List<NotificationContent> notificationList) {
+    public List<DistributionEvent> process(final List<AlertNotificationWrapper> notificationList) {
         logger.info("Notifications to Process: {}", notificationList.size());
         if (notificationList.isEmpty()) {
             return Collections.emptyList();

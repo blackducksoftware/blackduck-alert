@@ -66,6 +66,7 @@ jacoco {
 }
 
 dependencies {
+    implementation project(':alert-common')
     implementation project(':alert-database')
 
     implementation('com.blackducksoftware.integration:blackduck-common:41.2.0') {
@@ -78,7 +79,6 @@ dependencies {
     implementation 'com.synopsys.integration:polaris-common:0.4.1'
 
     // Spring boot
-    implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-devtools'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
@@ -89,7 +89,6 @@ dependencies {
     // Spring web security
     implementation 'org.springframework:spring-webmvc'
     implementation 'org.springframework.security:spring-security-web'
-    implementation 'org.springframework.security:spring-security-config'
     implementation 'org.springframework.security:spring-security-ldap'
 
     // Email
@@ -105,7 +104,6 @@ dependencies {
     implementation 'org.apache.activemq:activemq-broker'
     implementation 'org.apache.activemq:activemq-kahadb-store'
     implementation 'javax.interceptor:javax.interceptor-api:1.2.2'
-    implementation 'org.springframework.boot:spring-boot-starter-activemq'
 
     // XML
     implementation 'javax.xml.bind:jaxb-api'

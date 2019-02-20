@@ -29,8 +29,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.ProxyManager;
 import com.synopsys.integration.alert.common.AlertProperties;
-import com.synopsys.integration.alert.common.ProxyManager;
 import com.synopsys.integration.alert.common.data.BaseConfigurationAccessor;
 import com.synopsys.integration.alert.common.provider.ProviderProperties;
 import com.synopsys.integration.alert.provider.polaris.descriptor.PolarisDescriptor;

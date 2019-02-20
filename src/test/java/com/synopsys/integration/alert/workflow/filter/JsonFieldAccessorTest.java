@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.TypeRef;
 import com.synopsys.integration.alert.common.field.JsonField;
-import com.synopsys.integration.alert.workflow.filter.field.JsonFieldAccessor;
+import com.synopsys.integration.alert.common.workflow.filter.builder.field.JsonFieldAccessor;
 
 public class JsonFieldAccessorTest {
 

@@ -23,7 +23,7 @@
  */
 package com.synopsys.integration.alert.web.audit;
 
-import com.synopsys.integration.alert.web.model.MaskedModel;
+import com.synopsys.integration.alert.common.data.model.MaskedModel;
 
 public class AuditJobStatusModel extends MaskedModel {
     private String timeAuditCreated;

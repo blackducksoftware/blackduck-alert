@@ -9,19 +9,18 @@ import org.springframework.transaction.annotation.Transactional;
 import com.synopsys.integration.alert.common.data.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
-import com.synopsys.integration.alert.database.entity.configuration.ConfigContextEntity;
-import com.synopsys.integration.alert.database.entity.configuration.DefinedFieldEntity;
-import com.synopsys.integration.alert.database.entity.configuration.DescriptorFieldRelation;
-import com.synopsys.integration.alert.database.entity.configuration.DescriptorTypeEntity;
-import com.synopsys.integration.alert.database.entity.configuration.FieldContextRelation;
-import com.synopsys.integration.alert.database.entity.configuration.RegisteredDescriptorEntity;
-import com.synopsys.integration.alert.database.repository.configuration.ConfigContextRepository;
-import com.synopsys.integration.alert.database.repository.configuration.DefinedFieldRepository;
-import com.synopsys.integration.alert.database.repository.configuration.DescriptorFieldRepository;
-import com.synopsys.integration.alert.database.repository.configuration.DescriptorTypeRepository;
-import com.synopsys.integration.alert.database.repository.configuration.FieldContextRepository;
-import com.synopsys.integration.alert.database.repository.configuration.RegisteredDescriptorRepository;
+import com.synopsys.integration.alert.database.configuration.ConfigContextEntity;
+import com.synopsys.integration.alert.database.configuration.DefinedFieldEntity;
+import com.synopsys.integration.alert.database.configuration.DescriptorFieldRelation;
+import com.synopsys.integration.alert.database.configuration.DescriptorTypeEntity;
+import com.synopsys.integration.alert.database.configuration.FieldContextRelation;
+import com.synopsys.integration.alert.database.configuration.RegisteredDescriptorEntity;
+import com.synopsys.integration.alert.database.configuration.repository.ConfigContextRepository;
+import com.synopsys.integration.alert.database.configuration.repository.DefinedFieldRepository;
+import com.synopsys.integration.alert.database.configuration.repository.DescriptorFieldRepository;
+import com.synopsys.integration.alert.database.configuration.repository.DescriptorTypeRepository;
+import com.synopsys.integration.alert.database.configuration.repository.FieldContextRepository;
+import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
 
 @Transactional
 public class DescriptorMocker {

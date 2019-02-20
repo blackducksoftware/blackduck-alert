@@ -31,17 +31,17 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.google.gson.Gson;
 import com.synopsys.integration.alert.common.ContentConverter;
+import com.synopsys.integration.alert.common.data.model.FieldModel;
+import com.synopsys.integration.alert.common.data.model.FieldValueModel;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertException;
+import com.synopsys.integration.alert.common.exception.AlertFieldException;
 import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
-import com.synopsys.integration.alert.database.system.SystemStatusUtility;
+import com.synopsys.integration.alert.database.api.SystemStatusUtility;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.TestProperties;
 import com.synopsys.integration.alert.util.TestPropertyKey;
 import com.synopsys.integration.alert.web.actions.SystemActions;
-import com.synopsys.integration.alert.web.exception.AlertFieldException;
-import com.synopsys.integration.alert.web.model.configuration.FieldModel;
-import com.synopsys.integration.alert.web.model.configuration.FieldValueModel;
 
 public class SystemControllerTestIT extends AlertIntegrationTest {
     protected final MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
@@ -98,7 +98,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
         final String globalEncryptionPassword = "password";
         final String globalEncryptionSalt = "salt";
 
-        HashMap<String, FieldValueModel> valueModelMap = new HashMap<>();
+        final HashMap<String, FieldValueModel> valueModelMap = new HashMap<>();
 
         valueModelMap.put(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_EMAIL, new FieldValueModel(List.of(defaultAdminEmail), false));
         valueModelMap.put(SettingsDescriptor.KEY_DEFAULT_SYSTEM_ADMIN_PWD, new FieldValueModel(List.of(defaultAdminPassword), false));
@@ -121,7 +121,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void testGetLatestMessagesHandling() {
-        ResponseFactory responseFactory = new ResponseFactory();
+        final ResponseFactory responseFactory = new ResponseFactory();
         final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
         final ResponseEntity<String> responseEntity = handler.getLatestSystemMessages();
         Mockito.verify(systemActions).getSystemMessagesSinceStartup();
@@ -131,7 +131,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void testGetSystemMessagesgetAll() {
-        ResponseFactory responseFactory = new ResponseFactory();
+        final ResponseFactory responseFactory = new ResponseFactory();
         final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
         final ResponseEntity<String> responseEntity = handler.getSystemMessages("", "");
         Mockito.verify(systemActions).getSystemMessages();
@@ -141,7 +141,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void testGetSystemMessagesGetAfter() throws Exception {
-        ResponseFactory responseFactory = new ResponseFactory();
+        final ResponseFactory responseFactory = new ResponseFactory();
         final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
         final ResponseEntity<String> responseEntity = handler.getSystemMessages("2018-11-13T00:00:00.000Z", null);
         Mockito.verify(systemActions).getSystemMessagesAfter(Mockito.anyString());
@@ -151,7 +151,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void testGetSystemMessagesGetBefore() throws Exception {
-        ResponseFactory responseFactory = new ResponseFactory();
+        final ResponseFactory responseFactory = new ResponseFactory();
         final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
         final ResponseEntity<String> responseEntity = handler.getSystemMessages(null, "2018-11-13T00:00:00.000Z");
         Mockito.verify(systemActions).getSystemMessagesBefore(Mockito.anyString());
@@ -161,7 +161,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void testGetSystemMessagesGetBetween() throws Exception {
-        ResponseFactory responseFactory = new ResponseFactory();
+        final ResponseFactory responseFactory = new ResponseFactory();
         final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
         final ResponseEntity<String> responseEntity = handler.getSystemMessages("2018-11-13T00:00:00.000Z", "2018-11-13T01:00:00.000Z");
         Mockito.verify(systemActions).getSystemMessagesBetween(Mockito.anyString(), Mockito.anyString());
@@ -171,7 +171,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void testGetSystemMessagesBadDateRange() throws Exception {
-        ResponseFactory responseFactory = new ResponseFactory();
+        final ResponseFactory responseFactory = new ResponseFactory();
         final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
         Mockito.when(systemActions.getSystemMessagesBetween(Mockito.anyString(), Mockito.anyString())).thenThrow(new ParseException("errorparsing date ", 0));
         final ResponseEntity<String> responseEntity = handler.getSystemMessages("bad-start-time", "bad-end-time");
@@ -181,12 +181,12 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void testGetCurrentSetup() {
-        ResponseFactory responseFactory = new ResponseFactory();
+        final ResponseFactory responseFactory = new ResponseFactory();
         final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
 
         final String contextPath = "context-path/";
-        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        ServletContext servletContext = Mockito.mock(ServletContext.class);
+        final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        final ServletContext servletContext = Mockito.mock(ServletContext.class);
         Mockito.when(request.getServletContext()).thenReturn(servletContext);
         Mockito.when(servletContext.getContextPath()).thenReturn(contextPath);
         final ResponseEntity<String> response = handler.getInitialSystemSetup(request);
@@ -200,12 +200,12 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
 
     @Test
     public void testGetCurrentSetupInitialized() {
-        ResponseFactory responseFactory = new ResponseFactory();
+        final ResponseFactory responseFactory = new ResponseFactory();
         final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
         Mockito.when(systemActions.isSystemInitialized()).thenReturn(Boolean.TRUE);
         final String contextPath = "context-path/";
-        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        ServletContext servletContext = Mockito.mock(ServletContext.class);
+        final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        final ServletContext servletContext = Mockito.mock(ServletContext.class);
         Mockito.when(request.getServletContext()).thenReturn(servletContext);
         Mockito.when(servletContext.getContextPath()).thenReturn(contextPath);
         final ResponseEntity<String> response = handler.getInitialSystemSetup(request);
@@ -220,7 +220,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     public void testSaveNotAllowed() {
         final FieldModel model = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, "GLOBAL", Map.of());
         Mockito.when(systemActions.isSystemInitialized()).thenReturn(Boolean.TRUE);
-        ResponseFactory responseFactory = new ResponseFactory();
+        final ResponseFactory responseFactory = new ResponseFactory();
         final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
         final ResponseEntity<String> response = handler.initialSystemSetup(model);
         Mockito.verify(systemActions).isSystemInitialized();
@@ -235,7 +235,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
         final Map<String, String> fieldErrors = new HashMap<>();
         fieldErrors.put("propertyKey", "error");
         Mockito.when(systemActions.saveRequiredInformation(Mockito.any(FieldModel.class), Mockito.anyMap())).thenThrow(new AlertFieldException(fieldErrors));
-        ResponseFactory responseFactory = new ResponseFactory();
+        final ResponseFactory responseFactory = new ResponseFactory();
         final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
         final ResponseEntity<String> response = handler.initialSystemSetup(model);
         Mockito.verify(systemActions).isSystemInitialized();
@@ -251,7 +251,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
         final Map<String, String> fieldErrors = new HashMap<>();
         fieldErrors.put("propertyKey", "error");
         Mockito.when(systemActions.saveRequiredInformation(Mockito.any(FieldModel.class), Mockito.anyMap())).thenThrow(new AlertException("Test exception"));
-        ResponseFactory responseFactory = new ResponseFactory();
+        final ResponseFactory responseFactory = new ResponseFactory();
         final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
         final ResponseEntity<String> response = handler.initialSystemSetup(model);
         Mockito.verify(systemActions).isSystemInitialized();
@@ -264,7 +264,7 @@ public class SystemControllerTestIT extends AlertIntegrationTest {
     public void testSave() throws Exception {
         final FieldModel model = new FieldModel(SettingsDescriptor.SETTINGS_COMPONENT, "GLOBAL", Map.of());
         Mockito.when(systemActions.isSystemInitialized()).thenReturn(Boolean.FALSE);
-        ResponseFactory responseFactory = new ResponseFactory();
+        final ResponseFactory responseFactory = new ResponseFactory();
         final SystemController handler = new SystemController(systemActions, contentConverter, responseFactory);
         final ResponseEntity<String> response = handler.initialSystemSetup(model);
         Mockito.verify(systemActions).isSystemInitialized();

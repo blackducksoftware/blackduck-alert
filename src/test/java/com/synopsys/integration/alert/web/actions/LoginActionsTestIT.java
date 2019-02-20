@@ -29,7 +29,7 @@ import org.springframework.security.ldap.authentication.LdapAuthenticationProvid
 
 import com.synopsys.integration.alert.common.data.model.UserModel;
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
-import com.synopsys.integration.alert.database.api.user.UserAccessor;
+import com.synopsys.integration.alert.database.api.UserAccessor;
 import com.synopsys.integration.alert.mock.model.MockLoginRestModel;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 import com.synopsys.integration.alert.util.TestProperties;

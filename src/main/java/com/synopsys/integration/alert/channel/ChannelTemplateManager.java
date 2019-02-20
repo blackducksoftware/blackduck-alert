@@ -32,19 +32,19 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.ContentConverter;
 import com.synopsys.integration.alert.common.event.AlertEvent;
-import com.synopsys.integration.alert.database.audit.AuditUtility;
+import com.synopsys.integration.alert.common.event.DistributionEvent;
+import com.synopsys.integration.alert.database.api.AuditEntryAccessor;
 
 @Component
 public class ChannelTemplateManager {
     private final JmsTemplate jmsTemplate;
-    private final AuditUtility auditUtility;
+    private final AuditEntryAccessor auditUtility;
     private final ContentConverter contentConverter;
 
     @Autowired
-    public ChannelTemplateManager(final ContentConverter contentConverter, final AuditUtility auditUtility, final JmsTemplate jmsTemplate) {
+    public ChannelTemplateManager(final ContentConverter contentConverter, final AuditEntryAccessor auditUtility, final JmsTemplate jmsTemplate) {
         this.contentConverter = contentConverter;
         this.auditUtility = auditUtility;
         this.jmsTemplate = jmsTemplate;

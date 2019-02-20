@@ -12,9 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
-import com.synopsys.integration.alert.database.entity.configuration.ConfigContextEntity;
-import com.synopsys.integration.alert.database.entity.configuration.DescriptorConfigEntity;
-import com.synopsys.integration.alert.database.entity.configuration.RegisteredDescriptorEntity;
+import com.synopsys.integration.alert.database.configuration.ConfigContextEntity;
+import com.synopsys.integration.alert.database.configuration.DescriptorConfigEntity;
+import com.synopsys.integration.alert.database.configuration.RegisteredDescriptorEntity;
+import com.synopsys.integration.alert.database.configuration.repository.ConfigContextRepository;
+import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
+import com.synopsys.integration.alert.database.configuration.repository.RegisteredDescriptorRepository;
 import com.synopsys.integration.alert.util.AlertIntegrationTest;
 
 @Transactional

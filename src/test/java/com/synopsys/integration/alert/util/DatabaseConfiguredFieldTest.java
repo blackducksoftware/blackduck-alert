@@ -21,9 +21,9 @@ import com.synopsys.integration.alert.common.descriptor.Descriptor;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintException;
 import com.synopsys.integration.alert.database.DescriptorMocker;
-import com.synopsys.integration.alert.database.repository.configuration.ConfigGroupRepository;
-import com.synopsys.integration.alert.database.repository.configuration.DescriptorConfigRepository;
-import com.synopsys.integration.alert.database.repository.configuration.FieldValueRepository;
+import com.synopsys.integration.alert.database.configuration.repository.ConfigGroupRepository;
+import com.synopsys.integration.alert.database.configuration.repository.DescriptorConfigRepository;
+import com.synopsys.integration.alert.database.configuration.repository.FieldValueRepository;
 
 public abstract class DatabaseConfiguredFieldTest extends AlertIntegrationTest {
 

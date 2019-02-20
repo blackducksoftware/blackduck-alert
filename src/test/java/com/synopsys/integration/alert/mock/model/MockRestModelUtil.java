@@ -16,8 +16,8 @@ import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import com.google.gson.Gson;
+import com.synopsys.integration.alert.common.data.model.Config;
 import com.synopsys.integration.alert.mock.MockUtils;
-import com.synopsys.integration.alert.web.model.Config;
 
 public abstract class MockRestModelUtil<R extends Config> implements MockUtils {
 

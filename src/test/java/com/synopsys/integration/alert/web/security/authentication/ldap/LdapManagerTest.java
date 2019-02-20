@@ -16,7 +16,7 @@ import com.synopsys.integration.alert.common.data.model.ConfigurationModel;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.exception.AlertLDAPConfigurationException;
 import com.synopsys.integration.alert.component.settings.SettingsDescriptor;
-import com.synopsys.integration.alert.database.api.configuration.ConfigurationAccessor;
+import com.synopsys.integration.alert.database.api.ConfigurationAccessor;
 
 public class LdapManagerTest {
 

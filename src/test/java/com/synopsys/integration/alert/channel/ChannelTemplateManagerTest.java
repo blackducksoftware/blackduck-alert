@@ -12,21 +12,21 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.jms.core.JmsTemplate;
 
-import com.synopsys.integration.alert.channel.event.DistributionEvent;
 import com.synopsys.integration.alert.common.ContentConverter;
-import com.synopsys.integration.alert.common.configuration.FieldAccessor;
+import com.synopsys.integration.alert.common.data.FieldAccessor;
 import com.synopsys.integration.alert.common.event.AlertEvent;
 import com.synopsys.integration.alert.common.event.ContentEvent;
+import com.synopsys.integration.alert.common.event.DistributionEvent;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.LinkableItem;
-import com.synopsys.integration.alert.database.audit.AuditUtility;
+import com.synopsys.integration.alert.database.api.AuditEntryAccessor;
 import com.synopsys.integration.rest.RestConstants;
 
 public class ChannelTemplateManagerTest {
 
     @Test
     public void testSendEvents() {
-        final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
+        final AuditEntryAccessor auditUtility = Mockito.mock(AuditEntryAccessor.class);
         final JmsTemplate jmsTemplate = Mockito.mock(JmsTemplate.class);
         final ContentConverter contentConverter = Mockito.mock(ContentConverter.class);
         Mockito.doNothing().when(jmsTemplate).convertAndSend(Mockito.anyString(), Mockito.any(Object.class));
@@ -42,7 +42,7 @@ public class ChannelTemplateManagerTest {
 
     @Test
     public void testNotAbstractChannelEvent() {
-        final AuditUtility auditUtility = Mockito.mock(AuditUtility.class);
+        final AuditEntryAccessor auditUtility = Mockito.mock(AuditEntryAccessor.class);
         final JmsTemplate jmsTemplate = Mockito.mock(JmsTemplate.class);
         final ContentConverter contentConverter = Mockito.mock(ContentConverter.class);
         Mockito.doNothing().when(jmsTemplate).convertAndSend(Mockito.anyString(), Mockito.any(Object.class));
