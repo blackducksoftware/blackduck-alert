@@ -92,7 +92,7 @@ public class EmailGlobalUIConfig extends UIConfig {
         final ConfigField mailSmtpSocksHost = TextInputConfigField.createGrouped(EmailPropertyKeys.JAVAMAIL_SOCKS_HOST_KEY.getPropertyKey(), "Smtp Socks Host", FieldGroup.ADVANCED);
         final ConfigField mailSmtpSocksPort = NumberConfigField.createGrouped(EmailPropertyKeys.JAVAMAIL_SOCKS_PORT_KEY.getPropertyKey(), "Smtp Socks Port", FieldGroup.ADVANCED);
         final ConfigField mailSmtpMailExtension = TextInputConfigField.createGrouped(EmailPropertyKeys.JAVAMAIL_MAILEXTENSION_KEY.getPropertyKey(), "Smtp Mail Extension", FieldGroup.ADVANCED);
-        final ConfigField mailSmtpUserSet = CheckboxConfigField.createGrouped(EmailPropertyKeys.JAVAMAIL_USERSET_KEY.getPropertyKey(), "Smtp User Set", FieldGroup.ADVANCED);
+        final ConfigField mailSmtpUserSet = CheckboxConfigField.createGrouped(EmailPropertyKeys.JAVAMAIL_USERSET_KEY.getPropertyKey(), "Smtp Use RSET", FieldGroup.ADVANCED);
         final ConfigField mailSmtpNoopStrict = CheckboxConfigField.createGrouped(EmailPropertyKeys.JAVAMAIL_NOOP_STRICT_KEY.getPropertyKey(), "Smtp NoOp Strict", FieldGroup.ADVANCED);
 
         return List.of(mailSmtpHost, mailSmtpFrom, mailSmtpAuth, mailSmtpUser, mailSmtpPassword, mailSmtpPort, mailSmtpConnectionTimeout, mailSmtpTimeout, mailSmtpWriteTimeout, mailSmtpLocalhost, mailSmtpLocalAddress,
