@@ -32,6 +32,7 @@ import com.synopsys.integration.alert.common.descriptor.config.ui.UIConfig;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
 import com.synopsys.integration.alert.common.provider.Provider;
 import com.synopsys.integration.alert.common.provider.ProviderContentType;
+import com.synopsys.integration.alert.common.workflow.MessageContentCollector;
 
 public abstract class ProviderDescriptor extends Descriptor {
     private final Provider provider;
