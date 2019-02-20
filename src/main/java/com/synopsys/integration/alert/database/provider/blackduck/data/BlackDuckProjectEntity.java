@@ -48,7 +48,7 @@ public class BlackDuckProjectEntity extends DatabaseEntity {
         // JPA requires default constructor definitions
     }
 
-    public BlackDuckProjectEntity(final String name, final String description, final String href, String projectOwnerEmail) {
+    public BlackDuckProjectEntity(final String name, final String description, final String href, final String projectOwnerEmail) {
         this.name = name;
         this.description = description;
         this.href = href;

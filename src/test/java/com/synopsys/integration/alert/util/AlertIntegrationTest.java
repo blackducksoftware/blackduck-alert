@@ -16,8 +16,8 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
-import com.synopsys.integration.alert.Application;
 import com.synopsys.integration.alert.database.DatabaseDataSource;
+import com.synopsys.integration.alert.Application;
 import com.synopsys.integration.alert.database.DescriptorMocker;
 import com.synopsys.integration.alert.database.repository.configuration.ConfigContextRepository;
 import com.synopsys.integration.alert.database.repository.configuration.DefinedFieldRepository;

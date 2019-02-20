@@ -15,6 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.channel.ChannelDescriptorTest;
 import com.synopsys.integration.alert.channel.email.descriptor.EmailDescriptor;
 import com.synopsys.integration.alert.channel.event.DistributionEvent;
@@ -30,7 +31,6 @@ import com.synopsys.integration.alert.common.exception.AlertDatabaseConstraintEx
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.DateRange;
 import com.synopsys.integration.alert.common.model.LinkableItem;
-import com.synopsys.integration.alert.database.entity.DatabaseEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectEntity;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckProjectRepositoryAccessor;
 import com.synopsys.integration.alert.database.provider.blackduck.data.BlackDuckUserEntity;
