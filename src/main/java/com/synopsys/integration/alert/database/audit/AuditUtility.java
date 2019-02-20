@@ -42,7 +42,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.synopsys.integration.alert.common.enumeration.AuditEntryStatus;
 import com.synopsys.integration.alert.common.model.AggregateMessageContent;
 import com.synopsys.integration.alert.common.model.CategoryItem;
-import com.synopsys.integration.alert.database.audit.relation.AuditNotificationRelation;
 
 @Component
 public class AuditUtility {

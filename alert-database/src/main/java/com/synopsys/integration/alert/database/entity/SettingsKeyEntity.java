@@ -1,5 +1,5 @@
 /**
- * blackduck-alert
+ * alert-database
  *
  * Copyright (C) 2019 Black Duck Software, Inc.
  * http://www.blackducksoftware.com/
@@ -21,18 +21,36 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.synopsys.integration.alert.database.audit;
+package com.synopsys.integration.alert.database.entity;
 
-import java.util.Optional;
-import java.util.UUID;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+@Entity
+@Table(schema = "alert", name = "settings_key")
+public class SettingsKeyEntity extends DatabaseEntity {
 
-public interface AuditEntryRepository extends JpaRepository<AuditEntryEntity, Long> {
-    Optional<AuditEntryEntity> findFirstByCommonConfigIdOrderByTimeLastSentDesc(final UUID commonConfigId);
+    @Column
+    private String key;
 
-    @Query(value = "SELECT entity FROM AuditEntryEntity entity INNER JOIN entity.auditNotificationRelations relation ON entity.id = relation.auditEntryId WHERE entity.commonConfigId = ?2 AND relation.notificationContent.id = ?1")
-    Optional<AuditEntryEntity> findMatchingAudit(Long notificationId, UUID commonConfigId);
+    @Column
+    private String value;
 
+    public SettingsKeyEntity() {
+        // JPA requires default constructor definitions
+    }
+
+    public SettingsKeyEntity(final String key, final String value) {
+        this.key = key;
+        this.value = value;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public String getValue() {
+        return value;
+    }
 }
