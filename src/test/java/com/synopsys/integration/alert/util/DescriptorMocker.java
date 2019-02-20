@@ -1,4 +1,4 @@
-package com.synopsys.integration.alert.database;
+package com.synopsys.integration.alert.util;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.synopsys.integration.alert.common.data.model.DefinedFieldModel;
 import com.synopsys.integration.alert.common.enumeration.ConfigContextEnum;
 import com.synopsys.integration.alert.common.enumeration.DescriptorType;
+import com.synopsys.integration.alert.database.DatabaseEntity;
 import com.synopsys.integration.alert.database.configuration.ConfigContextEntity;
 import com.synopsys.integration.alert.database.configuration.DefinedFieldEntity;
 import com.synopsys.integration.alert.database.configuration.DescriptorFieldRelation;

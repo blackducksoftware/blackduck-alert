@@ -25,7 +25,6 @@ import com.synopsys.integration.alert.common.security.EncryptionUtility;
 import com.synopsys.integration.alert.mock.MockDescriptorAccessor;
 
 public class ConfigurationFieldModelTest {
-
     public static final String KEY_FIELD_1 = "field_1";
     public static final String KEY_FIELD_2 = "field_2";
     public static final String VALUE_FIELD_1 = "value_1";
